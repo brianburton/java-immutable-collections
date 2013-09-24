@@ -1,0 +1,183 @@
+///###////////////////////////////////////////////////////////////////////////
+//
+// Burton Computer Corporation
+// http://www.burton-computer.com
+//
+// Copyright (c) 2013, Burton Computer Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//     Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     Neither the name of the Burton Computer Corporation nor the names
+//     of its contributors may be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+package org.javimmutable.collections.cursors;
+
+import org.javimmutable.collections.Cursor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Utility class that implements standard Cursor behavior for classes that do not
+ * naturally start at a position before the first element.  Such classes can pass
+ * a Source implementation to the of() method and this class will ensure that traversal
+ * does not start until the next() method is called and does not progress beyond the
+ * point where atEnd() is true.
+ *
+ * @param <T>
+ */
+public abstract class StandardCursor<T>
+        implements Cursor<T>
+{
+    public interface Source<T>
+    {
+        boolean atEnd();
+
+        T currentValue();
+
+        Source<T> advance();
+    }
+
+    public static <T> StandardCursor<T> of(Source<T> source)
+    {
+        return new Start<T>(source);
+    }
+
+    /**
+     * Creates a Cursor over a range of integers.  Useful for test purposes.
+     *
+     * @param low
+     * @param high
+     * @return
+     */
+    public static StandardCursor<Integer> forRange(int low,
+                                                   int high)
+    {
+        return StandardCursor.of(new RangeSource(low, high));
+    }
+
+    public static <T> List<T>asList(Cursor<T> cursor)
+    {
+        List<T> answer = new ArrayList<T>();
+        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+            answer.add(cursor.getValue());
+        }
+        return answer;
+    }
+
+    private static class Start<V>
+            extends StandardCursor<V>
+    {
+        private final Source<V> source;
+
+        private Start(Source<V> source)
+        {
+            this.source = source;
+        }
+
+        @Override
+        public Cursor<V> next()
+        {
+            return new Started<V>(source);
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public V getValue()
+        {
+            throw new IllegalStateException();
+        }
+    }
+
+    private static class Started<V>
+            extends StandardCursor<V>
+    {
+        private final Source<V> source;
+
+        private Started(Source<V> source)
+        {
+            this.source = source;
+        }
+
+        @Override
+        public Cursor<V> next()
+        {
+            return source.atEnd() ? EmptyCursor.<V>of() : new Started<V>(source.advance());
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return !source.atEnd();
+        }
+
+        @Override
+        public V getValue()
+        {
+            if (source.atEnd()) {
+                throw new IllegalStateException();
+            }
+            return source.currentValue();
+        }
+    }
+
+    private static class RangeSource
+            implements Source<Integer>
+    {
+        private final int low;
+        private final int high;
+
+        private RangeSource(int low,
+                            int high)
+        {
+            this.low = low;
+            this.high = high;
+        }
+
+        @Override
+        public boolean atEnd()
+        {
+            return low > high;
+        }
+
+        @Override
+        public Integer currentValue()
+        {
+            return low;
+        }
+
+        @Override
+        public Source<Integer> advance()
+        {
+            return new RangeSource(low + 1, high);
+        }
+    }
+}

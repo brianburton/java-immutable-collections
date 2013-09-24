@@ -1,0 +1,157 @@
+///###////////////////////////////////////////////////////////////////////////
+//
+// Burton Computer Corporation
+// http://www.burton-computer.com
+//
+// Copyright (c) 2013, Burton Computer Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//     Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     Neither the name of the Burton Computer Corporation nor the names
+//     of its contributors may be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+package org.javimmutable.collections.tree;
+
+import org.javimmutable.collections.Holder;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+public class PersistentTreeMapTest
+        extends TestCase
+{
+    public void testInsert()
+    {
+        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        assertEquals(0, map.size());
+        assertEquals(Collections.<Integer>emptyList(), map.getKeysList());
+        map = add(map, 5);
+        assertEquals(1, map.size());
+        assertEquals(Arrays.asList(5), map.getKeysList());
+        map = add(map, 7);
+        assertEquals(2, map.size());
+        assertEquals(Arrays.asList(5, 7), map.getKeysList());
+        map = add(map, 3);
+        assertEquals(3, map.size());
+        assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
+    }
+
+    public void testRandom1()
+    {
+        Random random = new Random();
+        for (int loop = 0; loop < 20; ++loop) {
+            Set<Integer> expected = new TreeSet<Integer>();
+            PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+            final int size = 250 + random.nextInt(250);
+            for (int i = 1; i <= size; ++i) {
+                Integer value = random.nextInt(100000);
+                expected.add(value);
+                map = add(map, value);
+                assertEquals(new ArrayList<Integer>(expected), map.getKeysList());
+                assertEquals(expected.size(), map.size());
+            }
+            assertEquals(expected, map.asMap().keySet());
+            ArrayList<Integer> keys = new ArrayList<Integer>(expected);
+            Collections.shuffle(keys, random);
+            for (Integer key : keys) {
+                map = remove(map, key);
+            }
+            assertEquals(0, map.size());
+            assertEquals(new ArrayList<Integer>(), map.getKeysList());
+        }
+    }
+
+    public void testRandom2()
+    {
+        final int maxKey = 500;
+        Random random = new Random();
+        for (int loop = 0; loop < 10; ++loop) {
+            Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+            PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+            for (int i = 1; i <= 25 * maxKey; ++i) {
+                int command = random.nextInt(4);
+                if (command <= 1) {
+                    Integer key = random.nextInt(maxKey);
+                    Integer value = random.nextInt(1000000);
+                    expected.put(key, value);
+                    map = add(map, key, value);
+                } else if (command == 2) {
+                    Integer key = random.nextInt(maxKey);
+                    expected.remove(key);
+                    map = remove(map, key);
+                } else {
+                    Integer key = random.nextInt(maxKey);
+                    assertEquals(expected.get(key), map.findValue(key).getValueOrNull());
+                }
+                assertEquals(expected.size(), map.size());
+            }
+            assertEquals(expected, map.asMap());
+            assertEquals(expected.keySet(), map.asMap().keySet());
+            assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(map.asMap().values()));
+            for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
+                Holder<Integer> value = map.findValue(entry.getKey());
+                assertEquals(entry.getValue(), value.getValue());
+            }
+        }
+    }
+
+    private PersistentTreeMap<Integer, Integer> add(PersistentTreeMap<Integer, Integer> map,
+                                                    Integer value)
+    {
+        map = map.setValue(value, value);
+        map.verifyDepthsMatch();
+        assertEquals(true, map.findValue(value).isFilled());
+        assertEquals(value, map.findValue(value).getValue());
+        return map;
+    }
+
+    private PersistentTreeMap<Integer, Integer> add(PersistentTreeMap<Integer, Integer> map,
+                                                    Integer key,
+                                                    Integer value)
+    {
+        map = map.setValue(key, value);
+        map.verifyDepthsMatch();
+        assertEquals(true, map.findValue(key).isFilled());
+        assertEquals(value, map.findValue(key).getValue());
+        return map;
+    }
+
+    private PersistentTreeMap<Integer, Integer> remove(PersistentTreeMap<Integer, Integer> map,
+                                                       Integer value)
+    {
+        map = map.removeValue(value);
+        map.verifyDepthsMatch();
+        assertEquals(true, map.findValue(value).isEmpty());
+        return map;
+    }
+}

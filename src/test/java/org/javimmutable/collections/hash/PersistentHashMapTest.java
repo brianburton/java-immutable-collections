@@ -1,0 +1,124 @@
+///###////////////////////////////////////////////////////////////////////////
+//
+// Burton Computer Corporation
+// http://www.burton-computer.com
+//
+// Copyright (c) 2013, Burton Computer Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//     Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     Neither the name of the Burton Computer Corporation nor the names
+//     of its contributors may be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+package org.javimmutable.collections.hash;
+
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.PersistentMap;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+public class PersistentHashMapTest
+        extends TestCase
+{
+    public void test()
+    {
+        PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
+        assertEquals(true, map.findValue(10).isEmpty());
+        assertEquals(0, map.size());
+        map = map.setValue(10, 20);
+        assertEquals(1, map.size());
+        assertEquals(false, map.findValue(10).isEmpty());
+        assertEquals(20, (int)map.findValue(10).getValue());
+        map = map.removeValue(10);
+        assertEquals(true, map.findValue(10).isEmpty());
+        assertEquals(0, map.size());
+    }
+
+    public void testRandom1()
+    {
+        final int maxKey = 999999999;
+        Random random = new Random(100);
+        for (int loop = 0; loop < 1000; ++loop) {
+            Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
+            PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
+            final int size = 250 + random.nextInt(250);
+            for (int i = 1; i <= size; ++i) {
+                int command = random.nextInt(4);
+                if (command <= 1) {
+                    Integer key = random.nextInt(maxKey);
+                    Integer value = random.nextInt(1000000);
+                    expected.put(key, value);
+                    map = map.setValue(key, value);
+                } else if (command == 2) {
+                    Integer key = random.nextInt(maxKey);
+                    expected.remove(key);
+                    map = map.removeValue(key);
+                } else {
+                    Integer key = random.nextInt(maxKey);
+                    assertEquals(expected.get(key), map.findValue(key).getValueOrNull());
+                }
+                assertEquals(expected.size(), map.size());
+            }
+
+            for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
+                Holder<Integer> mapValue = map.findValue(entry.getKey());
+                assertEquals(true, mapValue.isFilled());
+                assertEquals(entry.getValue(), mapValue.getValue());
+            }
+
+            // verify the Map adaptor worked properly
+            assertEquals(expected, map.asMap());
+            assertEquals(expected.keySet(), map.asMap().keySet());
+            assertEquals(expected.entrySet(), map.asMap().entrySet());
+            ArrayList<Integer> jvalues = new ArrayList<Integer>(expected.values());
+            ArrayList<Integer> pvalues = new ArrayList<Integer>(map.asMap().values());
+            Collections.sort(jvalues);
+            Collections.sort(pvalues);
+            assertEquals(jvalues, pvalues);
+
+            // verify the cursor worked properly
+            Map<Integer, Integer> fromCursor = new HashMap<Integer, Integer>();
+            for (PersistentMap.Entry<Integer, Integer> entry : map) {
+                fromCursor.put(entry.getKey(), entry.getValue());
+            }
+            assertEquals(expected, fromCursor);
+
+            // verify the map can remove all keys
+            ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
+            Collections.shuffle(keys, random);
+            for (Integer key : keys) {
+                map = map.removeValue(key);
+                assertEquals(true, map.findValue(key).isEmpty());
+            }
+            assertEquals(0, map.size());
+        }
+    }
+}

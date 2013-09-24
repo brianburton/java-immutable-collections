@@ -1,0 +1,121 @@
+///###////////////////////////////////////////////////////////////////////////
+//
+// Burton Computer Corporation
+// http://www.burton-computer.com
+//
+// Copyright (c) 2013, Burton Computer Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//     Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     Neither the name of the Burton Computer Corporation nor the names
+//     of its contributors may be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+package org.javimmutable.collections;
+
+import java.util.Map;
+
+/**
+ * Interface for persistent data structures that allow storage and retrieval of
+ * key/value pairs.  null is always an allowed value within the map but is not
+ * an allowed key.
+ *
+ * @param <K>
+ * @param <V>
+ */
+public interface PersistentMap<K, V>
+        extends Addable<PersistentMap.Entry<K, V>>,
+                Iterable<PersistentMap.Entry<K, V>>,
+                Cursorable<PersistentMap.Entry<K, V>>
+{
+    /**
+     * An immutable entry in the map.  Contains the key and value for that entry.
+     * key must not be null but value can be null.
+     *
+     * @param <K>
+     * @param <V>
+     */
+    interface Entry<K, V>
+    {
+        K getKey();
+
+        V getValue();
+    }
+
+    /**
+     * Search for a value within the map and return a Holder indicating if the value
+     * was found and, if it was found, the value itself.  Holder allows null values
+     * to be returned unambiguously.
+     *
+     * @param key non-null key to search for
+     * @return empty Holder if not found, otherwise filled Holder with value
+     */
+    Holder<V> findValue(K key);
+
+    /**
+     * Search for an Entry within the map and return a Holder indicating if the Entry
+     * was found and, if it was found, the Entry itself.
+     *
+     * @param key non-null key to search for
+     * @return empty Holder if not found, otherwise filled Holder with Entry
+     */
+    Holder<Entry<K, V>> findEntry(K key);
+
+    /**
+     * Sets the value associated with a specific key.  Key must be non-null but value
+     * can be null.  If the key already has a value in the map the old value is discarded
+     * and the new value is stored in its place.  Returns a new PersistentMap reflecting
+     * any changes.  The original map is always left unchanged.
+     *
+     * @param key   non-null key
+     * @param value possibly null value
+     * @return new map reflecting the change
+     */
+    PersistentMap<K, V> setValue(K key,
+                                 V value);
+
+    /**
+     * Deletes the entry for the specified key (if any).  Returns a new map if the value
+     * was deleted or the current map if the key was not contained in the map.
+     *
+     * @param key non-null key
+     * @return same or different map depending on whether key was removed
+     */
+    PersistentMap<K, V> removeValue(K key);
+
+    /**
+     * Return the number of entries in the map.
+     *
+     * @return
+     */
+    int size();
+
+    /**
+     * Creates an unmodifiable java.util.Map reflecting the values of this PersistentMap.
+     *
+     * @return Map view of this PersistentMap
+     */
+    Map<K, V> asMap();
+}
