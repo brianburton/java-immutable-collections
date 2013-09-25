@@ -43,7 +43,9 @@ public class RandomMapLoop
             throws Exception
     {
         MapFactory factory = new MapFactory();
-        Random random = new Random(50);
+        long seed = System.currentTimeMillis();
+        System.out.printf("Starting with initial seed %d%n", seed);
+        Random random = new Random(seed);
         List<String> tokens = loadTokens(filenames);
         //noinspection InfiniteLoopStatement
         while (true) {
