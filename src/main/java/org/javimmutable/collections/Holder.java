@@ -41,9 +41,9 @@ package org.javimmutable.collections;
  * and getValue() must not change over time for a single instance.  null is a legitimate value for a
  * Holder and a filled Holder could return null from getValue().
  *
- * @param <V>
+ * @param <T>
  */
-public interface Holder<V>
+public interface Holder<T>
 {
     /**
      * @return true iff this Holder has no value to return
@@ -61,14 +61,14 @@ public interface Holder<V>
      * @return the (possibly null) value
      * @throws UnsupportedOperationException if Holder is empty
      */
-    V getValue();
+    T getValue();
 
     /**
      * Retrieve the value of a filled Holder or null if Holder is empty.
      *
      * @return null (empty) or value (filled)
      */
-    V getValueOrNull();
+    T getValueOrNull();
 
     /**
      * Retrieve the value of a filled Holder or the defaultValue if Holder is empty
@@ -76,5 +76,5 @@ public interface Holder<V>
      * @param defaultValue value to return if Holder is empty
      * @return value or defaultValue
      */
-    V getValueOr(V defaultValue);
+    T getValueOr(T defaultValue);
 }

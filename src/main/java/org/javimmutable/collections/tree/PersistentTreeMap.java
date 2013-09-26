@@ -78,7 +78,7 @@ public class PersistentTreeMap<K, V>
     {
         PersistentTreeMap<K, V> answer = of();
         for (Map.Entry<K, V> entry : map.entrySet()) {
-            answer = answer.setValue(entry.getKey(), entry.getValue());
+            answer = answer.set(entry.getKey(), entry.getValue());
         }
         return answer;
     }
@@ -92,7 +92,14 @@ public class PersistentTreeMap<K, V>
         this.size = size;
     }
 
-    public Holder<V> findValue(K key)
+    @Override
+    public V get(K key)
+    {
+        return find(key).getValueOrNull();
+    }
+
+    @Override
+    public Holder<V> find(K key)
     {
         if (root == null) {
             return Holders.of();
@@ -111,8 +118,9 @@ public class PersistentTreeMap<K, V>
         }
     }
 
-    public PersistentTreeMap<K, V> setValue(K key,
-                                            V value)
+    @Override
+    public PersistentTreeMap<K, V> set(K key,
+                                       V value)
     {
         if (root == null) {
             return create(new LeafNode<K, V>(key, value), 1);
@@ -136,7 +144,8 @@ public class PersistentTreeMap<K, V>
         }
     }
 
-    public PersistentTreeMap<K, V> removeValue(K key)
+    @Override
+    public PersistentTreeMap<K, V> delete(K key)
     {
         if (root == null) {
             return this;
@@ -172,14 +181,16 @@ public class PersistentTreeMap<K, V>
     @Override
     public Addable<Entry<K, V>> add(Entry<K, V> e)
     {
-        return setValue(e.getKey(), e.getValue());
+        return set(e.getKey(), e.getValue());
     }
 
+    @Override
     public Iterator<Entry<K, V>> iterator()
     {
         return IteratorAdaptor.of(cursor());
     }
 
+    @Override
     public Cursor<Entry<K, V>> cursor()
     {
         return (root == null) ? EmptyCursor.<Entry<K, V>>of() : root.cursor();

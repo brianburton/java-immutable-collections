@@ -44,11 +44,11 @@ public abstract class AbstractTrieNode<T>
     @Override
     public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
     {
-        Holder<Integer> current = map.findValue(getClass());
+        Holder<Integer> current = map.find(getClass());
         if (current.isEmpty()) {
-            return map.setValue(getClass(), 1);
+            return map.set(getClass(), 1);
         } else {
-            return map.setValue(getClass(), current.getValue() + 1);
+            return map.set(getClass(), current.getValue() + 1);
         }
     }
 }

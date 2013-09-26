@@ -47,6 +47,7 @@ import java.util.Map;
  */
 public interface PersistentMap<K, V>
         extends Addable<PersistentMap.Entry<K, V>>,
+                Mapped<K, V>,
                 Iterable<PersistentMap.Entry<K, V>>,
                 Cursorable<PersistentMap.Entry<K, V>>
 {
@@ -72,7 +73,7 @@ public interface PersistentMap<K, V>
      * @param key non-null key to search for
      * @return empty Holder if not found, otherwise filled Holder with value
      */
-    Holder<V> findValue(K key);
+    Holder<V> find(K key);
 
     /**
      * Search for an Entry within the map and return a Holder indicating if the Entry
@@ -93,8 +94,8 @@ public interface PersistentMap<K, V>
      * @param value possibly null value
      * @return new map reflecting the change
      */
-    PersistentMap<K, V> setValue(K key,
-                                 V value);
+    PersistentMap<K, V> set(K key,
+                            V value);
 
     /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
@@ -103,7 +104,7 @@ public interface PersistentMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    PersistentMap<K, V> removeValue(K key);
+    PersistentMap<K, V> delete(K key);
 
     /**
      * Return the number of entries in the map.

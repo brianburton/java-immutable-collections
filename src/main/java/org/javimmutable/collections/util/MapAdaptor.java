@@ -82,7 +82,7 @@ public class MapAdaptor<K, V>
     @Override
     public boolean containsKey(Object o)
     {
-        return map.findValue((K)o).isFilled();
+        return map.find((K)o).isFilled();
     }
 
     /**
@@ -112,7 +112,7 @@ public class MapAdaptor<K, V>
     @Override
     public V get(Object o)
     {
-        return map.findValue((K)o).getValueOrNull();
+        return map.find((K)o).getValueOrNull();
     }
 
     @Override
@@ -154,7 +154,7 @@ public class MapAdaptor<K, V>
             @Override
             public boolean contains(Object o)
             {
-                return map.findValue((K)o).isFilled();
+                return map.find((K)o).isFilled();
             }
 
             @Override

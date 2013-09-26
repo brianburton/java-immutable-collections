@@ -56,15 +56,15 @@ public class TimingLoop
             if (command <= 1) {
                 Integer key = random.nextInt(maxKey);
                 Integer value = random.nextInt(maxValue);
-                map = map.setValue(key, value);
+                map = map.set(key, value);
                 adds += 1;
             } else if (command == 2) {
                 Integer key = random.nextInt(maxKey);
-                map = map.removeValue(key);
+                map = map.delete(key);
                 removes += 1;
             } else {
                 Integer key = random.nextInt(maxKey);
-                map.findValue(key);
+                map.find(key);
                 gets += 1;
             }
         }

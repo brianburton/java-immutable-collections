@@ -98,9 +98,9 @@ public class StandardTrieNodeTest
         assertEquals(0, node.shallowSize());
         assertEquals(0, node.deepSize());
         PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // add a new subbranch
         node = node.set(1, 5, "a");
@@ -108,9 +108,9 @@ public class StandardTrieNodeTest
         assertEquals(1, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // add another new subbranch
         node = node.set(7, 15, "z");
@@ -119,9 +119,9 @@ public class StandardTrieNodeTest
         assertEquals("a", node.get(1, 5).getValueOrNull());
         assertEquals("z", node.get(7, 15).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // update a subbranch
         node = node.set(7, 15, "r");
@@ -130,9 +130,9 @@ public class StandardTrieNodeTest
         assertEquals("a", node.get(1, 5).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // expand a subbranch
         node = node.set(7, 8, "q");
@@ -142,9 +142,9 @@ public class StandardTrieNodeTest
         assertEquals("q", node.get(7, 8).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
     }
 
     public void testValuesDelete()
@@ -204,9 +204,9 @@ public class StandardTrieNodeTest
         assertEquals("r", node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
         PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // non-existent branch
         assertSame(node, node.delete(6, 3));
@@ -224,9 +224,9 @@ public class StandardTrieNodeTest
         assertEquals("r", node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // subbranch value
         node = node.delete(7, 15);
@@ -238,9 +238,9 @@ public class StandardTrieNodeTest
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // penultimate value
         node = node.delete(7, 8);
@@ -252,9 +252,9 @@ public class StandardTrieNodeTest
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // ultimate value
         node = node.delete(12, 3);
@@ -266,9 +266,9 @@ public class StandardTrieNodeTest
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals(null, node.get(12, 3).getValueOrNull());
         counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(1, (int)counts.findValue(EmptyTrieNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(StandardTrieNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(QuickTrieNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(StandardTrieNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(QuickTrieNode.class).getValueOr(0));
     }
 
     public void testCursor()

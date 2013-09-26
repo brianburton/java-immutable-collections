@@ -46,6 +46,7 @@ import java.util.List;
  */
 public interface PersistentIndexedList<T>
         extends Addable<T>,
+                Indexed<T>,
                 Cursorable<T>,
                 Iterable<T>
 {

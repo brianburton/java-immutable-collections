@@ -51,14 +51,14 @@ public class PersistentHashMapTest
     public void test()
     {
         PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
-        assertEquals(true, map.findValue(10).isEmpty());
+        assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
-        map = map.setValue(10, 20);
+        map = map.set(10, 20);
         assertEquals(1, map.size());
-        assertEquals(false, map.findValue(10).isEmpty());
-        assertEquals(20, (int)map.findValue(10).getValue());
-        map = map.removeValue(10);
-        assertEquals(true, map.findValue(10).isEmpty());
+        assertEquals(false, map.find(10).isEmpty());
+        assertEquals(20, (int)map.find(10).getValue());
+        map = map.delete(10);
+        assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
     }
 
@@ -76,20 +76,20 @@ public class PersistentHashMapTest
                     Integer key = random.nextInt(maxKey);
                     Integer value = random.nextInt(1000000);
                     expected.put(key, value);
-                    map = map.setValue(key, value);
+                    map = map.set(key, value);
                 } else if (command == 2) {
                     Integer key = random.nextInt(maxKey);
                     expected.remove(key);
-                    map = map.removeValue(key);
+                    map = map.delete(key);
                 } else {
                     Integer key = random.nextInt(maxKey);
-                    assertEquals(expected.get(key), map.findValue(key).getValueOrNull());
+                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
                 }
                 assertEquals(expected.size(), map.size());
             }
 
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-                Holder<Integer> mapValue = map.findValue(entry.getKey());
+                Holder<Integer> mapValue = map.find(entry.getKey());
                 assertEquals(true, mapValue.isFilled());
                 assertEquals(entry.getValue(), mapValue.getValue());
             }
@@ -115,8 +115,8 @@ public class PersistentHashMapTest
             ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
-                map = map.removeValue(key);
-                assertEquals(true, map.findValue(key).isEmpty());
+                map = map.delete(key);
+                assertEquals(true, map.find(key).isEmpty());
             }
             assertEquals(0, map.size());
         }

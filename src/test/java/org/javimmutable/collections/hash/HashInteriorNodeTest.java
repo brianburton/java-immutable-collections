@@ -119,9 +119,9 @@ public class HashInteriorNodeTest
         assertEquals("xx", newNode.get(98, 31, "x").getValueOrNull());
 
         PersistentMap<Class, Integer> counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(3, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(3, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         sizeDelta = new MutableDelta();
         newNode = newNode.set(98, 30, "z", "zz", sizeDelta);
@@ -134,9 +134,9 @@ public class HashInteriorNodeTest
         assertEquals("zz", newNode.get(98, 30, "z").getValueOrNull());
 
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(3, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(3, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(HashQuickNode.class).getValueOr(0));
     }
 
     public void testValueSet()
@@ -192,9 +192,9 @@ public class HashInteriorNodeTest
         assertEquals("zz", node.get(15, 30, "z").getValueOrNull());
 
         PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         // delete from non-existent branch
         sizeDelta = new MutableDelta();
@@ -225,9 +225,9 @@ public class HashInteriorNodeTest
         assertEquals("xx", newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         // delete subbranch
         sizeDelta = new MutableDelta();
@@ -240,9 +240,9 @@ public class HashInteriorNodeTest
         assertEquals("xx", newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(2, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         // delete from subbranch
         sizeDelta = new MutableDelta();
@@ -255,9 +255,9 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(0, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(1, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         // delete last subbranch
         sizeDelta = new MutableDelta();
@@ -270,9 +270,9 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(15, 31, "x").getValueOrNull());
         assertEquals(null, newNode.get(15, 30, "z").getValueOrNull());
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
-        assertEquals(1, (int)counts.findValue(HashEmptyNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(HashInteriorNode.class).getValueOr(0));
-        assertEquals(0, (int)counts.findValue(HashQuickNode.class).getValueOr(0));
+        assertEquals(1, (int)counts.find(HashEmptyNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashInteriorNode.class).getValueOr(0));
+        assertEquals(0, (int)counts.find(HashQuickNode.class).getValueOr(0));
     }
 
     public void testValuesDelete()

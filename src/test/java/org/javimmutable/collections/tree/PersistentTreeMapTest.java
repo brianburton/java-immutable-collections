@@ -111,7 +111,7 @@ public class PersistentTreeMapTest
                     map = remove(map, key);
                 } else {
                     Integer key = random.nextInt(maxKey);
-                    assertEquals(expected.get(key), map.findValue(key).getValueOrNull());
+                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
                 }
                 assertEquals(expected.size(), map.size());
             }
@@ -119,7 +119,7 @@ public class PersistentTreeMapTest
             assertEquals(expected.keySet(), map.asMap().keySet());
             assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(map.asMap().values()));
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-                Holder<Integer> value = map.findValue(entry.getKey());
+                Holder<Integer> value = map.find(entry.getKey());
                 assertEquals(entry.getValue(), value.getValue());
             }
         }
@@ -128,10 +128,10 @@ public class PersistentTreeMapTest
     private PersistentTreeMap<Integer, Integer> add(PersistentTreeMap<Integer, Integer> map,
                                                     Integer value)
     {
-        map = map.setValue(value, value);
+        map = map.set(value, value);
         map.verifyDepthsMatch();
-        assertEquals(true, map.findValue(value).isFilled());
-        assertEquals(value, map.findValue(value).getValue());
+        assertEquals(true, map.find(value).isFilled());
+        assertEquals(value, map.find(value).getValue());
         return map;
     }
 
@@ -139,19 +139,19 @@ public class PersistentTreeMapTest
                                                     Integer key,
                                                     Integer value)
     {
-        map = map.setValue(key, value);
+        map = map.set(key, value);
         map.verifyDepthsMatch();
-        assertEquals(true, map.findValue(key).isFilled());
-        assertEquals(value, map.findValue(key).getValue());
+        assertEquals(true, map.find(key).isFilled());
+        assertEquals(value, map.find(key).getValue());
         return map;
     }
 
     private PersistentTreeMap<Integer, Integer> remove(PersistentTreeMap<Integer, Integer> map,
                                                        Integer value)
     {
-        map = map.removeValue(value);
+        map = map.delete(value);
         map.verifyDepthsMatch();
-        assertEquals(true, map.findValue(value).isEmpty());
+        assertEquals(true, map.find(value).isEmpty());
         return map;
     }
 }

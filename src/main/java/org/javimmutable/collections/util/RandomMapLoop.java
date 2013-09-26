@@ -77,7 +77,7 @@ public class RandomMapLoop
                 keys.add(key);
 		pkeys = pkeys.add(key);
                 expected.put(key, key);
-                map = map.setValue(key, key);
+                map = map.set(key, key);
             }
             verifyContents(expected, map);
             System.out.printf("shrinking %d%n", map.size());
@@ -85,7 +85,7 @@ public class RandomMapLoop
                 int keyIndex = random.nextInt(keys.size());
                 String key = pkeys.get(keyIndex);
                 expected.remove(key);
-                map = map.removeValue(key);
+                map = map.delete(key);
 		keys.remove(keyIndex);
 		pkeys = pkeys.delete(keyIndex);
             }
@@ -105,7 +105,7 @@ public class RandomMapLoop
         System.out.printf("cleanup %d%n", map.size());
         for (String key : keys) {
             expected.remove(key);
-            map = map.removeValue(key);
+            map = map.delete(key);
         }
 	if (map.size() != 0) {
 	    throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
@@ -121,14 +121,14 @@ public class RandomMapLoop
             throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), map.size()));
         }
         for (PersistentMap.Entry<String, String> entry : map) {
-            String mapValue = map.findValue(entry.getKey()).getValueOrNull();
+            String mapValue = map.find(entry.getKey()).getValueOrNull();
             String expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
                 throw new RuntimeException(String.format("size mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
         }
         for (Map.Entry<String, String> entry : expected.entrySet()) {
-            String mapValue = map.findValue(entry.getKey()).getValueOrNull();
+            String mapValue = map.find(entry.getKey()).getValueOrNull();
             String expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
                 throw new RuntimeException(String.format("size mismatch - expected %s found %s%n", expectedValue, mapValue));
