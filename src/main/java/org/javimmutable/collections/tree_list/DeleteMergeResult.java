@@ -58,43 +58,43 @@ public class DeleteMergeResult<T>
     }
 
     public TreeNode<T> createLeftTwoNode(TreeNode<T> callerRight,
-                                            int callerRightSize)
+                                         int callerRightSize)
     {
         return new TwoNode<T>(left,
-                                 callerRight,
-                                 left.getSize(),
-                                 callerRightSize);
+                              callerRight,
+                              left.getSize(),
+                              callerRightSize);
     }
 
     public TreeNode<T> createLeftThreeNode(TreeNode<T> callerRight,
-                                              int callerRightSize)
+                                           int callerRightSize)
     {
         return new ThreeNode<T>(left,
-                                   right,
-                                   callerRight,
-                                   left.getSize(),
-                                   right.getSize(),
-                                   callerRightSize);
+                                right,
+                                callerRight,
+                                left.getSize(),
+                                right.getSize(),
+                                callerRightSize);
     }
 
     public TreeNode<T> createRightTwoNode(TreeNode<T> callerLeft,
-                                             int callerLeftMax)
+                                          int callerLeftMax)
     {
         return new TwoNode<T>(callerLeft,
-                                 left,
-                                 callerLeftMax,
-                                 left.getSize());
+                              left,
+                              callerLeftMax,
+                              left.getSize());
     }
 
     public TreeNode<T> createRightThreeNode(TreeNode<T> callerLeft,
-                                               int callerLeftMax)
+                                            int callerLeftMax)
     {
         return new ThreeNode<T>(callerLeft,
-                                   left,
-                                   right,
-                                   callerLeftMax,
-                                   left.getSize(),
-                                   right.getSize());
+                                left,
+                                right,
+                                callerLeftMax,
+                                left.getSize(),
+                                right.getSize());
     }
 
     @Override

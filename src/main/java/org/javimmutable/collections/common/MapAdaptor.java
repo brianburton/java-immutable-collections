@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 

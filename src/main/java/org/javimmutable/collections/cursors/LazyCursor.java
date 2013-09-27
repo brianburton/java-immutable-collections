@@ -36,8 +36,8 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func0;
 
 /**
  * Cursor that creates and returns a real Cursor for a specific iterable only when next() is

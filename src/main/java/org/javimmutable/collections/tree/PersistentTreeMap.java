@@ -40,9 +40,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.cursors.EmptyCursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
+import org.javimmutable.collections.cursors.EmptyCursor;
 
 import java.util.Collections;
 import java.util.Comparator;

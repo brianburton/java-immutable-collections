@@ -39,7 +39,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
 
 public abstract class AbstractTrieNode<T>
-    implements TrieNode<T>
+        implements TrieNode<T>
 {
     @Override
     public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)

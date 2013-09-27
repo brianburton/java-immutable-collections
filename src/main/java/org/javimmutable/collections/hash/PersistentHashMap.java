@@ -41,11 +41,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.cursors.LazyCursor;
-import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.LazyCursor;
+import org.javimmutable.collections.cursors.MultiTransformCursor;
 
 import java.util.Iterator;
 import java.util.Map;

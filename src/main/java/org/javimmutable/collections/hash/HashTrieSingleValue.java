@@ -39,9 +39,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.list.PersistentLinkedStack;
-import org.javimmutable.collections.common.MutableDelta;
 
 public class HashTrieSingleValue<K, V>
         implements HashTrieValue<K, V>,

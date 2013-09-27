@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursor;
 /**
  * A Cursor that combines multiple Cursors into a single virtual Cursor
  * that visits all values from all Cursors in order.
+ *
  * @param <T>
  */
 public class MultiCursor<T>

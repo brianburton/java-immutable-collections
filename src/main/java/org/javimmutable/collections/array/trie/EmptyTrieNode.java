@@ -36,7 +36,6 @@
 package org.javimmutable.collections.array.trie;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.cursors.EmptyCursor;

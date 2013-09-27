@@ -40,11 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.cursors.TransformCursor;
-import org.javimmutable.collections.common.MutableDelta;
 
 /**
  * Full HashTrieNode implementation for up to 32 subbranches and 32 values.  Uses Bit32Arrays for branches
