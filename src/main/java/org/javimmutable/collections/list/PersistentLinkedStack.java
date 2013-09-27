@@ -40,6 +40,7 @@ import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.EmptyCursor;
+import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
 import java.util.ArrayList;
@@ -239,7 +240,7 @@ public abstract class PersistentLinkedStack<T>
 
         public Cursor<V> cursor()
         {
-            return PersistentStackCursor.of(this);
+            return SequenceCursor.of(this);
         }
     }
 }

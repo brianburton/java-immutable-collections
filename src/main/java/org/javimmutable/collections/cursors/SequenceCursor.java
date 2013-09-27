@@ -33,16 +33,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentStack;
-import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.Sequence;
 
-public abstract class PersistentStackCursor<T>
+public abstract class SequenceCursor<T>
         implements Cursor<T>
 {
-    public static <T> Cursor<T> of(PersistentStack<T> list)
+    public static <T> Cursor<T> of(Sequence<T> list)
     {
         return StandardCursor.of(new ListSource<T>(list));
     }
@@ -50,9 +49,9 @@ public abstract class PersistentStackCursor<T>
     private static class ListSource<T>
             implements StandardCursor.Source<T>
     {
-        private final PersistentStack<T> list;
+        private final Sequence<T> list;
 
-        private ListSource(PersistentStack<T> list)
+        private ListSource(Sequence<T> list)
         {
             this.list = list;
         }

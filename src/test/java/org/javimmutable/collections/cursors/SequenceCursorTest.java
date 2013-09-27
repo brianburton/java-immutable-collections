@@ -33,19 +33,19 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.cursors;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.cursors.EmptyCursor;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.list.PersistentLinkedStack;
 
-public class PersistentStackCursorTest
+public class SequenceCursorTest
         extends TestCase
 {
     public void testEmptyList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of();
-        Cursor<Integer> cursor = PersistentStackCursor.of(list);
+        Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();
             fail();
@@ -74,7 +74,7 @@ public class PersistentStackCursorTest
     public void testSingleList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(100);
-        Cursor<Integer> cursor = PersistentStackCursor.of(list);
+        Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();
             fail();
@@ -104,7 +104,7 @@ public class PersistentStackCursorTest
     public void testMultiList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
-        Cursor<Integer> cursor = PersistentStackCursor.of(list);
+        Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();
             fail();
