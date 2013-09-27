@@ -79,7 +79,7 @@ public abstract class StandardCursor<T>
         return StandardCursor.of(new RangeSource(low, high));
     }
 
-    public static <T> List<T>asList(Cursor<T> cursor)
+    public static <T> List<T> makeList(Cursor<T> cursor)
     {
         List<T> answer = new ArrayList<T>();
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {

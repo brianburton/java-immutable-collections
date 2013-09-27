@@ -56,7 +56,7 @@ import java.util.List;
  * @param <T>
  */
 public abstract class PersistentLinkedStack<T>
-    implements PersistentStack<T>
+        implements PersistentStack<T>
 {
     private static final Empty EMPTY = new Empty();
 
@@ -112,7 +112,7 @@ public abstract class PersistentLinkedStack<T>
         return IteratorAdaptor.of(cursor());
     }
 
-    public List<T> toList()
+    public List<T> makeList()
     {
         List<T> answer = new ArrayList<T>();
         if (!isEmpty()) {

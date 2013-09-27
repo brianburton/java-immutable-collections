@@ -70,9 +70,9 @@ public class PersistentLinkedStackTest
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
 
-        assertEquals(Collections.<Integer>emptyList(), list.toList());
-        assertEquals(Arrays.asList(10), list2.toList());
-        assertEquals(Arrays.asList(30, 10), list3.toList());
+        assertEquals(Collections.<Integer>emptyList(), list.makeList());
+        assertEquals(Arrays.asList(10), list2.makeList());
+        assertEquals(Arrays.asList(30, 10), list3.makeList());
 
         assertEquals(list, PersistentLinkedStack.of(Collections.<Integer>emptyList()));
         assertEquals(list2, PersistentLinkedStack.of(Arrays.asList(10)));
