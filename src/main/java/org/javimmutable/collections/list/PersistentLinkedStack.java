@@ -129,7 +129,7 @@ public abstract class PersistentLinkedStack<T>
     }
 
     @Override
-    public PersistentStack<T> delete()
+    public PersistentStack<T> remove()
     {
         return getTail();
     }

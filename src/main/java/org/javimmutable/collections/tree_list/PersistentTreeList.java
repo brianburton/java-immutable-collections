@@ -90,13 +90,13 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> deleteLast()
+    public PersistentTreeList<T> removeLast()
     {
-        return delete(size - 1);
+        return remove(size - 1);
     }
 
     @Override
-    public PersistentTreeList<T> delete(int index)
+    public PersistentTreeList<T> remove(int index)
     {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();

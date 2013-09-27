@@ -145,7 +145,7 @@ public class PersistentTreeMap<K, V>
     }
 
     @Override
-    public PersistentTreeMap<K, V> delete(K key)
+    public PersistentTreeMap<K, V> remove(K key)
     {
         if (root == null) {
             return this;

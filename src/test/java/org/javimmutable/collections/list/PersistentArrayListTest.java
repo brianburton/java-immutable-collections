@@ -74,7 +74,7 @@ public class PersistentArrayListTest
         }
 
         for (int index = 0; index < 100; ++index) {
-            list = list.deleteLast();
+            list = list.removeLast();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));

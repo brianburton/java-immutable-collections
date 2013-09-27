@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Holder;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,7 +149,7 @@ public class PersistentTreeMapTest
     private PersistentTreeMap<Integer, Integer> remove(PersistentTreeMap<Integer, Integer> map,
                                                        Integer value)
     {
-        map = map.delete(value);
+        map = map.remove(value);
         map.verifyDepthsMatch();
         assertEquals(true, map.find(value).isEmpty());
         return map;

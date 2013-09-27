@@ -118,9 +118,9 @@ public class RandomMapLoop
                 int keyIndex = random.nextInt(keys.size());
                 String key = pkeys.get(keyIndex);
                 expected.remove(key);
-                map = map.delete(key);
+                map = map.remove(key);
                 keys.remove(keyIndex);
-                pkeys = pkeys.delete(keyIndex);
+                pkeys = pkeys.remove(keyIndex);
             }
             verifyContents(expected, map);
         }
@@ -138,7 +138,7 @@ public class RandomMapLoop
         System.out.printf("cleanup %d%n", map.size());
         for (String key : keys) {
             expected.remove(key);
-            map = map.delete(key);
+            map = map.remove(key);
         }
         if (map.size() != 0) {
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));

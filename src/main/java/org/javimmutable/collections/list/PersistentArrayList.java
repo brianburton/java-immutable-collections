@@ -105,7 +105,7 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public PersistentArrayList<T> deleteLast()
+    public PersistentArrayList<T> removeLast()
     {
         if (size <= 0) {
             throw new ArrayIndexOutOfBoundsException();

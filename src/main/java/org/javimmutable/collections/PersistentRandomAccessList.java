@@ -62,7 +62,7 @@ public interface PersistentRandomAccessList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
-    PersistentRandomAccessList<T> deleteLast();
+    PersistentRandomAccessList<T> removeLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -92,5 +92,5 @@ public interface PersistentRandomAccessList<T>
      * @param index
      * @return
      */
-    PersistentRandomAccessList<T> delete(int index);
+    PersistentRandomAccessList<T> remove(int index);
 }

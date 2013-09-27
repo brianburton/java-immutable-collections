@@ -83,7 +83,7 @@ public interface PersistentList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
-    PersistentList<T> deleteLast();
+    PersistentList<T> removeLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.

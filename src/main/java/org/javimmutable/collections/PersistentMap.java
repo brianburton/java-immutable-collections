@@ -104,7 +104,7 @@ public interface PersistentMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    PersistentMap<K, V> delete(K key);
+    PersistentMap<K, V> remove(K key);
 
     /**
      * Return the number of entries in the map.

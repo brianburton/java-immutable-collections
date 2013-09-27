@@ -110,7 +110,7 @@ public class PersistentHashMap<K, V>
     }
 
     @Override
-    public PersistentHashMap<K, V> delete(final K key)
+    public PersistentHashMap<K, V> remove(final K key)
     {
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();

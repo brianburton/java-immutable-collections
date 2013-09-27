@@ -60,7 +60,7 @@ public class TimingLoop
                 adds += 1;
             } else if (command == 2) {
                 Integer key = random.nextInt(maxKey);
-                map = map.delete(key);
+                map = map.remove(key);
                 removes += 1;
             } else {
                 Integer key = random.nextInt(maxKey);

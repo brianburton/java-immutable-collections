@@ -76,5 +76,5 @@ public interface PersistentStack<T>
      *
      * @return
      */
-    PersistentStack<T> delete();
+    PersistentStack<T> remove();
 }

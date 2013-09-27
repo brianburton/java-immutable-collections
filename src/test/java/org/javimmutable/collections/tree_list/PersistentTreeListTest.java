@@ -70,13 +70,13 @@ public class PersistentTreeListTest
         assertEquals(210, (int)list.get(1));
         list.verifyDepthsMatch();
 
-        list = list.delete(0);
+        list = list.remove(0);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(210, (int)list.get(0));
         list.verifyDepthsMatch();
 
-        list = list.delete(0);
+        list = list.remove(0);
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list.verifyDepthsMatch();
@@ -94,7 +94,7 @@ public class PersistentTreeListTest
         }
 
         for (int index = 0; index < 100; ++index) {
-            list = list.deleteLast();
+            list = list.removeLast();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));
@@ -153,7 +153,7 @@ public class PersistentTreeListTest
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
-                list = list.delete(index);
+                list = list.remove(index);
                 expected.remove(index);
                 if (list.size() % 100 == 0) {
                     assertEquals(expected, list.asList());
@@ -180,7 +180,7 @@ public class PersistentTreeListTest
                 } else {
                     int index = random.nextInt(list.size());
                     if (random.nextInt(3) == 0) {
-                        list = list.delete(index);
+                        list = list.remove(index);
                         expected.remove(index);
                     } else {
                         list = list.insert(index, value);
@@ -203,7 +203,7 @@ public class PersistentTreeListTest
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
-                list = list.delete(index);
+                list = list.remove(index);
                 expected.remove(index);
                 assertEquals(expected.size(), list.size());
             }

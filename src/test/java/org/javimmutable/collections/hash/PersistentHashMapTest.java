@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.hash;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
-import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public class PersistentHashMapTest
         assertEquals(1, map.size());
         assertEquals(false, map.find(10).isEmpty());
         assertEquals(20, (int)map.find(10).getValue());
-        map = map.delete(10);
+        map = map.remove(10);
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
     }
@@ -80,7 +80,7 @@ public class PersistentHashMapTest
                 } else if (command == 2) {
                     Integer key = random.nextInt(maxKey);
                     expected.remove(key);
-                    map = map.delete(key);
+                    map = map.remove(key);
                 } else {
                     Integer key = random.nextInt(maxKey);
                     assertEquals(expected.get(key), map.find(key).getValueOrNull());
@@ -115,7 +115,7 @@ public class PersistentHashMapTest
             ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
-                map = map.delete(key);
+                map = map.remove(key);
                 assertEquals(true, map.find(key).isEmpty());
             }
             assertEquals(0, map.size());
