@@ -45,6 +45,34 @@ public interface PersistentRandomAccessList<T>
         extends PersistentList<T>
 {
     /**
+     * Replaces the value at the specified index (which must be within current
+     * bounds of the list) with the new value.
+     *
+     * @param index
+     * @param value
+     * @return
+     * @throws IndexOutOfBoundsException if index is out of bounds
+     */
+    PersistentRandomAccessList<T> set(int index,
+                                      T value);
+
+    /**
+     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    PersistentRandomAccessList<T> deleteLast();
+
+    /**
+     * Adds a value to the end of the list.  May be invoked on an empty list.
+     *
+     * @param value
+     * @return
+     */
+    PersistentRandomAccessList<T> add(T value);
+
+    /**
      * Insert value at index (which must be within the current bounds of the list).
      * Shifts all values at and after index one position to the right and adds 1
      * to size of the list.

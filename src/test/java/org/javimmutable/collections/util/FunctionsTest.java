@@ -35,21 +35,20 @@
 
 package org.javimmutable.collections.util;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.PersistentStack;
-import org.javimmutable.collections.list.PersistentArrayList;
-import org.javimmutable.collections.list.PersistentLinkedStack;
-import junit.framework.TestCase;
 
 public class FunctionsTest
         extends TestCase
 {
     public void testFoldLeft()
     {
-        PersistentStack<Integer> list = PersistentLinkedStack.<Integer>of().add(1).add(2).add(3);
+        PersistentStack<Integer> list = Immutables.<Integer>stack().add(1).add(2).add(3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -63,7 +62,7 @@ public class FunctionsTest
 
     public void testFoldRight()
     {
-        PersistentStack<Integer> list = PersistentLinkedStack.<Integer>of().add(1).add(2).add(3);
+        PersistentStack<Integer> list = Immutables.<Integer>stack().add(1).add(2).add(3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -77,13 +76,13 @@ public class FunctionsTest
 
     public void testCollectAll()
     {
-        PersistentArrayList<Integer> expected = PersistentArrayList.of();
+        PersistentList<Integer> expected = Immutables.list();
         expected = expected.add(2).add(3).add(4);
 
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        PersistentList<Integer> list = Immutables.list();
         list = list.add(1).add(2).add(3);
 
-        assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), PersistentArrayList.<Integer>of(), new Func1<Integer, Integer>()
+        assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Integer>()
         {
             @Override
             public Integer apply(Integer value)
@@ -95,13 +94,13 @@ public class FunctionsTest
 
     public void testCollectSome()
     {
-        PersistentArrayList<Integer> expected = PersistentArrayList.of();
+        PersistentList<Integer> expected = Immutables.list();
         expected = expected.add(2).add(4);
 
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        PersistentList<Integer> list = Immutables.list();
         list = list.add(1).add(2).add(3);
 
-        assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), PersistentArrayList.<Integer>of(), new Func1<Integer, Holder<Integer>>()
+        assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
         {
             @Override
             public Holder<Integer> apply(Integer value)
@@ -126,11 +125,11 @@ public class FunctionsTest
             }
         };
 
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        PersistentList<Integer> list = Immutables.list();
         list = list.add(1).add(2).add(3);
         assertEquals(Holders.<Integer>of(2), Functions.find(list.cursor(), func));
 
-        list = PersistentArrayList.of();
+        list = Immutables.list();
         list = list.add(1).add(5).add(7);
         assertEquals(Holders.<Integer>of(), Functions.find(list.cursor(), func));
     }
@@ -146,18 +145,18 @@ public class FunctionsTest
             }
         };
 
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        PersistentList<Integer> list = Immutables.list();
         list = list.add(1).add(2).add(3);
-        PersistentArrayList<Integer> expected = PersistentArrayList.of();
+        PersistentList<Integer> expected = Immutables.list();
         expected = expected.add(1).add(3);
-        assertEquals(expected, Functions.reject(list.cursor(), PersistentArrayList.<Integer>of(), func));
-        list = PersistentArrayList.of();
+        assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
+        list = Immutables.list();
         list = list.add(1).add(5).add(7);
-        assertEquals(list, Functions.reject(list.cursor(), PersistentArrayList.<Integer>of(), func));
-        list = PersistentArrayList.of();
+        assertEquals(list, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
+        list = Immutables.list();
         list = list.add(2).add(6).add(12);
-        expected = PersistentArrayList.of();
-        assertEquals(expected, Functions.reject(list.cursor(), PersistentArrayList.<Integer>of(), func));
+        expected = Immutables.list();
+        assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
     }
 
     public void testSelect()
@@ -171,17 +170,17 @@ public class FunctionsTest
             }
         };
 
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        PersistentList<Integer> list = Immutables.list();
         list = list.add(1).add(2).add(3);
-        PersistentArrayList<Integer> expected = PersistentArrayList.of();
+        PersistentList<Integer> expected = Immutables.list();
         expected = expected.add(2);
-        assertEquals(expected, Functions.select(list.cursor(), PersistentArrayList.<Integer>of(), func));
-        list = PersistentArrayList.of();
+        assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
+        list = Immutables.list();
         list = list.add(2).add(6).add(12);
-        assertEquals(list, Functions.select(list.cursor(), PersistentArrayList.<Integer>of(), func));
-        list = PersistentArrayList.of();
+        assertEquals(list, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
+        list = Immutables.list();
         list = list.add(1).add(5).add(7);
-        expected = PersistentArrayList.of();
-        assertEquals(expected, Functions.select(list.cursor(), PersistentArrayList.<Integer>of(), func));
+        expected = Immutables.list();
+        assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
     }
 }

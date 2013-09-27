@@ -41,9 +41,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.list.PersistentLinkedStack;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Library of static functions that perform various operations on Cursors.
@@ -255,5 +257,23 @@ public class Functions
             addable = (A)addable.add(value);
         }
         return addable;
+    }
+
+    public static <K, V> PersistentMap<K, V> setAll(PersistentMap<K, V> dest,
+                                                    PersistentMap<K, V> src)
+    {
+        for (PersistentMap.Entry<K, V> entry : src) {
+            dest = dest.set(entry.getKey(), entry.getValue());
+        }
+        return dest;
+    }
+
+    public static <K, V> PersistentMap<K, V> setAll(PersistentMap<K, V> dest,
+                                                    Map<K, V> src)
+    {
+        for (Map.Entry<K, V> entry : src.entrySet()) {
+            dest = dest.set(entry.getKey(), entry.getValue());
+        }
+        return dest;
     }
 }

@@ -1,9 +1,7 @@
 package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.hash.PersistentHashMap;
-import org.javimmutable.collections.tree.PersistentTreeMap;
-import org.javimmutable.collections.tree_list.PersistentTreeList;
+import org.javimmutable.collections.PersistentRandomAccessList;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,9 +30,9 @@ public class RandomMapLoop
         {
             count += 1;
             if (count % 2 == 0) {
-                return PersistentHashMap.of();
+                return Immutables.hashMap();
             } else {
-                return PersistentTreeMap.of();
+                return Immutables.treeMap();
             }
         }
     }
@@ -68,14 +66,14 @@ public class RandomMapLoop
         final List<String> keys = new ArrayList<String>();
         final Map<String, String> expected = new HashMap<String, String>();
         PersistentMap<String, String> map = factory.createMap();
-	PersistentTreeList<String> pkeys = PersistentTreeList.of();
+        PersistentRandomAccessList<String> pkeys = Immutables.ralist();
         System.out.printf("starting test with %d tokens and factory %s%n", tokenCount, map.getClass().getSimpleName());
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
                 String key = makeKey(tokens, random);
                 keys.add(key);
-		pkeys = pkeys.add(key);
+                pkeys = pkeys.add(key);
                 expected.put(key, key);
                 map = map.set(key, key);
             }
@@ -86,30 +84,30 @@ public class RandomMapLoop
                 String key = pkeys.get(keyIndex);
                 expected.remove(key);
                 map = map.delete(key);
-		keys.remove(keyIndex);
-		pkeys = pkeys.delete(keyIndex);
+                keys.remove(keyIndex);
+                pkeys = pkeys.delete(keyIndex);
             }
             verifyContents(expected, map);
         }
-	if (keys.size() != pkeys.size()) {
-	    throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
-	}
-	System.out.printf("comparing %d keys%n", pkeys.size());
-	for (int i = 0; i < pkeys.size(); ++i) {
-	    String key = keys.get(i);
-	    String pkey = pkeys.get(i);
-	    if (!key.equals(pkey)) {
-		throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
-	    }
-	}
+        if (keys.size() != pkeys.size()) {
+            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
+        }
+        System.out.printf("comparing %d keys%n", pkeys.size());
+        for (int i = 0; i < pkeys.size(); ++i) {
+            String key = keys.get(i);
+            String pkey = pkeys.get(i);
+            if (!key.equals(pkey)) {
+                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
+            }
+        }
         System.out.printf("cleanup %d%n", map.size());
         for (String key : keys) {
             expected.remove(key);
             map = map.delete(key);
         }
-	if (map.size() != 0) {
-	    throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
-	}
+        if (map.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
+        }
         verifyContents(expected, map);
     }
 
