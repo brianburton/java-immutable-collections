@@ -39,13 +39,13 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.EmptyCursor;
 import junit.framework.TestCase;
 
-public class PersistentListCursorTest
+public class PersistentStackCursorTest
         extends TestCase
 {
     public void testEmptyList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of();
-        Cursor<Integer> cursor = PersistentListCursor.of(list);
+        Cursor<Integer> cursor = PersistentStackCursor.of(list);
         try {
             cursor.hasValue();
             fail();
@@ -74,7 +74,7 @@ public class PersistentListCursorTest
     public void testSingleList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(100);
-        Cursor<Integer> cursor = PersistentListCursor.of(list);
+        Cursor<Integer> cursor = PersistentStackCursor.of(list);
         try {
             cursor.hasValue();
             fail();
@@ -104,7 +104,7 @@ public class PersistentListCursorTest
     public void testMultiList()
     {
         PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
-        Cursor<Integer> cursor = PersistentListCursor.of(list);
+        Cursor<Integer> cursor = PersistentStackCursor.of(list);
         try {
             cursor.hasValue();
             fail();

@@ -254,7 +254,7 @@ public abstract class PersistentLinkedStack<T>
 
         public Cursor<V> cursor()
         {
-            return PersistentListCursor.of(this);
+            return PersistentStackCursor.of(this);
         }
     }
 }

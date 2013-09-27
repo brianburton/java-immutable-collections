@@ -90,6 +90,12 @@ public class PersistentTreeList<T>
     }
 
     @Override
+    public PersistentTreeList<T> deleteLast()
+    {
+        return delete(size - 1);
+    }
+
+    @Override
     public PersistentTreeList<T> delete(int index)
     {
         if (index < 0 || index >= size) {

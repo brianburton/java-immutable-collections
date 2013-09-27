@@ -61,6 +61,7 @@ public interface PersistentList<T>
      *
      * @param index
      * @return
+     * @throws IndexOutOfBoundsException if index is out of bounds
      */
     T get(int index);
 
@@ -71,9 +72,18 @@ public interface PersistentList<T>
      * @param index
      * @param value
      * @return
+     * @throws IndexOutOfBoundsException if index is out of bounds
      */
     PersistentList<T> set(int index,
                           T value);
+
+    /**
+     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    PersistentList<T> deleteLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.

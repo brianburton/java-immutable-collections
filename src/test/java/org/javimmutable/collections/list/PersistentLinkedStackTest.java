@@ -40,7 +40,7 @@ import junit.framework.TestCase;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class PersistentLinkedListTest
+public class PersistentLinkedStackTest
         extends TestCase
 {
     public void test()

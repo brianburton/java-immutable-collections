@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +60,29 @@ public class PersistentArrayListTest
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         assertEquals(200, (int)list.get(1));
+    }
+
+    public void testDeleteLast()
+    {
+        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        for (int index = 0; index < 100; ++index) {
+            list = list.add(index);
+            assertEquals(index + 1, list.size());
+            for (int k = 0; k <= index; ++k) {
+                assertEquals(k, (int)list.get(k));
+            }
+        }
+
+        for (int index = 0; index < 100; ++index) {
+            list = list.deleteLast();
+            assertEquals(99 - index, list.size());
+            for (int k = 0; k < list.size(); ++k) {
+                assertEquals(k, (int)list.get(k));
+            }
+        }
+
+        assertEquals(true, list.isEmpty());
+        assertEquals(0, list.size());
     }
 
     public void testRandom()

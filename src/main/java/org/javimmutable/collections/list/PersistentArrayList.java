@@ -39,10 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.array.trie.EmptyTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
-import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -89,7 +89,7 @@ public class PersistentArrayList<T>
 
     @Override
     public PersistentList<T> set(int index,
-                                        T value)
+                                 T value)
     {
         if (index < 0 || index >= size) {
             throw new ArrayIndexOutOfBoundsException();
@@ -102,6 +102,16 @@ public class PersistentArrayList<T>
     {
         final int index = size;
         return new PersistentArrayList<T>(values.set(index >>> 5, index & 0x1f, value), index + 1);
+    }
+
+    @Override
+    public PersistentArrayList<T> deleteLast()
+    {
+        if (size <= 0) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        final int index = size - 1;
+        return new PersistentArrayList<T>(values.delete(index >>> 5, index & 0x1f), index);
     }
 
     @Override

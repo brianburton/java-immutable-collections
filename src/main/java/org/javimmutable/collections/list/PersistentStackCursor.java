@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.cursors.StandardCursor;
 
-public abstract class PersistentListCursor<T>
+public abstract class PersistentStackCursor<T>
         implements Cursor<T>
 {
     public static <T> Cursor<T> of(PersistentStack<T> list)
