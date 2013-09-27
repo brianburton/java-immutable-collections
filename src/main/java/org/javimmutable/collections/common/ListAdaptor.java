@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.PersistentIndexedList;
+import org.javimmutable.collections.PersistentList;
 
 import java.util.AbstractList;
 import java.util.List;
@@ -49,14 +49,14 @@ public class ListAdaptor<T>
         extends AbstractList<T>
         implements List<T>
 {
-    private PersistentIndexedList<T> list;
+    private PersistentList<T> list;
 
-    public ListAdaptor(PersistentIndexedList<T> list)
+    public ListAdaptor(PersistentList<T> list)
     {
         this.list = list;
     }
 
-    public static <T> ListAdaptor<T> of(PersistentIndexedList<T> list)
+    public static <T> ListAdaptor<T> of(PersistentList<T> list)
     {
         return new ListAdaptor<T>(list);
     }

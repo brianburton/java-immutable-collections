@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentIndexedList;
+import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.array.trie.EmptyTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
 import org.javimmutable.collections.cursors.Cursors;
@@ -56,7 +56,7 @@ import java.util.List;
  * @param <T>
  */
 public class PersistentArrayList<T>
-        implements PersistentIndexedList<T>
+        implements PersistentList<T>
 {
     private static final PersistentArrayList EMPTY = new PersistentArrayList();
 
@@ -88,7 +88,7 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public PersistentIndexedList<T> set(int index,
+    public PersistentList<T> set(int index,
                                         T value)
     {
         if (index < 0 || index >= size) {
@@ -140,7 +140,7 @@ public class PersistentArrayList<T>
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof PersistentIndexedList && Cursors.areEqual(cursor(), ((PersistentIndexedList)o).cursor());
+        return o instanceof PersistentList && Cursors.areEqual(cursor(), ((PersistentList)o).cursor());
     }
 
     @Override

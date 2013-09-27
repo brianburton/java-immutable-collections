@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @param <T>
  */
-public interface PersistentIndexedList<T>
+public interface PersistentList<T>
         extends Addable<T>,
                 Indexed<T>,
                 Cursorable<T>,
@@ -72,8 +72,8 @@ public interface PersistentIndexedList<T>
      * @param value
      * @return
      */
-    PersistentIndexedList<T> set(int index,
-                                 T value);
+    PersistentList<T> set(int index,
+                          T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -81,7 +81,7 @@ public interface PersistentIndexedList<T>
      * @param value
      * @return
      */
-    PersistentIndexedList<T> add(T value);
+    PersistentList<T> add(T value);
 
     /**
      * @return true only if list contains no values

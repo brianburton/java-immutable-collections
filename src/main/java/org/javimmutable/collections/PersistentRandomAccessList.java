@@ -36,13 +36,13 @@
 package org.javimmutable.collections;
 
 /**
- * Extension of PersistentIndexList that allows insertion and deletion at arbitrary
+ * Extension of PersistentList that allows insertion and deletion at arbitrary
  * indexes within the list.
  *
  * @param <T>
  */
 public interface PersistentRandomAccessList<T>
-        extends PersistentIndexedList<T>
+        extends PersistentList<T>
 {
     /**
      * Insert value at index (which must be within the current bounds of the list).

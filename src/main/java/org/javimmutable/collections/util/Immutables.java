@@ -1,9 +1,9 @@
 package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentIndexedList;
-import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.PersistentRandomAccessList;
+import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.list.PersistentArrayList;
 import org.javimmutable.collections.list.PersistentLinkedStack;
 import org.javimmutable.collections.tree_list.PersistentTreeList;
@@ -22,42 +22,42 @@ public final class Immutables
         return PersistentLinkedStack.of(cursor);
     }
 
-    public static <T> PersistentIndexedList<T> list()
+    public static <T> PersistentList<T> list()
     {
         return PersistentArrayList.of();
     }
 
-    public static <T> PersistentIndexedList<T> list(Cursor<T> cursor)
+    public static <T> PersistentList<T> list(Cursor<T> cursor)
     {
         return Functions.addAll(PersistentArrayList.<T>of(), cursor);
     }
 
-    public static <T> PersistentIndexedList<T> list(Iterator<T> iterator)
+    public static <T> PersistentList<T> list(Iterator<T> iterator)
     {
         return Functions.addAll(PersistentArrayList.<T>of(), iterator);
     }
 
-    public static <T> PersistentIndexedList<T> list(Iterable<T> iterable)
+    public static <T> PersistentList<T> list(Iterable<T> iterable)
     {
         return Functions.addAll(PersistentArrayList.<T>of(), iterable.iterator());
     }
 
-    public static <T> PersistentRandomAccessList<T> raList()
+    public static <T> PersistentRandomAccessList<T> ralist()
     {
         return PersistentTreeList.of();
     }
 
-    public static <T> PersistentRandomAccessList raList(Cursor<T> cursor)
+    public static <T> PersistentRandomAccessList ralist(Cursor<T> cursor)
     {
         return Functions.addAll(PersistentTreeList.<T>of(), cursor);
     }
 
-    public static <T> PersistentRandomAccessList<T> raList(Iterator<T> iterator)
+    public static <T> PersistentRandomAccessList<T> ralist(Iterator<T> iterator)
     {
         return Functions.addAll(PersistentTreeList.<T>of(), iterator);
     }
 
-    public static <T> PersistentRandomAccessList<T> raList(Iterable<T> iterable)
+    public static <T> PersistentRandomAccessList<T> ralist(Iterable<T> iterable)
     {
         return Functions.addAll(PersistentTreeList.<T>of(), iterable.iterator());
     }

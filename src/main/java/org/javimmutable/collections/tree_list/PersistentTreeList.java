@@ -36,7 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentIndexedList;
+import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.PersistentRandomAccessList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -178,7 +178,7 @@ public class PersistentTreeList<T>
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof PersistentIndexedList && Cursors.areEqual(cursor(), ((PersistentIndexedList)o).cursor());
+        return o instanceof PersistentList && Cursors.areEqual(cursor(), ((PersistentList)o).cursor());
     }
 
     @Override
