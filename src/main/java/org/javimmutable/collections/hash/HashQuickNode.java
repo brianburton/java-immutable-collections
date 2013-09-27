@@ -40,7 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 
 /**
  * HashTrieNode implementation for a single value at arbitrary depth.  Used to keep branch depth

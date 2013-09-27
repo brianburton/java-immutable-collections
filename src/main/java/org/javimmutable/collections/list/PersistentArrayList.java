@@ -41,8 +41,8 @@ import org.javimmutable.collections.array.trie.EmptyTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.util.IteratorAdaptor;
-import org.javimmutable.collections.util.ListAdaptor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+import org.javimmutable.collections.common.ListAdaptor;
 
 import java.util.Iterator;
 import java.util.List;

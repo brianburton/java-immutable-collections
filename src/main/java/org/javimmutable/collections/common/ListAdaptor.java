@@ -33,47 +33,43 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections;
+package org.javimmutable.collections.common;
+
+import org.javimmutable.collections.PersistentIndexedList;
+
+import java.util.AbstractList;
+import java.util.List;
 
 /**
- * Interface for objects that store values in List form.  Elements are always added
- * at the front of the list so elements are traversed in reverse order.
+ * Immutable List implementation backed by a PersistentIndexedList.
  *
- * @param <V>
+ * @param <T>
  */
-public interface PersistentList<V>
-        extends Addable<V>,
-                Cursorable<V>,
-                Iterable<V>
+public class ListAdaptor<T>
+        extends AbstractList<T>
+        implements List<T>
 {
-    boolean isEmpty();
+    private PersistentIndexedList<T> list;
 
-    /**
-     * Accesses the first value in the List.
-     *
-     * @return
-     */
-    V getHead();
+    public ListAdaptor(PersistentIndexedList<T> list)
+    {
+        this.list = list;
+    }
 
-    /**
-     * Accesses the rest of the List (i.e. the entry after the head entry).
-     *
-     * @return
-     */
-    PersistentList<V> getTail();
+    public static <T> ListAdaptor<T> of(PersistentIndexedList<T> list)
+    {
+        return new ListAdaptor<T>(list);
+    }
 
-    /**
-     * Returns a new list containing the value before the element returned by getHead().
-     *
-     * @param value
-     * @return
-     */
-    PersistentList<V> add(V value);
+    @Override
+    public T get(int index)
+    {
+        return list.get(index);
+    }
 
-    /**
-     * Returns a list without the element returned by getHead().
-     *
-     * @return
-     */
-    PersistentList<V> delete();
+    @Override
+    public int size()
+    {
+        return list.size();
+    }
 }

@@ -39,9 +39,9 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentList;
+import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.list.PersistentArrayList;
-import org.javimmutable.collections.list.PersistentLinkedList;
+import org.javimmutable.collections.list.PersistentLinkedStack;
 import junit.framework.TestCase;
 
 public class FunctionsTest
@@ -49,7 +49,7 @@ public class FunctionsTest
 {
     public void testFoldLeft()
     {
-        PersistentList<Integer> list = PersistentLinkedList.<Integer>of().add(1).add(2).add(3);
+        PersistentStack<Integer> list = PersistentLinkedStack.<Integer>of().add(1).add(2).add(3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -63,7 +63,7 @@ public class FunctionsTest
 
     public void testFoldRight()
     {
-        PersistentList<Integer> list = PersistentLinkedList.<Integer>of().add(1).add(2).add(3);
+        PersistentStack<Integer> list = PersistentLinkedStack.<Integer>of().add(1).add(2).add(3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override

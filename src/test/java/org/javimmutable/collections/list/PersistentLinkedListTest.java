@@ -45,7 +45,7 @@ public class PersistentLinkedListTest
 {
     public void test()
     {
-        PersistentLinkedList<Integer> list = PersistentLinkedList.of();
+        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of();
         assertEquals(true, list.isEmpty());
         try {
             list.getHead();
@@ -60,22 +60,22 @@ public class PersistentLinkedListTest
             // expected
         }
 
-        PersistentLinkedList<Integer> list2 = list.add(10);
+        PersistentLinkedStack<Integer> list2 = list.add(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
 
-        PersistentLinkedList<Integer> list3 = list2.add(30);
+        PersistentLinkedStack<Integer> list3 = list2.add(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
 
-        assertEquals(Collections.<Integer>emptyList(), list.asList());
-        assertEquals(Arrays.asList(10), list2.asList());
-        assertEquals(Arrays.asList(30, 10), list3.asList());
+        assertEquals(Collections.<Integer>emptyList(), list.toList());
+        assertEquals(Arrays.asList(10), list2.toList());
+        assertEquals(Arrays.asList(30, 10), list3.toList());
 
-        assertEquals(list, PersistentLinkedList.of(Collections.<Integer>emptyList()));
-        assertEquals(list2, PersistentLinkedList.of(Arrays.asList(10)));
-        assertEquals(list3, PersistentLinkedList.of(Arrays.asList(10, 30)));
+        assertEquals(list, PersistentLinkedStack.of(Collections.<Integer>emptyList()));
+        assertEquals(list2, PersistentLinkedStack.of(Arrays.asList(10)));
+        assertEquals(list3, PersistentLinkedStack.of(Arrays.asList(10, 30)));
     }
 }

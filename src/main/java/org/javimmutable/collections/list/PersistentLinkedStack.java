@@ -37,10 +37,15 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.PersistentList;
+import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.EmptyCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Singly linked list implementation of PersistentList that stores and retrieves values
@@ -48,68 +53,103 @@ import org.javimmutable.collections.cursors.SingleValueCursor;
  * access to stored values is required use PersistentArrayList or PersistentTreeList
  * instead but this class  is significantly faster when its limitations are acceptable.
  *
- * @param <V>
+ * @param <T>
  */
-public abstract class PersistentLinkedList<V>
-        extends AbstractPersistentList<V>
+public abstract class PersistentLinkedStack<T>
+    implements PersistentStack<T>
 {
     private static final Empty EMPTY = new Empty();
 
     @SuppressWarnings("unchecked")
-    public static <V> PersistentLinkedList<V> of()
+    public static <T> PersistentLinkedStack<T> of()
     {
-        return (PersistentLinkedList<V>)EMPTY;
+        return (PersistentLinkedStack<T>)EMPTY;
     }
 
-    public static <V> PersistentLinkedList<V> of(V value)
+    public static <T> PersistentLinkedStack<T> of(T value)
     {
-        return new Single<V>(value);
+        return new Single<T>(value);
     }
 
-    public static <V> PersistentLinkedList<V> of(V... values)
+    public static <T> PersistentLinkedStack<T> of(T... values)
     {
-        PersistentLinkedList<V> list = of();
-        for (V value : values) {
+        PersistentLinkedStack<T> list = of();
+        for (T value : values) {
             list = list.add(value);
         }
         return list;
     }
 
-    public static <V> PersistentLinkedList<V> of(Cursorable<V> values)
+    public static <T> PersistentLinkedStack<T> of(Cursorable<T> values)
     {
         return of(values.cursor());
     }
 
-    public static <V> PersistentLinkedList<V> of(Cursor<V> cursor)
+    public static <T> PersistentLinkedStack<T> of(Cursor<T> cursor)
     {
-        PersistentLinkedList<V> list = of();
+        PersistentLinkedStack<T> list = of();
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             list = list.add(cursor.getValue());
         }
         return list;
     }
 
-    public static <V> PersistentLinkedList<V> of(Iterable<V> values)
+    public static <T> PersistentLinkedStack<T> of(Iterable<T> values)
     {
-        PersistentLinkedList<V> list = of();
-        for (V value : values) {
+        PersistentLinkedStack<T> list = of();
+        for (T value : values) {
             list = list.add(value);
         }
         return list;
     }
 
-    public abstract PersistentLinkedList<V> add(V value);
+    public abstract PersistentLinkedStack<T> add(T value);
 
-    public abstract PersistentLinkedList<V> getTail();
+    public abstract PersistentLinkedStack<T> getTail();
+
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(cursor());
+    }
+
+    public List<T> toList()
+    {
+        List<T> answer = new ArrayList<T>();
+        if (!isEmpty()) {
+            answer.add(getHead());
+            for (PersistentStack<T> next = getTail(); !next.isEmpty(); next = next.getTail()) {
+                answer.add(next.getHead());
+            }
+        }
+        return answer;
+    }
 
     @Override
-    public PersistentList<V> delete()
+    public boolean equals(Object o)
+    {
+        return (o instanceof PersistentStack) && Cursors.areEqual(cursor(), ((PersistentStack)o).cursor());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Cursors.computeHashCode(cursor());
+    }
+
+    @Override
+    public String toString()
+    {
+        return Cursors.makeString(cursor());
+    }
+
+    @Override
+    public PersistentStack<T> delete()
     {
         return getTail();
     }
 
     private static class Empty<V>
-            extends PersistentLinkedList<V>
+            extends PersistentLinkedStack<V>
     {
         public boolean isEmpty()
         {
@@ -122,13 +162,13 @@ public abstract class PersistentLinkedList<V>
         }
 
         @Override
-        public PersistentLinkedList<V> getTail()
+        public PersistentLinkedStack<V> getTail()
         {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public PersistentLinkedList<V> add(V value)
+        public PersistentLinkedStack<V> add(V value)
         {
             return new Single<V>(value);
         }
@@ -140,7 +180,7 @@ public abstract class PersistentLinkedList<V>
     }
 
     private static class Single<V>
-            extends PersistentLinkedList<V>
+            extends PersistentLinkedStack<V>
     {
         private V value;
 
@@ -160,13 +200,13 @@ public abstract class PersistentLinkedList<V>
         }
 
         @Override
-        public PersistentLinkedList<V> getTail()
+        public PersistentLinkedStack<V> getTail()
         {
             return of();
         }
 
         @Override
-        public PersistentLinkedList<V> add(V value)
+        public PersistentLinkedStack<V> add(V value)
         {
             return new Chain<V>(value, this);
         }
@@ -178,13 +218,13 @@ public abstract class PersistentLinkedList<V>
     }
 
     private static class Chain<V>
-            extends PersistentLinkedList<V>
+            extends PersistentLinkedStack<V>
     {
         private V value;
-        private PersistentLinkedList<V> next;
+        private PersistentLinkedStack<V> next;
 
         private Chain(V value,
-                      PersistentLinkedList<V> next)
+                      PersistentLinkedStack<V> next)
         {
             this.value = value;
             this.next = next;
@@ -201,13 +241,13 @@ public abstract class PersistentLinkedList<V>
         }
 
         @Override
-        public PersistentLinkedList<V> getTail()
+        public PersistentLinkedStack<V> getTail()
         {
             return next;
         }
 
         @Override
-        public PersistentLinkedList<V> add(V value)
+        public PersistentLinkedStack<V> add(V value)
         {
             return new Chain<V>(value, this);
         }
@@ -216,23 +256,5 @@ public abstract class PersistentLinkedList<V>
         {
             return PersistentListCursor.of(this);
         }
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        return o instanceof PersistentList && Cursors.areEqual(cursor(), ((PersistentList)o).cursor());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Cursors.computeHashCode(cursor());
-    }
-
-    @Override
-    public String toString()
-    {
-        return Cursors.makeString(cursor());
     }
 }

@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.util.IteratorAdaptor;
+import org.javimmutable.collections.common.IteratorAdaptor;
 
 import java.util.Iterator;
 

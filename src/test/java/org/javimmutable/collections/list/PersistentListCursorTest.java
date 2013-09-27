@@ -44,7 +44,7 @@ public class PersistentListCursorTest
 {
     public void testEmptyList()
     {
-        PersistentLinkedList<Integer> list = PersistentLinkedList.of();
+        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of();
         Cursor<Integer> cursor = PersistentListCursor.of(list);
         try {
             cursor.hasValue();
@@ -73,7 +73,7 @@ public class PersistentListCursorTest
 
     public void testSingleList()
     {
-        PersistentLinkedList<Integer> list = PersistentLinkedList.of(100);
+        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(100);
         Cursor<Integer> cursor = PersistentListCursor.of(list);
         try {
             cursor.hasValue();
@@ -103,7 +103,7 @@ public class PersistentListCursorTest
 
     public void testMultiList()
     {
-        PersistentLinkedList<Integer> list = PersistentLinkedList.of(8, 7, 6, 5, 4, 3, 2, 1);
+        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
         Cursor<Integer> cursor = PersistentListCursor.of(list);
         try {
             cursor.hasValue();

@@ -38,10 +38,10 @@ package org.javimmutable.collections.tree_list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentIndexedList;
 import org.javimmutable.collections.PersistentRandomAccessList;
+import org.javimmutable.collections.common.IteratorAdaptor;
+import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.EmptyCursor;
-import org.javimmutable.collections.util.IteratorAdaptor;
-import org.javimmutable.collections.util.ListAdaptor;
 
 import java.util.Iterator;
 import java.util.List;

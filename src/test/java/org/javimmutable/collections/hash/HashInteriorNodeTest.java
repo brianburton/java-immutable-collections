@@ -37,7 +37,7 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 import junit.framework.TestCase;
 
 public class HashInteriorNodeTest

@@ -40,8 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.list.PersistentLinkedList;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.common.MutableDelta;
 
 public class HashTrieSingleValue<K, V>
         implements HashTrieValue<K, V>,
@@ -79,7 +79,7 @@ public class HashTrieSingleValue<K, V>
             return new HashTrieSingleValue<K, V>(key, value);
         } else {
             sizeDelta.add(1);
-            PersistentLinkedList<HashTrieSingleValue<K, V>> values = PersistentLinkedList.of();
+            PersistentLinkedStack<HashTrieSingleValue<K, V>> values = PersistentLinkedStack.of();
             return new HashTrieMultiValue<K, V>(values.add(this).add(new HashTrieSingleValue<K, V>(key, value)));
         }
     }

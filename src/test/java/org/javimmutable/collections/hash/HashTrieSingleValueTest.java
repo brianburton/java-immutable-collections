@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 import junit.framework.TestCase;
 
 public class HashTrieSingleValueTest

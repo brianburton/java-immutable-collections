@@ -43,9 +43,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
-import org.javimmutable.collections.util.IteratorAdaptor;
-import org.javimmutable.collections.util.MapAdaptor;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.IteratorAdaptor;
+import org.javimmutable.collections.common.MapAdaptor;
+import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Iterator;
 import java.util.Map;

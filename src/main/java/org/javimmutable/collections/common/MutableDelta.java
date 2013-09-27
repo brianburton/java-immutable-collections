@@ -33,56 +33,40 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.util;
+package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
-
-import java.util.Iterator;
+import org.javimmutable.collections.Func1;
 
 /**
- * Adaptor to traverse a Cursor using the Iterator API.   Evaluation of the Cursor
- * is lazy in the sense that Cursor.next() is not called for the first time until
- * the hasNext() method is called.  The next() method automatically calls the
- * Cursor's next() method after obtaining the current value to return as its
- * result.  In this way the protocol matches how Iterators behave.
- *
- * @param <T>
+ * Mutable object for tracking changes from zero.
  */
-public class IteratorAdaptor<T>
-        implements Iterator<T>
+public class MutableDelta
+    implements Func1<Integer, Integer>
 {
-    private boolean starting;
-    private Cursor<T> cursor;
+    private int value;
 
-    public IteratorAdaptor(Cursor<T> cursor)
+    public MutableDelta()
     {
-        this.starting = true;
-        this.cursor = cursor;
     }
 
-    public static <V> IteratorAdaptor<V> of(Cursor<V> cursor)
+    public void add(int increment)
     {
-        return new IteratorAdaptor<V>(cursor);
+        value = value + increment;
     }
 
-    public boolean hasNext()
+    public void subtract(int decrement)
     {
-        if (starting) {
-            starting = false;
-            cursor = cursor.next();
-        }
-        return cursor.hasValue();
+        value = value - decrement;
     }
 
-    public T next()
+    public int getValue()
     {
-        T answer = cursor.getValue();
-        cursor = cursor.next();
-        return answer;
+        return value;
     }
 
-    public void remove()
+    @Override
+    public Integer apply(Integer callerValue)
     {
-        throw new UnsupportedOperationException();
+        return value + callerValue;
     }
 }

@@ -40,7 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.EmptyCursor;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 
 /**
  * Trivial HashTrieNode implementation for an empty node.  gets and deletes do nothing and sets

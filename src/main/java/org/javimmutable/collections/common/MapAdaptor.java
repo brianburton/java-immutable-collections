@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.util;
+package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Func1;

@@ -41,7 +41,9 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.list.PersistentLinkedList;
+import org.javimmutable.collections.list.PersistentLinkedStack;
+
+import java.util.Iterator;
 
 /**
  * Library of static functions that perform various operations on Cursors.
@@ -83,7 +85,7 @@ public class Functions
                                      Cursor<T> cursor,
                                      Func2<R, T, R> func)
     {
-        return foldLeft(accumulator, PersistentLinkedList.of(cursor).cursor(), func);
+        return foldLeft(accumulator, PersistentLinkedStack.of(cursor).cursor(), func);
     }
 
     /**
@@ -191,5 +193,38 @@ public class Functions
             }
         }
         return list;
+    }
+
+
+    /**
+     * Add all values form the iterator to the addable.
+     *
+     * @param iterator
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T, A extends Addable<T>> A addAll(A addable,
+                                                     Iterator<T> iterator)
+    {
+        while (iterator.hasNext()) {
+            addable = (A)addable.add(iterator.next());
+        }
+        return addable;
+    }
+
+    /**
+     * Add all values form the cursor to the addable.
+     *
+     * @param cursor
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T, A extends Addable<T>> A addAll(A addable,
+                                                     Cursor<T> cursor)
+    {
+        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+            addable = (A)addable.add(cursor.getValue());
+        }
+        return addable;
     }
 }

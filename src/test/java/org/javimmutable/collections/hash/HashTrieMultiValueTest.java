@@ -37,8 +37,8 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.list.PersistentLinkedList;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.common.MutableDelta;
 import junit.framework.TestCase;
 
 public class HashTrieMultiValueTest
@@ -49,7 +49,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedList.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
         assertEquals(3, v.size());
 
         assertEquals(true, v.getValueForKey("a").isFilled());
@@ -132,7 +132,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedList.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
         assertEquals(3, v.size());
 
         assertEquals(false, v.getValueForKey("d").isFilled());

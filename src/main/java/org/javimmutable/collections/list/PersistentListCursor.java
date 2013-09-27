@@ -36,13 +36,13 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentList;
+import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 public abstract class PersistentListCursor<T>
         implements Cursor<T>
 {
-    public static <T> Cursor<T> of(PersistentList<T> list)
+    public static <T> Cursor<T> of(PersistentStack<T> list)
     {
         return StandardCursor.of(new ListSource<T>(list));
     }
@@ -50,9 +50,9 @@ public abstract class PersistentListCursor<T>
     private static class ListSource<T>
             implements StandardCursor.Source<T>
     {
-        private final PersistentList<T> list;
+        private final PersistentStack<T> list;
 
-        private ListSource(PersistentList<T> list)
+        private ListSource(PersistentStack<T> list)
         {
             this.list = list;
         }

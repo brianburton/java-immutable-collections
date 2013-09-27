@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 
 public interface HashTrieNode<K, V>
         extends Cursorable<HashTrieValue<K, V>>

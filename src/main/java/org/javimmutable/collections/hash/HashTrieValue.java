@@ -38,7 +38,7 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.common.MutableDelta;
 
 public interface HashTrieValue<K, V>
         extends Cursorable<PersistentMap.Entry<K, V>>

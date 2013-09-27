@@ -118,7 +118,7 @@ public class ListTimingComparison
         removes = 0;
         gets = 0;
         startPer = System.currentTimeMillis();
-        PersistentLinkedList<Integer> rlist = PersistentLinkedList.of();
+        PersistentLinkedStack<Integer> rlist = PersistentLinkedStack.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (rlist.isEmpty() || command <= 1) {

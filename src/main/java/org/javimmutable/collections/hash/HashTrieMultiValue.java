@@ -41,15 +41,15 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
-import org.javimmutable.collections.list.PersistentLinkedList;
-import org.javimmutable.collections.util.MutableDelta;
+import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.common.MutableDelta;
 
 public class HashTrieMultiValue<K, V>
         implements HashTrieValue<K, V>
 {
-    private final PersistentLinkedList<HashTrieSingleValue<K, V>> values;
+    private final PersistentLinkedStack<HashTrieSingleValue<K, V>> values;
 
-    public HashTrieMultiValue(PersistentLinkedList<HashTrieSingleValue<K, V>> values)
+    public HashTrieMultiValue(PersistentLinkedStack<HashTrieSingleValue<K, V>> values)
     {
         this.values = values;
     }
@@ -57,8 +57,8 @@ public class HashTrieMultiValue<K, V>
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        final PersistentLinkedList<HashTrieSingleValue<K, V>> values = this.values;
-        for (PersistentLinkedList<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return Holders.of(list.getHead().getValue());
             }
@@ -69,8 +69,8 @@ public class HashTrieMultiValue<K, V>
     @Override
     public PersistentMap.Entry<K, V> getEntryForKey(K key)
     {
-        final PersistentLinkedList<HashTrieSingleValue<K, V>> values = this.values;
-        for (PersistentLinkedList<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return list.getHead();
             }
@@ -83,10 +83,10 @@ public class HashTrieMultiValue<K, V>
                                               V value,
                                               MutableDelta sizeDelta)
     {
-        final PersistentLinkedList<HashTrieSingleValue<K, V>> values = this.values;
-        PersistentLinkedList<HashTrieSingleValue<K, V>> newList = PersistentLinkedList.of();
+        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        PersistentLinkedStack<HashTrieSingleValue<K, V>> newList = PersistentLinkedStack.of();
         boolean found = false;
-        for (PersistentLinkedList<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 found = true;
             } else {
@@ -105,8 +105,8 @@ public class HashTrieMultiValue<K, V>
                                                  MutableDelta sizeDelta)
     {
         boolean found = false;
-        PersistentLinkedList<HashTrieSingleValue<K, V>> newList = PersistentLinkedList.of();
-        for (PersistentLinkedList<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        PersistentLinkedStack<HashTrieSingleValue<K, V>> newList = PersistentLinkedStack.of();
+        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             final HashTrieSingleValue<K, V> entry = list.getHead();
             if (entry.getKey().equals(key)) {
                 found = true;
@@ -132,7 +132,7 @@ public class HashTrieMultiValue<K, V>
     public int size()
     {
         int total = 0;
-        PersistentLinkedList<HashTrieSingleValue<K, V>> values = this.values;
+        PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
         while (!values.isEmpty()) {
             total += 1;
             values = values.getTail();
