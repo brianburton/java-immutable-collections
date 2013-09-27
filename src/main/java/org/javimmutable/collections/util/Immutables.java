@@ -128,49 +128,49 @@ public final class Immutables
         return Functions.addAll(PersistentTreeList.<T>of(), iterable.iterator());
     }
 
-    public static <K, V> PersistentMap<K, V> hashMap()
+    public static <K, V> PersistentMap<K, V> map()
     {
         return PersistentHashMap.of();
     }
 
-    public static <K, V> PersistentMap<K, V> hashMap(Map<K, V> map)
+    public static <K, V> PersistentMap<K, V> map(Map<K, V> map)
     {
         return Functions.setAll(PersistentHashMap.<K, V>of(), map);
     }
 
-    public static <K, V> PersistentMap<K, V> hashMap(PersistentMap<K, V> map)
+    public static <K, V> PersistentMap<K, V> map(PersistentMap<K, V> map)
     {
         return Functions.setAll(PersistentHashMap.<K, V>of(), map);
     }
 
-    public static <K extends Comparable<K>, V> PersistentMap<K, V> treeMap()
+    public static <K extends Comparable<K>, V> PersistentMap<K, V> sortedMap()
     {
         return PersistentTreeMap.of();
     }
 
-    public static <K extends Comparable<K>, V> PersistentMap<K, V> treeMap(Map<K, V> map)
+    public static <K extends Comparable<K>, V> PersistentMap<K, V> sortedMap(Map<K, V> map)
     {
         return Functions.setAll(PersistentTreeMap.<K, V>of(), map);
     }
 
-    public static <K extends Comparable<K>, V> PersistentMap<K, V> treeMap(PersistentMap<K, V> map)
+    public static <K extends Comparable<K>, V> PersistentMap<K, V> sortedMap(PersistentMap<K, V> map)
     {
         return Functions.setAll(PersistentTreeMap.<K, V>of(), map);
     }
 
-    public static <K, V> PersistentMap<K, V> treeMap(Comparator<K> comparator)
+    public static <K, V> PersistentMap<K, V> sortedMap(Comparator<K> comparator)
     {
         return PersistentTreeMap.of(comparator);
     }
 
-    public static <K, V> PersistentMap<K, V> treeMap(Comparator<K> comparator,
-                                                     Map<K, V> map)
+    public static <K, V> PersistentMap<K, V> sortedMap(Comparator<K> comparator,
+                                                       Map<K, V> map)
     {
         return Functions.setAll(PersistentTreeMap.<K, V>of(comparator), map);
     }
 
-    public static <K, V> PersistentMap<K, V> treeMap(Comparator<K> comparator,
-                                                     PersistentMap<K, V> map)
+    public static <K, V> PersistentMap<K, V> sortedMap(Comparator<K> comparator,
+                                                       PersistentMap<K, V> map)
     {
         return Functions.setAll(PersistentTreeMap.<K, V>of(comparator), map);
     }

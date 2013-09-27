@@ -65,9 +65,9 @@ public class RandomMapLoop
         {
             count += 1;
             if (count % 2 == 0) {
-                return Immutables.hashMap();
+                return Immutables.map();
             } else {
-                return Immutables.treeMap();
+                return Immutables.sortedMap();
             }
         }
     }
