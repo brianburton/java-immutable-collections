@@ -49,7 +49,7 @@ public interface Mapped<K, V>
      * will be ambiguous and find() should be used instead.
      *
      * @param key identifies the value to retrieve
-     * @return value assoiated with key or null if no value is associated
+     * @return value associated with key or null if no value is associated
      */
     V get(K key);
 
