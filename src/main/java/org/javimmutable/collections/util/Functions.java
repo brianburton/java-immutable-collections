@@ -85,7 +85,20 @@ public class Functions
                                      Cursor<T> cursor,
                                      Func2<R, T, R> func)
     {
-        return foldLeft(accumulator, PersistentLinkedStack.of(cursor).cursor(), func);
+        return foldLeft(accumulator, reverse(cursor), func);
+    }
+
+    /**
+     * Creates a new Cursor whose values are in the reverse order of the provided Cursor.
+     * Requires O(n) time and creates an intermediate copy of the Cursor's values.
+     *
+     * @param cursor
+     * @param <T>
+     * @return
+     */
+    public static <T> Cursor<T> reverse(Cursor<T> cursor)
+    {
+        return addAll(PersistentLinkedStack.<T>of(), cursor).cursor();
     }
 
     /**
@@ -224,6 +237,22 @@ public class Functions
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             addable = (A)addable.add(cursor.getValue());
+        }
+        return addable;
+    }
+
+    /**
+     * Add all values form the array to the addable.
+     *
+     * @param values
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T, A extends Addable<T>> A addAll(A addable,
+                                                     T[] values)
+    {
+        for (T value : values) {
+            addable = (A)addable.add(value);
         }
         return addable;
     }

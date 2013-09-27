@@ -53,12 +53,7 @@ public class PersistentLinkedStackTest
         } catch (UnsupportedOperationException ex) {
             // expected
         }
-        try {
-            list.getTail();
-            fail();
-        } catch (UnsupportedOperationException ex) {
-            // expected
-        }
+        assertSame(list, list.getTail());
 
         PersistentLinkedStack<Integer> list2 = list.add(10);
         assertEquals(false, list2.isEmpty());

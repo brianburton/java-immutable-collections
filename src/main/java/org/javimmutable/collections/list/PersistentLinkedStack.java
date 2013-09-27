@@ -36,7 +36,6 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.PersistentStack;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -71,7 +70,7 @@ public abstract class PersistentLinkedStack<T>
         return new Single<T>(value);
     }
 
-    public static <T> PersistentLinkedStack<T> of(T... values)
+    public static <T> PersistentLinkedStack<T> of(List<T> values)
     {
         PersistentLinkedStack<T> list = of();
         for (T value : values) {
@@ -80,21 +79,7 @@ public abstract class PersistentLinkedStack<T>
         return list;
     }
 
-    public static <T> PersistentLinkedStack<T> of(Cursorable<T> values)
-    {
-        return of(values.cursor());
-    }
-
-    public static <T> PersistentLinkedStack<T> of(Cursor<T> cursor)
-    {
-        PersistentLinkedStack<T> list = of();
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
-            list = list.add(cursor.getValue());
-        }
-        return list;
-    }
-
-    public static <T> PersistentLinkedStack<T> of(Iterable<T> values)
+    public static <T> PersistentLinkedStack<T> of(T... values)
     {
         PersistentLinkedStack<T> list = of();
         for (T value : values) {
@@ -164,7 +149,7 @@ public abstract class PersistentLinkedStack<T>
         @Override
         public PersistentLinkedStack<V> getTail()
         {
-            throw new UnsupportedOperationException();
+            return this;
         }
 
         @Override
