@@ -70,32 +70,30 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    public Holder<V> find(TreeProperties<K> props,
+    public Holder<V> find(Comparator<K> comparator,
                           K key)
     {
-        Comparator<K> comparator = props.getComparator();
         if (comparator.compare(key, leftMaxKey) <= 0) {
-            return left.find(props, key);
+            return left.find(comparator, key);
         }
         if (comparator.compare(key, middleMaxKey) <= 0) {
-            return middle.find(props, key);
+            return middle.find(comparator, key);
         } else {
-            return right.find(props, key);
+            return right.find(comparator, key);
         }
     }
 
     @Override
-    public Holder<PersistentMap.Entry<K, V>> findEntry(TreeProperties<K> props,
+    public Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> comparator,
                                                        K key)
     {
-        Comparator<K> comparator = props.getComparator();
         if (comparator.compare(key, leftMaxKey) <= 0) {
-            return left.findEntry(props, key);
+            return left.findEntry(comparator, key);
         }
         if (comparator.compare(key, middleMaxKey) <= 0) {
-            return middle.findEntry(props, key);
+            return middle.findEntry(comparator, key);
         } else {
-            return right.findEntry(props, key);
+            return right.findEntry(comparator, key);
         }
     }
 
@@ -106,13 +104,12 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    public UpdateResult<K, V> update(TreeProperties<K> props,
+    public UpdateResult<K, V> update(Comparator<K> comparator,
                                      K key,
                                      V value)
     {
-        Comparator<K> comparator = props.getComparator();
         if (comparator.compare(key, leftMaxKey) <= 0) {
-            UpdateResult<K, V> result = left.update(props, key, value);
+            UpdateResult<K, V> result = left.update(comparator, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -134,7 +131,7 @@ public class ThreeNode<K, V>
                                                 result.sizeDelta);
             }
         } else if (comparator.compare(key, middleMaxKey) <= 0) {
-            UpdateResult<K, V> result = middle.update(props, key, value);
+            UpdateResult<K, V> result = middle.update(comparator, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -159,7 +156,7 @@ public class ThreeNode<K, V>
                                                 result.sizeDelta);
             }
         } else {
-            UpdateResult<K, V> result = right.update(props, key, value);
+            UpdateResult<K, V> result = right.update(comparator, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -206,12 +203,11 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    public DeleteResult<K, V> delete(TreeProperties<K> props,
+    public DeleteResult<K, V> delete(Comparator<K> comparator,
                                      K key)
     {
-        Comparator<K> comparator = props.getComparator();
         if (comparator.compare(key, leftMaxKey) <= 0) {
-            DeleteResult<K, V> result = left.delete(props, key);
+            DeleteResult<K, V> result = left.delete(comparator, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -231,7 +227,7 @@ public class ThreeNode<K, V>
                                                                     rightMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = middle.leftDeleteMerge(props, result.node);
+                DeleteMergeResult<K, V> mergeResult = middle.leftDeleteMerge(comparator, result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createLeftTwoNode(right, rightMaxKey));
                 } else {
@@ -239,7 +235,7 @@ public class ThreeNode<K, V>
                 }
             }
         } else if (comparator.compare(key, middleMaxKey) <= 0) {
-            DeleteResult<K, V> result = middle.delete(props, key);
+            DeleteResult<K, V> result = middle.delete(comparator, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -259,7 +255,7 @@ public class ThreeNode<K, V>
                                                                     rightMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(props, result.node);
+                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(comparator, result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createRightTwoNode(left, leftMaxKey));
                 } else {
@@ -267,7 +263,7 @@ public class ThreeNode<K, V>
                 }
             }
         } else {
-            DeleteResult<K, V> result = right.delete(props, key);
+            DeleteResult<K, V> result = right.delete(comparator, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -287,7 +283,7 @@ public class ThreeNode<K, V>
                                                                     middleMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = middle.rightDeleteMerge(props, result.node);
+                DeleteMergeResult<K, V> mergeResult = middle.rightDeleteMerge(comparator, result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createRightTwoNode(left, leftMaxKey));
                 } else {
@@ -299,7 +295,7 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> leftDeleteMerge(TreeProperties<K> props,
+    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
                                                    TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
@@ -313,7 +309,7 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> rightDeleteMerge(TreeProperties<K> props,
+    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
                                                     TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(left,

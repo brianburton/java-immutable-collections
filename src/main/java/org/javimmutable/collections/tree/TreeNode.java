@@ -41,19 +41,20 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.PersistentMap;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 public abstract class TreeNode<K, V>
         implements Cursorable<PersistentMap.Entry<K, V>>
 {
-    public abstract Holder<V> find(TreeProperties<K> props,
+    public abstract Holder<V> find(Comparator<K> props,
                                    K key);
 
-    public abstract Holder<PersistentMap.Entry<K, V>> findEntry(TreeProperties<K> props,
+    public abstract Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                                 K key);
 
     public abstract K getMaxKey();
 
-    public abstract UpdateResult<K, V> update(TreeProperties<K> props,
+    public abstract UpdateResult<K, V> update(Comparator<K> props,
                                               K key,
                                               V value);
 
@@ -61,13 +62,13 @@ public abstract class TreeNode<K, V>
 
     public abstract int verifyDepthsMatch();
 
-    public abstract DeleteResult<K, V> delete(TreeProperties<K> props,
+    public abstract DeleteResult<K, V> delete(Comparator<K> props,
                                               K key);
 
-    public abstract DeleteMergeResult<K, V> leftDeleteMerge(TreeProperties<K> props,
+    public abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
                                                             TreeNode<K, V> node);
 
-    public abstract DeleteMergeResult<K, V> rightDeleteMerge(TreeProperties<K> props,
+    public abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
                                                              TreeNode<K, V> node);
 
     public abstract Cursor<PersistentMap.Entry<K, V>> cursor();

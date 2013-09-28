@@ -42,6 +42,7 @@ import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 public class TwoNode<K, V>
         extends TreeNode<K, V>
@@ -63,7 +64,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public Holder<V> find(TreeProperties<K> props,
+    public Holder<V> find(Comparator<K> props,
                           K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
@@ -74,7 +75,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public Holder<PersistentMap.Entry<K, V>> findEntry(TreeProperties<K> props,
+    public Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                        K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
@@ -91,7 +92,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public UpdateResult<K, V> update(TreeProperties<K> props,
+    public UpdateResult<K, V> update(Comparator<K> props,
                                      K key,
                                      V value)
     {
@@ -142,7 +143,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteResult<K, V> delete(TreeProperties<K> props,
+    public DeleteResult<K, V> delete(Comparator<K> props,
                                      K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
@@ -196,7 +197,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> leftDeleteMerge(TreeProperties<K> props,
+    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
                                                    TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(node,
@@ -208,7 +209,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> rightDeleteMerge(TreeProperties<K> props,
+    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
                                                     TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(left,

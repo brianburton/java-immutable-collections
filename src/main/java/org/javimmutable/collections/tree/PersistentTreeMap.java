@@ -57,13 +57,13 @@ public class PersistentTreeMap<K, V>
     @SuppressWarnings("unchecked")
     private static final PersistentTreeMap EMPTY = new PersistentTreeMap(new ComparableComparator());
 
-    private final TreeProperties<K> properties;
+    private final Comparator<K> properties;
     private final TreeNode<K, V> root;
     private final int size;
 
     public PersistentTreeMap(Comparator<K> comparator)
     {
-        this(new TreeProperties<K>(comparator), null, 0);
+        this(comparator, null, 0);
     }
 
     @SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public class PersistentTreeMap<K, V>
         return answer;
     }
 
-    private PersistentTreeMap(TreeProperties<K> properties,
+    private PersistentTreeMap(Comparator<K> properties,
                               TreeNode<K, V> root,
                               int size)
     {
