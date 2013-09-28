@@ -44,6 +44,9 @@ import java.util.Comparator;
 public class PersistentTreeSet<T>
         extends AbstractPersistentSet<T>
 {
+    @SuppressWarnings("unchecked")
+    private static final PersistentTreeSet EMPTY = new PersistentTreeSet(new ComparableComparator());
+
     private final Comparator<T> comparator;
 
     public PersistentTreeSet(Comparator<T> comparator)
@@ -58,9 +61,10 @@ public class PersistentTreeSet<T>
         this.comparator = comparator;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Comparable<T>> PersistentTreeSet<T> of()
     {
-        return new PersistentTreeSet<T>(ComparableComparator.<T>of());
+        return (PersistentTreeSet<T>)EMPTY;
     }
 
     public static <T> PersistentTreeSet<T> of(Comparator<T> comparator)
