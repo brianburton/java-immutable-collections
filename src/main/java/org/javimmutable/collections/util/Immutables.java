@@ -69,6 +69,11 @@ public final class Immutables
         return PersistentLinkedStack.of();
     }
 
+    public static <T> PersistentStack<T> stack(T... values)
+    {
+        return Functions.addAll(PersistentLinkedStack.<T>of(), values);
+    }
+
     public static <T> PersistentStack<T> stack(Cursor<T> cursor)
     {
         return Functions.addAll(PersistentLinkedStack.<T>of(), cursor);
@@ -92,6 +97,11 @@ public final class Immutables
     public static <T> PersistentList<T> list()
     {
         return PersistentArrayList.of();
+    }
+
+    public static <T> PersistentList<T> list(T... values)
+    {
+        return Functions.addAll(PersistentArrayList.<T>of(), values);
     }
 
     public static <T> PersistentList<T> list(Cursor<T> cursor)
@@ -122,6 +132,11 @@ public final class Immutables
     public static <T> PersistentRandomAccessList ralist(Cursor<T> cursor)
     {
         return Functions.addAll(PersistentTreeList.<T>of(), cursor);
+    }
+
+    public static <T> PersistentRandomAccessList ralist(T... values)
+    {
+        return Functions.addAll(PersistentTreeList.<T>of(), values);
     }
 
     public static <T> PersistentRandomAccessList ralist(Cursorable<T> cursorable)
@@ -196,6 +211,11 @@ public final class Immutables
         return Functions.addAll(PersistentHashSet.<T>of(), cursor);
     }
 
+    public static <T> PersistentSet<T> set(T... values)
+    {
+        return Functions.addAll(PersistentHashSet.<T>of(), values);
+    }
+
     public static <T> PersistentSet<T> set(Cursorable<T> cursorable)
     {
         return Functions.addAll(PersistentHashSet.<T>of(), cursorable.cursor());
@@ -214,6 +234,11 @@ public final class Immutables
     public static <T extends Comparable<T>> PersistentSet<T> sortedSet()
     {
         return PersistentTreeSet.of();
+    }
+
+    public static <T extends Comparable<T>> PersistentSet<T> sortedSet(T... values)
+    {
+        return Functions.addAll(PersistentTreeSet.<T>of(), values);
     }
 
     public static <T extends Comparable<T>> PersistentSet<T> sortedSet(Cursor<T> cursor)
@@ -245,6 +270,12 @@ public final class Immutables
                                                  Cursor<T> cursor)
     {
         return Functions.addAll(PersistentTreeSet.<T>of(comparator), cursor);
+    }
+
+    public static <T> PersistentSet<T> sortedSet(Comparator<T> comparator,
+                                                 T... values)
+    {
+        return Functions.addAll(PersistentTreeSet.<T>of(comparator), values);
     }
 
     public static <T> PersistentSet<T> sortedSet(Comparator<T> comparator,

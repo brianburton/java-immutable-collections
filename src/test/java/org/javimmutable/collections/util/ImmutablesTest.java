@@ -70,6 +70,7 @@ public class ImmutablesTest
         assertEquals(stack, Immutables.stack((inlist.cursor())));
         assertEquals(stack, Immutables.stack(input));
         assertEquals(stack, Immutables.stack(input.iterator()));
+        assertEquals(stack, Immutables.stack(1, 2, 3));
     }
 
     public void testList()
@@ -81,6 +82,7 @@ public class ImmutablesTest
         assertEquals(list, Immutables.list(input.iterator()));
         assertEquals(list, Immutables.list(list));
         assertEquals(list, Immutables.list(list.cursor()));
+        assertEquals(list, Immutables.list(1, 2, 3));
     }
 
     public void testRandomAccessList()
@@ -92,6 +94,7 @@ public class ImmutablesTest
         assertEquals(list, Immutables.ralist(input.iterator()));
         assertEquals(list, Immutables.ralist(list));
         assertEquals(list, Immutables.ralist(list.cursor()));
+        assertEquals(list, Immutables.ralist(1, 2, 3));
     }
 
     public void testMap()
@@ -129,6 +132,7 @@ public class ImmutablesTest
         assertEquals(set, Immutables.set(input.iterator()));
         assertEquals(set, Immutables.set(set));
         assertEquals(set, Immutables.set(set.cursor()));
+        assertEquals(set, Immutables.set(1, 100, 45, 87, 1));
     }
 
     public void testSortedSet()
@@ -140,6 +144,7 @@ public class ImmutablesTest
         assertEquals(set, Immutables.sortedSet(input.iterator()));
         assertEquals(set, Immutables.sortedSet(set));
         assertEquals(set, Immutables.sortedSet(set.cursor()));
+        assertEquals(set, Immutables.sortedSet(1, 100, 45, 87, 1));
         Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(1, 45, 87, 100).iterator()).cursor());
 
         Comparator<Integer> reverser = new Comparator<Integer>()
@@ -156,6 +161,7 @@ public class ImmutablesTest
         assertEquals(set, Immutables.sortedSet(reverser, input.iterator()));
         assertEquals(set, Immutables.sortedSet(reverser, set));
         assertEquals(set, Immutables.sortedSet(reverser, set.cursor()));
+        assertEquals(set, Immutables.sortedSet(reverser, 1, 100, 45, 87, 1));
         Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(100, 87, 45, 1).iterator()).cursor());
     }
 
