@@ -66,9 +66,9 @@ public abstract class AbstractPersistentSet<T>
     public PersistentSet<T> addAll(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = map;
-        for (Cursor<T> cursor = other.cursor(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
-            newMap = map.set(value, Boolean.TRUE);
+            newMap = newMap.set(value, Boolean.TRUE);
         }
         return (newMap != map) ? create(newMap) : this;
     }
@@ -84,9 +84,9 @@ public abstract class AbstractPersistentSet<T>
     public PersistentSet<T> removeAll(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = map;
-        for (Cursor<T> cursor = other.cursor(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
-            newMap = map.remove(value);
+            newMap = newMap.remove(value);
         }
         return (newMap != map) ? create(newMap) : this;
     }
@@ -95,7 +95,7 @@ public abstract class AbstractPersistentSet<T>
     public PersistentSet<T> retainAll(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = emptyMap();
-        for (Cursor<T> cursor = other.cursor(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             if (map.find(value).isFilled()) {
                 newMap = newMap.set(value, Boolean.TRUE);
