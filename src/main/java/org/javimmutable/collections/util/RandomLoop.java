@@ -35,27 +35,29 @@
 
 package org.javimmutable.collections.util;
 
+import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.PersistentRandomAccessList;
+import org.javimmutable.collections.PersistentSet;
+import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.Sequence;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
  * Test program to run an infinite loop feeding data to a PersistentMap, querying the
  * data, and deleting the data to verify the map always contains what it should.
  */
-public class RandomMapLoop
+public class RandomLoop
 {
     private class MapFactory
     {
@@ -79,9 +81,13 @@ public class RandomMapLoop
         long seed = System.currentTimeMillis();
         System.out.printf("Starting with initial seed %d%n", seed);
         Random random = new Random(seed);
-        List<String> tokens = loadTokens(filenames);
+        PersistentList<String> tokens = loadTokens(filenames);
+        System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
+            testStack(random);
+            testList(random);
+            testRandomAccessList(random);
             testMaps(factory, tokens, random);
         }
     }
@@ -89,20 +95,118 @@ public class RandomMapLoop
     public static void main(String[] argv)
             throws Exception
     {
-        new RandomMapLoop().execute(argv);
+        new RandomLoop().execute(argv);
+    }
+
+    private void testStack(Random random)
+    {
+        PersistentStack<Integer> stack = Immutables.stack();
+        LinkedList<Integer> expected = new LinkedList<Integer>();
+        int size = random.nextInt(1000);
+        System.out.printf("Testing PersistentStack of size %d%n", size);
+        for (int i = 0; i < size; ++i) {
+            int value = random.nextInt(999999999);
+            stack = stack.add(value);
+            expected.add(0, value);
+        }
+        Sequence<Integer> seq = stack;
+        for (Integer value : expected) {
+            if (!value.equals(seq.getHead())) {
+                throw new RuntimeException(String.format("found mismatch expected %d found %d", value, seq.getHead()));
+            }
+            seq = seq.getTail();
+        }
+        if (!seq.isEmpty()) {
+            throw new RuntimeException("expected to be at end of stack but found more values");
+        }
+        System.out.println("PersistentStack test completed without errors");
+    }
+
+    private void testList(Random random)
+    {
+        PersistentList<Integer> list = Immutables.list();
+        ArrayList<Integer> expected = new ArrayList<Integer>();
+        int size = random.nextInt(10000);
+        System.out.printf("Testing PersistentList of size %d%n", size);
+
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", list.size());
+            for (int i = 0; i < size / 3; ++i) {
+                int value = random.nextInt(999999999);
+                list = list.add(value);
+                expected.add(value);
+            }
+            verifyContents(expected, list);
+            System.out.printf("shrinking %d%n", list.size());
+            for (int i = 0; i < size / 6; ++i) {
+                list = list.removeLast();
+                expected.remove(expected.size() - 1);
+            }
+            verifyContents(expected, list);
+        }
+        System.out.printf("cleanup %d%n", expected.size());
+        while (list.size() > 0) {
+            list = list.removeLast();
+            expected.remove(expected.size() - 1);
+        }
+        verifyContents(expected, list);
+        System.out.println("PersistentList test completed without errors");
+    }
+
+    private void testRandomAccessList(Random random)
+    {
+        PersistentRandomAccessList<Integer> list = Immutables.ralist();
+        ArrayList<Integer> expected = new ArrayList<Integer>();
+        int size = random.nextInt(10000);
+        System.out.printf("Testing PersistentRandomAccessList of size %d%n", size);
+
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", list.size());
+            for (int i = 0; i < size / 3; ++i) {
+                int value = random.nextInt(999999999);
+                if (list.size() == 0) {
+                    list = list.add(value);
+                    expected.add(value);
+                } else {
+                    int index = random.nextInt(list.size());
+                    list = list.insert(index, value);
+                    expected.add(index, value);
+                }
+            }
+            verifyContents(expected, list);
+            System.out.printf("shrinking %d%n", list.size());
+            for (int i = 0; i < size / 6; ++i) {
+                if (list.size() == 1) {
+                    list = list.removeLast();
+                    expected.remove(expected.size() - 1);
+                } else {
+                    int index = random.nextInt(list.size());
+                    list = list.remove(index);
+                    expected.remove(index);
+                }
+            }
+            verifyContents(expected, list);
+        }
+        System.out.printf("cleanup %d%n", expected.size());
+        while (list.size() > 0) {
+            list = list.remove(0);
+            expected.remove(0);
+        }
+        verifyContents(expected, list);
+        System.out.println("PersistentRandomAccessList test completed without errors");
     }
 
     private void testMaps(MapFactory factory,
-                          List<String> tokens,
+                          PersistentList<String> tokens,
                           Random random)
             throws Exception
     {
-        final int tokenCount = random.nextInt(100000);
+        final int tokenCount = 1 + random.nextInt(100000);
         final List<String> keys = new ArrayList<String>();
         final Map<String, String> expected = new HashMap<String, String>();
         PersistentMap<String, String> map = factory.createMap();
         PersistentRandomAccessList<String> pkeys = Immutables.ralist();
-        System.out.printf("starting test with %d tokens and factory %s%n", tokenCount, map.getClass().getSimpleName());
+        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
@@ -144,6 +248,32 @@ public class RandomMapLoop
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
         }
         verifyContents(expected, map);
+        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
+    }
+
+    private void verifyContents(List<Integer> expected,
+                                PersistentList<Integer> list)
+    {
+        System.out.printf("checking contents with size %d%n", list.size());
+        if (list.size() != expected.size()) {
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), list.size()));
+        }
+        int index = 0;
+        for (Integer expectedValue : expected) {
+            Integer listValue = list.get(index);
+            if (!expectedValue.equals(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+            }
+            index += 1;
+        }
+        index = 0;
+        for (Integer listValue : list) {
+            Integer expectedValue = expected.get(index);
+            if (!expectedValue.equals(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+            }
+            index += 1;
+        }
     }
 
     private void verifyContents(Map<String, String> expected,
@@ -157,19 +287,19 @@ public class RandomMapLoop
             String mapValue = map.find(entry.getKey()).getValueOrNull();
             String expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
-                throw new RuntimeException(String.format("size mismatch - expected %s found %s%n", expectedValue, mapValue));
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
         }
         for (Map.Entry<String, String> entry : expected.entrySet()) {
             String mapValue = map.find(entry.getKey()).getValueOrNull();
             String expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
-                throw new RuntimeException(String.format("size mismatch - expected %s found %s%n", expectedValue, mapValue));
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
         }
     }
 
-    private String makeKey(List<String> tokens,
+    private String makeKey(PersistentList<String> tokens,
                            Random random)
     {
         int length = 1 + random.nextInt(250);
@@ -180,20 +310,18 @@ public class RandomMapLoop
         return sb.toString();
     }
 
-    private List<String> loadTokens(String[] filenames)
+    private PersistentList<String> loadTokens(String[] filenames)
             throws IOException
     {
-        Set<String> tokens = new HashSet<String>();
+        PersistentSet<String> tokens = Immutables.set();
         for (String filename : filenames) {
-            addTokensFromFile(filename, tokens);
+            tokens = addTokensFromFile(tokens, filename);
         }
-        List<String> answer = new ArrayList<String>();
-        answer.addAll(tokens);
-        return answer;
+        return Immutables.list(tokens);
     }
 
-    private void addTokensFromFile(String filename,
-                                   Collection<String> tokens)
+    private PersistentSet<String> addTokensFromFile(PersistentSet<String> tokens,
+                                                    String filename)
             throws IOException
     {
         BufferedReader inp = new BufferedReader(new FileReader(filename));
@@ -201,11 +329,12 @@ public class RandomMapLoop
             for (String line = inp.readLine(); line != null; line = inp.readLine()) {
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 while (tokenizer.hasMoreTokens()) {
-                    tokens.add(tokenizer.nextToken());
+                    tokens = tokens.add(tokenizer.nextToken());
                 }
             }
         } finally {
             inp.close();
         }
+        return tokens;
     }
 }
