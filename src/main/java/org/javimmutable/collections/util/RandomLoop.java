@@ -47,10 +47,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -88,6 +90,7 @@ public class RandomLoop
             testStack(random);
             testList(random);
             testRandomAccessList(random);
+            testSets(tokens, random);
             testMaps(factory, tokens, random);
         }
     }
@@ -196,6 +199,53 @@ public class RandomLoop
         System.out.println("PersistentRandomAccessList test completed without errors");
     }
 
+    private void testSets(PersistentList<String> tokens,
+                          Random random)
+    {
+        PersistentSet<String> hset = Immutables.set();
+        PersistentSet<String> tset = Immutables.sortedSet();
+        Set<String> expected = new HashSet<String>();
+        int size = random.nextInt(100000);
+        PersistentRandomAccessList<String> values = Immutables.ralist();
+
+        System.out.printf("Testing PersistentSet of size %d%n", size);
+
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", hset.size());
+            for (int i = 0; i < size / 3; ++i) {
+                String value = makeKey(tokens, random);
+                values = values.add(value);
+                hset = hset.add(value);
+                tset = tset.add(value);
+                expected.add(value);
+            }
+            verifyContents(expected, hset);
+            verifyContents(expected, tset);
+            System.out.printf("shrinking %d%n", hset.size());
+            for (int i = 0; i < size / 6; ++i) {
+                int keyIndex = random.nextInt(values.size());
+                String key = values.get(keyIndex);
+                expected.remove(key);
+                hset = hset.remove(key);
+                tset = tset.remove(key);
+                values = values.remove(keyIndex);
+            }
+            verifyContents(expected, hset);
+            verifyContents(expected, tset);
+        }
+        System.out.printf("cleanup %d%n", expected.size());
+        while (values.size() > 0) {
+            String value = values.get(0);
+            hset = hset.remove(value);
+            tset = tset.remove(value);
+            expected.remove(value);
+            values = values.remove(0);
+        }
+        verifyContents(expected, hset);
+        verifyContents(expected, tset);
+        System.out.println("PersistentSet test completed without errors");
+    }
+
     private void testMaps(MapFactory factory,
                           PersistentList<String> tokens,
                           Random random)
@@ -273,6 +323,25 @@ public class RandomLoop
                 throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
             }
             index += 1;
+        }
+    }
+
+    private void verifyContents(Set<String> expected,
+                                PersistentSet<String> set)
+    {
+        System.out.printf("checking contents with size %d%n", set.size());
+        if (set.size() != expected.size()) {
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), set.size()));
+        }
+        for (String expectedValue : expected) {
+            if (!set.contains(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %s but not in %s%n", expectedValue, set.getClass().getSimpleName()));
+            }
+        }
+        for (String expectedValue : set) {
+            if (!expected.contains(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %s but not in Set%n", expectedValue));
+            }
         }
     }
 
