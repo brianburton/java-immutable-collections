@@ -36,15 +36,18 @@
 package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.PersistentList;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.PersistentRandomAccessList;
+import org.javimmutable.collections.PersistentSet;
 import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.list.PersistentArrayList;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +65,8 @@ public class ImmutablesTest
 
         PersistentList<Integer> inlist = PersistentArrayList.of();
         inlist = inlist.add(1).add(2).add(3);
-        assertEquals(stack, Immutables.stack((Cursorable<Integer>)inlist));
+        assertEquals(stack, Immutables.stack(inlist));
         assertEquals(stack, Immutables.stack((inlist.cursor())));
-        assertEquals(stack, Immutables.stack(input));
         assertEquals(stack, Immutables.stack(input.iterator()));
     }
 
@@ -72,10 +74,10 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 2, 3);
 
-        PersistentList<Integer> list = Immutables.list(input);
+        PersistentList<Integer> list = Immutables.list(input.iterator());
         assertEquals(input, list.asList());
         assertEquals(list, Immutables.list(input.iterator()));
-        assertEquals(list, Immutables.list((Cursorable<Integer>)list));
+        assertEquals(list, Immutables.list(list));
         assertEquals(list, Immutables.list(list.cursor()));
     }
 
@@ -83,10 +85,10 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 2, 3);
 
-        PersistentRandomAccessList<Integer> list = Immutables.ralist(input);
+        PersistentRandomAccessList<Integer> list = Immutables.ralist(input.iterator());
         assertEquals(input, list.asList());
         assertEquals(list, Immutables.ralist(input.iterator()));
-        assertEquals(list, Immutables.ralist((Cursorable<Integer>)list));
+        assertEquals(list, Immutables.ralist(list));
         assertEquals(list, Immutables.ralist(list.cursor()));
     }
 
@@ -114,5 +116,41 @@ public class ImmutablesTest
         assertEquals(input, map.asMap());
         assertEquals(map, Immutables.sortedMap(map));
         assertEquals(map, Immutables.map(map));
+    }
+
+    public void testSet()
+    {
+        List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
+
+        PersistentSet<Integer> set = Immutables.set(input.iterator());
+        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.set(set));
+        assertEquals(set, Immutables.set(set.cursor()));
+    }
+
+    public void testSortedSet()
+    {
+        List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
+
+        PersistentSet<Integer> set = Immutables.sortedSet(input.iterator());
+        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.sortedSet(set));
+        assertEquals(set, Immutables.sortedSet(set.cursor()));
+        Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(1, 45, 87, 100).iterator()).cursor());
+
+        Comparator<Integer> reverser = new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -a.compareTo(b);
+            }
+        };
+        set = Immutables.sortedSet(reverser, input.iterator());
+        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.sortedSet(reverser, set));
+        assertEquals(set, Immutables.sortedSet(reverser, set.cursor()));
+        Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(100, 87, 45, 1).iterator()).cursor());
     }
 }
