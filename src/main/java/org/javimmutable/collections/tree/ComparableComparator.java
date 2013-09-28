@@ -37,9 +37,30 @@ package org.javimmutable.collections.tree;
 
 import java.util.Comparator;
 
-public class ComparableComparator<V extends Comparable<V>>
+/**
+ * Comparator that uses the associated type's own compareTo() method.
+ * Places null values before non-null values in its ordering.
+ *
+ * @param <V>
+ */
+public final class ComparableComparator<V extends Comparable<V>>
         implements Comparator<V>
 {
+    private static ComparableComparator INSTANCE = new ComparableComparator();
+
+    /**
+     * Creates a type appropriate reference to the singleton instance of this class.
+     *
+     * @param <T>
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Comparable<T>> ComparableComparator<T> of()
+    {
+        return (ComparableComparator<T>)INSTANCE;
+    }
+
+    @Override
     public int compare(V a,
                        V b)
     {

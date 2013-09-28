@@ -58,6 +58,16 @@ public class PersistentTreeSet<T>
         this.comparator = comparator;
     }
 
+    public static <T extends Comparable<T>> PersistentTreeSet<T> of()
+    {
+        return new PersistentTreeSet<T>(ComparableComparator.<T>of());
+    }
+
+    public static <T> PersistentTreeSet<T> of(Comparator<T> comparator)
+    {
+        return new PersistentTreeSet<T>(comparator);
+    }
+
     @Override
     protected PersistentSet<T> create(PersistentMap<T, Boolean> map)
     {

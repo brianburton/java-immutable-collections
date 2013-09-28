@@ -54,6 +54,9 @@ import java.util.Map;
 public class PersistentTreeMap<K, V>
         extends AbstractPersistentMap<K, V>
 {
+    @SuppressWarnings("unchecked")
+    private static final PersistentTreeMap EMPTY = new PersistentTreeMap(new ComparableComparator());
+
     private final TreeProperties<K> properties;
     private final TreeNode<K, V> root;
     private final int size;
@@ -63,9 +66,10 @@ public class PersistentTreeMap<K, V>
         this(new TreeProperties<K>(comparator), null, 0);
     }
 
+    @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> PersistentTreeMap<K, V> of()
     {
-        return new PersistentTreeMap<K, V>(new ComparableComparator<K>());
+        return (PersistentTreeMap<K, V>)EMPTY;
     }
 
     public static <K, V> PersistentTreeMap<K, V> of(Comparator<K> comparator)
