@@ -65,6 +65,11 @@ public class PersistentTreeMapTest
         map = add(map, 3);
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
+
+        map = PersistentTreeMap.of();
+        map = map.set(30, 18).set(10, 11).set(20, 19);
+        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.asMap().keySet()));
+        assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.asMap().values()));
     }
 
     public void testValueIdentity()
