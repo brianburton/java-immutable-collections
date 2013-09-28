@@ -48,7 +48,7 @@ public class FunctionsTest
 {
     public void testFoldLeft()
     {
-        PersistentStack<Integer> list = Immutables.<Integer>stack().add(1).add(2).add(3);
+        PersistentStack<Integer> list = Immutables.stack(1, 2, 3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -62,7 +62,7 @@ public class FunctionsTest
 
     public void testFoldRight()
     {
-        PersistentStack<Integer> list = Immutables.<Integer>stack().add(1).add(2).add(3);
+        PersistentStack<Integer> list = Immutables.stack(1, 2, 3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -76,12 +76,8 @@ public class FunctionsTest
 
     public void testCollectAll()
     {
-        PersistentList<Integer> expected = Immutables.list();
-        expected = expected.add(2).add(3).add(4);
-
-        PersistentList<Integer> list = Immutables.list();
-        list = list.add(1).add(2).add(3);
-
+        PersistentList<Integer> expected = Immutables.list(2, 3, 4);
+        PersistentList<Integer> list = Immutables.list(1, 2, 3);
         assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Integer>()
         {
             @Override
@@ -94,12 +90,8 @@ public class FunctionsTest
 
     public void testCollectSome()
     {
-        PersistentList<Integer> expected = Immutables.list();
-        expected = expected.add(2).add(4);
-
-        PersistentList<Integer> list = Immutables.list();
-        list = list.add(1).add(2).add(3);
-
+        PersistentList<Integer> expected = Immutables.list(2, 4);
+        PersistentList<Integer> list = Immutables.list(1, 2, 3);
         assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
         {
             @Override
@@ -125,12 +117,10 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list();
-        list = list.add(1).add(2).add(3);
+        PersistentList<Integer> list = Immutables.list(1, 2, 3);
         assertEquals(Holders.<Integer>of(2), Functions.find(list.cursor(), func));
 
-        list = Immutables.list();
-        list = list.add(1).add(5).add(7);
+        list = Immutables.list(1, 5, 7);
         assertEquals(Holders.<Integer>of(), Functions.find(list.cursor(), func));
     }
 
@@ -145,16 +135,12 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list();
-        list = list.add(1).add(2).add(3);
-        PersistentList<Integer> expected = Immutables.list();
-        expected = expected.add(1).add(3);
+        PersistentList<Integer> list = Immutables.list(1, 2, 3);
+        PersistentList<Integer> expected = Immutables.list(1, 3);
         assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list();
-        list = list.add(1).add(5).add(7);
+        list = Immutables.list(1, 5, 7);
         assertEquals(list, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list();
-        list = list.add(2).add(6).add(12);
+        list = Immutables.list(2, 6, 12);
         expected = Immutables.list();
         assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
     }
@@ -170,16 +156,12 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list();
-        list = list.add(1).add(2).add(3);
-        PersistentList<Integer> expected = Immutables.list();
-        expected = expected.add(2);
+        PersistentList<Integer> list = Immutables.list(1, 2, 3);
+        PersistentList<Integer> expected = Immutables.list(2);
         assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list();
-        list = list.add(2).add(6).add(12);
+        list = Immutables.list(2, 6, 12);
         assertEquals(list, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list();
-        list = list.add(1).add(5).add(7);
+        list = Immutables.list(1, 5, 7);
         expected = Immutables.list();
         assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
     }
