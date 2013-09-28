@@ -37,12 +37,25 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.Map;
 
 public abstract class AbstractPersistentMap<K, V>
         implements PersistentMap<K, V>
 {
+    @Override
+    public Cursor<K> keysCursor()
+    {
+        return TransformCursor.ofKeys(cursor());
+    }
+
+    @Override
+    public Cursor<V> valuesCursor()
+    {
+        return TransformCursor.ofValues(cursor());
+    }
+
     @Override
     public int hashCode()
     {
