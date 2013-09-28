@@ -115,7 +115,11 @@ public class LeafNode<K, V>
     {
         final int diff = props.compare(key, nodeKey);
         if (diff == 0) {
-            return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 0);
+            if (this.value == value) { // value identity - useful for sets, booleans, etc
+                return UpdateResult.createUnchanged();
+            } else {
+                return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 0);
+            }
         } else if (diff < 0) {
             return UpdateResult.createSplit(new LeafNode<K, V>(key, value), this, 1);
         } else {

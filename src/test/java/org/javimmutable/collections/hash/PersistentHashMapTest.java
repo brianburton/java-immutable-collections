@@ -62,6 +62,18 @@ public class PersistentHashMapTest
         assertEquals(0, map.size());
     }
 
+    public void testValueIdentity()
+    {
+        PersistentHashMap<Integer, String> map = PersistentHashMap.of();
+        map = map.set(10, "ab");
+        assertSame(map, map.set(10, "ab"));
+        for (int i = 100; i <= 15000; ++i) {
+            map = map.set(i, Integer.toString(i));
+        }
+        map = map.set(14000, "aaa");
+        assertSame(map, map.set(14000, "aaa"));
+    }
+
     public void testRandom1()
     {
         final int maxKey = 999999999;

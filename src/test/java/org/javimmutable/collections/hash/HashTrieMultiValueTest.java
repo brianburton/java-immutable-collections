@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.hash;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.list.PersistentLinkedStack;
 import org.javimmutable.collections.common.MutableDelta;
-import junit.framework.TestCase;
+import org.javimmutable.collections.list.PersistentLinkedStack;
 
 public class HashTrieMultiValueTest
         extends TestCase
@@ -78,6 +78,11 @@ public class HashTrieMultiValueTest
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
         assertEquals(3, nv.size());
+
+        // test value identity
+        assertSame(nv, nv.setValueForKey("a", "A", null));
+        assertSame(nv, nv.setValueForKey("b", "bb", null));
+        assertSame(nv, nv.setValueForKey("c", "cc", null));
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);

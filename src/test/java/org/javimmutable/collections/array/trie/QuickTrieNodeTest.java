@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.array.trie;
 
-import org.javimmutable.collections.Holders;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holders;
 
 public class QuickTrieNodeTest
         extends TestCase
@@ -79,5 +79,14 @@ public class QuickTrieNodeTest
         assertEquals(true, node.cursor().next().hasValue());
         assertEquals(100, (int)node.cursor().next().getValue());
         assertEquals(false, node.cursor().next().next().hasValue());
+    }
+
+    public void testValueIdentity()
+    {
+        QuickTrieNode<String> node = new QuickTrieNode<String>(100, 5, "ab");
+        assertTrue(node == node.set(100, 5, "ab"));
+        assertTrue(node == node.set(100, 5, "a" + "b"));
+        assertFalse(node == node.set(100, 5, "abc"));
+        assertFalse(node == node.set(100, 5, "abc".substring(0, 2)));
     }
 }

@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.common.MutableDelta;
 import junit.framework.TestCase;
+import org.javimmutable.collections.common.MutableDelta;
 
 public class HashTrieSingleValueTest
         extends TestCase
@@ -53,6 +53,9 @@ public class HashTrieSingleValueTest
         assertEquals("aa", v.getValue());
 
         assertSame(v, v.getEntryForKey("a"));
+
+        // test value identity
+        assertSame(v, v.setValueForKey("a", "aa", null));
 
         MutableDelta sizeDelta = new MutableDelta();
         HashTrieValue<String, String> nv = v.setValueForKey("a", "A", sizeDelta);

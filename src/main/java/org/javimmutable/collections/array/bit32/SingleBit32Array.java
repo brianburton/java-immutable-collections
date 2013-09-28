@@ -69,7 +69,7 @@ public class SingleBit32Array<T>
     {
         checkIndex(index);
         if (this.index == index) {
-            return new SingleBit32Array<T>(index, value);
+            return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
         } else {
             return StandardBit32Array.<T>of().set(this.index, this.value).set(index, value);
         }

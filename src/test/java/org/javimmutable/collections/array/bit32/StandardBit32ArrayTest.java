@@ -35,10 +35,10 @@
 
 package org.javimmutable.collections.array.bit32;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
-import junit.framework.TestCase;
 
 public class StandardBit32ArrayTest
         extends TestCase
@@ -53,6 +53,10 @@ public class StandardBit32ArrayTest
                 assertEquals(Holders.of(k), test.get(k));
             }
             assertEquals(i + 1, test.size());
+        }
+        // verify no copy is made for value identity not changing
+        for (int i = 0; i < 32; ++i) {
+            assertSame(test, test.set(i, i));
         }
         for (int i = 0; i < 32; ++i) {
             test = test.delete(i);

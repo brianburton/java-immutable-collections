@@ -112,7 +112,8 @@ public class HashQuickNode<K, V>
         if (branchIndex != thisBranchIndex || valueIndex != thisValueIndex) {
             return new HashInteriorNode<K, V>(thisBranchIndex, thisValueIndex, this.value).set(branchIndex, valueIndex, key, value, sizeDelta);
         } else {
-            return new HashQuickNode<K, V>(branchIndex, valueIndex, this.value.setValueForKey(key, value, sizeDelta));
+            HashTrieValue<K, V> newValue = this.value.setValueForKey(key, value, sizeDelta);
+            return (newValue == this.value) ? this : new HashQuickNode<K, V>(branchIndex, valueIndex, newValue);
         }
     }
 

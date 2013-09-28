@@ -37,6 +37,7 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.PersistentMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,14 @@ public class PersistentTreeMapTest
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
     }
 
+    public void testValueIdentity()
+    {
+        PersistentTreeMap<String, String> map = PersistentTreeMap.of();
+        map = map.set("a", "A");
+        assertSame(map, map.set("a", "A"));
+        assertFalse(map == map.set("a", "AA"));
+    }
+
     public void testRandom1()
     {
         Random random = new Random();
@@ -81,6 +90,12 @@ public class PersistentTreeMapTest
                 assertEquals(expected.size(), map.size());
             }
             assertEquals(expected, map.asMap().keySet());
+
+            // test value identity at all levels
+            for (PersistentMap.Entry<Integer, Integer> entry : map) {
+                assertSame(map, map.set(entry.getKey(), entry.getValue()));
+            }
+
             ArrayList<Integer> keys = new ArrayList<Integer>(expected);
             Collections.shuffle(keys, random);
             for (Integer key : keys) {

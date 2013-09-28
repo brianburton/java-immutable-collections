@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.hash;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.MutableDelta;
-import junit.framework.TestCase;
 
 public class HashQuickNodeTest
         extends TestCase
@@ -124,5 +124,11 @@ public class HashQuickNodeTest
         newNode = node.delete(0, 1, "x", sizeDelta);
         assertSame(newNode, node);
         assertEquals(0, sizeDelta.getValue());
+    }
+
+    public void testValueIdentity()
+    {
+        HashQuickNode<String, String> node = new HashQuickNode<String, String>(0, 1, new HashTrieSingleValue<String, String>("k", "kk"));
+        assertSame(node, node.set(0, 1, "k", "kk", null));
     }
 }

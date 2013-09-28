@@ -92,7 +92,8 @@ public final class StandardTrieNode<T>
         final Bit32Array<TrieNode<T>> branches = this.branches;
         final Bit32Array<T> values = this.values;
         if (branchIndex == 0) {
-            return new StandardTrieNode<T>(branches, values.set(valueIndex, value));
+            Bit32Array<T> newValues = values.set(valueIndex, value);
+            return (newValues == values) ? this : new StandardTrieNode<T>(branches, values.set(valueIndex, value));
         } else {
             final int childIndex = branchIndex & 0x1f;
             final int childBranchIndex = branchIndex >>> 5;

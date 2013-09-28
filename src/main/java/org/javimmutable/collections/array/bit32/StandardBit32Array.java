@@ -88,6 +88,8 @@ public class StandardBit32Array<T>
             final Holder<T>[] newEntries = copyToLargerArray(entries, arrayIndex);
             newEntries[arrayIndex] = Holders.of(value);
             return new StandardBit32Array<T>(bitmask | bit, newEntries);
+        } else if (entries[arrayIndex].getValueOrNull() == value) {
+            return this;
         } else {
             final Holder<T>[] newEntries = entries.clone();
             newEntries[arrayIndex] = Holders.of(value);

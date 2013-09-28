@@ -131,7 +131,8 @@ public class HashInteriorNode<K, V>
         if (branchIndex == 0) {
             HashTrieValue<K, V> valueNode = values.get(valueIndex).getValueOrNull();
             if (valueNode != null) {
-                return new HashInteriorNode<K, V>(branches, values.set(valueIndex, valueNode.setValueForKey(key, value, sizeDelta)));
+                HashTrieValue<K, V> newValueNode = valueNode.setValueForKey(key, value, sizeDelta);
+                return (newValueNode == valueNode) ? this : new HashInteriorNode<K, V>(branches, values.set(valueIndex, newValueNode));
             } else {
                 sizeDelta.add(1);
                 return new HashInteriorNode<K, V>(branches, values.set(valueIndex, new HashTrieSingleValue<K, V>(key, value)));
@@ -139,13 +140,14 @@ public class HashInteriorNode<K, V>
         } else {
             final int childIndex = branchIndex & 0x1f;
             HashTrieNode<K, V> child = branches.get(childIndex).getValueOrNull();
+            HashTrieNode<K, V> newChild;
             if (child == null) {
                 sizeDelta.add(1);
-                child = new HashQuickNode<K, V>(branchIndex >>> 5, valueIndex, new HashTrieSingleValue<K, V>(key, value));
+                newChild = new HashQuickNode<K, V>(branchIndex >>> 5, valueIndex, new HashTrieSingleValue<K, V>(key, value));
             } else {
-                child = child.set(branchIndex >>> 5, valueIndex, key, value, sizeDelta);
+                newChild = child.set(branchIndex >>> 5, valueIndex, key, value, sizeDelta);
             }
-            return new HashInteriorNode<K, V>(branches.set(childIndex, child), values);
+            return (newChild == child) ? this : new HashInteriorNode<K, V>(branches.set(childIndex, newChild), values);
         }
     }
 

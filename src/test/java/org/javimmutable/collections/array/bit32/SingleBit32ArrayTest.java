@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.array.bit32;
 
-import org.javimmutable.collections.Holders;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holders;
 
 public class SingleBit32ArrayTest
         extends TestCase
@@ -57,6 +57,20 @@ public class SingleBit32ArrayTest
         assertEquals(Holders.of(200), array.get(10));
         assertEquals(Holders.of(220), array.get(11));
         assertEquals(2, array.size());
+    }
+
+    public void testValueIdentity()
+    {
+        final String a = "a";
+        final String b = "ab";
+        Bit32Array<String> array = new SingleBit32Array<String>(10, a);
+        assertSame(array, array.set(10, a));
+        assertFalse(array == array.set(10, b));
+
+        array = array.set(10, b);
+        assertSame(array, array.set(10, b));
+        assertEquals(b, "abc".substring(0, 2));
+        assertFalse(array == array.set(10, "abc".substring(0, 2)));
     }
 
     public void testDelete()

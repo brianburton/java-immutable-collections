@@ -60,6 +60,11 @@ public class UpdateResult<K, V>
         this.sizeDelta = sizeDelta;
     }
 
+    public static <K, V> UpdateResult<K, V> createUnchanged()
+    {
+        return new UpdateResult<K, V>(Type.UNCHANGED, null, null, 0);
+    }
+
     public static <K, V> UpdateResult<K, V> createInPlace(TreeNode<K, V> newNode,
                                                           int sizeDelta)
     {

@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.array.trie;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.hash.PersistentHashMap;
-import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +79,8 @@ public class StandardTrieNodeTest
         assertEquals(1, node.shallowSize());
         assertEquals(1, node.deepSize());
         assertEquals("a", node.get(0, 8).getValueOrNull());
+
+        assertSame(node, node.set(0, 8, "a"));
 
         node = node.set(0, 8, "x");
         assertEquals(1, node.shallowSize());

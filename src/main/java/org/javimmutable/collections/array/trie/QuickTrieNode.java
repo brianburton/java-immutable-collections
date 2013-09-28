@@ -71,7 +71,7 @@ public class QuickTrieNode<T>
         final int thisBranchIndex = this.branchIndex;
         final int thisValueIndex = this.valueIndex;
         if (thisBranchIndex == branchIndex && thisValueIndex == valueIndex) {
-            return new QuickTrieNode<T>(branchIndex, valueIndex, value);
+            return (this.value == value) ? this : new QuickTrieNode<T>(branchIndex, valueIndex, value);
         } else {
             return new StandardTrieNode<T>(thisBranchIndex, thisValueIndex, this.value).set(branchIndex, valueIndex, value);
         }

@@ -87,10 +87,14 @@ public class HashTrieMultiValue<K, V>
         PersistentLinkedStack<HashTrieSingleValue<K, V>> newList = PersistentLinkedStack.of();
         boolean found = false;
         for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
-            if (list.getHead().getKey().equals(key)) {
+            final HashTrieSingleValue<K, V> head = list.getHead();
+            if (head.getKey().equals(key)) {
+                if (head.getValue() == value) {
+                    return this;
+                }
                 found = true;
             } else {
-                newList = newList.add(list.getHead());
+                newList = newList.add(head);
             }
         }
         newList = newList.add(new HashTrieSingleValue<K, V>(key, value));

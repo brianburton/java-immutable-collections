@@ -76,7 +76,7 @@ public class HashTrieSingleValue<K, V>
                                               MutableDelta sizeDelta)
     {
         if (key.equals(this.key)) {
-            return new HashTrieSingleValue<K, V>(key, value);
+            return (this.value == value) ? this : new HashTrieSingleValue<K, V>(key, value);
         } else {
             sizeDelta.add(1);
             PersistentLinkedStack<HashTrieSingleValue<K, V>> values = PersistentLinkedStack.of();

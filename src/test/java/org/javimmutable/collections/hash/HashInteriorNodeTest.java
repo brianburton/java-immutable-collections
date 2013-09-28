@@ -35,10 +35,10 @@
 
 package org.javimmutable.collections.hash;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.common.MutableDelta;
-import junit.framework.TestCase;
 
 public class HashInteriorNodeTest
         extends TestCase
@@ -133,6 +133,12 @@ public class HashInteriorNodeTest
         assertEquals("xx", newNode.get(98, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(98, 30, "z").getValueOrNull());
 
+        // test value identity
+        assertSame(newNode, newNode.set(65, 9, "a", "A", sizeDelta));
+        assertSame(newNode, newNode.set(77, 9, "c", "cc", sizeDelta));
+        assertSame(newNode, newNode.set(98, 31, "x", "xx", sizeDelta));
+        assertSame(newNode, newNode.set(98, 30, "z", "zz", sizeDelta));
+
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(3, (int)counts.find(HashInteriorNode.class).getValueOr(0));
@@ -149,6 +155,9 @@ public class HashInteriorNodeTest
         assertEquals(1, sizeDelta.getValue());
         assertEquals(1, newNode.deepSize());
         assertEquals("aa", newNode.get(0, 9, "a").getValueOrNull());
+
+        // test value identity
+        assertSame(newNode, newNode.set(0, 9, "a", "aa", sizeDelta));
 
         sizeDelta = new MutableDelta();
         newNode = newNode.set(0, 9, "a", "A", sizeDelta);
