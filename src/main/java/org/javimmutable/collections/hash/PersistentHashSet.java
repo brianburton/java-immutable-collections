@@ -33,51 +33,38 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.PersistentSet;
+import org.javimmutable.collections.common.AbstractPersistentSet;
 
-import java.util.Map;
-
-public abstract class AbstractPersistentMap<K, V>
-        implements PersistentMap<K, V>
+public class PersistentHashSet<T>
+        extends AbstractPersistentSet<T>
 {
-    @Override
-    public int hashCode()
+    @SuppressWarnings("unchecked")
+    private static final PersistentHashSet EMPTY = new PersistentHashSet(PersistentHashMap.of());
+
+    public PersistentHashSet(PersistentMap<T, Boolean> map)
     {
-        return asMap().hashCode();
+        super(map);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> PersistentHashSet<T> of()
+    {
+        return (PersistentHashSet<T>)EMPTY;
     }
 
     @Override
-    public boolean equals(Object o)
+    protected PersistentSet<T> create(PersistentMap<T, Boolean> map)
     {
-        if (o == this) {
-            return true;
-        } else if (o instanceof PersistentMap) {
-            return asMap().equals(((PersistentMap)o).asMap());
-        } else {
-            return (o instanceof Map) && asMap().equals(o);
-        }
+        return new PersistentHashSet<T>(map);
     }
 
     @Override
-    public String toString()
+    protected PersistentMap<T, Boolean> emptyMap()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
-            if (sb.length() > 1) {
-                sb.append(",");
-            }
-            PersistentMap.Entry<K, V> entry = cursor.getValue();
-            sb.append("(");
-            sb.append(entry.getKey());
-            sb.append(" -> ");
-            sb.append(entry.getValue());
-            sb.append(")");
-        }
-        sb.append("]");
-        return sb.toString();
+        return new PersistentHashMap<T, Boolean>();
     }
 }

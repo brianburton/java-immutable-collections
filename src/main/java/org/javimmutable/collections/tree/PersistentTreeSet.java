@@ -33,51 +33,40 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.PersistentSet;
+import org.javimmutable.collections.common.AbstractPersistentSet;
 
-import java.util.Map;
+import java.util.Comparator;
 
-public abstract class AbstractPersistentMap<K, V>
-        implements PersistentMap<K, V>
+public class PersistentTreeSet<T>
+        extends AbstractPersistentSet<T>
 {
-    @Override
-    public int hashCode()
+    private final Comparator<T> comparator;
+
+    public PersistentTreeSet(Comparator<T> comparator)
     {
-        return asMap().hashCode();
+        this(PersistentTreeMap.<T, Boolean>of(comparator), comparator);
+    }
+
+    private PersistentTreeSet(PersistentMap<T, Boolean> map,
+                              Comparator<T> comparator)
+    {
+        super(map);
+        this.comparator = comparator;
     }
 
     @Override
-    public boolean equals(Object o)
+    protected PersistentSet<T> create(PersistentMap<T, Boolean> map)
     {
-        if (o == this) {
-            return true;
-        } else if (o instanceof PersistentMap) {
-            return asMap().equals(((PersistentMap)o).asMap());
-        } else {
-            return (o instanceof Map) && asMap().equals(o);
-        }
+        return new PersistentTreeSet<T>(map, comparator);
     }
 
     @Override
-    public String toString()
+    protected PersistentMap<T, Boolean> emptyMap()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
-            if (sb.length() > 1) {
-                sb.append(",");
-            }
-            PersistentMap.Entry<K, V> entry = cursor.getValue();
-            sb.append("(");
-            sb.append(entry.getKey());
-            sb.append(" -> ");
-            sb.append(entry.getValue());
-            sb.append(")");
-        }
-        sb.append("]");
-        return sb.toString();
+        return PersistentTreeMap.of(comparator);
     }
 }

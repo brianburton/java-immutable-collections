@@ -35,49 +35,79 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.PersistentSet;
 
-import java.util.Map;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
-public abstract class AbstractPersistentMap<K, V>
-        implements PersistentMap<K, V>
+/**
+ * Adaptor that implements an unmodifiable Set backed by a PersistentSet.
+ *
+ * @param <T>
+ */
+public class SetAdaptor<T>
+        extends AbstractSet<T>
 {
-    @Override
-    public int hashCode()
+    private final PersistentSet<T> pset;
+
+    public SetAdaptor(PersistentSet<T> pset)
     {
-        return asMap().hashCode();
+        this.pset = pset;
+    }
+
+    public static <T> SetAdaptor<T> of(PersistentSet<T> pset)
+    {
+        return new SetAdaptor<T>(pset);
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean contains(Object o)
     {
-        if (o == this) {
-            return true;
-        } else if (o instanceof PersistentMap) {
-            return asMap().equals(((PersistentMap)o).asMap());
-        } else {
-            return (o instanceof Map) && asMap().equals(o);
-        }
+        //noinspection unchecked
+        return pset.contains((T)o);
     }
 
     @Override
-    public String toString()
+    public boolean containsAll(Collection<?> objects)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
-            if (sb.length() > 1) {
-                sb.append(",");
+        for (Object o : objects) {
+            if (!contains(o)) {
+                return false;
             }
-            PersistentMap.Entry<K, V> entry = cursor.getValue();
-            sb.append("(");
-            sb.append(entry.getKey());
-            sb.append(" -> ");
-            sb.append(entry.getValue());
-            sb.append(")");
         }
-        sb.append("]");
-        return sb.toString();
+        return true;
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return pset.iterator();
+    }
+
+    @Override
+    public int size()
+    {
+        return pset.size();
+    }
+
+    public static <T> boolean areEqual(Set<T> a,
+                                       Set<T> b)
+    {
+        if (a == null) {
+            return b == null;
+        } else if (b == null) {
+            return false;
+        }
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (T value : a) {
+            if (!b.contains(value)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
