@@ -41,6 +41,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.common.AbstractPersistentMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
@@ -51,7 +52,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PersistentHashMap<K, V>
-        implements PersistentMap<K, V>
+        extends AbstractPersistentMap<K, V>
 {
     @SuppressWarnings("unchecked")
     private static final PersistentHashMap EMPTY = new PersistentHashMap();

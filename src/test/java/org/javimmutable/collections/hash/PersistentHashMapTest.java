@@ -121,4 +121,12 @@ public class PersistentHashMapTest
             assertEquals(0, map.size());
         }
     }
+
+    public void testEquals()
+    {
+        PersistentMap<Integer, Integer> map1 = PersistentHashMap.<Integer, Integer>of().set(1, 3).set(2, 4).set(3, 5);
+        PersistentMap<Integer, Integer> map2 = PersistentHashMap.<Integer, Integer>of().set(1, 3).set(2, 4).set(3, 5);
+        assertEquals(map1.hashCode(), map2.hashCode());
+        assertEquals(map1, map2);
+    }
 }

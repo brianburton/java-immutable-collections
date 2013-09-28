@@ -39,7 +39,7 @@ import org.javimmutable.collections.Addable;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.common.AbstractPersistentMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.cursors.EmptyCursor;
@@ -52,8 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PersistentTreeMap<K, V>
-        implements PersistentMap<K, V>,
-                   Iterable<PersistentMap.Entry<K, V>>
+        extends AbstractPersistentMap<K, V>
 {
     private final TreeProperties<K> properties;
     private final TreeNode<K, V> root;

@@ -42,6 +42,7 @@ import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.AbstractCollection;
+import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,7 +54,7 @@ import java.util.Set;
  */
 @SuppressWarnings({"unchecked", "NullableProblems"})
 public class MapAdaptor<K, V>
-        implements Map<K, V>
+        extends AbstractMap<K, V>
 {
     private final PersistentMap<K, V> map;
 
