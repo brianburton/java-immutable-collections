@@ -46,9 +46,9 @@ public abstract class AbstractHashTrieNode<K, V>
     {
         Holder<Integer> current = map.find(getClass());
         if (current.isEmpty()) {
-            return map.set(getClass(), 1);
+            return map.assign(getClass(), 1);
         } else {
-            return map.set(getClass(), current.getValue() + 1);
+            return map.assign(getClass(), current.getValue() + 1);
         }
     }
 }

@@ -39,13 +39,13 @@ import java.util.List;
 
 /**
  * Interface for containers that store items in list form with individual items available
- * for get() and set() using their indexes.  Items added to the list are always added at
+ * for get() and assign() using their indexes.  Items added to the list are always added at
  * the end of the list and indexes of items are always in the range 0 through size() - 1.
  *
  * @param <T>
  */
 public interface PersistentList<T>
-        extends Addable<T>,
+        extends Insertable<T>,
                 Indexed<T>,
                 Cursorable<T>,
                 Iterable<T>
@@ -74,8 +74,8 @@ public interface PersistentList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
-    PersistentList<T> set(int index,
-                          T value);
+    PersistentList<T> assign(int index,
+                             T value);
 
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
@@ -83,7 +83,7 @@ public interface PersistentList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
-    PersistentList<T> removeLast();
+    PersistentList<T> deleteLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -91,7 +91,7 @@ public interface PersistentList<T>
      * @param value
      * @return
      */
-    PersistentList<T> add(T value);
+    PersistentList<T> insert(T value);
 
     /**
      * @return true only if list contains no values

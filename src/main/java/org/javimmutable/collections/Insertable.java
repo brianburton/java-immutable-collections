@@ -36,14 +36,14 @@
 package org.javimmutable.collections;
 
 /**
- * Implemented by classes that can "add" some type of value to themselves.
- * The meaning of "add" can vary between implementations but must be sensible in the
+ * Implemented by classes that can "insert" some type of value to themselves.
+ * The meaning of "insert" can vary between implementations but must be sensible in the
  * context in which it is used.  Implementing classes are free to deal with duplicates
  * as best fits their nature.  For example Lists can add duplicates but Maps cannot.
  *
  * @param <T>
  */
-public interface Addable<T>
+public interface Insertable<T>
 {
     /**
      * Add value to the container in some manner appropriate to the implementation.
@@ -51,5 +51,5 @@ public interface Addable<T>
      * @param value
      * @return
      */
-    Addable<T> add(T value);
+    Insertable<T> insert(T value);
 }

@@ -90,7 +90,7 @@ public class ListTimingComparison
             int command = random.nextInt(maxCommand);
             if (list.size() == 0 || command <= 1) {
                 int value = random.nextInt(maxValue);
-                list = list.add(value);
+                list = list.insert(value);
                 adds += 1;
             } else {
                 int index = random.nextInt(list.size());
@@ -123,7 +123,7 @@ public class ListTimingComparison
             int command = random.nextInt(maxCommand);
             if (rlist.isEmpty() || command <= 1) {
                 int value = random.nextInt(maxValue);
-                rlist = rlist.add(value);
+                rlist = rlist.insert(value);
                 adds += 1;
             }
         }

@@ -53,8 +53,8 @@ public interface PersistentRandomAccessList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
-    PersistentRandomAccessList<T> set(int index,
-                                      T value);
+    PersistentRandomAccessList<T> assign(int index,
+                                         T value);
 
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
@@ -62,7 +62,7 @@ public interface PersistentRandomAccessList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
-    PersistentRandomAccessList<T> removeLast();
+    PersistentRandomAccessList<T> deleteLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -70,7 +70,7 @@ public interface PersistentRandomAccessList<T>
      * @param value
      * @return
      */
-    PersistentRandomAccessList<T> add(T value);
+    PersistentRandomAccessList<T> insert(T value);
 
     /**
      * Insert value at index (which must be within the current bounds of the list).
@@ -92,5 +92,5 @@ public interface PersistentRandomAccessList<T>
      * @param index
      * @return
      */
-    PersistentRandomAccessList<T> remove(int index);
+    PersistentRandomAccessList<T> delete(int index);
 }

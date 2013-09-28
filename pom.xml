@@ -1,55 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.javimmutable</groupId>
-  <artifactId>javimmutable-collections</artifactId>
-  <version>0.6-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <groupId>org.javimmutable</groupId>
+    <artifactId>javimmutable-collections</artifactId>
+    <version>0.7-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-  <name>javimmutable Persistent Collections</name>
-  <url>http://maven.apache.org</url>
+    <name>javimmutable Persistent Collections</name>
+    <url>https://sourceforge.net/projects/javimmutablecollections/</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-source-plugin</artifactId>
-	<version>2.0.4</version>
-	<executions>
-	  <execution>
-	    <id>attach-sources</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<version>2.9.1</version>
-	<executions>
-	  <execution>
-	    <id>attach-javadocs</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>
-    </plugins>
-  </build>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.0.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

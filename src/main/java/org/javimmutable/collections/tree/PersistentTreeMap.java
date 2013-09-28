@@ -35,10 +35,10 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Addable;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.common.AbstractPersistentMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
@@ -81,7 +81,7 @@ public class PersistentTreeMap<K, V>
     {
         PersistentTreeMap<K, V> answer = of();
         for (Map.Entry<K, V> entry : map.entrySet()) {
-            answer = answer.set(entry.getKey(), entry.getValue());
+            answer = answer.assign(entry.getKey(), entry.getValue());
         }
         return answer;
     }
@@ -122,8 +122,8 @@ public class PersistentTreeMap<K, V>
     }
 
     @Override
-    public PersistentTreeMap<K, V> set(K key,
-                                       V value)
+    public PersistentTreeMap<K, V> assign(K key,
+                                          V value)
     {
         if (root == null) {
             return create(new LeafNode<K, V>(key, value), 1);
@@ -148,7 +148,7 @@ public class PersistentTreeMap<K, V>
     }
 
     @Override
-    public PersistentTreeMap<K, V> remove(K key)
+    public PersistentTreeMap<K, V> delete(K key)
     {
         if (root == null) {
             return this;
@@ -182,9 +182,9 @@ public class PersistentTreeMap<K, V>
      * @return
      */
     @Override
-    public Addable<Entry<K, V>> add(Entry<K, V> e)
+    public Insertable<Entry<K, V>> insert(Entry<K, V> e)
     {
-        return set(e.getKey(), e.getValue());
+        return assign(e.getKey(), e.getValue());
     }
 
     @Override

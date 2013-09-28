@@ -75,7 +75,7 @@ public abstract class PersistentLinkedStack<T>
     {
         PersistentLinkedStack<T> list = of();
         for (T value : values) {
-            list = list.add(value);
+            list = list.insert(value);
         }
         return list;
     }
@@ -84,12 +84,12 @@ public abstract class PersistentLinkedStack<T>
     {
         PersistentLinkedStack<T> list = of();
         for (T value : values) {
-            list = list.add(value);
+            list = list.insert(value);
         }
         return list;
     }
 
-    public abstract PersistentLinkedStack<T> add(T value);
+    public abstract PersistentLinkedStack<T> insert(T value);
 
     public abstract PersistentLinkedStack<T> getTail();
 
@@ -154,7 +154,7 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> add(V value)
+        public PersistentLinkedStack<V> insert(V value)
         {
             return new Single<V>(value);
         }
@@ -192,7 +192,7 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> add(V value)
+        public PersistentLinkedStack<V> insert(V value)
         {
             return new Chain<V>(value, this);
         }
@@ -233,7 +233,7 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> add(V value)
+        public PersistentLinkedStack<V> insert(V value)
         {
             return new Chain<V>(value, this);
         }

@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.Addable;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.list.PersistentLinkedStack;
 
@@ -100,7 +100,7 @@ public class Functions
      */
     public static <T> Cursor<T> reverse(Cursor<T> cursor)
     {
-        return addAll(PersistentLinkedStack.<T>of(), cursor).cursor();
+        return insertAll(PersistentLinkedStack.<T>of(), cursor).cursor();
     }
 
     /**
@@ -113,12 +113,12 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T, R> Addable<R> collectAll(Cursor<T> cursor,
-                                               Addable<R> list,
-                                               Func1<T, R> func)
+    public static <T, R> Insertable<R> collectAll(Cursor<T> cursor,
+                                                  Insertable<R> list,
+                                                  Func1<T, R> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
-            list = list.add(func.apply(cursor.getValue()));
+            list = list.insert(func.apply(cursor.getValue()));
         }
         return list;
     }
@@ -133,14 +133,14 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T, R> Addable<R> collectSome(Cursor<T> cursor,
-                                                Addable<R> list,
-                                                Func1<T, Holder<R>> func)
+    public static <T, R> Insertable<R> collectSome(Cursor<T> cursor,
+                                                   Insertable<R> list,
+                                                   Func1<T, Holder<R>> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             Holder<R> mappedValue = func.apply(cursor.getValue());
             if (mappedValue.isFilled()) {
-                list = list.add(mappedValue.getValue());
+                list = list.insert(mappedValue.getValue());
             }
         }
         return list;
@@ -177,13 +177,13 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T> Addable<T> reject(Cursor<T> cursor,
-                                        Addable<T> list,
-                                        Func1<T, Boolean> func)
+    public static <T> Insertable<T> reject(Cursor<T> cursor,
+                                           Insertable<T> list,
+                                           Func1<T, Boolean> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             if (!func.apply(cursor.getValue())) {
-                list = list.add(cursor.getValue());
+                list = list.insert(cursor.getValue());
             }
         }
         return list;
@@ -198,13 +198,13 @@ public class Functions
      * @param list   list to receive the values
      * @return
      */
-    public static <T> Addable<T> select(Cursor<T> cursor,
-                                        Addable<T> list,
-                                        Func1<T, Boolean> func)
+    public static <T> Insertable<T> select(Cursor<T> cursor,
+                                           Insertable<T> list,
+                                           Func1<T, Boolean> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
-                list = list.add(cursor.getValue());
+                list = list.insert(cursor.getValue());
             }
         }
         return list;
@@ -218,11 +218,11 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Addable<T>> A addAll(A addable,
-                                                     Iterator<T> iterator)
+    public static <T, A extends Insertable<T>> A insertAll(A addable,
+                                                           Iterator<T> iterator)
     {
         while (iterator.hasNext()) {
-            addable = (A)addable.add(iterator.next());
+            addable = (A)addable.insert(iterator.next());
         }
         return addable;
     }
@@ -234,11 +234,11 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Addable<T>> A addAll(A addable,
-                                                     Cursor<T> cursor)
+    public static <T, A extends Insertable<T>> A insertAll(A addable,
+                                                           Cursor<T> cursor)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
-            addable = (A)addable.add(cursor.getValue());
+            addable = (A)addable.insert(cursor.getValue());
         }
         return addable;
     }
@@ -250,29 +250,29 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Addable<T>> A addAll(A addable,
-                                                     T[] values)
+    public static <T, A extends Insertable<T>> A insertAll(A addable,
+                                                           T[] values)
     {
         for (T value : values) {
-            addable = (A)addable.add(value);
+            addable = (A)addable.insert(value);
         }
         return addable;
     }
 
-    public static <K, V> PersistentMap<K, V> setAll(PersistentMap<K, V> dest,
-                                                    PersistentMap<K, V> src)
+    public static <K, V> PersistentMap<K, V> assignAll(PersistentMap<K, V> dest,
+                                                       PersistentMap<K, V> src)
     {
         for (PersistentMap.Entry<K, V> entry : src) {
-            dest = dest.set(entry.getKey(), entry.getValue());
+            dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }
 
-    public static <K, V> PersistentMap<K, V> setAll(PersistentMap<K, V> dest,
-                                                    Map<K, V> src)
+    public static <K, V> PersistentMap<K, V> assignAll(PersistentMap<K, V> dest,
+                                                       Map<K, V> src)
     {
         for (Map.Entry<K, V> entry : src.entrySet()) {
-            dest = dest.set(entry.getKey(), entry.getValue());
+            dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }

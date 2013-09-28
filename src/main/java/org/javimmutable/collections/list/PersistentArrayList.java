@@ -88,8 +88,8 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public PersistentList<T> set(int index,
-                                 T value)
+    public PersistentList<T> assign(int index,
+                                    T value)
     {
         if (index < 0 || index >= size) {
             throw new ArrayIndexOutOfBoundsException();
@@ -98,14 +98,14 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public PersistentArrayList<T> add(T value)
+    public PersistentArrayList<T> insert(T value)
     {
         final int index = size;
         return new PersistentArrayList<T>(values.set(index >>> 5, index & 0x1f, value), index + 1);
     }
 
     @Override
-    public PersistentArrayList<T> removeLast()
+    public PersistentArrayList<T> deleteLast()
     {
         if (size <= 0) {
             throw new ArrayIndexOutOfBoundsException();

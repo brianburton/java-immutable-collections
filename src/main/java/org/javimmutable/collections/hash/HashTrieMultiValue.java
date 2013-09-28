@@ -94,10 +94,10 @@ public class HashTrieMultiValue<K, V>
                 }
                 found = true;
             } else {
-                newList = newList.add(head);
+                newList = newList.insert(head);
             }
         }
-        newList = newList.add(new HashTrieSingleValue<K, V>(key, value));
+        newList = newList.insert(new HashTrieSingleValue<K, V>(key, value));
         if (!found) {
             sizeDelta.add(1);
         }
@@ -115,7 +115,7 @@ public class HashTrieMultiValue<K, V>
             if (entry.getKey().equals(key)) {
                 found = true;
             } else {
-                newList = newList.add(entry);
+                newList = newList.insert(entry);
             }
         }
         if (found) {

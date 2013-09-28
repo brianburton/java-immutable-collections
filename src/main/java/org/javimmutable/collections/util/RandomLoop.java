@@ -109,7 +109,7 @@ public class RandomLoop
         System.out.printf("Testing PersistentStack of size %d%n", size);
         for (int i = 0; i < size; ++i) {
             int value = random.nextInt(999999999);
-            stack = stack.add(value);
+            stack = stack.insert(value);
             expected.add(0, value);
         }
         Sequence<Integer> seq = stack;
@@ -136,20 +136,20 @@ public class RandomLoop
             System.out.printf("growing %d%n", list.size());
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
-                list = list.add(value);
+                list = list.insert(value);
                 expected.add(value);
             }
             verifyContents(expected, list);
             System.out.printf("shrinking %d%n", list.size());
             for (int i = 0; i < size / 6; ++i) {
-                list = list.removeLast();
+                list = list.deleteLast();
                 expected.remove(expected.size() - 1);
             }
             verifyContents(expected, list);
         }
         System.out.printf("cleanup %d%n", expected.size());
         while (list.size() > 0) {
-            list = list.removeLast();
+            list = list.deleteLast();
             expected.remove(expected.size() - 1);
         }
         verifyContents(expected, list);
@@ -168,7 +168,7 @@ public class RandomLoop
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
                 if (list.size() == 0) {
-                    list = list.add(value);
+                    list = list.insert(value);
                     expected.add(value);
                 } else {
                     int index = random.nextInt(list.size());
@@ -180,11 +180,11 @@ public class RandomLoop
             System.out.printf("shrinking %d%n", list.size());
             for (int i = 0; i < size / 6; ++i) {
                 if (list.size() == 1) {
-                    list = list.removeLast();
+                    list = list.deleteLast();
                     expected.remove(expected.size() - 1);
                 } else {
                     int index = random.nextInt(list.size());
-                    list = list.remove(index);
+                    list = list.delete(index);
                     expected.remove(index);
                 }
             }
@@ -192,7 +192,7 @@ public class RandomLoop
         }
         System.out.printf("cleanup %d%n", expected.size());
         while (list.size() > 0) {
-            list = list.remove(0);
+            list = list.delete(0);
             expected.remove(0);
         }
         verifyContents(expected, list);
@@ -214,9 +214,9 @@ public class RandomLoop
             System.out.printf("growing %d%n", hset.size());
             for (int i = 0; i < size / 3; ++i) {
                 String value = makeKey(tokens, random);
-                values = values.add(value);
-                hset = hset.add(value);
-                tset = tset.add(value);
+                values = values.insert(value);
+                hset = hset.insert(value);
+                tset = tset.insert(value);
                 expected.add(value);
             }
             verifyContents(expected, hset);
@@ -226,9 +226,9 @@ public class RandomLoop
                 int keyIndex = random.nextInt(values.size());
                 String key = values.get(keyIndex);
                 expected.remove(key);
-                hset = hset.remove(key);
-                tset = tset.remove(key);
-                values = values.remove(keyIndex);
+                hset = hset.delete(key);
+                tset = tset.delete(key);
+                values = values.delete(keyIndex);
             }
             verifyContents(expected, hset);
             verifyContents(expected, tset);
@@ -236,10 +236,10 @@ public class RandomLoop
         System.out.printf("cleanup %d%n", expected.size());
         while (values.size() > 0) {
             String value = values.get(0);
-            hset = hset.remove(value);
-            tset = tset.remove(value);
+            hset = hset.delete(value);
+            tset = tset.delete(value);
             expected.remove(value);
-            values = values.remove(0);
+            values = values.delete(0);
         }
         verifyContents(expected, hset);
         verifyContents(expected, tset);
@@ -262,9 +262,9 @@ public class RandomLoop
             for (int i = 0; i < tokenCount / 3; ++i) {
                 String key = makeKey(tokens, random);
                 keys.add(key);
-                pkeys = pkeys.add(key);
+                pkeys = pkeys.insert(key);
                 expected.put(key, key);
-                map = map.set(key, key);
+                map = map.assign(key, key);
             }
             verifyContents(expected, map);
             System.out.printf("shrinking %d%n", map.size());
@@ -272,9 +272,9 @@ public class RandomLoop
                 int keyIndex = random.nextInt(keys.size());
                 String key = pkeys.get(keyIndex);
                 expected.remove(key);
-                map = map.remove(key);
+                map = map.delete(key);
                 keys.remove(keyIndex);
-                pkeys = pkeys.remove(keyIndex);
+                pkeys = pkeys.delete(keyIndex);
             }
             verifyContents(expected, map);
         }
@@ -292,7 +292,7 @@ public class RandomLoop
         System.out.printf("cleanup %d%n", map.size());
         for (String key : keys) {
             expected.remove(key);
-            map = map.remove(key);
+            map = map.delete(key);
         }
         if (map.size() != 0) {
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
@@ -398,7 +398,7 @@ public class RandomLoop
             for (String line = inp.readLine(); line != null; line = inp.readLine()) {
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 while (tokenizer.hasMoreTokens()) {
-                    tokens = tokens.add(tokenizer.nextToken());
+                    tokens = tokens.insert(tokenizer.nextToken());
                 }
             }
         } finally {

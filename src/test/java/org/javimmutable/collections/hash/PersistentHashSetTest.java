@@ -51,7 +51,7 @@ public class PersistentHashSetTest
     public void test()
     {
         PersistentStack<String> expected = PersistentLinkedStack.of();
-        expected = expected.add("fred").add("wilma").add("betty").add("barney");
+        expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
 
         PersistentSet<String> set = PersistentHashSet.of();
         assertTrue(set.isEmpty());
@@ -63,7 +63,7 @@ public class PersistentHashSetTest
         assertEquals(false, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        set = set.add("FRED".toLowerCase());
+        set = set.insert("FRED".toLowerCase());
         assertFalse(set.isEmpty());
         assertEquals(1, set.size());
         assertEquals(true, set.contains("fred"));
@@ -73,7 +73,7 @@ public class PersistentHashSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        set = set.add("WILMA".toLowerCase());
+        set = set.insert("WILMA".toLowerCase());
         assertFalse(set.isEmpty());
         assertEquals(2, set.size());
         assertEquals(true, set.contains("fred"));
@@ -83,10 +83,10 @@ public class PersistentHashSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        assertSame(set, set.add("fred"));
-        assertSame(set, set.add("wilma"));
+        assertSame(set, set.insert("fred"));
+        assertSame(set, set.insert("wilma"));
 
-        PersistentSet<String> set2 = set.addAll(expected);
+        PersistentSet<String> set2 = set.insertAll(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -97,10 +97,10 @@ public class PersistentHashSetTest
         assertEquals(true, set2.containsAll(expected));
         assertEquals(new HashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.asSet());
 
-        assertEquals(set, set2.retainAll(set));
-        assertEquals(set, set2.remove("betty").remove("barney"));
+        assertEquals(set, set2.intersection(set));
+        assertEquals(set, set2.delete("betty").delete("barney"));
 
-        set2 = set2.removeAll(set);
+        set2 = set2.deleteAll(set);
         assertFalse(set2.isEmpty());
         assertEquals(2, set2.size());
         assertEquals(false, set2.contains("fred"));
@@ -111,7 +111,7 @@ public class PersistentHashSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        PersistentSet<String> set3 = set.addAll(expected).add("homer").add("marge");
+        PersistentSet<String> set3 = set.insertAll(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));
@@ -127,13 +127,13 @@ public class PersistentHashSetTest
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
         assertEquals(new HashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.asSet());
-        assertEquals(set, set3.retainAll(set));
-        assertEquals(set2, set3.retainAll(set2));
-        assertEquals(set, set.retainAll(set));
-        assertEquals(set, set.retainAll(set3));
-        assertEquals(PersistentHashSet.<String>of(), set.retainAll(set2));
-        assertEquals(PersistentHashSet.<String>of(), set2.retainAll(set));
-        assertEquals(PersistentHashSet.<String>of(), set3.removeAll(set3));
+        assertEquals(set, set3.intersection(set));
+        assertEquals(set2, set3.intersection(set2));
+        assertEquals(set, set.intersection(set));
+        assertEquals(set, set.intersection(set3));
+        assertEquals(PersistentHashSet.<String>of(), set.intersection(set2));
+        assertEquals(PersistentHashSet.<String>of(), set2.intersection(set));
+        assertEquals(PersistentHashSet.<String>of(), set3.deleteAll(set3));
     }
 
     public void testRandom()
@@ -149,7 +149,7 @@ public class PersistentHashSetTest
                 switch (command) {
                 case 0:
                 case 1:
-                    set = set.add(value);
+                    set = set.insert(value);
                     expected.add(value);
                     assertEquals(true, set.contains(value));
                     break;
@@ -157,7 +157,7 @@ public class PersistentHashSetTest
                     assertEquals(expected.contains(value), set.contains(value));
                     break;
                 case 3:
-                    set = set.remove(value);
+                    set = set.delete(value);
                     expected.remove(value);
                     assertEquals(false, set.contains(value));
                     break;
@@ -166,10 +166,10 @@ public class PersistentHashSetTest
             }
             assertEquals(expected, set.asSet());
             for (Integer value : set) {
-                assertSame(set, set.add(value));
+                assertSame(set, set.insert(value));
             }
             for (Integer value : set) {
-                set = set.remove(value);
+                set = set.delete(value);
             }
             assertEquals(0, set.size());
             assertEquals(true, set.isEmpty());

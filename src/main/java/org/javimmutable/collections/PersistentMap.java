@@ -46,7 +46,7 @@ import java.util.Map;
  * @param <V>
  */
 public interface PersistentMap<K, V>
-        extends Addable<PersistentMap.Entry<K, V>>,
+        extends Insertable<PersistentMap.Entry<K, V>>,
                 Mapped<K, V>,
                 Iterable<PersistentMap.Entry<K, V>>,
                 Cursorable<PersistentMap.Entry<K, V>>
@@ -94,8 +94,8 @@ public interface PersistentMap<K, V>
      * @param value possibly null value
      * @return new map reflecting the change
      */
-    PersistentMap<K, V> set(K key,
-                            V value);
+    PersistentMap<K, V> assign(K key,
+                               V value);
 
     /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
@@ -104,7 +104,7 @@ public interface PersistentMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    PersistentMap<K, V> remove(K key);
+    PersistentMap<K, V> delete(K key);
 
     /**
      * Return the number of entries in the map.

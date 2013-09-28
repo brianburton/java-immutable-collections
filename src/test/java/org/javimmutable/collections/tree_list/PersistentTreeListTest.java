@@ -50,33 +50,33 @@ public class PersistentTreeListTest
         PersistentTreeList<Integer> list = PersistentTreeList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
-        list = list.add(100);
+        list = list.insert(100);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         list.verifyDepthsMatch();
 
-        list = list.add(200);
+        list = list.insert(200);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         assertEquals(200, (int)list.get(1));
         list.verifyDepthsMatch();
 
-        list = list.set(1, 210);
+        list = list.assign(1, 210);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         assertEquals(210, (int)list.get(1));
         list.verifyDepthsMatch();
 
-        list = list.remove(0);
+        list = list.delete(0);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(210, (int)list.get(0));
         list.verifyDepthsMatch();
 
-        list = list.remove(0);
+        list = list.delete(0);
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list.verifyDepthsMatch();
@@ -86,7 +86,7 @@ public class PersistentTreeListTest
     {
         PersistentTreeList<Integer> list = PersistentTreeList.of();
         for (int index = 0; index < 100; ++index) {
-            list = list.add(index);
+            list = list.insert(index);
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
                 assertEquals(k, (int)list.get(k));
@@ -94,7 +94,7 @@ public class PersistentTreeListTest
         }
 
         for (int index = 0; index < 100; ++index) {
-            list = list.removeLast();
+            list = list.deleteLast();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));
@@ -109,7 +109,7 @@ public class PersistentTreeListTest
     {
         PersistentTreeList<Integer> list = PersistentTreeList.of();
         List<Integer> expected = new ArrayList<Integer>();
-        list = list.add(0);
+        list = list.insert(0);
         expected.add(0);
         for (int i = 1; i <= 1000; ++i) {
             list = list.insert(0, i);
@@ -135,7 +135,7 @@ public class PersistentTreeListTest
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
-                list = list.add(value);
+                list = list.insert(value);
                 expected.add(value);
                 assertEquals(expected.size(), list.size());
                 list.verifyDepthsMatch();
@@ -153,7 +153,7 @@ public class PersistentTreeListTest
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
-                list = list.remove(index);
+                list = list.delete(index);
                 expected.remove(index);
                 if (list.size() % 100 == 0) {
                     assertEquals(expected, list.asList());
@@ -175,12 +175,12 @@ public class PersistentTreeListTest
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
                 if (list.isEmpty()) {
-                    list = list.add(value);
+                    list = list.insert(value);
                     expected.add(value);
                 } else {
                     int index = random.nextInt(list.size());
                     if (random.nextInt(3) == 0) {
-                        list = list.remove(index);
+                        list = list.delete(index);
                         expected.remove(index);
                     } else {
                         list = list.insert(index, value);
@@ -203,7 +203,7 @@ public class PersistentTreeListTest
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
-                list = list.remove(index);
+                list = list.delete(index);
                 expected.remove(index);
                 assertEquals(expected.size(), list.size());
             }

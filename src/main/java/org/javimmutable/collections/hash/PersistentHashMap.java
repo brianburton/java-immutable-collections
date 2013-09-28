@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Addable;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.common.AbstractPersistentMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
@@ -100,8 +100,8 @@ public class PersistentHashMap<K, V>
     }
 
     @Override
-    public PersistentHashMap<K, V> set(final K key,
-                                       final V value)
+    public PersistentHashMap<K, V> assign(final K key,
+                                          final V value)
     {
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
@@ -111,7 +111,7 @@ public class PersistentHashMap<K, V>
     }
 
     @Override
-    public PersistentHashMap<K, V> remove(final K key)
+    public PersistentHashMap<K, V> delete(final K key)
     {
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
@@ -140,9 +140,9 @@ public class PersistentHashMap<K, V>
      * @return
      */
     @Override
-    public Addable<Entry<K, V>> add(Entry<K, V> e)
+    public Insertable<Entry<K, V>> insert(Entry<K, V> e)
     {
-        return set(e.getKey(), e.getValue());
+        return assign(e.getKey(), e.getValue());
     }
 
     @Override

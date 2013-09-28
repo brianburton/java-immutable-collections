@@ -49,7 +49,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(true, v.getValueForKey("a").isFilled());
@@ -137,7 +137,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).add(b).add(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(false, v.getValueForKey("d").isFilled());

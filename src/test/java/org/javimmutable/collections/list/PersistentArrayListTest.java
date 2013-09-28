@@ -50,12 +50,12 @@ public class PersistentArrayListTest
         PersistentArrayList<Integer> list = PersistentArrayList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
-        list = list.add(100);
+        list = list.insert(100);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
 
-        list = list.add(200);
+        list = list.insert(200);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
@@ -66,7 +66,7 @@ public class PersistentArrayListTest
     {
         PersistentArrayList<Integer> list = PersistentArrayList.of();
         for (int index = 0; index < 100; ++index) {
-            list = list.add(index);
+            list = list.insert(index);
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
                 assertEquals(k, (int)list.get(k));
@@ -74,7 +74,7 @@ public class PersistentArrayListTest
         }
 
         for (int index = 0; index < 100; ++index) {
-            list = list.removeLast();
+            list = list.deleteLast();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));
@@ -94,7 +94,7 @@ public class PersistentArrayListTest
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
-                list = list.add(value);
+                list = list.insert(value);
                 expected.add(value);
                 assertEquals(expected.size(), list.size());
             }

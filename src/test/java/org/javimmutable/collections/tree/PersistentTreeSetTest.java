@@ -53,7 +53,7 @@ public class PersistentTreeSetTest
     public void test()
     {
         PersistentStack<String> expected = PersistentLinkedStack.of();
-        expected = expected.add("fred").add("wilma").add("betty").add("barney");
+        expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
 
         PersistentSet<String> set = PersistentTreeSet.of();
         assertTrue(set.isEmpty());
@@ -65,7 +65,7 @@ public class PersistentTreeSetTest
         assertEquals(false, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        set = set.add("FRED".toLowerCase());
+        set = set.insert("FRED".toLowerCase());
         assertFalse(set.isEmpty());
         assertEquals(1, set.size());
         assertEquals(true, set.contains("fred"));
@@ -75,7 +75,7 @@ public class PersistentTreeSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        set = set.add("WILMA".toLowerCase());
+        set = set.insert("WILMA".toLowerCase());
         assertFalse(set.isEmpty());
         assertEquals(2, set.size());
         assertEquals(true, set.contains("fred"));
@@ -85,10 +85,10 @@ public class PersistentTreeSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
 
-        assertSame(set, set.add("fred"));
-        assertSame(set, set.add("wilma"));
+        assertSame(set, set.insert("fred"));
+        assertSame(set, set.insert("wilma"));
 
-        PersistentSet<String> set2 = set.addAll(expected);
+        PersistentSet<String> set2 = set.insertAll(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -99,10 +99,10 @@ public class PersistentTreeSetTest
         assertEquals(true, set2.containsAll(expected));
         assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.asSet());
 
-        assertEquals(set, set2.retainAll(set));
-        assertEquals(set, set2.remove("betty").remove("barney"));
+        assertEquals(set, set2.intersection(set));
+        assertEquals(set, set2.delete("betty").delete("barney"));
 
-        set2 = set2.removeAll(set);
+        set2 = set2.deleteAll(set);
         assertFalse(set2.isEmpty());
         assertEquals(2, set2.size());
         assertEquals(false, set2.contains("fred"));
@@ -113,7 +113,7 @@ public class PersistentTreeSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        PersistentSet<String> set3 = set.addAll(expected).add("homer").add("marge");
+        PersistentSet<String> set3 = set.insertAll(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));
@@ -129,13 +129,13 @@ public class PersistentTreeSetTest
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
         assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.asSet());
-        assertEquals(set, set3.retainAll(set));
-        assertEquals(set2, set3.retainAll(set2));
-        assertEquals(set, set.retainAll(set));
-        assertEquals(set, set.retainAll(set3));
-        assertEquals(PersistentTreeSet.<String>of(), set.retainAll(set2));
-        assertEquals(PersistentTreeSet.<String>of(), set2.retainAll(set));
-        assertEquals(PersistentTreeSet.<String>of(), set3.removeAll(set3));
+        assertEquals(set, set3.intersection(set));
+        assertEquals(set2, set3.intersection(set2));
+        assertEquals(set, set.intersection(set));
+        assertEquals(set, set.intersection(set3));
+        assertEquals(PersistentTreeSet.<String>of(), set.intersection(set2));
+        assertEquals(PersistentTreeSet.<String>of(), set2.intersection(set));
+        assertEquals(PersistentTreeSet.<String>of(), set3.deleteAll(set3));
     }
 
     public void testRandom()
@@ -151,7 +151,7 @@ public class PersistentTreeSetTest
                 switch (command) {
                 case 0:
                 case 1:
-                    set = set.add(value);
+                    set = set.insert(value);
                     expected.add(value);
                     assertEquals(true, set.contains(value));
                     break;
@@ -159,7 +159,7 @@ public class PersistentTreeSetTest
                     assertEquals(expected.contains(value), set.contains(value));
                     break;
                 case 3:
-                    set = set.remove(value);
+                    set = set.delete(value);
                     expected.remove(value);
                     assertEquals(false, set.contains(value));
                     break;
@@ -173,11 +173,11 @@ public class PersistentTreeSetTest
 
             // verify value identity
             for (Integer value : set) {
-                assertSame(set, set.add(value));
+                assertSame(set, set.insert(value));
             }
 
             for (Integer value : set) {
-                set = set.remove(value);
+                set = set.delete(value);
             }
             assertEquals(0, set.size());
             assertEquals(true, set.isEmpty());
@@ -202,7 +202,7 @@ public class PersistentTreeSetTest
         for (int i = 0; i < 10000; ++i) {
             int value = random.nextInt(100000) - 50000;
             expected.add(value);
-            set = set.add(value);
+            set = set.insert(value);
         }
         assertEquals(expected, set.asSet());
         assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.asSet()));

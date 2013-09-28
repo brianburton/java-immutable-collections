@@ -42,7 +42,7 @@ package org.javimmutable.collections;
  * @param <T>
  */
 public interface PersistentStack<T>
-        extends Addable<T>,
+        extends Insertable<T>,
                 Sequence<T>,
                 Cursorable<T>,
                 Iterable<T>
@@ -69,7 +69,7 @@ public interface PersistentStack<T>
      * @param value
      * @return
      */
-    PersistentStack<T> add(T value);
+    PersistentStack<T> insert(T value);
 
     /**
      * Returns a list without the element returned by getHead().

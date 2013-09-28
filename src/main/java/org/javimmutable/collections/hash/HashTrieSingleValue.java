@@ -80,7 +80,7 @@ public class HashTrieSingleValue<K, V>
         } else {
             sizeDelta.add(1);
             PersistentLinkedStack<HashTrieSingleValue<K, V>> values = PersistentLinkedStack.of();
-            return new HashTrieMultiValue<K, V>(values.add(this).add(new HashTrieSingleValue<K, V>(key, value)));
+            return new HashTrieMultiValue<K, V>(values.insert(this).insert(new HashTrieSingleValue<K, V>(key, value)));
         }
     }
 

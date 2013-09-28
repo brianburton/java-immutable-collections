@@ -90,13 +90,13 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> removeLast()
+    public PersistentTreeList<T> deleteLast()
     {
-        return remove(size - 1);
+        return delete(size - 1);
     }
 
     @Override
-    public PersistentTreeList<T> remove(int index)
+    public PersistentTreeList<T> delete(int index)
     {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -123,8 +123,8 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> set(int index,
-                                     T value)
+    public PersistentTreeList<T> assign(int index,
+                                        T value)
     {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -147,7 +147,7 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> add(T value)
+    public PersistentTreeList<T> insert(T value)
     {
         if (size == 0) {
             return create(new LeafNode<T>(value));

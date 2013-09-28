@@ -55,12 +55,12 @@ public class PersistentLinkedStackTest
         }
         assertSame(list, list.getTail());
 
-        PersistentLinkedStack<Integer> list2 = list.add(10);
+        PersistentLinkedStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
 
-        PersistentLinkedStack<Integer> list3 = list2.add(30);
+        PersistentLinkedStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());

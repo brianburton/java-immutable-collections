@@ -94,11 +94,11 @@ public class LowMemTimingComparison
             if (command <= 1) {
                 Integer key = random.nextInt(maxKey);
                 Integer value = random.nextInt(maxValue);
-                map = map.set(key, value);
+                map = map.assign(key, value);
                 adds += 1;
             } else if (command == 2) {
                 Integer key = random.nextInt(maxKey);
-                map = map.remove(key);
+                map = map.delete(key);
                 removes += 1;
             } else {
                 Integer key = random.nextInt(maxKey);

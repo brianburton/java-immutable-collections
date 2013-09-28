@@ -53,11 +53,11 @@ public class PersistentHashMapTest
         PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
-        map = map.set(10, 20);
+        map = map.assign(10, 20);
         assertEquals(1, map.size());
         assertEquals(false, map.find(10).isEmpty());
         assertEquals(20, (int)map.find(10).getValue());
-        map = map.remove(10);
+        map = map.delete(10);
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
     }
@@ -65,13 +65,13 @@ public class PersistentHashMapTest
     public void testValueIdentity()
     {
         PersistentHashMap<Integer, String> map = PersistentHashMap.of();
-        map = map.set(10, "ab");
-        assertSame(map, map.set(10, "ab"));
+        map = map.assign(10, "ab");
+        assertSame(map, map.assign(10, "ab"));
         for (int i = 100; i <= 15000; ++i) {
-            map = map.set(i, Integer.toString(i));
+            map = map.assign(i, Integer.toString(i));
         }
-        map = map.set(14000, "aaa");
-        assertSame(map, map.set(14000, "aaa"));
+        map = map.assign(14000, "aaa");
+        assertSame(map, map.assign(14000, "aaa"));
     }
 
     public void testRandom1()
@@ -88,11 +88,11 @@ public class PersistentHashMapTest
                     Integer key = random.nextInt(maxKey);
                     Integer value = random.nextInt(1000000);
                     expected.put(key, value);
-                    map = map.set(key, value);
+                    map = map.assign(key, value);
                 } else if (command == 2) {
                     Integer key = random.nextInt(maxKey);
                     expected.remove(key);
-                    map = map.remove(key);
+                    map = map.delete(key);
                 } else {
                     Integer key = random.nextInt(maxKey);
                     assertEquals(expected.get(key), map.find(key).getValueOrNull());
@@ -127,7 +127,7 @@ public class PersistentHashMapTest
             ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
-                map = map.remove(key);
+                map = map.delete(key);
                 assertEquals(true, map.find(key).isEmpty());
             }
             assertEquals(0, map.size());
@@ -136,8 +136,8 @@ public class PersistentHashMapTest
 
     public void testEquals()
     {
-        PersistentMap<Integer, Integer> map1 = PersistentHashMap.<Integer, Integer>of().set(1, 3).set(2, 4).set(3, 5);
-        PersistentMap<Integer, Integer> map2 = PersistentHashMap.<Integer, Integer>of().set(1, 3).set(2, 4).set(3, 5);
+        PersistentMap<Integer, Integer> map1 = PersistentHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
+        PersistentMap<Integer, Integer> map2 = PersistentHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }

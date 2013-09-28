@@ -56,49 +56,49 @@ public abstract class AbstractPersistentSet<T>
     }
 
     @Override
-    public PersistentSet<T> add(T value)
+    public PersistentSet<T> insert(T value)
     {
-        PersistentMap<T, Boolean> newMap = map.set(value, Boolean.TRUE);
+        PersistentMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> addAll(Cursorable<T> other)
+    public PersistentSet<T> insertAll(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
-            newMap = newMap.set(value, Boolean.TRUE);
+            newMap = newMap.assign(value, Boolean.TRUE);
         }
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> remove(T value)
+    public PersistentSet<T> delete(T value)
     {
-        PersistentMap<T, Boolean> newMap = map.remove(value);
+        PersistentMap<T, Boolean> newMap = map.delete(value);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> removeAll(Cursorable<T> other)
+    public PersistentSet<T> deleteAll(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
-            newMap = newMap.remove(value);
+            newMap = newMap.delete(value);
         }
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> retainAll(Cursorable<T> other)
+    public PersistentSet<T> intersection(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = emptyMap();
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             if (map.find(value).isFilled()) {
-                newMap = newMap.set(value, Boolean.TRUE);
+                newMap = newMap.assign(value, Boolean.TRUE);
             }
         }
         return (newMap != map) ? create(newMap) : this;
