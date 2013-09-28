@@ -50,10 +50,18 @@ import org.javimmutable.collections.tree.PersistentTreeMap;
 import org.javimmutable.collections.tree.PersistentTreeSet;
 import org.javimmutable.collections.tree_list.PersistentTreeList;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * This class contains static factory methods to create instances of each of the collection interfaces.
+ * Overloaded variants are provided for each to pre-populate the created collection with existing values.
+ * Where possible the empty collection methods return a common singleton instance to save memory.  The
+ * factory methods always return the fastest implementation of each interface (i.e. hash when sort not
+ * required, trie when random access not required, etc).
+ */
 public final class Immutables
 {
     public static <T> PersistentStack<T> stack()
@@ -76,6 +84,11 @@ public final class Immutables
         return Functions.addAll(PersistentLinkedStack.<T>of(), iterator);
     }
 
+    public static <T> PersistentStack<T> stack(Collection<T> collection)
+    {
+        return Functions.addAll(PersistentLinkedStack.<T>of(), collection.iterator());
+    }
+
     public static <T> PersistentList<T> list()
     {
         return PersistentArrayList.of();
@@ -96,6 +109,11 @@ public final class Immutables
         return Functions.addAll(PersistentArrayList.<T>of(), iterator);
     }
 
+    public static <T> PersistentList<T> list(Collection<T> collection)
+    {
+        return Functions.addAll(PersistentArrayList.<T>of(), collection.iterator());
+    }
+
     public static <T> PersistentRandomAccessList<T> ralist()
     {
         return PersistentTreeList.of();
@@ -114,6 +132,11 @@ public final class Immutables
     public static <T> PersistentRandomAccessList<T> ralist(Iterator<T> iterator)
     {
         return Functions.addAll(PersistentTreeList.<T>of(), iterator);
+    }
+
+    public static <T> PersistentRandomAccessList<T> ralist(Collection<T> collection)
+    {
+        return Functions.addAll(PersistentTreeList.<T>of(), collection.iterator());
     }
 
     public static <K, V> PersistentMap<K, V> map()
@@ -183,6 +206,11 @@ public final class Immutables
         return Functions.addAll(PersistentHashSet.<T>of(), iterator);
     }
 
+    public static <T> PersistentSet<T> set(Collection<T> collection)
+    {
+        return Functions.addAll(PersistentHashSet.<T>of(), collection.iterator());
+    }
+
     public static <T extends Comparable<T>> PersistentSet<T> sortedSet()
     {
         return PersistentTreeSet.of();
@@ -201,6 +229,11 @@ public final class Immutables
     public static <T extends Comparable<T>> PersistentSet<T> sortedSet(Iterator<T> iterator)
     {
         return Functions.addAll(PersistentTreeSet.<T>of(), iterator);
+    }
+
+    public static <T extends Comparable<T>> PersistentSet<T> sortedSet(Collection<T> collection)
+    {
+        return Functions.addAll(PersistentTreeSet.<T>of(), collection.iterator());
     }
 
     public static <T> PersistentSet<T> sortedSet(Comparator<T> comparator)
@@ -224,5 +257,11 @@ public final class Immutables
                                                  Iterator<T> iterator)
     {
         return Functions.addAll(PersistentTreeSet.<T>of(comparator), iterator);
+    }
+
+    public static <T> PersistentSet<T> sortedSet(Comparator<T> comparator,
+                                                 Collection<T> collection)
+    {
+        return Functions.addAll(PersistentTreeSet.<T>of(comparator), collection.iterator());
     }
 }

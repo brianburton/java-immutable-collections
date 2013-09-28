@@ -67,6 +67,7 @@ public class ImmutablesTest
         inlist = inlist.add(1).add(2).add(3);
         assertEquals(stack, Immutables.stack(inlist));
         assertEquals(stack, Immutables.stack((inlist.cursor())));
+        assertEquals(stack, Immutables.stack(input));
         assertEquals(stack, Immutables.stack(input.iterator()));
     }
 
@@ -74,7 +75,7 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 2, 3);
 
-        PersistentList<Integer> list = Immutables.list(input.iterator());
+        PersistentList<Integer> list = Immutables.list(input);
         assertEquals(input, list.asList());
         assertEquals(list, Immutables.list(input.iterator()));
         assertEquals(list, Immutables.list(list));
@@ -85,7 +86,7 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 2, 3);
 
-        PersistentRandomAccessList<Integer> list = Immutables.ralist(input.iterator());
+        PersistentRandomAccessList<Integer> list = Immutables.ralist(input);
         assertEquals(input, list.asList());
         assertEquals(list, Immutables.ralist(input.iterator()));
         assertEquals(list, Immutables.ralist(list));
@@ -122,8 +123,9 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
 
-        PersistentSet<Integer> set = Immutables.set(input.iterator());
+        PersistentSet<Integer> set = Immutables.set(input);
         assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.set(input.iterator()));
         assertEquals(set, Immutables.set(set));
         assertEquals(set, Immutables.set(set.cursor()));
     }
@@ -132,8 +134,9 @@ public class ImmutablesTest
     {
         List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
 
-        PersistentSet<Integer> set = Immutables.sortedSet(input.iterator());
+        PersistentSet<Integer> set = Immutables.sortedSet(input);
         assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.sortedSet(input.iterator()));
         assertEquals(set, Immutables.sortedSet(set));
         assertEquals(set, Immutables.sortedSet(set.cursor()));
         Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(1, 45, 87, 100).iterator()).cursor());
@@ -147,8 +150,9 @@ public class ImmutablesTest
                 return -a.compareTo(b);
             }
         };
-        set = Immutables.sortedSet(reverser, input.iterator());
+        set = Immutables.sortedSet(reverser, input);
         assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(set, Immutables.sortedSet(reverser, input.iterator()));
         assertEquals(set, Immutables.sortedSet(reverser, set));
         assertEquals(set, Immutables.sortedSet(reverser, set.cursor()));
         Cursors.areEqual(set.cursor(), Immutables.list(Arrays.asList(100, 87, 45, 1).iterator()).cursor());
