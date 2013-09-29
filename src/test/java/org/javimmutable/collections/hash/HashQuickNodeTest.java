@@ -51,7 +51,7 @@ public class HashQuickNodeTest
         assertEquals(new HashTrieSingleValue<String, String>("k", "kk"), node.getTrieValue(0, 1));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(0, 1, "k", "K", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(0, 1, "k", "K", sizeDelta);
         assertEquals(true, newNode instanceof HashQuickNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(Holders.of("K"), newNode.get(0, 1, "k"));
@@ -74,7 +74,7 @@ public class HashQuickNodeTest
         assertEquals(null, node.getTrieValue(1, 0));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(1, 0, "k", "K", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(1, 0, "k", "K", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(Holders.of("kk"), newNode.get(0, 1, "k"));
@@ -94,7 +94,7 @@ public class HashQuickNodeTest
         assertEquals(null, node.getTrieValue(0, 2));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(0, 2, "k", "K", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(0, 2, "k", "K", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(Holders.of("kk"), newNode.get(0, 1, "k"));
@@ -114,7 +114,7 @@ public class HashQuickNodeTest
         assertEquals(new HashTrieSingleValue<String, String>("k", "kk"), node.getTrieValue(0, 1));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(0, 1, "x", "X", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(0, 1, "x", "X", sizeDelta);
         assertEquals(true, newNode instanceof HashQuickNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(Holders.of("kk"), newNode.get(0, 1, "k"));
@@ -129,6 +129,6 @@ public class HashQuickNodeTest
     public void testValueIdentity()
     {
         HashQuickNode<String, String> node = new HashQuickNode<String, String>(0, 1, new HashTrieSingleValue<String, String>("k", "kk"));
-        assertSame(node, node.set(0, 1, "k", "kk", null));
+        assertSame(node, node.assign(0, 1, "k", "kk", null));
     }
 }

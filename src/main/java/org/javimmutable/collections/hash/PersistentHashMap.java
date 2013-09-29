@@ -122,7 +122,7 @@ public class PersistentHashMap<K, V>
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
         final int hashCode = key.hashCode();
-        HashTrieNode<K, V> newNodes = nodes.set(hashCode >>> 5, hashCode & 0x1f, key, value, sizeDelta);
+        HashTrieNode<K, V> newNodes = nodes.assign(hashCode >>> 5, hashCode & 0x1f, key, value, sizeDelta);
         return (newNodes == nodes) ? this : new PersistentHashMap<K, V>(newNodes, sizeDelta.apply(size));
     }
 

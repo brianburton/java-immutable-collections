@@ -101,16 +101,16 @@ public class HashQuickNode<K, V>
     }
 
     @Override
-    public HashTrieNode<K, V> set(int branchIndex,
-                                  int valueIndex,
-                                  K key,
-                                  V value,
-                                  MutableDelta sizeDelta)
+    public HashTrieNode<K, V> assign(int branchIndex,
+                                     int valueIndex,
+                                     K key,
+                                     V value,
+                                     MutableDelta sizeDelta)
     {
         final int thisBranchIndex = this.branchIndex;
         final int thisValueIndex = this.valueIndex;
         if (branchIndex != thisBranchIndex || valueIndex != thisValueIndex) {
-            return new HashInteriorNode<K, V>(thisBranchIndex, thisValueIndex, this.value).set(branchIndex, valueIndex, key, value, sizeDelta);
+            return new HashInteriorNode<K, V>(thisBranchIndex, thisValueIndex, this.value).assign(branchIndex, valueIndex, key, value, sizeDelta);
         } else {
             HashTrieValue<K, V> newValue = this.value.setValueForKey(key, value, sizeDelta);
             return (newValue == this.value) ? this : new HashQuickNode<K, V>(branchIndex, valueIndex, newValue);

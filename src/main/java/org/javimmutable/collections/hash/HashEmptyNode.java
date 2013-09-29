@@ -84,11 +84,11 @@ public class HashEmptyNode<K, V>
     }
 
     @Override
-    public HashTrieNode<K, V> set(int branchIndex,
-                                  int valueIndex,
-                                  K key,
-                                  V value,
-                                  MutableDelta sizeDelta)
+    public HashTrieNode<K, V> assign(int branchIndex,
+                                     int valueIndex,
+                                     K key,
+                                     V value,
+                                     MutableDelta sizeDelta)
     {
         sizeDelta.add(1);
         return new HashQuickNode<K, V>(branchIndex, valueIndex, new HashTrieSingleValue<K, V>(key, value));

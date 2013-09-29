@@ -88,21 +88,21 @@ public class HashInteriorNodeTest
         HashInteriorNode<String, String> node = new HashInteriorNode<String, String>();
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(65, 9, "a", "aa", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(65, 9, "a", "aa", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(1, newNode.deepSize());
         assertEquals("aa", newNode.get(65, 9, "a").getValueOrNull());
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(65, 9, "a", "A", sizeDelta);
+        newNode = newNode.assign(65, 9, "a", "A", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(1, newNode.deepSize());
         assertEquals("A", newNode.get(65, 9, "a").getValueOrNull());
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(77, 9, "c", "cc", sizeDelta);
+        newNode = newNode.assign(77, 9, "c", "cc", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(2, newNode.deepSize());
@@ -110,7 +110,7 @@ public class HashInteriorNodeTest
         assertEquals("cc", newNode.get(77, 9, "c").getValueOrNull());
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(98, 31, "x", "xx", sizeDelta);
+        newNode = newNode.assign(98, 31, "x", "xx", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(3, newNode.deepSize());
@@ -124,7 +124,7 @@ public class HashInteriorNodeTest
         assertEquals(3, (int)counts.find(HashQuickNode.class).getValueOr(0));
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(98, 30, "z", "zz", sizeDelta);
+        newNode = newNode.assign(98, 30, "z", "zz", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(4, newNode.deepSize());
@@ -134,10 +134,10 @@ public class HashInteriorNodeTest
         assertEquals("zz", newNode.get(98, 30, "z").getValueOrNull());
 
         // test value identity
-        assertSame(newNode, newNode.set(65, 9, "a", "A", sizeDelta));
-        assertSame(newNode, newNode.set(77, 9, "c", "cc", sizeDelta));
-        assertSame(newNode, newNode.set(98, 31, "x", "xx", sizeDelta));
-        assertSame(newNode, newNode.set(98, 30, "z", "zz", sizeDelta));
+        assertSame(newNode, newNode.assign(65, 9, "a", "A", sizeDelta));
+        assertSame(newNode, newNode.assign(77, 9, "c", "cc", sizeDelta));
+        assertSame(newNode, newNode.assign(98, 31, "x", "xx", sizeDelta));
+        assertSame(newNode, newNode.assign(98, 30, "z", "zz", sizeDelta));
 
         counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
@@ -150,24 +150,24 @@ public class HashInteriorNodeTest
         HashInteriorNode<String, String> node = new HashInteriorNode<String, String>();
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(0, 9, "a", "aa", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(0, 9, "a", "aa", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(1, newNode.deepSize());
         assertEquals("aa", newNode.get(0, 9, "a").getValueOrNull());
 
         // test value identity
-        assertSame(newNode, newNode.set(0, 9, "a", "aa", sizeDelta));
+        assertSame(newNode, newNode.assign(0, 9, "a", "aa", sizeDelta));
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(0, 9, "a", "A", sizeDelta);
+        newNode = newNode.assign(0, 9, "a", "A", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(1, newNode.deepSize());
         assertEquals("A", newNode.get(0, 9, "a").getValueOrNull());
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(0, 9, "c", "cc", sizeDelta);
+        newNode = newNode.assign(0, 9, "c", "cc", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(2, newNode.deepSize());
@@ -175,7 +175,7 @@ public class HashInteriorNodeTest
         assertEquals("cc", newNode.get(0, 9, "c").getValueOrNull());
 
         sizeDelta = new MutableDelta();
-        newNode = newNode.set(0, 31, "x", "xx", sizeDelta);
+        newNode = newNode.assign(0, 31, "x", "xx", sizeDelta);
         assertEquals(true, newNode instanceof HashInteriorNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(3, newNode.deepSize());
@@ -189,10 +189,10 @@ public class HashInteriorNodeTest
         HashTrieNode<String, String> node = new HashInteriorNode<String, String>();
 
         MutableDelta sizeDelta = new MutableDelta();
-        node = node.set(5, 9, "a", "A", sizeDelta);
-        node = node.set(10, 9, "c", "cc", sizeDelta);
-        node = node.set(15, 31, "x", "xx", sizeDelta);
-        node = node.set(15, 30, "z", "zz", sizeDelta);
+        node = node.assign(5, 9, "a", "A", sizeDelta);
+        node = node.assign(10, 9, "c", "cc", sizeDelta);
+        node = node.assign(15, 31, "x", "xx", sizeDelta);
+        node = node.assign(15, 30, "z", "zz", sizeDelta);
         assertEquals(true, node instanceof HashInteriorNode);
         assertEquals(4, node.deepSize());
         assertEquals("A", node.get(5, 9, "a").getValueOrNull());
@@ -289,9 +289,9 @@ public class HashInteriorNodeTest
         HashTrieNode<String, String> node = new HashInteriorNode<String, String>();
 
         MutableDelta sizeDelta = new MutableDelta();
-        node = node.set(0, 9, "a", "A", sizeDelta);
-        node = node.set(0, 9, "c", "cc", sizeDelta);
-        node = node.set(0, 31, "x", "xx", sizeDelta);
+        node = node.assign(0, 9, "a", "A", sizeDelta);
+        node = node.assign(0, 9, "c", "cc", sizeDelta);
+        node = node.assign(0, 31, "x", "xx", sizeDelta);
         assertEquals(true, node instanceof HashInteriorNode);
         assertEquals(3, node.deepSize());
         assertEquals("A", node.get(0, 9, "a").getValueOrNull());
@@ -329,7 +329,7 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(0, 31, "x").getValueOrNull());
 
         // delete last node
-        node = new HashInteriorNode<String, String>().set(0, 9, "a", "A", sizeDelta);
+        node = new HashInteriorNode<String, String>().assign(0, 9, "a", "A", sizeDelta);
         sizeDelta = new MutableDelta();
         newNode = node.delete(0, 9, "a", sizeDelta);
         assertTrue(newNode instanceof HashEmptyNode);
@@ -345,10 +345,10 @@ public class HashInteriorNodeTest
         HashTrieNode<String, String> node = new HashInteriorNode<String, String>();
 
         MutableDelta sizeDelta = new MutableDelta();
-        node = node.set(0, 9, "a", "A", sizeDelta);
-        node = node.set(0, 31, "x", "xx", sizeDelta);
-        node = node.set(10, 9, "c", "cc", sizeDelta);
-        node = node.set(15, 31, "z", "zz", sizeDelta);
+        node = node.assign(0, 9, "a", "A", sizeDelta);
+        node = node.assign(0, 31, "x", "xx", sizeDelta);
+        node = node.assign(10, 9, "c", "cc", sizeDelta);
+        node = node.assign(15, 31, "z", "zz", sizeDelta);
         assertEquals(true, node instanceof HashInteriorNode);
         assertEquals(4, node.deepSize());
         assertEquals("A", node.get(0, 9, "a").getValueOrNull());

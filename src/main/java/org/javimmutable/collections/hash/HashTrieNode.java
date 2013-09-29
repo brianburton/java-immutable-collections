@@ -55,11 +55,11 @@ public interface HashTrieNode<K, V>
     HashTrieValue<K, V> getTrieValue(int branchIndex,
                                      int valueIndex);
 
-    HashTrieNode<K, V> set(int branchIndex,
-                           int valueIndex,
-                           K key,
-                           V value,
-                           MutableDelta sizeDelta);
+    HashTrieNode<K, V> assign(int branchIndex,
+                              int valueIndex,
+                              K key,
+                              V value,
+                              MutableDelta sizeDelta);
 
     HashTrieNode<K, V> delete(int branchIndex,
                               int valueIndex,

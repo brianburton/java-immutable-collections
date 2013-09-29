@@ -120,11 +120,11 @@ public class HashInteriorNode<K, V>
     }
 
     @Override
-    public HashTrieNode<K, V> set(int branchIndex,
-                                  int valueIndex,
-                                  K key,
-                                  V value,
-                                  MutableDelta sizeDelta)
+    public HashTrieNode<K, V> assign(int branchIndex,
+                                     int valueIndex,
+                                     K key,
+                                     V value,
+                                     MutableDelta sizeDelta)
     {
         final Bit32Array<HashTrieNode<K, V>> branches = this.branches;
         final Bit32Array<HashTrieValue<K, V>> values = this.values;
@@ -145,7 +145,7 @@ public class HashInteriorNode<K, V>
                 sizeDelta.add(1);
                 newChild = new HashQuickNode<K, V>(branchIndex >>> 5, valueIndex, new HashTrieSingleValue<K, V>(key, value));
             } else {
-                newChild = child.set(branchIndex >>> 5, valueIndex, key, value, sizeDelta);
+                newChild = child.assign(branchIndex >>> 5, valueIndex, key, value, sizeDelta);
             }
             return (newChild == child) ? this : new HashInteriorNode<K, V>(branches.assign(childIndex, newChild), values);
         }

@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.hash;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.MutableDelta;
-import junit.framework.TestCase;
 
 public class HashEmptyNodeTest
         extends TestCase
@@ -50,7 +50,7 @@ public class HashEmptyNodeTest
         assertEquals(null, node.getTrieValue(0, 0));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieNode<String, String> newNode = node.set(0, 1, "k", "kk", sizeDelta);
+        HashTrieNode<String, String> newNode = node.assign(0, 1, "k", "kk", sizeDelta);
         assertEquals(true, newNode instanceof HashQuickNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(Holders.of("kk"), newNode.get(0, 1, "k"));
