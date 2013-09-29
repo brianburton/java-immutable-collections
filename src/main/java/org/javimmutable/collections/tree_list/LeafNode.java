@@ -64,8 +64,8 @@ public class LeafNode<T>
     }
 
     @Override
-    public UpdateResult<T> addBefore(int index,
-                                     T value)
+    public UpdateResult<T> insertBefore(int index,
+                                        T value)
     {
         if (index != 0) {
             throw new ArrayIndexOutOfBoundsException();
@@ -75,8 +75,8 @@ public class LeafNode<T>
     }
 
     @Override
-    public UpdateResult<T> addAfter(int index,
-                                    T value)
+    public UpdateResult<T> insertAfter(int index,
+                                       T value)
     {
         if (index != 0) {
             throw new ArrayIndexOutOfBoundsException();

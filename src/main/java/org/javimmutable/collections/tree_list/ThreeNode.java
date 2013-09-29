@@ -89,40 +89,40 @@ public class ThreeNode<T>
     }
 
     @Override
-    public UpdateResult<T> addBefore(int index,
-                                     T value)
+    public UpdateResult<T> insertBefore(int index,
+                                        T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.addBefore(index, value);
+            UpdateResult<T> result = left.insertBefore(index, value);
             return leftUpdate(result);
         } else {
             index -= leftSize;
             if (index < middleSize) {
-                UpdateResult<T> result = middle.addBefore(index, value);
+                UpdateResult<T> result = middle.insertBefore(index, value);
                 return middleUpdate(result);
             } else {
                 index -= middleSize;
-                UpdateResult<T> result = right.addBefore(index, value);
+                UpdateResult<T> result = right.insertBefore(index, value);
                 return rightUpdate(result);
             }
         }
     }
 
     @Override
-    public UpdateResult<T> addAfter(int index,
-                                    T value)
+    public UpdateResult<T> insertAfter(int index,
+                                       T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.addAfter(index, value);
+            UpdateResult<T> result = left.insertAfter(index, value);
             return leftUpdate(result);
         } else {
             index -= leftSize;
             if (index < middleSize) {
-                UpdateResult<T> result = middle.addAfter(index, value);
+                UpdateResult<T> result = middle.insertAfter(index, value);
                 return middleUpdate(result);
             } else {
                 index -= middleSize;
-                UpdateResult<T> result = right.addAfter(index, value);
+                UpdateResult<T> result = right.insertAfter(index, value);
                 return rightUpdate(result);
             }
         }

@@ -77,27 +77,27 @@ public class TwoNode<T>
     }
 
     @Override
-    public UpdateResult<T> addBefore(int index,
-                                     T value)
+    public UpdateResult<T> insertBefore(int index,
+                                        T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.addBefore(index, value);
+            UpdateResult<T> result = left.insertBefore(index, value);
             return updateLeft(result);
         } else {
-            UpdateResult<T> result = right.addBefore(index - leftSize, value);
+            UpdateResult<T> result = right.insertBefore(index - leftSize, value);
             return updateRight(result);
         }
     }
 
     @Override
-    public UpdateResult<T> addAfter(int index,
-                                    T value)
+    public UpdateResult<T> insertAfter(int index,
+                                       T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.addAfter(index, value);
+            UpdateResult<T> result = left.insertAfter(index, value);
             return updateLeft(result);
         } else {
-            UpdateResult<T> result = right.addAfter(index - leftSize, value);
+            UpdateResult<T> result = right.insertAfter(index - leftSize, value);
             return updateRight(result);
         }
     }

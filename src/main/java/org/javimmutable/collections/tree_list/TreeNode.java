@@ -45,11 +45,11 @@ public abstract class TreeNode<T>
 
     public abstract int getSize();
 
-    public abstract UpdateResult<T> addBefore(int index,
-                                              T value);
+    public abstract UpdateResult<T> insertBefore(int index,
+                                                 T value);
 
-    public abstract UpdateResult<T> addAfter(int index,
-                                             T value);
+    public abstract UpdateResult<T> insertAfter(int index,
+                                                T value);
 
     public abstract UpdateResult<T> assign(int index,
                                            T value);

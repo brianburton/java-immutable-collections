@@ -85,7 +85,7 @@ public class PersistentTreeList<T>
             throw new IndexOutOfBoundsException();
         }
 
-        UpdateResult<T> result = root.addBefore(index, value);
+        UpdateResult<T> result = root.insertBefore(index, value);
         return update(result);
     }
 
@@ -152,7 +152,7 @@ public class PersistentTreeList<T>
         if (size == 0) {
             return create(new LeafNode<T>(value));
         } else {
-            UpdateResult<T> result = root.addAfter(size - 1, value);
+            UpdateResult<T> result = root.insertAfter(size - 1, value);
             return update(result);
         }
     }
