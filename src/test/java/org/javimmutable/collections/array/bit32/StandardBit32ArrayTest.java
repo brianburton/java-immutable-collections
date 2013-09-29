@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 public class StandardBit32ArrayTest
         extends TestCase
@@ -220,7 +220,7 @@ public class StandardBit32ArrayTest
             array = array.assign(i, i);
         }
         int index = 0;
-        Cursor<PersistentMap.Entry<Integer, Integer>> cursor = array.cursor();
+        Cursor<JImmutableMap.Entry<Integer, Integer>> cursor = array.cursor();
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             assertEquals(index, (int)cursor.getValue().getKey());
             assertEquals(index, (int)cursor.getValue().getValue());

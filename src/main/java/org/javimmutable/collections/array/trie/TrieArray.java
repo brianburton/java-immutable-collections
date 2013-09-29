@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.trie;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 
 public final class TrieArray<T>
@@ -84,7 +84,7 @@ public final class TrieArray<T>
         return LazyCursor.of(root);
     }
 
-    public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
+    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
     {
         return root.getNodeTypeCounts(map);
     }

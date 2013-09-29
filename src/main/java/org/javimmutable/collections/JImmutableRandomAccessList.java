@@ -35,36 +35,15 @@
 
 package org.javimmutable.collections;
 
-import java.util.List;
-
 /**
- * Interface for containers that store items in list form with individual items available
- * for get() and assign() using their indexes.  Items inserted into the list are always added at
- * the end of the list and indexes of items are always in the range 0 through size() - 1.
+ * Extension of PersistentList that allows insertion and deletion at arbitrary
+ * indexes within the list.
  *
  * @param <T>
  */
-public interface PersistentList<T>
-        extends Insertable<T>,
-                Indexed<T>,
-                Cursorable<T>,
-                Iterable<T>
+public interface JImmutableRandomAccessList<T>
+        extends JImmutableList<T>
 {
-    /**
-     * @return number of values in the list
-     */
-    int size();
-
-    /**
-     * Retrieves the value at the specified index (which must be within the bounds
-     * of the list).
-     *
-     * @param index
-     * @return
-     * @throws IndexOutOfBoundsException if index is out of bounds
-     */
-    T get(int index);
-
     /**
      * Replaces the value at the specified index (which must be within current
      * bounds of the list) with the new value.
@@ -74,8 +53,8 @@ public interface PersistentList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
-    PersistentList<T> assign(int index,
-                             T value);
+    JImmutableRandomAccessList<T> assign(int index,
+                                         T value);
 
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
@@ -83,7 +62,7 @@ public interface PersistentList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
-    PersistentList<T> deleteLast();
+    JImmutableRandomAccessList<T> deleteLast();
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -91,17 +70,27 @@ public interface PersistentList<T>
      * @param value
      * @return
      */
-    PersistentList<T> insert(T value);
+    JImmutableRandomAccessList<T> insert(T value);
 
     /**
-     * @return true only if list contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * Returns an unmodifiable List implementation backed by this list.
+     * Insert value at index (which must be within 0 to size).
+     * Shifts all values at and after index one position to the right and adds 1
+     * to size of the list.
      *
+     * @param index
+     * @param value
      * @return
      */
-    public List<T> getList();
+    JImmutableRandomAccessList<T> insert(int index,
+                                         T value);
+
+    /**
+     * Delete value at index (which must be within the current bounds of the list).
+     * Shifts all values at and after index one position to the left and subtracts 1
+     * from size of the list.
+     *
+     * @param index
+     * @return
+     */
+    JImmutableRandomAccessList<T> delete(int index);
 }

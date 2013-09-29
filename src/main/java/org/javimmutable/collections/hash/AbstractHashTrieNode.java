@@ -36,13 +36,13 @@
 package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 public abstract class AbstractHashTrieNode<K, V>
         implements HashTrieNode<K, V>
 {
     @Override
-    public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
+    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
     {
         Holder<Integer> current = map.find(getClass());
         if (current.isEmpty()) {

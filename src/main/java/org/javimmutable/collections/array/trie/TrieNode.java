@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.trie;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 public interface TrieNode<T>
         extends Cursorable<T>
@@ -60,5 +60,5 @@ public interface TrieNode<T>
 
     int deepSize();
 
-    PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map);
+    JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map);
 }

@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.PersistentList;
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.PersistentRandomAccessList;
-import org.javimmutable.collections.PersistentSet;
-import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 
 import java.io.BufferedReader;
@@ -65,13 +65,13 @@ public class RandomLoop
     {
         private int count;
 
-        private PersistentMap<String, String> createMap()
+        private JImmutableMap<String, String> createMap()
         {
             count += 1;
             if (count % 2 == 0) {
-                return Immutables.map();
+                return JImmutables.map();
             } else {
-                return Immutables.sortedMap();
+                return JImmutables.sortedMap();
             }
         }
     }
@@ -83,7 +83,7 @@ public class RandomLoop
         long seed = System.currentTimeMillis();
         System.out.printf("Starting with initial seed %d%n", seed);
         Random random = new Random(seed);
-        PersistentList<String> tokens = loadTokens(filenames);
+        JImmutableList<String> tokens = loadTokens(filenames);
         System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -103,7 +103,7 @@ public class RandomLoop
 
     private void testStack(Random random)
     {
-        PersistentStack<Integer> stack = Immutables.stack();
+        JImmutableStack<Integer> stack = JImmutables.stack();
         LinkedList<Integer> expected = new LinkedList<Integer>();
         int size = random.nextInt(1000);
         System.out.printf("Testing PersistentStack of size %d%n", size);
@@ -127,7 +127,7 @@ public class RandomLoop
 
     private void testList(Random random)
     {
-        PersistentList<Integer> list = Immutables.list();
+        JImmutableList<Integer> list = JImmutables.list();
         ArrayList<Integer> expected = new ArrayList<Integer>();
         int size = random.nextInt(10000);
         System.out.printf("Testing PersistentList of size %d%n", size);
@@ -158,7 +158,7 @@ public class RandomLoop
 
     private void testRandomAccessList(Random random)
     {
-        PersistentRandomAccessList<Integer> list = Immutables.ralist();
+        JImmutableRandomAccessList<Integer> list = JImmutables.ralist();
         ArrayList<Integer> expected = new ArrayList<Integer>();
         int size = random.nextInt(10000);
         System.out.printf("Testing PersistentRandomAccessList of size %d%n", size);
@@ -199,14 +199,14 @@ public class RandomLoop
         System.out.println("PersistentRandomAccessList test completed without errors");
     }
 
-    private void testSets(PersistentList<String> tokens,
+    private void testSets(JImmutableList<String> tokens,
                           Random random)
     {
-        PersistentSet<String> hset = Immutables.set();
-        PersistentSet<String> tset = Immutables.sortedSet();
+        JImmutableSet<String> hset = JImmutables.set();
+        JImmutableSet<String> tset = JImmutables.sortedSet();
         Set<String> expected = new HashSet<String>();
         int size = random.nextInt(100000);
-        PersistentRandomAccessList<String> values = Immutables.ralist();
+        JImmutableRandomAccessList<String> values = JImmutables.ralist();
 
         System.out.printf("Testing PersistentSet of size %d%n", size);
 
@@ -247,15 +247,15 @@ public class RandomLoop
     }
 
     private void testMaps(MapFactory factory,
-                          PersistentList<String> tokens,
+                          JImmutableList<String> tokens,
                           Random random)
             throws Exception
     {
         final int tokenCount = 1 + random.nextInt(100000);
         final List<String> keys = new ArrayList<String>();
         final Map<String, String> expected = new HashMap<String, String>();
-        PersistentMap<String, String> map = factory.createMap();
-        PersistentRandomAccessList<String> pkeys = Immutables.ralist();
+        JImmutableMap<String, String> map = factory.createMap();
+        JImmutableRandomAccessList<String> pkeys = JImmutables.ralist();
         System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
@@ -302,7 +302,7 @@ public class RandomLoop
     }
 
     private void verifyContents(List<Integer> expected,
-                                PersistentList<Integer> list)
+                                JImmutableList<Integer> list)
     {
         System.out.printf("checking contents with size %d%n", list.size());
         if (list.size() != expected.size()) {
@@ -327,7 +327,7 @@ public class RandomLoop
     }
 
     private void verifyContents(Set<String> expected,
-                                PersistentSet<String> set)
+                                JImmutableSet<String> set)
     {
         System.out.printf("checking contents with size %d%n", set.size());
         if (set.size() != expected.size()) {
@@ -346,13 +346,13 @@ public class RandomLoop
     }
 
     private void verifyContents(Map<String, String> expected,
-                                PersistentMap<String, String> map)
+                                JImmutableMap<String, String> map)
     {
         System.out.printf("checking contents with size %d%n", map.size());
         if (map.size() != expected.size()) {
             throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), map.size()));
         }
-        for (PersistentMap.Entry<String, String> entry : map) {
+        for (JImmutableMap.Entry<String, String> entry : map) {
             String mapValue = map.find(entry.getKey()).getValueOrNull();
             String expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
@@ -368,7 +368,7 @@ public class RandomLoop
         }
     }
 
-    private String makeKey(PersistentList<String> tokens,
+    private String makeKey(JImmutableList<String> tokens,
                            Random random)
     {
         int length = 1 + random.nextInt(250);
@@ -379,17 +379,17 @@ public class RandomLoop
         return sb.toString();
     }
 
-    private PersistentList<String> loadTokens(String[] filenames)
+    private JImmutableList<String> loadTokens(String[] filenames)
             throws IOException
     {
-        PersistentSet<String> tokens = Immutables.set();
+        JImmutableSet<String> tokens = JImmutables.set();
         for (String filename : filenames) {
             tokens = addTokensFromFile(tokens, filename);
         }
-        return Immutables.list(tokens);
+        return JImmutables.list(tokens);
     }
 
-    private PersistentSet<String> addTokensFromFile(PersistentSet<String> tokens,
+    private JImmutableSet<String> addTokensFromFile(JImmutableSet<String> tokens,
                                                     String filename)
             throws IOException
     {

@@ -37,8 +37,8 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.AbstractCollection;
@@ -56,14 +56,14 @@ import java.util.Set;
 public class MapAdaptor<K, V>
         extends AbstractMap<K, V>
 {
-    private final PersistentMap<K, V> map;
+    private final JImmutableMap<K, V> map;
 
-    public MapAdaptor(PersistentMap<K, V> map)
+    public MapAdaptor(JImmutableMap<K, V> map)
     {
         this.map = map;
     }
 
-    public static <K, V> MapAdaptor<K, V> of(PersistentMap<K, V> map)
+    public static <K, V> MapAdaptor<K, V> of(JImmutableMap<K, V> map)
     {
         return new MapAdaptor<K, V>(map);
     }
@@ -95,7 +95,7 @@ public class MapAdaptor<K, V>
     @Override
     public boolean containsValue(Object o)
     {
-        for (PersistentMap.Entry<K, V> entry : map) {
+        for (JImmutableMap.Entry<K, V> entry : map) {
             V value = entry.getValue();
             if (o == null) {
                 if (value == null) {
@@ -209,17 +209,17 @@ public class MapAdaptor<K, V>
                     return false;
                 }
                 Map.Entry<K, V> oEntry = (Entry<K, V>)o;
-                Holder<PersistentMap.Entry<K, V>> eHolder = map.findEntry(oEntry.getKey());
+                Holder<JImmutableMap.Entry<K, V>> eHolder = map.findEntry(oEntry.getKey());
                 return eHolder.isFilled() && new MapEntry(eHolder.getValue()).equals(oEntry);
             }
 
             @Override
             public Iterator<Entry<K, V>> iterator()
             {
-                return IteratorAdaptor.of(TransformCursor.of(map.cursor(), new Func1<PersistentMap.Entry<K, V>, Entry<K, V>>()
+                return IteratorAdaptor.of(TransformCursor.of(map.cursor(), new Func1<JImmutableMap.Entry<K, V>, Entry<K, V>>()
                 {
                     @Override
-                    public Entry<K, V> apply(PersistentMap.Entry<K, V> value)
+                    public Entry<K, V> apply(JImmutableMap.Entry<K, V> value)
                     {
                         return new MapEntry(value);
                     }

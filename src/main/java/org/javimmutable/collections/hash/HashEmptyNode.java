@@ -38,7 +38,7 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.EmptyCursor;
 
@@ -69,7 +69,7 @@ public class HashEmptyNode<K, V>
     }
 
     @Override
-    public PersistentMap.Entry<K, V> getEntry(int branchIndex,
+    public JImmutableMap.Entry<K, V> getEntry(int branchIndex,
                                               int valueIndex,
                                               K key)
     {

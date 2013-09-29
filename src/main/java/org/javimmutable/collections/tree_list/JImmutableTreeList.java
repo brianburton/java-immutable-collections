@@ -36,8 +36,8 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentList;
-import org.javimmutable.collections.PersistentRandomAccessList;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -55,22 +55,22 @@ import java.util.List;
  *
  * @param <T>
  */
-public class PersistentTreeList<T>
-        implements PersistentRandomAccessList<T>
+public class JImmutableTreeList<T>
+        implements JImmutableRandomAccessList<T>
 {
     @SuppressWarnings("unchecked")
-    private static final PersistentTreeList EMPTY = new PersistentTreeList(null, 0);
+    private static final JImmutableTreeList EMPTY = new JImmutableTreeList(null, 0);
 
     private final TreeNode<T> root;
     private final int size;
 
     @SuppressWarnings("unchecked")
-    public static <T> PersistentTreeList<T> of()
+    public static <T> JImmutableTreeList<T> of()
     {
-        return (PersistentTreeList<T>)EMPTY;
+        return (JImmutableTreeList<T>)EMPTY;
     }
 
-    private PersistentTreeList(TreeNode<T> root,
+    private JImmutableTreeList(TreeNode<T> root,
                                int size)
     {
         this.root = root;
@@ -78,7 +78,7 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> insert(int index,
+    public JImmutableTreeList<T> insert(int index,
                                         T value)
     {
         if (index < 0 || index > size) {
@@ -94,13 +94,13 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> deleteLast()
+    public JImmutableTreeList<T> deleteLast()
     {
         return delete(size - 1);
     }
 
     @Override
-    public PersistentTreeList<T> delete(int index)
+    public JImmutableTreeList<T> delete(int index)
     {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -127,7 +127,7 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> assign(int index,
+    public JImmutableTreeList<T> assign(int index,
                                         T value)
     {
         if (index < 0 || index >= size) {
@@ -151,7 +151,7 @@ public class PersistentTreeList<T>
     }
 
     @Override
-    public PersistentTreeList<T> insert(T value)
+    public JImmutableTreeList<T> insert(T value)
     {
         if (size == 0) {
             return create(new LeafNode<T>(value));
@@ -161,7 +161,7 @@ public class PersistentTreeList<T>
         }
     }
 
-    private PersistentTreeList<T> update(UpdateResult<T> result)
+    private JImmutableTreeList<T> update(UpdateResult<T> result)
     {
         switch (result.type) {
         case UNCHANGED:
@@ -188,7 +188,7 @@ public class PersistentTreeList<T>
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof PersistentList && Cursors.areEqual(cursor(), ((PersistentList)o).cursor());
+        return o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());
     }
 
     @Override
@@ -220,8 +220,8 @@ public class PersistentTreeList<T>
         }
     }
 
-    private PersistentTreeList<T> create(TreeNode<T> root)
+    private JImmutableTreeList<T> create(TreeNode<T> root)
     {
-        return new PersistentTreeList<T>(root, root.getSize());
+        return new JImmutableTreeList<T>(root, root.getSize());
     }
 }

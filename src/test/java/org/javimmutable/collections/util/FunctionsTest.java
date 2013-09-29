@@ -40,15 +40,15 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentList;
-import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableStack;
 
 public class FunctionsTest
         extends TestCase
 {
     public void testFoldLeft()
     {
-        PersistentStack<Integer> list = Immutables.stack(1, 2, 3);
+        JImmutableStack<Integer> list = JImmutables.stack(1, 2, 3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -62,7 +62,7 @@ public class FunctionsTest
 
     public void testFoldRight()
     {
-        PersistentStack<Integer> list = Immutables.stack(1, 2, 3);
+        JImmutableStack<Integer> list = JImmutables.stack(1, 2, 3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.cursor(), new Func2<Integer, Integer, Integer>()
         {
             @Override
@@ -76,9 +76,9 @@ public class FunctionsTest
 
     public void testCollectAll()
     {
-        PersistentList<Integer> expected = Immutables.list(2, 3, 4);
-        PersistentList<Integer> list = Immutables.list(1, 2, 3);
-        assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Integer>()
+        JImmutableList<Integer> expected = JImmutables.list(2, 3, 4);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Integer>()
         {
             @Override
             public Integer apply(Integer value)
@@ -90,9 +90,9 @@ public class FunctionsTest
 
     public void testCollectSome()
     {
-        PersistentList<Integer> expected = Immutables.list(2, 4);
-        PersistentList<Integer> list = Immutables.list(1, 2, 3);
-        assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), Immutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
+        JImmutableList<Integer> expected = JImmutables.list(2, 4);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
         {
             @Override
             public Holder<Integer> apply(Integer value)
@@ -117,10 +117,10 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list(1, 2, 3);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
         assertEquals(Holders.<Integer>of(2), Functions.find(list.cursor(), func));
 
-        list = Immutables.list(1, 5, 7);
+        list = JImmutables.list(1, 5, 7);
         assertEquals(Holders.<Integer>of(), Functions.find(list.cursor(), func));
     }
 
@@ -135,14 +135,14 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list(1, 2, 3);
-        PersistentList<Integer> expected = Immutables.list(1, 3);
-        assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list(1, 5, 7);
-        assertEquals(list, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list(2, 6, 12);
-        expected = Immutables.list();
-        assertEquals(expected, Functions.reject(list.cursor(), Immutables.<Integer>list(), func));
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        JImmutableList<Integer> expected = JImmutables.list(1, 3);
+        assertEquals(expected, Functions.reject(list.cursor(), JImmutables.<Integer>list(), func));
+        list = JImmutables.list(1, 5, 7);
+        assertEquals(list, Functions.reject(list.cursor(), JImmutables.<Integer>list(), func));
+        list = JImmutables.list(2, 6, 12);
+        expected = JImmutables.list();
+        assertEquals(expected, Functions.reject(list.cursor(), JImmutables.<Integer>list(), func));
     }
 
     public void testSelect()
@@ -156,13 +156,13 @@ public class FunctionsTest
             }
         };
 
-        PersistentList<Integer> list = Immutables.list(1, 2, 3);
-        PersistentList<Integer> expected = Immutables.list(2);
-        assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list(2, 6, 12);
-        assertEquals(list, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
-        list = Immutables.list(1, 5, 7);
-        expected = Immutables.list();
-        assertEquals(expected, Functions.select(list.cursor(), Immutables.<Integer>list(), func));
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        JImmutableList<Integer> expected = JImmutables.list(2);
+        assertEquals(expected, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
+        list = JImmutables.list(2, 6, 12);
+        assertEquals(list, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
+        list = JImmutables.list(1, 5, 7);
+        expected = JImmutables.list();
+        assertEquals(expected, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
     }
 }

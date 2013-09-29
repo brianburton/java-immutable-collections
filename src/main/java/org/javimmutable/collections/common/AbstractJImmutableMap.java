@@ -33,48 +33,64 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections;
+package org.javimmutable.collections.common;
 
-/**
- * Interface for objects that store values in LIFO form.  Elements are always added
- * at the front of the list so elements are traversed in reverse order.
- *
- * @param <T>
- */
-public interface PersistentStack<T>
-        extends Insertable<T>,
-                Sequence<T>,
-                Cursorable<T>,
-                Iterable<T>
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.cursors.TransformCursor;
+
+import java.util.Map;
+
+public abstract class AbstractJImmutableMap<K, V>
+        implements JImmutableMap<K, V>
 {
-    boolean isEmpty();
+    @Override
+    public Cursor<K> keysCursor()
+    {
+        return TransformCursor.ofKeys(cursor());
+    }
 
-    /**
-     * Accesses the first value in the List.
-     *
-     * @return
-     */
-    T getHead();
+    @Override
+    public Cursor<V> valuesCursor()
+    {
+        return TransformCursor.ofValues(cursor());
+    }
 
-    /**
-     * Accesses the rest of the List (i.e. the entry after the head entry).
-     *
-     * @return
-     */
-    PersistentStack<T> getTail();
+    @Override
+    public int hashCode()
+    {
+        return getMap().hashCode();
+    }
 
-    /**
-     * Returns a new list containing the value before the element returned by getHead().
-     *
-     * @param value
-     * @return
-     */
-    PersistentStack<T> insert(T value);
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) {
+            return true;
+        } else if (o instanceof JImmutableMap) {
+            return getMap().equals(((JImmutableMap)o).getMap());
+        } else {
+            return (o instanceof Map) && getMap().equals(o);
+        }
+    }
 
-    /**
-     * Returns a list without the element returned by getHead().
-     *
-     * @return
-     */
-    PersistentStack<T> remove();
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+            if (sb.length() > 1) {
+                sb.append(",");
+            }
+            JImmutableMap.Entry<K, V> entry = cursor.getValue();
+            sb.append("(");
+            sb.append(entry.getKey());
+            sb.append(" -> ");
+            sb.append(entry.getValue());
+            sb.append(")");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

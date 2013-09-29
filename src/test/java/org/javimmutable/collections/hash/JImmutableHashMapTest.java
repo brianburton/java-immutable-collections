@@ -37,7 +37,7 @@ package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,12 +45,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class PersistentHashMapTest
+public class JImmutableHashMapTest
         extends TestCase
 {
     public void test()
     {
-        PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
+        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
         map = map.assign(10, 20);
@@ -64,7 +64,7 @@ public class PersistentHashMapTest
 
     public void testValueIdentity()
     {
-        PersistentHashMap<Integer, String> map = PersistentHashMap.of();
+        JImmutableHashMap<Integer, String> map = JImmutableHashMap.of();
         map = map.assign(10, "ab");
         assertSame(map, map.assign(10, "ab"));
         for (int i = 100; i <= 15000; ++i) {
@@ -76,7 +76,7 @@ public class PersistentHashMapTest
 
     public void testNullKeys()
     {
-        PersistentMap<Integer, Integer> map = PersistentHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
         map = map.assign(1, 3);
         try {
             map.assign(null, 18);
@@ -111,7 +111,7 @@ public class PersistentHashMapTest
         Random random = new Random(100);
         for (int loop = 0; loop < 1000; ++loop) {
             Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
-            PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
+            JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(4);
@@ -149,7 +149,7 @@ public class PersistentHashMapTest
 
             // verify the cursor worked properly
             Map<Integer, Integer> fromCursor = new HashMap<Integer, Integer>();
-            for (PersistentMap.Entry<Integer, Integer> entry : map) {
+            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
                 fromCursor.put(entry.getKey(), entry.getValue());
             }
             assertEquals(expected, fromCursor);
@@ -167,8 +167,8 @@ public class PersistentHashMapTest
 
     public void testEquals()
     {
-        PersistentMap<Integer, Integer> map1 = PersistentHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
-        PersistentMap<Integer, Integer> map2 = PersistentHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
+        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
+        JImmutableMap<Integer, Integer> map2 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }

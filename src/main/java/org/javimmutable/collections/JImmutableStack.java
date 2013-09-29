@@ -33,38 +33,48 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections;
 
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.PersistentSet;
-import org.javimmutable.collections.common.AbstractPersistentSet;
-
-public class PersistentHashSet<T>
-        extends AbstractPersistentSet<T>
+/**
+ * Interface for objects that store values in LIFO form.  Elements are always added
+ * at the front of the list so elements are traversed in reverse order.
+ *
+ * @param <T>
+ */
+public interface JImmutableStack<T>
+        extends Insertable<T>,
+                Sequence<T>,
+                Cursorable<T>,
+                Iterable<T>
 {
-    @SuppressWarnings("unchecked")
-    private static final PersistentHashSet EMPTY = new PersistentHashSet(PersistentHashMap.of());
+    boolean isEmpty();
 
-    public PersistentHashSet(PersistentMap<T, Boolean> map)
-    {
-        super(map);
-    }
+    /**
+     * Accesses the first value in the List.
+     *
+     * @return
+     */
+    T getHead();
 
-    @SuppressWarnings("unchecked")
-    public static <T> PersistentHashSet<T> of()
-    {
-        return (PersistentHashSet<T>)EMPTY;
-    }
+    /**
+     * Accesses the rest of the List (i.e. the entry after the head entry).
+     *
+     * @return
+     */
+    JImmutableStack<T> getTail();
 
-    @Override
-    protected PersistentSet<T> create(PersistentMap<T, Boolean> map)
-    {
-        return new PersistentHashSet<T>(map);
-    }
+    /**
+     * Returns a new list containing the value before the element returned by getHead().
+     *
+     * @param value
+     * @return
+     */
+    JImmutableStack<T> insert(T value);
 
-    @Override
-    protected PersistentMap<T, Boolean> emptyMap()
-    {
-        return new PersistentHashMap<T, Boolean>();
-    }
+    /**
+     * Returns a list without the element returned by getHead().
+     *
+     * @return
+     */
+    JImmutableStack<T> remove();
 }

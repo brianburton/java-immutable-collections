@@ -38,7 +38,7 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ import java.util.Comparator;
 
 public class LeafNode<K, V>
         extends TreeNode<K, V>
-        implements PersistentMap.Entry<K, V>,
+        implements JImmutableMap.Entry<K, V>,
                    Holder<V>
 {
     private final K nodeKey;
@@ -97,10 +97,10 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> props,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                        K searchKey)
     {
-        return props.compare(searchKey, nodeKey) == 0 ? Holders.<PersistentMap.Entry<K, V>>of(this) : Holders.<PersistentMap.Entry<K, V>>of();
+        return props.compare(searchKey, nodeKey) == 0 ? Holders.<JImmutableMap.Entry<K, V>>of(this) : Holders.<JImmutableMap.Entry<K, V>>of();
     }
 
     @Override
@@ -129,7 +129,7 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public void addEntriesTo(Collection<PersistentMap.Entry<K, V>> collection)
+    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
     {
         collection.add(this);
     }
@@ -178,8 +178,8 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<K, V>> cursor()
+    public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return SingleValueCursor.<PersistentMap.Entry<K, V>>of(this);
+        return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
     }
 }

@@ -38,12 +38,12 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
 public class SingleBit32Array<T>
         extends Bit32Array<T>
-        implements PersistentMap.Entry<Integer, T>,
+        implements JImmutableMap.Entry<Integer, T>,
                    Holder<T>
 {
     private final int index;
@@ -131,8 +131,8 @@ public class SingleBit32Array<T>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<Integer, T>> cursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return SingleValueCursor.<PersistentMap.Entry<Integer, T>>of(this);
+        return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(this);
     }
 }

@@ -38,7 +38,7 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyCursor;
@@ -99,7 +99,7 @@ public class HashInteriorNode<K, V>
     }
 
     @Override
-    public PersistentMap.Entry<K, V> getEntry(int branchIndex,
+    public JImmutableMap.Entry<K, V> getEntry(int branchIndex,
                                               int valueIndex,
                                               K key)
     {
@@ -209,20 +209,20 @@ public class HashInteriorNode<K, V>
     public int deepSize()
     {
         int total = 0;
-        for (PersistentMap.Entry<Integer, HashTrieNode<K, V>> branch : branches) {
+        for (JImmutableMap.Entry<Integer, HashTrieNode<K, V>> branch : branches) {
             total += branch.getValue().deepSize();
         }
-        for (PersistentMap.Entry<Integer, HashTrieValue<K, V>> value : values) {
+        for (JImmutableMap.Entry<Integer, HashTrieValue<K, V>> value : values) {
             total += value.getValue().size();
         }
         return total;
     }
 
     @Override
-    public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
+    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
     {
         map = super.getNodeTypeCounts(map);
-        for (PersistentMap.Entry<Integer, HashTrieNode<K, V>> branch : branches) {
+        for (JImmutableMap.Entry<Integer, HashTrieNode<K, V>> branch : branches) {
             map = branch.getValue().getNodeTypeCounts(map);
         }
         return map;

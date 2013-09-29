@@ -37,7 +37,7 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,12 +48,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-public class PersistentTreeMapTest
+public class JImmutableTreeMapTest
         extends TestCase
 {
     public void testInsert()
     {
-        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         assertEquals(0, map.size());
         assertEquals(Collections.<Integer>emptyList(), map.getKeysList());
         map = add(map, 5);
@@ -66,7 +66,7 @@ public class PersistentTreeMapTest
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
 
-        map = PersistentTreeMap.of();
+        map = JImmutableTreeMap.of();
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.getMap().values()));
@@ -74,7 +74,7 @@ public class PersistentTreeMapTest
 
     public void testNullKeys()
     {
-        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         map = map.assign(1, 3);
         try {
             map.assign(null, 18);
@@ -105,7 +105,7 @@ public class PersistentTreeMapTest
 
     public void testValueIdentity()
     {
-        PersistentTreeMap<String, String> map = PersistentTreeMap.of();
+        JImmutableTreeMap<String, String> map = JImmutableTreeMap.of();
         map = map.assign("a", "A");
         assertSame(map, map.assign("a", "A"));
         assertFalse(map == map.assign("a", "AA"));
@@ -116,7 +116,7 @@ public class PersistentTreeMapTest
         Random random = new Random();
         for (int loop = 0; loop < 20; ++loop) {
             Set<Integer> expected = new TreeSet<Integer>();
-            PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+            JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 Integer value = random.nextInt(100000);
@@ -128,7 +128,7 @@ public class PersistentTreeMapTest
             assertEquals(expected, map.getMap().keySet());
 
             // test value identity at all levels
-            for (PersistentMap.Entry<Integer, Integer> entry : map) {
+            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
                 assertSame(map, map.assign(entry.getKey(), entry.getValue()));
             }
 
@@ -148,7 +148,7 @@ public class PersistentTreeMapTest
         Random random = new Random();
         for (int loop = 0; loop < 10; ++loop) {
             Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
-            PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+            JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(4);
                 if (command <= 1) {
@@ -176,7 +176,7 @@ public class PersistentTreeMapTest
         }
     }
 
-    private PersistentTreeMap<Integer, Integer> add(PersistentTreeMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> add(JImmutableTreeMap<Integer, Integer> map,
                                                     Integer value)
     {
         map = map.assign(value, value);
@@ -186,7 +186,7 @@ public class PersistentTreeMapTest
         return map;
     }
 
-    private PersistentTreeMap<Integer, Integer> add(PersistentTreeMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> add(JImmutableTreeMap<Integer, Integer> map,
                                                     Integer key,
                                                     Integer value)
     {
@@ -197,7 +197,7 @@ public class PersistentTreeMapTest
         return map;
     }
 
-    private PersistentTreeMap<Integer, Integer> remove(PersistentTreeMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> remove(JImmutableTreeMap<Integer, Integer> map,
                                                        Integer value)
     {
         map = map.delete(value);

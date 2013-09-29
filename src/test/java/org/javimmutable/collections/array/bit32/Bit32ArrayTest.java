@@ -37,7 +37,7 @@ package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class Bit32ArrayTest
                 assertEquals(Holders.fromNullable(expected.get(index)), array.get(index));
             }
             int count = 0;
-            for (PersistentMap.Entry<Integer, Integer> entry : array) {
+            for (JImmutableMap.Entry<Integer, Integer> entry : array) {
                 assertEquals(expected.get(entry.getKey()), entry.getValue());
                 count += 1;
             }

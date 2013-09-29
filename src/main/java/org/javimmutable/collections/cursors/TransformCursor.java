@@ -37,7 +37,7 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 /**
  * A Cursor that visits all values in another Cursor and transforms each value
@@ -62,24 +62,24 @@ public class TransformCursor<S, T>
         return new TransformCursor<S, T>(cursor, transforminator);
     }
 
-    public static <K, V> Cursor<K> ofKeys(Cursor<PersistentMap.Entry<K, V>> cursor)
+    public static <K, V> Cursor<K> ofKeys(Cursor<JImmutableMap.Entry<K, V>> cursor)
     {
-        return new TransformCursor<PersistentMap.Entry<K, V>, K>(cursor, new Func1<PersistentMap.Entry<K, V>, K>()
+        return new TransformCursor<JImmutableMap.Entry<K, V>, K>(cursor, new Func1<JImmutableMap.Entry<K, V>, K>()
         {
             @Override
-            public K apply(PersistentMap.Entry<K, V> entry)
+            public K apply(JImmutableMap.Entry<K, V> entry)
             {
                 return entry.getKey();
             }
         });
     }
 
-    public static <K, V> Cursor<V> ofValues(Cursor<PersistentMap.Entry<K, V>> cursor)
+    public static <K, V> Cursor<V> ofValues(Cursor<JImmutableMap.Entry<K, V>> cursor)
     {
-        return new TransformCursor<PersistentMap.Entry<K, V>, V>(cursor, new Func1<PersistentMap.Entry<K, V>, V>()
+        return new TransformCursor<JImmutableMap.Entry<K, V>, V>(cursor, new Func1<JImmutableMap.Entry<K, V>, V>()
         {
             @Override
-            public V apply(PersistentMap.Entry<K, V> entry)
+            public V apply(JImmutableMap.Entry<K, V> entry)
             {
                 return entry.getValue();
             }

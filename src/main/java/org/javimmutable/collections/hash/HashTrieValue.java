@@ -37,15 +37,15 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
 public interface HashTrieValue<K, V>
-        extends Cursorable<PersistentMap.Entry<K, V>>
+        extends Cursorable<JImmutableMap.Entry<K, V>>
 {
     Holder<V> getValueForKey(K key);
 
-    PersistentMap.Entry<K, V> getEntryForKey(K key);
+    JImmutableMap.Entry<K, V> getEntryForKey(K key);
 
     HashTrieValue<K, V> setValueForKey(K key,
                                        V value,

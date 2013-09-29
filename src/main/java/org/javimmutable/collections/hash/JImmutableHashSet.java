@@ -33,64 +33,38 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.cursors.TransformCursor;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.AbstractJImmutableSet;
 
-import java.util.Map;
-
-public abstract class AbstractPersistentMap<K, V>
-        implements PersistentMap<K, V>
+public class JImmutableHashSet<T>
+        extends AbstractJImmutableSet<T>
 {
-    @Override
-    public Cursor<K> keysCursor()
+    @SuppressWarnings("unchecked")
+    private static final JImmutableHashSet EMPTY = new JImmutableHashSet(JImmutableHashMap.of());
+
+    public JImmutableHashSet(JImmutableMap<T, Boolean> map)
     {
-        return TransformCursor.ofKeys(cursor());
+        super(map);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> JImmutableHashSet<T> of()
+    {
+        return (JImmutableHashSet<T>)EMPTY;
     }
 
     @Override
-    public Cursor<V> valuesCursor()
+    protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return TransformCursor.ofValues(cursor());
+        return new JImmutableHashSet<T>(map);
     }
 
     @Override
-    public int hashCode()
+    protected JImmutableMap<T, Boolean> emptyMap()
     {
-        return getMap().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) {
-            return true;
-        } else if (o instanceof PersistentMap) {
-            return getMap().equals(((PersistentMap)o).getMap());
-        } else {
-            return (o instanceof Map) && getMap().equals(o);
-        }
-    }
-
-    @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
-            if (sb.length() > 1) {
-                sb.append(",");
-            }
-            PersistentMap.Entry<K, V> entry = cursor.getValue();
-            sb.append("(");
-            sb.append(entry.getKey());
-            sb.append(" -> ");
-            sb.append(entry.getValue());
-            sb.append(")");
-        }
-        sb.append("]");
-        return sb.toString();
+        return new JImmutableHashMap<T, Boolean>();
     }
 }

@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.common.AbstractPersistentMap;
+import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.cursors.EmptyCursor;
@@ -51,42 +51,42 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class PersistentTreeMap<K, V>
-        extends AbstractPersistentMap<K, V>
+public class JImmutableTreeMap<K, V>
+        extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    private static final PersistentTreeMap EMPTY = new PersistentTreeMap(new ComparableComparator());
+    private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(new ComparableComparator());
 
     private final Comparator<K> properties;
     private final TreeNode<K, V> root;
     private final int size;
 
-    public PersistentTreeMap(Comparator<K> comparator)
+    public JImmutableTreeMap(Comparator<K> comparator)
     {
         this(comparator, null, 0);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> PersistentTreeMap<K, V> of()
+    public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of()
     {
-        return (PersistentTreeMap<K, V>)EMPTY;
+        return (JImmutableTreeMap<K, V>)EMPTY;
     }
 
-    public static <K, V> PersistentTreeMap<K, V> of(Comparator<K> comparator)
+    public static <K, V> JImmutableTreeMap<K, V> of(Comparator<K> comparator)
     {
-        return new PersistentTreeMap<K, V>(comparator);
+        return new JImmutableTreeMap<K, V>(comparator);
     }
 
-    public static <K extends Comparable<K>, V> PersistentTreeMap<K, V> of(Map<K, V> map)
+    public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
     {
-        PersistentTreeMap<K, V> answer = of();
+        JImmutableTreeMap<K, V> answer = of();
         for (Map.Entry<K, V> entry : map.entrySet()) {
             answer = answer.assign(entry.getKey(), entry.getValue());
         }
         return answer;
     }
 
-    private PersistentTreeMap(Comparator<K> properties,
+    private JImmutableTreeMap(Comparator<K> properties,
                               TreeNode<K, V> root,
                               int size)
     {
@@ -128,7 +128,7 @@ public class PersistentTreeMap<K, V>
     }
 
     @Override
-    public PersistentTreeMap<K, V> assign(K key,
+    public JImmutableTreeMap<K, V> assign(K key,
                                           V value)
     {
         if (key == null) {
@@ -157,7 +157,7 @@ public class PersistentTreeMap<K, V>
     }
 
     @Override
-    public PersistentTreeMap<K, V> delete(K key)
+    public JImmutableTreeMap<K, V> delete(K key)
     {
         if (key == null) {
             throw new NullPointerException();
@@ -228,9 +228,9 @@ public class PersistentTreeMap<K, V>
         }
     }
 
-    private PersistentTreeMap<K, V> create(TreeNode<K, V> root,
+    private JImmutableTreeMap<K, V> create(TreeNode<K, V> root,
                                            int sizeDelta)
     {
-        return new PersistentTreeMap<K, V>(properties, root, size + sizeDelta);
+        return new JImmutableTreeMap<K, V>(properties, root, size + sizeDelta);
     }
 }

@@ -45,7 +45,7 @@ import java.util.Map;
  * @param <V>
  */
 public class MapEntry<K, V>
-        implements PersistentMap.Entry<K, V>,
+        implements JImmutableMap.Entry<K, V>,
                    Map.Entry<K, V>
 {
     private final K key;
@@ -56,7 +56,7 @@ public class MapEntry<K, V>
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(PersistentMap.Entry<K, V> entry)
+    public MapEntry(JImmutableMap.Entry<K, V> entry)
     {
         this(entry.getKey(), entry.getValue());
     }
@@ -73,7 +73,7 @@ public class MapEntry<K, V>
         return new MapEntry<K, V>(entry);
     }
 
-    public static <K, V> MapEntry<K, V> of(PersistentMap.Entry<K, V> entry)
+    public static <K, V> MapEntry<K, V> of(JImmutableMap.Entry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }

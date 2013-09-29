@@ -42,12 +42,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class PersistentArrayListTest
+public class JImmutableArrayListTest
         extends TestCase
 {
     public void test()
     {
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
@@ -64,7 +64,7 @@ public class PersistentArrayListTest
 
     public void testDeleteLast()
     {
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insert(index);
             assertEquals(index + 1, list.size());
@@ -90,7 +90,7 @@ public class PersistentArrayListTest
         Random random = new Random(100);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(4000);
-            PersistentArrayList<Integer> list = PersistentArrayList.of();
+            JImmutableArrayList<Integer> list = JImmutableArrayList.of();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);

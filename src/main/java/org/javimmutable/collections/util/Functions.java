@@ -41,8 +41,8 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -100,7 +100,7 @@ public class Functions
      */
     public static <T> Cursor<T> reverse(Cursor<T> cursor)
     {
-        return insertAll(PersistentLinkedStack.<T>of(), cursor).cursor();
+        return insertAll(JImmutableLinkedStack.<T>of(), cursor).cursor();
     }
 
     /**
@@ -259,16 +259,16 @@ public class Functions
         return addable;
     }
 
-    public static <K, V> PersistentMap<K, V> assignAll(PersistentMap<K, V> dest,
-                                                       PersistentMap<K, V> src)
+    public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,
+                                                       JImmutableMap<K, V> src)
     {
-        for (PersistentMap.Entry<K, V> entry : src) {
+        for (JImmutableMap.Entry<K, V> entry : src) {
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }
 
-    public static <K, V> PersistentMap<K, V> assignAll(PersistentMap<K, V> dest,
+    public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,
                                                        Map<K, V> src)
     {
         for (Map.Entry<K, V> entry : src.entrySet()) {

@@ -48,7 +48,7 @@ public class TimingLoop
         int removes = 0;
         int gets = 0;
         long startPer = System.currentTimeMillis();
-        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= 25 * maxKey; ++i) {
             int command = random.nextInt(8);
             if (command <= 1) {

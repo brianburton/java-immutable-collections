@@ -38,18 +38,18 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class HashTrieMultiValue<K, V>
         implements HashTrieValue<K, V>
 {
-    private final PersistentLinkedStack<HashTrieSingleValue<K, V>> values;
+    private final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values;
 
-    public HashTrieMultiValue(PersistentLinkedStack<HashTrieSingleValue<K, V>> values)
+    public HashTrieMultiValue(JImmutableLinkedStack<HashTrieSingleValue<K, V>> values)
     {
         this.values = values;
     }
@@ -57,8 +57,8 @@ public class HashTrieMultiValue<K, V>
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return Holders.of(list.getHead().getValue());
             }
@@ -67,10 +67,10 @@ public class HashTrieMultiValue<K, V>
     }
 
     @Override
-    public PersistentMap.Entry<K, V> getEntryForKey(K key)
+    public JImmutableMap.Entry<K, V> getEntryForKey(K key)
     {
-        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return list.getHead();
             }
@@ -83,10 +83,10 @@ public class HashTrieMultiValue<K, V>
                                               V value,
                                               MutableDelta sizeDelta)
     {
-        final PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        PersistentLinkedStack<HashTrieSingleValue<K, V>> newList = PersistentLinkedStack.of();
+        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        JImmutableLinkedStack<HashTrieSingleValue<K, V>> newList = JImmutableLinkedStack.of();
         boolean found = false;
-        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             final HashTrieSingleValue<K, V> head = list.getHead();
             if (head.getKey().equals(key)) {
                 if (head.getValue() == value) {
@@ -109,8 +109,8 @@ public class HashTrieMultiValue<K, V>
                                                  MutableDelta sizeDelta)
     {
         boolean found = false;
-        PersistentLinkedStack<HashTrieSingleValue<K, V>> newList = PersistentLinkedStack.of();
-        for (PersistentLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        JImmutableLinkedStack<HashTrieSingleValue<K, V>> newList = JImmutableLinkedStack.of();
+        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
             final HashTrieSingleValue<K, V> entry = list.getHead();
             if (entry.getKey().equals(key)) {
                 found = true;
@@ -136,7 +136,7 @@ public class HashTrieMultiValue<K, V>
     public int size()
     {
         int total = 0;
-        PersistentLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
+        JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
         while (!values.isEmpty()) {
             total += 1;
             values = values.getTail();
@@ -145,7 +145,7 @@ public class HashTrieMultiValue<K, V>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<K, V>> cursor()
+    public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return MultiTransformCursor.of(LazyCursor.of(values), HashTrieValueToEntryCursorFunc.<K, V>of());
     }

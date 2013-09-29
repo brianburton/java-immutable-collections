@@ -42,12 +42,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class PersistentTreeListTest
+public class JImmutableTreeListTest
         extends TestCase
 {
     public void test()
     {
-        PersistentTreeList<Integer> list = PersistentTreeList.of();
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
@@ -84,7 +84,7 @@ public class PersistentTreeListTest
 
     public void testDeleteLast()
     {
-        PersistentTreeList<Integer> list = PersistentTreeList.of();
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insert(index);
             assertEquals(index + 1, list.size());
@@ -107,7 +107,7 @@ public class PersistentTreeListTest
 
     public void testInsert()
     {
-        PersistentTreeList<Integer> list = PersistentTreeList.of();
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
         List<Integer> expected = new ArrayList<Integer>();
         list = list.insert(0);
         expected.add(0);
@@ -128,7 +128,7 @@ public class PersistentTreeListTest
 
     public void testInsertAtSize()
     {
-        PersistentTreeList<Integer> list = PersistentTreeList.of();
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
         List<Integer> expected = new ArrayList<Integer>();
         for (int i = 1; i <= 1000; ++i) {
             list = list.insert(list.size(), i);
@@ -143,7 +143,7 @@ public class PersistentTreeListTest
         Random random = new Random(100);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(500);
-            PersistentTreeList<Integer> list = PersistentTreeList.of();
+            JImmutableTreeList<Integer> list = JImmutableTreeList.of();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
@@ -182,7 +182,7 @@ public class PersistentTreeListTest
         Random random = new Random(100);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(3000);
-            PersistentTreeList<Integer> list = PersistentTreeList.of();
+            JImmutableTreeList<Integer> list = JImmutableTreeList.of();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);

@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
@@ -181,17 +181,17 @@ public final class StandardTrieNode<T>
     public int deepSize()
     {
         int total = values.size();
-        for (PersistentMap.Entry<Integer, TrieNode<T>> branch : branches) {
+        for (JImmutableMap.Entry<Integer, TrieNode<T>> branch : branches) {
             total += branch.getValue().deepSize();
         }
         return total;
     }
 
     @Override
-    public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
+    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
     {
         map = super.getNodeTypeCounts(map);
-        for (PersistentMap.Entry<Integer, TrieNode<T>> branch : branches) {
+        for (JImmutableMap.Entry<Integer, TrieNode<T>> branch : branches) {
             map = branch.getValue().getNodeTypeCounts(map);
         }
         return map;

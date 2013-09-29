@@ -88,7 +88,7 @@ public class LowMemTimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {

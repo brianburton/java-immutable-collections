@@ -37,7 +37,7 @@ package org.javimmutable.collections;
 
 import java.util.Set;
 
-public interface PersistentSet<T>
+public interface JImmutableSet<T>
         extends Insertable<T>,
                 Cursorable<T>,
                 Iterable<T>
@@ -48,7 +48,7 @@ public interface PersistentSet<T>
      * @param value
      * @return instance of set containing the value
      */
-    PersistentSet<T> insert(T value);
+    JImmutableSet<T> insert(T value);
 
     /**
      * Determines if the Set contains the specified value.
@@ -80,7 +80,7 @@ public interface PersistentSet<T>
      * @param value
      * @return instance of set without the value
      */
-    PersistentSet<T> delete(T value);
+    JImmutableSet<T> delete(T value);
 
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
@@ -88,7 +88,7 @@ public interface PersistentSet<T>
      * @param other
      * @return instance of set without the values
      */
-    PersistentSet<T> deleteAll(Cursorable<T> other);
+    JImmutableSet<T> deleteAll(Cursorable<T> other);
 
     /**
      * Adds all values from other to the Set.
@@ -96,7 +96,7 @@ public interface PersistentSet<T>
      * @param other source of values to add
      * @return instance of set containing the values
      */
-    PersistentSet<T> union(Cursorable<T> other);
+    JImmutableSet<T> union(Cursorable<T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -104,7 +104,7 @@ public interface PersistentSet<T>
      * @param other
      * @return instance of set with unmatched values removed
      */
-    PersistentSet<T> intersection(Cursorable<T> other);
+    JImmutableSet<T> intersection(Cursorable<T> other);
 
     /**
      * Determines the number of values in the Set.

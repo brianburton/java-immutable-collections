@@ -38,18 +38,18 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.Collection;
 import java.util.Comparator;
 
 public abstract class TreeNode<K, V>
-        implements Cursorable<PersistentMap.Entry<K, V>>
+        implements Cursorable<JImmutableMap.Entry<K, V>>
 {
     public abstract Holder<V> find(Comparator<K> props,
                                    K key);
 
-    public abstract Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> props,
+    public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                                 K key);
 
     public abstract K getMaxKey();
@@ -58,7 +58,7 @@ public abstract class TreeNode<K, V>
                                               K key,
                                               V value);
 
-    public abstract void addEntriesTo(Collection<PersistentMap.Entry<K, V>> collection);
+    public abstract void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
 
     public abstract int verifyDepthsMatch();
 
@@ -71,5 +71,5 @@ public abstract class TreeNode<K, V>
     public abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
                                                              TreeNode<K, V> node);
 
-    public abstract Cursor<PersistentMap.Entry<K, V>> cursor();
+    public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
 }

@@ -38,15 +38,15 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class HashTrieSingleValue<K, V>
         implements HashTrieValue<K, V>,
                    Holder<V>,
-                   PersistentMap.Entry<K, V>
+                   JImmutableMap.Entry<K, V>
 {
     private final K key;
     private final V value;
@@ -65,7 +65,7 @@ public class HashTrieSingleValue<K, V>
     }
 
     @Override
-    public PersistentMap.Entry<K, V> getEntryForKey(K key)
+    public JImmutableMap.Entry<K, V> getEntryForKey(K key)
     {
         return key.equals(this.key) ? this : null;
     }
@@ -79,7 +79,7 @@ public class HashTrieSingleValue<K, V>
             return (this.value == value) ? this : new HashTrieSingleValue<K, V>(key, value);
         } else {
             sizeDelta.add(1);
-            PersistentLinkedStack<HashTrieSingleValue<K, V>> values = PersistentLinkedStack.of();
+            JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = JImmutableLinkedStack.of();
             return new HashTrieMultiValue<K, V>(values.insert(this).insert(new HashTrieSingleValue<K, V>(key, value)));
         }
     }
@@ -139,9 +139,9 @@ public class HashTrieSingleValue<K, V>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<K, V>> cursor()
+    public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return SingleValueCursor.<PersistentMap.Entry<K, V>>of(this);
+        return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
     }
 
     @Override

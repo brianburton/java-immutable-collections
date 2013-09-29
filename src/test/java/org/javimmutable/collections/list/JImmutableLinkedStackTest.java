@@ -33,54 +33,44 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.PersistentSet;
-import org.javimmutable.collections.common.AbstractPersistentSet;
+import junit.framework.TestCase;
 
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Collections;
 
-public class PersistentTreeSet<T>
-        extends AbstractPersistentSet<T>
+public class JImmutableLinkedStackTest
+        extends TestCase
 {
-    @SuppressWarnings("unchecked")
-    private static final PersistentTreeSet EMPTY = new PersistentTreeSet(new ComparableComparator());
-
-    private final Comparator<T> comparator;
-
-    public PersistentTreeSet(Comparator<T> comparator)
+    public void test()
     {
-        this(PersistentTreeMap.<T, Boolean>of(comparator), comparator);
-    }
+        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of();
+        assertEquals(true, list.isEmpty());
+        try {
+            list.getHead();
+            fail();
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+        assertSame(list, list.getTail());
 
-    private PersistentTreeSet(PersistentMap<T, Boolean> map,
-                              Comparator<T> comparator)
-    {
-        super(map);
-        this.comparator = comparator;
-    }
+        JImmutableLinkedStack<Integer> list2 = list.insert(10);
+        assertEquals(false, list2.isEmpty());
+        assertEquals(10, (int)list2.getHead());
+        assertEquals(list, list2.getTail());
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> PersistentTreeSet<T> of()
-    {
-        return (PersistentTreeSet<T>)EMPTY;
-    }
+        JImmutableLinkedStack<Integer> list3 = list2.insert(30);
+        assertEquals(false, list3.isEmpty());
+        assertEquals(30, (int)list3.getHead());
+        assertEquals(list2, list3.getTail());
 
-    public static <T> PersistentTreeSet<T> of(Comparator<T> comparator)
-    {
-        return new PersistentTreeSet<T>(comparator);
-    }
+        assertEquals(Collections.<Integer>emptyList(), list.makeList());
+        assertEquals(Arrays.asList(10), list2.makeList());
+        assertEquals(Arrays.asList(30, 10), list3.makeList());
 
-    @Override
-    protected PersistentSet<T> create(PersistentMap<T, Boolean> map)
-    {
-        return new PersistentTreeSet<T>(map, comparator);
-    }
-
-    @Override
-    protected PersistentMap<T, Boolean> emptyMap()
-    {
-        return PersistentTreeMap.of(comparator);
+        assertEquals(list, JImmutableLinkedStack.of(Collections.<Integer>emptyList()));
+        assertEquals(list2, JImmutableLinkedStack.of(Arrays.asList(10)));
+        assertEquals(list3, JImmutableLinkedStack.of(Arrays.asList(10, 30)));
     }
 }

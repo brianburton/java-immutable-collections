@@ -38,7 +38,7 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
 public interface HashTrieNode<K, V>
@@ -48,7 +48,7 @@ public interface HashTrieNode<K, V>
                   int valueIndex,
                   K key);
 
-    PersistentMap.Entry<K, V> getEntry(int branchIndex,
+    JImmutableMap.Entry<K, V> getEntry(int branchIndex,
                                        int valueIndex,
                                        K key);
 
@@ -73,5 +73,5 @@ public interface HashTrieNode<K, V>
 
     int deepSize();
 
-    PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map);
+    JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map);
 }

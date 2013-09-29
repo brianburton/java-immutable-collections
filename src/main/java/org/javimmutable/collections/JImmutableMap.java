@@ -45,11 +45,11 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
-public interface PersistentMap<K, V>
-        extends Insertable<PersistentMap.Entry<K, V>>,
+public interface JImmutableMap<K, V>
+        extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, V>,
-                Iterable<PersistentMap.Entry<K, V>>,
-                Cursorable<PersistentMap.Entry<K, V>>
+                Iterable<JImmutableMap.Entry<K, V>>,
+                Cursorable<JImmutableMap.Entry<K, V>>
 {
     /**
      * An immutable entry in the map.  Contains the key and value for that entry.
@@ -94,7 +94,7 @@ public interface PersistentMap<K, V>
      * @param value possibly null value
      * @return new map reflecting the change
      */
-    PersistentMap<K, V> assign(K key,
+    JImmutableMap<K, V> assign(K key,
                                V value);
 
     /**
@@ -104,7 +104,7 @@ public interface PersistentMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    PersistentMap<K, V> delete(K key);
+    JImmutableMap<K, V> delete(K key);
 
     /**
      * Return the number of entries in the map.

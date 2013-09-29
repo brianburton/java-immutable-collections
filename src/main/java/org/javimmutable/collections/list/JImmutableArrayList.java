@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentList;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.trie.EmptyTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
 import org.javimmutable.collections.common.IteratorAdaptor;
@@ -55,20 +55,20 @@ import java.util.List;
  *
  * @param <T>
  */
-public class PersistentArrayList<T>
-        implements PersistentList<T>
+public class JImmutableArrayList<T>
+        implements JImmutableList<T>
 {
-    private static final PersistentArrayList EMPTY = new PersistentArrayList();
+    private static final JImmutableArrayList EMPTY = new JImmutableArrayList();
 
     private final TrieNode<T> values;
     private final int size;
 
-    public PersistentArrayList()
+    public JImmutableArrayList()
     {
         this(EmptyTrieNode.<T>of(), 0);
     }
 
-    private PersistentArrayList(TrieNode<T> values,
+    private JImmutableArrayList(TrieNode<T> values,
                                 int size)
     {
         this.values = values;
@@ -76,9 +76,9 @@ public class PersistentArrayList<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> PersistentArrayList<T> of()
+    public static <T> JImmutableArrayList<T> of()
     {
-        return (PersistentArrayList<T>)EMPTY;
+        return (JImmutableArrayList<T>)EMPTY;
     }
 
     @Override
@@ -88,30 +88,30 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public PersistentList<T> assign(int index,
+    public JImmutableList<T> assign(int index,
                                     T value)
     {
         if (index < 0 || index >= size) {
             throw new ArrayIndexOutOfBoundsException();
         }
-        return new PersistentArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), size);
+        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), size);
     }
 
     @Override
-    public PersistentArrayList<T> insert(T value)
+    public JImmutableArrayList<T> insert(T value)
     {
         final int index = size;
-        return new PersistentArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index + 1);
+        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index + 1);
     }
 
     @Override
-    public PersistentArrayList<T> deleteLast()
+    public JImmutableArrayList<T> deleteLast()
     {
         if (size <= 0) {
             throw new ArrayIndexOutOfBoundsException();
         }
         final int index = size - 1;
-        return new PersistentArrayList<T>(values.delete(index >>> 5, index & 0x1f), index);
+        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), index);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class PersistentArrayList<T>
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof PersistentList && Cursors.areEqual(cursor(), ((PersistentList)o).cursor());
+        return o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());
     }
 
     @Override

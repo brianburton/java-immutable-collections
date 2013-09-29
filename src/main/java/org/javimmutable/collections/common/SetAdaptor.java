@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.PersistentSet;
+import org.javimmutable.collections.JImmutableSet;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -50,14 +50,14 @@ import java.util.Set;
 public class SetAdaptor<T>
         extends AbstractSet<T>
 {
-    private final PersistentSet<T> pset;
+    private final JImmutableSet<T> pset;
 
-    public SetAdaptor(PersistentSet<T> pset)
+    public SetAdaptor(JImmutableSet<T> pset)
     {
         this.pset = pset;
     }
 
-    public static <T> SetAdaptor<T> of(PersistentSet<T> pset)
+    public static <T> SetAdaptor<T> of(JImmutableSet<T> pset)
     {
         return new SetAdaptor<T>(pset);
     }

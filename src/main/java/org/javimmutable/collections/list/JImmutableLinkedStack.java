@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentStack;
+import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.EmptyCursor;
@@ -55,43 +55,43 @@ import java.util.List;
  *
  * @param <T>
  */
-public abstract class PersistentLinkedStack<T>
-        implements PersistentStack<T>
+public abstract class JImmutableLinkedStack<T>
+        implements JImmutableStack<T>
 {
     private static final Empty EMPTY = new Empty();
 
     @SuppressWarnings("unchecked")
-    public static <T> PersistentLinkedStack<T> of()
+    public static <T> JImmutableLinkedStack<T> of()
     {
-        return (PersistentLinkedStack<T>)EMPTY;
+        return (JImmutableLinkedStack<T>)EMPTY;
     }
 
-    public static <T> PersistentLinkedStack<T> of(T value)
+    public static <T> JImmutableLinkedStack<T> of(T value)
     {
         return new Single<T>(value);
     }
 
-    public static <T> PersistentLinkedStack<T> of(List<T> values)
+    public static <T> JImmutableLinkedStack<T> of(List<T> values)
     {
-        PersistentLinkedStack<T> list = of();
+        JImmutableLinkedStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
         return list;
     }
 
-    public static <T> PersistentLinkedStack<T> of(T... values)
+    public static <T> JImmutableLinkedStack<T> of(T... values)
     {
-        PersistentLinkedStack<T> list = of();
+        JImmutableLinkedStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
         return list;
     }
 
-    public abstract PersistentLinkedStack<T> insert(T value);
+    public abstract JImmutableLinkedStack<T> insert(T value);
 
-    public abstract PersistentLinkedStack<T> getTail();
+    public abstract JImmutableLinkedStack<T> getTail();
 
     public Iterator<T> iterator()
     {
@@ -103,7 +103,7 @@ public abstract class PersistentLinkedStack<T>
         List<T> answer = new ArrayList<T>();
         if (!isEmpty()) {
             answer.add(getHead());
-            for (PersistentStack<T> next = getTail(); !next.isEmpty(); next = next.getTail()) {
+            for (JImmutableStack<T> next = getTail(); !next.isEmpty(); next = next.getTail()) {
                 answer.add(next.getHead());
             }
         }
@@ -113,7 +113,7 @@ public abstract class PersistentLinkedStack<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o instanceof PersistentStack) && Cursors.areEqual(cursor(), ((PersistentStack)o).cursor());
+        return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
     }
 
     @Override
@@ -129,13 +129,13 @@ public abstract class PersistentLinkedStack<T>
     }
 
     @Override
-    public PersistentStack<T> remove()
+    public JImmutableStack<T> remove()
     {
         return getTail();
     }
 
     private static class Empty<V>
-            extends PersistentLinkedStack<V>
+            extends JImmutableLinkedStack<V>
     {
         public boolean isEmpty()
         {
@@ -148,13 +148,13 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> getTail()
+        public JImmutableLinkedStack<V> getTail()
         {
             return this;
         }
 
         @Override
-        public PersistentLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(V value)
         {
             return new Single<V>(value);
         }
@@ -166,7 +166,7 @@ public abstract class PersistentLinkedStack<T>
     }
 
     private static class Single<V>
-            extends PersistentLinkedStack<V>
+            extends JImmutableLinkedStack<V>
     {
         private V value;
 
@@ -186,13 +186,13 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> getTail()
+        public JImmutableLinkedStack<V> getTail()
         {
             return of();
         }
 
         @Override
-        public PersistentLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(V value)
         {
             return new Chain<V>(value, this);
         }
@@ -204,13 +204,13 @@ public abstract class PersistentLinkedStack<T>
     }
 
     private static class Chain<V>
-            extends PersistentLinkedStack<V>
+            extends JImmutableLinkedStack<V>
     {
         private V value;
-        private PersistentLinkedStack<V> next;
+        private JImmutableLinkedStack<V> next;
 
         private Chain(V value,
-                      PersistentLinkedStack<V> next)
+                      JImmutableLinkedStack<V> next)
         {
             this.value = value;
             this.next = next;
@@ -227,13 +227,13 @@ public abstract class PersistentLinkedStack<T>
         }
 
         @Override
-        public PersistentLinkedStack<V> getTail()
+        public JImmutableLinkedStack<V> getTail()
         {
             return next;
         }
 
         @Override
-        public PersistentLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(V value)
         {
             return new Chain<V>(value, this);
         }

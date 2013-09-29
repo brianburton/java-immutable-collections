@@ -37,9 +37,9 @@ package org.javimmutable.collections.array.trie;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
-import org.javimmutable.collections.hash.PersistentHashMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +99,7 @@ public class StandardTrieNodeTest
         TrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
         assertEquals(0, node.shallowSize());
         assertEquals(0, node.deepSize());
-        PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        JImmutableMap<Class, Integer> counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -109,7 +109,7 @@ public class StandardTrieNodeTest
         assertEquals(1, node.shallowSize());
         assertEquals(1, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -120,7 +120,7 @@ public class StandardTrieNodeTest
         assertEquals(2, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
         assertEquals("z", node.get(7, 15).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -131,7 +131,7 @@ public class StandardTrieNodeTest
         assertEquals(2, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -143,7 +143,7 @@ public class StandardTrieNodeTest
         assertEquals("a", node.get(1, 5).getValueOrNull());
         assertEquals("q", node.get(7, 8).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -205,7 +205,7 @@ public class StandardTrieNodeTest
         assertEquals("q", node.get(7, 8).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
-        PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        JImmutableMap<Class, Integer> counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -225,7 +225,7 @@ public class StandardTrieNodeTest
         assertEquals("q", node.get(7, 8).getValueOrNull());
         assertEquals("r", node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -239,7 +239,7 @@ public class StandardTrieNodeTest
         assertEquals("q", node.get(7, 8).getValueOrNull());
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -253,7 +253,7 @@ public class StandardTrieNodeTest
         assertEquals(null, node.get(7, 8).getValueOrNull());
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals("z", node.get(12, 3).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
@@ -267,7 +267,7 @@ public class StandardTrieNodeTest
         assertEquals(null, node.get(7, 8).getValueOrNull());
         assertEquals(null, node.get(7, 15).getValueOrNull());
         assertEquals(null, node.get(12, 3).getValueOrNull());
-        counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(1, (int)counts.find(EmptyTrieNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(StandardTrieNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(QuickTrieNode.class).getValueOr(0));

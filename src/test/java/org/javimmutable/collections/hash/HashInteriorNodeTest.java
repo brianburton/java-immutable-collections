@@ -36,7 +36,7 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.common.MutableDelta;
 
@@ -118,7 +118,7 @@ public class HashInteriorNodeTest
         assertEquals("cc", newNode.get(77, 9, "c").getValueOrNull());
         assertEquals("xx", newNode.get(98, 31, "x").getValueOrNull());
 
-        PersistentMap<Class, Integer> counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        JImmutableMap<Class, Integer> counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(3, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -139,7 +139,7 @@ public class HashInteriorNodeTest
         assertSame(newNode, newNode.assign(98, 31, "x", "xx", sizeDelta));
         assertSame(newNode, newNode.assign(98, 30, "z", "zz", sizeDelta));
 
-        counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(3, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -200,7 +200,7 @@ public class HashInteriorNodeTest
         assertEquals("xx", node.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", node.get(15, 30, "z").getValueOrNull());
 
-        PersistentMap<Class, Integer> counts = node.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        JImmutableMap<Class, Integer> counts = node.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -233,7 +233,7 @@ public class HashInteriorNodeTest
         assertEquals("cc", newNode.get(10, 9, "c").getValueOrNull());
         assertEquals("xx", newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
-        counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -248,7 +248,7 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(10, 9, "c").getValueOrNull());
         assertEquals("xx", newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
-        counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(2, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -263,7 +263,7 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(10, 9, "c").getValueOrNull());
         assertEquals(null, newNode.get(15, 31, "x").getValueOrNull());
         assertEquals("zz", newNode.get(15, 30, "z").getValueOrNull());
-        counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(0, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(1, (int)counts.find(HashQuickNode.class).getValueOr(0));
@@ -278,7 +278,7 @@ public class HashInteriorNodeTest
         assertEquals(null, newNode.get(10, 9, "c").getValueOrNull());
         assertEquals(null, newNode.get(15, 31, "x").getValueOrNull());
         assertEquals(null, newNode.get(15, 30, "z").getValueOrNull());
-        counts = newNode.getNodeTypeCounts(PersistentHashMap.<Class, Integer>of());
+        counts = newNode.getNodeTypeCounts(JImmutableHashMap.<Class, Integer>of());
         assertEquals(1, (int)counts.find(HashEmptyNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(HashInteriorNode.class).getValueOr(0));
         assertEquals(0, (int)counts.find(HashQuickNode.class).getValueOr(0));

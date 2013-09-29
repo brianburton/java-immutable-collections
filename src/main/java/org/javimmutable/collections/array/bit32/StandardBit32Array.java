@@ -38,8 +38,8 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.PersistentMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 public class StandardBit32Array<T>
@@ -132,13 +132,13 @@ public class StandardBit32Array<T>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<Integer, T>> cursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return StandardCursor.of(new CursorSource(bitmask));
     }
 
     private class CursorSource
-            implements StandardCursor.Source<PersistentMap.Entry<Integer, T>>
+            implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
     {
         private final int remainingMask;
         private final int index;
@@ -156,13 +156,13 @@ public class StandardBit32Array<T>
         }
 
         @Override
-        public PersistentMap.Entry<Integer, T> currentValue()
+        public JImmutableMap.Entry<Integer, T> currentValue()
         {
             return MapEntry.of(index, get(index).getValue());
         }
 
         @Override
-        public StandardCursor.Source<PersistentMap.Entry<Integer, T>> advance()
+        public StandardCursor.Source<JImmutableMap.Entry<Integer, T>> advance()
         {
             if (remainingMask == 0) {
                 return this;

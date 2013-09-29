@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.Map;
 import java.util.Random;
@@ -102,7 +102,7 @@ public class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        PersistentHashMap<Integer, Integer> map = PersistentHashMap.of();
+        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
@@ -126,11 +126,11 @@ public class TimingComparison
         System.gc();
     }
 
-    private static void dumpNodes(PersistentHashMap<Integer, Integer> map)
+    private static void dumpNodes(JImmutableHashMap<Integer, Integer> map)
     {
-        PersistentMap<Class, Integer> counts = PersistentHashMap.of();
+        JImmutableMap<Class, Integer> counts = JImmutableHashMap.of();
         counts = map.getNodeTypeCounts(counts);
-        for (PersistentMap.Entry<Class, Integer> count : counts) {
+        for (JImmutableMap.Entry<Class, Integer> count : counts) {
             System.out.printf("%s: %d%n", count.getKey(), count.getValue());
         }
     }

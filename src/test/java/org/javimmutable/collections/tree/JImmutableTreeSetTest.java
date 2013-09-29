@@ -33,27 +33,29 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.PersistentSet;
-import org.javimmutable.collections.PersistentStack;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 
-public class PersistentHashSetTest
+public class JImmutableTreeSetTest
         extends TestCase
 {
     public void test()
     {
-        PersistentStack<String> expected = PersistentLinkedStack.of();
+        JImmutableStack<String> expected = JImmutableLinkedStack.of();
         expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
 
-        PersistentSet<String> set = PersistentHashSet.of();
+        JImmutableSet<String> set = JImmutableTreeSet.of();
         assertTrue(set.isEmpty());
         assertEquals(0, set.size());
         assertEquals(false, set.contains("fred"));
@@ -86,7 +88,7 @@ public class PersistentHashSetTest
         assertSame(set, set.insert("fred"));
         assertSame(set, set.insert("wilma"));
 
-        PersistentSet<String> set2 = set.union(expected);
+        JImmutableSet<String> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -95,7 +97,7 @@ public class PersistentHashSetTest
         assertEquals(true, set2.contains("barney"));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new HashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
+        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
 
         assertEquals(set, set2.intersection(set));
         assertEquals(set, set2.delete("betty").delete("barney"));
@@ -111,7 +113,7 @@ public class PersistentHashSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        PersistentSet<String> set3 = set.union(expected).insert("homer").insert("marge");
+        JImmutableSet<String> set3 = set.union(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));
@@ -126,14 +128,14 @@ public class PersistentHashSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new HashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
         assertEquals(set, set.intersection(set3));
-        assertEquals(PersistentHashSet.<String>of(), set.intersection(set2));
-        assertEquals(PersistentHashSet.<String>of(), set2.intersection(set));
-        assertEquals(PersistentHashSet.<String>of(), set3.deleteAll(set3));
+        assertEquals(JImmutableTreeSet.<String>of(), set.intersection(set2));
+        assertEquals(JImmutableTreeSet.<String>of(), set2.intersection(set));
+        assertEquals(JImmutableTreeSet.<String>of(), set3.deleteAll(set3));
     }
 
     public void testRandom()
@@ -141,8 +143,8 @@ public class PersistentHashSetTest
         Random random = new Random(2500);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            Set<Integer> expected = new HashSet<Integer>();
-            PersistentSet<Integer> set = PersistentHashSet.of();
+            Set<Integer> expected = new TreeSet<Integer>();
+            JImmutableSet<Integer> set = JImmutableTreeSet.of();
             for (int loops = 0; loops < 4 * size; ++loops) {
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
@@ -165,14 +167,44 @@ public class PersistentHashSetTest
                 assertEquals(expected.size(), set.size());
             }
             assertEquals(expected, set.getSet());
+
+            // verify ordering is the same in both sets
+            assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
+
+            // verify value identity
             for (Integer value : set) {
                 assertSame(set, set.insert(value));
             }
+
             for (Integer value : set) {
                 set = set.delete(value);
             }
             assertEquals(0, set.size());
             assertEquals(true, set.isEmpty());
         }
+    }
+
+    public void testSortOrder()
+    {
+        Comparator<Integer> reverser = new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -a.compareTo(b);
+            }
+        };
+
+        Set<Integer> expected = new TreeSet<Integer>(reverser);
+        JImmutableSet<Integer> set = JImmutableTreeSet.of(reverser);
+        Random random = new Random(2500);
+        for (int i = 0; i < 10000; ++i) {
+            int value = random.nextInt(100000) - 50000;
+            expected.add(value);
+            set = set.insert(value);
+        }
+        assertEquals(expected, set.getSet());
+        assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
     }
 }

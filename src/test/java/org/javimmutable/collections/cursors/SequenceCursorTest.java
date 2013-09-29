@@ -37,14 +37,14 @@ package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class SequenceCursorTest
         extends TestCase
 {
     public void testEmptyList()
     {
-        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of();
+        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of();
         Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();
@@ -73,7 +73,7 @@ public class SequenceCursorTest
 
     public void testSingleList()
     {
-        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(100);
+        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(100);
         Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();
@@ -103,7 +103,7 @@ public class SequenceCursorTest
 
     public void testMultiList()
     {
-        PersistentLinkedStack<Integer> list = PersistentLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
+        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
         Cursor<Integer> cursor = SequenceCursor.of(list);
         try {
             cursor.hasValue();

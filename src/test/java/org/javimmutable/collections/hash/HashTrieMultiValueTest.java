@@ -37,9 +37,9 @@ package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.list.PersistentLinkedStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class HashTrieMultiValueTest
         extends TestCase
@@ -49,7 +49,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(JImmutableLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(true, v.getValueForKey("a").isFilled());
@@ -116,7 +116,7 @@ public class HashTrieMultiValueTest
         assertEquals(null, nv);
         assertEquals(-1, sizeDelta.getValue());
 
-        Cursor<PersistentMap.Entry<String, String>> cursor = v.cursor().next();
+        Cursor<JImmutableMap.Entry<String, String>> cursor = v.cursor().next();
         assertEquals(true, cursor.hasValue());
         assertEquals("c", cursor.getValue().getKey());
         assertEquals("cc", cursor.getValue().getValue());
@@ -137,7 +137,7 @@ public class HashTrieMultiValueTest
         HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
         HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
         HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(PersistentLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
+        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(JImmutableLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(false, v.getValueForKey("d").isFilled());
@@ -161,7 +161,7 @@ public class HashTrieMultiValueTest
         assertSame(c, nv.getEntryForKey("c"));
         assertEquals(4, nv.size());
 
-        Cursor<PersistentMap.Entry<String, String>> cursor = nv.cursor().next();
+        Cursor<JImmutableMap.Entry<String, String>> cursor = nv.cursor().next();
         assertEquals(true, cursor.hasValue());
         assertEquals("d", cursor.getValue().getKey());
         assertEquals("dd", cursor.getValue().getValue());

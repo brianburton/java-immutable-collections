@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.EmptyCursor;
 
 public class EmptyBit32Array<T>
@@ -79,7 +79,7 @@ public class EmptyBit32Array<T>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<Integer, T>> cursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return EmptyCursor.of();
     }

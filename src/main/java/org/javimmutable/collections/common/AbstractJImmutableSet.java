@@ -37,35 +37,35 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.PersistentSet;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.Iterator;
 import java.util.Set;
 
-public abstract class AbstractPersistentSet<T>
-        implements PersistentSet<T>
+public abstract class AbstractJImmutableSet<T>
+        implements JImmutableSet<T>
 {
-    private final PersistentMap<T, Boolean> map;
+    private final JImmutableMap<T, Boolean> map;
 
-    protected AbstractPersistentSet(PersistentMap<T, Boolean> map)
+    protected AbstractJImmutableSet(JImmutableMap<T, Boolean> map)
     {
         this.map = map;
     }
 
     @Override
-    public PersistentSet<T> insert(T value)
+    public JImmutableSet<T> insert(T value)
     {
-        PersistentMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
+        JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> union(Cursorable<T> other)
+    public JImmutableSet<T> union(Cursorable<T> other)
     {
-        PersistentMap<T, Boolean> newMap = map;
+        JImmutableMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             newMap = newMap.assign(value, Boolean.TRUE);
@@ -74,16 +74,16 @@ public abstract class AbstractPersistentSet<T>
     }
 
     @Override
-    public PersistentSet<T> delete(T value)
+    public JImmutableSet<T> delete(T value)
     {
-        PersistentMap<T, Boolean> newMap = map.delete(value);
+        JImmutableMap<T, Boolean> newMap = map.delete(value);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public PersistentSet<T> deleteAll(Cursorable<T> other)
+    public JImmutableSet<T> deleteAll(Cursorable<T> other)
     {
-        PersistentMap<T, Boolean> newMap = map;
+        JImmutableMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             newMap = newMap.delete(value);
@@ -92,9 +92,9 @@ public abstract class AbstractPersistentSet<T>
     }
 
     @Override
-    public PersistentSet<T> intersection(Cursorable<T> other)
+    public JImmutableSet<T> intersection(Cursorable<T> other)
     {
-        PersistentMap<T, Boolean> newMap = emptyMap();
+        JImmutableMap<T, Boolean> newMap = emptyMap();
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             if (map.find(value).isFilled()) {
@@ -175,8 +175,8 @@ public abstract class AbstractPersistentSet<T>
             return true;
         } else if (o == null) {
             return false;
-        } else if (o instanceof PersistentSet) {
-            return getSet().equals(((PersistentSet)o).getSet());
+        } else if (o instanceof JImmutableSet) {
+            return getSet().equals(((JImmutableSet)o).getSet());
         } else {
             return (o instanceof Set) && getSet().equals(o);
         }
@@ -194,12 +194,12 @@ public abstract class AbstractPersistentSet<T>
      * @param map
      * @return
      */
-    protected abstract PersistentSet<T> create(PersistentMap<T, Boolean> map);
+    protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
 
     /**
      * Implemented by derived classes to create a new empty PersistentMap for use by retainAll()
      *
      * @return
      */
-    protected abstract PersistentMap<T, Boolean> emptyMap();
+    protected abstract JImmutableMap<T, Boolean> emptyMap();
 }

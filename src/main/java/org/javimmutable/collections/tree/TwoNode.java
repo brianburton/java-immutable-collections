@@ -37,7 +37,7 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
@@ -75,7 +75,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public Holder<PersistentMap.Entry<K, V>> findEntry(Comparator<K> props,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                        K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
@@ -125,7 +125,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public void addEntriesTo(Collection<PersistentMap.Entry<K, V>> collection)
+    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
     {
         left.addEntriesTo(collection);
         right.addEntriesTo(collection);
@@ -227,7 +227,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public Cursor<PersistentMap.Entry<K, V>> cursor()
+    public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));
     }

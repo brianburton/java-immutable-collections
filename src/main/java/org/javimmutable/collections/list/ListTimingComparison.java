@@ -85,7 +85,7 @@ public class ListTimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        PersistentArrayList<Integer> list = PersistentArrayList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (list.size() == 0 || command <= 1) {
@@ -118,7 +118,7 @@ public class ListTimingComparison
         removes = 0;
         gets = 0;
         startPer = System.currentTimeMillis();
-        PersistentLinkedStack<Integer> rlist = PersistentLinkedStack.of();
+        JImmutableLinkedStack<Integer> rlist = JImmutableLinkedStack.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (rlist.isEmpty() || command <= 1) {

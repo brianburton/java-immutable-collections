@@ -40,8 +40,8 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.PersistentMap;
-import org.javimmutable.collections.common.AbstractPersistentMap;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
@@ -51,22 +51,22 @@ import org.javimmutable.collections.cursors.MultiTransformCursor;
 import java.util.Iterator;
 import java.util.Map;
 
-public class PersistentHashMap<K, V>
-        extends AbstractPersistentMap<K, V>
+public class JImmutableHashMap<K, V>
+        extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    private static final PersistentHashMap EMPTY = new PersistentHashMap();
+    private static final JImmutableHashMap EMPTY = new JImmutableHashMap();
 
     private final HashTrieNode<K, V> nodes;
     private final int size;
 
     @SuppressWarnings("unchecked")
-    public PersistentHashMap()
+    public JImmutableHashMap()
     {
         this(new HashInteriorNode<K, V>(), 0);
     }
 
-    private PersistentHashMap(HashTrieNode<K, V> nodes,
+    private JImmutableHashMap(HashTrieNode<K, V> nodes,
                               int size)
     {
         this.nodes = nodes;
@@ -74,9 +74,9 @@ public class PersistentHashMap<K, V>
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> PersistentHashMap<K, V> of()
+    public static <K, V> JImmutableHashMap<K, V> of()
     {
-        return (PersistentHashMap<K, V>)EMPTY;
+        return (JImmutableHashMap<K, V>)EMPTY;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PersistentHashMap<K, V>
     }
 
     @Override
-    public PersistentHashMap<K, V> assign(final K key,
+    public JImmutableHashMap<K, V> assign(final K key,
                                           final V value)
     {
         if (key == null) {
@@ -123,11 +123,11 @@ public class PersistentHashMap<K, V>
         final MutableDelta sizeDelta = new MutableDelta();
         final int hashCode = key.hashCode();
         HashTrieNode<K, V> newNodes = nodes.assign(hashCode >>> 5, hashCode & 0x1f, key, value, sizeDelta);
-        return (newNodes == nodes) ? this : new PersistentHashMap<K, V>(newNodes, sizeDelta.apply(size));
+        return (newNodes == nodes) ? this : new JImmutableHashMap<K, V>(newNodes, sizeDelta.apply(size));
     }
 
     @Override
-    public PersistentHashMap<K, V> delete(final K key)
+    public JImmutableHashMap<K, V> delete(final K key)
     {
         if (key == null) {
             throw new NullPointerException();
@@ -137,7 +137,7 @@ public class PersistentHashMap<K, V>
         final MutableDelta sizeDelta = new MutableDelta();
         final int hashCode = key.hashCode();
         HashTrieNode<K, V> newNodes = nodes.delete(hashCode >>> 5, hashCode & 0x1f, key, sizeDelta);
-        return (newNodes == nodes) ? this : new PersistentHashMap<K, V>(newNodes, sizeDelta.apply(size));
+        return (newNodes == nodes) ? this : new JImmutableHashMap<K, V>(newNodes, sizeDelta.apply(size));
     }
 
     @Override
@@ -174,17 +174,17 @@ public class PersistentHashMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return MultiTransformCursor.of(LazyCursor.of(nodes), new Func1<HashTrieValue<K, V>, Cursor<PersistentMap.Entry<K, V>>>()
+        return MultiTransformCursor.of(LazyCursor.of(nodes), new Func1<HashTrieValue<K, V>, Cursor<JImmutableMap.Entry<K, V>>>()
         {
             @Override
-            public Cursor<PersistentMap.Entry<K, V>> apply(HashTrieValue<K, V> node)
+            public Cursor<JImmutableMap.Entry<K, V>> apply(HashTrieValue<K, V> node)
             {
                 return node.cursor();
             }
         });
     }
 
-    public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
+    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
     {
         return map;
     }

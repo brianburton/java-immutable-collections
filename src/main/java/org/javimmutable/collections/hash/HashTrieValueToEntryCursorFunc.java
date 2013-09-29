@@ -37,15 +37,15 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 class HashTrieValueToEntryCursorFunc<K, V>
-        implements Func1<HashTrieSingleValue<K, V>, Cursor<PersistentMap.Entry<K, V>>>
+        implements Func1<HashTrieSingleValue<K, V>, Cursor<JImmutableMap.Entry<K, V>>>
 {
     private static final HashTrieValueToEntryCursorFunc INSTANCE = new HashTrieValueToEntryCursorFunc();
 
     @Override
-    public Cursor<PersistentMap.Entry<K, V>> apply(HashTrieSingleValue<K, V> node)
+    public Cursor<JImmutableMap.Entry<K, V>> apply(HashTrieSingleValue<K, V> node)
     {
         return node.cursor();
     }

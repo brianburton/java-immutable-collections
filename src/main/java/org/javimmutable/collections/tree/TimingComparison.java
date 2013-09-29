@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -102,7 +102,7 @@ public class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
@@ -125,13 +125,13 @@ public class TimingComparison
         map.verifyDepthsMatch();
 
         Iterator<Map.Entry<Integer, Integer>> expectedIter = expected.entrySet().iterator();
-        Iterator<PersistentMap.Entry<Integer, Integer>> mapIter = map.iterator();
+        Iterator<JImmutableMap.Entry<Integer, Integer>> mapIter = map.iterator();
         while (expectedIter.hasNext()) {
             if (!mapIter.hasNext()) {
                 throw new RuntimeException();
             }
             Map.Entry<Integer, Integer> expectedEntry = expectedIter.next();
-            PersistentMap.Entry<Integer, Integer> mapEntry = mapIter.next();
+            JImmutableMap.Entry<Integer, Integer> mapEntry = mapIter.next();
             assertEquals(expectedEntry.getKey(), mapEntry.getKey());
             assertEquals(expectedEntry.getValue(), mapEntry.getValue());
         }

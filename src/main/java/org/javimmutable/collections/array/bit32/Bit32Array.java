@@ -37,7 +37,7 @@ package org.javimmutable.collections.array.bit32;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.PersistentMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
 import java.util.Iterator;
@@ -48,8 +48,8 @@ import java.util.Iterator;
  * @param <T>
  */
 public abstract class Bit32Array<T>
-        implements Cursorable<PersistentMap.Entry<Integer, T>>,
-                   Iterable<PersistentMap.Entry<Integer, T>>
+        implements Cursorable<JImmutableMap.Entry<Integer, T>>,
+                   Iterable<JImmutableMap.Entry<Integer, T>>
 {
     private static final int INVALID_INDEX_MASK = ~0x1f;
     private static final Bit32Array EMPTY = new EmptyBit32Array();
@@ -72,9 +72,9 @@ public abstract class Bit32Array<T>
     public abstract int firstIndex();
 
     @Override
-    public Iterator<PersistentMap.Entry<Integer, T>> iterator()
+    public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return new IteratorAdaptor<PersistentMap.Entry<Integer, T>>(cursor());
+        return new IteratorAdaptor<JImmutableMap.Entry<Integer, T>>(cursor());
     }
 
     protected static void checkIndex(int index)
