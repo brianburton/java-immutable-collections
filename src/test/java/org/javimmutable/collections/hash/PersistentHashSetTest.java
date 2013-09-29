@@ -86,7 +86,7 @@ public class PersistentHashSetTest
         assertSame(set, set.insert("fred"));
         assertSame(set, set.insert("wilma"));
 
-        PersistentSet<String> set2 = set.insertAll(expected);
+        PersistentSet<String> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -111,7 +111,7 @@ public class PersistentHashSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        PersistentSet<String> set3 = set.insertAll(expected).insert("homer").insert("marge");
+        PersistentSet<String> set3 = set.union(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));

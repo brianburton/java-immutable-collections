@@ -63,7 +63,7 @@ public abstract class AbstractPersistentSet<T>
     }
 
     @Override
-    public PersistentSet<T> insertAll(Cursorable<T> other)
+    public PersistentSet<T> union(Cursorable<T> other)
     {
         PersistentMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {

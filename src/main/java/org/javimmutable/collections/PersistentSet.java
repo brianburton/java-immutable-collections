@@ -51,14 +51,6 @@ public interface PersistentSet<T>
     PersistentSet<T> insert(T value);
 
     /**
-     * Adds all values from other to the Set.
-     *
-     * @param other source of values to add
-     * @return instance of set containing the values
-     */
-    PersistentSet<T> insertAll(Cursorable<T> other);
-
-    /**
      * Determines if the Set contains the specified value.
      *
      * @param value
@@ -97,6 +89,14 @@ public interface PersistentSet<T>
      * @return instance of set without the values
      */
     PersistentSet<T> deleteAll(Cursorable<T> other);
+
+    /**
+     * Adds all values from other to the Set.
+     *
+     * @param other source of values to add
+     * @return instance of set containing the values
+     */
+    PersistentSet<T> union(Cursorable<T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
