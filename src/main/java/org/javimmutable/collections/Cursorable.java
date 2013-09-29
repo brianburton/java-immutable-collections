@@ -38,9 +38,9 @@ package org.javimmutable.collections;
 /**
  * Implemented by objects that can create a Cursor for a given type.
  *
- * @param <V>
+ * @param <T>
  */
-public interface Cursorable<V>
+public interface Cursorable<T>
 {
-    Cursor<V> cursor();
+    Cursor<T> cursor();
 }

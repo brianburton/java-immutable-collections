@@ -36,7 +36,7 @@
 package org.javimmutable.collections;
 
 /**
- * Interface for objects that store values in List form.  Elements are always added
+ * Interface for objects that store values in LIFO form.  Elements are always added
  * at the front of the list so elements are traversed in reverse order.
  *
  * @param <T>

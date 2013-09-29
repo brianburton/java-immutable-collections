@@ -36,7 +36,7 @@
 package org.javimmutable.collections;
 
 /**
- * Implemented by classes that can "insert" some type of value to themselves.
+ * Implemented by classes that can "insert" some type of value into themselves.
  * The meaning of "insert" can vary between implementations but must be sensible in the
  * context in which it is used.  Implementing classes are free to deal with duplicates
  * as best fits their nature.  For example Lists can add duplicates but Maps cannot.

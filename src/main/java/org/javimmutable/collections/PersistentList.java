@@ -39,7 +39,7 @@ import java.util.List;
 
 /**
  * Interface for containers that store items in list form with individual items available
- * for get() and assign() using their indexes.  Items added to the list are always added at
+ * for get() and assign() using their indexes.  Items inserted into the list are always added at
  * the end of the list and indexes of items are always in the range 0 through size() - 1.
  *
  * @param <T>
