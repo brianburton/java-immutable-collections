@@ -130,7 +130,7 @@ public class PersistentTreeList<T>
             throw new IndexOutOfBoundsException();
         }
 
-        UpdateResult<T> result = root.set(index, value);
+        UpdateResult<T> result = root.assign(index, value);
         return update(result);
     }
 

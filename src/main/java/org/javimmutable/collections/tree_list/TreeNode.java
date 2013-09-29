@@ -51,8 +51,8 @@ public abstract class TreeNode<T>
     public abstract UpdateResult<T> addAfter(int index,
                                              T value);
 
-    public abstract UpdateResult<T> set(int index,
-                                        T value);
+    public abstract UpdateResult<T> assign(int index,
+                                           T value);
 
     public abstract DeleteResult<T> delete(int index);
 

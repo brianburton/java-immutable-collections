@@ -129,20 +129,20 @@ public class ThreeNode<T>
     }
 
     @Override
-    public UpdateResult<T> set(int index,
-                               T value)
+    public UpdateResult<T> assign(int index,
+                                  T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.set(index, value);
+            UpdateResult<T> result = left.assign(index, value);
             return leftUpdate(result);
         } else {
             index -= leftSize;
             if (index < middleSize) {
-                UpdateResult<T> result = middle.set(index, value);
+                UpdateResult<T> result = middle.assign(index, value);
                 return middleUpdate(result);
             } else {
                 index -= middleSize;
-                UpdateResult<T> result = right.set(index, value);
+                UpdateResult<T> result = right.assign(index, value);
                 return rightUpdate(result);
             }
         }

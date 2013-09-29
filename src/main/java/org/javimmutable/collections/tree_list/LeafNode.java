@@ -86,8 +86,8 @@ public class LeafNode<T>
     }
 
     @Override
-    public UpdateResult<T> set(int index,
-                               T value)
+    public UpdateResult<T> assign(int index,
+                                  T value)
     {
         if (index != 0) {
             throw new ArrayIndexOutOfBoundsException();

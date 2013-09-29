@@ -103,14 +103,14 @@ public class TwoNode<T>
     }
 
     @Override
-    public UpdateResult<T> set(int index,
-                               T value)
+    public UpdateResult<T> assign(int index,
+                                  T value)
     {
         if (index < leftSize) {
-            UpdateResult<T> result = left.set(index, value);
+            UpdateResult<T> result = left.assign(index, value);
             return updateLeft(result);
         } else {
-            UpdateResult<T> result = right.set(index - leftSize, value);
+            UpdateResult<T> result = right.assign(index - leftSize, value);
             return updateRight(result);
         }
     }
