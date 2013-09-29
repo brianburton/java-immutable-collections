@@ -46,8 +46,8 @@ public class HashInteriorNodeTest
     public void testBranchGet()
     {
         Bit32Array<HashTrieNode<String, String>> branches = Bit32Array.of();
-        branches = branches.set(1, new HashQuickNode<String, String>(2, 3, new HashTrieSingleValue<String, String>("a", "aa")));
-        branches = branches.set(2, new HashQuickNode<String, String>(3, 4, new HashTrieSingleValue<String, String>("b", "bb")));
+        branches = branches.assign(1, new HashQuickNode<String, String>(2, 3, new HashTrieSingleValue<String, String>("a", "aa")));
+        branches = branches.assign(2, new HashQuickNode<String, String>(3, 4, new HashTrieSingleValue<String, String>("b", "bb")));
 
         HashInteriorNode<String, String> node = new HashInteriorNode<String, String>(branches, Bit32Array.<HashTrieValue<String, String>>of());
         assertEquals("aa", node.get((2 << 5) + 1, 3, "a").getValueOrNull());
@@ -66,8 +66,8 @@ public class HashInteriorNodeTest
     public void testValueGet()
     {
         Bit32Array<HashTrieValue<String, String>> values = Bit32Array.of();
-        values = values.set(1, new HashTrieSingleValue<String, String>("a", "aa"));
-        values = values.set(2, new HashTrieSingleValue<String, String>("b", "bb"));
+        values = values.assign(1, new HashTrieSingleValue<String, String>("a", "aa"));
+        values = values.assign(2, new HashTrieSingleValue<String, String>("b", "bb"));
 
         HashInteriorNode<String, String> node = new HashInteriorNode<String, String>(Bit32Array.<HashTrieNode<String, String>>of(), values);
         assertEquals("aa", node.get(0, 1, "a").getValueOrNull());

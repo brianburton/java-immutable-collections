@@ -58,9 +58,9 @@ public final class StandardTrieNode<T>
     {
         if (branchIndex == 0) {
             this.branches = Bit32Array.of();
-            this.values = Bit32Array.<T>of().set(valueIndex, value);
+            this.values = Bit32Array.<T>of().assign(valueIndex, value);
         } else {
-            this.branches = Bit32Array.<TrieNode<T>>of().set(branchIndex & 0x1f, new QuickTrieNode<T>(branchIndex >>> 5, valueIndex, value));
+            this.branches = Bit32Array.<TrieNode<T>>of().assign(branchIndex & 0x1f, new QuickTrieNode<T>(branchIndex >>> 5, valueIndex, value));
             this.values = Bit32Array.of();
         }
     }
@@ -92,16 +92,16 @@ public final class StandardTrieNode<T>
         final Bit32Array<TrieNode<T>> branches = this.branches;
         final Bit32Array<T> values = this.values;
         if (branchIndex == 0) {
-            Bit32Array<T> newValues = values.set(valueIndex, value);
-            return (newValues == values) ? this : new StandardTrieNode<T>(branches, values.set(valueIndex, value));
+            Bit32Array<T> newValues = values.assign(valueIndex, value);
+            return (newValues == values) ? this : new StandardTrieNode<T>(branches, values.assign(valueIndex, value));
         } else {
             final int childIndex = branchIndex & 0x1f;
             final int childBranchIndex = branchIndex >>> 5;
             TrieNode<T> child = branches.get(childIndex).getValueOrNull();
             if (child == null) {
-                return new StandardTrieNode<T>(branches.set(childIndex, new QuickTrieNode<T>(childBranchIndex, valueIndex, value)), values);
+                return new StandardTrieNode<T>(branches.assign(childIndex, new QuickTrieNode<T>(childBranchIndex, valueIndex, value)), values);
             } else {
-                return new StandardTrieNode<T>(branches.set(childIndex, child.set(childBranchIndex, valueIndex, value)), values);
+                return new StandardTrieNode<T>(branches.assign(childIndex, child.set(childBranchIndex, valueIndex, value)), values);
             }
         }
     }
@@ -130,7 +130,7 @@ public final class StandardTrieNode<T>
                     return new StandardTrieNode<T>(branches.delete(childIndex), values);
                 }
             } else {
-                return new StandardTrieNode<T>(branches.set(childIndex, newChild), values);
+                return new StandardTrieNode<T>(branches.assign(childIndex, newChild), values);
             }
         }
     }

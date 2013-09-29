@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.array.bit32;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.PersistentMap;
-import junit.framework.TestCase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class Bit32ArrayTest
         }
         assertEquals(0, array.size());
         for (int i = 0; i < 32; ++i) {
-            array = array.set(i, i);
+            array = array.assign(i, i);
             assertEquals(i + 1, array.size());
         }
         for (int i = 0; i < 32; ++i) {
@@ -63,7 +63,7 @@ public class Bit32ArrayTest
             assertEquals(32, array.size());
         }
         for (int i = 0; i < 32; ++i) {
-            array = array.set(i, i + i);
+            array = array.assign(i, i + i);
             assertEquals(32, array.size());
         }
         for (int i = 0; i < 32; ++i) {
@@ -92,7 +92,7 @@ public class Bit32ArrayTest
                 int index = random.nextInt(31);
                 if (command < 3) {
                     int value = random.nextInt(1000);
-                    array = array.set(index, value);
+                    array = array.assign(index, value);
                     expected.put(index, value);
                 } else if (command < 6) {
                     array = array.delete(index);

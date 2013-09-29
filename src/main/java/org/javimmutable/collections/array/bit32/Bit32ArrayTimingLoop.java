@@ -64,7 +64,7 @@ public class Bit32ArrayTimingLoop
                 int index = random.nextInt(31);
                 if (command <= 1) {
                     int value = random.nextInt(1000);
-                    array = array.set(index, value);
+                    array = array.assign(index, value);
                 } else if (command == 2) {
                     array = array.delete(index);
                 } else {

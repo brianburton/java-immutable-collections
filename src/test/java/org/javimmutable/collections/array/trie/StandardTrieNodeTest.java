@@ -50,8 +50,8 @@ public class StandardTrieNodeTest
     public void testValuesGet()
     {
         Bit32Array<String> values = Bit32Array.of();
-        values = values.set(8, "a");
-        values = values.set(15, "b");
+        values = values.assign(8, "a");
+        values = values.assign(15, "b");
 
         StandardTrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), values);
         assertEquals("a", node.get(0, 8).getValueOrNull());
@@ -62,8 +62,8 @@ public class StandardTrieNodeTest
     public void testBranchesGet()
     {
         Bit32Array<TrieNode<String>> branches = Bit32Array.of();
-        branches = branches.set(3, new QuickTrieNode<String>(1, 3, "a"));
-        branches = branches.set(5, new QuickTrieNode<String>(8, 7, "b"));
+        branches = branches.assign(3, new QuickTrieNode<String>(1, 3, "a"));
+        branches = branches.assign(5, new QuickTrieNode<String>(8, 7, "b"));
 
         StandardTrieNode<String> node = new StandardTrieNode<String>(branches, Bit32Array.<String>of());
         assertEquals("a", node.get((1 << 5) + 3, 3).getValueOrNull());

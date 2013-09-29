@@ -75,9 +75,9 @@ public class HashInteriorNode<K, V>
     {
         if (branchIndex == 0) {
             this.branches = Bit32Array.of();
-            this.values = Bit32Array.<HashTrieValue<K, V>>of().set(valueIndex, value);
+            this.values = Bit32Array.<HashTrieValue<K, V>>of().assign(valueIndex, value);
         } else {
-            this.branches = Bit32Array.<HashTrieNode<K, V>>of().set(branchIndex & 0x1f, new HashQuickNode<K, V>(branchIndex >>> 5, valueIndex, value));
+            this.branches = Bit32Array.<HashTrieNode<K, V>>of().assign(branchIndex & 0x1f, new HashQuickNode<K, V>(branchIndex >>> 5, valueIndex, value));
             this.values = Bit32Array.of();
         }
     }
@@ -132,10 +132,10 @@ public class HashInteriorNode<K, V>
             HashTrieValue<K, V> valueNode = values.get(valueIndex).getValueOrNull();
             if (valueNode != null) {
                 HashTrieValue<K, V> newValueNode = valueNode.setValueForKey(key, value, sizeDelta);
-                return (newValueNode == valueNode) ? this : new HashInteriorNode<K, V>(branches, values.set(valueIndex, newValueNode));
+                return (newValueNode == valueNode) ? this : new HashInteriorNode<K, V>(branches, values.assign(valueIndex, newValueNode));
             } else {
                 sizeDelta.add(1);
-                return new HashInteriorNode<K, V>(branches, values.set(valueIndex, new HashTrieSingleValue<K, V>(key, value)));
+                return new HashInteriorNode<K, V>(branches, values.assign(valueIndex, new HashTrieSingleValue<K, V>(key, value)));
             }
         } else {
             final int childIndex = branchIndex & 0x1f;
@@ -147,7 +147,7 @@ public class HashInteriorNode<K, V>
             } else {
                 newChild = child.set(branchIndex >>> 5, valueIndex, key, value, sizeDelta);
             }
-            return (newChild == child) ? this : new HashInteriorNode<K, V>(branches.set(childIndex, newChild), values);
+            return (newChild == child) ? this : new HashInteriorNode<K, V>(branches.assign(childIndex, newChild), values);
         }
     }
 
@@ -170,7 +170,7 @@ public class HashInteriorNode<K, V>
                 } else if (newValue == null) {
                     return deleteConsolidationImpl(branches, values.delete(valueIndex));
                 } else {
-                    return new HashInteriorNode<K, V>(branches, values.set(valueIndex, newValue));
+                    return new HashInteriorNode<K, V>(branches, values.assign(valueIndex, newValue));
                 }
             }
         } else {
@@ -185,7 +185,7 @@ public class HashInteriorNode<K, V>
                 } else if (newNode.shallowSize() == 0) {
                     return deleteConsolidationImpl(branches.delete(nodeIndex), values);
                 } else {
-                    return new HashInteriorNode<K, V>(branches.set(nodeIndex, newNode), values);
+                    return new HashInteriorNode<K, V>(branches.assign(nodeIndex, newNode), values);
                 }
             }
         }

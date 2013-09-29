@@ -62,8 +62,8 @@ public abstract class Bit32Array<T>
 
     public abstract Holder<T> get(int index);
 
-    public abstract Bit32Array<T> set(int index,
-                                      T value);
+    public abstract Bit32Array<T> assign(int index,
+                                         T value);
 
     public abstract Bit32Array<T> delete(int index);
 

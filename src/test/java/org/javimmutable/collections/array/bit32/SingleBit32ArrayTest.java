@@ -47,12 +47,12 @@ public class SingleBit32ArrayTest
         assertEquals(Holders.of(100), array.get(10));
         assertEquals(1, array.size());
 
-        array = array.set(10, 200);
+        array = array.assign(10, 200);
         assertTrue(array instanceof SingleBit32Array);
         assertEquals(Holders.of(200), array.get(10));
         assertEquals(1, array.size());
 
-        array = array.set(11, 220);
+        array = array.assign(11, 220);
         assertTrue(array instanceof StandardBit32Array);
         assertEquals(Holders.of(200), array.get(10));
         assertEquals(Holders.of(220), array.get(11));
@@ -64,13 +64,13 @@ public class SingleBit32ArrayTest
         final String a = "a";
         final String b = "ab";
         Bit32Array<String> array = new SingleBit32Array<String>(10, a);
-        assertSame(array, array.set(10, a));
-        assertFalse(array == array.set(10, b));
+        assertSame(array, array.assign(10, a));
+        assertFalse(array == array.assign(10, b));
 
-        array = array.set(10, b);
-        assertSame(array, array.set(10, b));
+        array = array.assign(10, b);
+        assertSame(array, array.assign(10, b));
         assertEquals(b, "abc".substring(0, 2));
-        assertFalse(array == array.set(10, "abc".substring(0, 2)));
+        assertFalse(array == array.assign(10, "abc".substring(0, 2)));
     }
 
     public void testDelete()
@@ -97,7 +97,7 @@ public class SingleBit32ArrayTest
         Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
         for (int i = 0; i < 32; ++i) {
             array.get(i);
-            array.set(i, i);
+            array.assign(i, i);
             array.delete(i);
         }
         try {

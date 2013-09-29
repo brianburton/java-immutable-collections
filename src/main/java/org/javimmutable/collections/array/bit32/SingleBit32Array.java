@@ -64,14 +64,14 @@ public class SingleBit32Array<T>
     }
 
     @Override
-    public Bit32Array<T> set(int index,
-                             T value)
+    public Bit32Array<T> assign(int index,
+                                T value)
     {
         checkIndex(index);
         if (this.index == index) {
             return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
         } else {
-            return StandardBit32Array.<T>of().set(this.index, this.value).set(index, value);
+            return StandardBit32Array.<T>of().assign(this.index, this.value).assign(index, value);
         }
     }
 

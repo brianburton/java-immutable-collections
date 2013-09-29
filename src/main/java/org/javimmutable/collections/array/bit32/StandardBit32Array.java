@@ -76,8 +76,8 @@ public class StandardBit32Array<T>
         }
     }
 
-    public Bit32Array<T> set(int index,
-                             T value)
+    public Bit32Array<T> assign(int index,
+                                T value)
     {
         checkIndex(index);
         final int bit = 1 << index;

@@ -47,7 +47,7 @@ public class StandardBit32ArrayTest
     {
         Bit32Array<Integer> test = StandardBit32Array.of();
         for (int i = 0; i < 32; ++i) {
-            test = test.set(i, i);
+            test = test.assign(i, i);
             assertEquals(Holders.of(i), test.get(i));
             for (int k = 0; k < i; ++k) {
                 assertEquals(Holders.of(k), test.get(k));
@@ -56,7 +56,7 @@ public class StandardBit32ArrayTest
         }
         // verify no copy is made for value identity not changing
         for (int i = 0; i < 32; ++i) {
-            assertSame(test, test.set(i, i));
+            assertSame(test, test.assign(i, i));
         }
         for (int i = 0; i < 32; ++i) {
             test = test.delete(i);
@@ -74,10 +74,10 @@ public class StandardBit32ArrayTest
             for (int second = 0; second < 32; ++second) {
                 if (first != second) {
                     Bit32Array<Integer> array = StandardBit32Array.of();
-                    array = array.set(first, first);
+                    array = array.assign(first, first);
                     assertEquals(1, array.size());
                     assertEquals(Holders.of(first), array.get(first));
-                    array = array.set(second, second);
+                    array = array.assign(second, second);
                     assertEquals(2, array.size());
                     assertEquals(Holders.of(first), array.get(first));
                     assertEquals(Holders.of(second), array.get(second));
@@ -117,9 +117,9 @@ public class StandardBit32ArrayTest
                 for (int third = 0; third < 32; ++third) {
                     if (first != second && first != third && second != third) {
                         Bit32Array<Integer> array = StandardBit32Array.of();
-                        array = array.set(first, first);
-                        array = array.set(second, second);
-                        array = array.set(third, third);
+                        array = array.assign(first, first);
+                        array = array.assign(second, second);
+                        array = array.assign(third, third);
                         assertTrue(array instanceof StandardBit32Array);
                         assertEquals(3, array.size());
                         assertEquals(Holders.of(first), array.get(first));
@@ -155,8 +155,8 @@ public class StandardBit32ArrayTest
     public void testDownsizing2to1()
     {
         Bit32Array<Integer> test = StandardBit32Array.of();
-        test = test.set(10, 10);
-        test = test.set(20, 20);
+        test = test.assign(10, 10);
+        test = test.assign(20, 20);
         assertEquals(2, test.size());
         assertTrue(test instanceof StandardBit32Array);
 
@@ -169,7 +169,7 @@ public class StandardBit32ArrayTest
     public void testDownsizing1to0()
     {
         Bit32Array<Integer> test = StandardBit32Array.of();
-        test = test.set(20, 20);
+        test = test.assign(20, 20);
         assertEquals(1, test.size());
         assertTrue(test instanceof StandardBit32Array);
 
@@ -184,7 +184,7 @@ public class StandardBit32ArrayTest
         Bit32Array<Integer> array = StandardBit32Array.of();
         for (int i = 0; i < 32; ++i) {
             array.get(i);
-            array.set(i, i);
+            array.assign(i, i);
             array.delete(i);
         }
         try {
@@ -205,7 +205,7 @@ public class StandardBit32ArrayTest
     {
         Bit32Array<Integer> array = StandardBit32Array.of();
         for (int index = 31; index > 0; --index) {
-            array = array.set(index, index);
+            array = array.assign(index, index);
             assertEquals(index, (int)array.get(index).getValueOrNull());
             assertEquals(index, array.firstIndex());
         }
@@ -217,7 +217,7 @@ public class StandardBit32ArrayTest
         assertEquals(false, array.cursor().next().hasValue());
 
         for (int i = 0; i < 32; ++i) {
-            array = array.set(i, i);
+            array = array.assign(i, i);
         }
         int index = 0;
         Cursor<PersistentMap.Entry<Integer, Integer>> cursor = array.cursor();
@@ -229,7 +229,7 @@ public class StandardBit32ArrayTest
 
         array = StandardBit32Array.of();
         for (int i = 1; i < 32; i += 5) {
-            array = array.set(i, i);
+            array = array.assign(i, i);
         }
         index = 1;
         cursor = array.cursor();

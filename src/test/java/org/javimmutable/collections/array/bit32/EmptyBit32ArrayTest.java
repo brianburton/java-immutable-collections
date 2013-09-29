@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.array.bit32;
 
-import org.javimmutable.collections.Holders;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holders;
 
 public class EmptyBit32ArrayTest
         extends TestCase
@@ -49,7 +49,7 @@ public class EmptyBit32ArrayTest
         Bit32Array<Integer> newArray = array.delete(10);
         assertSame(array, newArray);
 
-        newArray = array.set(10, 100);
+        newArray = array.assign(10, 100);
         assertTrue(newArray instanceof SingleBit32Array);
         assertEquals(Holders.of(100), newArray.get(10));
     }
@@ -59,7 +59,7 @@ public class EmptyBit32ArrayTest
         Bit32Array<Integer> array = new EmptyBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
             array.get(i);
-            array.set(i, i);
+            array.assign(i, i);
             array.delete(i);
         }
         try {
