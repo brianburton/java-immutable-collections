@@ -8,7 +8,56 @@
     <packaging>jar</packaging>
 
     <name>javimmutable Persistent Collections</name>
+    <description>
+      Library providing immutable/persistent collection classes for
+      Java. While collections are immutable they provide methods for
+      adding and removing values by creating new modified copies of
+      themselves. Each copy shares almost all of its structure with
+      other copies to minimize memory consumption.
+    </description>
     <url>https://sourceforge.net/projects/javimmutablecollections/</url>
+
+    <licenses>
+      <license>
+	<name>Simplified BSD License</name>
+	<url>http://opensource.org/licenses/BSD-3-Clause</url>
+	<distribution>repo</distribution>
+	<comments>A business friendly open source license</comments>
+      </license>
+    </licenses>
+
+    <organization>
+      <name>Burton Computer Corporation</name>
+      <url>http://www.burton-computer.com</url>
+    </organization>
+
+    <developers>
+      <developer>
+	<id>bburton</id>
+	<name>Brian Burton</name>
+	<email>bburton@users.sourceforge.net</email>
+	<url>http://www.burton-computer.com</url>
+	<organization>Burton Computer Corporation</organization>
+	<organizationUrl>http://www.burton-computer.com</organizationUrl>
+	<roles>
+          <role>architect</role>
+          <role>developer</role>
+	</roles>
+	<timezone>America/New_York</timezone>
+      </developer>
+    </developers>
+
+    <issueManagement>
+      <system>Sourceforge</system>
+      <url>https://sourceforge.net/p/javimmutablecollections/tickets/</url>
+    </issueManagement>
+
+    <scm>
+      <connection>scm:git:git://git.code.sf.net/p/javimmutablecollections/code</connection>
+      <developerConnection>scm:git:ssh://git.code.sf.net/p/javimmutablecollections/code</developerConnection>
+      <tag>HEAD</tag>
+      <url>https://sourceforge.net/p/javimmutablecollections/code/ci/master/tree/</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
