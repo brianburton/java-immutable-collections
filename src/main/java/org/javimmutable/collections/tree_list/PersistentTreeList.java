@@ -81,12 +81,16 @@ public class PersistentTreeList<T>
     public PersistentTreeList<T> insert(int index,
                                         T value)
     {
-        if (index < 0 || index >= size) {
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
 
-        UpdateResult<T> result = root.insertBefore(index, value);
-        return update(result);
+        if (index == size) {
+            return insert(value);
+        } else {
+            UpdateResult<T> result = root.insertBefore(index, value);
+            return update(result);
+        }
     }
 
     @Override

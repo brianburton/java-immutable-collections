@@ -126,6 +126,18 @@ public class PersistentTreeListTest
         list.verifyDepthsMatch();
     }
 
+    public void testInsertAtSize()
+    {
+        PersistentTreeList<Integer> list = PersistentTreeList.of();
+        List<Integer> expected = new ArrayList<Integer>();
+        for (int i = 1; i <= 1000; ++i) {
+            list = list.insert(list.size(), i);
+            expected.add(i);
+        }
+        assertEquals(expected, list.getList());
+        list.verifyDepthsMatch();
+    }
+
     public void testRandom()
     {
         Random random = new Random(100);

@@ -73,7 +73,7 @@ public interface PersistentRandomAccessList<T>
     PersistentRandomAccessList<T> insert(T value);
 
     /**
-     * Insert value at index (which must be within the current bounds of the list).
+     * Insert value at index (which must be within 0 to size).
      * Shifts all values at and after index one position to the right and adds 1
      * to size of the list.
      *
