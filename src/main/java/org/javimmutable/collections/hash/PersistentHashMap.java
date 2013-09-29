@@ -96,7 +96,7 @@ public class PersistentHashMap<K, V>
             throw new NullPointerException();
         }
 
-        final int hashCode = calcHashCode(key);
+        final int hashCode = key.hashCode();
         return nodes.get(hashCode >>> 5, hashCode & 0x1f, key);
     }
 
@@ -107,7 +107,7 @@ public class PersistentHashMap<K, V>
             throw new NullPointerException();
         }
 
-        final int hashCode = calcHashCode(key);
+        final int hashCode = key.hashCode();
         return Holders.fromNullable(nodes.getEntry(hashCode >>> 5, hashCode & 0x1f, key));
     }
 
@@ -121,7 +121,7 @@ public class PersistentHashMap<K, V>
 
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
-        final int hashCode = calcHashCode(key);
+        final int hashCode = key.hashCode();
         HashTrieNode<K, V> newNodes = nodes.set(hashCode >>> 5, hashCode & 0x1f, key, value, sizeDelta);
         return (newNodes == nodes) ? this : new PersistentHashMap<K, V>(newNodes, sizeDelta.apply(size));
     }
@@ -135,7 +135,7 @@ public class PersistentHashMap<K, V>
 
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
-        final int hashCode = calcHashCode(key);
+        final int hashCode = key.hashCode();
         HashTrieNode<K, V> newNodes = nodes.delete(hashCode >>> 5, hashCode & 0x1f, key, sizeDelta);
         return (newNodes == nodes) ? this : new PersistentHashMap<K, V>(newNodes, sizeDelta.apply(size));
     }
@@ -187,10 +187,5 @@ public class PersistentHashMap<K, V>
     public PersistentMap<Class, Integer> getNodeTypeCounts(PersistentMap<Class, Integer> map)
     {
         return map;
-    }
-
-    private int calcHashCode(K key)
-    {
-        return key.hashCode();
     }
 }
