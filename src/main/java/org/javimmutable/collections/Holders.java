@@ -194,11 +194,19 @@ public abstract class Holders<V>
     {
         if (a == null || b == null) {
             return a == null && b == null;
-        }
-        if (a.isEmpty()) {
+        } else if (a.isEmpty()) {
             return b.isEmpty();
+        } else if (b.isEmpty()) {
+            return false;
+        } else {
+            T v1 = a.getValue();
+            T v2 = b.getValue();
+            if (v1 == null || v2 == null) {
+                return v1 == null && v2 == null;
+            } else {
+                return v1.equals(v2);
+            }
         }
-        return a.getValue().equals(b.getValue());
     }
 
     public static <T> int hashCode(Holder<T> a)
