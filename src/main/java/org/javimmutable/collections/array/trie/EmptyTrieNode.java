@@ -59,9 +59,9 @@ public class EmptyTrieNode<T>
     }
 
     @Override
-    public TrieNode<T> set(int branchIndex,
-                           int valueIndex,
-                           T value)
+    public TrieNode<T> assign(int branchIndex,
+                              int valueIndex,
+                              T value)
     {
         return new QuickTrieNode<T>(branchIndex, valueIndex, value);
     }

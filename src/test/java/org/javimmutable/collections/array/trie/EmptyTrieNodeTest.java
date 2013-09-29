@@ -44,7 +44,7 @@ public class EmptyTrieNodeTest
     {
         EmptyTrieNode<String> node = new EmptyTrieNode<String>();
         assertEquals(true, node.get(0, 1).isEmpty());
-        TrieNode<String> newNode = node.set(0, 1, "a");
+        TrieNode<String> newNode = node.assign(0, 1, "a");
         assertTrue(newNode instanceof QuickTrieNode);
         assertEquals("a", newNode.get(0, 1).getValueOrNull());
         assertSame(node, node.delete(0, 1));

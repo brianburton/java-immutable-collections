@@ -75,19 +75,19 @@ public class StandardTrieNodeTest
     {
         TrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
 
-        node = node.set(0, 8, "a");
+        node = node.assign(0, 8, "a");
         assertEquals(1, node.shallowSize());
         assertEquals(1, node.deepSize());
         assertEquals("a", node.get(0, 8).getValueOrNull());
 
-        assertSame(node, node.set(0, 8, "a"));
+        assertSame(node, node.assign(0, 8, "a"));
 
-        node = node.set(0, 8, "x");
+        node = node.assign(0, 8, "x");
         assertEquals(1, node.shallowSize());
         assertEquals(1, node.deepSize());
         assertEquals("x", node.get(0, 8).getValueOrNull());
 
-        node = node.set(0, 18, "q");
+        node = node.assign(0, 18, "q");
         assertEquals(2, node.shallowSize());
         assertEquals(2, node.deepSize());
         assertEquals("x", node.get(0, 8).getValueOrNull());
@@ -105,7 +105,7 @@ public class StandardTrieNodeTest
         assertEquals(0, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // add a new subbranch
-        node = node.set(1, 5, "a");
+        node = node.assign(1, 5, "a");
         assertEquals(1, node.shallowSize());
         assertEquals(1, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
@@ -115,7 +115,7 @@ public class StandardTrieNodeTest
         assertEquals(1, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // add another new subbranch
-        node = node.set(7, 15, "z");
+        node = node.assign(7, 15, "z");
         assertEquals(2, node.shallowSize());
         assertEquals(2, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
@@ -126,7 +126,7 @@ public class StandardTrieNodeTest
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // update a subbranch
-        node = node.set(7, 15, "r");
+        node = node.assign(7, 15, "r");
         assertEquals(2, node.shallowSize());
         assertEquals(2, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
@@ -137,7 +137,7 @@ public class StandardTrieNodeTest
         assertEquals(2, (int)counts.find(QuickTrieNode.class).getValueOr(0));
 
         // expand a subbranch
-        node = node.set(7, 8, "q");
+        node = node.assign(7, 8, "q");
         assertEquals(2, node.shallowSize());
         assertEquals(3, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
@@ -153,9 +153,9 @@ public class StandardTrieNodeTest
     {
         TrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
 
-        node = node.set(0, 8, "x");
-        node = node.set(0, 18, "q");
-        node = node.set(0, 31, "g");
+        node = node.assign(0, 8, "x");
+        node = node.assign(0, 18, "q");
+        node = node.assign(0, 31, "g");
         assertEquals(3, node.shallowSize());
         assertEquals(3, node.deepSize());
         assertEquals("x", node.get(0, 8).getValueOrNull());
@@ -184,7 +184,7 @@ public class StandardTrieNodeTest
 
         // ultimate value
         node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
-        node = node.set(0, 8, "x");
+        node = node.assign(0, 8, "x");
         node = node.delete(0, 8);
         assertTrue(node instanceof EmptyTrieNode);
         assertEquals(0, node.shallowSize());
@@ -195,10 +195,10 @@ public class StandardTrieNodeTest
     public void testBranchesDelete()
     {
         TrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
-        node = node.set(1, 5, "a");
-        node = node.set(7, 15, "r");
-        node = node.set(7, 8, "q");
-        node = node.set(12, 3, "z");
+        node = node.assign(1, 5, "a");
+        node = node.assign(7, 15, "r");
+        node = node.assign(7, 8, "q");
+        node = node.assign(12, 3, "z");
         assertEquals(3, node.shallowSize());
         assertEquals(4, node.deepSize());
         assertEquals("a", node.get(1, 5).getValueOrNull());
@@ -276,12 +276,12 @@ public class StandardTrieNodeTest
     public void testCursor()
     {
         TrieNode<String> node = new StandardTrieNode<String>(Bit32Array.<TrieNode<String>>of(), Bit32Array.<String>of());
-        node = node.set(0, 8, "a");
-        node = node.set(0, 12, "b");
-        node = node.set(1, 5, "c");
-        node = node.set(7, 8, "d");
-        node = node.set(7, 15, "e");
-        node = node.set(12, 3, "f");
+        node = node.assign(0, 8, "a");
+        node = node.assign(0, 12, "b");
+        node = node.assign(1, 5, "c");
+        node = node.assign(7, 8, "d");
+        node = node.assign(7, 15, "e");
+        node = node.assign(12, 3, "f");
 
         Cursor<String> cursor = node.cursor().next();
         assertEquals(true, cursor.hasValue());
@@ -311,7 +311,7 @@ public class StandardTrieNodeTest
         final int maxBranches = 500;
         for (int branch = 0; branch < maxBranches; ++branch) {
             int branchIndex = branch * 32 + 1;
-            node = node.set(branchIndex, 1, branch);
+            node = node.assign(branchIndex, 1, branch);
         }
 
         List<Integer> values = new ArrayList<Integer>();

@@ -85,9 +85,9 @@ public final class StandardTrieNode<T>
     }
 
     @Override
-    public TrieNode<T> set(int branchIndex,
-                           int valueIndex,
-                           T value)
+    public TrieNode<T> assign(int branchIndex,
+                              int valueIndex,
+                              T value)
     {
         final Bit32Array<TrieNode<T>> branches = this.branches;
         final Bit32Array<T> values = this.values;
@@ -101,7 +101,7 @@ public final class StandardTrieNode<T>
             if (child == null) {
                 return new StandardTrieNode<T>(branches.assign(childIndex, new QuickTrieNode<T>(childBranchIndex, valueIndex, value)), values);
             } else {
-                return new StandardTrieNode<T>(branches.assign(childIndex, child.set(childBranchIndex, valueIndex, value)), values);
+                return new StandardTrieNode<T>(branches.assign(childIndex, child.assign(childBranchIndex, valueIndex, value)), values);
             }
         }
     }

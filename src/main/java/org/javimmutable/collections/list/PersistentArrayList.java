@@ -94,14 +94,14 @@ public class PersistentArrayList<T>
         if (index < 0 || index >= size) {
             throw new ArrayIndexOutOfBoundsException();
         }
-        return new PersistentArrayList<T>(values.set(index >>> 5, index & 0x1f, value), size);
+        return new PersistentArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), size);
     }
 
     @Override
     public PersistentArrayList<T> insert(T value)
     {
         final int index = size;
-        return new PersistentArrayList<T>(values.set(index >>> 5, index & 0x1f, value), index + 1);
+        return new PersistentArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index + 1);
     }
 
     @Override

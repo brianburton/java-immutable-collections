@@ -65,10 +65,10 @@ public final class TrieArray<T>
         return root.get(index >>> 5, index & 0x1f);
     }
 
-    public TrieArray<T> set(int index,
-                            T value)
+    public TrieArray<T> assign(int index,
+                               T value)
     {
-        TrieNode<T> newRoot = root.set(index >>> 5, index & 0x1f, value);
+        TrieNode<T> newRoot = root.assign(index >>> 5, index & 0x1f, value);
         return (newRoot == root) ? this : new TrieArray<T>(newRoot);
     }
 

@@ -50,13 +50,13 @@ public class QuickTrieNodeTest
         assertEquals(Holders.<Integer>of(), node.get(101, 5));
         assertEquals(Holders.<Integer>of(), node.get(100, 6));
 
-        TrieNode<Integer> newNode = node.set(100, 5, 101);
+        TrieNode<Integer> newNode = node.assign(100, 5, 101);
         assertEquals(QuickTrieNode.class, newNode.getClass());
         assertEquals(Holders.of(101), newNode.get(100, 5));
         assertEquals(Holders.<Integer>of(), newNode.get(101, 5));
         assertEquals(Holders.<Integer>of(), newNode.get(100, 6));
 
-        newNode = node.set(101, 5, 101);
+        newNode = node.assign(101, 5, 101);
         assertEquals(StandardTrieNode.class, newNode.getClass());
         assertEquals(2, newNode.deepSize());
         assertEquals(2, newNode.shallowSize());
@@ -64,7 +64,7 @@ public class QuickTrieNodeTest
         assertEquals(Holders.of(101), newNode.get(101, 5));
         assertEquals(Holders.<Integer>of(), newNode.get(100, 6));
 
-        newNode = node.set(100, 6, 106);
+        newNode = node.assign(100, 6, 106);
         assertEquals(StandardTrieNode.class, newNode.getClass());
         assertEquals(2, newNode.deepSize());
         assertEquals(1, newNode.shallowSize());
@@ -84,9 +84,9 @@ public class QuickTrieNodeTest
     public void testValueIdentity()
     {
         QuickTrieNode<String> node = new QuickTrieNode<String>(100, 5, "ab");
-        assertTrue(node == node.set(100, 5, "ab"));
-        assertTrue(node == node.set(100, 5, "a" + "b"));
-        assertFalse(node == node.set(100, 5, "abc"));
-        assertFalse(node == node.set(100, 5, "abc".substring(0, 2)));
+        assertTrue(node == node.assign(100, 5, "ab"));
+        assertTrue(node == node.assign(100, 5, "a" + "b"));
+        assertFalse(node == node.assign(100, 5, "abc"));
+        assertFalse(node == node.assign(100, 5, "abc".substring(0, 2)));
     }
 }

@@ -46,9 +46,9 @@ public interface TrieNode<T>
     Holder<T> get(int branchIndex,
                   int valueIndex);
 
-    TrieNode<T> set(int branchIndex,
-                    int valueIndex,
-                    T value);
+    TrieNode<T> assign(int branchIndex,
+                       int valueIndex,
+                       T value);
 
     TrieNode<T> delete(int branchIndex,
                        int valueIndex);

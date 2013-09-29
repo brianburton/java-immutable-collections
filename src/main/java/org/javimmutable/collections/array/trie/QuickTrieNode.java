@@ -64,16 +64,16 @@ public class QuickTrieNode<T>
     }
 
     @Override
-    public TrieNode<T> set(int branchIndex,
-                           int valueIndex,
-                           T value)
+    public TrieNode<T> assign(int branchIndex,
+                              int valueIndex,
+                              T value)
     {
         final int thisBranchIndex = this.branchIndex;
         final int thisValueIndex = this.valueIndex;
         if (thisBranchIndex == branchIndex && thisValueIndex == valueIndex) {
             return (this.value == value) ? this : new QuickTrieNode<T>(branchIndex, valueIndex, value);
         } else {
-            return new StandardTrieNode<T>(thisBranchIndex, thisValueIndex, this.value).set(branchIndex, valueIndex, value);
+            return new StandardTrieNode<T>(thisBranchIndex, thisValueIndex, this.value).assign(branchIndex, valueIndex, value);
         }
     }
 
