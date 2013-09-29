@@ -82,12 +82,20 @@ public class PersistentHashMap<K, V>
     @Override
     public V get(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         return find(key).getValueOrNull();
     }
 
     @Override
     public Holder<V> find(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         final int hashCode = calcHashCode(key);
         return nodes.get(hashCode >>> 5, hashCode & 0x1f, key);
     }
@@ -95,6 +103,10 @@ public class PersistentHashMap<K, V>
     @Override
     public Holder<Entry<K, V>> findEntry(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         final int hashCode = calcHashCode(key);
         return Holders.fromNullable(nodes.getEntry(hashCode >>> 5, hashCode & 0x1f, key));
     }
@@ -103,6 +115,10 @@ public class PersistentHashMap<K, V>
     public PersistentHashMap<K, V> assign(final K key,
                                           final V value)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
         final int hashCode = calcHashCode(key);
@@ -113,6 +129,10 @@ public class PersistentHashMap<K, V>
     @Override
     public PersistentHashMap<K, V> delete(final K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         final HashTrieNode<K, V> nodes = this.nodes;
         final MutableDelta sizeDelta = new MutableDelta();
         final int hashCode = calcHashCode(key);

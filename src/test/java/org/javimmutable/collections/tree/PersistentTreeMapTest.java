@@ -72,6 +72,37 @@ public class PersistentTreeMapTest
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.asMap().values()));
     }
 
+    public void testNullKeys()
+    {
+        PersistentTreeMap<Integer, Integer> map = PersistentTreeMap.of();
+        map = map.assign(1, 3);
+        try {
+            map.assign(null, 18);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.get(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.find(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.findEntry(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.delete(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
     public void testValueIdentity()
     {
         PersistentTreeMap<String, String> map = PersistentTreeMap.of();

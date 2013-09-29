@@ -74,6 +74,37 @@ public class PersistentHashMapTest
         assertSame(map, map.assign(14000, "aaa"));
     }
 
+    public void testNullKeys()
+    {
+        PersistentMap<Integer, Integer> map = PersistentHashMap.of();
+        map = map.assign(1, 3);
+        try {
+            map.assign(null, 18);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.get(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.find(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.findEntry(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+        try {
+            map.delete(null);
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
     public void testRandom1()
     {
         final int maxKey = 999999999;

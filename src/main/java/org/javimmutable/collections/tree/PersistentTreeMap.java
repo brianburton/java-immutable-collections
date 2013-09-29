@@ -104,6 +104,9 @@ public class PersistentTreeMap<K, V>
     @Override
     public Holder<V> find(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
         if (root == null) {
             return Holders.of();
         } else {
@@ -114,6 +117,9 @@ public class PersistentTreeMap<K, V>
     @Override
     public Holder<Entry<K, V>> findEntry(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
         if (root == null) {
             return Holders.of();
         } else {
@@ -125,6 +131,9 @@ public class PersistentTreeMap<K, V>
     public PersistentTreeMap<K, V> assign(K key,
                                           V value)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
         if (root == null) {
             return create(new LeafNode<K, V>(key, value), 1);
         } else {
@@ -150,6 +159,10 @@ public class PersistentTreeMap<K, V>
     @Override
     public PersistentTreeMap<K, V> delete(K key)
     {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
         if (root == null) {
             return this;
         }
