@@ -130,7 +130,7 @@ public class PersistentArrayList<T>
     }
 
     @Override
-    public List<T> asList()
+    public List<T> getList()
     {
         return ListAdaptor.of(this);
     }

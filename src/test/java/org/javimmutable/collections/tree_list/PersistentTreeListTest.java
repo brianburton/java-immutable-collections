@@ -115,14 +115,14 @@ public class PersistentTreeListTest
             list = list.insert(0, i);
             expected.add(0, i);
         }
-        assertEquals(expected, list.asList());
+        assertEquals(expected, list.getList());
         list.verifyDepthsMatch();
 
         for (int i = 1; i <= 1000; ++i) {
             list = list.insert(999, i);
             expected.add(999, i);
         }
-        assertEquals(expected, list.asList());
+        assertEquals(expected, list.getList());
         list.verifyDepthsMatch();
     }
 
@@ -140,7 +140,7 @@ public class PersistentTreeListTest
                 assertEquals(expected.size(), list.size());
                 list.verifyDepthsMatch();
             }
-            assertEquals(expected, list.asList());
+            assertEquals(expected, list.getList());
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < size; ++i) {
@@ -156,7 +156,7 @@ public class PersistentTreeListTest
                 list = list.delete(index);
                 expected.remove(index);
                 if (list.size() % 100 == 0) {
-                    assertEquals(expected, list.asList());
+                    assertEquals(expected, list.getList());
                 }
                 list.verifyDepthsMatch();
             }
@@ -189,7 +189,7 @@ public class PersistentTreeListTest
                 }
                 assertEquals(expected.size(), list.size());
             }
-            assertEquals(expected, list.asList());
+            assertEquals(expected, list.getList());
             list.verifyDepthsMatch();
 
             Cursor<Integer> cursor = list.cursor().next();

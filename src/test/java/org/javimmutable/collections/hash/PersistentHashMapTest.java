@@ -138,11 +138,11 @@ public class PersistentHashMapTest
             }
 
             // verify the Map adaptor worked properly
-            assertEquals(expected, map.asMap());
-            assertEquals(expected.keySet(), map.asMap().keySet());
-            assertEquals(expected.entrySet(), map.asMap().entrySet());
+            assertEquals(expected, map.getMap());
+            assertEquals(expected.keySet(), map.getMap().keySet());
+            assertEquals(expected.entrySet(), map.getMap().entrySet());
             ArrayList<Integer> jvalues = new ArrayList<Integer>(expected.values());
-            ArrayList<Integer> pvalues = new ArrayList<Integer>(map.asMap().values());
+            ArrayList<Integer> pvalues = new ArrayList<Integer>(map.getMap().values());
             Collections.sort(jvalues);
             Collections.sort(pvalues);
             assertEquals(jvalues, pvalues);

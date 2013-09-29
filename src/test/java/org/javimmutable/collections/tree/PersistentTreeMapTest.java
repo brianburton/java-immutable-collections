@@ -68,8 +68,8 @@ public class PersistentTreeMapTest
 
         map = PersistentTreeMap.of();
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
-        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.asMap().keySet()));
-        assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.asMap().values()));
+        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.getMap().keySet()));
+        assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.getMap().values()));
     }
 
     public void testNullKeys()
@@ -125,7 +125,7 @@ public class PersistentTreeMapTest
                 assertEquals(new ArrayList<Integer>(expected), map.getKeysList());
                 assertEquals(expected.size(), map.size());
             }
-            assertEquals(expected, map.asMap().keySet());
+            assertEquals(expected, map.getMap().keySet());
 
             // test value identity at all levels
             for (PersistentMap.Entry<Integer, Integer> entry : map) {
@@ -166,9 +166,9 @@ public class PersistentTreeMapTest
                 }
                 assertEquals(expected.size(), map.size());
             }
-            assertEquals(expected, map.asMap());
-            assertEquals(expected.keySet(), map.asMap().keySet());
-            assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(map.asMap().values()));
+            assertEquals(expected, map.getMap());
+            assertEquals(expected.keySet(), map.getMap().keySet());
+            assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(map.getMap().values()));
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
                 Holder<Integer> value = map.find(entry.getKey());
                 assertEquals(entry.getValue(), value.getValue());

@@ -103,5 +103,5 @@ public interface PersistentList<T>
      *
      * @return
      */
-    public List<T> asList();
+    public List<T> getList();
 }

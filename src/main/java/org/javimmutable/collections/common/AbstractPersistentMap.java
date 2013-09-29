@@ -59,7 +59,7 @@ public abstract class AbstractPersistentMap<K, V>
     @Override
     public int hashCode()
     {
-        return asMap().hashCode();
+        return getMap().hashCode();
     }
 
     @Override
@@ -68,9 +68,9 @@ public abstract class AbstractPersistentMap<K, V>
         if (o == this) {
             return true;
         } else if (o instanceof PersistentMap) {
-            return asMap().equals(((PersistentMap)o).asMap());
+            return getMap().equals(((PersistentMap)o).getMap());
         } else {
-            return (o instanceof Map) && asMap().equals(o);
+            return (o instanceof Map) && getMap().equals(o);
         }
     }
 

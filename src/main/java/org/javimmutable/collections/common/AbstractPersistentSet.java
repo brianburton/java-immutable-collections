@@ -145,7 +145,7 @@ public abstract class AbstractPersistentSet<T>
     }
 
     @Override
-    public Set<T> asSet()
+    public Set<T> getSet()
     {
         return SetAdaptor.of(this);
     }
@@ -176,9 +176,9 @@ public abstract class AbstractPersistentSet<T>
         } else if (o == null) {
             return false;
         } else if (o instanceof PersistentSet) {
-            return asSet().equals(((PersistentSet)o).asSet());
+            return getSet().equals(((PersistentSet)o).getSet());
         } else {
-            return (o instanceof Set) && asSet().equals(o);
+            return (o instanceof Set) && getSet().equals(o);
         }
     }
 

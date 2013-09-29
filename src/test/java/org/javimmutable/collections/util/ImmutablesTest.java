@@ -62,7 +62,7 @@ public class ImmutablesTest
 
         PersistentStack<Integer> stack = Immutables.stack();
         stack = stack.insert(1).insert(2).insert(3);
-        assertEquals(expected, Immutables.list(stack.cursor()).asList());
+        assertEquals(expected, Immutables.list(stack.cursor()).getList());
 
         PersistentList<Integer> inlist = PersistentArrayList.of();
         inlist = inlist.insert(1).insert(2).insert(3);
@@ -78,7 +78,7 @@ public class ImmutablesTest
         List<Integer> input = Arrays.asList(1, 2, 3);
 
         PersistentList<Integer> list = Immutables.list(input);
-        assertEquals(input, list.asList());
+        assertEquals(input, list.getList());
         assertEquals(list, Immutables.list(input.iterator()));
         assertEquals(list, Immutables.list(list));
         assertEquals(list, Immutables.list(list.cursor()));
@@ -90,7 +90,7 @@ public class ImmutablesTest
         List<Integer> input = Arrays.asList(1, 2, 3);
 
         PersistentRandomAccessList<Integer> list = Immutables.ralist(input);
-        assertEquals(input, list.asList());
+        assertEquals(input, list.getList());
         assertEquals(list, Immutables.ralist(input.iterator()));
         assertEquals(list, Immutables.ralist(list));
         assertEquals(list, Immutables.ralist(list.cursor()));
@@ -105,7 +105,7 @@ public class ImmutablesTest
         input.put(3, 5);
 
         PersistentMap<Integer, Integer> map = Immutables.map(input);
-        assertEquals(input, map.asMap());
+        assertEquals(input, map.getMap());
         assertEquals(map, Immutables.map(map));
         assertEquals(map, Immutables.map(map));
     }
@@ -118,7 +118,7 @@ public class ImmutablesTest
         input.put(3, 5);
 
         PersistentMap<Integer, Integer> map = Immutables.sortedMap(input);
-        assertEquals(input, map.asMap());
+        assertEquals(input, map.getMap());
         assertEquals(map, Immutables.sortedMap(map));
         assertEquals(map, Immutables.map(map));
     }
@@ -128,7 +128,7 @@ public class ImmutablesTest
         List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
 
         PersistentSet<Integer> set = Immutables.set(input);
-        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(new HashSet<Integer>(input), set.getSet());
         assertEquals(set, Immutables.set(input.iterator()));
         assertEquals(set, Immutables.set(set));
         assertEquals(set, Immutables.set(set.cursor()));
@@ -140,7 +140,7 @@ public class ImmutablesTest
         List<Integer> input = Arrays.asList(1, 87, 100, 1, 45);
 
         PersistentSet<Integer> set = Immutables.sortedSet(input);
-        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(new HashSet<Integer>(input), set.getSet());
         assertEquals(set, Immutables.sortedSet(input.iterator()));
         assertEquals(set, Immutables.sortedSet(set));
         assertEquals(set, Immutables.sortedSet(set.cursor()));
@@ -157,7 +157,7 @@ public class ImmutablesTest
             }
         };
         set = Immutables.sortedSet(reverser, input);
-        assertEquals(new HashSet<Integer>(input), set.asSet());
+        assertEquals(new HashSet<Integer>(input), set.getSet());
         assertEquals(set, Immutables.sortedSet(reverser, input.iterator()));
         assertEquals(set, Immutables.sortedSet(reverser, set));
         assertEquals(set, Immutables.sortedSet(reverser, set.cursor()));
@@ -187,8 +187,8 @@ public class ImmutablesTest
         assertEquals(20, changed.get(1));
         assertEquals(45, changed.get(2));
 
-        assertEquals(Arrays.asList(10, 20, 30), list.asList());
-        assertEquals(Arrays.asList(10, 20, 45), changed.asList());
+        assertEquals(Arrays.asList(10, 20, 30), list.getList());
+        assertEquals(Arrays.asList(10, 20, 45), changed.getList());
 
         PersistentRandomAccessList<Integer> ralist = Immutables.ralist();
         ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
@@ -203,8 +203,8 @@ public class ImmutablesTest
         assertEquals(10, ralist2.get(0));
         assertEquals(87, ralist2.get(1));
         assertEquals(30, ralist2.get(2));
-        assertEquals(Arrays.asList(10, 20, 30), ralist.asList());
-        assertEquals(Arrays.asList(10, 87, 30), ralist2.asList());
+        assertEquals(Arrays.asList(10, 20, 30), ralist.getList());
+        assertEquals(Arrays.asList(10, 87, 30), ralist2.getList());
     }
 
     public void testMapTutorialCode()
@@ -234,7 +234,7 @@ public class ImmutablesTest
 
         PersistentMap<Integer, Integer> smap = Immutables.sortedMap();
         smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
-        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(smap.asMap().keySet()));
-        assertEquals(Arrays.asList(80, 19, 31), new ArrayList<Integer>(smap.asMap().values()));
+        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(smap.getMap().keySet()));
+        assertEquals(Arrays.asList(80, 19, 31), new ArrayList<Integer>(smap.getMap().values()));
     }
 }

@@ -121,5 +121,5 @@ public interface PersistentSet<T>
     /**
      * @return an unmodifiable Set implementation backed by this set.
      */
-    public Set<T> asSet();
+    public Set<T> getSet();
 }

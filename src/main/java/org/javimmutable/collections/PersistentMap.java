@@ -118,7 +118,7 @@ public interface PersistentMap<K, V>
      *
      * @return Map view of this PersistentMap
      */
-    Map<K, V> asMap();
+    Map<K, V> getMap();
 
     /**
      * Creates a Cursor to access all of the Map's keys.

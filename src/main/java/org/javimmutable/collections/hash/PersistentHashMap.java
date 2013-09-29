@@ -147,7 +147,7 @@ public class PersistentHashMap<K, V>
     }
 
     @Override
-    public Map<K, V> asMap()
+    public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);
     }

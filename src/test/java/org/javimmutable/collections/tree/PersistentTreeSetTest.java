@@ -97,7 +97,7 @@ public class PersistentTreeSetTest
         assertEquals(true, set2.contains("barney"));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.asSet());
+        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
 
         assertEquals(set, set2.intersection(set));
         assertEquals(set, set2.delete("betty").delete("barney"));
@@ -128,7 +128,7 @@ public class PersistentTreeSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.asSet());
+        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -166,10 +166,10 @@ public class PersistentTreeSetTest
                 }
                 assertEquals(expected.size(), set.size());
             }
-            assertEquals(expected, set.asSet());
+            assertEquals(expected, set.getSet());
 
             // verify ordering is the same in both sets
-            assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.asSet()));
+            assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
 
             // verify value identity
             for (Integer value : set) {
@@ -204,7 +204,7 @@ public class PersistentTreeSetTest
             expected.add(value);
             set = set.insert(value);
         }
-        assertEquals(expected, set.asSet());
-        assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.asSet()));
+        assertEquals(expected, set.getSet());
+        assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
     }
 }
