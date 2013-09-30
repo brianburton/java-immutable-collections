@@ -92,6 +92,25 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
+    public JImmutableSet<T> intersection(JImmutableSet<T> other)
+    {
+        JImmutableSet<T> smaller, larger;
+        if (other.getClass() == getClass() && other.size() < size()) {
+            smaller = other;
+            larger = this;
+        } else {
+            smaller = this;
+            larger = other;
+        }
+        for (T value : smaller) {
+            if (!larger.contains(value)) {
+                smaller = smaller.delete(value);
+            }
+        }
+        return smaller;
+    }
+
+    @Override
     public JImmutableSet<T> intersection(Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = emptyMap();

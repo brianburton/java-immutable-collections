@@ -99,6 +99,14 @@ public interface JImmutableSet<T>
     JImmutableSet<T> union(Cursorable<T> other);
 
     /**
+     * Removes all values from the Set that are not contained in the other Set.
+     *
+     * @param other
+     * @return instance of set with unmatched values removed
+     */
+    JImmutableSet<T> intersection(JImmutableSet<T> other);
+
+    /**
      * Removes all values from the Set that are not contained in the other collection.
      *
      * @param other

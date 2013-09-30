@@ -99,6 +99,7 @@ public class JImmutableTreeSetTest
         assertEquals(true, set2.containsAll(expected));
         assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
 
+        assertEquals(set, set.intersection(set2));
         assertEquals(set, set2.intersection(set));
         assertEquals(set, set2.delete("betty").delete("barney"));
 
