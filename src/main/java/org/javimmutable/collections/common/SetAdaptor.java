@@ -62,10 +62,10 @@ public class SetAdaptor<T>
         return new SetAdaptor<T>(pset);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o)
     {
-        //noinspection unchecked
         return pset.contains((T)o);
     }
 
