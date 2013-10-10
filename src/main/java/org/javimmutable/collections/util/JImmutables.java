@@ -167,7 +167,11 @@ public final class JImmutables
 
     public static <K, V> JImmutableMap<K, V> map(JImmutableMap<K, V> map)
     {
-        return Functions.assignAll(JImmutableHashMap.<K, V>of(), map);
+        if (map instanceof JImmutableHashMap) {
+            return map;
+        } else {
+            return Functions.assignAll(JImmutableHashMap.<K, V>of(), map);
+        }
     }
 
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap()

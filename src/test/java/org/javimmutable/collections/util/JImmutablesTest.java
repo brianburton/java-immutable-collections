@@ -106,7 +106,7 @@ public class JImmutablesTest
 
         JImmutableMap<Integer, Integer> map = JImmutables.map(input);
         assertEquals(input, map.getMap());
-        assertEquals(map, JImmutables.map(map));
+        assertSame(map, JImmutables.map(map));
         assertEquals(map, JImmutables.map(map));
     }
 
