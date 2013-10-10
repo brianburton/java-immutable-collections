@@ -46,6 +46,7 @@ import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
@@ -181,6 +182,12 @@ public final class JImmutables
 
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(JImmutableMap<K, V> map)
     {
+        if (map instanceof JImmutableTreeMap) {
+            JImmutableTreeMap treemap = (JImmutableTreeMap)map;
+            if (treemap.getComparatorClass().equals(ComparableComparator.class)) {
+                return map;
+            }
+        }
         return Functions.assignAll(JImmutableTreeMap.<K, V>of(), map);
     }
 

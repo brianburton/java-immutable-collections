@@ -119,8 +119,23 @@ public class JImmutablesTest
 
         JImmutableMap<Integer, Integer> map = JImmutables.sortedMap(input);
         assertEquals(input, map.getMap());
-        assertEquals(map, JImmutables.sortedMap(map));
+        assertSame(map, JImmutables.sortedMap(map));
         assertEquals(map, JImmutables.map(map));
+
+        JImmutableMap<Integer, Integer> map2 = JImmutables.sortedMap(new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -b.compareTo(a);
+            }
+        }, input);
+        assertEquals(input, map2.getMap());
+        assertEquals(map, JImmutables.sortedMap(map2));
+        assertNotSame(map, JImmutables.sortedMap(map2));
+        assertEquals(map, JImmutables.map(map2));
+        assertNotSame(map, JImmutables.map(map2));
     }
 
     public void testSet()

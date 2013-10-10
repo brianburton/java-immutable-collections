@@ -57,7 +57,7 @@ public class JImmutableTreeMap<K, V>
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(new ComparableComparator());
 
-    private final Comparator<K> properties;
+    private final Comparator<K> comparator;
     private final TreeNode<K, V> root;
     private final int size;
 
@@ -86,11 +86,11 @@ public class JImmutableTreeMap<K, V>
         return answer;
     }
 
-    private JImmutableTreeMap(Comparator<K> properties,
+    private JImmutableTreeMap(Comparator<K> comparator,
                               TreeNode<K, V> root,
                               int size)
     {
-        this.properties = properties;
+        this.comparator = comparator;
         this.root = root;
         this.size = size;
     }
@@ -110,7 +110,7 @@ public class JImmutableTreeMap<K, V>
         if (root == null) {
             return Holders.of();
         } else {
-            return root.find(properties, key);
+            return root.find(comparator, key);
         }
     }
 
@@ -123,7 +123,7 @@ public class JImmutableTreeMap<K, V>
         if (root == null) {
             return Holders.of();
         } else {
-            return root.findEntry(properties, key);
+            return root.findEntry(comparator, key);
         }
     }
 
@@ -137,7 +137,7 @@ public class JImmutableTreeMap<K, V>
         if (root == null) {
             return create(new LeafNode<K, V>(key, value), 1);
         } else {
-            UpdateResult<K, V> result = root.update(properties, key, value);
+            UpdateResult<K, V> result = root.update(comparator, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return this;
@@ -167,7 +167,7 @@ public class JImmutableTreeMap<K, V>
             return this;
         }
 
-        DeleteResult<K, V> result = root.delete(properties, key);
+        DeleteResult<K, V> result = root.delete(comparator, key);
         if (result.type == DeleteResult.Type.UNCHANGED) {
             return this;
         } else {
@@ -228,9 +228,14 @@ public class JImmutableTreeMap<K, V>
         }
     }
 
+    public Class<? extends Comparator> getComparatorClass()
+    {
+        return comparator.getClass();
+    }
+
     private JImmutableTreeMap<K, V> create(TreeNode<K, V> root,
                                            int sizeDelta)
     {
-        return new JImmutableTreeMap<K, V>(properties, root, size + sizeDelta);
+        return new JImmutableTreeMap<K, V>(comparator, root, size + sizeDelta);
     }
 }
