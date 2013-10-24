@@ -155,61 +155,137 @@ public final class JImmutables
         return Functions.insertAll(JImmutableTreeList.<T>of(), collection.iterator());
     }
 
+    /**
+     * Constructs an empty unsorted map.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     public static <K, V> JImmutableMap<K, V> map()
     {
         return JImmutableHashMap.of();
     }
 
-    public static <K, V> JImmutableMap<K, V> map(Map<K, V> map)
+    /**
+     * Constructs an unsorted map.
+     * All key/value pairs from source are copied into the newly created map.
+     *
+     * @param source
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableMap<K, V> map(Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableHashMap.<K, V>of(), map);
+        return Functions.assignAll(JImmutableHashMap.<K, V>of(), source);
     }
 
-    public static <K, V> JImmutableMap<K, V> map(JImmutableMap<K, V> map)
+    /**
+     * Constructs an unsorted map.
+     * If source is already an unsorted map it is returned directly, otherwise a new map
+     * is created and all key/value pairs from source are copied into the newly created map.
+     *
+     * @param source
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableMap<K, V> map(JImmutableMap<K, V> source)
     {
-        if (map instanceof JImmutableHashMap) {
-            return map;
+        if (source instanceof JImmutableHashMap) {
+            return source;
         } else {
-            return Functions.assignAll(JImmutableHashMap.<K, V>of(), map);
+            return Functions.assignAll(JImmutableHashMap.<K, V>of(), source);
         }
     }
 
+    /**
+     * Constructs an empty map that sorts keys in their natural sort order (using ComparableComparator).
+     */
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap()
     {
         return JImmutableTreeMap.of();
     }
 
-    public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(Map<K, V> map)
+    /**
+     * Constructs a map that sorts keys in their natural sort order (using ComparableComparator).
+     * All key/value pairs from source are copied into the newly created map.
+     *
+     * @param source java.util.Map containing starting key/value pairs
+     */
+    public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.<K, V>of(), map);
+        return Functions.assignAll(JImmutableTreeMap.<K, V>of(), source);
     }
 
-    public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(JImmutableMap<K, V> map)
+    /**
+     * Constructs a map that sorts keys in their natural sort order (using ComparableComparator).
+     * All key/value pairs from source are copied into the newly created map.
+     * If source is already a sorted map using the natural sort order it will be returned directly
+     * (effectively performing a simple cast).
+     *
+     * @param source JImmutableMap containing starting key/value pairs
+     */
+    public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(JImmutableMap<K, V> source)
     {
-        if (map instanceof JImmutableTreeMap) {
-            JImmutableTreeMap treemap = (JImmutableTreeMap)map;
-            if (treemap.getComparatorClass().equals(ComparableComparator.class)) {
-                return map;
-            }
-        }
-        return Functions.assignAll(JImmutableTreeMap.<K, V>of(), map);
+        return sortedMap(ComparableComparator.<K>of(), source);
     }
 
+    /**
+     * Constructs a map that sorts keys using the specified Comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     * <p/>
+     * All key/value pairs from map are copied into the newly created map.
+     */
     public static <K, V> JImmutableMap<K, V> sortedMap(Comparator<K> comparator)
     {
         return JImmutableTreeMap.of(comparator);
     }
 
+    /**
+     * Constructs a map that sorts keys using the specified Comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     * <p/>
+     * All key/value pairs from source are copied into the newly created map.
+     *
+     * @param source java.util.Map containing starting key/value pairs
+     */
     public static <K, V> JImmutableMap<K, V> sortedMap(Comparator<K> comparator,
-                                                       Map<K, V> map)
+                                                       Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.<K, V>of(comparator), map);
+        return Functions.assignAll(JImmutableTreeMap.<K, V>of(comparator), source);
     }
 
+    /**
+     * Constructs a map that sorts keys using the specified Comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     * <p/>
+     * If source is already a sorted map that uses the same comparator (as indicated by comparator.equals())
+     * then source will be returned directly.  Otherwise all key/value pairs from source are copied into
+     * the newly created map.
+     *
+     * @param source JImmutableMap containing starting key/value pairs
+     */
     public static <K, V> JImmutableMap<K, V> sortedMap(Comparator<K> comparator,
-                                                       JImmutableMap<K, V> map)
+                                                       JImmutableMap<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.<K, V>of(comparator), map);
+        if (source instanceof JImmutableTreeMap) {
+            JImmutableTreeMap treemap = (JImmutableTreeMap)source;
+            if (treemap.getComparator().equals(comparator)) {
+                return source;
+            }
+        }
+        return Functions.assignAll(JImmutableTreeMap.<K, V>of(comparator), source);
     }
 
     public static <T> JImmutableSet<T> set()

@@ -46,7 +46,7 @@ import java.util.Comparator;
 public final class ComparableComparator<V extends Comparable<V>>
         implements Comparator<V>
 {
-    private static ComparableComparator INSTANCE = new ComparableComparator();
+    private static final ComparableComparator INSTANCE = new ComparableComparator();
 
     /**
      * Creates a type appropriate reference to the singleton instance of this class.
@@ -71,5 +71,17 @@ public final class ComparableComparator<V extends Comparable<V>>
             return 1;
         }
         return a.compareTo(b);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 3571; // prime number
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return o == this || o.getClass() == this.getClass();
     }
 }

@@ -61,6 +61,13 @@ public class JImmutableTreeMap<K, V>
     private final TreeNode<K, V> root;
     private final int size;
 
+    /**
+     * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     *
+     * @param comparator
+     */
     public JImmutableTreeMap(Comparator<K> comparator)
     {
         this(comparator, null, 0);
@@ -72,11 +79,27 @@ public class JImmutableTreeMap<K, V>
         return (JImmutableTreeMap<K, V>)EMPTY;
     }
 
+    /**
+     * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     *
+     * @param comparator
+     */
     public static <K, V> JImmutableTreeMap<K, V> of(Comparator<K> comparator)
     {
         return new JImmutableTreeMap<K, V>(comparator);
     }
 
+    /**
+     * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
+     * to compare the keys.
+     *
+     * @param map
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
     {
         JImmutableTreeMap<K, V> answer = of();
@@ -228,9 +251,9 @@ public class JImmutableTreeMap<K, V>
         }
     }
 
-    public Class<? extends Comparator> getComparatorClass()
+    public Comparator<K> getComparator()
     {
-        return comparator.getClass();
+        return comparator;
     }
 
     private JImmutableTreeMap<K, V> create(TreeNode<K, V> root,
