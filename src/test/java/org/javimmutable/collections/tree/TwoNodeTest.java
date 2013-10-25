@@ -1,8 +1,12 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holders;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class TwoNodeTest
         extends TestCase
@@ -29,6 +33,86 @@ public class TwoNodeTest
         comparator = null;
         node = null;
         super.tearDown();
+    }
+
+    public void testFind()
+    {
+        assertEquals(Holders.<Integer>of(), node.find(comparator, 8));
+        assertEquals(Holders.of(10), node.find(comparator, 10));
+        assertEquals(Holders.<Integer>of(), node.find(comparator, 11));
+        assertEquals(Holders.of(12), node.find(comparator, 12));
+        assertEquals(Holders.<Integer>of(), node.find(comparator, 13));
+    }
+
+    public void testFindEntry()
+    {
+        assertEquals(Holders.<JImmutableTreeMap.Entry<Integer, Integer>>of(), node.findEntry(comparator, 8));
+        assertEquals(Holders.<JImmutableTreeMap.Entry<Integer, Integer>>of(new LeafNode<Integer, Integer>(10, 10)), node.findEntry(comparator, 10));
+        assertEquals(Holders.<JImmutableTreeMap.Entry<Integer, Integer>>of(), node.findEntry(comparator, 11));
+        assertEquals(Holders.<JImmutableTreeMap.Entry<Integer, Integer>>of(new LeafNode<Integer, Integer>(12, 12)), node.findEntry(comparator, 12));
+        assertEquals(Holders.<JImmutableTreeMap.Entry<Integer, Integer>>of(), node.findEntry(comparator, 13));
+    }
+
+    public void testVarious()
+    {
+        assertEquals(Integer.valueOf(12), node.getMaxKey());
+        assertEquals(Integer.valueOf(10), node.getLeftMaxKey());
+        assertEquals(Integer.valueOf(12), node.getRightMaxKey());
+        assertEquals(new LeafNode<Integer, Integer>(10, 10), node.getLeft());
+        assertEquals(new LeafNode<Integer, Integer>(12, 12), node.getRight());
+        List<JImmutableTreeMap.Entry<Integer, Integer>> values = new ArrayList<JImmutableTreeMap.Entry<Integer, Integer>>();
+        node.addEntriesTo(values);
+        //noinspection AssertEqualsBetweenInconvertibleTypes,unchecked
+        assertEquals(Arrays.asList(node.getLeft(), node.getRight()), values);
+    }
+
+    public void testVerifyDepthsMatch()
+    {
+        assertEquals(2, node.verifyDepthsMatch());
+
+        TwoNode<Integer, Integer> testNode = new TwoNode<Integer, Integer>(node,
+                                                                           node.getRight(),
+                                                                           8,
+                                                                           10);
+        try {
+            testNode.verifyDepthsMatch();
+            fail();
+        } catch (RuntimeException ex) {
+            // expected
+        }
+
+        testNode = new TwoNode<Integer, Integer>(node.getLeft(),
+                                                 node,
+                                                 8,
+                                                 10);
+        try {
+            testNode.verifyDepthsMatch();
+            fail();
+        } catch (RuntimeException ex) {
+            // expected
+        }
+    }
+
+    public void testLeftDeleteMerge()
+    {
+        assertEquals(new DeleteMergeResult<Integer, Integer>(new ThreeNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
+                                                                                             node.getLeft(),
+                                                                                             node.getRight(),
+                                                                                             8,
+                                                                                             10,
+                                                                                             12)),
+                     node.leftDeleteMerge(comparator, new LeafNode<Integer, Integer>(8, 8)));
+    }
+
+    public void testRightDeleteMerge()
+    {
+        assertEquals(new DeleteMergeResult<Integer, Integer>(new ThreeNode<Integer, Integer>(node.getLeft(),
+                                                                                             node.getRight(),
+                                                                                             new LeafNode<Integer, Integer>(14, 14),
+                                                                                             10,
+                                                                                             12,
+                                                                                             14)),
+                     node.rightDeleteMerge(comparator, new LeafNode<Integer, Integer>(14, 14)));
     }
 
     public void testUpdateLeftUnchanged()
