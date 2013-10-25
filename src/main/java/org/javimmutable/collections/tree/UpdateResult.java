@@ -127,6 +127,44 @@ public class UpdateResult<K, V>
     }
 
     @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UpdateResult that = (UpdateResult)o;
+
+        if (sizeDelta != that.sizeDelta) {
+            return false;
+        }
+        if (extraNode != null ? !extraNode.equals(that.extraNode) : that.extraNode != null) {
+            return false;
+        }
+        if (newNode != null ? !newNode.equals(that.newNode) : that.newNode != null) {
+            return false;
+        }
+        if (type != that.type) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (newNode != null ? newNode.hashCode() : 0);
+        result = 31 * result + (extraNode != null ? extraNode.hashCode() : 0);
+        result = 31 * result + sizeDelta;
+        return result;
+    }
+
+    @Override
     public String toString()
     {
         return String.format("<%s,%s,%s>", type, newNode, extraNode);

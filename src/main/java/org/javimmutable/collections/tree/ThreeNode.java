@@ -333,4 +333,50 @@ public class ThreeNode<K, V>
     {
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(middle), LazyCursor.of(right));
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ThreeNode threeNode = (ThreeNode)o;
+
+        if (left != null ? !left.equals(threeNode.left) : threeNode.left != null) {
+            return false;
+        }
+        if (leftMaxKey != null ? !leftMaxKey.equals(threeNode.leftMaxKey) : threeNode.leftMaxKey != null) {
+            return false;
+        }
+        if (middle != null ? !middle.equals(threeNode.middle) : threeNode.middle != null) {
+            return false;
+        }
+        if (middleMaxKey != null ? !middleMaxKey.equals(threeNode.middleMaxKey) : threeNode.middleMaxKey != null) {
+            return false;
+        }
+        if (right != null ? !right.equals(threeNode.right) : threeNode.right != null) {
+            return false;
+        }
+        if (rightMaxKey != null ? !rightMaxKey.equals(threeNode.rightMaxKey) : threeNode.rightMaxKey != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = left != null ? left.hashCode() : 0;
+        result = 31 * result + (middle != null ? middle.hashCode() : 0);
+        result = 31 * result + (right != null ? right.hashCode() : 0);
+        result = 31 * result + (leftMaxKey != null ? leftMaxKey.hashCode() : 0);
+        result = 31 * result + (middleMaxKey != null ? middleMaxKey.hashCode() : 0);
+        result = 31 * result + (rightMaxKey != null ? rightMaxKey.hashCode() : 0);
+        return result;
+    }
 }

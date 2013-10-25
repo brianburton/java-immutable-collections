@@ -220,6 +220,26 @@ public class TwoNode<K, V>
                                                                node.getMaxKey()));
     }
 
+    public TreeNode<K, V> getLeft()
+    {
+        return left;
+    }
+
+    public TreeNode<K, V> getRight()
+    {
+        return right;
+    }
+
+    public K getLeftMaxKey()
+    {
+        return leftMaxKey;
+    }
+
+    public K getRightMaxKey()
+    {
+        return rightMaxKey;
+    }
+
     @Override
     public String toString()
     {
@@ -230,5 +250,43 @@ public class TwoNode<K, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TwoNode twoNode = (TwoNode)o;
+
+        if (left != null ? !left.equals(twoNode.left) : twoNode.left != null) {
+            return false;
+        }
+        if (leftMaxKey != null ? !leftMaxKey.equals(twoNode.leftMaxKey) : twoNode.leftMaxKey != null) {
+            return false;
+        }
+        if (right != null ? !right.equals(twoNode.right) : twoNode.right != null) {
+            return false;
+        }
+        if (rightMaxKey != null ? !rightMaxKey.equals(twoNode.rightMaxKey) : twoNode.rightMaxKey != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = left != null ? left.hashCode() : 0;
+        result = 31 * result + (right != null ? right.hashCode() : 0);
+        result = 31 * result + (leftMaxKey != null ? leftMaxKey.hashCode() : 0);
+        result = 31 * result + (rightMaxKey != null ? rightMaxKey.hashCode() : 0);
+        return result;
     }
 }

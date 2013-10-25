@@ -182,4 +182,34 @@ public class LeafNode<K, V>
     {
         return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        LeafNode leafNode = (LeafNode)o;
+
+        if (nodeKey != null ? !nodeKey.equals(leafNode.nodeKey) : leafNode.nodeKey != null) {
+            return false;
+        }
+        if (value != null ? !value.equals(leafNode.value) : leafNode.value != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = nodeKey != null ? nodeKey.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

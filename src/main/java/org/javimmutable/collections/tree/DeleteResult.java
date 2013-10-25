@@ -94,4 +94,34 @@ public class DeleteResult<K, V>
         }
         throw new IllegalStateException();
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        DeleteResult that = (DeleteResult)o;
+
+        if (node != null ? !node.equals(that.node) : that.node != null) {
+            return false;
+        }
+        if (type != that.type) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (node != null ? node.hashCode() : 0);
+        return result;
+    }
 }
