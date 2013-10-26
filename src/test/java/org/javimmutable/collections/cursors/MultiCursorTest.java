@@ -36,138 +36,41 @@
 package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursor;
+
+import java.util.Arrays;
 
 public class MultiCursorTest
         extends TestCase
 {
     public void testTwoEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of());
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.emptyCursorTest(MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of()));
     }
 
     public void testThreeEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), StandardCursor.<Integer>of());
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.emptyCursorTest(MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), StandardCursor.<Integer>of()));
     }
 
     public void testOneNonEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of());
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(100, (int)multi.getValue());
-
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of(), StandardCursor.<Integer>of()));
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of()));
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100)));
     }
 
     public void testNoneEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(SingleValueCursor.<Integer>of(100), SingleValueCursor.<Integer>of(200), SingleValueCursor.<Integer>of(300));
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(100, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(200, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(300, (int)multi.getValue());
-
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200), MultiCursor.of(SingleValueCursor.<Integer>of(100), SingleValueCursor.<Integer>of(200)));
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300), MultiCursor.of(SingleValueCursor.<Integer>of(100), SingleValueCursor.<Integer>of(200), SingleValueCursor.<Integer>of(300)));
     }
 
     public void testNested()
     {
-        Cursor<Integer> multi = MultiCursor.of(MultiCursor.of(SingleValueCursor.<Integer>of(100),
-                                                              SingleValueCursor.<Integer>of(200)),
-                                               MultiCursor.of(SingleValueCursor.<Integer>of(300),
-                                                              SingleValueCursor.<Integer>of(400),
-                                                              SingleValueCursor.of(500)));
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(100, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(200, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(300, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(400, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(500, (int)multi.getValue());
-
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300, 400, 500), MultiCursor.of(MultiCursor.of(SingleValueCursor.<Integer>of(100),
+                                                                                                                SingleValueCursor.<Integer>of(200)),
+                                                                                                 MultiCursor.of(SingleValueCursor.<Integer>of(300),
+                                                                                                                SingleValueCursor.<Integer>of(400),
+                                                                                                                SingleValueCursor.of(500))));
     }
 }

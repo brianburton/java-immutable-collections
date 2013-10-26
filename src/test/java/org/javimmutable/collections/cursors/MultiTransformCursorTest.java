@@ -39,6 +39,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 
+import java.util.Arrays;
+
 public class MultiTransformCursorTest
         extends TestCase
 {
@@ -46,98 +48,21 @@ public class MultiTransformCursorTest
     {
         RangeTransform transform = new RangeTransform();
         Cursor<Integer> multi = MultiTransformCursor.of(StandardCursor.<Integer>of(), transform);
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.emptyCursorTest(multi);
     }
 
     public void testSingle()
     {
         RangeTransform transform = new RangeTransform();
         Cursor<Integer> multi = MultiTransformCursor.of(SingleValueCursor.<Integer>of(3), transform);
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(1, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(2, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(3, (int)multi.getValue());
-
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), multi);
     }
 
     public void testMultiple()
     {
         RangeTransform transform = new RangeTransform();
         Cursor<Integer> multi = MultiTransformCursor.of(StandardCursor.forRange(1, 3), transform);
-        try {
-            multi.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            multi.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-
-        // 1
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(1, (int)multi.getValue());
-
-        // 2
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(1, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(2, (int)multi.getValue());
-
-        // 3
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(1, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(2, (int)multi.getValue());
-
-        multi = multi.next();
-        assertEquals(true, multi.hasValue());
-        assertEquals(3, (int)multi.getValue());
-
-        multi = multi.next();
-        assertTrue(multi instanceof EmptyStartedCursor);
-        assertEquals(false, multi.hasValue());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 1, 2, 3), multi);
     }
 
     private static class RangeTransform

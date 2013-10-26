@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,16 +55,19 @@ public class JImmutableLinkedStackTest
             // expected
         }
         assertSame(list, list.getTail());
+        StandardCursorTest.emptyCursorTest(list.cursor());
 
         JImmutableLinkedStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
+        StandardCursorTest.listCursorTest(Arrays.asList(10), list2.cursor());
 
         JImmutableLinkedStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
+        StandardCursorTest.listCursorTest(Arrays.asList(30, 10), list3.cursor());
 
         assertEquals(Collections.<Integer>emptyList(), list.makeList());
         assertEquals(Arrays.asList(10), list2.makeList());

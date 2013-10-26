@@ -39,6 +39,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
+import java.util.Arrays;
+
 public class SequenceCursorTest
         extends TestCase
 {
@@ -46,90 +48,20 @@ public class SequenceCursorTest
     {
         JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of();
         Cursor<Integer> cursor = SequenceCursor.of(list);
-        try {
-            cursor.hasValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-
-        assertTrue(cursor.next() instanceof EmptyStartedCursor);
+        StandardCursorTest.emptyCursorTest(cursor);
     }
 
     public void testSingleList()
     {
         JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(100);
         Cursor<Integer> cursor = SequenceCursor.of(list);
-        try {
-            cursor.hasValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals(100, (int)cursor.getValue());
-
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
+        StandardCursorTest.listCursorTest(Arrays.asList(100), cursor);
     }
 
     public void testMultiList()
     {
         JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
         Cursor<Integer> cursor = SequenceCursor.of(list);
-        try {
-            cursor.hasValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
-
-        for (int i = 1; i <= 8; ++i) {
-            cursor = cursor.next();
-            assertEquals(true, cursor.hasValue());
-            assertEquals(i, (int)cursor.getValue());
-        }
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
-        try {
-            cursor.getValue();
-            fail();
-        } catch (IllegalStateException ex) {
-            // expected
-        }
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), cursor);
     }
 }
