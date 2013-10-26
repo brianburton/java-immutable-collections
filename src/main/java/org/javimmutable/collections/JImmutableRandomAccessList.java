@@ -57,14 +57,6 @@ public interface JImmutableRandomAccessList<T>
                                          T value);
 
     /**
-     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
-     *
-     * @return new PersistentList without last value
-     * @throws IndexOutOfBoundsException if list is already empty
-     */
-    JImmutableRandomAccessList<T> deleteLast();
-
-    /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      *
      * @param value
@@ -83,6 +75,40 @@ public interface JImmutableRandomAccessList<T>
      */
     JImmutableRandomAccessList<T> insert(int index,
                                          T value);
+
+    /**
+     * Adds a value to the front of the list.  May be invoked on an empty list.
+     * Synonym for insert()
+     *
+     * @param value
+     * @return
+     */
+    JImmutableRandomAccessList<T> insertFirst(T value);
+
+    /**
+     * Adds a value to the end of the list.  May be invoked on an empty list.
+     * Synonym for insert().
+     *
+     * @param value
+     * @return
+     */
+    JImmutableRandomAccessList<T> insertLast(T value);
+
+    /**
+     * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    JImmutableRandomAccessList<T> deleteFirst();
+
+    /**
+     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    JImmutableRandomAccessList<T> deleteLast();
 
     /**
      * Delete value at index (which must be within the current bounds of the list).
