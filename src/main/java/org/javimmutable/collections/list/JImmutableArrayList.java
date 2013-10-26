@@ -39,7 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.trie.EmptyTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -166,13 +165,13 @@ public class JImmutableArrayList<T>
     @Override
     public Iterator<T> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return StandardCursor.iterator(new CursorSource());
     }
 
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());
+        return (o == this) || (o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
     }
 
     @Override

@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -274,8 +275,13 @@ public class JImmutableTreeListTest
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
-                list = list.insert(value);
-                expected.add(value);
+                if (value % 2 == 0) {
+                    list = (value % 3 == 0) ? list.insert(value) : list.insertLast(value);
+                    expected.add(value);
+                } else {
+                    list = list.insertFirst(value);
+                    expected.add(0, value);
+                }
                 assertEquals(expected.size(), list.size());
                 list.verifyDepthsMatch();
             }
@@ -348,6 +354,102 @@ public class JImmutableTreeListTest
             }
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
+        }
+    }
+
+    public void testCursor()
+    {
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        Cursor<Integer> cursor = list.cursor().next();
+        assertEquals(false, cursor.hasValue());
+
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insert(size);
+            cursor = list.cursor();
+            for (int i = 0; i < size; ++i) {
+                cursor = cursor.next();
+                assertEquals(true, cursor.hasValue());
+                assertEquals(Integer.valueOf(i + 1), cursor.getValue());
+            }
+            cursor = cursor.next();
+            assertEquals(false, cursor.hasValue());
+        }
+
+        list = JImmutableTreeList.of();
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insertFirst(size);
+            cursor = list.cursor();
+            for (int i = 0; i < size; ++i) {
+                cursor = cursor.next();
+                assertEquals(true, cursor.hasValue());
+                assertEquals(Integer.valueOf(size - i), cursor.getValue());
+            }
+            cursor = cursor.next();
+            assertEquals(false, cursor.hasValue());
+        }
+
+        list = JImmutableTreeList.of();
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insertLast(size);
+            cursor = list.cursor();
+            for (int i = 0; i < size; ++i) {
+                cursor = cursor.next();
+                assertEquals(true, cursor.hasValue());
+                assertEquals(Integer.valueOf(i + 1), cursor.getValue());
+            }
+            cursor = cursor.next();
+            assertEquals(false, cursor.hasValue());
+        }
+
+        Cursor<Integer> oldCursor = list.cursor();
+        //noinspection UnusedAssignment
+        list = list.deleteFirst().deleteLast();
+        cursor = oldCursor;
+        for (int i = 0; i < 10; ++i) {
+            cursor = cursor.next();
+            assertEquals(true, cursor.hasValue());
+            assertEquals(Integer.valueOf(i + 1), cursor.getValue());
+        }
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
+    }
+
+    public void testIterator()
+    {
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        Iterator<Integer> iterator = list.iterator();
+        assertEquals(false, iterator.hasNext());
+
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insert(size);
+            iterator = list.iterator();
+            for (int i = 0; i < size; ++i) {
+                assertEquals(true, iterator.hasNext());
+                assertEquals(Integer.valueOf(i + 1), iterator.next());
+            }
+            assertEquals(false, iterator.hasNext());
+        }
+
+        list = JImmutableTreeList.of();
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insertFirst(size);
+            iterator = list.iterator();
+            for (int i = 0; i < size; ++i) {
+                assertEquals(true, iterator.hasNext());
+                assertEquals(Integer.valueOf(size - i), iterator.next());
+            }
+            assertEquals(false, iterator.hasNext());
+        }
+
+        list = JImmutableTreeList.of();
+        for (int size = 1; size <= 10; ++size) {
+            list = list.insertLast(size);
+            iterator = list.iterator();
+            for (int i = 0; i < size; ++i) {
+                assertEquals(true, iterator.hasNext());
+                assertEquals(Integer.valueOf(i + 1), iterator.next());
+            }
+            assertEquals(false, iterator.hasNext());
         }
     }
 }

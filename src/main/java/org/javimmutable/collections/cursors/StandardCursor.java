@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -52,18 +53,56 @@ import java.util.List;
 public abstract class StandardCursor<T>
         implements Cursor<T>
 {
+    /**
+     * Simple interface for classes that can iterate strictly (i.e. do not require a lazy start).
+     * A Source must start already pointing at a current value.
+     * Implementations of this interface must be immutable.
+     *
+     * @param <T>
+     */
     public interface Source<T>
     {
+        /**
+         * @return true iff a call to advance() will fail
+         */
         boolean atEnd();
 
+        /**
+         * @return current value
+         */
         T currentValue();
 
+        /**
+         * @return new Source pointing at the next value or throw if no next value available
+         */
         Source<T> advance();
     }
 
+    /**
+     * Creates a Cursor for the given Source.  The Source must point to the first value (i.e. cannot be
+     * be used for empty collections) to be iterated over.
+     *
+     * @param source
+     * @param <T>
+     * @return
+     */
     public static <T> StandardCursor<T> of(Source<T> source)
     {
         return new Start<T>(source);
+    }
+
+    /**
+     * Creates a java.util.Iterator that iterates over values in the specified Source.
+     * The Source must point to the first value (i.e. cannot be
+     * be used for empty collections) to be iterated over.
+     *
+     * @param source
+     * @param <T>
+     * @return
+     */
+    public static <T> Iterator<T> iterator(Source<T> source)
+    {
+        return new SourceIterator<T>(source);
     }
 
     /**
@@ -178,6 +217,37 @@ public abstract class StandardCursor<T>
         public Source<Integer> advance()
         {
             return new RangeSource(low + 1, high);
+        }
+    }
+
+    private static class SourceIterator<V>
+            implements Iterator<V>
+    {
+        private Source<V> source;
+
+        private SourceIterator(Source<V> source)
+        {
+            this.source = source;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return !source.atEnd();
+        }
+
+        @Override
+        public V next()
+        {
+            final V value = source.currentValue();
+            source = source.advance();
+            return value;
+        }
+
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException();
         }
     }
 }
