@@ -63,6 +63,35 @@ public class JImmutableTreeListTest
         assertEquals(200, (int)list.get(1));
         list.verifyDepthsMatch();
 
+        JImmutableTreeList<Integer> saved = list;
+
+        list = list.insertFirst(80);
+        assertEquals(3, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(80, (int)list.get(0));
+        assertEquals(100, (int)list.get(1));
+        assertEquals(200, (int)list.get(2));
+        list.verifyDepthsMatch();
+
+        list = list.deleteLast();
+        assertEquals(2, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(80, (int)list.get(0));
+        assertEquals(100, (int)list.get(1));
+        list.verifyDepthsMatch();
+
+        list = list.deleteFirst();
+        assertEquals(1, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(100, (int)list.get(0));
+        list.verifyDepthsMatch();
+
+        list = list.deleteLast();
+        assertEquals(0, list.size());
+        assertEquals(true, list.isEmpty());
+        list.verifyDepthsMatch();
+
+        list = saved;
         list = list.assign(1, 210);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
@@ -80,6 +109,39 @@ public class JImmutableTreeListTest
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list.verifyDepthsMatch();
+    }
+
+    public void testInsertDeleteFirst()
+    {
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        for (int index = 0; index < 100; ++index) {
+            list = list.insertFirst(index);
+            list.verifyDepthsMatch();
+            assertEquals(index + 1, list.size());
+            for (int k = 0; k <= index; ++k) {
+                assertEquals(index - k, (int)list.get(k));
+            }
+        }
+
+        for (int index = 0; index < 100; ++index) {
+            assertEquals(list.size() - 1, (int)list.get(0));
+            list = list.deleteFirst();
+            list.verifyDepthsMatch();
+            assertEquals(99 - index, list.size());
+            for (int k = 0; k < list.size(); ++k) {
+                assertEquals(list.size() - k - 1, (int)list.get(k));
+            }
+        }
+
+        assertEquals(true, list.isEmpty());
+        assertEquals(0, list.size());
+
+        try {
+            list.deleteFirst();
+            fail();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // expected
+        }
     }
 
     public void testDeleteLast()
@@ -103,6 +165,13 @@ public class JImmutableTreeListTest
 
         assertEquals(true, list.isEmpty());
         assertEquals(0, list.size());
+
+        try {
+            list.deleteLast();
+            fail();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // expected
+        }
     }
 
     public void testInsert()

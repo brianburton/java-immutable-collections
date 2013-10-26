@@ -39,8 +39,9 @@ import java.util.List;
 
 /**
  * Interface for containers that store items in list form with individual items available
- * for get() and assign() using their indexes.  Items inserted into the list are always added at
- * the end of the list and indexes of items are always in the range 0 through size() - 1.
+ * for get() and assign() using their indexes.  Items inserted into the list are always
+ * added at either the front or the end of the list and indexes of items are always in
+ * the range 0 through size() - 1.
  *
  * @param <T>
  */
@@ -78,20 +79,46 @@ public interface JImmutableList<T>
                              T value);
 
     /**
-     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
-     *
-     * @return new PersistentList without last value
-     * @throws IndexOutOfBoundsException if list is already empty
-     */
-    JImmutableList<T> deleteLast();
-
-    /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      *
      * @param value
      * @return
      */
     JImmutableList<T> insert(T value);
+
+    /**
+     * Adds a value to the front of the list.  May be invoked on an empty list.
+     * Synonym for insert()
+     *
+     * @param value
+     * @return
+     */
+    JImmutableList<T> insertFirst(T value);
+
+    /**
+     * Adds a value to the end of the list.  May be invoked on an empty list.
+     * Synonym for insert().
+     *
+     * @param value
+     * @return
+     */
+    JImmutableList<T> insertLast(T value);
+
+    /**
+     * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    JImmutableList<T> deleteFirst();
+
+    /**
+     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
+     *
+     * @return new PersistentList without last value
+     * @throws IndexOutOfBoundsException if list is already empty
+     */
+    JImmutableList<T> deleteLast();
 
     /**
      * @return true only if list contains no values

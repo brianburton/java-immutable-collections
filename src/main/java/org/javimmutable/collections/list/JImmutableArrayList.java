@@ -49,7 +49,7 @@ import java.util.List;
 
 /**
  * Implementation of PersistentIndexedList that uses a sparse array for its implementation.
- * Values are stored and traversed in the same order as they are added using add().
+ * Values are stored and traversed in the same order as they are added using insert().
  * Performance is slower than PersistentLinkedList so if forward order and/or random
  * access are not required using that class may be a better option.
  *
@@ -61,18 +61,21 @@ public class JImmutableArrayList<T>
     private static final JImmutableArrayList EMPTY = new JImmutableArrayList();
 
     private final TrieNode<T> values;
-    private final int size;
+    private final int first;
+    private final int next;
 
     public JImmutableArrayList()
     {
-        this(EmptyTrieNode.<T>of(), 0);
+        this(EmptyTrieNode.<T>of(), 0, 0);
     }
 
     private JImmutableArrayList(TrieNode<T> values,
-                                int size)
+                                int first,
+                                int next)
     {
         this.values = values;
-        this.size = size;
+        this.first = first;
+        this.next = next;
     }
 
     @SuppressWarnings("unchecked")
@@ -84,49 +87,68 @@ public class JImmutableArrayList<T>
     @Override
     public boolean isEmpty()
     {
-        return size == 0;
+        return first == next;
     }
 
     @Override
     public JImmutableList<T> assign(int index,
                                     T value)
     {
-        if (index < 0 || index >= size) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), size);
+        final int realIndex = calcRealIndex(index);
+        return new JImmutableArrayList<T>(values.assign(realIndex >>> 5, realIndex & 0x1f, value), first, next);
     }
 
     @Override
     public JImmutableArrayList<T> insert(T value)
     {
-        final int index = size;
-        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index + 1);
+        final int index = next;
+        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), first, index + 1);
+    }
+
+    @Override
+    public JImmutableArrayList<T> insertFirst(T value)
+    {
+        final int index = first - 1;
+        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index, next);
+    }
+
+    @Override
+    public JImmutableArrayList<T> insertLast(T value)
+    {
+        return insert(value);
+    }
+
+    @Override
+    public JImmutableArrayList<T> deleteFirst()
+    {
+        if (first == next) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        final int index = first;
+        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first + 1, next);
     }
 
     @Override
     public JImmutableArrayList<T> deleteLast()
     {
-        if (size <= 0) {
+        if (first == next) {
             throw new ArrayIndexOutOfBoundsException();
         }
-        final int index = size - 1;
-        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), index);
+        final int index = next - 1;
+        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first, index);
     }
 
     @Override
     public int size()
     {
-        return size;
+        return next - first;
     }
 
     @Override
     public T get(int index)
     {
-        if (index < 0 || index >= size) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-        return values.get(index >>> 5, index & 0x1f).getValue();
+        final int realIndex = calcRealIndex(index);
+        return values.get(realIndex >>> 5, realIndex & 0x1f).getValue();
     }
 
     @Override
@@ -165,32 +187,41 @@ public class JImmutableArrayList<T>
         return Cursors.makeString(cursor());
     }
 
+    private int calcRealIndex(int index)
+    {
+        final int realIndex = first + index;
+        if (realIndex < first || realIndex >= next) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        return realIndex;
+    }
+
     private class CursorSource
             implements StandardCursor.Source<T>
     {
-        private int index = 0;
+        private int realIndex = first;
 
-        private CursorSource(int index)
+        private CursorSource(int realIndex)
         {
-            this.index = index;
+            this.realIndex = realIndex;
         }
 
         @Override
         public boolean atEnd()
         {
-            return index >= size;
+            return realIndex >= next;
         }
 
         @Override
         public T currentValue()
         {
-            return get(index);
+            return get(realIndex);
         }
 
         @Override
         public StandardCursor.Source<T> advance()
         {
-            return new CursorSource(index + 1);
+            return new CursorSource(realIndex + 1);
         }
     }
 }

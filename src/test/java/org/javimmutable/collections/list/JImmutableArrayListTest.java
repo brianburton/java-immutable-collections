@@ -60,6 +60,59 @@ public class JImmutableArrayListTest
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         assertEquals(200, (int)list.get(1));
+
+        list = list.insertFirst(80);
+        assertEquals(3, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(80, (int)list.get(0));
+        assertEquals(100, (int)list.get(1));
+        assertEquals(200, (int)list.get(2));
+
+        list = list.deleteLast();
+        assertEquals(2, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(80, (int)list.get(0));
+        assertEquals(100, (int)list.get(1));
+
+        list = list.deleteFirst();
+        assertEquals(1, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(100, (int)list.get(0));
+
+        list = list.deleteLast();
+        assertEquals(0, list.size());
+        assertEquals(true, list.isEmpty());
+    }
+
+    public void testInsertDeleteFirst()
+    {
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
+        for (int index = 0; index < 100; ++index) {
+            list = list.insertFirst(index);
+            assertEquals(index + 1, list.size());
+            for (int k = 0; k <= index; ++k) {
+                assertEquals(index - k, (int)list.get(k));
+            }
+        }
+
+        for (int index = 0; index < 100; ++index) {
+            assertEquals(list.size() - 1, (int)list.get(0));
+            list = list.deleteFirst();
+            assertEquals(99 - index, list.size());
+            for (int k = 0; k < list.size(); ++k) {
+                assertEquals(list.size() - k - 1, (int)list.get(k));
+            }
+        }
+
+        assertEquals(true, list.isEmpty());
+        assertEquals(0, list.size());
+
+        try {
+            list.deleteFirst();
+            fail();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // expected
+        }
     }
 
     public void testDeleteLast()
@@ -83,6 +136,13 @@ public class JImmutableArrayListTest
 
         assertEquals(true, list.isEmpty());
         assertEquals(0, list.size());
+
+        try {
+            list.deleteLast();
+            fail();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // expected
+        }
     }
 
     public void testRandom()

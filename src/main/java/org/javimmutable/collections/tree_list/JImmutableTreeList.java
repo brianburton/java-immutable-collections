@@ -82,7 +82,7 @@ public class JImmutableTreeList<T>
                                         T value)
     {
         if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         if (index == size) {
@@ -91,6 +91,24 @@ public class JImmutableTreeList<T>
             UpdateResult<T> result = root.insertBefore(index, value);
             return update(result);
         }
+    }
+
+    @Override
+    public JImmutableTreeList<T> insertFirst(T value)
+    {
+        return insert(0, value);
+    }
+
+    @Override
+    public JImmutableTreeList<T> insertLast(T value)
+    {
+        return insert(value);
+    }
+
+    @Override
+    public JImmutableTreeList<T> deleteFirst()
+    {
+        return delete(0);
     }
 
     @Override
@@ -103,12 +121,12 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> delete(int index)
     {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         DeleteResult<T> result = root.delete(index);
         if (result.type == DeleteResult.Type.UNCHANGED) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         } else if (result.type == DeleteResult.Type.ELIMINATED) {
             return of();
         } else {
@@ -120,7 +138,7 @@ public class JImmutableTreeList<T>
     public T get(int index)
     {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         return root.get(index);
@@ -131,7 +149,7 @@ public class JImmutableTreeList<T>
                                         T value)
     {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         UpdateResult<T> result = root.assign(index, value);
