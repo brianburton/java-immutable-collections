@@ -112,6 +112,14 @@ public class MapEntry<K, V>
     @Override
     public boolean equals(Object o)
     {
+        if (o instanceof JImmutableMap.Entry) {
+            JImmutableMap.Entry jentry = (JImmutableMap.Entry)o;
+            return (key == null ?
+                    jentry.getKey() == null : key.equals(jentry.getKey())) &&
+                   (value == null ?
+                    jentry.getValue() == null : value.equals(jentry.getValue()));
+        }
+
         if (!(o instanceof Map.Entry)) {
             return false;
         }

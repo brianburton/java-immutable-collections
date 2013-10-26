@@ -36,8 +36,12 @@
 package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,30 +58,38 @@ public class Bit32ArrayTest
             assertEquals(Holders.<Integer>of(), array.get(i));
         }
         assertEquals(0, array.size());
+        StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i);
             assertEquals(i + 1, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of(i), array.get(i));
             assertEquals(32, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i + i);
             assertEquals(32, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of(i + i), array.get(i));
             assertEquals(32, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
         for (int i = 0; i < 32; ++i) {
             array = array.delete(i);
             assertEquals(32 - i - 1, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.<Integer>of(), array.get(i));
             assertEquals(0, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
         }
+        StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
     }
 
     public void testRandomOrder()
@@ -111,6 +123,34 @@ public class Bit32ArrayTest
                 count += 1;
             }
             assertEquals(count, array.size());
+            StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+        }
+    }
+
+    private static class Lookup<T>
+            implements Func1<Integer, JImmutableMap.Entry<Integer, T>>
+    {
+        private final Bit32Array<T> array;
+
+        private Lookup(Bit32Array<T> array)
+        {
+            this.array = array;
+        }
+
+        @Override
+        public JImmutableMap.Entry<Integer, T> apply(Integer value)
+        {
+            for (int i = 0; i < 32; ++i) {
+                Holder<T> holder = array.get(i);
+                if (holder.isFilled()) {
+                    if (value == 0) {
+                        return MapEntry.of(i, holder.getValue());
+                    } else {
+                        value -= 1;
+                    }
+                }
+            }
+            throw new IndexOutOfBoundsException();
         }
     }
 }

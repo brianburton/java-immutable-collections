@@ -39,9 +39,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.EmptyCursor;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -161,7 +161,7 @@ public abstract class JImmutableLinkedStack<T>
 
         public Cursor<V> cursor()
         {
-            return EmptyCursor.of();
+            return StandardCursor.of();
         }
     }
 

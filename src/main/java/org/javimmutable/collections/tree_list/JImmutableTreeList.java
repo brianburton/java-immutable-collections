@@ -41,7 +41,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.EmptyCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -228,7 +228,7 @@ public class JImmutableTreeList<T>
 
     public Cursor<T> cursor()
     {
-        return (size == 0) ? EmptyCursor.<T>of() : root.cursor();
+        return (size == 0) ? StandardCursor.<T>of() : root.cursor();
     }
 
     public void verifyDepthsMatch()

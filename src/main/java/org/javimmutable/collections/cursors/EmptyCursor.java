@@ -37,10 +37,16 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 
+/**
+ * Cursor implementation intended solely for internal use in the cursors package.
+ * Use StandardCursor.of() to create proper empty cursors.
+ *
+ * @param <T>
+ */
 public class EmptyCursor<T>
         implements Cursor<T>
 {
-    public static EmptyCursor EMPTY = new EmptyCursor();
+    private static EmptyCursor EMPTY = new EmptyCursor();
 
     @SuppressWarnings("unchecked")
     public static <V> EmptyCursor<V> of()

@@ -42,7 +42,7 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
-import org.javimmutable.collections.cursors.EmptyCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -232,7 +232,7 @@ public class JImmutableTreeMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return (root == null) ? EmptyCursor.<Entry<K, V>>of() : root.cursor();
+        return (root == null) ? StandardCursor.<Entry<K, V>>of() : root.cursor();
     }
 
     public List<K> getKeysList()

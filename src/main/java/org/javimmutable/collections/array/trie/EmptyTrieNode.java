@@ -38,7 +38,7 @@ package org.javimmutable.collections.array.trie;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.cursors.EmptyCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 public class EmptyTrieNode<T>
         extends AbstractTrieNode<T>
@@ -76,7 +76,7 @@ public class EmptyTrieNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return EmptyCursor.of();
+        return StandardCursor.of();
     }
 
     @Override

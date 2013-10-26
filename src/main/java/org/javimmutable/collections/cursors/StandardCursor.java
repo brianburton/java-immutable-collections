@@ -53,6 +53,9 @@ import java.util.List;
 public abstract class StandardCursor<T>
         implements Cursor<T>
 {
+    @SuppressWarnings("unchecked")
+    private static final Cursor EMPTY = new Start(new EmptySource());
+
     /**
      * Simple interface for classes that can iterate strictly (i.e. do not require a lazy start).
      * A Source must start already pointing at a current value.
@@ -76,6 +79,18 @@ public abstract class StandardCursor<T>
          * @return new Source pointing at the next value or throw if no next value available
          */
         Source<T> advance();
+    }
+
+    /**
+     * Creates an empty cursor that has no values.
+     *
+     * @param <T>
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Cursor<T> of()
+    {
+        return (Cursor<T>)EMPTY;
     }
 
     /**
@@ -185,6 +200,28 @@ public abstract class StandardCursor<T>
                 throw new IllegalStateException();
             }
             return source.currentValue();
+        }
+    }
+
+    private static class EmptySource<T>
+            implements Source<T>
+    {
+        @Override
+        public boolean atEnd()
+        {
+            return true;
+        }
+
+        @Override
+        public T currentValue()
+        {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public Source<T> advance()
+        {
+            throw new IllegalStateException();
         }
     }
 

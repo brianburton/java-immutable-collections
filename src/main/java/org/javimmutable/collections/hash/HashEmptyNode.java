@@ -40,7 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.EmptyCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 /**
  * Trivial HashTrieNode implementation for an empty node.  gets and deletes do nothing and sets
@@ -106,7 +106,7 @@ public class HashEmptyNode<K, V>
     @Override
     public Cursor<HashTrieValue<K, V>> cursor()
     {
-        return EmptyCursor.of();
+        return StandardCursor.of();
     }
 
     @Override

@@ -74,7 +74,7 @@ public abstract class Bit32Array<T>
     @Override
     public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return new IteratorAdaptor<JImmutableMap.Entry<Integer, T>>(cursor());
+        return IteratorAdaptor.of(cursor());
     }
 
     protected static void checkIndex(int index)
