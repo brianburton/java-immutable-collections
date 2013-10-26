@@ -121,6 +121,13 @@ public class JImmutableTreeListTest
             for (int k = 0; k <= index; ++k) {
                 assertEquals(index - k, (int)list.get(k));
             }
+            {
+                int kk = 0;
+                for (Integer value : list) {
+                    assertEquals(index - kk, (int)value);
+                    kk += 1;
+                }
+            }
         }
 
         for (int index = 0; index < 100; ++index) {
@@ -130,6 +137,13 @@ public class JImmutableTreeListTest
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(list.size() - k - 1, (int)list.get(k));
+            }
+            {
+                int kk = 0;
+                for (Integer value : list) {
+                    assertEquals(list.size() - kk - 1, (int)value);
+                    kk += 1;
+                }
             }
         }
 
