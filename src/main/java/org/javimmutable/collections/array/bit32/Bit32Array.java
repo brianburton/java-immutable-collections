@@ -80,7 +80,7 @@ public abstract class Bit32Array<T>
     protected static void checkIndex(int index)
     {
         if ((index & INVALID_INDEX_MASK) != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
     }
 }

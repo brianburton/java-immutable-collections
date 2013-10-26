@@ -82,7 +82,7 @@ public class JImmutableTreeList<T>
                                         T value)
     {
         if (index < 0 || index > size) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         if (index == size) {
@@ -121,12 +121,12 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> delete(int index)
     {
         if (index < 0 || index >= size) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         DeleteResult<T> result = root.delete(index);
         if (result.type == DeleteResult.Type.UNCHANGED) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         } else if (result.type == DeleteResult.Type.ELIMINATED) {
             return of();
         } else {
@@ -138,7 +138,7 @@ public class JImmutableTreeList<T>
     public T get(int index)
     {
         if (index < 0 || index >= size) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         return root.get(index);
@@ -149,7 +149,7 @@ public class JImmutableTreeList<T>
                                         T value)
     {
         if (index < 0 || index >= size) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         UpdateResult<T> result = root.assign(index, value);

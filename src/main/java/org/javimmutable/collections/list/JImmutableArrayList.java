@@ -122,7 +122,7 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> deleteFirst()
     {
         if (first == next) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         final int index = first;
         return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first + 1, next);
@@ -132,7 +132,7 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> deleteLast()
     {
         if (first == next) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         final int index = next - 1;
         return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first, index);
@@ -191,7 +191,7 @@ public class JImmutableArrayList<T>
     {
         final int realIndex = first + index;
         if (realIndex < first || realIndex >= next) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return realIndex;
     }

@@ -103,13 +103,13 @@ public class SingleBit32ArrayTest
         try {
             array.get(-1);
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
         try {
             array.get(32);
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
     }

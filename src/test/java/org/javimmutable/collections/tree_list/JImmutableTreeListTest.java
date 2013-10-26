@@ -139,7 +139,7 @@ public class JImmutableTreeListTest
         try {
             list.deleteFirst();
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
     }
@@ -169,7 +169,7 @@ public class JImmutableTreeListTest
         try {
             list.deleteLast();
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
     }

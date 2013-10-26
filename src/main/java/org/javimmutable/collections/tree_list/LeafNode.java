@@ -58,7 +58,7 @@ public class LeafNode<T>
     public T get(int index)
     {
         if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return value;
     }
@@ -68,7 +68,7 @@ public class LeafNode<T>
                                         T value)
     {
         if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return UpdateResult.createSplit(new LeafNode<T>(value),
                                         this);
@@ -79,7 +79,7 @@ public class LeafNode<T>
                                        T value)
     {
         if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return UpdateResult.createSplit(this,
                                         new LeafNode<T>(value));
@@ -90,7 +90,7 @@ public class LeafNode<T>
                                   T value)
     {
         if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return UpdateResult.createInPlace(new LeafNode<T>(value));
     }
@@ -99,7 +99,7 @@ public class LeafNode<T>
     public DeleteResult<T> delete(int index)
     {
         if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
         return DeleteResult.createEliminated();
     }

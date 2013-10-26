@@ -110,7 +110,7 @@ public class JImmutableArrayListTest
         try {
             list.deleteFirst();
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
     }
@@ -140,7 +140,7 @@ public class JImmutableArrayListTest
         try {
             list.deleteLast();
             fail();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ex) {
             // expected
         }
     }

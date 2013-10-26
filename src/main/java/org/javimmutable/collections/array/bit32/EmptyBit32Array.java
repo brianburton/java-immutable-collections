@@ -75,7 +75,7 @@ public class EmptyBit32Array<T>
     @Override
     public int firstIndex()
     {
-        throw new ArrayIndexOutOfBoundsException();
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
