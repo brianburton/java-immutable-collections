@@ -252,6 +252,7 @@ public class TwoNode<K, V>
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)
     {

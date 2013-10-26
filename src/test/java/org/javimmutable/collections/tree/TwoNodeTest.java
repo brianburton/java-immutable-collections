@@ -258,8 +258,6 @@ public class TwoNodeTest
         assertEquals(expected, testNode.delete(comparator, 8));
     }
 
-//
-
     public void testDeleteRightUnchanged()
     {
         assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 14));

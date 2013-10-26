@@ -322,6 +322,36 @@ public class ThreeNode<K, V>
                                                              node.getMaxKey()));
     }
 
+    public TreeNode<K, V> getLeft()
+    {
+        return left;
+    }
+
+    public TreeNode<K, V> getMiddle()
+    {
+        return middle;
+    }
+
+    public TreeNode<K, V> getRight()
+    {
+        return right;
+    }
+
+    public K getLeftMaxKey()
+    {
+        return leftMaxKey;
+    }
+
+    public K getMiddleMaxKey()
+    {
+        return middleMaxKey;
+    }
+
+    public K getRightMaxKey()
+    {
+        return rightMaxKey;
+    }
+
     @Override
     public String toString()
     {
@@ -334,6 +364,7 @@ public class ThreeNode<K, V>
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(middle), LazyCursor.of(right));
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)
     {
