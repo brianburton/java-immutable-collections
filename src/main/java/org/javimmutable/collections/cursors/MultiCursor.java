@@ -103,7 +103,7 @@ public class MultiCursor<T>
             newNodes = newNodes.next;
         }
 
-        return EmptyCursor.of();
+        return EmptyStartedCursor.of();
     }
 
     @Override

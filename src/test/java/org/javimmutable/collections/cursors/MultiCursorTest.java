@@ -35,15 +35,15 @@
 
 package org.javimmutable.collections.cursors;
 
-import org.javimmutable.collections.Cursor;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
 
 public class MultiCursorTest
         extends TestCase
 {
     public void testTwoEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(EmptyCursor.<Integer>of(), EmptyCursor.<Integer>of());
+        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of());
         try {
             multi.hasValue();
         } catch (IllegalStateException ex) {
@@ -55,13 +55,13 @@ public class MultiCursorTest
             //expected
         }
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
     public void testThreeEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(EmptyCursor.<Integer>of(), EmptyCursor.<Integer>of(), EmptyCursor.<Integer>of());
+        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), StandardCursor.<Integer>of());
         try {
             multi.hasValue();
         } catch (IllegalStateException ex) {
@@ -73,13 +73,13 @@ public class MultiCursorTest
             //expected
         }
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
     public void testOneNonEmpty()
     {
-        Cursor<Integer> multi = MultiCursor.of(EmptyCursor.<Integer>of(), SingleValueCursor.<Integer>of(100), EmptyCursor.<Integer>of());
+        Cursor<Integer> multi = MultiCursor.of(StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of());
         try {
             multi.hasValue();
         } catch (IllegalStateException ex) {
@@ -95,7 +95,7 @@ public class MultiCursorTest
         assertEquals(100, (int)multi.getValue());
 
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
@@ -125,7 +125,7 @@ public class MultiCursorTest
         assertEquals(300, (int)multi.getValue());
 
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
@@ -167,7 +167,7 @@ public class MultiCursorTest
         assertEquals(500, (int)multi.getValue());
 
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 }

@@ -14,10 +14,10 @@ public class StandardCursorTest
 {
     public static void testVarious()
     {
-        listCursorTest(Collections.<Integer>emptyList(), 0, StandardCursor.<Integer>of());
-        listCursorTest(Arrays.<Integer>asList(1), 1, StandardCursor.forRange(1, 1));
-        listCursorTest(Arrays.<Integer>asList(1, 2), 2, StandardCursor.forRange(1, 2));
-        listCursorTest(Arrays.<Integer>asList(-1, 0, 1, 2, 3), 5, StandardCursor.forRange(-1, 3));
+        listCursorTest(Collections.<Integer>emptyList(), StandardCursor.<Integer>of());
+        listCursorTest(Arrays.<Integer>asList(1), StandardCursor.forRange(1, 1));
+        listCursorTest(Arrays.<Integer>asList(1, 2), StandardCursor.forRange(1, 2));
+        listCursorTest(Arrays.<Integer>asList(-1, 0, 1, 2, 3), StandardCursor.forRange(-1, 3));
         assertEquals(Arrays.<Integer>asList(-1, 0, 1, 2, 3), StandardCursor.makeList(StandardCursor.forRange(-1, 3)));
     }
 
@@ -63,10 +63,9 @@ public class StandardCursorTest
     }
 
     public static <T> void listCursorTest(List<T> list,
-                                          int size,
                                           Cursor<T> cursor)
     {
-        cursorTest(new ListLookup<T>(list), size, cursor);
+        cursorTest(new ListLookup<T>(list), list.size(), cursor);
     }
 
     private static class ListLookup<T>

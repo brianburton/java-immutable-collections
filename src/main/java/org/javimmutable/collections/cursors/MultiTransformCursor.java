@@ -93,7 +93,7 @@ public class MultiTransformCursor<S, T>
             nextSource = sourceCursor.next();
         }
 
-        return EmptyCursor.of();
+        return EmptyStartedCursor.of();
     }
 
     @Override

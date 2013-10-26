@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.cursors;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
-import junit.framework.TestCase;
 
 public class MultiTransformCursorTest
         extends TestCase
@@ -45,7 +45,7 @@ public class MultiTransformCursorTest
     public void testEmpty()
     {
         RangeTransform transform = new RangeTransform();
-        Cursor<Integer> multi = MultiTransformCursor.of(EmptyCursor.<Integer>of(), transform);
+        Cursor<Integer> multi = MultiTransformCursor.of(StandardCursor.<Integer>of(), transform);
         try {
             multi.hasValue();
         } catch (IllegalStateException ex) {
@@ -57,7 +57,7 @@ public class MultiTransformCursorTest
             //expected
         }
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
@@ -89,7 +89,7 @@ public class MultiTransformCursorTest
         assertEquals(3, (int)multi.getValue());
 
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 
@@ -136,7 +136,7 @@ public class MultiTransformCursorTest
         assertEquals(3, (int)multi.getValue());
 
         multi = multi.next();
-        assertTrue(multi instanceof EmptyCursor);
+        assertTrue(multi instanceof EmptyStartedCursor);
         assertEquals(false, multi.hasValue());
     }
 

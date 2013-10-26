@@ -68,7 +68,7 @@ public class SequenceCursorTest
             // expected
         }
 
-        assertTrue(cursor.next() instanceof EmptyCursor);
+        assertTrue(cursor.next() instanceof EmptyStartedCursor);
     }
 
     public void testSingleList()

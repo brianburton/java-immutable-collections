@@ -43,15 +43,15 @@ import org.javimmutable.collections.Cursor;
  *
  * @param <T>
  */
-public class EmptyCursor<T>
+public class EmptyStartedCursor<T>
         implements Cursor<T>
 {
-    private static EmptyCursor EMPTY = new EmptyCursor();
+    private static EmptyStartedCursor EMPTY = new EmptyStartedCursor();
 
     @SuppressWarnings("unchecked")
-    public static <V> EmptyCursor<V> of()
+    public static <V> EmptyStartedCursor<V> of()
     {
-        return (EmptyCursor<V>)EMPTY;
+        return (EmptyStartedCursor<V>)EMPTY;
     }
 
     @Override

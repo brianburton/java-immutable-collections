@@ -184,7 +184,7 @@ public abstract class StandardCursor<T>
         @Override
         public Cursor<V> next()
         {
-            return source.atEnd() ? EmptyCursor.<V>of() : new Started<V>(source.advance());
+            return source.atEnd() ? EmptyStartedCursor.<V>of() : new Started<V>(source.advance());
         }
 
         @Override

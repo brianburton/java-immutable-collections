@@ -60,7 +60,7 @@ public class SingleValueCursor<T>
             @Override
             public Cursor<T> next()
             {
-                return EmptyCursor.of();
+                return EmptyStartedCursor.of();
             }
 
             @Override

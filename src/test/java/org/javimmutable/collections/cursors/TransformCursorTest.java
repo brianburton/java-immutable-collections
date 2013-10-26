@@ -35,76 +35,36 @@
 
 package org.javimmutable.collections.cursors;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func1;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class TransformCursorTest
         extends TestCase
 {
     public void testEmpty()
     {
-        Cursor<String> cursor = TransformCursor.of(EmptyCursor.<Integer>of(), new Func1<Integer, String>()
+        StandardCursorTest.listCursorTest(Collections.<String>emptyList(), TransformCursor.of(StandardCursor.<Integer>of(), new Func1<Integer, String>()
         {
             @Override
             public String apply(Integer value)
             {
                 return String.valueOf(value);
             }
-        });
-
-        try {
-            cursor.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            cursor.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-
-        assertEquals(false, cursor.hasValue());
+        }));
     }
 
     public void testRange()
     {
-        Cursor<String> cursor = TransformCursor.of(StandardCursor.forRange(3, 6), new Func1<Integer, String>()
+        StandardCursorTest.listCursorTest(Arrays.<String>asList("3", "4", "5", "6"), TransformCursor.of(StandardCursor.forRange(3, 6), new Func1<Integer, String>()
         {
             @Override
             public String apply(Integer value)
             {
                 return String.valueOf(value);
             }
-        });
-        try {
-            cursor.hasValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-        try {
-            cursor.getValue();
-        } catch (IllegalStateException ex) {
-            //expected
-        }
-
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("3", cursor.getValue());
-
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("4", cursor.getValue());
-
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("5", cursor.getValue());
-
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("6", cursor.getValue());
-
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
+        }));
     }
 }
