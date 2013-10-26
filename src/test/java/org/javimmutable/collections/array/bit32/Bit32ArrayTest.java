@@ -127,12 +127,12 @@ public class Bit32ArrayTest
         }
     }
 
-    private static class Lookup<T>
+    static class Lookup<T>
             implements Func1<Integer, JImmutableMap.Entry<Integer, T>>
     {
         private final Bit32Array<T> array;
 
-        private Lookup(Bit32Array<T> array)
+        Lookup(Bit32Array<T> array)
         {
             this.array = array;
         }

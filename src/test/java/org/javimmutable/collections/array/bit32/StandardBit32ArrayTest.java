@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 public class StandardBit32ArrayTest
         extends TestCase
@@ -215,24 +216,21 @@ public class StandardBit32ArrayTest
     {
         Bit32Array<Integer> array = StandardBit32Array.of();
         assertEquals(false, array.cursor().next().hasValue());
+        StandardCursorTest.emptyCursorTest(array.cursor());
 
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i);
-        }
-        int index = 0;
-        Cursor<JImmutableMap.Entry<Integer, Integer>> cursor = array.cursor();
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
-            assertEquals(index, (int)cursor.getValue().getKey());
-            assertEquals(index, (int)cursor.getValue().getValue());
-            index += 1;
+            StandardCursorTest.cursorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.cursor());
         }
 
         array = StandardBit32Array.of();
         for (int i = 1; i < 32; i += 5) {
             array = array.assign(i, i);
+            StandardCursorTest.cursorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.cursor());
         }
-        index = 1;
-        cursor = array.cursor();
+
+        int index = 1;
+        Cursor<JImmutableMap.Entry<Integer, Integer>> cursor = array.cursor();
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             assertEquals(index, (int)cursor.getValue().getKey());
             assertEquals(index, (int)cursor.getValue().getValue());
