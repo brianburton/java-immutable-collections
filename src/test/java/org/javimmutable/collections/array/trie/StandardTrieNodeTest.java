@@ -39,9 +39,11 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StandardTrieNodeTest
@@ -303,6 +305,8 @@ public class StandardTrieNodeTest
         assertEquals("f", cursor.getValue());
         cursor = cursor.next();
         assertEquals(false, cursor.hasValue());
+
+        StandardCursorTest.listCursorTest(Arrays.asList("a", "b", "c", "d", "e", "f"), node.cursor());
     }
 
     public void testCursor2()
