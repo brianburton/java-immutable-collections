@@ -160,7 +160,7 @@ public class JImmutableArrayList<T>
     @Override
     public Cursor<T> cursor()
     {
-        return StandardCursor.of(new CursorSource(0));
+        return StandardCursor.of(new CursorSource());
     }
 
     @Override
@@ -199,17 +199,25 @@ public class JImmutableArrayList<T>
     private class CursorSource
             implements StandardCursor.Source<T>
     {
-        private int index = 0;
+        private final int index;
+        private final int size;
 
-        private CursorSource(int index)
+        private CursorSource()
+        {
+            this(0, next - first);
+        }
+
+        private CursorSource(int index,
+                             int size)
         {
             this.index = index;
+            this.size = size;
         }
 
         @Override
         public boolean atEnd()
         {
-            return (first + index) >= next;
+            return index >= size;
         }
 
         @Override
@@ -221,7 +229,7 @@ public class JImmutableArrayList<T>
         @Override
         public StandardCursor.Source<T> advance()
         {
-            return new CursorSource(index + 1);
+            return new CursorSource(index + 1, size);
         }
     }
 }
