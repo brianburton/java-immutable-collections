@@ -44,6 +44,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -183,6 +184,33 @@ public class JImmutableTreeMapTest
                 assertEquals(entry.getValue(), value.getValue());
             }
         }
+    }
+
+    public void testDeleteAll()
+    {
+        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
+        map = map.assign(1, 2).assign(3, 4);
+        JImmutableTreeMap<Integer, Integer> cleared = map.deleteAll();
+        assertNotSame(JImmutableTreeMap.<Integer, Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertSame(map.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
+
+        map = JImmutableTreeMap.of(new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -b.compareTo(a);
+            }
+        });
+        map = map.assign(1, 2).assign(3, 4);
+        cleared = map.deleteAll();
+        assertNotSame(JImmutableTreeMap.<Integer, Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertSame(map.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableTreeMap<Integer, Integer> map,

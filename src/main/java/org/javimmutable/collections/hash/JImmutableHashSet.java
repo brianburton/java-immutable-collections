@@ -57,6 +57,12 @@ public class JImmutableHashSet<T>
     }
 
     @Override
+    public JImmutableSet<T> deleteAll()
+    {
+        return of();
+    }
+
+    @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
         return new JImmutableHashSet<T>(map);

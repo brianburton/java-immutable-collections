@@ -61,6 +61,17 @@ public class JImmutableTreeSet<T>
         this.comparator = comparator;
     }
 
+    @Override
+    public JImmutableTreeSet<T> deleteAll()
+    {
+        return of(comparator);
+    }
+
+    public Comparator<T> getComparator()
+    {
+        return comparator;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<T>> JImmutableTreeSet<T> of()
     {

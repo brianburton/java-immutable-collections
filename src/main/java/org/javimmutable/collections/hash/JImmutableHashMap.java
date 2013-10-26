@@ -147,6 +147,12 @@ public class JImmutableHashMap<K, V>
     }
 
     @Override
+    public JImmutableMap<K, V> deleteAll()
+    {
+        return of();
+    }
+
+    @Override
     public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);

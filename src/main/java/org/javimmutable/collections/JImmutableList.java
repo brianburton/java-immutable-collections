@@ -126,6 +126,11 @@ public interface JImmutableList<T>
     boolean isEmpty();
 
     /**
+     * @return an equivalent collection with no values
+     */
+    JImmutableList<T> deleteAll();
+
+    /**
      * Returns an unmodifiable List implementation backed by this list.
      *
      * @return

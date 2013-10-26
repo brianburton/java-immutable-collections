@@ -445,4 +445,11 @@ public class JImmutableTreeListTest
             assertEquals(false, iterator.hasNext());
         }
     }
+
+    public void testDeleteAll()
+    {
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        list = list.insert(1).insert(2);
+        assertSame(JImmutableTreeList.of(), list.deleteAll());
+    }
 }

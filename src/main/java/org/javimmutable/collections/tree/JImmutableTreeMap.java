@@ -205,6 +205,12 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
+    public JImmutableTreeMap<K, V> deleteAll()
+    {
+        return of(comparator);
+    }
+
+    @Override
     public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);

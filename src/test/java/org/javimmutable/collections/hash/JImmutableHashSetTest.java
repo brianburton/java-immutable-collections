@@ -176,4 +176,10 @@ public class JImmutableHashSetTest
             assertEquals(true, set.isEmpty());
         }
     }
+
+    public void testDeleteAll()
+    {
+        JImmutableSet<String> set = JImmutableHashSet.<String>of().insert("FRED").insert("WILMA");
+        assertSame(JImmutableHashSet.of(), set.deleteAll());
+    }
 }

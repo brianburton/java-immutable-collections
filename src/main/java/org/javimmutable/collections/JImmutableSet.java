@@ -127,6 +127,11 @@ public interface JImmutableSet<T>
     boolean isEmpty();
 
     /**
+     * @return an equivalent collection with no values
+     */
+    JImmutableSet<T> deleteAll();
+
+    /**
      * @return an unmodifiable Set implementation backed by this set.
      */
     public Set<T> getSet();

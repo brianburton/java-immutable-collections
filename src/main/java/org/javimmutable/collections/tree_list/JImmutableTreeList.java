@@ -204,6 +204,12 @@ public class JImmutableTreeList<T>
     }
 
     @Override
+    public JImmutableRandomAccessList<T> deleteAll()
+    {
+        return of();
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         return o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());

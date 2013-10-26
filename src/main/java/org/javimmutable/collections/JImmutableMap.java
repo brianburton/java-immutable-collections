@@ -114,6 +114,11 @@ public interface JImmutableMap<K, V>
     int size();
 
     /**
+     * @return an equivalent collection with no values
+     */
+    JImmutableMap<K, V> deleteAll();
+
+    /**
      * Creates an unmodifiable java.util.Map reflecting the values of this PersistentMap.
      *
      * @return Map view of this PersistentMap

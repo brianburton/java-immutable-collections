@@ -194,4 +194,10 @@ public class JImmutableHashMapTest
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }
+
+    public void testDeleteAll()
+    {
+        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
+        assertSame(JImmutableHashMap.of(), map1.deleteAll());
+    }
 }

@@ -119,4 +119,9 @@ public interface JImmutableRandomAccessList<T>
      * @return
      */
     JImmutableRandomAccessList<T> delete(int index);
+
+    /**
+     * @return an equivalent collection with no values
+     */
+    JImmutableRandomAccessList<T> deleteAll();
 }

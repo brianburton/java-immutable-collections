@@ -144,6 +144,12 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    public JImmutableList<T> deleteAll()
+    {
+        return of();
+    }
+
+    @Override
     public T get(int index)
     {
         final int realIndex = calcRealIndex(index);

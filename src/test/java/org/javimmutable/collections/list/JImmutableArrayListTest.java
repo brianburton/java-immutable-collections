@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -311,5 +312,11 @@ public class JImmutableArrayListTest
             }
             assertEquals(false, iterator.hasNext());
         }
+    }
+
+    public void testDeleteAll()
+    {
+        JImmutableList<Integer> list = JImmutableArrayList.<Integer>of().insert(1).insert(2);
+        assertSame(JImmutableArrayList.of(), list.deleteAll());
     }
 }

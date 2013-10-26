@@ -218,4 +218,31 @@ public class JImmutableTreeSetTest
         assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
         StandardCursorTest.listCursorTest(new ArrayList<Integer>(expected), set.cursor());
     }
+
+    public void testDeleteAll()
+    {
+        JImmutableTreeSet<Integer> map = JImmutableTreeSet.of();
+        map = (JImmutableTreeSet<Integer>)map.insert(1).insert(3);
+        JImmutableTreeSet<Integer> cleared = map.deleteAll();
+        assertNotSame(JImmutableTreeSet.<Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertSame(map.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
+
+        map = JImmutableTreeSet.of(new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -b.compareTo(a);
+            }
+        });
+        map = (JImmutableTreeSet<Integer>)map.insert(1).insert(3);
+        cleared = map.deleteAll();
+        assertNotSame(JImmutableTreeSet.<Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertSame(map.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
+    }
 }
