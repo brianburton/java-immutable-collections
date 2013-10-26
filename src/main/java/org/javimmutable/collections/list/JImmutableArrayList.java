@@ -199,29 +199,29 @@ public class JImmutableArrayList<T>
     private class CursorSource
             implements StandardCursor.Source<T>
     {
-        private int realIndex = first;
+        private int index = 0;
 
-        private CursorSource(int realIndex)
+        private CursorSource(int index)
         {
-            this.realIndex = realIndex;
+            this.index = index;
         }
 
         @Override
         public boolean atEnd()
         {
-            return realIndex >= next;
+            return (first + index) >= next;
         }
 
         @Override
         public T currentValue()
         {
-            return get(realIndex);
+            return get(index);
         }
 
         @Override
         public StandardCursor.Source<T> advance()
         {
-            return new CursorSource(realIndex + 1);
+            return new CursorSource(index + 1);
         }
     }
 }

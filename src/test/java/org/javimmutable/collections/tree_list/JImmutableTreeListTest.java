@@ -63,6 +63,15 @@ public class JImmutableTreeListTest
         assertEquals(200, (int)list.get(1));
         list.verifyDepthsMatch();
 
+        Cursor<Integer> cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(200, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
+
         JImmutableTreeList<Integer> saved = list;
 
         list = list.insertFirst(80);
@@ -73,12 +82,33 @@ public class JImmutableTreeListTest
         assertEquals(200, (int)list.get(2));
         list.verifyDepthsMatch();
 
+        cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(80, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(200, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
+
         list = list.deleteLast();
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(80, (int)list.get(0));
         assertEquals(100, (int)list.get(1));
         list.verifyDepthsMatch();
+
+        cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(80, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
 
         list = list.deleteFirst();
         assertEquals(1, list.size());

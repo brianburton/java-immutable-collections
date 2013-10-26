@@ -61,6 +61,15 @@ public class JImmutableArrayListTest
         assertEquals(100, (int)list.get(0));
         assertEquals(200, (int)list.get(1));
 
+        Cursor<Integer> cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(200, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
+
         list = list.insertFirst(80);
         assertEquals(3, list.size());
         assertEquals(false, list.isEmpty());
@@ -68,11 +77,32 @@ public class JImmutableArrayListTest
         assertEquals(100, (int)list.get(1));
         assertEquals(200, (int)list.get(2));
 
+        cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(80, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(200, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
+
         list = list.deleteLast();
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(80, (int)list.get(0));
         assertEquals(100, (int)list.get(1));
+
+        cursor = list.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(80, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals(100, (int)cursor.getValue());
+        cursor = cursor.next();
+        assertEquals(false, cursor.hasValue());
 
         list = list.deleteFirst();
         assertEquals(1, list.size());
