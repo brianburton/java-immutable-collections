@@ -36,12 +36,15 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -137,6 +140,32 @@ public class JImmutableHashMapTest
                 assertEquals(entry.getValue(), mapValue.getValue());
             }
 
+            // verify the cursor worked properly
+            final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+            Map<Integer, Integer> fromCursor = new HashMap<Integer, Integer>();
+            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
+                entries.add(entry);
+                fromCursor.put(entry.getKey(), entry.getValue());
+            }
+            assertEquals(expected, fromCursor);
+            StandardCursorTest.listCursorTest(entries, map.cursor());
+            StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+            {
+                @Override
+                public Integer apply(Integer value)
+                {
+                    return entries.get(value).getKey();
+                }
+            }, entries.size(), map.keysCursor());
+            StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+            {
+                @Override
+                public Integer apply(Integer value)
+                {
+                    return entries.get(value).getValue();
+                }
+            }, entries.size(), map.valuesCursor());
+
             // verify the Map adaptor worked properly
             assertEquals(expected, map.getMap());
             assertEquals(expected.keySet(), map.getMap().keySet());
@@ -146,13 +175,6 @@ public class JImmutableHashMapTest
             Collections.sort(jvalues);
             Collections.sort(pvalues);
             assertEquals(jvalues, pvalues);
-
-            // verify the cursor worked properly
-            Map<Integer, Integer> fromCursor = new HashMap<Integer, Integer>();
-            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
-                fromCursor.put(entry.getKey(), entry.getValue());
-            }
-            assertEquals(expected, fromCursor);
 
             // verify the map can remove all keys
             ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
