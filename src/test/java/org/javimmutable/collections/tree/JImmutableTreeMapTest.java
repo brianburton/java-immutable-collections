@@ -38,6 +38,8 @@ package org.javimmutable.collections.tree;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +56,9 @@ public class JImmutableTreeMapTest
     public void testInsert()
     {
         JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
+        StandardCursorTest.emptyCursorTest(map.cursor());
+        StandardCursorTest.emptyCursorTest(map.keysCursor());
+        StandardCursorTest.emptyCursorTest(map.valuesCursor());
         assertEquals(0, map.size());
         assertEquals(Collections.<Integer>emptyList(), map.getKeysList());
         map = add(map, 5);
@@ -70,6 +75,10 @@ public class JImmutableTreeMapTest
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.getMap().values()));
+        //noinspection unchecked
+        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(10, 20, 30), map.keysCursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(11, 19, 18), map.valuesCursor());
     }
 
     public void testNullKeys()
