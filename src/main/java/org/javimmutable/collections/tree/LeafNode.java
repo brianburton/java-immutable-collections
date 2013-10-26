@@ -183,6 +183,7 @@ public class LeafNode<K, V>
         return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)
     {
