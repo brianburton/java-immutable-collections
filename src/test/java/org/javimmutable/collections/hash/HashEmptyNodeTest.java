@@ -38,6 +38,7 @@ package org.javimmutable.collections.hash;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 public class HashEmptyNodeTest
         extends TestCase
@@ -60,6 +61,6 @@ public class HashEmptyNodeTest
         assertSame(newNode, node);
         assertEquals(0, sizeDelta.getValue());
 
-        assertEquals(false, node.cursor().hasValue());
+        StandardCursorTest.emptyCursorTest(node.cursor());
     }
 }

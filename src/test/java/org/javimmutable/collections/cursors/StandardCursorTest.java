@@ -68,6 +68,11 @@ public class StandardCursorTest
         cursorTest(new ListLookup<T>(list), list.size(), cursor);
     }
 
+    public static <T> void emptyCursorTest(Cursor<T> cursor)
+    {
+        listCursorTest(Collections.<T>emptyList(), cursor);
+    }
+
     private static class ListLookup<T>
             implements Func1<Integer, T>
     {
