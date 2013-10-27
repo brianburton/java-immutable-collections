@@ -136,14 +136,31 @@ public class RandomLoop
             System.out.printf("growing %d%n", list.size());
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
-                list = list.insert(value);
-                expected.add(value);
+                switch (random.nextInt(3)) {
+                case 0:
+                    list = list.insert(value);
+                    expected.add(value);
+                    break;
+                case 1:
+                    list = list.insertLast(value);
+                    expected.add(value);
+                    break;
+                case 2:
+                    list = list.insertFirst(value);
+                    expected.add(0, value);
+                    break;
+                }
             }
             verifyContents(expected, list);
             System.out.printf("shrinking %d%n", list.size());
             for (int i = 0; i < size / 6; ++i) {
-                list = list.deleteLast();
-                expected.remove(expected.size() - 1);
+                if (random.nextInt(2) == 0) {
+                    list = list.deleteLast();
+                    expected.remove(expected.size() - 1);
+                } else {
+                    list = list.deleteFirst();
+                    expected.remove(0);
+                }
             }
             verifyContents(expected, list);
         }
@@ -171,9 +188,25 @@ public class RandomLoop
                     list = list.insert(value);
                     expected.add(value);
                 } else {
-                    int index = random.nextInt(list.size());
-                    list = list.insert(index, value);
-                    expected.add(index, value);
+                    switch (random.nextInt(8)) {
+                    case 0:
+                        list = list.insert(value);
+                        expected.add(value);
+                        break;
+                    case 1:
+                        list = list.insertLast(value);
+                        expected.add(value);
+                        break;
+                    case 2:
+                        list = list.insertFirst(value);
+                        expected.add(0, value);
+                        break;
+                    default:
+                        int index = random.nextInt(list.size());
+                        list = list.insert(index, value);
+                        expected.add(index, value);
+                        break;
+                    }
                 }
             }
             verifyContents(expected, list);
@@ -183,9 +216,20 @@ public class RandomLoop
                     list = list.deleteLast();
                     expected.remove(expected.size() - 1);
                 } else {
-                    int index = random.nextInt(list.size());
-                    list = list.delete(index);
-                    expected.remove(index);
+                    switch (random.nextInt(8)) {
+                    case 0:
+                        list = list.deleteLast();
+                        expected.remove(expected.size() - 1);
+                        break;
+                    case 1:
+                        list = list.deleteFirst();
+                        expected.remove(0);
+                        break;
+                    default:
+                        int index = random.nextInt(list.size());
+                        list = list.delete(index);
+                        expected.remove(index);
+                    }
                 }
             }
             verifyContents(expected, list);
