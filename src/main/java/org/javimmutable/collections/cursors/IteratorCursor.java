@@ -16,8 +16,8 @@ import java.util.Iterator;
 public abstract class IteratorCursor<T>
         implements Cursor<T>
 {
-    private final Iterator<T> iterator;
     private final boolean hasNext;
+    private Iterator<T> iterator;
     private Cursor<T> next;
 
     /**
@@ -58,8 +58,10 @@ public abstract class IteratorCursor<T>
 
     protected IteratorCursor(Iterator<T> iterator)
     {
-        this.iterator = iterator;
         this.hasNext = iterator.hasNext();
+        if (hasNext) {
+            this.iterator = iterator;
+        }
     }
 
     @Override
@@ -67,6 +69,7 @@ public abstract class IteratorCursor<T>
     {
         if (next == null) {
             next = hasNext ? new Started<T>(iterator, iterator.next()) : EmptyStartedCursor.<T>of();
+            iterator = null;
         }
         return next;
     }
