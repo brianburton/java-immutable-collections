@@ -104,11 +104,11 @@ public class Functions
     }
 
     /**
-     * Calls func for every value in cursor and adds each value for which func returns true
+     * Calls func for every value in cursor and adds each value returned by func
      * to a list.  Returns the resulting list.
      *
      * @param cursor source of the values
-     * @param func   function to reject the values
+     * @param func   function to transform the values
      * @param list   list to receive the values
      * @param <T>
      * @return
@@ -125,7 +125,7 @@ public class Functions
 
     /**
      * Calls func for every value in cursor and adds each value for which func returns a non-empty
-     * value to a list.  Returns the resulting list.
+     * Holder to a list.  Returns the resulting list.
      *
      * @param cursor source of the values
      * @param func   function to reject the values

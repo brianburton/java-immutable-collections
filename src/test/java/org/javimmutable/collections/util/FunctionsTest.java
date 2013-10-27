@@ -41,7 +41,13 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
+
+import java.util.Arrays;
 
 public class FunctionsTest
         extends TestCase
@@ -72,6 +78,12 @@ public class FunctionsTest
                 return 2 * accumulator + value;
             }
         }));
+    }
+
+    public void testReverse()
+    {
+        StandardCursorTest.listCursorTest(Arrays.asList(1), Functions.reverse(JImmutables.list(1).cursor()));
+        StandardCursorTest.listCursorTest(Arrays.asList(3, 2, 1), Functions.reverse(JImmutables.list(1, 2, 3).cursor()));
     }
 
     public void testCollectAll()
@@ -117,7 +129,7 @@ public class FunctionsTest
             }
         };
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
         assertEquals(Holders.<Integer>of(2), Functions.find(list.cursor(), func));
 
         list = JImmutables.list(1, 5, 7);
@@ -135,7 +147,7 @@ public class FunctionsTest
             }
         };
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
         JImmutableList<Integer> expected = JImmutables.list(1, 3);
         assertEquals(expected, Functions.reject(list.cursor(), JImmutables.<Integer>list(), func));
         list = JImmutables.list(1, 5, 7);
@@ -156,13 +168,28 @@ public class FunctionsTest
             }
         };
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
-        JImmutableList<Integer> expected = JImmutables.list(2);
+        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
+        JImmutableList<Integer> expected = JImmutables.list(2, 4);
         assertEquals(expected, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
         list = JImmutables.list(2, 6, 12);
         assertEquals(list, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
         list = JImmutables.list(1, 5, 7);
         expected = JImmutables.list();
         assertEquals(expected, Functions.select(list.cursor(), JImmutables.<Integer>list(), func));
+    }
+
+    public void testInsertAll()
+    {
+        final JImmutableList<Integer> expected = JImmutableArrayList.<Integer>of().insert(1).insert(2).insert(3);
+        assertEquals(expected, Functions.insertAll(JImmutableArrayList.<Integer>of(), Arrays.asList(1, 2, 3).iterator()));
+        assertEquals(expected, Functions.insertAll(JImmutableArrayList.<Integer>of(), expected.cursor()));
+        assertEquals(expected, Functions.insertAll(JImmutableArrayList.<Integer>of(), new Integer[]{1, 2, 3}));
+    }
+
+    public void testAssignAll()
+    {
+        final JImmutableMap<String, String> expected = JImmutableTreeMap.<String, String>of().assign("a", "A").assign("b", "B");
+        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.<String, String>of(), expected));
+        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.<String, String>of(), expected.getMap()));
     }
 }
