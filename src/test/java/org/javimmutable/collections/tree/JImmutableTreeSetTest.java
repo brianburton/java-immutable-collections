@@ -77,6 +77,7 @@ public class JImmutableTreeSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
         StandardCursorTest.listCursorTest(Arrays.asList("fred"), set.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("fred"), set.iterator());
 
         set = set.insert("WILMA".toLowerCase());
         assertFalse(set.isEmpty());
@@ -88,10 +89,12 @@ public class JImmutableTreeSetTest
         assertEquals(true, set.containsAny(expected));
         assertEquals(false, set.containsAll(expected));
         StandardCursorTest.listCursorTest(Arrays.asList("fred", "wilma"), set.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("fred", "wilma"), set.iterator());
 
         assertSame(set, set.insert("fred"));
         assertSame(set, set.insert("wilma"));
         StandardCursorTest.listCursorTest(Arrays.asList("fred", "wilma"), set.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("fred", "wilma"), set.iterator());
 
         JImmutableSet<String> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
@@ -104,12 +107,14 @@ public class JImmutableTreeSetTest
         assertEquals(true, set2.containsAll(expected));
         assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
         StandardCursorTest.listCursorTest(Arrays.asList("barney", "betty", "fred", "wilma"), set2.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("barney", "betty", "fred", "wilma"), set2.iterator());
 
         assertEquals(set, set.intersection(set2));
         assertEquals(set, set2.intersection(set));
         assertEquals(set, set2.delete("betty").delete("barney"));
         StandardCursorTest.listCursorTest(Arrays.asList("barney", "betty", "fred", "wilma"), set2.cursor());
         StandardCursorTest.listCursorTest(Arrays.asList("fred", "wilma"), set2.delete("betty").delete("barney").cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("fred", "wilma"), set2.delete("betty").delete("barney").iterator());
 
         set2 = set2.deleteAll(set);
         assertFalse(set2.isEmpty());
@@ -122,6 +127,7 @@ public class JImmutableTreeSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
         StandardCursorTest.listCursorTest(Arrays.asList("barney", "betty"), set2.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("barney", "betty"), set2.iterator());
 
         JImmutableSet<String> set3 = set.union(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
@@ -217,6 +223,7 @@ public class JImmutableTreeSetTest
         assertEquals(expected, set.getSet());
         assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
         StandardCursorTest.listCursorTest(new ArrayList<Integer>(expected), set.cursor());
+        StandardCursorTest.listIteratorTest(new ArrayList<Integer>(expected), set.iterator());
     }
 
     public void testDeleteAll()

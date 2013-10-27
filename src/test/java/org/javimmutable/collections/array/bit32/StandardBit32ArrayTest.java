@@ -221,12 +221,14 @@ public class StandardBit32ArrayTest
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i);
             StandardCursorTest.cursorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.iterator());
         }
 
         array = StandardBit32Array.of();
         for (int i = 1; i < 32; i += 5) {
             array = array.assign(i, i);
             StandardCursorTest.cursorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.iterator());
         }
 
         int index = 1;

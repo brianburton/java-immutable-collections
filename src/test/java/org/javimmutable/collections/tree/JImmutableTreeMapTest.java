@@ -54,6 +54,7 @@ import java.util.TreeSet;
 public class JImmutableTreeMapTest
         extends TestCase
 {
+    @SuppressWarnings("unchecked")
     public void testInsert()
     {
         JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
@@ -78,10 +79,12 @@ public class JImmutableTreeMapTest
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.getMap().values()));
-        //noinspection unchecked
         StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.cursor());
         StandardCursorTest.listCursorTest(Arrays.asList(10, 20, 30), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(11, 19, 18), map.valuesCursor());
+        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.iterator());
+        StandardCursorTest.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
+        StandardCursorTest.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
     }
 
     public void testNullKeys()

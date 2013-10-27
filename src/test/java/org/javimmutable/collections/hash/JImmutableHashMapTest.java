@@ -167,6 +167,23 @@ public class JImmutableHashMapTest
                     return entries.get(value).getValue();
                 }
             }, entries.size(), map.valuesCursor());
+            StandardCursorTest.listIteratorTest(entries, map.iterator());
+            StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+            {
+                @Override
+                public Integer apply(Integer value)
+                {
+                    return entries.get(value).getKey();
+                }
+            }, entries.size(), map.getMap().keySet().iterator());
+            StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+            {
+                @Override
+                public Integer apply(Integer value)
+                {
+                    return entries.get(value).getValue();
+                }
+            }, entries.size(), map.getMap().values().iterator());
 
             // verify the Map adaptor worked properly
             assertEquals(expected, map.getMap());

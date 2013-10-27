@@ -62,12 +62,14 @@ public class JImmutableLinkedStackTest
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
         StandardCursorTest.listCursorTest(Arrays.asList(10), list2.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList(10), list2.iterator());
 
         JImmutableLinkedStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
         StandardCursorTest.listCursorTest(Arrays.asList(30, 10), list3.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList(30, 10), list3.iterator());
 
         assertEquals(Collections.<Integer>emptyList(), list.makeList());
         assertEquals(Arrays.asList(10), list2.makeList());

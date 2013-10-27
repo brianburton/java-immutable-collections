@@ -225,14 +225,14 @@ public abstract class StandardCursor<T>
         }
     }
 
-    private static class RangeSource
+    static class RangeSource
             implements Source<Integer>
     {
         private final int low;
         private final int high;
 
-        private RangeSource(int low,
-                            int high)
+        RangeSource(int low,
+                    int high)
         {
             this.low = low;
             this.high = high;

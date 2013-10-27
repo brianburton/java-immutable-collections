@@ -59,35 +59,42 @@ public class Bit32ArrayTest
         }
         assertEquals(0, array.size());
         StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+        StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i);
             assertEquals(i + 1, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of(i), array.get(i));
             assertEquals(32, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
             array = array.assign(i, i + i);
             assertEquals(32, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of(i + i), array.get(i));
             assertEquals(32, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
             array = array.delete(i);
             assertEquals(32 - i - 1, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.<Integer>of(), array.get(i));
             assertEquals(0, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
     }
@@ -124,6 +131,7 @@ public class Bit32ArrayTest
             }
             assertEquals(count, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
+            StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
     }
 
