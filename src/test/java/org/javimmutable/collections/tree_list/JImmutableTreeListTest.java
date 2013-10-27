@@ -58,6 +58,7 @@ public class JImmutableTreeListTest
         assertEquals(100, (int)list.get(0));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.insert(200);
         assertEquals(2, list.size());
@@ -66,6 +67,7 @@ public class JImmutableTreeListTest
         assertEquals(200, (int)list.get(1));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         JImmutableTreeList<Integer> saved = list;
 
@@ -77,6 +79,7 @@ public class JImmutableTreeListTest
         assertEquals(200, (int)list.get(2));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
         assertEquals(2, list.size());
@@ -85,6 +88,7 @@ public class JImmutableTreeListTest
         assertEquals(100, (int)list.get(1));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteFirst();
         assertEquals(1, list.size());
@@ -92,12 +96,14 @@ public class JImmutableTreeListTest
         assertEquals(100, (int)list.get(0));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = saved;
         list = list.assign(1, 210);
@@ -107,6 +113,7 @@ public class JImmutableTreeListTest
         assertEquals(210, (int)list.get(1));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.delete(0);
         assertEquals(1, list.size());
@@ -114,12 +121,14 @@ public class JImmutableTreeListTest
         assertEquals(210, (int)list.get(0));
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.delete(0);
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
     public void testInsertDeleteFirst()
@@ -140,6 +149,7 @@ public class JImmutableTreeListTest
                 }
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
 
         for (int index = 0; index < 100; ++index) {
@@ -158,6 +168,7 @@ public class JImmutableTreeListTest
                 }
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
 
         assertEquals(true, list.isEmpty());
@@ -188,6 +199,7 @@ public class JImmutableTreeListTest
                 }
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
 
         for (int index = 0; index < 100; ++index) {
@@ -204,6 +216,7 @@ public class JImmutableTreeListTest
                 }
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
 
         assertEquals(true, list.isEmpty());
@@ -230,6 +243,7 @@ public class JImmutableTreeListTest
         assertEquals(expected, list.getList());
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         for (int i = 1; i <= 1000; ++i) {
             list = list.insert(999, i);
@@ -238,6 +252,7 @@ public class JImmutableTreeListTest
         assertEquals(expected, list.getList());
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
     public void testInsertAtSize()
@@ -251,6 +266,7 @@ public class JImmutableTreeListTest
         assertEquals(expected, list.getList());
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
     public void testRandom()
@@ -274,6 +290,7 @@ public class JImmutableTreeListTest
             }
             assertEquals(expected, list.getList());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < size; ++i) {
@@ -284,6 +301,7 @@ public class JImmutableTreeListTest
             }
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
@@ -297,6 +315,7 @@ public class JImmutableTreeListTest
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
     }
 
@@ -327,6 +346,7 @@ public class JImmutableTreeListTest
             assertEquals(expected, list.getList());
             list.verifyDepthsMatch();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < list.size(); ++i) {
@@ -337,6 +357,7 @@ public class JImmutableTreeListTest
             }
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
             while (list.size() > 0) {
                 int index = random.nextInt(list.size());
@@ -347,6 +368,7 @@ public class JImmutableTreeListTest
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
     }
 
