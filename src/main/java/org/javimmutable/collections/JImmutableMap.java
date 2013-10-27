@@ -114,6 +114,11 @@ public interface JImmutableMap<K, V>
     int size();
 
     /**
+     * @return true only if list contains no values
+     */
+    boolean isEmpty();
+
+    /**
      * @return an equivalent collection with no values
      */
     JImmutableMap<K, V> deleteAll();

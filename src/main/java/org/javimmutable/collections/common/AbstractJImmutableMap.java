@@ -45,6 +45,12 @@ public abstract class AbstractJImmutableMap<K, V>
         implements JImmutableMap<K, V>
 {
     @Override
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
+
+    @Override
     public Cursor<K> keysCursor()
     {
         return TransformCursor.ofKeys(cursor());

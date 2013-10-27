@@ -61,9 +61,11 @@ public class JImmutableTreeMapTest
         StandardCursorTest.emptyCursorTest(map.keysCursor());
         StandardCursorTest.emptyCursorTest(map.valuesCursor());
         assertEquals(0, map.size());
+        assertEquals(true, map.isEmpty());
         assertEquals(Collections.<Integer>emptyList(), map.getKeysList());
         map = add(map, 5);
         assertEquals(1, map.size());
+        assertEquals(false, map.isEmpty());
         assertEquals(Arrays.asList(5), map.getKeysList());
         map = add(map, 7);
         assertEquals(2, map.size());
