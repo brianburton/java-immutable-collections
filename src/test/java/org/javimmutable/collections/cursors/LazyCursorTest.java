@@ -39,10 +39,12 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 
+import java.util.Arrays;
+
 public class LazyCursorTest
         extends TestCase
 {
-    public void test()
+    public void testStarting()
     {
         TestIterable source = new TestIterable();
         assertEquals(false, source.isCreated());
@@ -52,7 +54,7 @@ public class LazyCursorTest
         try {
             lazyIterator.hasValue();
             fail();
-        } catch (IllegalStateException ex) {
+        } catch (Cursor.NotStartedException ex) {
             // expected
         }
         assertEquals(false, source.isCreated());
@@ -60,7 +62,7 @@ public class LazyCursorTest
         try {
             lazyIterator.getValue();
             fail();
-        } catch (IllegalStateException ex) {
+        } catch (Cursor.NotStartedException ex) {
             // expected
         }
         assertEquals(false, source.isCreated());
@@ -72,6 +74,12 @@ public class LazyCursorTest
         TestIterator testIterator = (TestIterator)cursor;
         assertEquals(true, testIterator.isAdvanced());
         assertEquals("success!", testIterator.getValue());
+    }
+
+    public void testWithRangeCursor()
+    {
+        Cursor<Integer> cursor = StandardCursor.forRange(1, 5);
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 4, 5), cursor);
     }
 
     private static class TestIterator

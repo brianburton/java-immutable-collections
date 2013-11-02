@@ -46,13 +46,13 @@ public abstract class IterableCursor
         @Override
         public boolean hasValue()
         {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
 
         @Override
         public T getValue()
         {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
 
         @Override

@@ -79,11 +79,11 @@ public class SingleValueCursor<T>
     @Override
     public boolean hasValue()
     {
-        throw new IllegalStateException();
+        throw new NotStartedException();
     }
 
     public T getValue()
     {
-        throw new IllegalStateException();
+        throw new NotStartedException();
     }
 }

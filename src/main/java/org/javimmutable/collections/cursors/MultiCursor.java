@@ -110,7 +110,7 @@ public class MultiCursor<T>
     public boolean hasValue()
     {
         if (cursor == null) {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
         return cursor.hasValue();
     }
@@ -119,7 +119,7 @@ public class MultiCursor<T>
     public T getValue()
     {
         if (cursor == null) {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
         return cursor.getValue();
     }

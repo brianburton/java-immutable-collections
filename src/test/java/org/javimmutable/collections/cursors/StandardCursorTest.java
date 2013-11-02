@@ -35,13 +35,13 @@ public class StandardCursorTest
         try {
             cursor.hasValue();
             fail();
-        } catch (Exception ex) {
+        } catch (Cursor.NotStartedException ex) {
             // expected
         }
         try {
             cursor.getValue();
             fail();
-        } catch (Exception ex) {
+        } catch (Cursor.NotStartedException ex) {
             // expected
         }
 
@@ -55,6 +55,12 @@ public class StandardCursorTest
         // after expected sequence has no values
         cursor = cursor.next();
         assertEquals(false, cursor.hasValue());
+        try {
+            cursor.getValue();
+            fail();
+        } catch (Cursor.NoValueException ex) {
+            // expected
+        }
 
         // safe to call multiple times once at end
         cursor = cursor.next();

@@ -57,7 +57,7 @@ public abstract class StandardCursor<T>
     private static final Cursor EMPTY = new Start(new EmptySource());
 
     /**
-     * Simple interface for classes that can iterate strictly (i.e. do not require a lazy start).
+     * Simple interface for classes that can iterate immediately (i.e. do not require a lazy start).
      * A Source must start already pointing at a current value.
      * Implementations of this interface must be immutable.
      *
@@ -161,13 +161,13 @@ public abstract class StandardCursor<T>
         @Override
         public boolean hasValue()
         {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
 
         @Override
         public V getValue()
         {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
     }
 
@@ -197,7 +197,7 @@ public abstract class StandardCursor<T>
         public V getValue()
         {
             if (source.atEnd()) {
-                throw new IllegalStateException();
+                throw new NoValueException();
             }
             return source.currentValue();
         }
@@ -215,7 +215,7 @@ public abstract class StandardCursor<T>
         @Override
         public T currentValue()
         {
-            throw new IllegalStateException();
+            throw new NoValueException();
         }
 
         @Override

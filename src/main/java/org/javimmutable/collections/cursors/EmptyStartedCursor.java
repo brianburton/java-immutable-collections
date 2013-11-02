@@ -69,6 +69,6 @@ public class EmptyStartedCursor<T>
     @Override
     public T getValue()
     {
-        throw new IllegalStateException();
+        throw new NoValueException();
     }
 }

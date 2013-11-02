@@ -120,7 +120,7 @@ public class LazyCursor<V>
     @Override
     public boolean hasValue()
     {
-        throw new IllegalStateException();
+        throw new NotStartedException();
     }
 
     /**
@@ -131,6 +131,6 @@ public class LazyCursor<V>
      */
     public V getValue()
     {
-        throw new IllegalStateException();
+        throw new NotStartedException();
     }
 }

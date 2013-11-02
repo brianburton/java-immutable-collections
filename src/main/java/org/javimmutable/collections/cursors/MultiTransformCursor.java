@@ -100,7 +100,7 @@ public class MultiTransformCursor<S, T>
     public boolean hasValue()
     {
         if (visitCursor == null) {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
         return visitCursor.hasValue();
     }
@@ -109,7 +109,7 @@ public class MultiTransformCursor<S, T>
     public T getValue()
     {
         if (visitCursor == null) {
-            throw new IllegalStateException();
+            throw new NotStartedException();
         }
         return visitCursor.getValue();
     }

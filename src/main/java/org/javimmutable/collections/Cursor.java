@@ -45,6 +45,22 @@ package org.javimmutable.collections;
 public interface Cursor<V>
 {
     /**
+     * Thrown by hasValue() and getValue() if the cursor has not been started by calling next() yet.
+     */
+    public static class NotStartedException
+            extends IllegalStateException
+    {
+    }
+
+    /**
+     * Thrown by getValue() if the Cursor's hasValue() method returns false.
+     */
+    public static class NoValueException
+            extends IllegalStateException
+    {
+    }
+
+    /**
      * Advances to the next (possibly first) value.  Must always return a non-null Cursor.
      * A newly created Cursor must always point to "before" the first value because next() will always
      * be called once before retrieving the first value.  If the Cursor is already at the end
