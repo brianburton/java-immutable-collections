@@ -41,37 +41,37 @@ import org.javimmutable.collections.Sequence;
 public abstract class SequenceCursor<T>
         implements Cursor<T>
 {
-    public static <T> Cursor<T> of(Sequence<T> list)
+    public static <T> Cursor<T> of(Sequence<T> sequence)
     {
-        return StandardCursor.of(new ListSource<T>(list));
+        return StandardCursor.of(new SequenceSource<T>(sequence));
     }
 
-    private static class ListSource<T>
+    private static class SequenceSource<T>
             implements StandardCursor.Source<T>
     {
-        private final Sequence<T> list;
+        private final Sequence<T> sequence;
 
-        private ListSource(Sequence<T> list)
+        private SequenceSource(Sequence<T> sequence)
         {
-            this.list = list;
+            this.sequence = sequence;
         }
 
         @Override
         public boolean atEnd()
         {
-            return list.isEmpty();
+            return sequence.isEmpty();
         }
 
         @Override
         public T currentValue()
         {
-            return list.getHead();
+            return sequence.getHead();
         }
 
         @Override
         public StandardCursor.Source<T> advance()
         {
-            return new ListSource<T>(list.getTail());
+            return new SequenceSource<T>(sequence.getTail());
         }
     }
 }

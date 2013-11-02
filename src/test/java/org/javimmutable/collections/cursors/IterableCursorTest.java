@@ -11,7 +11,7 @@ import java.util.List;
 public class IterableCursorTest
         extends TestCase
 {
-    public void testEmptyIterator()
+    public void testEmptyIterable()
     {
         List<Integer> source = Collections.emptyList();
         Cursor<Integer> cursor = IterableCursor.of(source);
@@ -20,10 +20,10 @@ public class IterableCursorTest
         StandardCursorTest.emptyCursorTest(cursor);
 
         // subsequent passes will use the next pointers
-        assertEquals(source, collect(cursor.next()));
+        assertEquals(source, remainingValuesAsList(cursor.next()));
     }
 
-    public void testSingleIterator()
+    public void testSingleValueIterable()
     {
         List<Integer> source = Arrays.asList(1);
         Cursor<Integer> cursor = IterableCursor.of(source);
@@ -33,11 +33,11 @@ public class IterableCursorTest
 
         // subsequent passes will use the next pointers
         Cursor<Integer> advanced = cursor.next();
-        assertEquals(source, collect(advanced));
-        assertEquals(Collections.<Integer>emptyList(), collect(advanced.next()));
+        assertEquals(source, remainingValuesAsList(advanced));
+        assertEquals(Collections.<Integer>emptyList(), remainingValuesAsList(advanced.next()));
     }
 
-    public void testMultiIterator()
+    public void testMultiValueIterable()
     {
         List<Integer> source = Arrays.asList(1, 2, 3, 4);
         Cursor<Integer> cursor = IterableCursor.of(source);
@@ -47,18 +47,18 @@ public class IterableCursorTest
 
         // subsequent passes will use the next pointers
         Cursor<Integer> advanced = cursor.next();
-        assertEquals(source, collect(advanced));
+        assertEquals(source, remainingValuesAsList(advanced));
         advanced = advanced.next();
-        assertEquals(Arrays.asList(2, 3, 4), collect(advanced));
+        assertEquals(Arrays.asList(2, 3, 4), remainingValuesAsList(advanced));
         advanced = advanced.next();
-        assertEquals(Arrays.asList(3, 4), collect(advanced));
+        assertEquals(Arrays.asList(3, 4), remainingValuesAsList(advanced));
         advanced = advanced.next();
-        assertEquals(Arrays.asList(4), collect(advanced));
+        assertEquals(Arrays.asList(4), remainingValuesAsList(advanced));
         advanced = advanced.next();
-        assertEquals(Collections.<Integer>emptyList(), collect(advanced.next()));
+        assertEquals(Collections.<Integer>emptyList(), remainingValuesAsList(advanced.next()));
     }
 
-    private List<Integer> collect(Cursor<Integer> cursor)
+    private List<Integer> remainingValuesAsList(Cursor<Integer> cursor)
     {
         List<Integer> answer = new ArrayList<Integer>();
         while (cursor.hasValue()) {

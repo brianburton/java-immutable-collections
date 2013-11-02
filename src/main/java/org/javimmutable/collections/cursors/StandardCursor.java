@@ -133,6 +133,14 @@ public abstract class StandardCursor<T>
         return StandardCursor.of(new RangeSource(low, high));
     }
 
+    /**
+     * Utility method, useful in unit tests, that collects all of the values in the Cursor into a List
+     * and returns the List.
+     *
+     * @param cursor
+     * @param <T>
+     * @return
+     */
     public static <T> List<T> makeList(Cursor<T> cursor)
     {
         List<T> answer = new ArrayList<T>();
