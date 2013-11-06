@@ -1,6 +1,8 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 
 import java.util.Iterator;
 
@@ -30,77 +32,40 @@ public abstract class IterableCursor
      */
     public static <T> Cursor<T> of(Iterable<T> iterable)
     {
-        return new Start<T>(iterable);
+        return ValueFunctionCursor.<T, Function, Factory>of(new Factory<T>(iterable));
     }
 
-    private static class Start<T>
-            implements Cursor<T>
+    private static class Factory<T>
+            implements ValueFunctionFactory<T, Function<T>>
     {
         private final Iterable<T> iterable;
 
-        private Start(Iterable<T> iterable)
+        private Factory(Iterable<T> iterable)
         {
             this.iterable = iterable;
         }
 
         @Override
-        public boolean hasValue()
+        public Function<T> createFunction()
         {
-            throw new NotStartedException();
-        }
-
-        @Override
-        public T getValue()
-        {
-            throw new NotStartedException();
-        }
-
-        @Override
-        public Cursor<T> next()
-        {
-            final Iterator<T> iterator = iterable.iterator();
-            return iterator.hasNext() ? new Started<T>(iterator, iterator.next()) : EmptyStartedCursor.<T>of();
+            return new Function<T>(iterable.iterator());
         }
     }
 
-    private static class Started<T>
-            implements Cursor<T>
+    private static class Function<T>
+            implements ValueFunction<T>
     {
-        private final boolean hasNext;
-        private Iterator<T> iterator;
-        private Cursor<T> next;
-        private final T value;
+        private final Iterator<T> iterator;
 
-        private Started(Iterator<T> iterator,
-                        T value)
+        private Function(Iterator<T> iterator)
         {
-            this.hasNext = iterator.hasNext();
-            if (hasNext) {
-                this.iterator = iterator;
-            }
-            this.value = value;
+            this.iterator = iterator;
         }
 
         @Override
-        public boolean hasValue()
+        public Holder<T> nextValue()
         {
-            return true;
-        }
-
-        @Override
-        public T getValue()
-        {
-            return value;
-        }
-
-        @Override
-        public Cursor<T> next()
-        {
-            if (next == null) {
-                next = hasNext ? new Started<T>(iterator, iterator.next()) : EmptyStartedCursor.<T>of();
-                iterator = null;
-            }
-            return next;
+            return iterator.hasNext() ? Holders.of(iterator.next()) : Holders.<T>of();
         }
     }
 }
