@@ -34,7 +34,7 @@ public abstract class ValueFunctionCursor
     }
 
     protected static class Start<T, F extends ValueFunction<T>, A extends ValueFunctionFactory<T, F>>
-            implements Cursor<T>
+            extends AbstractStartCursor<T>
     {
         private final A factory;
 
@@ -44,23 +44,11 @@ public abstract class ValueFunctionCursor
         }
 
         @Override
-        public boolean hasValue()
-        {
-            throw new Cursor.NotStartedException();
-        }
-
-        @Override
-        public T getValue()
-        {
-            throw new Cursor.NotStartedException();
-        }
-
-        @Override
         public Cursor<T> next()
         {
             final F function = createFunction();
             final Holder<T> firstValue = function.nextValue();
-            return firstValue.isFilled() ? new Started<T, F>(function, firstValue.getValue()) : EmptyStartedCursor.<T>of();
+            return firstValue.isFilled() ? new Started<T, F>(function, firstValue.getValue()) : super.next();
         }
 
         protected F createFunction()
@@ -70,7 +58,7 @@ public abstract class ValueFunctionCursor
     }
 
     private static class Started<T, F extends ValueFunction<T>>
-            implements Cursor<T>
+            extends AbstractStartedCursor<T>
     {
         private F function;
         private Cursor<T> next;
@@ -84,12 +72,6 @@ public abstract class ValueFunctionCursor
         }
 
         @Override
-        public boolean hasValue()
-        {
-            return true;
-        }
-
-        @Override
         public T getValue()
         {
             return value;
@@ -100,7 +82,7 @@ public abstract class ValueFunctionCursor
         {
             if (next == null) {
                 final Holder<T> nextValue = function.nextValue();
-                next = nextValue.isFilled() ? new Started<T, F>(function, nextValue.getValue()) : EmptyStartedCursor.<T>of();
+                next = nextValue.isFilled() ? new Started<T, F>(function, nextValue.getValue()) : super.next();
             }
             return next;
         }

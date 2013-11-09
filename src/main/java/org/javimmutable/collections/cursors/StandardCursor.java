@@ -47,11 +47,8 @@ import java.util.List;
  * a Source implementation to the of() method and this class will ensure that traversal
  * does not start until the next() method is called and does not progress beyond the
  * point where atEnd() is true.
- *
- * @param <T>
  */
-public abstract class StandardCursor<T>
-        implements Cursor<T>
+public abstract class StandardCursor
 {
     @SuppressWarnings("unchecked")
     private static final Cursor EMPTY = new Start(new EmptySource());
@@ -101,7 +98,7 @@ public abstract class StandardCursor<T>
      * @param <T>
      * @return
      */
-    public static <T> StandardCursor<T> of(Source<T> source)
+    public static <T> Cursor<T> of(Source<T> source)
     {
         return new Start<T>(source);
     }
@@ -127,8 +124,8 @@ public abstract class StandardCursor<T>
      * @param high
      * @return
      */
-    public static StandardCursor<Integer> forRange(int low,
-                                                   int high)
+    public static Cursor<Integer> forRange(int low,
+                                           int high)
     {
         return StandardCursor.of(new RangeSource(low, high));
     }
@@ -151,7 +148,7 @@ public abstract class StandardCursor<T>
     }
 
     private static class Start<V>
-            extends StandardCursor<V>
+            extends AbstractStartCursor<V>
     {
         private final Source<V> source;
 
@@ -165,22 +162,10 @@ public abstract class StandardCursor<T>
         {
             return new Started<V>(source);
         }
-
-        @Override
-        public boolean hasValue()
-        {
-            throw new NotStartedException();
-        }
-
-        @Override
-        public V getValue()
-        {
-            throw new NotStartedException();
-        }
     }
 
     private static class Started<V>
-            extends StandardCursor<V>
+            implements Cursor<V>
     {
         private final Source<V> source;
 
@@ -223,7 +208,7 @@ public abstract class StandardCursor<T>
         @Override
         public T currentValue()
         {
-            throw new NoValueException();
+            throw new Cursor.NoValueException();
         }
 
         @Override

@@ -38,7 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 
 public class SingleValueCursor<T>
-        implements Cursor<T>
+        extends AbstractStartCursor<T>
 {
     private final T value;
 
@@ -74,16 +74,5 @@ public class SingleValueCursor<T>
                 return value;
             }
         };
-    }
-
-    @Override
-    public boolean hasValue()
-    {
-        throw new NotStartedException();
-    }
-
-    public T getValue()
-    {
-        throw new NotStartedException();
     }
 }

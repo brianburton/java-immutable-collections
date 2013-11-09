@@ -46,7 +46,7 @@ import org.javimmutable.collections.Func0;
  * @param <V>
  */
 public class LazyCursor<V>
-        implements Cursor<V>
+        extends AbstractStartCursor<V>
 {
     private final Func0<Cursor<V>> factory;
 
@@ -109,28 +109,5 @@ public class LazyCursor<V>
     public Cursor<V> next()
     {
         return factory.apply().next();
-    }
-
-    /**
-     * Always throws IllegalStateException
-     *
-     * @return never returns
-     * @throws IllegalStateException
-     */
-    @Override
-    public boolean hasValue()
-    {
-        throw new NotStartedException();
-    }
-
-    /**
-     * Always throws IllegalStateException
-     *
-     * @return never returns
-     * @throws IllegalStateException
-     */
-    public V getValue()
-    {
-        throw new NotStartedException();
     }
 }
