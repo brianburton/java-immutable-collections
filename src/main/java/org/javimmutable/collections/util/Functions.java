@@ -113,12 +113,13 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T, R> Insertable<R> collectAll(Cursor<T> cursor,
-                                                  Insertable<R> list,
-                                                  Func1<T, R> func)
+    @SuppressWarnings("unchecked")
+    public static <T, R, A extends Insertable<R>> A collectAll(Cursor<T> cursor,
+                                                               A list,
+                                                               Func1<T, R> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
-            list = list.insert(func.apply(cursor.getValue()));
+            list = (A)list.insert(func.apply(cursor.getValue()));
         }
         return list;
     }
@@ -133,14 +134,15 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T, R> Insertable<R> collectSome(Cursor<T> cursor,
-                                                   Insertable<R> list,
-                                                   Func1<T, Holder<R>> func)
+    @SuppressWarnings("unchecked")
+    public static <T, R, A extends Insertable<R>> A collectSome(Cursor<T> cursor,
+                                                                A list,
+                                                                Func1<T, Holder<R>> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             Holder<R> mappedValue = func.apply(cursor.getValue());
             if (mappedValue.isFilled()) {
-                list = list.insert(mappedValue.getValue());
+                list = (A)list.insert(mappedValue.getValue());
             }
         }
         return list;
@@ -177,13 +179,14 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T> Insertable<T> reject(Cursor<T> cursor,
-                                           Insertable<T> list,
-                                           Func1<T, Boolean> func)
+    @SuppressWarnings("unchecked")
+    public static <T, A extends Insertable<T>> A reject(Cursor<T> cursor,
+                                                        A list,
+                                                        Func1<T, Boolean> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             if (!func.apply(cursor.getValue())) {
-                list = list.insert(cursor.getValue());
+                list = (A)list.insert(cursor.getValue());
             }
         }
         return list;
@@ -198,13 +201,14 @@ public class Functions
      * @param list   list to receive the values
      * @return
      */
-    public static <T> Insertable<T> select(Cursor<T> cursor,
-                                           Insertable<T> list,
-                                           Func1<T, Boolean> func)
+    @SuppressWarnings("unchecked")
+    public static <T, A extends Insertable<T>> A select(Cursor<T> cursor,
+                                                        A list,
+                                                        Func1<T, Boolean> func)
     {
         for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
-                list = list.insert(cursor.getValue());
+                list = (A)list.insert(cursor.getValue());
             }
         }
         return list;

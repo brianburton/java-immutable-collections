@@ -90,7 +90,7 @@ public class FunctionsTest
     {
         JImmutableList<Integer> expected = JImmutables.list(2, 3, 4);
         JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
-        assertEquals(expected, Functions.<Integer, Integer>collectAll(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Integer>()
+        assertEquals(expected, Functions.collectAll(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Integer>()
         {
             @Override
             public Integer apply(Integer value)
@@ -104,7 +104,7 @@ public class FunctionsTest
     {
         JImmutableList<Integer> expected = JImmutables.list(2, 4);
         JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
-        assertEquals(expected, Functions.<Integer, Integer>collectSome(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
+        assertEquals(expected, Functions.collectSome(list.cursor(), JImmutables.<Integer>list(), new Func1<Integer, Holder<Integer>>()
         {
             @Override
             public Holder<Integer> apply(Integer value)
