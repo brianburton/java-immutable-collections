@@ -37,8 +37,11 @@ package org.javimmutable.collections.array.trie;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
@@ -327,5 +330,28 @@ public class StandardTrieNodeTest
         }
         assertFalse(cursor.hasValue());
         assertEquals(values.size(), node.deepSize());
+    }
+
+    public void testIndexedConstructor()
+    {
+        Integer[] values = new Integer[32 * 32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        final IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        for (int offset = 0; offset < values.length; ++offset) {
+            for (int limit = offset; limit <= values.length; ++limit) {
+                final int size = limit - offset;
+                StandardTrieNode<Integer> node = new StandardTrieNode<Integer>(source, offset, limit);
+                for (int i = 0; i < size; ++i) {
+                    final Holder<Integer> value = node.get(i >>> 5, i & 0x1f);
+                    assertEquals(Holders.of(values[offset + i]), value);
+                }
+                for (int i = size; i < 32; ++i) {
+                    final Holder<Integer> value = node.get(i >>> 5, i & 0x1f);
+                    assertEquals(Holders.<Integer>of(), value);
+                }
+            }
+        }
     }
 }

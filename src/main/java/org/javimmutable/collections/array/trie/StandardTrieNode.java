@@ -39,8 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
@@ -70,6 +72,41 @@ public final class StandardTrieNode<T>
     {
         this.branches = branches;
         this.values = values;
+    }
+
+    /**
+     * Fast constructor creating a StandardTrieNode holding (limit - offset) consecutive values
+     * from the specified Indexed collection.  (limit - offset) must be in the range 0 to 32*32
+     * (1024) inclusive.
+     *
+     * @param source
+     * @param offset
+     * @param limit
+     */
+    @SuppressWarnings("unchecked")
+    public StandardTrieNode(Indexed<T> source,
+                            int offset,
+                            int limit)
+    {
+        final int size = limit - offset;
+        if (size < 0 || size > 32 * 32) {
+            throw new IllegalArgumentException("invalid size: " + size);
+        }
+
+        if (size <= 32) {
+            this.branches = Bit32Array.of();
+            this.values = Bit32Array.of(source, offset, limit);
+        } else {
+            this.values = Bit32Array.of(source, offset, offset + 32);
+            final int numBranches = (limit - offset + 31) / 32;
+            final TrieNode<T>[] branchArray = (TrieNode<T>[])new TrieNode[numBranches];
+            for (int b = 1; b < numBranches; ++b) {
+                offset += 32;
+                int blimit = Math.min(offset + 32, limit);
+                branchArray[b] = new StandardTrieNode<T>(source, offset, blimit);
+            }
+            this.branches = Bit32Array.of(IndexedArray.unsafe(branchArray), 0, numBranches);
+        }
     }
 
     @Override
