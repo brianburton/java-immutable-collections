@@ -37,6 +37,7 @@ package org.javimmutable.collections.array.bit32;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
@@ -58,6 +59,31 @@ public abstract class Bit32Array<T>
     public static <T> Bit32Array<T> of()
     {
         return (Bit32Array<T>)EMPTY;
+    }
+
+    /**
+     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 elements
+     * from an Indexed collection.  (limit - offset) must be in the range 0 to 32 inclusive.
+     *
+     * @param source
+     * @param offset
+     * @param limit
+     * @param <T>
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Bit32Array<T> of(Indexed<T> source,
+                                       int offset,
+                                       int limit)
+    {
+        final int size = limit - offset;
+        if (size == 0) {
+            return of();
+        } else if (size == 1) {
+            return new SingleBit32Array<T>(0, source.get(offset));
+        } else {
+            return new StandardBit32Array(source, offset, limit);
+        }
     }
 
     public abstract Holder<T> get(int index);

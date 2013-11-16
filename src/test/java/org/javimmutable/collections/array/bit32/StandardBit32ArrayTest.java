@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 public class StandardBit32ArrayTest
@@ -46,7 +47,7 @@ public class StandardBit32ArrayTest
 {
     public void test()
     {
-        Bit32Array<Integer> test = StandardBit32Array.of();
+        Bit32Array<Integer> test = new StandardBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
             test = test.assign(i, i);
             assertEquals(Holders.of(i), test.get(i));
@@ -74,7 +75,7 @@ public class StandardBit32ArrayTest
         for (int first = 0; first < 32; ++first) {
             for (int second = 0; second < 32; ++second) {
                 if (first != second) {
-                    Bit32Array<Integer> array = StandardBit32Array.of();
+                    Bit32Array<Integer> array = new StandardBit32Array<Integer>();
                     array = array.assign(first, first);
                     assertEquals(1, array.size());
                     assertEquals(Holders.of(first), array.get(first));
@@ -117,7 +118,7 @@ public class StandardBit32ArrayTest
             for (int second = 0; second < 32; ++second) {
                 for (int third = 0; third < 32; ++third) {
                     if (first != second && first != third && second != third) {
-                        Bit32Array<Integer> array = StandardBit32Array.of();
+                        Bit32Array<Integer> array = new StandardBit32Array<Integer>();
                         array = array.assign(first, first);
                         array = array.assign(second, second);
                         array = array.assign(third, third);
@@ -155,7 +156,7 @@ public class StandardBit32ArrayTest
 
     public void testDownsizing2to1()
     {
-        Bit32Array<Integer> test = StandardBit32Array.of();
+        Bit32Array<Integer> test = new StandardBit32Array<Integer>();
         test = test.assign(10, 10);
         test = test.assign(20, 20);
         assertEquals(2, test.size());
@@ -169,7 +170,7 @@ public class StandardBit32ArrayTest
 
     public void testDownsizing1to0()
     {
-        Bit32Array<Integer> test = StandardBit32Array.of();
+        Bit32Array<Integer> test = new StandardBit32Array<Integer>();
         test = test.assign(20, 20);
         assertEquals(1, test.size());
         assertTrue(test instanceof StandardBit32Array);
@@ -182,7 +183,7 @@ public class StandardBit32ArrayTest
 
     public void testBoundsCheck()
     {
-        Bit32Array<Integer> array = StandardBit32Array.of();
+        Bit32Array<Integer> array = new StandardBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
             array.get(i);
             array.assign(i, i);
@@ -204,7 +205,7 @@ public class StandardBit32ArrayTest
 
     public void testFirstIndex()
     {
-        Bit32Array<Integer> array = StandardBit32Array.of();
+        Bit32Array<Integer> array = new StandardBit32Array<Integer>();
         for (int index = 31; index > 0; --index) {
             array = array.assign(index, index);
             assertEquals(index, (int)array.get(index).getValueOrNull());
@@ -214,7 +215,7 @@ public class StandardBit32ArrayTest
 
     public void testCursor()
     {
-        Bit32Array<Integer> array = StandardBit32Array.of();
+        Bit32Array<Integer> array = new StandardBit32Array<Integer>();
         assertEquals(false, array.cursor().next().hasValue());
         StandardCursorTest.emptyCursorTest(array.cursor());
 
@@ -224,7 +225,7 @@ public class StandardBit32ArrayTest
             StandardCursorTest.iteratorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.iterator());
         }
 
-        array = StandardBit32Array.of();
+        array = new StandardBit32Array<Integer>();
         for (int i = 1; i < 32; i += 5) {
             array = array.assign(i, i);
             StandardCursorTest.cursorTest(new Bit32ArrayTest.Lookup<Integer>(array), array.size(), array.cursor());
@@ -237,6 +238,29 @@ public class StandardBit32ArrayTest
             assertEquals(index, (int)cursor.getValue().getKey());
             assertEquals(index, (int)cursor.getValue().getValue());
             index += 5;
+        }
+    }
+
+    public void testIndexedConstructor()
+    {
+        Integer[] values = new Integer[32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        IndexedArray<Integer> source = IndexedArray.unsafe(values);
+
+        for (int offset = 0; offset < values.length; ++offset) {
+            for (int limit = offset; limit <= values.length; ++limit) {
+                final int size = limit - offset;
+                StandardBit32Array<Integer> barray = new StandardBit32Array<Integer>(source, offset, limit);
+                assertEquals(size, barray.size());
+                for (int i = 0; i < size; ++i) {
+                    assertEquals(Holders.of(values[offset + i]), barray.get(i));
+                }
+                for (int i = size; i < 32; ++i) {
+                    assertEquals(Holders.<Integer>of(), barray.get(i));
+                }
+            }
         }
     }
 }

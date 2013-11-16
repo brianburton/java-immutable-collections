@@ -38,6 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -45,9 +46,6 @@ import org.javimmutable.collections.cursors.StandardCursor;
 public class StandardBit32Array<T>
         extends Bit32Array<T>
 {
-    @SuppressWarnings("unchecked")
-    private static final StandardBit32Array EMPTY = new StandardBit32Array(0, new Holder[0]);
-
     private final int bitmask;
     private final Holder<T>[] entries;
 
@@ -59,9 +57,35 @@ public class StandardBit32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> StandardBit32Array<T> of()
+    StandardBit32Array()
     {
-        return (StandardBit32Array<T>)EMPTY;
+        this(0, new Holder[0]);
+    }
+
+    /**
+     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 elements
+     * from an Indexed collection.  (limit - offset) must be in the range 0 to 32 inclusive.
+     *
+     * @param source
+     * @param offset
+     * @param limit
+     */
+    @SuppressWarnings("unchecked")
+    StandardBit32Array(Indexed<T> source,
+                       int offset,
+                       int limit)
+    {
+        final int size = limit - offset;
+        if (size < 0 || size > 32) {
+            throw new IllegalArgumentException("invalid size " + size);
+        } else {
+            final Holder<T>[] entries = (Holder<T>[])new Holder[size];
+            for (int i = 0; i < size; ++i) {
+                entries[i] = Holders.of(source.get(offset + i));
+            }
+            this.bitmask = (size == 32) ? -1 : ((1 << size) - 1);
+            this.entries = entries;
+        }
     }
 
     public Holder<T> get(int index)

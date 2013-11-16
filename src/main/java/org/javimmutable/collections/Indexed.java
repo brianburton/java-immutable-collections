@@ -50,4 +50,11 @@ public interface Indexed<T>
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     T get(int index);
+
+    /**
+     * Retrieve the number of values available in the container.
+     *
+     * @return
+     */
+    public int size();
 }

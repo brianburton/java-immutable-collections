@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.HashMap;
@@ -132,6 +133,29 @@ public class Bit32ArrayTest
             assertEquals(count, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
+        }
+    }
+
+    public void testIndexedConstructor()
+    {
+        Integer[] values = new Integer[32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        IndexedArray<Integer> source = IndexedArray.unsafe(values);
+
+        for (int offset = 0; offset < values.length; ++offset) {
+            for (int limit = offset; limit <= values.length; ++limit) {
+                final int size = limit - offset;
+                Bit32Array<Integer> barray = Bit32Array.of(source, offset, limit);
+                assertEquals(size, barray.size());
+                for (int i = 0; i < size; ++i) {
+                    assertEquals(Holders.of(values[offset + i]), barray.get(i));
+                }
+                for (int i = size; i < 32; ++i) {
+                    assertEquals(Holders.<Integer>of(), barray.get(i));
+                }
+            }
         }
     }
 
