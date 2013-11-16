@@ -36,8 +36,10 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.trie.EmptyTrieNode;
+import org.javimmutable.collections.array.trie.StandardTrieNode;
 import org.javimmutable.collections.array.trie.TrieNode;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -58,6 +60,8 @@ public class JImmutableArrayList<T>
         implements JImmutableList<T>
 {
     private static final JImmutableArrayList EMPTY = new JImmutableArrayList();
+
+    public static final int MAX_INDEXED_CONSTRUCTOR_SIZE = 32 * 32;
 
     private final TrieNode<T> values;
     private final int first;
@@ -81,6 +85,29 @@ public class JImmutableArrayList<T>
     public static <T> JImmutableArrayList<T> of()
     {
         return (JImmutableArrayList<T>)EMPTY;
+    }
+
+    public static <T> JImmutableArrayList<T> of(Indexed<T> source,
+                                                int offset,
+                                                int limit)
+    {
+        final int size = limit - offset;
+        if (size <= JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE) {
+            return new JImmutableArrayList<T>(new StandardTrieNode<T>(source, offset, limit), 0, size);
+        }
+
+        JImmutableArrayList<T> list = new JImmutableArrayList<T>(new StandardTrieNode<T>(source, offset, offset + JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE), 0, JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE);
+        offset += JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE;
+        while (offset < limit) {
+            list = list.insert(source.get(offset));
+            offset += 1;
+        }
+        return list;
+    }
+
+    public static <T> JImmutableArrayList<T> of(Indexed<T> source)
+    {
+        return of(source, 0, source.size());
     }
 
     @Override

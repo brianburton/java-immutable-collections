@@ -37,11 +37,14 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
@@ -54,6 +57,7 @@ import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,7 +106,7 @@ public final class JImmutables
 
     public static <T> JImmutableList<T> list(T... values)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), values);
+        return JImmutableArrayList.of(IndexedArray.unsafe(values));
     }
 
     public static <T> JImmutableList<T> list(Cursor<T> cursor)
@@ -110,14 +114,31 @@ public final class JImmutables
         return Functions.insertAll(JImmutableArrayList.<T>of(), cursor);
     }
 
-    public static <T> JImmutableList<T> list(Cursorable<T> cursorable)
+    public static <T> JImmutableList<T> list(Indexed<T> cursorable)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), cursorable.cursor());
+        return list(cursorable, 0, cursorable.size());
+    }
+
+    public static <T> JImmutableList<T> list(Indexed<T> cursorable,
+                                             int offset,
+                                             int limit)
+    {
+        return JImmutableArrayList.of(cursorable, offset, limit);
+    }
+
+    public static <T> JImmutableList<T> list(JImmutableSet<T> cursorable)
+    {
+        return list(cursorable.cursor());
     }
 
     public static <T> JImmutableList<T> list(Iterator<T> iterator)
     {
         return Functions.insertAll(JImmutableArrayList.<T>of(), iterator);
+    }
+
+    public static <T> JImmutableList<T> list(List<T> collection)
+    {
+        return JImmutableArrayList.of(IndexedList.unsafe(collection));
     }
 
     public static <T> JImmutableList<T> list(Collection<T> collection)

@@ -38,6 +38,7 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -329,5 +330,24 @@ public class JImmutableArrayListTest
     {
         JImmutableList<Integer> list = JImmutableArrayList.<Integer>of().insert(1).insert(2);
         assertSame(JImmutableArrayList.of(), list.deleteAll());
+    }
+
+    public void testIndexedConstructor()
+    {
+        Integer[] values = new Integer[33 * 32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        final IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        for (int offset = 0; offset < values.length; ++offset) {
+            for (int limit = offset; limit <= values.length; ++limit) {
+                final int size = limit - offset;
+                JImmutableArrayList<Integer> list = JImmutableArrayList.of(source, offset, limit);
+                for (int i = 0; i < size; ++i) {
+                    final Integer value = list.get(i);
+                    assertEquals(values[offset + i], value);
+                }
+            }
+        }
     }
 }

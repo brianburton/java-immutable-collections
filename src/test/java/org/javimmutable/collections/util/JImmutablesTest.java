@@ -85,6 +85,16 @@ public class JImmutablesTest
         assertEquals(list, JImmutables.list(1, 2, 3));
     }
 
+    public void testLargeList()
+    {
+        List<Integer> input = new ArrayList<Integer>();
+        for (int i = 0; i < 2000; ++i) {
+            input.add(i);
+        }
+        JImmutableList<Integer> list = JImmutables.list(input);
+        assertEquals(input, list.getList());
+    }
+
     public void testRandomAccessList()
     {
         List<Integer> input = Arrays.asList(1, 2, 3);
