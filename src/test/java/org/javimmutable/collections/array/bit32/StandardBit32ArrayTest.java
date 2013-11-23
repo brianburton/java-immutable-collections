@@ -247,7 +247,7 @@ public class StandardBit32ArrayTest
         for (int i = 0; i < values.length; ++i) {
             values[i] = i;
         }
-        IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        IndexedArray<Integer> source = IndexedArray.retained(values);
 
         for (int startIndex = 0; startIndex < 31; ++startIndex) {
             int maxLength = values.length - startIndex;

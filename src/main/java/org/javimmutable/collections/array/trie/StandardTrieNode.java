@@ -104,7 +104,7 @@ public final class StandardTrieNode<T>
                 offset += 32;
                 branchArray[b] = new StandardTrieNode<T>(source, offset, Math.min(offset + 32, limit));
             }
-            this.branches = Bit32Array.of(IndexedArray.unsafe(branchArray), 1, 0, numBranches);
+            this.branches = Bit32Array.of(IndexedArray.retained(branchArray), 1, 0, numBranches);
         }
     }
 

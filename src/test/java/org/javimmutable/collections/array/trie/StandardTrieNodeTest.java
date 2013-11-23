@@ -339,7 +339,7 @@ public class StandardTrieNodeTest
         for (int i = 0; i < values.length; ++i) {
             values[i] = i;
         }
-        final IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        final IndexedArray<Integer> source = IndexedArray.retained(values);
         for (int offset = 0; offset < values.length; offset += 7) {
             for (int limit = offset; limit <= values.length; ++limit) {
                 final int size = limit - offset;
@@ -358,7 +358,7 @@ public class StandardTrieNodeTest
         for (int i = 0; i < values.length; ++i) {
             values[i] = i;
         }
-        final IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        final IndexedArray<Integer> source = IndexedArray.retained(values);
         for (int size = 1; size <= values.length; ++size) {
             StandardTrieNode<Integer> fastNode = new StandardTrieNode<Integer>(source, 0, size);
             TrieNode<Integer> slowNode = EmptyTrieNode.of();

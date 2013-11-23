@@ -106,7 +106,7 @@ public final class JImmutables
 
     public static <T> JImmutableList<T> list(T... values)
     {
-        return JImmutableArrayList.of(IndexedArray.unsafe(values));
+        return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
     public static <T> JImmutableList<T> list(Cursor<T> cursor)
@@ -138,7 +138,7 @@ public final class JImmutables
 
     public static <T> JImmutableList<T> list(List<T> collection)
     {
-        return JImmutableArrayList.of(IndexedList.unsafe(collection));
+        return JImmutableArrayList.of(IndexedList.retained(collection));
     }
 
     public static <T> JImmutableList<T> list(Collection<T> collection)

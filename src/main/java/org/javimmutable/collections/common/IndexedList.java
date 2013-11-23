@@ -24,13 +24,13 @@ public class IndexedList<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedList<T> safe(List<T> values)
+    public static <T> IndexedList<T> copied(List<T> values)
     {
         return new IndexedList<T>(new ArrayList<T>(values));
     }
 
     /**
-     * Produces an instance using the provided List.  This makes the instance unsafe in general since
+     * Produces an instance using the provided List.  This makes the instance unsafe for sharing since
      * changes to the List will cause changes to this instance's values.  However this can be useful
      * when performance is important and the instance will not be shared or retained beyond a single
      * method scope.
@@ -39,7 +39,7 @@ public class IndexedList<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedList<T> unsafe(List<T> values)
+    public static <T> IndexedList<T> retained(List<T> values)
     {
         return new IndexedList<T>(values);
     }

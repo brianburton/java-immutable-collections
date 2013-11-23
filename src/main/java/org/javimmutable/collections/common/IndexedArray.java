@@ -19,13 +19,13 @@ public class IndexedArray<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedArray<T> safe(T[] values)
+    public static <T> IndexedArray<T> copied(T[] values)
     {
         return new IndexedArray<T>(values.clone());
     }
 
     /**
-     * Produces an instance using the provided array.  This makes the instance unsafe in general since
+     * Produces an instance using the provided array.  This makes the instance unsafe for sharing since
      * changes to the array will cause changes to this instance's values.  However this can be useful
      * when performance is important and the instance will not be shared or retained beyond a single
      * method scope.
@@ -34,7 +34,7 @@ public class IndexedArray<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedArray<T> unsafe(T[] values)
+    public static <T> IndexedArray<T> retained(T[] values)
     {
         return new IndexedArray<T>(values);
     }
