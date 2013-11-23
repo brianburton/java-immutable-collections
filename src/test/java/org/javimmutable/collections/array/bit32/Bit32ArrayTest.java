@@ -144,16 +144,22 @@ public class Bit32ArrayTest
         }
         IndexedArray<Integer> source = IndexedArray.unsafe(values);
 
-        for (int offset = 0; offset < values.length; ++offset) {
-            for (int limit = offset; limit <= values.length; ++limit) {
-                final int size = limit - offset;
-                Bit32Array<Integer> barray = Bit32Array.of(source, offset, limit);
-                assertEquals(size, barray.size());
-                for (int i = 0; i < size; ++i) {
-                    assertEquals(Holders.of(values[offset + i]), barray.get(i));
-                }
-                for (int i = size; i < 32; ++i) {
-                    assertEquals(Holders.<Integer>of(), barray.get(i));
+        for (int startIndex = 0; startIndex < 31; ++startIndex) {
+            int maxLength = values.length - startIndex;
+            for (int offset = 0; offset < maxLength; ++offset) {
+                for (int limit = offset; limit <= maxLength; ++limit) {
+                    final int size = limit - offset;
+                    Bit32Array<Integer> barray = Bit32Array.of(source, startIndex, offset, limit);
+                    assertEquals(size, barray.size());
+                    for (int i = 0; i < startIndex; ++i) {
+                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                    }
+                    for (int i = startIndex; i < startIndex + size; ++i) {
+                        assertEquals(Holders.of(values[offset + i - startIndex]), barray.get(i));
+                    }
+                    for (int i = startIndex + size; i < 32; ++i) {
+                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                    }
                 }
             }
         }

@@ -63,8 +63,8 @@ public class StandardBit32Array<T>
     }
 
     /**
-     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 elements
-     * from an Indexed collection.  (limit - offset) must be in the range 0 to 32 inclusive.
+     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 - startIndex elements
+     * from an Indexed collection.  (limit - offset) must be in the range 0 to (32 - startIndex) inclusive.
      *
      * @param source
      * @param offset
@@ -72,18 +72,23 @@ public class StandardBit32Array<T>
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(Indexed<T> source,
+                       int startIndex,
                        int offset,
                        int limit)
     {
         final int size = limit - offset;
-        if (size < 0 || size > 32) {
+        if (size < 0 || size > (32 - startIndex)) {
             throw new IllegalArgumentException("invalid size " + size);
         } else {
             final Holder<T>[] entries = (Holder<T>[])new Holder[size];
             for (int i = 0; i < size; ++i) {
                 entries[i] = Holders.of(source.get(offset + i));
             }
-            this.bitmask = (size == 32) ? -1 : ((1 << size) - 1);
+            if (size == 32) {
+                this.bitmask = -1;
+            } else {
+                this.bitmask = ((1 << size) - 1) << startIndex;
+            }
             this.entries = entries;
         }
     }

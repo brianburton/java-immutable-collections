@@ -42,6 +42,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
@@ -339,7 +340,7 @@ public class StandardTrieNodeTest
             values[i] = i;
         }
         final IndexedArray<Integer> source = IndexedArray.unsafe(values);
-        for (int offset = 0; offset < values.length; ++offset) {
+        for (int offset = 0; offset < values.length; offset += 7) {
             for (int limit = offset; limit <= values.length; ++limit) {
                 final int size = limit - offset;
                 StandardTrieNode<Integer> node = new StandardTrieNode<Integer>(source, offset, limit);
@@ -347,11 +348,24 @@ public class StandardTrieNodeTest
                     final Holder<Integer> value = node.get(i >>> 5, i & 0x1f);
                     assertEquals(Holders.of(values[offset + i]), value);
                 }
-                for (int i = size; i < 32; ++i) {
-                    final Holder<Integer> value = node.get(i >>> 5, i & 0x1f);
-                    assertEquals(Holders.<Integer>of(), value);
-                }
             }
+        }
+    }
+
+    public void testIndexedConstructor2()
+    {
+        Integer[] values = new Integer[32 * 32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        final IndexedArray<Integer> source = IndexedArray.unsafe(values);
+        for (int size = 1; size <= values.length; ++size) {
+            StandardTrieNode<Integer> fastNode = new StandardTrieNode<Integer>(source, 0, size);
+            TrieNode<Integer> slowNode = EmptyTrieNode.of();
+            for (int i = 0; i < size; ++i) {
+                slowNode = slowNode.assign(i >>> 5, i & 0x1f, values[i]);
+            }
+            assertEquals(StandardCursor.makeList(slowNode.cursor()), StandardCursor.makeList(fastNode.cursor()));
         }
     }
 }

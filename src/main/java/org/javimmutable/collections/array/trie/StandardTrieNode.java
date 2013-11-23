@@ -94,18 +94,17 @@ public final class StandardTrieNode<T>
         }
 
         if (size <= 32) {
+            this.values = Bit32Array.of(source, 0, offset, limit);
             this.branches = Bit32Array.of();
-            this.values = Bit32Array.of(source, offset, limit);
         } else {
-            this.values = Bit32Array.of(source, offset, offset + 32);
-            final int numBranches = (limit - offset + 31) / 32;
+            this.values = Bit32Array.of(source, 0, offset, offset + 32);
+            final int numBranches = ((limit - offset + 31) / 32) - 1;
             final TrieNode<T>[] branchArray = (TrieNode<T>[])new TrieNode[numBranches];
-            for (int b = 1; b < numBranches; ++b) {
+            for (int b = 0; b < numBranches; ++b) {
                 offset += 32;
-                int blimit = Math.min(offset + 32, limit);
-                branchArray[b] = new StandardTrieNode<T>(source, offset, blimit);
+                branchArray[b] = new StandardTrieNode<T>(source, offset, Math.min(offset + 32, limit));
             }
-            this.branches = Bit32Array.of(IndexedArray.unsafe(branchArray), 0, numBranches);
+            this.branches = Bit32Array.of(IndexedArray.unsafe(branchArray), 1, 0, numBranches);
         }
     }
 
