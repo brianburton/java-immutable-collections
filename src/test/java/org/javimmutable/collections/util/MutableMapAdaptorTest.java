@@ -4,9 +4,11 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 public class MutableMapAdaptorTest
@@ -179,5 +181,39 @@ public class MutableMapAdaptorTest
         assertEquals(true, adaptor.isEmpty());
         assertEquals(0, adaptor.size());
         assertEquals(expected, adaptor);
+    }
+
+    public void testRandom()
+    {
+        final int maxKey = 250;
+        Random random = new Random();
+        for (int loop = 0; loop < 10; ++loop) {
+            TestAdaptor<Integer, Integer> adaptor = new TestAdaptor<Integer, Integer>();
+            Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+            for (int i = 1; i <= 25 * maxKey; ++i) {
+                int command = random.nextInt(4);
+                if (command <= 1) {
+                    Integer key = random.nextInt(maxKey);
+                    Integer value = random.nextInt(1000000);
+                    expected.put(key, value);
+                    adaptor.put(key, value);
+                } else if (command == 2) {
+                    Integer key = random.nextInt(maxKey);
+                    expected.remove(key);
+                    adaptor.remove(key);
+                } else {
+                    Integer key = random.nextInt(maxKey);
+                    assertEquals(expected.get(key), adaptor.get(key));
+                }
+                assertEquals(expected.size(), adaptor.size());
+            }
+            assertEquals(expected, adaptor);
+            assertEquals(expected.keySet(), adaptor.keySet());
+            assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(adaptor.values()));
+            for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
+                Integer value = adaptor.get(entry.getKey());
+                assertEquals(entry.getValue(), value);
+            }
+        }
     }
 }
