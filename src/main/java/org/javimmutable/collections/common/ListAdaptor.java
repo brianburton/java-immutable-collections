@@ -49,7 +49,7 @@ public class ListAdaptor<T>
         extends AbstractList<T>
         implements List<T>
 {
-    private JImmutableList<T> list;
+    private final JImmutableList<T> list;
 
     public ListAdaptor(JImmutableList<T> list)
     {
