@@ -35,6 +35,12 @@
 
 package org.javimmutable.collections;
 
+/**
+ * Immutable container for 2 values.
+ *
+ * @param <A>
+ * @param <B>
+ */
 public class Tuple2<A, B>
 {
     private final A first;
