@@ -343,11 +343,16 @@ public class JImmutableArrayListTest
             for (int limit = offset; limit <= values.length; ++limit) {
                 final int size = limit - offset;
                 JImmutableArrayList<Integer> list = JImmutableArrayList.of(source, offset, limit);
+                if (size == 0) {
+                    assertSame(JImmutableArrayList.<Integer>of(), list);
+                }
                 for (int i = 0; i < size; ++i) {
                     final Integer value = list.get(i);
                     assertEquals(values[offset + i], value);
                 }
             }
         }
+
+        assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.<Integer>of(JImmutableArrayList.<Integer>of()));
     }
 }

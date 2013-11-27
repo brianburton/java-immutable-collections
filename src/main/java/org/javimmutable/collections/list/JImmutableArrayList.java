@@ -92,6 +92,10 @@ public class JImmutableArrayList<T>
                                                 int limit)
     {
         final int size = limit - offset;
+        if (size == 0) {
+            return of();
+        }
+
         if (size <= JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE) {
             return new JImmutableArrayList<T>(new StandardTrieNode<T>(source, offset, limit), 0, size);
         }
