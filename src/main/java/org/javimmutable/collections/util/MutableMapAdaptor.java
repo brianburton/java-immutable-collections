@@ -55,7 +55,7 @@ import java.util.Set;
  * adapt one of them into a mutable Map.  Concrete classes derived from this class only have to implement
  * two methods, accessMap() and replaceMap() in order to implement the adaptor.
  * <p/>
- * NOTE: this adaptor is NOT synchronized.
+ * NOTE: this adaptor is NOT thread safe.  Do not use it in a multi-threaded environment.
  */
 public abstract class MutableMapAdaptor<K, V>
         extends AbstractMap<K, V>
