@@ -61,6 +61,14 @@ public class Tuple4<A, B, C, D>
         this.fourth = fourth;
     }
 
+    public static <A, B, C, D> Tuple4<A, B, C, D> of(A first,
+                                                     B second,
+                                                     C third,
+                                                     D fourth)
+    {
+        return new Tuple4<A, B, C, D>(first, second, third, fourth);
+    }
+
     public A getFirst()
     {
         return first;

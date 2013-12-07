@@ -11,7 +11,7 @@ public class Tuple2Test
         Tuple2<Integer, String> a12 = new Tuple2<Integer, String>(12, "a");
         Tuple2<Integer, String> b10 = new Tuple2<Integer, String>(12, "b");
         assertEquals(true, a10.equals(a10));
-        assertEquals(true, a10.equals(new Tuple2<Integer, String>(10, "a")));
+        assertEquals(true, a10.equals(Tuple2.of(10, "a")));
         assertEquals(false, a10.equals(a12));
         assertEquals(false, a10.equals(b10));
     }

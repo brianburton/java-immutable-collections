@@ -53,6 +53,12 @@ public class Tuple2<A, B>
         this.second = second;
     }
 
+    public static <A, B> Tuple2<A, B> of(A first,
+                                         B second)
+    {
+        return new Tuple2<A, B>(first, second);
+    }
+
     public A getFirst()
     {
         return first;

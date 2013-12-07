@@ -57,6 +57,13 @@ public class Tuple3<A, B, C>
         this.third = third;
     }
 
+    public static <A, B, C> Tuple3<A, B, C> of(A first,
+                                               B second,
+                                               C third)
+    {
+        return new Tuple3<A, B, C>(first, second, third);
+    }
+
     public A getFirst()
     {
         return first;
