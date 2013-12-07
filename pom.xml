@@ -3,7 +3,7 @@
 
     <groupId>org.javimmutable</groupId>
     <artifactId>javimmutable-collections</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <packaging>jar</packaging>
 
     <name>javimmutable Persistent Collections</name>
@@ -60,7 +60,7 @@
     <scm>
         <connection>scm:git:git://git.code.sf.net/p/javimmutablecollections/code</connection>
         <developerConnection>scm:git:ssh://git.code.sf.net/p/javimmutablecollections/code</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.3</tag>
         <url>https://sourceforge.net/p/javimmutablecollections/code/ci/master/tree/</url>
     </scm>
 
