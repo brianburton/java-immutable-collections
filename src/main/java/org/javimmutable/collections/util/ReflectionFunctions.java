@@ -141,6 +141,81 @@ public class ReflectionFunctions
     }
 
     /**
+     * Returns a Func1 instance that calls the specified non-static method on a java object
+     * passed as the parameter of the function.  These functions are useful for invoking
+     * the same method on all objects returned by a Cursor.
+     *
+     * @param name  name of the method to invoke
+     * @param klass class of the instance object parameter
+     * @return
+     */
+    public static <OT, R> Func1<OT, R> method(String name,
+                                              Class<OT> klass)
+    {
+        return new ParamReflectionFunc1<OT, R>(findMethod(klass, name, false));
+    }
+
+    /**
+     * Returns a Func2 instance that calls the specified non-static method on a java object
+     * passed as the last parameter of the Func2.  These functions are useful for invoking
+     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * object is the last parameter to facilitate the use of Curry.of().
+     *
+     * @param name      name of the method to invoke
+     * @param arg1Class Class of parameter 1 of the method
+     * @param klass     class of the instance object parameter
+     * @return
+     */
+    public static <P1, OT, R> Func2<P1, OT, R> method(String name,
+                                                      Class<P1> arg1Class,
+                                                      Class<OT> klass)
+    {
+        return new ParamReflectionFunc2<P1, OT, R>(findMethod(klass, name, false, arg1Class));
+    }
+
+    /**
+     * Returns a Func3 instance that calls the specified non-static method on a java object
+     * passed as the last parameter of the Func3.  These functions are useful for invoking
+     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * object is the last parameter to facilitate the use of Curry.of().
+     *
+     * @param name      name of the method to invoke
+     * @param arg1Class Class of parameter 1 of the method
+     * @param arg2Class Class of parameter 2 of the method
+     * @param klass     class of the instance object parameter
+     * @return
+     */
+    public static <P1, P2, OT, R> Func3<P1, P2, OT, R> method(String name,
+                                                              Class<P1> arg1Class,
+                                                              Class<P2> arg2Class,
+                                                              Class<OT> klass)
+    {
+        return new ParamReflectionFunc3<P1, P2, OT, R>(findMethod(klass, name, false, arg1Class, arg2Class));
+    }
+
+    /**
+     * Returns a Func4 instance that calls the specified non-static method on a java object
+     * passed as the last parameter of the Func4.  These functions are useful for invoking
+     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * object is the last parameter to facilitate the use of Curry.of().
+     *
+     * @param name      name of the method to invoke
+     * @param arg1Class Class of parameter 1 of the method
+     * @param arg2Class Class of parameter 2 of the method
+     * @param arg3Class Class of parameter 3 of the method
+     * @param klass     class of the instance object parameter
+     * @return
+     */
+    public static <P1, P2, P3, OT, R> Func4<P1, P2, P3, OT, R> method(String name,
+                                                                      Class<P1> arg1Class,
+                                                                      Class<P2> arg2Class,
+                                                                      Class<P3> arg3Class,
+                                                                      Class<OT> klass)
+    {
+        return new ParamReflectionFunc4<P1, P2, P3, OT, R>(findMethod(klass, name, false, arg1Class, arg2Class, arg3Class));
+    }
+
+    /**
      * Returns a Func0 instance that calls the specified static method on the specified java object.
      *
      * @param name the name of the method to invoke
@@ -235,15 +310,25 @@ public class ReflectionFunctions
         return new ReflectionFunc4<P1, P2, P3, P4, R>(findMethod(klass, name, true, arg1Class, arg2Class, arg3Class, arg4Class), null);
     }
 
-    private static class ReflectionBase
+    private static class NoInstanceReflectionBase
     {
         protected final Method method;
+
+        private NoInstanceReflectionBase(Method method)
+        {
+            this.method = method;
+        }
+    }
+
+    private static class ReflectionBase
+            extends NoInstanceReflectionBase
+    {
         protected final Object obj;
 
         private ReflectionBase(Method method,
                                Object obj)
         {
-            this.method = method;
+            super(method);
             this.obj = obj;
         }
     }
@@ -336,6 +421,76 @@ public class ReflectionFunctions
                        P4 param4)
         {
             return (R)callMethod(method, obj, param1, param2, param3, param4);
+        }
+    }
+
+    private static class ParamReflectionFunc1<OT, R>
+            extends NoInstanceReflectionBase
+            implements Func1<OT, R>
+    {
+        private ParamReflectionFunc1(Method method)
+        {
+            super(method);
+        }
+
+        @Override
+        public R apply(OT obj)
+        {
+            return (R)callMethod(method, obj);
+        }
+    }
+
+    private static class ParamReflectionFunc2<P1, OT, R>
+            extends NoInstanceReflectionBase
+            implements Func2<P1, OT, R>
+    {
+        private ParamReflectionFunc2(Method method)
+        {
+            super(method);
+        }
+
+        @Override
+        public R apply(P1 param1,
+                       OT obj)
+        {
+            return (R)callMethod(method, obj, param1);
+        }
+    }
+
+    private static class ParamReflectionFunc3<P1, P2, OT, R>
+            extends NoInstanceReflectionBase
+            implements Func3<P1, P2, OT, R>
+    {
+        private ParamReflectionFunc3(Method method)
+        {
+            super(method);
+        }
+
+        @Override
+        public R apply(P1 param1,
+                       P2 param2,
+                       OT obj)
+        {
+            return (R)callMethod(method, obj, param1, param2);
+        }
+    }
+
+    private static class ParamReflectionFunc4<P1, P2, P3, OT, R>
+            extends NoInstanceReflectionBase
+            implements Func4<P1, P2, P3, OT, R>
+    {
+        private ParamReflectionFunc4(Method method)
+        {
+            super(method);
+        }
+
+        @Override
+        public R apply(P1 param1,
+                       P2 param2,
+                       P3 param3,
+                       OT obj)
+        {
+            return (R)callMethod(method, obj, param1, param2, param3);
         }
     }
 
