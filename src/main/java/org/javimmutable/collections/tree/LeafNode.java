@@ -45,8 +45,8 @@ import java.util.Collection;
 import java.util.Comparator;
 
 public class LeafNode<K, V>
-        extends TreeNode<K, V>
-        implements JImmutableMap.Entry<K, V>,
+        implements TreeNode<K, V>,
+                   JImmutableMap.Entry<K, V>,
                    Holder<V>
 {
     private final K nodeKey;

@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.Comparator;
 
 public class TwoNode<K, V>
-        extends TreeNode<K, V>
+        implements TreeNode<K, V>
 {
     private final TreeNode<K, V> left;
     private final TreeNode<K, V> right;
