@@ -7,6 +7,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
+import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.Iterator;
 
@@ -107,6 +108,12 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.find(key);
     }
 
+    @Override
+    public JImmutableListMap<K, V> deleteAll()
+    {
+        return create(contents.deleteAll());
+    }
+
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *
@@ -117,6 +124,7 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     /**
      * Overridable by derived classes to create a compatible copy of the specified list.
+     * Default implementation simply returns the original.
      *
      * @return
      */
@@ -126,11 +134,14 @@ public abstract class AbstractJImmutableListMap<K, V>
     }
 
     /**
-     * Implemented by derived classes to create a new empty list
+     * Overridable by derived classes to create a new empty list
      *
      * @return
      */
-    protected abstract JImmutableList<V> emptyList();
+    protected JImmutableList<V> emptyList()
+    {
+        return JImmutableArrayList.of();
+    }
 
     /**
      * Overridable by derived classes to insert a value into a list in some way.

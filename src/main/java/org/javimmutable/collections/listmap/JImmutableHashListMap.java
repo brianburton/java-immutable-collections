@@ -4,7 +4,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.list.JImmutableArrayList;
 
 /**
  * JImmutableListMap using a hash map for fast lookup.
@@ -33,17 +32,5 @@ public class JImmutableHashListMap<K, V>
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
         return new JImmutableHashListMap<K, V>(map);
-    }
-
-    @Override
-    protected JImmutableList<V> emptyList()
-    {
-        return JImmutableArrayList.of();
-    }
-
-    @Override
-    public JImmutableListMap<K, V> deleteAll()
-    {
-        return of();
     }
 }
