@@ -42,12 +42,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
-
-import java.util.Iterator;
 
 public class JImmutableHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
@@ -75,16 +72,6 @@ public class JImmutableHashMap<K, V>
     public static <K, V> JImmutableHashMap<K, V> of()
     {
         return (JImmutableHashMap<K, V>)EMPTY;
-    }
-
-    @Override
-    public V get(K key)
-    {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
-        return find(key).getValueOrNull();
     }
 
     @Override
@@ -161,12 +148,6 @@ public class JImmutableHashMap<K, V>
     public Insertable<Entry<K, V>> insert(Entry<K, V> e)
     {
         return assign(e.getKey(), e.getValue());
-    }
-
-    @Override
-    public Iterator<Entry<K, V>> iterator()
-    {
-        return IteratorAdaptor.of(cursor());
     }
 
     @Override

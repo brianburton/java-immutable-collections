@@ -40,11 +40,18 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import java.util.Iterator;
 import java.util.Map;
 
 public abstract class AbstractJImmutableMap<K, V>
         implements JImmutableMap<K, V>
 {
+    @Override
+    public V get(K key)
+    {
+        return find(key).getValueOrNull();
+    }
+
     @Override
     public boolean isEmpty()
     {
@@ -67,6 +74,12 @@ public abstract class AbstractJImmutableMap<K, V>
     public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);
+    }
+
+    @Override
+    public Iterator<Entry<K, V>> iterator()
+    {
+        return IteratorAdaptor.of(cursor());
     }
 
     @Override
@@ -96,8 +109,7 @@ public abstract class AbstractJImmutableMap<K, V>
             if (sb.length() > 1) {
                 sb.append(", ");
             }
-            JImmutableMap.Entry<K, V> entry = cursor.getValue();
-            MapEntry.addToString(sb, entry);
+            MapEntry.addToString(sb, cursor.getValue());
         }
         sb.append("}");
         return sb.toString();

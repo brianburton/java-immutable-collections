@@ -7,11 +7,9 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -109,18 +107,6 @@ public class JImmutableInsertOrderMap<K, V>
     public Insertable<Entry<K, V>> insert(Entry<K, V> entry)
     {
         return assign(entry.getKey(), entry.getValue());
-    }
-
-    @Override
-    public Iterator<Entry<K, V>> iterator()
-    {
-        return IteratorAdaptor.of(cursor());
-    }
-
-    @Override
-    public V get(K key)
-    {
-        return find(key).getValueOrNull();
     }
 
     private class InOrderCursor

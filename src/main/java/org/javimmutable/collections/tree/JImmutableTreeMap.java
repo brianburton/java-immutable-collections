@@ -40,12 +40,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -115,12 +113,6 @@ public class JImmutableTreeMap<K, V>
         this.comparator = comparator;
         this.root = root;
         this.size = size;
-    }
-
-    @Override
-    public V get(K key)
-    {
-        return find(key).getValueOrNull();
     }
 
     @Override
@@ -220,12 +212,6 @@ public class JImmutableTreeMap<K, V>
     public Insertable<Entry<K, V>> insert(Entry<K, V> e)
     {
         return assign(e.getKey(), e.getValue());
-    }
-
-    @Override
-    public Iterator<Entry<K, V>> iterator()
-    {
-        return IteratorAdaptor.of(cursor());
     }
 
     @Override
