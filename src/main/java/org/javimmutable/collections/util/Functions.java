@@ -36,12 +36,14 @@
 package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.Iterator;
@@ -279,5 +281,38 @@ public class Functions
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
+    }
+
+    /**
+     * Returns an Iterable that can be used to navigate each element in the specified Cursor.
+     * The Cursor must not have been started yet.  Intended for use in java foreach loops.
+     *
+     * @param cursor
+     * @param <T>
+     * @return
+     */
+    public static <T> Iterable<T> each(final Cursor<T> cursor)
+    {
+        return new Iterable<T>()
+        {
+            @Override
+            public Iterator<T> iterator()
+            {
+                return IteratorAdaptor.of(cursor);
+            }
+        };
+    }
+
+    /**
+     * Returns an Iterable that can be used to navigate each element in the specified Cursorable.
+     * Intended for use in java foreach loops.
+     *
+     * @param cursorable
+     * @param <T>
+     * @return
+     */
+    public static <T> Iterable<T> each(final Cursorable<T> cursorable)
+    {
+        return each(cursorable.cursor());
     }
 }

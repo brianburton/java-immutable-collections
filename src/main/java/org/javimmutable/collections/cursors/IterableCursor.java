@@ -43,7 +43,7 @@ import java.util.Iterator;
 
 /**
  * Provides objects implementing the Cursor interface that can be used to traverse
- * an Iterable.  The Cursor are not actually immutable but are designed to behave
+ * an Iterable.  The Cursors are not actually immutable but are designed to behave
  * as though they are.  However since they depend on a mutable object tied to a
  * mutable collection for their state they are not thread safe.  They should only
  * be used when no other threads could be modifying the underlying collection.
