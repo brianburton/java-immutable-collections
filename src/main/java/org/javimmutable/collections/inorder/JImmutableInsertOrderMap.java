@@ -5,9 +5,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.MapAdaptor;
-import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -24,7 +25,7 @@ import java.util.Map;
  * @param <V>
  */
 public class JImmutableInsertOrderMap<K, V>
-        implements JImmutableMap<K, V>
+        extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
     public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTreeMap.<Integer, Object>of(), JImmutableHashMap.of(), 1);
@@ -94,12 +95,6 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        return values.isEmpty();
-    }
-
-    @Override
     public JImmutableInsertOrderMap<K, V> deleteAll()
     {
         return of();
@@ -109,18 +104,6 @@ public class JImmutableInsertOrderMap<K, V>
     public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);
-    }
-
-    @Override
-    public Cursor<K> keysCursor()
-    {
-        return TransformCursor.ofKeys(cursor());
-    }
-
-    @Override
-    public Cursor<V> valuesCursor()
-    {
-        return TransformCursor.ofValues(cursor());
     }
 
     @Override
@@ -256,6 +239,12 @@ public class JImmutableInsertOrderMap<K, V>
                     entry2.getKey() == null : key.equals(entry2.getKey())) &&
                    (value == null ?
                     entry2.getValue() == null : value.equals(entry2.getValue()));
+        }
+
+        @Override
+        public String toString()
+        {
+            return MapEntry.makeToString(this);
         }
 
         private Node<K, V> withValue(V value)

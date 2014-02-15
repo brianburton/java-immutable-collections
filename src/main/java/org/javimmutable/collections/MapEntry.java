@@ -130,4 +130,35 @@ public class MapEntry<K, V>
                (value == null ?
                 entry2.getValue() == null : value.equals(entry2.getValue()));
     }
+
+    @Override
+    public String toString()
+    {
+        return makeToString(this);
+    }
+
+    private static void addToString(StringBuilder sb,
+                                    Object obj)
+    {
+        if (obj == null) {
+            sb.append("null");
+        } else {
+            sb.append(obj);
+        }
+    }
+
+    public static String makeToString(JImmutableMap.Entry entry)
+    {
+        StringBuilder sb = new StringBuilder();
+        addToString(sb, entry);
+        return sb.toString();
+    }
+
+    public static void addToString(StringBuilder sb,
+                                   JImmutableMap.Entry entry)
+    {
+        addToString(sb, entry.getKey());
+        sb.append("=");
+        addToString(sb, entry.getValue());
+    }
 }

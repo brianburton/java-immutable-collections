@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.Map;
@@ -84,19 +85,15 @@ public abstract class AbstractJImmutableMap<K, V>
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("{");
         for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
             if (sb.length() > 1) {
-                sb.append(",");
+                sb.append(", ");
             }
             JImmutableMap.Entry<K, V> entry = cursor.getValue();
-            sb.append("(");
-            sb.append(entry.getKey());
-            sb.append(" -> ");
-            sb.append(entry.getValue());
-            sb.append(")");
+            MapEntry.addToString(sb, entry);
         }
-        sb.append("]");
+        sb.append("}");
         return sb.toString();
     }
 }
