@@ -18,7 +18,7 @@ public class JImmutableTreeListMap<K, V>
         extends AbstractJImmutableListMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of());
+    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.<Comparable, Object>of());
 
     private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents)
     {
