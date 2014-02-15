@@ -48,8 +48,8 @@ public class MapEntry<K, V>
         implements JImmutableMap.Entry<K, V>,
                    Map.Entry<K, V>
 {
-    private final K key;
-    private final V value;
+    protected final K key;
+    protected final V value;
 
     public MapEntry(Map.Entry<K, V> entry)
     {

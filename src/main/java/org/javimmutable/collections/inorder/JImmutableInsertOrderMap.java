@@ -39,14 +39,11 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
-
-import java.util.Map;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -165,32 +162,17 @@ public class JImmutableInsertOrderMap<K, V>
      * @param <V>
      */
     private static class Node<K, V>
-            implements Entry<K, V>,
-                       Holder<V>
+            extends MapEntry<K, V>
+            implements Holder<V>
     {
-        private final K key;
-        private final V value;
         private final int index;
 
         private Node(K key,
                      V value,
                      int index)
         {
-            this.key = key;
-            this.value = value;
+            super(key, value);
             this.index = index;
-        }
-
-        @Override
-        public K getKey()
-        {
-            return key;
-        }
-
-        @Override
-        public V getValue()
-        {
-            return value;
         }
 
         @Override
@@ -215,41 +197,6 @@ public class JImmutableInsertOrderMap<K, V>
         public V getValueOr(V defaultValue)
         {
             return value;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return (key == null ? 0 : key.hashCode()) ^
-                   (value == null ? 0 : value.hashCode());
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (o instanceof JImmutableMap.Entry) {
-                JImmutableMap.Entry jentry = (JImmutableMap.Entry)o;
-                return (key == null ?
-                        jentry.getKey() == null : key.equals(jentry.getKey())) &&
-                       (value == null ?
-                        jentry.getValue() == null : value.equals(jentry.getValue()));
-            }
-
-            if (!(o instanceof Map.Entry)) {
-                return false;
-            }
-
-            Map.Entry entry2 = (Map.Entry)o;
-            return (key == null ?
-                    entry2.getKey() == null : key.equals(entry2.getKey())) &&
-                   (value == null ?
-                    entry2.getValue() == null : value.equals(entry2.getValue()));
-        }
-
-        @Override
-        public String toString()
-        {
-            return MapEntry.makeToString(this);
         }
 
         private Node<K, V> withValue(V value)
