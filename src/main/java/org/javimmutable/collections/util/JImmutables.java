@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
@@ -51,6 +52,9 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.listmap.JImmutableHashListMap;
+import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
+import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
@@ -484,5 +488,54 @@ public final class JImmutables
     public static <T> JImmutableSet<T> insertOrderSet(Collection<T> collection)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), collection.iterator());
+    }
+
+    /**
+     * Creates a list map with higher performance but no specific ordering of keys.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableListMap<K, V> listMap()
+    {
+        return JImmutableHashListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by order they are inserted.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableListMap<K, V> insertOrderListMap()
+    {
+        return JImmutableInsertOrderListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by their natural ordering.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K extends Comparable<K>, V> JImmutableListMap<K, V> sortedListMap()
+    {
+        return JImmutableTreeListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
+     *
+     * @param comparator
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableListMap<K, V> sortedListMap(Comparator<K> comparator)
+    {
+        return JImmutableTreeListMap.of(comparator);
     }
 }
