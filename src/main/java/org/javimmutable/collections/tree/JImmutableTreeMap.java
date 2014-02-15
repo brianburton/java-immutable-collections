@@ -41,7 +41,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
-import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Collections;
@@ -208,12 +207,6 @@ public class JImmutableTreeMap<K, V>
     public JImmutableTreeMap<K, V> deleteAll()
     {
         return of(comparator);
-    }
-
-    @Override
-    public Map<K, V> getMap()
-    {
-        return MapAdaptor.of(this);
     }
 
     /**

@@ -43,13 +43,11 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
-import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 
 import java.util.Iterator;
-import java.util.Map;
 
 public class JImmutableHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
@@ -150,12 +148,6 @@ public class JImmutableHashMap<K, V>
     public JImmutableMap<K, V> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    public Map<K, V> getMap()
-    {
-        return MapAdaptor.of(this);
     }
 
     /**

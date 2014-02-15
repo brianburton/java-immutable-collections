@@ -8,7 +8,6 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
-import org.javimmutable.collections.common.MapAdaptor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -98,12 +97,6 @@ public class JImmutableInsertOrderMap<K, V>
     public JImmutableInsertOrderMap<K, V> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    public Map<K, V> getMap()
-    {
-        return MapAdaptor.of(this);
     }
 
     @Override
