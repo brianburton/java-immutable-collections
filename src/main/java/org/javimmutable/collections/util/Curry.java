@@ -90,4 +90,117 @@ public class Curry
             }
         };
     }
+
+    /**
+     * Produces a Curried Func3 that calls the provided Func4 passing it the fixed parameter
+     * param1 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, P3, P4, R> Func3<P2, P3, P4, R> func3(final P1 param1,
+                                                                 final Func4<P1, P2, P3, P4, R> function)
+    {
+        return new Func3<P2, P3, P4, R>()
+        {
+            @Override
+            public R apply(P2 param2,
+                           P3 param3,
+                           P4 param4)
+            {
+                return function.apply(param1, param2, param3, param4);
+            }
+        };
+    }
+
+    /**
+     * Produces a Curried Func2 that calls the provided Func3 passing it the fixed parameter
+     * param1 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, P3, R> Func2<P2, P3, R> func2(final P1 param1,
+                                                         final Func3<P1, P2, P3, R> function)
+    {
+        return new Func2<P2, P3, R>()
+        {
+            @Override
+            public R apply(P2 param2,
+                           P3 param3)
+            {
+                return function.apply(param1, param2, param3);
+            }
+        };
+    }
+
+    /**
+     * Produces a Curried Func3 that calls the provided Func4 passing it the fixed parameter
+     * param1 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, P3, P4, R> Func2<P3, P4, R> func2(final P1 param1,
+                                                             final P2 param2,
+                                                             final Func4<P1, P2, P3, P4, R> function)
+    {
+        return new Func2<P3, P4, R>()
+        {
+            @Override
+            public R apply(P3 param3,
+                           P4 param4)
+            {
+                return function.apply(param1, param2, param3, param4);
+            }
+        };
+    }
+
+    /**
+     * Produces a Curried Func1 that calls the provided Func2 passing it the fixed parameter
+     * param1 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, R> Func1<P2, R> func1(final P1 param1,
+                                                 final Func2<P1, P2, R> function)
+    {
+        return of(function, param1);
+    }
+
+    /**
+     * Produces a Curried Func1 that calls the provided Func3 passing it the fixed parameters
+     * param1 and param2 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, P3, R> Func1<P3, R> func1(final P1 param1,
+                                                     final P2 param2,
+                                                     final Func3<P1, P2, P3, R> function)
+    {
+        return of(function, param1, param2);
+    }
+
+    /**
+     * Produces a Curried Func1 that calls the provided Func4 passing it the fixed parameters
+     * param1 and param2 along with the actual parameters to the apply() method.
+     *
+     * @param param1
+     * @param function
+     * @return
+     */
+    public static <P1, P2, P3, P4, R> Func1<P4, R> func1(final P1 param1,
+                                                         final P2 param2,
+                                                         final P3 param3,
+                                                         final Func4<P1, P2, P3, P4, R> function)
+    {
+        return of(function, param1, param2, param3);
+    }
 }

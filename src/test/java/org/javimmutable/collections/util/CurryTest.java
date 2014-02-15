@@ -8,7 +8,7 @@ import org.javimmutable.collections.Func4;
 public class CurryTest
         extends TestCase
 {
-    public void test()
+    public void testOf()
     {
         assertEquals("abcd", Curry.of(new Func4<String, String, String, String, String>()
         {
@@ -42,5 +42,79 @@ public class CurryTest
                 return a + b;
             }
         }, "a").apply("d"));
+    }
+
+    public void testFunc3()
+    {
+        assertEquals("abcd", Curry.func3("a", new Func4<String, String, String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2,
+                                String p3,
+                                String p4)
+            {
+                return p1 + p2 + p3 + p4;
+            }
+        }).apply("b", "c", "d"));
+    }
+
+    public void testFunc2()
+    {
+        assertEquals("abcd", Curry.func2("a", "b", new Func4<String, String, String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2,
+                                String p3,
+                                String p4)
+            {
+                return p1 + p2 + p3 + p4;
+            }
+        }).apply("c", "d"));
+        assertEquals("abc", Curry.func2("a", new Func3<String, String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2,
+                                String p3)
+            {
+                return p1 + p2 + p3;
+            }
+        }).apply("b", "c"));
+    }
+
+    public void testFunc1()
+    {
+        assertEquals("abcd", Curry.func1("a", "b", "c", new Func4<String, String, String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2,
+                                String p3,
+                                String p4)
+            {
+                return p1 + p2 + p3 + p4;
+            }
+        }).apply("d"));
+        assertEquals("abc", Curry.func1("a", "b", new Func3<String, String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2,
+                                String p3)
+            {
+                return p1 + p2 + p3;
+            }
+        }).apply("c"));
+        assertEquals("ab", Curry.func1("a", new Func2<String, String, String>()
+        {
+            @Override
+            public String apply(String p1,
+                                String p2)
+            {
+                return p1 + p2;
+            }
+        }).apply("b"));
     }
 }
