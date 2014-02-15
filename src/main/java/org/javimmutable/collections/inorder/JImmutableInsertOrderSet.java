@@ -39,6 +39,14 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
+/**
+ * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
+ * elements are returned in the same order they were inserted into the set.  Performance is
+ * slower than hash or tree sets but should be sufficient or most algorithms where insert
+ * order matters.
+ *
+ * @param <T>
+ */
 public class JImmutableInsertOrderSet<T>
         extends AbstractJImmutableSet<T>
 {

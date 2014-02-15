@@ -50,9 +50,12 @@ import java.util.Map;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
- * were inserted into the map.  Gets are as fast as hash map gets but updates are slower.
- * Iteration is slightly slower than a bare map since each entry returned by the cursor
- * is created as needed.
+ * were inserted into the map.  Maintains two parallel data structures, one for sorting and
+ * the other for storing entries.  Gets are approximately as fast as hash map gets but updates
+ * are significantly slower.   Iteration is also somewhat slower than a bare map.
+ * <p/>
+ * Use a hash or tree map whenever possible but this class performs well enough for most cases
+ * where insertion order is important to an algorithm.
  *
  * @param <K>
  * @param <V>
@@ -71,6 +74,7 @@ public class JImmutableInsertOrderMap<K, V>
                                      JImmutableHashMap<K, Node<K, V>> values,
                                      int nextIndex)
     {
+        assert sortedKeys.size() == values.size();
         this.sortedKeys = sortedKeys;
         this.values = values;
         this.nextIndex = nextIndex;
@@ -85,38 +89,43 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Holder<V> find(K key)
     {
-        final Holder<Node<K, V>> current = values.find(key);
-        return current.isFilled() ? current.getValue() : Holders.<V>of();
+        final Node<K, V> current = values.get(key);
+        return (current != null) ? current : Holders.<V>of();
     }
 
     @Override
     public Holder<Entry<K, V>> findEntry(K key)
     {
-        final Holder<Node<K, V>> current = values.find(key);
-        return current.isFilled() ? Holders.<Entry<K, V>>of(current.getValue()) : Holders.<Entry<K, V>>of();
+        final Node<K, V> current = values.get(key);
+        return (current != null) ? Holders.<Entry<K, V>>of(current) : Holders.<Entry<K, V>>of();
     }
 
     @Override
     public JImmutableInsertOrderMap<K, V> assign(K key,
                                                  V value)
     {
-        final Holder<Node<K, V>> current = values.find(key);
-        if (current.isFilled()) {
-            final Node<K, V> node = current.getValue();
-            return node.getValue() == value ? this : new JImmutableInsertOrderMap<K, V>(sortedKeys, values.assign(key, node.withValue(value)), nextIndex);
+        final Node<K, V> current = values.get(key);
+        if (current == null) {
+            return new JImmutableInsertOrderMap<K, V>(sortedKeys.assign(nextIndex, key),
+                                                      values.assign(key, new Node<K, V>(key, value, nextIndex)),
+                                                      nextIndex + 1);
+        } else if (current.getValue() == value) {
+            return this;
         } else {
-            final JImmutableTreeMap<Integer, K> newSortedKeys = sortedKeys.assign(nextIndex, key);
-            final JImmutableHashMap<K, Node<K, V>> newValues = values.assign(key, new Node<K, V>(key, value, nextIndex));
-            return new JImmutableInsertOrderMap<K, V>(newSortedKeys, newValues, nextIndex + 1);
+            return new JImmutableInsertOrderMap<K, V>(sortedKeys,
+                                                      values.assign(key, current.withValue(value)),
+                                                      nextIndex);
         }
     }
 
     @Override
     public JImmutableInsertOrderMap<K, V> delete(K key)
     {
-        final Holder<Node<K, V>> current = values.find(key);
-        if (current.isFilled()) {
-            return new JImmutableInsertOrderMap<K, V>(sortedKeys.delete(current.getValue().index), values.delete(key), nextIndex);
+        final Node<K, V> current = values.get(key);
+        if (current != null) {
+            return new JImmutableInsertOrderMap<K, V>(sortedKeys.delete(current.index),
+                                                      values.delete(key),
+                                                      nextIndex);
         } else {
             return this;
         }
@@ -137,6 +146,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
+        // use the key stored in each sortedKeys entry to retrieve and return the actual entry from the values map
         return TransformCursor.of(sortedKeys.cursor(), new Func1<Entry<Integer, K>, Entry<K, V>>()
         {
             @Override
@@ -147,6 +157,12 @@ public class JImmutableInsertOrderMap<K, V>
         });
     }
 
+    /**
+     * An Entry implementation that also stores the sortedKeys index corresponding to this node's key.
+     *
+     * @param <K>
+     * @param <V>
+     */
     private static class Node<K, V>
             implements Entry<K, V>,
                        Holder<V>

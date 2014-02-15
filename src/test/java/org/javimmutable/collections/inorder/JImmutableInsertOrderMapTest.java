@@ -101,9 +101,6 @@ public class JImmutableInsertOrderMapTest
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
 
-        Map<String, String> expected = new LinkedHashMap<String, String>();
-        expected.put("a", "AA");
-        expected.put("x", "XX");
         map = map.assign("x", "XX");
         expectedEntries.set(0, MapEntry.of("x", "XX"));
         expectedValues.set(0, "XX");
