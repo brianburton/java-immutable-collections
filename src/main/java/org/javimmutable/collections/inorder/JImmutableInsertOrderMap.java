@@ -1,11 +1,13 @@
 package org.javimmutable.collections.inorder;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -26,13 +28,13 @@ public class JImmutableInsertOrderMap<K, V>
     @SuppressWarnings("unchecked")
     public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTreeMap.<Integer, Object>of(), JImmutableHashMap.of(), 1);
 
-    private final JImmutableMap<Integer, K> sortedKeys;
-    private final JImmutableMap<K, Node<K, V>> values;
+    private final JImmutableTreeMap<Integer, K> sortedKeys;
+    private final JImmutableHashMap<K, Node<K, V>> values;
     private final int nextIndex;
 
-    public JImmutableInsertOrderMap(JImmutableMap<Integer, K> sortedKeys,
-                                    JImmutableMap<K, Node<K, V>> values,
-                                    int nextIndex)
+    private JImmutableInsertOrderMap(JImmutableTreeMap<Integer, K> sortedKeys,
+                                     JImmutableHashMap<K, Node<K, V>> values,
+                                     int nextIndex)
     {
         this.sortedKeys = sortedKeys;
         this.values = values;
@@ -67,8 +69,8 @@ public class JImmutableInsertOrderMap<K, V>
         if (current.isFilled()) {
             return new JImmutableInsertOrderMap<K, V>(sortedKeys, values.assign(key, current.getValue().withValue(value)), nextIndex);
         } else {
-            final JImmutableMap<Integer, K> newSortedKeys = sortedKeys.assign(nextIndex, key);
-            final JImmutableMap<K, Node<K, V>> newValues = values.assign(key, new Node<K, V>(key, value, nextIndex));
+            final JImmutableTreeMap<Integer, K> newSortedKeys = sortedKeys.assign(nextIndex, key);
+            final JImmutableHashMap<K, Node<K, V>> newValues = values.assign(key, new Node<K, V>(key, value, nextIndex));
             return new JImmutableInsertOrderMap<K, V>(newSortedKeys, newValues, nextIndex + 1);
         }
     }
@@ -99,36 +101,14 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return new InOrderCursor(sortedKeys.cursor());
-    }
-
-    private class InOrderCursor
-            implements Cursor<Entry<K, V>>
-    {
-        private Cursor<Entry<Integer, K>> sortedMapCursor;
-
-        private InOrderCursor(Cursor<Entry<Integer, K>> sortedMapCursor)
+        return TransformCursor.of(sortedKeys.cursor(), new Func1<Entry<Integer, K>, Entry<K, V>>()
         {
-            this.sortedMapCursor = sortedMapCursor;
-        }
-
-        @Override
-        public Cursor<Entry<K, V>> next()
-        {
-            return new InOrderCursor(sortedMapCursor.next());
-        }
-
-        @Override
-        public boolean hasValue()
-        {
-            return sortedMapCursor.hasValue();
-        }
-
-        @Override
-        public Entry<K, V> getValue()
-        {
-            return values.get(sortedMapCursor.getValue().getValue());
-        }
+            @Override
+            public Entry<K, V> apply(Entry<Integer, K> value)
+            {
+                return values.get(value.getValue());
+            }
+        });
     }
 
     private static class Node<K, V>
