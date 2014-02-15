@@ -102,7 +102,8 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Holder<Node<K, V>> current = values.find(key);
         if (current.isFilled()) {
-            return new JImmutableInsertOrderMap<K, V>(sortedKeys, values.assign(key, current.getValue().withValue(value)), nextIndex);
+            final Node<K, V> node = current.getValue();
+            return node.getValue() == value ? this : new JImmutableInsertOrderMap<K, V>(sortedKeys, values.assign(key, node.withValue(value)), nextIndex);
         } else {
             final JImmutableTreeMap<Integer, K> newSortedKeys = sortedKeys.assign(nextIndex, key);
             final JImmutableHashMap<K, Node<K, V>> newValues = values.assign(key, new Node<K, V>(key, value, nextIndex));

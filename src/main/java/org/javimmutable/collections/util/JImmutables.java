@@ -48,6 +48,7 @@ import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -453,5 +454,35 @@ public final class JImmutables
                                                  Collection<T> collection)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), collection.iterator());
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet()
+    {
+        return JImmutableInsertOrderSet.of();
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet(Cursor<T> cursor)
+    {
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), cursor);
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet(T... values)
+    {
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), values);
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet(Cursorable<T> cursorable)
+    {
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), cursorable.cursor());
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet(Iterator<T> iterator)
+    {
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), iterator);
+    }
+
+    public static <T> JImmutableSet<T> insertOrderSet(Collection<T> collection)
+    {
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), collection.iterator());
     }
 }
