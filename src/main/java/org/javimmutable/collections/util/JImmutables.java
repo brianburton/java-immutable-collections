@@ -47,6 +47,7 @@ import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -307,6 +308,56 @@ public final class JImmutables
             }
         }
         return Functions.assignAll(JImmutableTreeMap.<K, V>of(comparator), source);
+    }
+
+    /**
+     * Constructs an empty map whose cursors traverse elements in the same order that they
+     * were originally added to the map.  Similar to LinkedHapMap.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableMap<K, V> insertOrderMap()
+    {
+        return JImmutableInsertOrderMap.of();
+    }
+
+    /**
+     * Constructs a map whose cursors traverse elements in the same order that they
+     * were originally added to the map.  Similar to LinkedHapMap.
+     * All key/value pairs from source are copied into the newly created map.
+     *
+     * @param source
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableMap<K, V> insertOrderMap(Map<K, V> source)
+    {
+        return Functions.assignAll(JImmutableInsertOrderMap.<K, V>of(), source);
+    }
+
+    /**
+     * Constructs a map whose cursors traverse elements in the same order that they
+     * were originally added to the map.  Similar to LinkedHapMap.
+     * If source is already an in order map it is returned directly, otherwise a new map
+     * is created and all key/value pairs from source are copied into the newly created map.
+     * In this case the iteration order for those entries would be based on the order of elements
+     * returned by source's cursor.
+     *
+     * @param source
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableMap<K, V> insertOrderMap(JImmutableMap<K, V> source)
+    {
+        if (source instanceof JImmutableInsertOrderMap) {
+            return source;
+        } else {
+            return Functions.assignAll(JImmutableInsertOrderMap.<K, V>of(), source);
+        }
     }
 
     public static <T> JImmutableSet<T> set()
