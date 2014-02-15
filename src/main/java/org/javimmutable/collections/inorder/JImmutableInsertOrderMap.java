@@ -104,15 +104,15 @@ public class JImmutableInsertOrderMap<K, V>
         return TransformCursor.of(sortedKeys.cursor(), new Func1<Entry<Integer, K>, Entry<K, V>>()
         {
             @Override
-            public Entry<K, V> apply(Entry<Integer, K> value)
+            public Entry<K, V> apply(Entry<Integer, K> entry)
             {
-                return values.get(value.getValue());
+                return values.get(entry.getValue());
             }
         });
     }
 
     private static class Node<K, V>
-            implements JImmutableMap.Entry<K, V>,
+            implements Entry<K, V>,
                        Holder<V>
     {
         private final K key;
