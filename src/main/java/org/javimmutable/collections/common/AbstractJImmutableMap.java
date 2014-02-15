@@ -36,6 +36,7 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
@@ -50,6 +51,19 @@ public abstract class AbstractJImmutableMap<K, V>
     public V get(K key)
     {
         return find(key).getValueOrNull();
+    }
+
+    /**
+     * Adds the key/value pair to this map.  Any value already existing for the specified key
+     * is replaced with the new value.
+     *
+     * @param e
+     * @return
+     */
+    @Override
+    public Insertable<Entry<K, V>> insert(Entry<K, V> e)
+    {
+        return assign(e.getKey(), e.getValue());
     }
 
     @Override

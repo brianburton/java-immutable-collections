@@ -38,7 +38,6 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
@@ -199,19 +198,6 @@ public class JImmutableTreeMap<K, V>
     public JImmutableTreeMap<K, V> deleteAll()
     {
         return of(comparator);
-    }
-
-    /**
-     * Adds the key/value pair to this map.  Any value already existing for the specified key
-     * is replaced with the new value.
-     *
-     * @param e
-     * @return
-     */
-    @Override
-    public Insertable<Entry<K, V>> insert(Entry<K, V> e)
-    {
-        return assign(e.getKey(), e.getValue());
     }
 
     @Override

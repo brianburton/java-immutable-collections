@@ -3,7 +3,6 @@ package org.javimmutable.collections.inorder;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
@@ -101,12 +100,6 @@ public class JImmutableInsertOrderMap<K, V>
     public Cursor<Entry<K, V>> cursor()
     {
         return new InOrderCursor(sortedKeys.cursor());
-    }
-
-    @Override
-    public Insertable<Entry<K, V>> insert(Entry<K, V> entry)
-    {
-        return assign(entry.getKey(), entry.getValue());
     }
 
     private class InOrderCursor
