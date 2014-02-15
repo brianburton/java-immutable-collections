@@ -67,7 +67,7 @@ public class JImmutableArrayList<T>
     private final int first;
     private final int next;
 
-    public JImmutableArrayList()
+    private JImmutableArrayList()
     {
         this(EmptyTrieNode.<T>of(), 0, 0);
     }

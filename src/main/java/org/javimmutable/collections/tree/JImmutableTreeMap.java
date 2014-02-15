@@ -64,7 +64,7 @@ public class JImmutableTreeMap<K, V>
      *
      * @param comparator
      */
-    public JImmutableTreeMap(Comparator<K> comparator)
+    private JImmutableTreeMap(Comparator<K> comparator)
     {
         this(comparator, null, 0);
     }

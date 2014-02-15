@@ -49,7 +49,7 @@ public class JImmutableTreeSet<T>
 
     private final Comparator<T> comparator;
 
-    public JImmutableTreeSet(Comparator<T> comparator)
+    private JImmutableTreeSet(Comparator<T> comparator)
     {
         this(JImmutableTreeMap.<T, Boolean>of(comparator), comparator);
     }

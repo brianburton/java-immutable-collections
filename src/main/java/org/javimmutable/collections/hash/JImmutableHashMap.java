@@ -55,7 +55,7 @@ public class JImmutableHashMap<K, V>
     private final int size;
 
     @SuppressWarnings("unchecked")
-    public JImmutableHashMap()
+    private JImmutableHashMap()
     {
         this(new HashInteriorNode<K, V>(), 0);
     }

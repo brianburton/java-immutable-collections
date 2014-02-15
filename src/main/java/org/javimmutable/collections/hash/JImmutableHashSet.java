@@ -45,7 +45,7 @@ public class JImmutableHashSet<T>
     @SuppressWarnings("unchecked")
     private static final JImmutableHashSet EMPTY = new JImmutableHashSet(JImmutableHashMap.of());
 
-    public JImmutableHashSet(JImmutableMap<T, Boolean> map)
+    private JImmutableHashSet(JImmutableMap<T, Boolean> map)
     {
         super(map);
     }
@@ -71,6 +71,6 @@ public class JImmutableHashSet<T>
     @Override
     protected JImmutableMap<T, Boolean> emptyMap()
     {
-        return new JImmutableHashMap<T, Boolean>();
+        return JImmutableHashMap.of();
     }
 }
