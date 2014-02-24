@@ -39,9 +39,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.trie32.Trie32Array;
+import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -172,13 +172,13 @@ public class JImmutableArrayList<T>
     @Override
     public Cursor<T> cursor()
     {
-        return StandardCursor.of(new CursorSource());
+        return values.valuesCursor();
     }
 
     @Override
     public Iterator<T> iterator()
     {
-        return StandardCursor.iterator(new CursorSource());
+        return IteratorAdaptor.of(cursor());
     }
 
     @Override
@@ -206,39 +206,5 @@ public class JImmutableArrayList<T>
             throw new IndexOutOfBoundsException();
         }
         return realIndex;
-    }
-
-    private class CursorSource
-            implements StandardCursor.Source<T>
-    {
-        private final int realIndex;
-
-        private CursorSource()
-        {
-            this(first);
-        }
-
-        private CursorSource(int realIndex)
-        {
-            this.realIndex = realIndex;
-        }
-
-        @Override
-        public boolean atEnd()
-        {
-            return realIndex >= next;
-        }
-
-        @Override
-        public T currentValue()
-        {
-            return values.get(realIndex);
-        }
-
-        @Override
-        public StandardCursor.Source<T> advance()
-        {
-            return new CursorSource(realIndex + 1);
-        }
     }
 }
