@@ -43,7 +43,7 @@ import org.javimmutable.collections.Func4;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.TransformedTrie32Array;
+import org.javimmutable.collections.array.trie32.Trie32HashTable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
@@ -52,20 +52,20 @@ public class JImmutableHashMap<K, V>
 {
     private static final JImmutableHashMap EMPTY = new JImmutableHashMap();
 
-    private final TransformedTrie32Array<K, V> values;
+    private final Trie32HashTable<K, V> values;
 
-    private JImmutableHashMap(TransformedTrie32Array<K, V> values)
+    private JImmutableHashMap(Trie32HashTable<K, V> values)
     {
         this.values = values;
     }
 
     private JImmutableHashMap()
     {
-        this(TransformedTrie32Array.of(new TransformedTrie32Array.Transforms<K, V>(JImmutableHashMap.<K, V>createUpdater(),
-                                                                                   JImmutableHashMap.<K, V>createDeleter(),
-                                                                                   JImmutableHashMap.<K, V>createValueGetter(),
-                                                                                   JImmutableHashMap.<K, V>createEntryGetter(),
-                                                                                   JImmutableHashMap.<K, V>createCursorGetter())));
+        this(Trie32HashTable.of(new Trie32HashTable.Transforms<K, V>(JImmutableHashMap.<K, V>createUpdater(),
+                                                                     JImmutableHashMap.<K, V>createDeleter(),
+                                                                     JImmutableHashMap.<K, V>createValueGetter(),
+                                                                     JImmutableHashMap.<K, V>createEntryGetter(),
+                                                                     JImmutableHashMap.<K, V>createCursorGetter())));
     }
 
     @SuppressWarnings("unchecked")
@@ -90,14 +90,14 @@ public class JImmutableHashMap<K, V>
     public JImmutableHashMap<K, V> assign(K key,
                                           V value)
     {
-        final TransformedTrie32Array<K, V> newValues = values.assign(key.hashCode(), key, value);
+        final Trie32HashTable<K, V> newValues = values.assign(key.hashCode(), key, value);
         return (newValues == values) ? this : new JImmutableHashMap<K, V>(newValues);
     }
 
     @Override
     public JImmutableHashMap<K, V> delete(K key)
     {
-        final TransformedTrie32Array<K, V> newValues = values.delete(key.hashCode(), key);
+        final Trie32HashTable<K, V> newValues = values.delete(key.hashCode(), key);
         return (newValues == values) ? this : new JImmutableHashMap<K, V>(newValues);
     }
 

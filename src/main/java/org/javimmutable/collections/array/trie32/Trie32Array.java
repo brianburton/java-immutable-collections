@@ -36,19 +36,19 @@
 package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.cursors.TransformCursor;
 
 /**
  * Sparse array implementation that stores values of type T indexed by 32 bit indexes.
@@ -69,8 +69,7 @@ import org.javimmutable.collections.cursors.TransformCursor;
  * @param <T>
  */
 public class Trie32Array<T>
-        implements Indexed<T>,
-                   Cursorable<JImmutableMap.Entry<Integer, T>>
+        extends AbstractJImmutableArray<T>
 {
     private static final Bit32Array<Object> EMPTY_ARRAY = Bit32Array.of();
     private static final Trie32Array<Object> EMPTY = new Trie32Array<Object>(EMPTY_ARRAY, 0);
@@ -152,12 +151,6 @@ public class Trie32Array<T>
         return (newRoot == root) ? this : new Trie32Array<T>(newRoot, size + delta.getValue());
     }
 
-    @Override
-    public T get(int index)
-    {
-        return Trie32Array.<T>find(root, index, 30).getValueOrNull();
-    }
-
     public Holder<T> find(int index)
     {
         return Trie32Array.find(root, index, 30);
@@ -170,26 +163,18 @@ public class Trie32Array<T>
     }
 
     @Override
+    public JImmutableArray<T> deleteAll()
+    {
+        return of();
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         if (root.size() == 0) {
             return StandardCursor.of();
         } else {
             return MultiTransformCursor.of(StandardCursor.of(new SignedOrderRootEntryCursor()), new EntryCursorTransforminator(30, 0));
-        }
-    }
-
-    public Cursor<Integer> keysCursor()
-    {
-        return TransformCursor.ofKeys(cursor());
-    }
-
-    public Cursor<T> valuesCursor()
-    {
-        if (root.size() == 0) {
-            return StandardCursor.of();
-        } else {
-            return MultiTransformCursor.of(StandardCursor.of(new SignedOrderRootCursor()), new ValueCursorTransforminator(30));
         }
     }
 
@@ -200,10 +185,10 @@ public class Trie32Array<T>
     {
         if (shift == 0) {
             final int childIndex = index & 0x1f;
-            return (Holder<T>)array.get(childIndex);
+            return (Holder<T>)array.find(childIndex);
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
         }
     }
@@ -222,7 +207,7 @@ public class Trie32Array<T>
             return newArray;
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
         }
@@ -241,7 +226,7 @@ public class Trie32Array<T>
             return newArray;
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(null);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(null);
             if (oldChildArray == null) {
                 return array;
             } else {
@@ -257,38 +242,42 @@ public class Trie32Array<T>
         }
     }
 
-    private class SignedOrderRootCursor
-            implements StandardCursor.Source<Object>
+
+    // adds interior single value arrays for prebuilt leaves
+    private static Bit32Array<Object> addParentLevels(int shift,
+                                                      Bit32Array<Object> child)
     {
-        private final int index;
-
-        private SignedOrderRootCursor()
-        {
-            this(firstFilledIndex(root, 2));
+        Bit32Array<Object> answer = child;
+        while (shift <= 30) {
+            answer = Bit32Array.<Object>of(0, answer);
+            shift += 5;
         }
+        return answer;
+    }
 
-        private SignedOrderRootCursor(int index)
-        {
-            this.index = index;
+    private static int firstFilledIndex(Bit32Array<Object> root,
+                                        int index)
+    {
+        int newIndex = index;
+        while (newIndex >= 0 && root.find(newIndex).isEmpty()) {
+            newIndex = nextIndex(newIndex);
         }
+        return newIndex;
+    }
 
-        @Override
-        public boolean atEnd()
-        {
-            return index < 0;
-        }
-
-        @Override
-        public Object currentValue()
-        {
-            return root.get(index).getValue();
-        }
-
-        @Override
-        public StandardCursor.Source<Object> advance()
-        {
-            int newIndex = firstFilledIndex(root, nextIndex(index));
-            return new SignedOrderRootCursor(newIndex);
+    private static int nextIndex(int index)
+    {
+        switch (index) {
+        case 2:
+            return 3;
+        case 3:
+            return 0;
+        case 0:
+            return 1;
+        case 1:
+            return -1;
+        default:
+            throw new IllegalArgumentException(String.format("unexpected index %d", index));
         }
     }
 
@@ -316,7 +305,7 @@ public class Trie32Array<T>
         @Override
         public JImmutableMap.Entry<Integer, Object> currentValue()
         {
-            return new MapEntry<Integer, Object>(index, root.get(index).getValue());
+            return new MapEntry<Integer, Object>(index, root.find(index).getValue());
         }
 
         @Override
@@ -324,62 +313,6 @@ public class Trie32Array<T>
         {
             int newIndex = firstFilledIndex(root, nextIndex(index));
             return new SignedOrderRootEntryCursor(newIndex);
-        }
-    }
-
-    private static int firstFilledIndex(Bit32Array<Object> root,
-                                        int index)
-    {
-        int newIndex = index;
-        while (newIndex >= 0 && root.get(newIndex).isEmpty()) {
-            newIndex = nextIndex(newIndex);
-        }
-        return newIndex;
-    }
-
-    private static int nextIndex(int index)
-    {
-        switch (index) {
-        case 2:
-            return 3;
-        case 3:
-            return 0;
-        case 0:
-            return 1;
-        case 1:
-            return -1;
-        default:
-            throw new IllegalArgumentException(String.format("unexpected index %d", index));
-        }
-    }
-
-    /**
-     * Transforminator (BEHOLD!!) that takes a Cursor of array (if shift > 0) or leaf (if shift == 0)
-     * objects and returns a Cursor of the values stored in the children (if shift > 0)
-     * or in the leaves (if shift == 0).
-     */
-    private class ValueCursorTransforminator
-            implements Func1<Object, Cursor<T>>
-    {
-        private final int shift;
-
-        private ValueCursorTransforminator(int shift)
-        {
-            this.shift = shift;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Cursor<T> apply(Object arrayValue)
-        {
-            if (shift > 0) {
-                // the internal arrays contain other arrays as values
-                Bit32Array<Object> array = (Bit32Array<Object>)arrayValue;
-                return MultiTransformCursor.of(array.valuesCursor(), new ValueCursorTransforminator(shift - 5));
-            } else {
-                // the leaf arrays contain value objects as values
-                return SingleValueCursor.of((T)arrayValue);
-            }
         }
     }
 
@@ -415,17 +348,5 @@ public class Trie32Array<T>
                 return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(new MapEntry<Integer, T>(index, (T)arrayEntry.getValue()));
             }
         }
-    }
-
-    // adds interior single value arrays for prebuilt leaves
-    private static Bit32Array<Object> addParentLevels(int shift,
-                                                      Bit32Array<Object> child)
-    {
-        Bit32Array<Object> answer = child;
-        while (shift <= 30) {
-            answer = Bit32Array.<Object>of(0, answer);
-            shift += 5;
-        }
-        return answer;
     }
 }

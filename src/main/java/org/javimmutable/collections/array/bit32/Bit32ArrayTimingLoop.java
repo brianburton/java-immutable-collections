@@ -68,7 +68,7 @@ public class Bit32ArrayTimingLoop
                 } else if (command == 2) {
                     array = array.delete(index);
                 } else {
-                    array.get(index);
+                    array.find(index);
                 }
             }
 //            final long loopElapsed = System.currentTimeMillis() - loopStart;

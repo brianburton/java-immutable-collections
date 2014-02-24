@@ -51,25 +51,25 @@ public class EmptyBit32ArrayTest
 
         newArray = array.assign(10, 100);
         assertTrue(newArray instanceof SingleBit32Array);
-        assertEquals(Holders.of(100), newArray.get(10));
+        assertEquals(Holders.of(100), newArray.find(10));
     }
 
     public void testBoundsCheck()
     {
         Bit32Array<Integer> array = new EmptyBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
-            array.get(i);
+            array.find(i);
             array.assign(i, i);
             array.delete(i);
         }
         try {
-            array.get(-1);
+            array.find(-1);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected
         }
         try {
-            array.get(32);
+            array.find(32);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected

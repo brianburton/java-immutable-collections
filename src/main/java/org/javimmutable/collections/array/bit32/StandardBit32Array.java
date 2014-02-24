@@ -93,7 +93,7 @@ public class StandardBit32Array<T>
         }
     }
 
-    public Holder<T> get(int index)
+    public Holder<T> find(int index)
     {
         checkIndex(index);
         final int bit = 1 << index;
@@ -187,7 +187,7 @@ public class StandardBit32Array<T>
         @Override
         public JImmutableMap.Entry<Integer, T> currentValue()
         {
-            return MapEntry.of(index, get(index).getValue());
+            return MapEntry.of(index, find(index).getValue());
         }
 
         @Override

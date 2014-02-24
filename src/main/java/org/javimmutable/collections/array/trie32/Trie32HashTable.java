@@ -49,7 +49,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 
 /**
- * Similar to LargeArray but uses caller provided function objects to manage the leaf values.
+ * Similar to Trie32Array but uses caller provided function objects to manage the leaf values.
  * Abstracting the leaf operations into the Transforms object allows different hash implementations
  * to use different types of leaf classes.  Also it moves the added complexity of hash collision
  * detection and management out of this class and into the class that defines the transforms.
@@ -59,7 +59,7 @@ import org.javimmutable.collections.cursors.MultiTransformCursor;
  * are objects managed by the transform functions.  These functions provide the ability to
  * create and replace these objects, pull cursors and values from them, etc.
  */
-public class TransformedTrie32Array<K, V>
+public class Trie32HashTable<K, V>
         implements Cursorable<JImmutableMap.Entry<K, V>>
 {
     private static final Bit32Array<Object> EMPTY_ARRAY = Bit32Array.of();
@@ -122,35 +122,35 @@ public class TransformedTrie32Array<K, V>
         }
     }
 
-    private TransformedTrie32Array(Transforms<K, V> transforms,
-                                   Bit32Array<Object> root,
-                                   int size)
+    private Trie32HashTable(Transforms<K, V> transforms,
+                            Bit32Array<Object> root,
+                            int size)
     {
         this.transforms = transforms;
         this.root = root;
         this.size = size;
     }
 
-    public static <K, V> TransformedTrie32Array<K, V> of(Transforms<K, V> transforms)
+    public static <K, V> Trie32HashTable<K, V> of(Transforms<K, V> transforms)
     {
-        return new TransformedTrie32Array<K, V>(transforms, Bit32Array.of(), 0);
+        return new Trie32HashTable<K, V>(transforms, Bit32Array.of(), 0);
     }
 
-    public TransformedTrie32Array<K, V> assign(int index,
-                                               K key,
-                                               V value)
+    public Trie32HashTable<K, V> assign(int index,
+                                        K key,
+                                        V value)
     {
         final MutableDelta delta = new MutableDelta();
         final Bit32Array<Object> newRoot = assign(root, index, 30, key, value, delta);
-        return (newRoot == root) ? this : new TransformedTrie32Array<K, V>(transforms, newRoot, size + delta.getValue());
+        return (newRoot == root) ? this : new Trie32HashTable<K, V>(transforms, newRoot, size + delta.getValue());
     }
 
-    public TransformedTrie32Array<K, V> delete(int index,
-                                               K key)
+    public Trie32HashTable<K, V> delete(int index,
+                                        K key)
     {
         final MutableDelta delta = new MutableDelta();
         final Bit32Array<Object> newRoot = delete(root, index, 30, key, delta);
-        return (newRoot == root) ? this : new TransformedTrie32Array<K, V>(transforms, newRoot, size + delta.getValue());
+        return (newRoot == root) ? this : new Trie32HashTable<K, V>(transforms, newRoot, size + delta.getValue());
     }
 
     public Holder<V> findValue(int index,
@@ -190,10 +190,10 @@ public class TransformedTrie32Array<K, V>
     {
         if (shift == 0) {
             final int childIndex = index & 0x1f;
-            return array.get(childIndex);
+            return array.find(childIndex);
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
         }
     }
@@ -208,11 +208,11 @@ public class TransformedTrie32Array<K, V>
     {
         if (shift == 0) {
             final int childIndex = index & 0x1f;
-            final Bit32Array<Object> newArray = array.assign(childIndex, transforms.updater.apply(array.get(childIndex), key, value, delta));
+            final Bit32Array<Object> newArray = array.assign(childIndex, transforms.updater.apply(array.find(childIndex), key, value, delta));
             return (newArray == array) ? array : newArray;
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, key, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
         }
@@ -227,7 +227,7 @@ public class TransformedTrie32Array<K, V>
     {
         if (shift == 0) {
             final int childIndex = index & 0x1f;
-            final Holder<Object> oldLeaf = array.get(childIndex);
+            final Holder<Object> oldLeaf = array.find(childIndex);
             if (oldLeaf.isEmpty()) {
                 return array;
             } else {
@@ -237,7 +237,7 @@ public class TransformedTrie32Array<K, V>
             }
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.get(childIndex).getValueOr(null);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(null);
             if (oldChildArray == null) {
                 return array;
             } else {

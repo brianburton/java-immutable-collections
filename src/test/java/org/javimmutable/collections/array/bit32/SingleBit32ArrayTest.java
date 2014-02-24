@@ -44,18 +44,18 @@ public class SingleBit32ArrayTest
     public void testSet()
     {
         Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
-        assertEquals(Holders.of(100), array.get(10));
+        assertEquals(Holders.of(100), array.find(10));
         assertEquals(1, array.size());
 
         array = array.assign(10, 200);
         assertTrue(array instanceof SingleBit32Array);
-        assertEquals(Holders.of(200), array.get(10));
+        assertEquals(Holders.of(200), array.find(10));
         assertEquals(1, array.size());
 
         array = array.assign(11, 220);
         assertTrue(array instanceof StandardBit32Array);
-        assertEquals(Holders.of(200), array.get(10));
-        assertEquals(Holders.of(220), array.get(11));
+        assertEquals(Holders.of(200), array.find(10));
+        assertEquals(Holders.of(220), array.find(11));
         assertEquals(2, array.size());
     }
 
@@ -76,19 +76,19 @@ public class SingleBit32ArrayTest
     public void testDelete()
     {
         Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
-        assertEquals(Holders.of(100), array.get(10));
+        assertEquals(Holders.of(100), array.find(10));
         assertEquals(1, array.size());
 
         Bit32Array<Integer> newArray = array.delete(18);
         assertSame(newArray, array);
         assertTrue(newArray instanceof SingleBit32Array);
-        assertEquals(Holders.of(100), newArray.get(10));
+        assertEquals(Holders.of(100), newArray.find(10));
         assertEquals(1, newArray.size());
 
         array = newArray;
         newArray = array.delete(10);
         assertTrue(newArray instanceof EmptyBit32Array);
-        assertEquals(Holders.<Integer>of(), newArray.get(10));
+        assertEquals(Holders.<Integer>of(), newArray.find(10));
         assertEquals(0, newArray.size());
     }
 
@@ -96,18 +96,18 @@ public class SingleBit32ArrayTest
     {
         Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
         for (int i = 0; i < 32; ++i) {
-            array.get(i);
+            array.find(i);
             array.assign(i, i);
             array.delete(i);
         }
         try {
-            array.get(-1);
+            array.find(-1);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected
         }
         try {
-            array.get(32);
+            array.find(32);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected

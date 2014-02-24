@@ -45,7 +45,7 @@ public class EmptyBit32Array<T>
         extends Bit32Array<T>
 {
     @Override
-    public Holder<T> get(int index)
+    public Holder<T> find(int index)
     {
         checkIndex(index);
         return Holders.of();

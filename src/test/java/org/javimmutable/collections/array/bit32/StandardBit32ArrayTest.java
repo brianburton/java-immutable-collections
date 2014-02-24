@@ -50,9 +50,9 @@ public class StandardBit32ArrayTest
         Bit32Array<Integer> test = new StandardBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
             test = test.assign(i, i);
-            assertEquals(Holders.of(i), test.get(i));
+            assertEquals(Holders.of(i), test.find(i));
             for (int k = 0; k < i; ++k) {
-                assertEquals(Holders.of(k), test.get(k));
+                assertEquals(Holders.of(k), test.find(k));
             }
             assertEquals(i + 1, test.size());
         }
@@ -62,9 +62,9 @@ public class StandardBit32ArrayTest
         }
         for (int i = 0; i < 32; ++i) {
             test = test.delete(i);
-            assertEquals(Holders.<Integer>of(), test.get(i));
+            assertEquals(Holders.<Integer>of(), test.find(i));
             for (int k = i + 1; k < 32; ++k) {
-                assertEquals(Holders.of(k), test.get(k));
+                assertEquals(Holders.of(k), test.find(k));
             }
             assertEquals(32 - i - 1, test.size());
         }
@@ -78,35 +78,35 @@ public class StandardBit32ArrayTest
                     Bit32Array<Integer> array = new StandardBit32Array<Integer>();
                     array = array.assign(first, first);
                     assertEquals(1, array.size());
-                    assertEquals(Holders.of(first), array.get(first));
+                    assertEquals(Holders.of(first), array.find(first));
                     array = array.assign(second, second);
                     assertEquals(2, array.size());
-                    assertEquals(Holders.of(first), array.get(first));
-                    assertEquals(Holders.of(second), array.get(second));
+                    assertEquals(Holders.of(first), array.find(first));
+                    assertEquals(Holders.of(second), array.find(second));
 
                     // test deleting first first
                     Bit32Array<Integer> delArray = array.delete(first);
                     assertTrue(delArray instanceof SingleBit32Array);
                     assertEquals(1, delArray.size());
-                    assertEquals(Holders.<Integer>of(), delArray.get(first));
-                    assertEquals(Holders.of(second), delArray.get(second));
+                    assertEquals(Holders.<Integer>of(), delArray.find(first));
+                    assertEquals(Holders.of(second), delArray.find(second));
                     delArray = delArray.delete(second);
                     assertTrue(delArray instanceof EmptyBit32Array);
                     assertEquals(0, delArray.size());
-                    assertEquals(Holders.<Integer>of(), delArray.get(first));
-                    assertEquals(Holders.<Integer>of(), delArray.get(second));
+                    assertEquals(Holders.<Integer>of(), delArray.find(first));
+                    assertEquals(Holders.<Integer>of(), delArray.find(second));
 
                     // test deleting second first
                     delArray = array.delete(second);
                     assertTrue(delArray instanceof SingleBit32Array);
                     assertEquals(1, delArray.size());
-                    assertEquals(Holders.of(first), delArray.get(first));
-                    assertEquals(Holders.<Integer>of(), delArray.get(second));
+                    assertEquals(Holders.of(first), delArray.find(first));
+                    assertEquals(Holders.<Integer>of(), delArray.find(second));
                     delArray = delArray.delete(first);
                     assertTrue(delArray instanceof EmptyBit32Array);
                     assertEquals(0, delArray.size());
-                    assertEquals(Holders.<Integer>of(), delArray.get(first));
-                    assertEquals(Holders.<Integer>of(), delArray.get(second));
+                    assertEquals(Holders.<Integer>of(), delArray.find(first));
+                    assertEquals(Holders.<Integer>of(), delArray.find(second));
                 }
             }
         }
@@ -124,30 +124,30 @@ public class StandardBit32ArrayTest
                         array = array.assign(third, third);
                         assertTrue(array instanceof StandardBit32Array);
                         assertEquals(3, array.size());
-                        assertEquals(Holders.of(first), array.get(first));
-                        assertEquals(Holders.of(second), array.get(second));
-                        assertEquals(Holders.of(third), array.get(third));
+                        assertEquals(Holders.of(first), array.find(first));
+                        assertEquals(Holders.of(second), array.find(second));
+                        assertEquals(Holders.of(third), array.find(third));
 
                         Bit32Array<Integer> newArray = array.delete(first);
                         assertTrue(newArray instanceof StandardBit32Array);
                         assertEquals(2, newArray.size());
-                        assertEquals(Holders.<Integer>of(), newArray.get(first));
-                        assertEquals(Holders.of(second), newArray.get(second));
-                        assertEquals(Holders.of(third), newArray.get(third));
+                        assertEquals(Holders.<Integer>of(), newArray.find(first));
+                        assertEquals(Holders.of(second), newArray.find(second));
+                        assertEquals(Holders.of(third), newArray.find(third));
 
                         newArray = newArray.delete(second);
                         assertTrue(newArray instanceof SingleBit32Array);
                         assertEquals(1, newArray.size());
-                        assertEquals(Holders.<Integer>of(), newArray.get(first));
-                        assertEquals(Holders.<Integer>of(), newArray.get(second));
-                        assertEquals(Holders.of(third), newArray.get(third));
+                        assertEquals(Holders.<Integer>of(), newArray.find(first));
+                        assertEquals(Holders.<Integer>of(), newArray.find(second));
+                        assertEquals(Holders.of(third), newArray.find(third));
 
                         newArray = newArray.delete(third);
                         assertTrue(newArray instanceof EmptyBit32Array);
                         assertEquals(0, newArray.size());
-                        assertEquals(Holders.<Integer>of(), newArray.get(first));
-                        assertEquals(Holders.<Integer>of(), newArray.get(second));
-                        assertEquals(Holders.<Integer>of(), newArray.get(third));
+                        assertEquals(Holders.<Integer>of(), newArray.find(first));
+                        assertEquals(Holders.<Integer>of(), newArray.find(second));
+                        assertEquals(Holders.<Integer>of(), newArray.find(third));
                     }
                 }
             }
@@ -165,7 +165,7 @@ public class StandardBit32ArrayTest
         test = test.delete(10);
         assertEquals(1, test.size());
         assertTrue(test instanceof SingleBit32Array);
-        assertEquals(Holders.of(20), test.get(20));
+        assertEquals(Holders.of(20), test.find(20));
     }
 
     public void testDownsizing1to0()
@@ -178,25 +178,25 @@ public class StandardBit32ArrayTest
         test = test.delete(20);
         assertEquals(0, test.size());
         assertTrue(test instanceof EmptyBit32Array);
-        assertEquals(Holders.<Integer>of(), test.get(20));
+        assertEquals(Holders.<Integer>of(), test.find(20));
     }
 
     public void testBoundsCheck()
     {
         Bit32Array<Integer> array = new StandardBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
-            array.get(i);
+            array.find(i);
             array.assign(i, i);
             array.delete(i);
         }
         try {
-            array.get(-1);
+            array.find(-1);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected
         }
         try {
-            array.get(32);
+            array.find(32);
             fail();
         } catch (IndexOutOfBoundsException ex) {
             // expected
@@ -208,7 +208,7 @@ public class StandardBit32ArrayTest
         Bit32Array<Integer> array = new StandardBit32Array<Integer>();
         for (int index = 31; index > 0; --index) {
             array = array.assign(index, index);
-            assertEquals(index, (int)array.get(index).getValueOrNull());
+            assertEquals(index, (int)array.find(index).getValueOrNull());
             assertEquals(index, array.firstIndex());
         }
     }
@@ -257,13 +257,13 @@ public class StandardBit32ArrayTest
                     StandardBit32Array<Integer> barray = new StandardBit32Array<Integer>(source, startIndex, offset, limit);
                     assertEquals(size, barray.size());
                     for (int i = 0; i < startIndex; ++i) {
-                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                        assertEquals(Holders.<Integer>of(), barray.find(i));
                     }
                     for (int i = startIndex; i < startIndex + size; ++i) {
-                        assertEquals(Holders.of(values[offset + i - startIndex]), barray.get(i));
+                        assertEquals(Holders.of(values[offset + i - startIndex]), barray.find(i));
                     }
                     for (int i = startIndex + size; i < 32; ++i) {
-                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                        assertEquals(Holders.<Integer>of(), barray.find(i));
                     }
                 }
             }

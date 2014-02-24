@@ -35,24 +35,17 @@
 
 package org.javimmutable.collections.array.bit32;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
-import org.javimmutable.collections.cursors.TransformCursor;
-
-import java.util.Iterator;
+import org.javimmutable.collections.JImmutableArray;
+import org.javimmutable.collections.common.AbstractJImmutableArray;
 
 /**
- * Fixed size (32 entries) persistent array of type T.
+ * JImmutableArray implementation that only accepts indexes in the range [0, 31].
  *
  * @param <T>
  */
 public abstract class Bit32Array<T>
-        implements Cursorable<JImmutableMap.Entry<Integer, T>>,
-                   Iterable<JImmutableMap.Entry<Integer, T>>
+        extends AbstractJImmutableArray<T>
 {
     private static final int INVALID_INDEX_MASK = ~0x1f;
     private static final Bit32Array EMPTY = new EmptyBit32Array();
@@ -104,26 +97,19 @@ public abstract class Bit32Array<T>
         }
     }
 
-    public abstract Holder<T> get(int index);
-
-    public abstract Bit32Array<T> assign(int index,
+    @Override
+    public abstract Bit32Array<T> assign(int key,
                                          T value);
 
-    public abstract Bit32Array<T> delete(int index);
-
-    public abstract int size();
+    @Override
+    public abstract Bit32Array<T> delete(int key);
 
     public abstract int firstIndex();
 
-    public Cursor<T> valuesCursor()
-    {
-        return TransformCursor.ofValues(cursor());
-    }
-
     @Override
-    public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public JImmutableArray<T> deleteAll()
     {
-        return IteratorAdaptor.of(cursor());
+        return of();
     }
 
     protected static void checkIndex(int index)

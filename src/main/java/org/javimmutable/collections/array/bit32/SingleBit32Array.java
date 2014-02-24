@@ -57,7 +57,7 @@ public class SingleBit32Array<T>
     }
 
     @Override
-    public Holder<T> get(int index)
+    public Holder<T> find(int index)
     {
         checkIndex(index);
         return this.index == index ? this : Holders.<T>of();

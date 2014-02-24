@@ -56,7 +56,7 @@ public class Bit32ArrayTest
         Bit32Array<Integer> array = Bit32Array.of();
         assertEquals(0, array.size());
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.<Integer>of(), array.get(i));
+            assertEquals(Holders.<Integer>of(), array.find(i));
         }
         assertEquals(0, array.size());
         StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
@@ -68,7 +68,7 @@ public class Bit32ArrayTest
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.of(i), array.get(i));
+            assertEquals(Holders.of(i), array.find(i));
             assertEquals(32, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
@@ -80,7 +80,7 @@ public class Bit32ArrayTest
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.of(i + i), array.get(i));
+            assertEquals(Holders.of(i + i), array.find(i));
             assertEquals(32, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
@@ -92,7 +92,7 @@ public class Bit32ArrayTest
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
         }
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.<Integer>of(), array.get(i));
+            assertEquals(Holders.<Integer>of(), array.find(i));
             assertEquals(0, array.size());
             StandardCursorTest.cursorTest(new Lookup<Integer>(array), array.size(), array.cursor());
             StandardCursorTest.iteratorTest(new Lookup<Integer>(array), array.size(), array.iterator());
@@ -118,12 +118,12 @@ public class Bit32ArrayTest
                     array = array.delete(index);
                     expected.remove(index);
                 } else {
-                    assertEquals(Holders.fromNullable(expected.get(index)), array.get(index));
+                    assertEquals(Holders.fromNullable(expected.get(index)), array.find(index));
                 }
                 assertEquals(expected.size(), array.size());
             }
             for (int index = 0; index < 32; ++index) {
-                assertEquals(Holders.fromNullable(expected.get(index)), array.get(index));
+                assertEquals(Holders.fromNullable(expected.get(index)), array.find(index));
             }
             int count = 0;
             for (JImmutableMap.Entry<Integer, Integer> entry : array) {
@@ -152,13 +152,13 @@ public class Bit32ArrayTest
                     Bit32Array<Integer> barray = Bit32Array.of(source, startIndex, offset, limit);
                     assertEquals(size, barray.size());
                     for (int i = 0; i < startIndex; ++i) {
-                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                        assertEquals(Holders.<Integer>of(), barray.find(i));
                     }
                     for (int i = startIndex; i < startIndex + size; ++i) {
-                        assertEquals(Holders.of(values[offset + i - startIndex]), barray.get(i));
+                        assertEquals(Holders.of(values[offset + i - startIndex]), barray.find(i));
                     }
                     for (int i = startIndex + size; i < 32; ++i) {
-                        assertEquals(Holders.<Integer>of(), barray.get(i));
+                        assertEquals(Holders.<Integer>of(), barray.find(i));
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class Bit32ArrayTest
         public JImmutableMap.Entry<Integer, T> apply(Integer value)
         {
             for (int i = 0; i < 32; ++i) {
-                Holder<T> holder = array.get(i);
+                Holder<T> holder = array.find(i);
                 if (holder.isFilled()) {
                     if (value == 0) {
                         return MapEntry.of(i, holder.getValue());
