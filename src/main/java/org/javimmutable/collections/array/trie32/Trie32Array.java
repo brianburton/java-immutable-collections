@@ -41,7 +41,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.array.bit32.Bit32Array;
-import org.javimmutable.collections.array.bit32.SingleBit32Array;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
@@ -133,45 +132,6 @@ public class Trie32Array<T>
         return array;
     }
 
-    //    @SuppressWarnings("unchecked")
-//    public static <T> Trie32Array<T> of(Indexed<T> source,
-//                                        int offset,
-//                                        int limit)
-//    {
-//        final int size = limit - offset;
-//        if (size == 0) {
-//            return of();
-//        }
-//
-//        // small lists can be directly constructed from a single leaf array
-//        if (size <= 32) {
-//            return new Trie32Array<T>(addParentLevels(5, Bit32Array.of((Indexed<Object>)source, 0, offset, limit)), size);
-//        }
-//
-//        // first construct an array containing a single level of arrays of leaves
-//        final int loopLimit = Math.min(limit, offset + MAX_INDEXED_CONSTRUCTOR_SIZE);
-//        int added = 0;
-//        int index = 0;
-//        Bit32Array<Object> root = Bit32Array.of();
-//        while (offset < loopLimit) {
-//            int blockLimit = Math.min(limit, offset + 32);
-//            Bit32Array<Object> child = Bit32Array.of((Indexed<Object>)source, 0, offset, blockLimit);
-//            root = root.assign(index, child);
-//            added += (blockLimit - offset);
-//            index += 1;
-//            offset = blockLimit;
-//        }
-//
-//        // then add any extras left over above that size
-//        Trie32Array<T> array = new Trie32Array<T>(addParentLevels(10, root), added);
-//        while (offset < limit) {
-//            array = array.assign(added, source.get(offset));
-//            offset += 1;
-//            added += 1;
-//        }
-//        return array;
-//    }
-//
     public static <T> Trie32Array<T> of(Indexed<T> source)
     {
         return of(source, 0, source.size());
@@ -315,7 +275,7 @@ public class Trie32Array<T>
     {
         Bit32Array<Object> answer = child;
         while (shift <= 30) {
-            answer = new SingleBit32Array<Object>(0, answer);
+            answer = Bit32Array.<Object>of(0, answer);
             shift += 5;
         }
         return answer;

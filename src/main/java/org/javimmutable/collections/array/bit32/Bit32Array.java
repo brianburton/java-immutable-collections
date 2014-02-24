@@ -64,6 +64,21 @@ public abstract class Bit32Array<T>
     }
 
     /**
+     * Creates a new Bit32Array containing exactly one element.
+     *
+     * @param index
+     * @param value
+     * @param <T>
+     * @return
+     */
+    public static <T> Bit32Array<T> of(int index,
+                                       T value)
+    {
+        checkIndex(index);
+        return new SingleBit32Array<T>(index, value);
+    }
+
+    /**
      * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 - startIndex elements
      * from an Indexed collection.  (limit - offset) must be in the range 0 to (32 - startIndex) inclusive.
      *
