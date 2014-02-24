@@ -145,7 +145,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return TransformCursor.of(sortedNodes.cursor(), new Func1<Node<K, V>, Entry<K, V>>()
+        return TransformCursor.of(sortedNodes.valuesCursor(), new Func1<Node<K, V>, Entry<K, V>>()
         {
             @Override
             public Entry<K, V> apply(Node<K, V> node)
