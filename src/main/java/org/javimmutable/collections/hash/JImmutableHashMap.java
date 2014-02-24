@@ -37,34 +37,35 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Func3;
+import org.javimmutable.collections.Func4;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.array.trie32.TransformedTrie32Array;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyCursor;
-import org.javimmutable.collections.cursors.MultiTransformCursor;
 
 public class JImmutableHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
-    @SuppressWarnings("unchecked")
     private static final JImmutableHashMap EMPTY = new JImmutableHashMap();
 
-    private final HashTrieNode<K, V> nodes;
-    private final int size;
+    private final TransformedTrie32Array<K, V> values;
 
-    @SuppressWarnings("unchecked")
-    private JImmutableHashMap()
+    private JImmutableHashMap(TransformedTrie32Array<K, V> values)
     {
-        this(new HashInteriorNode<K, V>(), 0);
+        this.values = values;
     }
 
-    private JImmutableHashMap(HashTrieNode<K, V> nodes,
-                              int size)
+    private JImmutableHashMap()
     {
-        this.nodes = nodes;
-        this.size = size;
+        this(TransformedTrie32Array.of(new TransformedTrie32Array.Transforms<K, V>(JImmutableHashMap.<K, V>createUpdater(),
+                                                                                   JImmutableHashMap.<K, V>createDeleter(),
+                                                                                   JImmutableHashMap.<K, V>createValueGetter(),
+                                                                                   JImmutableHashMap.<K, V>createEntryGetter(),
+                                                                                   JImmutableHashMap.<K, V>createCursorGetter())));
     }
 
     @SuppressWarnings("unchecked")
@@ -76,62 +77,38 @@ public class JImmutableHashMap<K, V>
     @Override
     public Holder<V> find(K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
-        final int hashCode = key.hashCode();
-        return nodes.get(hashCode >>> 5, hashCode & 0x1f, key);
+        return values.findValue(key.hashCode(), key);
     }
 
     @Override
     public Holder<Entry<K, V>> findEntry(K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
-        final int hashCode = key.hashCode();
-        return Holders.fromNullable(nodes.getEntry(hashCode >>> 5, hashCode & 0x1f, key));
+        return values.findEntry(key.hashCode(), key);
     }
 
     @Override
-    public JImmutableHashMap<K, V> assign(final K key,
-                                          final V value)
+    public JImmutableHashMap<K, V> assign(K key,
+                                          V value)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
-        final HashTrieNode<K, V> nodes = this.nodes;
-        final MutableDelta sizeDelta = new MutableDelta();
-        final int hashCode = key.hashCode();
-        HashTrieNode<K, V> newNodes = nodes.assign(hashCode >>> 5, hashCode & 0x1f, key, value, sizeDelta);
-        return (newNodes == nodes) ? this : new JImmutableHashMap<K, V>(newNodes, sizeDelta.apply(size));
+        final TransformedTrie32Array<K, V> newValues = values.assign(key.hashCode(), key, value);
+        return (newValues == values) ? this : new JImmutableHashMap<K, V>(newValues);
     }
 
     @Override
-    public JImmutableHashMap<K, V> delete(final K key)
+    public JImmutableHashMap<K, V> delete(K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
-        final HashTrieNode<K, V> nodes = this.nodes;
-        final MutableDelta sizeDelta = new MutableDelta();
-        final int hashCode = key.hashCode();
-        HashTrieNode<K, V> newNodes = nodes.delete(hashCode >>> 5, hashCode & 0x1f, key, sizeDelta);
-        return (newNodes == nodes) ? this : new JImmutableHashMap<K, V>(newNodes, sizeDelta.apply(size));
+        final TransformedTrie32Array<K, V> newValues = values.delete(key.hashCode(), key);
+        return (newValues == values) ? this : new JImmutableHashMap<K, V>(newValues);
     }
 
     @Override
     public int size()
     {
-        return size;
+        return values.size();
     }
 
     @Override
-    public JImmutableMap<K, V> deleteAll()
+    public JImmutableHashMap<K, V> deleteAll()
     {
         return of();
     }
@@ -139,18 +116,84 @@ public class JImmutableHashMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return MultiTransformCursor.of(LazyCursor.of(nodes), new Func1<HashTrieValue<K, V>, Cursor<JImmutableMap.Entry<K, V>>>()
-        {
-            @Override
-            public Cursor<JImmutableMap.Entry<K, V>> apply(HashTrieValue<K, V> node)
-            {
-                return node.cursor();
-            }
-        });
+        return values.cursor();
     }
 
-    public JImmutableMap<Class, Integer> getNodeTypeCounts(JImmutableMap<Class, Integer> map)
+    private static <K, V> Func4<Holder<Object>, K, V, MutableDelta, Object> createUpdater()
     {
-        return map;
+        return new Func4<Holder<Object>, K, V, MutableDelta, Object>()
+        {
+            @Override
+            public Object apply(Holder<Object> oldLeaf,
+                                K key,
+                                V value,
+                                MutableDelta delta)
+            {
+                if (oldLeaf.isEmpty()) {
+                    delta.add(1);
+                    return new SingleValueLeafNode<K, V>(key, value);
+                }
+
+                @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf.getValue();
+                return oldNode.setValueForKey(key, value, delta);
+            }
+        };
+    }
+
+    private static <K, V> Func3<Object, K, MutableDelta, Holder<Object>> createDeleter()
+    {
+        return new Func3<Object, K, MutableDelta, Holder<Object>>()
+        {
+            @Override
+            public Holder<Object> apply(Object oldLeaf,
+                                        K key,
+                                        MutableDelta delta)
+            {
+                @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
+                final LeafNode<K, V> newNode = oldNode.deleteValueForKey(key, delta);
+                return (newNode == null || newNode.size() == 0) ? Holders.of() : Holders.<Object>of(newNode);
+            }
+        };
+    }
+
+    private static <K, V> Func2<Object, K, Holder<V>> createValueGetter()
+    {
+        return new Func2<Object, K, Holder<V>>()
+        {
+            @Override
+            public Holder<V> apply(Object oldLeaf,
+                                   K key)
+            {
+                @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
+                return oldNode.getValueForKey(key);
+            }
+        };
+    }
+
+    private static <K, V> Func2<Object, K, Holder<JImmutableMap.Entry<K, V>>> createEntryGetter()
+    {
+        return new Func2<Object, K, Holder<JImmutableMap.Entry<K, V>>>()
+        {
+            @Override
+            public Holder<JImmutableMap.Entry<K, V>> apply(Object oldLeaf,
+                                                           K key)
+            {
+                @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
+                return Holders.fromNullable(oldNode.getEntryForKey(key));
+            }
+        };
+    }
+
+    private static <K, V> Func1<Object, Cursor<Entry<K, V>>> createCursorGetter()
+    {
+        return new Func1<Object, Cursor<Entry<K, V>>>()
+        {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Cursor<Entry<K, V>> apply(Object leaf)
+            {
+                return ((LeafNode<K, V>)leaf).cursor();
+            }
+        };
     }
 }

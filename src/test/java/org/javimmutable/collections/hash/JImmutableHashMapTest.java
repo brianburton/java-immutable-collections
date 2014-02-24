@@ -219,4 +219,17 @@ public class JImmutableHashMapTest
         JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
         assertSame(JImmutableHashMap.of(), map1.deleteAll());
     }
+
+    public void testCursor()
+    {
+        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+        List<Integer> expected = new ArrayList<Integer>();
+        for (int i = 0; i < 100000; ++i) {
+            map = map.assign(i, i);
+            expected.add(i);
+            assertEquals(expected.size(), map.size());
+        }
+        StandardCursorTest.listCursorTest(expected, map.keysCursor());
+        StandardCursorTest.listCursorTest(expected, map.valuesCursor());
+    }
 }

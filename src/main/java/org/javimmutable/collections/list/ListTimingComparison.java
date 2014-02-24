@@ -54,82 +54,73 @@ public class ListTimingComparison
         final int loops = Integer.valueOf(argv[1]);
 
         final int maxValue = 10 * loops;
-        final int maxCommand = 4;
+        final int maxCommand = 6;
 
-        Random random = new Random(seed);
-        int adds = 0;
-        int sets = 0;
-        int inserts = 0;
-        int removes = 0;
-        int gets = 0;
-        long startMap = System.currentTimeMillis();
-        List<Integer> expected = new ArrayList<Integer>();
-        for (int i = 1; i <= loops; ++i) {
-            int command = random.nextInt(maxCommand);
-            if (expected.size() == 0 || command <= 1) {
-                int value = random.nextInt(maxValue);
-                expected.add(value);
-                adds += 1;
-            } else {
-                int index = random.nextInt(expected.size());
-                expected.get(index);
-                gets += 1;
+        for (int outerloop = 0; outerloop < 10; ++outerloop) {
+            Random random = new Random(seed);
+            int adds = 0;
+            int sets = 0;
+            int inserts = 0;
+            int removes = 0;
+            int gets = 0;
+            long startMap = System.currentTimeMillis();
+            List<Integer> expected = new ArrayList<Integer>();
+            for (int i = 1; i <= loops; ++i) {
+                int command = random.nextInt(maxCommand);
+                if (expected.size() == 0 || command <= 1) {
+                    int value = random.nextInt(maxValue);
+                    expected.add(value);
+                    adds += 1;
+                } else if (command == 2) {
+                    expected.remove(expected.size() - 1);
+                    removes += 1;
+                } else {
+                    int index = random.nextInt(expected.size());
+                    expected.get(index);
+                    gets += 1;
+                }
             }
-        }
-        long endMap = System.currentTimeMillis();
-        System.out.printf("jlist adds %d inserts %d sets %s removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, expected.size(), (endMap - startMap));
+            long endMap = System.currentTimeMillis();
+            System.out.printf("jlist adds %d inserts %d sets %s removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, expected.size(), (endMap - startMap));
 
-        random = new Random(seed);
-        adds = 0;
-        sets = 0;
-        removes = 0;
-        gets = 0;
-        long startPer = System.currentTimeMillis();
-        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
-        for (int i = 1; i <= loops; ++i) {
-            int command = random.nextInt(maxCommand);
-            if (list.size() == 0 || command <= 1) {
-                int value = random.nextInt(maxValue);
-                list = list.insert(value);
-                adds += 1;
-            } else {
-                int index = random.nextInt(list.size());
-                list.get(index);
-                gets += 1;
+            random = new Random(seed);
+            adds = 0;
+            sets = 0;
+            removes = 0;
+            gets = 0;
+            long startPer = System.currentTimeMillis();
+            JImmutableArrayList<Integer> list = JImmutableArrayList.of();
+            for (int i = 1; i <= loops; ++i) {
+                int command = random.nextInt(maxCommand);
+                if (list.size() == 0 || command <= 1) {
+                    int value = random.nextInt(maxValue);
+                    list = list.insert(value);
+                    adds += 1;
+                } else if (command == 2) {
+                    list = list.deleteLast();
+                    removes += 1;
+                } else {
+                    int index = random.nextInt(list.size());
+                    list.get(index);
+                    gets += 1;
+                }
             }
-        }
-        long endPer = System.currentTimeMillis();
-        System.out.printf("flist adds %d inserts %d sets %d removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, list.size(), (endPer - startPer));
+            long endPer = System.currentTimeMillis();
+            System.out.printf("flist adds %d inserts %d sets %d removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, list.size(), (endPer - startPer));
 
-        Iterator<Integer> expectedIterator = expected.iterator();
-        Iterator<Integer> listIterator = list.iterator();
-        while (true) {
-            assertEquals(expectedIterator.hasNext(), listIterator.hasNext());
-            if (expectedIterator.hasNext()) {
-                assertEquals(expectedIterator.next(), listIterator.next());
-            } else {
-                break;
+            Iterator<Integer> expectedIterator = expected.iterator();
+            Iterator<Integer> listIterator = list.iterator();
+            while (true) {
+                assertEquals(expectedIterator.hasNext(), listIterator.hasNext());
+                if (expectedIterator.hasNext()) {
+                    assertEquals(expectedIterator.next(), listIterator.next());
+                } else {
+                    break;
+                }
             }
-        }
 
-        random = new Random(seed);
-        adds = 0;
-        sets = 0;
-        removes = 0;
-        gets = 0;
-        startPer = System.currentTimeMillis();
-        JImmutableLinkedStack<Integer> rlist = JImmutableLinkedStack.of();
-        for (int i = 1; i <= loops; ++i) {
-            int command = random.nextInt(maxCommand);
-            if (rlist.isEmpty() || command <= 1) {
-                int value = random.nextInt(maxValue);
-                rlist = rlist.insert(value);
-                adds += 1;
-            }
+            System.out.println();
         }
-        endPer = System.currentTimeMillis();
-        System.out.printf("rlist adds %d inserts %d sets %d removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, list.size(), (endPer - startPer));
-
     }
 
     private static void assertEquals(boolean a,

@@ -36,29 +36,38 @@
 package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class HashTrieMultiValue<K, V>
-        implements HashTrieValue<K, V>
+/**
+ * TrieNode variation that can handle multiple key/value pairs.
+ */
+public class MultiValueLeafNode<K, V>
+        implements LeafNode<K, V>
 {
-    private final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values;
+    private final JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes;
 
-    public HashTrieMultiValue(JImmutableLinkedStack<HashTrieSingleValue<K, V>> values)
+    public MultiValueLeafNode(K key,
+                              V value)
     {
-        this.values = values;
+        nodes = JImmutableLinkedStack.of(new SingleValueLeafNode<K, V>(key, value));
+    }
+
+    public MultiValueLeafNode(JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes)
+    {
+        this.nodes = nodes;
     }
 
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes = this.nodes;
+        for (JImmutableLinkedStack<SingleValueLeafNode<K, V>> list = nodes; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return Holders.of(list.getHead().getValue());
             }
@@ -69,8 +78,8 @@ public class HashTrieMultiValue<K, V>
     @Override
     public JImmutableMap.Entry<K, V> getEntryForKey(K key)
     {
-        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
+        final JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes = this.nodes;
+        for (JImmutableLinkedStack<SingleValueLeafNode<K, V>> list = nodes; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
                 return list.getHead();
             }
@@ -79,15 +88,14 @@ public class HashTrieMultiValue<K, V>
     }
 
     @Override
-    public HashTrieValue<K, V> setValueForKey(K key,
-                                              V value,
-                                              MutableDelta sizeDelta)
+    public LeafNode<K, V> setValueForKey(K key,
+                                         V value,
+                                         MutableDelta sizeDelta)
     {
-        final JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        JImmutableLinkedStack<HashTrieSingleValue<K, V>> newList = JImmutableLinkedStack.of();
+        JImmutableLinkedStack<SingleValueLeafNode<K, V>> newList = JImmutableLinkedStack.of();
         boolean found = false;
-        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
-            final HashTrieSingleValue<K, V> head = list.getHead();
+        for (JImmutableLinkedStack<SingleValueLeafNode<K, V>> list = nodes; !list.isEmpty(); list = list.getTail()) {
+            final SingleValueLeafNode<K, V> head = list.getHead();
             if (head.getKey().equals(key)) {
                 if (head.getValue() == value) {
                     return this;
@@ -97,21 +105,21 @@ public class HashTrieMultiValue<K, V>
                 newList = newList.insert(head);
             }
         }
-        newList = newList.insert(new HashTrieSingleValue<K, V>(key, value));
+        newList = newList.insert(new SingleValueLeafNode<K, V>(key, value));
         if (!found) {
             sizeDelta.add(1);
         }
-        return new HashTrieMultiValue<K, V>(newList);
+        return new MultiValueLeafNode<K, V>(newList);
     }
 
     @Override
-    public HashTrieValue<K, V> deleteValueForKey(K key,
-                                                 MutableDelta sizeDelta)
+    public LeafNode<K, V> deleteValueForKey(K key,
+                                            MutableDelta sizeDelta)
     {
         boolean found = false;
-        JImmutableLinkedStack<HashTrieSingleValue<K, V>> newList = JImmutableLinkedStack.of();
-        for (JImmutableLinkedStack<HashTrieSingleValue<K, V>> list = values; !list.isEmpty(); list = list.getTail()) {
-            final HashTrieSingleValue<K, V> entry = list.getHead();
+        JImmutableLinkedStack<SingleValueLeafNode<K, V>> newList = JImmutableLinkedStack.of();
+        for (JImmutableLinkedStack<SingleValueLeafNode<K, V>> list = nodes; !list.isEmpty(); list = list.getTail()) {
+            final SingleValueLeafNode<K, V> entry = list.getHead();
             if (entry.getKey().equals(key)) {
                 found = true;
             } else {
@@ -125,7 +133,7 @@ public class HashTrieMultiValue<K, V>
             } else if (newList.getTail().isEmpty()) {
                 return newList.getHead();
             } else {
-                return new HashTrieMultiValue<K, V>(newList);
+                return new MultiValueLeafNode<K, V>(newList);
             }
         } else {
             return this;
@@ -136,10 +144,10 @@ public class HashTrieMultiValue<K, V>
     public int size()
     {
         int total = 0;
-        JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = this.values;
-        while (!values.isEmpty()) {
+        JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes = this.nodes;
+        while (!nodes.isEmpty()) {
             total += 1;
-            values = values.getTail();
+            nodes = nodes.getTail();
         }
         return total;
     }
@@ -147,6 +155,39 @@ public class HashTrieMultiValue<K, V>
     @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return MultiTransformCursor.of(LazyCursor.of(values), HashTrieValueToEntryCursorFunc.<K, V>of());
+        return MultiTransformCursor.of(nodes.cursor(), new Func1<SingleValueLeafNode<K, V>, Cursor<JImmutableMap.Entry<K, V>>>()
+        {
+            @Override
+            public Cursor<JImmutableMap.Entry<K, V>> apply(SingleValueLeafNode<K, V> node)
+            {
+                return node.cursor();
+            }
+        });
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MultiValueLeafNode that = (MultiValueLeafNode)o;
+
+        if (nodes != null ? !nodes.equals(that.nodes) : that.nodes != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return nodes != null ? nodes.hashCode() : 0;
     }
 }

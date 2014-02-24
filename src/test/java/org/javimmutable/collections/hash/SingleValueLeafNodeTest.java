@@ -38,12 +38,12 @@ package org.javimmutable.collections.hash;
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.MutableDelta;
 
-public class HashTrieSingleValueTest
+public class SingleValueLeafNodeTest
         extends TestCase
 {
     public void testKeyMatches()
     {
-        HashTrieSingleValue<String, String> v = new HashTrieSingleValue<String, String>("a", "aa");
+        SingleValueLeafNode<String, String> v = new SingleValueLeafNode<String, String>("a", "aa");
         assertEquals(true, v.getValueForKey("a").isFilled());
         assertEquals("aa", v.getValueForKey("a").getValue());
         assertEquals("aa", v.getValueForKey("a").getValueOr("x"));
@@ -58,8 +58,8 @@ public class HashTrieSingleValueTest
         assertSame(v, v.setValueForKey("a", "aa", null));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieValue<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieSingleValue);
+        LeafNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof SingleValueLeafNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("A", nv.getValueForKey("a").getValue());
@@ -74,7 +74,7 @@ public class HashTrieSingleValueTest
 
     public void testKeyMismatches()
     {
-        HashTrieSingleValue<String, String> v = new HashTrieSingleValue<String, String>("b", "bb");
+        SingleValueLeafNode<String, String> v = new SingleValueLeafNode<String, String>("b", "bb");
         assertEquals(false, v.getValueForKey("a").isFilled());
         assertEquals("x", v.getValueForKey("a").getValueOr("x"));
         assertEquals(null, v.getValueForKey("a").getValueOrNull());
@@ -82,8 +82,8 @@ public class HashTrieSingleValueTest
         assertEquals(null, v.getEntryForKey("a"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieValue<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieMultiValue);
+        LeafNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof MultiValueLeafNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("A", nv.getValueForKey("a").getValue());

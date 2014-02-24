@@ -43,15 +43,15 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class HashTrieSingleValue<K, V>
-        implements HashTrieValue<K, V>,
-                   Holder<V>,
-                   JImmutableMap.Entry<K, V>
+public class SingleValueLeafNode<K, V>
+        implements LeafNode<K, V>,
+                   JImmutableMap.Entry<K, V>,
+                   Holder<V>
 {
     private final K key;
     private final V value;
 
-    public HashTrieSingleValue(K key,
+    public SingleValueLeafNode(K key,
                                V value)
     {
         this.key = key;
@@ -61,32 +61,32 @@ public class HashTrieSingleValue<K, V>
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        return key.equals(this.key) ? this : Holders.<V>of();
+        return this.key.equals(key) ? this : Holders.<V>of();
     }
 
     @Override
     public JImmutableMap.Entry<K, V> getEntryForKey(K key)
     {
-        return key.equals(this.key) ? this : null;
+        return this.key.equals(key) ? this : null;
     }
 
     @Override
-    public HashTrieValue<K, V> setValueForKey(K key,
-                                              V value,
-                                              MutableDelta sizeDelta)
+    public LeafNode<K, V> setValueForKey(K key,
+                                         V value,
+                                         MutableDelta sizeDelta)
     {
         if (key.equals(this.key)) {
-            return (this.value == value) ? this : new HashTrieSingleValue<K, V>(key, value);
+            return (this.value == value) ? this : new SingleValueLeafNode<K, V>(key, value);
         } else {
             sizeDelta.add(1);
-            JImmutableLinkedStack<HashTrieSingleValue<K, V>> values = JImmutableLinkedStack.of();
-            return new HashTrieMultiValue<K, V>(values.insert(this).insert(new HashTrieSingleValue<K, V>(key, value)));
+            JImmutableLinkedStack<SingleValueLeafNode<K, V>> values = JImmutableLinkedStack.of();
+            return new MultiValueLeafNode<K, V>(values.insert(this).insert(new SingleValueLeafNode<K, V>(key, value)));
         }
     }
 
     @Override
-    public HashTrieValue<K, V> deleteValueForKey(K key,
-                                                 MutableDelta sizeDelta)
+    public LeafNode<K, V> deleteValueForKey(K key,
+                                            MutableDelta sizeDelta)
     {
         if (this.key.equals(key)) {
             sizeDelta.subtract(1);
@@ -94,6 +94,12 @@ public class HashTrieSingleValue<K, V>
         } else {
             return this;
         }
+    }
+
+    @Override
+    public int size()
+    {
+        return 1;
     }
 
     @Override
@@ -133,12 +139,6 @@ public class HashTrieSingleValue<K, V>
     }
 
     @Override
-    public int size()
-    {
-        return 1;
-    }
-
-    @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
@@ -154,9 +154,9 @@ public class HashTrieSingleValue<K, V>
             return false;
         }
 
-        HashTrieSingleValue that = (HashTrieSingleValue)o;
+        SingleValueLeafNode that = (SingleValueLeafNode)o;
 
-        if (!key.equals(that.key)) {
+        if (key != null ? !key.equals(that.key) : that.key != null) {
             return false;
         }
         //noinspection RedundantIfStatement
@@ -170,7 +170,7 @@ public class HashTrieSingleValue<K, V>
     @Override
     public int hashCode()
     {
-        int result = key.hashCode();
+        int result = key != null ? key.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }

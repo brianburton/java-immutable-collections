@@ -40,10 +40,10 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -61,13 +61,13 @@ public class JImmutableInsertOrderMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTreeMap.<Integer, Object>of(), JImmutableHashMap.of(), 1);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(Trie32Array.of(), JImmutableHashMap.of(), 1);
 
-    private final JImmutableTreeMap<Integer, Node<K, V>> sortedNodes;
+    private final Trie32Array<Node<K, V>> sortedNodes;
     private final JImmutableHashMap<K, Node<K, V>> hashedNodes;
     private final int nextIndex;
 
-    private JImmutableInsertOrderMap(JImmutableTreeMap<Integer, Node<K, V>> sortedNodes,
+    private JImmutableInsertOrderMap(Trie32Array<Node<K, V>> sortedNodes,
                                      JImmutableHashMap<K, Node<K, V>> hashedNodes,
                                      int nextIndex)
     {
@@ -145,7 +145,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return TransformCursor.of(sortedNodes.valuesCursor(), new Func1<Node<K, V>, Entry<K, V>>()
+        return TransformCursor.of(sortedNodes.cursor(), new Func1<Node<K, V>, Entry<K, V>>()
         {
             @Override
             public Entry<K, V> apply(Node<K, V> node)

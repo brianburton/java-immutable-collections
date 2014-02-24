@@ -38,9 +38,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.array.trie.EmptyTrieNode;
-import org.javimmutable.collections.array.trie.StandardTrieNode;
-import org.javimmutable.collections.array.trie.TrieNode;
+import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -48,31 +46,19 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Implementation of PersistentIndexedList that uses a sparse array for its implementation.
- * Values are stored and traversed in the same order as they are added using insert().
- * Performance is slower than PersistentLinkedList so if forward order and/or random
- * access are not required using that class may be a better option.
- *
- * @param <T>
- */
 public class JImmutableArrayList<T>
         implements JImmutableList<T>
 {
-    private static final JImmutableArrayList EMPTY = new JImmutableArrayList();
+    @SuppressWarnings("unchecked")
+    private static JImmutableArrayList EMPTY = new JImmutableArrayList(Trie32Array.of(), 0, 0);
 
-    public static final int MAX_INDEXED_CONSTRUCTOR_SIZE = 32 * 32;
+    public static final int MAX_INDEXED_CONSTRUCTOR_SIZE = Trie32Array.MAX_INDEXED_CONSTRUCTOR_SIZE;
 
-    private final TrieNode<T> values;
+    private final Trie32Array<T> values;
     private final int first;
     private final int next;
 
-    private JImmutableArrayList()
-    {
-        this(EmptyTrieNode.<T>of(), 0, 0);
-    }
-
-    private JImmutableArrayList(TrieNode<T> values,
+    private JImmutableArrayList(Trie32Array<T> values,
                                 int first,
                                 int next)
     {
@@ -94,19 +80,9 @@ public class JImmutableArrayList<T>
         final int size = limit - offset;
         if (size == 0) {
             return of();
+        } else {
+            return new JImmutableArrayList<T>(Trie32Array.of(source, offset, limit), 0, size);
         }
-
-        if (size <= JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE) {
-            return new JImmutableArrayList<T>(new StandardTrieNode<T>(source, offset, limit), 0, size);
-        }
-
-        JImmutableArrayList<T> list = new JImmutableArrayList<T>(new StandardTrieNode<T>(source, offset, offset + JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE), 0, JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE);
-        offset += JImmutableArrayList.MAX_INDEXED_CONSTRUCTOR_SIZE;
-        while (offset < limit) {
-            list = list.insert(source.get(offset));
-            offset += 1;
-        }
-        return list;
     }
 
     public static <T> JImmutableArrayList<T> of(Indexed<T> source)
@@ -121,25 +97,25 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    public JImmutableList<T> assign(int index,
-                                    T value)
+    public JImmutableArrayList<T> assign(int index,
+                                         T value)
     {
         final int realIndex = calcRealIndex(index);
-        return new JImmutableArrayList<T>(values.assign(realIndex >>> 5, realIndex & 0x1f, value), first, next);
+        return new JImmutableArrayList<T>(values.assign(realIndex, value), first, next);
     }
 
     @Override
     public JImmutableArrayList<T> insert(T value)
     {
         final int index = next;
-        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), first, index + 1);
+        return new JImmutableArrayList<T>(values.assign(index, value), first, index + 1);
     }
 
     @Override
     public JImmutableArrayList<T> insertFirst(T value)
     {
         final int index = first - 1;
-        return new JImmutableArrayList<T>(values.assign(index >>> 5, index & 0x1f, value), index, next);
+        return new JImmutableArrayList<T>(values.assign(index, value), index, next);
     }
 
     @Override
@@ -155,7 +131,7 @@ public class JImmutableArrayList<T>
             throw new IndexOutOfBoundsException();
         }
         final int index = first;
-        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first + 1, next);
+        return new JImmutableArrayList<T>(values.delete(index), first + 1, next);
     }
 
     @Override
@@ -165,7 +141,7 @@ public class JImmutableArrayList<T>
             throw new IndexOutOfBoundsException();
         }
         final int index = next - 1;
-        return new JImmutableArrayList<T>(values.delete(index >>> 5, index & 0x1f), first, index);
+        return new JImmutableArrayList<T>(values.delete(index), first, index);
     }
 
     @Override
@@ -184,7 +160,7 @@ public class JImmutableArrayList<T>
     public T get(int index)
     {
         final int realIndex = calcRealIndex(index);
-        return values.get(realIndex >>> 5, realIndex & 0x1f).getValue();
+        return values.get(realIndex);
     }
 
     @Override
@@ -256,7 +232,7 @@ public class JImmutableArrayList<T>
         @Override
         public T currentValue()
         {
-            return values.get(realIndex >>> 5, realIndex & 0x1f).getValue();
+            return values.get(realIndex);
         }
 
         @Override

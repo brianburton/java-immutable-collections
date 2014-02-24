@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.JImmutableMap;
-
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -122,16 +120,6 @@ public class TimingComparison
         }
         long endPer = System.currentTimeMillis();
         System.out.printf("phm adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endPer - startPer));
-        dumpNodes(map);
         System.gc();
-    }
-
-    private static void dumpNodes(JImmutableHashMap<Integer, Integer> map)
-    {
-        JImmutableMap<Class, Integer> counts = JImmutableHashMap.of();
-        counts = map.getNodeTypeCounts(counts);
-        for (JImmutableMap.Entry<Class, Integer> count : counts) {
-            System.out.printf("%s: %d%n", count.getKey(), count.getValue());
-        }
     }
 }

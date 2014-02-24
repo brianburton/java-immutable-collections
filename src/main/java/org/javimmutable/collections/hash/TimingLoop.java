@@ -70,6 +70,5 @@ public class TimingLoop
         }
         long endPer = System.currentTimeMillis();
         System.out.printf("phm adds %d removes %d gets %d elapsed %d%n", adds, removes, gets, (endPer - startPer));
-        Thread.sleep(180000L);
     }
 }

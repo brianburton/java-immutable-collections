@@ -41,15 +41,15 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class HashTrieMultiValueTest
+public class MultiValueLeafNodeTest
         extends TestCase
 {
     public void testKeyMatches()
     {
-        HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
-        HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
-        HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(JImmutableLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
+        SingleValueLeafNode<String, String> a = new SingleValueLeafNode<String, String>("a", "aa");
+        SingleValueLeafNode<String, String> b = new SingleValueLeafNode<String, String>("b", "bb");
+        SingleValueLeafNode<String, String> c = new SingleValueLeafNode<String, String>("c", "cc");
+        MultiValueLeafNode<String, String> v = new MultiValueLeafNode<String, String>(JImmutableLinkedStack.<SingleValueLeafNode<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(true, v.getValueForKey("a").isFilled());
@@ -65,9 +65,9 @@ public class HashTrieMultiValueTest
         assertSame(c, v.getEntryForKey("c"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieValue<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieMultiValue);
-        assertEquals(true, nv.getEntryForKey("a") instanceof HashTrieSingleValue);
+        LeafNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof MultiValueLeafNode);
+        assertEquals(true, nv.getEntryForKey("a") instanceof SingleValueLeafNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("A", nv.getValueForKey("a").getValue());
@@ -86,7 +86,7 @@ public class HashTrieMultiValueTest
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieMultiValue);
+        assertEquals(true, nv instanceof MultiValueLeafNode);
         assertEquals(-1, sizeDelta.getValue());
         assertEquals(null, nv.getEntryForKey("a"));
         assertEquals(false, nv.getValueForKey("a").isFilled());
@@ -100,7 +100,7 @@ public class HashTrieMultiValueTest
 
         sizeDelta = new MutableDelta();
         nv = nv.deleteValueForKey("b", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieSingleValue);
+        assertEquals(true, nv instanceof SingleValueLeafNode);
         assertEquals(-1, sizeDelta.getValue());
         assertEquals(null, nv.getEntryForKey("a"));
         assertEquals(false, nv.getValueForKey("a").isFilled());
@@ -134,19 +134,19 @@ public class HashTrieMultiValueTest
 
     public void testKeyMismatches()
     {
-        HashTrieSingleValue<String, String> a = new HashTrieSingleValue<String, String>("a", "aa");
-        HashTrieSingleValue<String, String> b = new HashTrieSingleValue<String, String>("b", "bb");
-        HashTrieSingleValue<String, String> c = new HashTrieSingleValue<String, String>("c", "cc");
-        HashTrieMultiValue<String, String> v = new HashTrieMultiValue<String, String>(JImmutableLinkedStack.<HashTrieSingleValue<String, String>>of(a).insert(b).insert(c));
+        SingleValueLeafNode<String, String> a = new SingleValueLeafNode<String, String>("a", "aa");
+        SingleValueLeafNode<String, String> b = new SingleValueLeafNode<String, String>("b", "bb");
+        SingleValueLeafNode<String, String> c = new SingleValueLeafNode<String, String>("c", "cc");
+        MultiValueLeafNode<String, String> v = new MultiValueLeafNode<String, String>(JImmutableLinkedStack.<SingleValueLeafNode<String, String>>of(a).insert(b).insert(c));
         assertEquals(3, v.size());
 
         assertEquals(false, v.getValueForKey("d").isFilled());
         assertSame(null, v.getEntryForKey("d"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashTrieValue<String, String> nv = v.setValueForKey("d", "dd", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieMultiValue);
-        assertEquals(true, nv.getEntryForKey("d") instanceof HashTrieSingleValue);
+        LeafNode<String, String> nv = v.setValueForKey("d", "dd", sizeDelta);
+        assertEquals(true, nv instanceof MultiValueLeafNode);
+        assertEquals(true, nv.getEntryForKey("d") instanceof SingleValueLeafNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("d").isFilled());
         assertEquals("dd", nv.getValueForKey("d").getValue());
@@ -182,7 +182,7 @@ public class HashTrieMultiValueTest
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("d", sizeDelta);
-        assertEquals(true, nv instanceof HashTrieMultiValue);
+        assertEquals(true, nv instanceof MultiValueLeafNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("aa", nv.getValueForKey("a").getValue());

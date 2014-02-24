@@ -35,11 +35,13 @@
 
 package org.javimmutable.collections.array.bit32;
 
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
+import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.Iterator;
 
@@ -97,6 +99,11 @@ public abstract class Bit32Array<T>
     public abstract int size();
 
     public abstract int firstIndex();
+
+    public Cursor<T> valuesCursor()
+    {
+        return TransformCursor.ofValues(cursor());
+    }
 
     @Override
     public Iterator<JImmutableMap.Entry<Integer, T>> iterator()

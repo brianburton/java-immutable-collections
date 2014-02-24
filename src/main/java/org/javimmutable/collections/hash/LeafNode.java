@@ -35,24 +35,24 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.MutableDelta;
 
-class HashTrieValueToEntryCursorFunc<K, V>
-        implements Func1<HashTrieSingleValue<K, V>, Cursor<JImmutableMap.Entry<K, V>>>
+public interface LeafNode<K, V>
+        extends Cursorable<JImmutableMap.Entry<K, V>>
 {
-    private static final HashTrieValueToEntryCursorFunc INSTANCE = new HashTrieValueToEntryCursorFunc();
+    Holder<V> getValueForKey(K key);
 
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> apply(HashTrieSingleValue<K, V> node)
-    {
-        return node.cursor();
-    }
+    JImmutableMap.Entry<K, V> getEntryForKey(K key);
 
-    @SuppressWarnings("unchecked")
-    public static <K, V> HashTrieValueToEntryCursorFunc<K, V> of()
-    {
-        return (HashTrieValueToEntryCursorFunc<K, V>)INSTANCE;
-    }
+    LeafNode<K, V> setValueForKey(K key,
+                                  V value,
+                                  MutableDelta sizeDelta);
+
+    LeafNode<K, V> deleteValueForKey(K key,
+                                     MutableDelta sizeDelta);
+
+    int size();
 }
