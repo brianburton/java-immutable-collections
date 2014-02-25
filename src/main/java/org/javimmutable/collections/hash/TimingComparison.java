@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.JImmutableArray;
+import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Map;
@@ -55,47 +57,50 @@ public class TimingComparison
         final int loops = Integer.valueOf(argv[1]);
 
         final int maxValue = 10 * loops;
-        final int maxKey = 999999999;
-        final int maxCommand = 6;
+        final int maxKey = 10000;
+        final int maxCommand = 10;
 
-        MutableDelta mapElapsed = new MutableDelta();
-        MutableDelta perElapsed = new MutableDelta();
+        MutableDelta javaElapsed = new MutableDelta();
+        MutableDelta hashElapsed = new MutableDelta();
+        MutableDelta arrayElapsed = new MutableDelta();
         System.out.println("warm up runs");
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
         System.out.println();
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, mapElapsed, perElapsed);
+            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaElapsed, hashElapsed, arrayElapsed);
             System.out.println();
         }
-        System.out.printf("Map avg: %.1f  phm avg: %.1f%n", mapElapsed.getValue() / 25.0, perElapsed.getValue() / 25.0);
+        System.out.printf("java avg: %.1f  hash avg: %.1f  array avg: %.1f%n", javaElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0);
     }
 
+    @SuppressWarnings("UnusedAssignment")
     private static void runLoop(int seed,
                                 int loops,
                                 int maxValue,
                                 int maxKey,
                                 int maxCommand,
-                                MutableDelta mapElapsed,
-                                MutableDelta perElapsed)
+                                MutableDelta javaElapsed,
+                                MutableDelta hashElapsed,
+                                MutableDelta arrayElapsed)
     {
         Random random = new Random(seed);
         int adds = 0;
         int removes = 0;
         int gets = 0;
-        long startMap = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
         Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
-            if (command <= 1) {
+            if (command <= 2) {
                 Integer key = random.nextInt(maxKey);
                 Integer value = random.nextInt(maxValue);
                 expected.put(key, value);
                 adds += 1;
-            } else if (command == 2) {
+            } else if (command == 3) {
                 Integer key = random.nextInt(maxKey);
                 expected.remove(key);
                 removes += 1;
@@ -105,25 +110,26 @@ public class TimingComparison
                 gets += 1;
             }
         }
-        long endMap = System.currentTimeMillis();
-        mapElapsed.add((int)(endMap - startMap));
-        System.out.printf("map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMap - startMap));
+        long endMillis = System.currentTimeMillis();
+        javaElapsed.add((int)(endMillis - startMillis));
+        System.out.printf("java map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
+        expected = null;
         System.gc();
 
         random = new Random(seed);
         adds = 0;
         removes = 0;
         gets = 0;
-        long startPer = System.currentTimeMillis();
+        startMillis = System.currentTimeMillis();
         JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
-            if (command <= 1) {
+            if (command <= 2) {
                 Integer key = random.nextInt(maxKey);
                 Integer value = random.nextInt(maxValue);
                 map = map.assign(key, value);
                 adds += 1;
-            } else if (command == 2) {
+            } else if (command == 3) {
                 Integer key = random.nextInt(maxKey);
                 map = map.delete(key);
                 removes += 1;
@@ -133,9 +139,39 @@ public class TimingComparison
                 gets += 1;
             }
         }
-        long endPer = System.currentTimeMillis();
-        perElapsed.add((int)(endPer - startPer));
-        System.out.printf("phm adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endPer - startPer));
+        endMillis = System.currentTimeMillis();
+        hashElapsed.add((int)(endMillis - startMillis));
+        System.out.printf("jimm map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        map = null;
+        System.gc();
+
+        random = new Random(seed);
+        adds = 0;
+        removes = 0;
+        gets = 0;
+        startMillis = System.currentTimeMillis();
+        JImmutableArray<Integer> array = Trie32Array.of();
+        for (int i = 1; i <= loops; ++i) {
+            int command = random.nextInt(maxCommand);
+            if (command <= 2) {
+                Integer key = random.nextInt(maxKey);
+                Integer value = random.nextInt(maxValue);
+                array = array.assign(key, value);
+                adds += 1;
+            } else if (command == 3) {
+                Integer key = random.nextInt(maxKey);
+                array = array.delete(key);
+                removes += 1;
+            } else {
+                Integer key = random.nextInt(maxKey);
+                array.find(key);
+                gets += 1;
+            }
+        }
+        endMillis = System.currentTimeMillis();
+        arrayElapsed.add((int)(endMillis - startMillis));
+        System.out.printf("jimm ary adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, array.size(), (endMillis - startMillis));
+        array = null;
         System.gc();
     }
 }

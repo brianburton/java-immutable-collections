@@ -12,6 +12,14 @@ import java.util.List;
 public class Trie32ArrayTest
         extends TestCase
 {
+    public void testShift()
+    {
+        int shift = 0;
+        assertEquals(0xff00, (0xff00 >>> shift));
+        shift = 4;
+        assertEquals(0x0ff0, (0xff00 >>> shift));
+    }
+
     public void testCursor()
     {
         Trie32Array<Integer> array = Trie32Array.of();

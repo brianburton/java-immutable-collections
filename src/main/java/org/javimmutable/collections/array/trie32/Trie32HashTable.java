@@ -190,13 +190,12 @@ public class Trie32HashTable<K, V>
                                 int index,
                                 int shift)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
             // child contains key/value pairs
-            final int childIndex = index & 0x1f;
             return array.find(childIndex);
         } else {
             // child contains next level of arrays
-            final int childIndex = (index >>> shift) & 0x1f;
             final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
         }
@@ -210,14 +209,13 @@ public class Trie32HashTable<K, V>
                                       V value,
                                       MutableDelta delta)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
             // child contains key/value pairs
-            final int childIndex = index & 0x1f;
             final Bit32Array<Object> newArray = array.assign(childIndex, transforms.updater.apply(array.find(childIndex), key, value, delta));
             return (newArray == array) ? array : newArray;
         } else {
             // child contains next level of arrays
-            final int childIndex = (index >>> shift) & 0x1f;
             final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, key, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
@@ -231,9 +229,9 @@ public class Trie32HashTable<K, V>
                                       K key,
                                       MutableDelta delta)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
             // child contains key/value pairs
-            final int childIndex = index & 0x1f;
             final Holder<Object> oldLeaf = array.find(childIndex);
             if (oldLeaf.isEmpty()) {
                 return array;
@@ -244,19 +242,14 @@ public class Trie32HashTable<K, V>
             }
         } else {
             // child contains next level of arrays
-            final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(null);
-            if (oldChildArray == null) {
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, key, delta);
+            if (oldChildArray == newChildArray) {
                 return array;
+            } else if (newChildArray.size() == 0) {
+                return array.delete(childIndex);
             } else {
-                final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, key, delta);
-                if (oldChildArray == newChildArray) {
-                    return array;
-                } else if (newChildArray.size() == 0) {
-                    return array.delete(childIndex);
-                } else {
-                    return array.assign(childIndex, newChildArray);
-                }
+                return array.assign(childIndex, newChildArray);
             }
         }
     }

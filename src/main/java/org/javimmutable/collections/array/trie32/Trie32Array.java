@@ -38,7 +38,6 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
@@ -194,17 +193,12 @@ public class Trie32Array<T>
                               int index,
                               int shift)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
-            final int childIndex = index & 0x1f;
             return (Holder<T>)array.find(childIndex);
         } else {
-            final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOrNull();
-            if (childArray != null) {
-                return find(childArray, index, shift - 5);
-            } else {
-                return Holders.of();
-            }
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            return find(childArray, index, shift - 5);
         }
     }
 
@@ -215,13 +209,12 @@ public class Trie32Array<T>
                                          T value,
                                          MutableDelta delta)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
-            final int childIndex = index & 0x1f;
             Bit32Array<Object> newArray = array.assign(childIndex, value);
             delta.add(newArray.size() - array.size());
             return newArray;
         } else {
-            final int childIndex = (index >>> shift) & 0x1f;
             final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
@@ -234,25 +227,20 @@ public class Trie32Array<T>
                                      int shift,
                                      MutableDelta delta)
     {
+        final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
-            final int childIndex = index & 0x1f;
             Bit32Array<Object> newArray = array.delete(childIndex);
             delta.add(newArray.size() - array.size());
             return newArray;
         } else {
-            final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(null);
-            if (oldChildArray == null) {
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, delta);
+            if (oldChildArray == newChildArray) {
                 return array;
+            } else if (newChildArray.size() == 0) {
+                return array.delete(childIndex);
             } else {
-                final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, delta);
-                if (oldChildArray == newChildArray) {
-                    return array;
-                } else if (newChildArray.size() == 0) {
-                    return array.delete(childIndex);
-                } else {
-                    return array.assign(childIndex, newChildArray);
-                }
+                return array.assign(childIndex, newChildArray);
             }
         }
     }
