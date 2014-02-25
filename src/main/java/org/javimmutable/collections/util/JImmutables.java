@@ -35,15 +35,8 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
@@ -537,5 +530,84 @@ public final class JImmutables
     public static <K, V> JImmutableListMap<K, V> sortedListMap(Comparator<K> comparator)
     {
         return JImmutableTreeListMap.of(comparator);
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array()
+    {
+        return Trie32Array.of();
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Copies all values into the array starting at index zero.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array(T... values)
+    {
+        return Trie32Array.of(IndexedArray.retained(values));
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Copies all entries into the array using each key as an index for storing the corresponding value.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array(Cursor<JImmutableMap.Entry<Integer, T>> cursor)
+    {
+        return Functions.insertAll(Trie32Array.<T>of(), cursor);
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Copies all values into the array starting at index zero.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array(Indexed<T> cursorable)
+    {
+        return array(cursorable, 0, cursorable.size());
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Copies all values into the array starting at index zero.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array(Indexed<T> cursorable,
+                                               int offset,
+                                               int limit)
+    {
+        return Trie32Array.of(cursorable, offset, limit);
+    }
+
+    /**
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
+     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Copies all values into the array starting at index zero.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableArray<T> array(List<T> collection)
+    {
+        return Trie32Array.of(IndexedList.retained(collection));
     }
 }

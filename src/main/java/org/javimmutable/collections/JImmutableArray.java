@@ -3,7 +3,9 @@ package org.javimmutable.collections;
 import java.util.Map;
 
 /**
- * Similar to JImmutableMap but uses native ints in place of Integers as keys.
+ * A sparse array implementation using integers as keys.  Keys are traversed in signed integer
+ * order by Cursors so negative values are visited before positive values.  Implementations
+ * are allowed to restrict the range of allowable indexes for performance or other reasons.
  */
 public interface JImmutableArray<T>
         extends Indexed<T>,
