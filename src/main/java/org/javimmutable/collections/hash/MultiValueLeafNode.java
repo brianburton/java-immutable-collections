@@ -69,7 +69,7 @@ public class MultiValueLeafNode<K, V>
         final JImmutableLinkedStack<SingleValueLeafNode<K, V>> nodes = this.nodes;
         for (JImmutableLinkedStack<SingleValueLeafNode<K, V>> list = nodes; !list.isEmpty(); list = list.getTail()) {
             if (list.getHead().getKey().equals(key)) {
-                return Holders.of(list.getHead().getValue());
+                return list.getHead();
             }
         }
         return Holders.of();
