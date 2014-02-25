@@ -174,7 +174,17 @@ public class Trie32Array<T>
         if (root.size() == 0) {
             return StandardCursor.of();
         } else {
-            return MultiTransformCursor.of(StandardCursor.of(new SignedOrderRootEntryCursor()), new EntryCursorTransforminator(30, 0));
+            return MultiTransformCursor.of(StandardCursor.of(new RootEntryCursor()), new EntryCursorTransforminator(30, 0));
+        }
+    }
+
+    @Override
+    public Cursor<T> valuesCursor()
+    {
+        if (root.size() == 0) {
+            return StandardCursor.of();
+        } else {
+            return MultiTransformCursor.of(StandardCursor.of(new RootValueCursor()), new ValueCursorTransforminator(30));
         }
     }
 
@@ -281,17 +291,52 @@ public class Trie32Array<T>
         }
     }
 
-    private class SignedOrderRootEntryCursor
-            implements StandardCursor.Source<JImmutableMap.Entry<Integer, Object>>
+    private class RootValueCursor
+            implements StandardCursor.Source<Object>
     {
         private final int index;
 
-        private SignedOrderRootEntryCursor()
+        private RootValueCursor()
         {
             this(firstFilledIndex(root, 2));
         }
 
-        private SignedOrderRootEntryCursor(int index)
+        private RootValueCursor(int index)
+        {
+            this.index = index;
+        }
+
+        @Override
+        public boolean atEnd()
+        {
+            return index < 0;
+        }
+
+        @Override
+        public Object currentValue()
+        {
+            return root.get(index);
+        }
+
+        @Override
+        public StandardCursor.Source<Object> advance()
+        {
+            int newIndex = firstFilledIndex(root, nextIndex(index));
+            return new RootValueCursor(newIndex);
+        }
+    }
+
+    private class RootEntryCursor
+            implements StandardCursor.Source<JImmutableMap.Entry<Integer, Object>>
+    {
+        private final int index;
+
+        private RootEntryCursor()
+        {
+            this(firstFilledIndex(root, 2));
+        }
+
+        private RootEntryCursor(int index)
         {
             this.index = index;
         }
@@ -312,7 +357,37 @@ public class Trie32Array<T>
         public StandardCursor.Source<JImmutableMap.Entry<Integer, Object>> advance()
         {
             int newIndex = firstFilledIndex(root, nextIndex(index));
-            return new SignedOrderRootEntryCursor(newIndex);
+            return new RootEntryCursor(newIndex);
+        }
+    }
+
+    /**
+     * Transforminator (BEHOLD!!) that takes a Cursor of array (if shift > 0) or leaf (if shift == 0)
+     * objects and returns a Cursor of the values stored in the children (if shift > 0)
+     * or in the leaves (if shift == 0).
+     */
+    private class ValueCursorTransforminator
+            implements Func1<Object, Cursor<T>>
+    {
+        private final int shift;
+
+        private ValueCursorTransforminator(int shift)
+        {
+            this.shift = shift;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Cursor<T> apply(Object arrayValue)
+        {
+            if (shift > 0) {
+                // the internal arrays contain other arrays as values
+                Bit32Array<Object> array = (Bit32Array<Object>)arrayValue;
+                return MultiTransformCursor.of(array.valuesCursor(), new ValueCursorTransforminator(shift - 5));
+            } else {
+                // the leaf arrays contain value objects as values
+                return SingleValueCursor.of((T)arrayValue);
+            }
         }
     }
 
