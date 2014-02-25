@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.common.MutableDelta;
+
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -56,17 +58,29 @@ public class TimingComparison
         final int maxKey = 999999999;
         final int maxCommand = 6;
 
+        MutableDelta mapElapsed = new MutableDelta();
+        MutableDelta perElapsed = new MutableDelta();
+        System.out.println("warm up runs");
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta());
+        System.out.println();
+        System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand);
+            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, mapElapsed, perElapsed);
             System.out.println();
         }
+        System.out.printf("Map avg: %.1f  phm avg: %.1f%n", mapElapsed.getValue() / 25.0, perElapsed.getValue() / 25.0);
     }
 
     private static void runLoop(int seed,
                                 int loops,
                                 int maxValue,
                                 int maxKey,
-                                int maxCommand)
+                                int maxCommand,
+                                MutableDelta mapElapsed,
+                                MutableDelta perElapsed)
     {
         Random random = new Random(seed);
         int adds = 0;
@@ -92,6 +106,7 @@ public class TimingComparison
             }
         }
         long endMap = System.currentTimeMillis();
+        mapElapsed.add((int)(endMap - startMap));
         System.out.printf("map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMap - startMap));
         System.gc();
 
@@ -119,6 +134,7 @@ public class TimingComparison
             }
         }
         long endPer = System.currentTimeMillis();
+        perElapsed.add((int)(endPer - startPer));
         System.out.printf("phm adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endPer - startPer));
         System.gc();
     }
