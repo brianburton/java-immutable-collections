@@ -38,6 +38,7 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
@@ -198,8 +199,12 @@ public class Trie32Array<T>
             return (Holder<T>)array.find(childIndex);
         } else {
             final int childIndex = (index >>> shift) & 0x1f;
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
-            return find(childArray, index, shift - 5);
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOrNull();
+            if (childArray != null) {
+                return find(childArray, index, shift - 5);
+            } else {
+                return Holders.of();
+            }
         }
     }
 
