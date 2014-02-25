@@ -43,24 +43,23 @@ import org.javimmutable.collections.cursors.SingleValueCursor;
 
 public class SingleBit32Array<T>
         extends Bit32Array<T>
-        implements JImmutableMap.Entry<Integer, T>,
-                   Holder<T>
+        implements JImmutableMap.Entry<Integer, T>
 {
     private final int index;
-    private final T value;
+    private final Holder<T> value;
 
     public SingleBit32Array(int index,
                             T value)
     {
         this.index = index;
-        this.value = value;
+        this.value = Holders.of(value);
     }
 
     @Override
     public Holder<T> find(int index)
     {
         checkIndex(index);
-        return this.index == index ? this : Holders.<T>of();
+        return this.index == index ? value : Holders.<T>of();
     }
 
     @Override
@@ -69,9 +68,9 @@ public class SingleBit32Array<T>
     {
         checkIndex(index);
         if (this.index == index) {
-            return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
+            return (this.value.getValue() != value) ? new SingleBit32Array<T>(index, value) : this;
         } else {
-            return new StandardBit32Array<T>(this.index, this.value, index, value);
+            return new StandardBit32Array<T>(this.index, this.value, index, Holders.of(value));
         }
     }
 
@@ -103,31 +102,13 @@ public class SingleBit32Array<T>
     @Override
     public T getValue()
     {
-        return value;
+        return value.getValue();
     }
 
     @Override
     public boolean isEmpty()
     {
         return false;
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    @Override
-    public T getValueOrNull()
-    {
-        return value;
-    }
-
-    @Override
-    public T getValueOr(T defaultValue)
-    {
-        return value;
     }
 
     @Override

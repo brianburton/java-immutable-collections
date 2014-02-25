@@ -104,19 +104,13 @@ public class StandardBit32Array<T>
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(int index1,
-                       T value1,
+                       Holder<T> value1,
                        int index2,
-                       T value2)
+                       Holder<T> value2)
     {
         assert index1 != index2;
-        final int bit1 = 1 << index1;
-        final int bit2 = 1 << index2;
-        final int bitmask = bit1 | bit2;
-        final Holder<T>[] entries = (Holder<T>[])new Holder[2];
-        entries[realIndex(bitmask, bit1)] = Holders.of(value1);
-        entries[realIndex(bitmask, bit2)] = Holders.of(value2);
-        this.bitmask = bit1 | bit2;
-        this.entries = entries;
+        bitmask = (1 << index1) | (1 << index2);
+        entries = index1 > index2 ? new Holder[]{value2, value1} : new Holder[]{value1, value2};
     }
 
     public Holder<T> find(int index)

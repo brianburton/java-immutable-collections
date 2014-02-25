@@ -57,7 +57,7 @@ public class TimingComparison
         final int loops = Integer.valueOf(argv[1]);
 
         final int maxValue = 10 * loops;
-        final int maxKey = 10000;
+        final int maxKey = loops / 3;
         final int maxCommand = 10;
 
         MutableDelta javaElapsed = new MutableDelta();
