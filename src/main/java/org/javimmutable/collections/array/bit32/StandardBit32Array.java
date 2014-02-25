@@ -93,6 +93,32 @@ public class StandardBit32Array<T>
         }
     }
 
+    /**
+     * Constructor for efficiently creating a new instance with exactly two values.
+     * index1 and index2 must not be equal.
+     *
+     * @param index1
+     * @param value1
+     * @param index2
+     * @param value2
+     */
+    @SuppressWarnings("unchecked")
+    StandardBit32Array(int index1,
+                       T value1,
+                       int index2,
+                       T value2)
+    {
+        assert index1 != index2;
+        final int bit1 = 1 << index1;
+        final int bit2 = 1 << index2;
+        final int bitmask = bit1 | bit2;
+        final Holder<T>[] entries = (Holder<T>[])new Holder[2];
+        entries[realIndex(bitmask, bit1)] = Holders.of(value1);
+        entries[realIndex(bitmask, bit2)] = Holders.of(value2);
+        this.bitmask = bit1 | bit2;
+        this.entries = entries;
+    }
+
     public Holder<T> find(int index)
     {
         checkIndex(index);

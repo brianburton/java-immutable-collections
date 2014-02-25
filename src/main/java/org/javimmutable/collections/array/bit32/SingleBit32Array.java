@@ -71,7 +71,7 @@ public class SingleBit32Array<T>
         if (this.index == index) {
             return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
         } else {
-            return new StandardBit32Array<T>().assign(this.index, this.value).assign(index, value);
+            return new StandardBit32Array<T>(this.index, this.value, index, value);
         }
     }
 
