@@ -37,6 +37,7 @@ package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IndexedArray;
@@ -266,6 +267,54 @@ public class StandardBit32ArrayTest
                         assertEquals(Holders.<Integer>of(), barray.find(i));
                     }
                 }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testFullWithout()
+    {
+        for (int i = 0; i < 32; ++i) {
+            Holder<Integer>[] entries = (Holder<Integer>[])new Holder[32];
+            for (int k = 0; k < 32; ++k) {
+                entries[k] = Holders.of(k);
+            }
+            StandardBit32Array<Integer> std = StandardBit32Array.fullWithout(entries, i);
+            assertEquals(31, std.size());
+            for (int k = 0; k < 32; ++k) {
+                if (k == i) {
+                    assertEquals(true, std.find(k).isEmpty());
+                } else {
+                    assertEquals((Integer)k, std.find(k).getValue());
+                }
+            }
+        }
+    }
+
+    public void testBecomeFull()
+    {
+        for (int i = 0; i < 32; ++i) {
+            Bit32Array<Integer> std = new StandardBit32Array<Integer>();
+            for (int k = 0; k < 32; ++k) {
+                if (k != i) {
+                    std = std.assign(k, k);
+                    assertTrue(std instanceof StandardBit32Array);
+                }
+            }
+            assertEquals(31, std.size());
+            for (int k = 0; k < 32; ++k) {
+                if (k == i) {
+                    assertEquals(true, std.find(k).isEmpty());
+                } else {
+                    assertEquals((Integer)k, std.find(k).getValue());
+                    assertSame(std, std.assign(k, k));
+                }
+            }
+            Bit32Array<Integer> full = std.assign(i, i);
+            assertTrue(full instanceof FullBit32Array);
+            assertEquals(32, full.size());
+            for (int k = 0; k < 32; ++k) {
+                assertEquals((Integer)k, full.find(k).getValue());
             }
         }
     }

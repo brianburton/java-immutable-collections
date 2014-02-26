@@ -113,6 +113,15 @@ public class StandardBit32Array<T>
         entries = index1 > index2 ? new Holder[]{value2, value1} : new Holder[]{value1, value2};
     }
 
+    static <T> StandardBit32Array<T> fullWithout(Holder<T>[] entries,
+                                                 int withoutIndex)
+    {
+        assert entries.length == 32;
+        final Holder<T>[] newEntries = copyToSmallerArray(entries, withoutIndex);
+        final int newMask = ~(1 << withoutIndex);
+        return new StandardBit32Array<T>(newMask, newEntries);
+    }
+
     public Holder<T> find(int index)
     {
         checkIndex(index);
@@ -136,7 +145,11 @@ public class StandardBit32Array<T>
         if ((bitmask & bit) == 0) {
             final Holder<T>[] newEntries = copyToLargerArray(entries, arrayIndex);
             newEntries[arrayIndex] = Holders.of(value);
-            return new StandardBit32Array<T>(bitmask | bit, newEntries);
+            if (newEntries.length == 32) {
+                return new FullBit32Array<T>(newEntries);
+            } else {
+                return new StandardBit32Array<T>(bitmask | bit, newEntries);
+            }
         } else if (entries[arrayIndex].getValueOrNull() == value) {
             return this;
         } else {
