@@ -37,7 +37,6 @@ package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IndexedArray;
@@ -275,9 +274,9 @@ public class StandardBit32ArrayTest
     public void testFullWithout()
     {
         for (int i = 0; i < 32; ++i) {
-            Holder<Integer>[] entries = (Holder<Integer>[])new Holder[32];
+            Object[] entries = new Object[32];
             for (int k = 0; k < 32; ++k) {
-                entries[k] = Holders.of(k);
+                entries[k] = k;
             }
             StandardBit32Array<Integer> std = StandardBit32Array.fullWithout(entries, i);
             assertEquals(31, std.size());

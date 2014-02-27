@@ -45,24 +45,25 @@ import org.javimmutable.collections.cursors.StandardCursor;
 public class FullBit32Array<T>
         extends Bit32Array<T>
 {
-    private final Holder<T>[] entries;
+    private final T[] entries;
 
-    FullBit32Array(Holder<T>[] entries)
+    @SuppressWarnings("unchecked")
+    FullBit32Array(Object[] entries)
     {
         assert entries.length == 32;
-        this.entries = entries;
+        this.entries = (T[])entries;
     }
 
     @Override
     public Bit32Array<T> assign(int key,
                                 T value)
     {
-        Holder<T> current = entries[key];
-        if (current.getValue() == value) {
+        T current = entries[key];
+        if (current == value) {
             return this;
         } else {
-            Holder<T>[] newEntries = entries.clone();
-            newEntries[key] = Holders.of(value);
+            T[] newEntries = entries.clone();
+            newEntries[key] = value;
             return new FullBit32Array<T>(newEntries);
         }
     }
@@ -80,9 +81,16 @@ public class FullBit32Array<T>
     }
 
     @Override
-    public Holder<T> find(int index)
+    public T getValueOr(int index,
+                        T defaultValue)
     {
         return entries[index];
+    }
+
+    @Override
+    public Holder<T> find(int index)
+    {
+        return Holders.of(entries[index]);
     }
 
     @Override
@@ -116,7 +124,7 @@ public class FullBit32Array<T>
         @Override
         public JImmutableMap.Entry<Integer, T> currentValue()
         {
-            return MapEntry.of(index, entries[index].getValue());
+            return MapEntry.of(index, entries[index]);
         }
 
         @Override

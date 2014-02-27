@@ -47,10 +47,10 @@ public class StandardBit32Array<T>
         extends Bit32Array<T>
 {
     private final int bitmask;
-    private final Holder<T>[] entries;
+    private final T[] entries;
 
     private StandardBit32Array(int bitmask,
-                               Holder<T>[] entries)
+                               T[] entries)
     {
         this.bitmask = bitmask;
         this.entries = entries;
@@ -59,7 +59,7 @@ public class StandardBit32Array<T>
     @SuppressWarnings("unchecked")
     StandardBit32Array()
     {
-        this(0, new Holder[0]);
+        this(0, (T[])new Object[0]);
     }
 
     /**
@@ -80,9 +80,9 @@ public class StandardBit32Array<T>
         if (size < 0 || size > (32 - startIndex)) {
             throw new IllegalArgumentException("invalid size " + size);
         } else {
-            final Holder<T>[] entries = (Holder<T>[])new Holder[size];
+            final T[] entries = (T[])new Object[size];
             for (int i = 0; i < size; ++i) {
-                entries[i] = Holders.of(source.get(offset + i));
+                entries[i] = source.get(offset + i);
             }
             if (size == 32) {
                 this.bitmask = -1;
@@ -104,22 +104,37 @@ public class StandardBit32Array<T>
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(int index1,
-                       Holder<T> value1,
+                       T value1,
                        int index2,
-                       Holder<T> value2)
+                       T value2)
     {
         assert index1 != index2;
         bitmask = (1 << index1) | (1 << index2);
-        entries = index1 > index2 ? new Holder[]{value2, value1} : new Holder[]{value1, value2};
+        entries = (T[])(index1 > index2 ? new Object[]{value2, value1} : new Object[]{value1, value2});
     }
 
-    static <T> StandardBit32Array<T> fullWithout(Holder<T>[] entries,
+    @SuppressWarnings("unchecked")
+    static <T> StandardBit32Array<T> fullWithout(Object[] entries,
                                                  int withoutIndex)
     {
         assert entries.length == 32;
-        final Holder<T>[] newEntries = copyToSmallerArray(entries, withoutIndex);
+        final T[] newEntries = copyToSmallerArray((T[])entries, withoutIndex);
         final int newMask = ~(1 << withoutIndex);
         return new StandardBit32Array<T>(newMask, newEntries);
+    }
+
+    @Override
+    public T getValueOr(int index,
+                        T defaultValue)
+    {
+        checkIndex(index);
+        final int bit = 1 << index;
+        final int bitmask = this.bitmask;
+        if ((bitmask & bit) == 0) {
+            return defaultValue;
+        } else {
+            return entries[realIndex(bitmask, bit)];
+        }
     }
 
     public Holder<T> find(int index)
@@ -130,7 +145,7 @@ public class StandardBit32Array<T>
         if ((bitmask & bit) == 0) {
             return Holders.of();
         } else {
-            return entries[realIndex(bitmask, bit)];
+            return Holders.of(entries[realIndex(bitmask, bit)]);
         }
     }
 
@@ -141,20 +156,20 @@ public class StandardBit32Array<T>
         final int bit = 1 << index;
         final int bitmask = this.bitmask;
         final int arrayIndex = realIndex(bitmask, bit);
-        final Holder<T>[] entries = this.entries;
+        final T[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final Holder<T>[] newEntries = copyToLargerArray(entries, arrayIndex);
-            newEntries[arrayIndex] = Holders.of(value);
+            final T[] newEntries = copyToLargerArray(entries, arrayIndex);
+            newEntries[arrayIndex] = value;
             if (newEntries.length == 32) {
                 return new FullBit32Array<T>(newEntries);
             } else {
                 return new StandardBit32Array<T>(bitmask | bit, newEntries);
             }
-        } else if (entries[arrayIndex].getValueOrNull() == value) {
+        } else if (entries[arrayIndex] == value) {
             return this;
         } else {
-            final Holder<T>[] newEntries = entries.clone();
-            newEntries[arrayIndex] = Holders.of(value);
+            final T[] newEntries = entries.clone();
+            newEntries[arrayIndex] = value;
             return new StandardBit32Array<T>(bitmask, newEntries);
         }
     }
@@ -164,7 +179,7 @@ public class StandardBit32Array<T>
         checkIndex(index);
         final int bit = 1 << index;
         final int bitmask = this.bitmask;
-        final Holder<T>[] entries = this.entries;
+        final T[] entries = this.entries;
         if ((bitmask & bit) == 0) {
             return this;
         } else {
@@ -174,7 +189,7 @@ public class StandardBit32Array<T>
             case 2: {
                 final int newBitmask = bitmask & ~bit;
                 final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                return new SingleBit32Array<T>(remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)].getValue());
+                return new SingleBit32Array<T>(remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
             }
             default:
                 return new StandardBit32Array<T>(bitmask & ~bit, copyToSmallerArray(entries, realIndex(bitmask, bit)));
@@ -236,22 +251,22 @@ public class StandardBit32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Holder<T>[] copyToSmallerArray(Holder<T>[] oldArray,
-                                                      int skipIndex)
+    private static <T> T[] copyToSmallerArray(T[] oldArray,
+                                              int skipIndex)
     {
         final int newLength = oldArray.length - 1;
-        Holder<T>[] newArray = (Holder<T>[])new Holder[newLength];
+        T[] newArray = (T[])new Object[newLength];
         System.arraycopy(oldArray, 0, newArray, 0, skipIndex);
         System.arraycopy(oldArray, skipIndex + 1, newArray, skipIndex, newLength - skipIndex);
         return newArray;
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Holder<T>[] copyToLargerArray(Holder<T>[] oldArray,
-                                                     int insertIndex)
+    private static <T> T[] copyToLargerArray(T[] oldArray,
+                                             int insertIndex)
     {
         final int oldLength = oldArray.length;
-        Holder<T>[] newArray = (Holder<T>[])new Holder[oldLength + 1];
+        T[] newArray = (T[])new Object[oldLength + 1];
         if (oldLength > 0) {
             System.arraycopy(oldArray, 0, newArray, 0, insertIndex);
             System.arraycopy(oldArray, insertIndex, newArray, insertIndex + 1, oldLength - insertIndex);

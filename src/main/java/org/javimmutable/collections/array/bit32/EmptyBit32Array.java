@@ -45,6 +45,14 @@ public class EmptyBit32Array<T>
         extends Bit32Array<T>
 {
     @Override
+    public T getValueOr(int index,
+                        T defaultValue)
+    {
+        checkIndex(index);
+        return defaultValue;
+    }
+
+    @Override
     public Holder<T> find(int index)
     {
         checkIndex(index);

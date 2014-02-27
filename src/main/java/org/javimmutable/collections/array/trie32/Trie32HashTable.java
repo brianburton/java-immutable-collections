@@ -196,7 +196,7 @@ public class Trie32HashTable<K, V>
             return array.find(childIndex);
         } else {
             // child contains next level of arrays
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
         }
     }
@@ -216,7 +216,7 @@ public class Trie32HashTable<K, V>
             return (newArray == array) ? array : newArray;
         } else {
             // child contains next level of arrays
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, key, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
         }
@@ -242,7 +242,7 @@ public class Trie32HashTable<K, V>
             }
         } else {
             // child contains next level of arrays
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, key, delta);
             if (oldChildArray == newChildArray) {
                 return array;

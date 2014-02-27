@@ -36,8 +36,6 @@
 package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -50,9 +48,9 @@ public class FullBit32ArrayTest
 {
     public void testVarious()
     {
-        @SuppressWarnings("unchecked") Holder<Integer>[] entries = (Holder<Integer>[])new Holder[32];
+        @SuppressWarnings("unchecked") Object[] entries = new Object[32];
         for (int k = 0; k < 32; ++k) {
-            entries[k] = Holders.of(k);
+            entries[k] = k;
         }
         for (int i = 0; i < 32; ++i) {
             Bit32Array<Integer> full = new FullBit32Array<Integer>(entries.clone());
@@ -85,9 +83,9 @@ public class FullBit32ArrayTest
     public void testCursor()
     {
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        @SuppressWarnings("unchecked") Holder<Integer>[] entries = (Holder<Integer>[])new Holder[32];
+        @SuppressWarnings("unchecked") Object[] entries = new Object[32];
         for (int k = 0; k < 32; ++k) {
-            entries[k] = Holders.of(k);
+            entries[k] = k;
             expected.add(MapEntry.of(k, k));
         }
         Bit32Array<Integer> full = new FullBit32Array<Integer>(entries.clone());

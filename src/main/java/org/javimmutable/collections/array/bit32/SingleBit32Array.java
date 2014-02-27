@@ -46,20 +46,28 @@ public class SingleBit32Array<T>
         implements JImmutableMap.Entry<Integer, T>
 {
     private final int index;
-    private final Holder<T> value;
+    private final T value;
 
     public SingleBit32Array(int index,
                             T value)
     {
         this.index = index;
-        this.value = Holders.of(value);
+        this.value = value;
+    }
+
+    @Override
+    public T getValueOr(int index,
+                        T defaultValue)
+    {
+        checkIndex(index);
+        return this.index == index ? value : defaultValue;
     }
 
     @Override
     public Holder<T> find(int index)
     {
         checkIndex(index);
-        return this.index == index ? value : Holders.<T>of();
+        return this.index == index ? Holders.of(value) : Holders.<T>of();
     }
 
     @Override
@@ -68,9 +76,9 @@ public class SingleBit32Array<T>
     {
         checkIndex(index);
         if (this.index == index) {
-            return (this.value.getValue() != value) ? new SingleBit32Array<T>(index, value) : this;
+            return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
         } else {
-            return new StandardBit32Array<T>(this.index, this.value, index, Holders.of(value));
+            return new StandardBit32Array<T>(this.index, this.value, index, value);
         }
     }
 
@@ -102,7 +110,7 @@ public class SingleBit32Array<T>
     @Override
     public T getValue()
     {
-        return value.getValue();
+        return value;
     }
 
     @Override

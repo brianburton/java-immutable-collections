@@ -197,7 +197,7 @@ public class Trie32Array<T>
         if (shift == 0) {
             return (Holder<T>)array.find(childIndex);
         } else {
-            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
         }
     }
@@ -215,7 +215,7 @@ public class Trie32Array<T>
             delta.add(newArray.size() - array.size());
             return newArray;
         } else {
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = assign(oldChildArray, index, shift - 5, value, delta);
             return (oldChildArray == newChildArray) ? array : array.assign(childIndex, newChildArray);
         }
@@ -233,7 +233,7 @@ public class Trie32Array<T>
             delta.add(newArray.size() - array.size());
             return newArray;
         } else {
-            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.find(childIndex).getValueOr(EMPTY_ARRAY);
+            final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             final Bit32Array<Object> newChildArray = delete(oldChildArray, index, shift - 5, delta);
             if (oldChildArray == newChildArray) {
                 return array;
