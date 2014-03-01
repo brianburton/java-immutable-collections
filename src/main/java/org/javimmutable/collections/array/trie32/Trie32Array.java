@@ -196,9 +196,9 @@ public class Trie32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Holder<T> find(Bit32Array<Object> array,
-                              int index,
-                              int shift)
+    private static <T> Holder<T> find(Bit32Array<Object> array,
+                                      int index,
+                                      int shift)
     {
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
@@ -210,10 +210,10 @@ public class Trie32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T get(Bit32Array<Object> array,
-                     int index,
-                     int shift,
-                     T defaultValue)
+    private static <T> T get(Bit32Array<Object> array,
+                             int index,
+                             int shift,
+                             T defaultValue)
     {
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
@@ -225,11 +225,11 @@ public class Trie32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Bit32Array<Object> assign(Bit32Array<Object> array,
-                                         int index,
-                                         int shift,
-                                         T value,
-                                         MutableDelta delta)
+    private static <T> Bit32Array<Object> assign(Bit32Array<Object> array,
+                                                 int index,
+                                                 int shift,
+                                                 T value,
+                                                 MutableDelta delta)
     {
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
@@ -244,10 +244,10 @@ public class Trie32Array<T>
     }
 
     @SuppressWarnings("unchecked")
-    static Bit32Array<Object> delete(Bit32Array<Object> array,
-                                     int index,
-                                     int shift,
-                                     MutableDelta delta)
+    private static Bit32Array<Object> delete(Bit32Array<Object> array,
+                                             int index,
+                                             int shift,
+                                             MutableDelta delta)
     {
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {

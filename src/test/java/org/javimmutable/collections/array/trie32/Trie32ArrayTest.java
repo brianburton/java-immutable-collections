@@ -36,12 +36,15 @@
 package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Trie32ArrayTest
@@ -75,5 +78,86 @@ public class Trie32ArrayTest
         entries.add(MapEntry.of(10, 101));
         entries.add(MapEntry.of(500, 5001));
         StandardCursorTest.listCursorTest(entries, array.cursor());
+    }
+
+    public void testVarious()
+    {
+        List<Integer> indexes = createBranchIndexes();
+        for (int length = indexes.size(); length > 0; --length) {
+            List<Integer> keys = new ArrayList<Integer>();
+            List<Integer> values = new ArrayList<Integer>();
+            Trie32Array<Integer> array = Trie32Array.of();
+            for (int i = 0; i < length; ++i) {
+                array = array.assign(indexes.get(i), i);
+                keys.add(indexes.get(i));
+                values.add(i);
+                assertEquals(i + 1, array.size());
+            }
+            StandardCursorTest.listCursorTest(keys, array.keysCursor());
+            StandardCursorTest.listCursorTest(values, array.valuesCursor());
+            for (int i = 0; i < length; ++i) {
+                final Integer index = indexes.get(i);
+                assertEquals(Integer.valueOf(i), array.get(index));
+                assertEquals(Integer.valueOf(i), array.getValueOr(index, -99));
+                assertEquals(Holders.of(i), array.find(index));
+                assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(index, i)), array.findEntry(index));
+            }
+            for (int i = 0; i < length; ++i) {
+                final Integer index = indexes.get(i);
+                array = array.assign(index, i - 1);
+                assertEquals(Integer.valueOf(i - 1), array.get(index));
+                assertEquals(Integer.valueOf(i - 1), array.getValueOr(index, -99));
+                assertEquals(Holders.of(i - 1), array.find(index));
+                assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(index, i - 1)), array.findEntry(index));
+            }
+            for (int i = 0; i < length; ++i) {
+                final Integer index = indexes.get(i);
+                array = array.delete(index);
+                assertEquals(length - i - 1, array.size());
+                assertEquals(null, array.get(index));
+                assertEquals(Integer.valueOf(-99), array.getValueOr(index, -99));
+                assertEquals(Holders.<Integer>of(), array.find(index));
+                assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), array.findEntry(index));
+            }
+        }
+    }
+
+    public void testIndexedConstructor()
+    {
+        List<Integer> source = new ArrayList<Integer>();
+        for (int length = 1; length <= 1026; ++length) {
+            source.add(length);
+            Trie32Array<Integer> array = Trie32Array.of(IndexedList.retained(source));
+            assertEquals(length, array.size());
+            for (int i = 0; i < source.size(); ++i) {
+                assertEquals(source.get(i), array.get(i));
+            }
+
+            if (length > 1) {
+                array = Trie32Array.of(IndexedList.retained(source), 1, length);
+                assertEquals(length - 1, array.size());
+                for (int i = 0; i < array.size(); ++i) {
+                    assertEquals(source.get(i + 1), array.get(i));
+                }
+            }
+        }
+    }
+
+    private List<Integer> createBranchIndexes()
+    {
+        List<Integer> answer = new ArrayList<Integer>();
+        answer.add(0);
+        answer.add(1 << 30);
+        answer.add(2 << 30);
+        answer.add(3 << 30);
+        int shift = 25;
+        while (shift >= 0) {
+            for (Integer base : new ArrayList<Integer>(answer)) {
+                answer.add(base | (1 << shift));
+            }
+            shift -= 5;
+        }
+        Collections.sort(answer);
+        return answer;
     }
 }
