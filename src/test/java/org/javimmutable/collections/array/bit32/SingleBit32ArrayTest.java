@@ -44,11 +44,20 @@ public class SingleBit32ArrayTest
     public void testSet()
     {
         Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
+        assertEquals(Integer.valueOf(100), array.get(10));
+        assertEquals(Integer.valueOf(100), array.getValueOr(10, -99));
         assertEquals(Holders.of(100), array.find(10));
         assertEquals(1, array.size());
 
+        // wrong index
+        assertEquals(null, array.get(11));
+        assertEquals(Integer.valueOf(-99), array.getValueOr(11, -99));
+        assertEquals(Holders.<Integer>of(), array.find(11));
+
         array = array.assign(10, 200);
         assertTrue(array instanceof SingleBit32Array);
+        assertEquals(Integer.valueOf(200), array.get(10));
+        assertEquals(Integer.valueOf(200), array.getValueOr(10, -99));
         assertEquals(Holders.of(200), array.find(10));
         assertEquals(1, array.size());
 

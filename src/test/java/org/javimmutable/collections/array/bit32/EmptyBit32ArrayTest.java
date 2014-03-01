@@ -45,6 +45,9 @@ public class EmptyBit32ArrayTest
     {
         EmptyBit32Array<Integer> array = new EmptyBit32Array<Integer>();
         assertEquals(0, array.size());
+        assertEquals(null, array.get(0));
+        assertEquals(Integer.valueOf(-99), array.getValueOr(0, -99));
+        assertEquals(Holders.<Integer>of(), array.find(0));
 
         Bit32Array<Integer> newArray = array.delete(10);
         assertSame(array, newArray);
@@ -58,6 +61,8 @@ public class EmptyBit32ArrayTest
     {
         Bit32Array<Integer> array = new EmptyBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
+            array.get(i);
+            array.getValueOr(i, -99);
             array.find(i);
             array.assign(i, i);
             array.delete(i);

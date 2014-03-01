@@ -56,6 +56,8 @@ public class FullBit32ArrayTest
         for (int i = 0; i < 32; ++i) {
             Bit32Array<Integer> full = new FullBit32Array<Integer>(entries.clone());
             for (int k = 0; k < 32; ++k) {
+                assertEquals((Integer)k, full.get(k));
+                assertEquals((Integer)k, full.getValueOr(k, -99));
                 assertEquals((Integer)k, full.find(k).getValue());
             }
             for (int k = 0; k < 32; ++k) {

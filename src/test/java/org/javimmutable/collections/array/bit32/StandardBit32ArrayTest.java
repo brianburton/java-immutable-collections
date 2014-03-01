@@ -50,6 +50,8 @@ public class StandardBit32ArrayTest
         Bit32Array<Integer> test = new StandardBit32Array<Integer>();
         for (int i = 0; i < 32; ++i) {
             test = test.assign(i, i);
+            assertEquals(Integer.valueOf(i), test.get(i));
+            assertEquals(Integer.valueOf(i), test.getValueOr(i, -99));
             assertEquals(Holders.of(i), test.find(i));
             for (int k = 0; k < i; ++k) {
                 assertEquals(Holders.of(k), test.find(k));
@@ -62,6 +64,8 @@ public class StandardBit32ArrayTest
         }
         for (int i = 0; i < 32; ++i) {
             test = test.delete(i);
+            assertEquals(null, test.get(i));
+            assertEquals(Integer.valueOf(-99), test.getValueOr(i, -99));
             assertEquals(Holders.<Integer>of(), test.find(i));
             for (int k = i + 1; k < 32; ++k) {
                 assertEquals(Holders.of(k), test.find(k));
