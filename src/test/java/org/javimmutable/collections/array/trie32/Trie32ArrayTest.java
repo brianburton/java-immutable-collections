@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Trie32ArrayTest
         extends TestCase
@@ -84,15 +86,19 @@ public class Trie32ArrayTest
     {
         List<Integer> indexes = createBranchIndexes();
         for (int length = indexes.size(); length > 0; --length) {
+            Map<Integer, Integer> map = new TreeMap<Integer, Integer>();
             List<Integer> keys = new ArrayList<Integer>();
             List<Integer> values = new ArrayList<Integer>();
             Trie32Array<Integer> array = Trie32Array.of();
             for (int i = 0; i < length; ++i) {
-                array = array.assign(indexes.get(i), i);
-                keys.add(indexes.get(i));
+                final Integer index = indexes.get(i);
+                array = array.assign(index, i);
+                keys.add(index);
                 values.add(i);
+                map.put(index, i);
                 assertEquals(i + 1, array.size());
             }
+            assertEquals(array.getMap(), map);
             StandardCursorTest.listCursorTest(keys, array.keysCursor());
             StandardCursorTest.listCursorTest(values, array.valuesCursor());
             for (int i = 0; i < length; ++i) {

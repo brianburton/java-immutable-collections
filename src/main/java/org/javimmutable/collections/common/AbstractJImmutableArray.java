@@ -43,7 +43,6 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
-import org.javimmutable.collections.hash.ArrayToMapAdaptor;
 
 import java.util.Iterator;
 import java.util.Map;

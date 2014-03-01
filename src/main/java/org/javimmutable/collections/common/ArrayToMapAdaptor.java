@@ -33,14 +33,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import java.util.AbstractCollection;
@@ -112,7 +111,7 @@ public class ArrayToMapAdaptor<T>
     @Override
     public T get(Object o)
     {
-        return map.find((Integer)o).getValueOrNull();
+        return map.get((Integer)o);
     }
 
     @Override
