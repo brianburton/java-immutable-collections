@@ -143,7 +143,7 @@ public class Trie32ArrayTest
         }
     }
 
-    private List<Integer> createBranchIndexes()
+    static List<Integer> createBranchIndexes()
     {
         List<Integer> answer = new ArrayList<Integer>();
         answer.add(0);
