@@ -115,9 +115,6 @@ public abstract class Bit32Array<T>
         return getValueOr(index, null);
     }
 
-    public abstract T getValueOr(int index,
-                                 T defaultValue);
-
     @Override
     public JImmutableArray<T> deleteAll()
     {

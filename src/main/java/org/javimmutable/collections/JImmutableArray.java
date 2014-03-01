@@ -62,6 +62,19 @@ public interface JImmutableArray<T>
      */
     T get(int index);
 
+
+    /**
+     * Return the value associated with index or defaultValue if no value is associated.
+     * Note that if defaultValue is an acceptable value to the container then this method
+     * will be ambiguous and find() should be used instead.
+     *
+     * @param index        identifies the value to retrieve
+     * @param defaultValue value to return if no entry exists for index
+     * @return value associated with index or defaultValue if no value is associated
+     */
+    T getValueOr(int index,
+                 T defaultValue);
+
     /**
      * Return a Holder containing the value associated wth the index or an empty
      * Holder if no value is associated with the index.

@@ -157,6 +157,13 @@ public class Trie32Array<T>
     }
 
     @Override
+    public T getValueOr(int index,
+                        T defaultValue)
+    {
+        return Trie32Array.get(root, index, 30, defaultValue);
+    }
+
+    @Override
     public int size()
     {
         return this.size;
@@ -199,6 +206,21 @@ public class Trie32Array<T>
         } else {
             final Bit32Array<Object> childArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
             return find(childArray, index, shift - 5);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> T get(Bit32Array<Object> array,
+                     int index,
+                     int shift,
+                     T defaultValue)
+    {
+        final int childIndex = (index >>> shift) & 0x1f;
+        if (shift == 0) {
+            return (T)array.getValueOr(childIndex, defaultValue);
+        } else {
+            final Bit32Array<Object> childArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
+            return get(childArray, index, shift - 5, defaultValue);
         }
     }
 
