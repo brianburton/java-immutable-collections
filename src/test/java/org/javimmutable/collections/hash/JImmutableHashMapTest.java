@@ -243,6 +243,9 @@ public class JImmutableHashMapTest
         JImmutableHashMap<ManualHashKey, String> map = JImmutableHashMap.of();
         map = map.assign(key1, "1").assign(key2, "2").assign(key3, "3");
         assertEquals(3, map.size());
+        assertEquals("1", map.get(key1));
+        assertEquals("2", map.get(key2));
+        assertEquals("3", map.get(key3));
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("2", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
@@ -251,6 +254,9 @@ public class JImmutableHashMapTest
         assertEquals("3", map.find(key3).getValueOr("X"));
         map = map.delete(key2);
         assertEquals(2, map.size());
+        assertEquals("1", map.get(key1));
+        assertEquals(null, map.get(key2));
+        assertEquals("3", map.get(key3));
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
@@ -259,6 +265,9 @@ public class JImmutableHashMapTest
         assertEquals("3", map.find(key3).getValueOr("X"));
         map = map.delete(key1);
         assertEquals(1, map.size());
+        assertEquals(null, map.get(key1));
+        assertEquals(null, map.get(key2));
+        assertEquals("3", map.get(key3));
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
@@ -267,6 +276,9 @@ public class JImmutableHashMapTest
         assertEquals("3", map.find(key3).getValueOr("X"));
         map = map.delete(key3);
         assertEquals(0, map.size());
+        assertEquals(null, map.get(key1));
+        assertEquals(null, map.get(key2));
+        assertEquals(null, map.get(key3));
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("X", map.getValueOr(key3, "X"));

@@ -171,13 +171,27 @@ public class JImmutableTreeMapTest
                     Integer value = random.nextInt(1000000);
                     expected.put(key, value);
                     map = add(map, key, value);
+                    assertEquals(expected.get(key), map.get(key));
+                    assertEquals(expected.get(key), map.getValueOr(key, -99));
+                    assertEquals(expected.get(key), map.find(key).getValue());
                 } else if (command == 2) {
                     Integer key = random.nextInt(maxKey);
                     expected.remove(key);
                     map = remove(map, key);
+                    assertEquals(null, map.get(key));
+                    assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
+                    assertEquals(true, map.find(key).isEmpty());
                 } else {
                     Integer key = random.nextInt(maxKey);
-                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                    if (expected.containsKey(key)) {
+                        assertEquals(expected.get(key), map.get(key));
+                        assertEquals(expected.get(key), map.getValueOr(key, -99));
+                        assertEquals(expected.get(key), map.find(key).getValue());
+                    } else {
+                        assertEquals(null, map.get(key));
+                        assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
+                        assertEquals(true, map.find(key).isEmpty());
+                    }
                 }
                 assertEquals(expected.size(), map.size());
             }
