@@ -113,12 +113,14 @@ public class StandardBit32Array<T>
         entries = (T[])(index1 > index2 ? new Object[]{value2, value1} : new Object[]{value1, value2});
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "RedundantCast"})
     static <T> StandardBit32Array<T> fullWithout(Object[] entries,
                                                  int withoutIndex)
     {
         assert entries.length == 32;
-        final T[] newEntries = copyToSmallerArray((T[])entries, withoutIndex);
+        final T[] newEntries = (T[])new Object[31];
+        System.arraycopy((T[])entries, 0, newEntries, 0, withoutIndex);
+        System.arraycopy((T[])entries, withoutIndex + 1, newEntries, withoutIndex, 31 - withoutIndex);
         final int newMask = ~(1 << withoutIndex);
         return new StandardBit32Array<T>(newMask, newEntries);
     }
@@ -149,6 +151,7 @@ public class StandardBit32Array<T>
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Bit32Array<T> assign(int index,
                                 T value)
     {
@@ -158,7 +161,12 @@ public class StandardBit32Array<T>
         final int arrayIndex = realIndex(bitmask, bit);
         final T[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final T[] newEntries = copyToLargerArray(entries, arrayIndex);
+            final int oldLength = entries.length;
+            final T[] newEntries = (T[])new Object[oldLength + 1];
+            if (bitmask != 0) {
+                System.arraycopy(entries, 0, newEntries, 0, arrayIndex);
+                System.arraycopy(entries, arrayIndex, newEntries, arrayIndex + 1, oldLength - arrayIndex);
+            }
             newEntries[arrayIndex] = value;
             if (newEntries.length == 32) {
                 return new FullBit32Array<T>(newEntries);
@@ -174,6 +182,7 @@ public class StandardBit32Array<T>
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Bit32Array<T> delete(int index)
     {
         checkIndex(index);
@@ -191,8 +200,14 @@ public class StandardBit32Array<T>
                 final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
                 return new SingleBit32Array<T>(remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
             }
-            default:
-                return new StandardBit32Array<T>(bitmask & ~bit, copyToSmallerArray(entries, realIndex(bitmask, bit)));
+            default: {
+                int skipIndex = realIndex(bitmask, bit);
+                final int newLength = entries.length - 1;
+                final T[] newArray = (T[])new Object[newLength];
+                System.arraycopy(entries, 0, newArray, 0, skipIndex);
+                System.arraycopy(entries, skipIndex + 1, newArray, skipIndex, newLength - skipIndex);
+                return new StandardBit32Array<T>(bitmask & ~bit, newArray);
+            }
             }
         }
     }
@@ -248,30 +263,6 @@ public class StandardBit32Array<T>
                 return new CursorSource(remainingMask & ~bit);
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T[] copyToSmallerArray(T[] oldArray,
-                                              int skipIndex)
-    {
-        final int newLength = oldArray.length - 1;
-        T[] newArray = (T[])new Object[newLength];
-        System.arraycopy(oldArray, 0, newArray, 0, skipIndex);
-        System.arraycopy(oldArray, skipIndex + 1, newArray, skipIndex, newLength - skipIndex);
-        return newArray;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T[] copyToLargerArray(T[] oldArray,
-                                             int insertIndex)
-    {
-        final int oldLength = oldArray.length;
-        T[] newArray = (T[])new Object[oldLength + 1];
-        if (oldLength > 0) {
-            System.arraycopy(oldArray, 0, newArray, 0, insertIndex);
-            System.arraycopy(oldArray, insertIndex, newArray, insertIndex + 1, oldLength - insertIndex);
-        }
-        return newArray;
     }
 
     private static int realIndex(int bitmask,
