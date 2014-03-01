@@ -38,6 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -52,6 +53,21 @@ public class FullBit32Array<T>
     {
         assert entries.length == 32;
         this.entries = (T[])entries;
+    }
+
+    @SuppressWarnings("unchecked")
+    FullBit32Array(Indexed<T> source,
+                   int startIndex,
+                   int offset)
+    {
+        assert source.size() - offset >= 32;
+        T[] entries = (T[])new Object[32];
+        int index = 0;
+        offset += startIndex;
+        while (index < 32) {
+            entries[index++] = source.get(offset++);
+        }
+        this.entries = entries;
     }
 
     @Override

@@ -38,6 +38,7 @@ package org.javimmutable.collections.array.bit32;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -76,6 +77,26 @@ public class FullBit32ArrayTest
                 } else {
                     assertEquals((Integer)(k + 1), std.find(k).getValue());
                 }
+            }
+        }
+    }
+
+    public void testIndexedConstructor()
+    {
+        List<Integer> values = new ArrayList<Integer>(64);
+        for (int i = 0; i < 64; ++i) {
+            values.add(i);
+        }
+        for (int startIndex = 0; startIndex < 32; ++startIndex) {
+            FullBit32Array<Integer> full = new FullBit32Array<Integer>(IndexedList.retained(values), 0, startIndex);
+            for (int i = 0; i < 32; ++i) {
+                assertEquals((Integer)(i + startIndex), full.get(i));
+            }
+        }
+        for (int offset = 0; offset < 32; ++offset) {
+            FullBit32Array<Integer> full = new FullBit32Array<Integer>(IndexedList.retained(values), offset, 0);
+            for (int i = 0; i < 32; ++i) {
+                assertEquals((Integer)(i + offset), full.get(i));
             }
         }
     }

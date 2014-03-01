@@ -88,11 +88,14 @@ public abstract class Bit32Array<T>
                                        int limit)
     {
         final int size = limit - offset;
-        if (size == 0) {
+        switch (size) {
+        case 0:
             return of();
-        } else if (size == 1) {
+        case 1:
             return new SingleBit32Array<T>(startIndex, source.get(offset));
-        } else {
+        case 32:
+            return new FullBit32Array<T>(source, startIndex, offset);
+        default:
             return new StandardBit32Array(source, startIndex, offset, limit);
         }
     }
