@@ -38,9 +38,6 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Func3;
-import org.javimmutable.collections.Func4;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -49,14 +46,14 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 
 /**
- * Similar to Trie32Array but uses caller provided function objects to manage the leaf values.
+ * Similar to Trie32Array but uses caller provided transformation objects to manage the leaf values.
  * Abstracting the leaf operations into the Transforms object allows different hash implementations
  * to use different types of leaf classes.  Also it moves the added complexity of hash collision
  * detection and management out of this class and into the class that defines the transforms.
  * <p/>
  * The root is a Bit32Array 6 levels deep.  At all levels except the bottom level the values
  * stored in the arrays are other Bit32Arrays.  At the bottom level (leaf level) the values
- * are objects managed by the transform functions.  These functions provide the ability to
+ * are objects managed by the transforms object.  Its methods provide the ability to
  * create and replace these objects, pull cursors and values from them, etc.
  */
 public class Trie32HashTable<K, V>
@@ -68,58 +65,62 @@ public class Trie32HashTable<K, V>
     private final Bit32Array<Object> root;
     private final int size;
 
-    public static class Transforms<K, V>
+    /**
+     * Interface for transformation objects that manage the leaf nodes in the hash table.
+     * Implementations are free to use any class for their leaf nodes and manage them as needed.
+     * NOTE: The transforms object is shared across all versions of a hash table so it MUST BE IMMUTABLE.
+     * If the transforms object is not immutable it can cause the table to become
+     * corrupted over time and/or make older versions of the table invalid.
+     *
+     * @param <K>
+     * @param <V>
+     */
+    public static interface Transforms<K, V>
     {
         /**
-         * Function to take the current leaf object (if there is one) and produce a new one
+         * Take the current leaf object (if there is one) and produce a new one
          * (possibly the same) with the specified key and value.  If there is not currently
          * a leaf for this key in the array the Holder will be empty.  The result must be
          * a non-null leaf object with the specified value associated with the specified key.
-         * If this key was not previously present the function must add 1 to the delta
+         * If this key was not previously present the method must add 1 to the delta
          * so that the size of the array can be properly maintained.
          */
-        public final Func4<Holder<Object>, K, V, MutableDelta, Object> updater;
+        Object update(Holder<Object> leaf,
+                      K key,
+                      V value,
+                      MutableDelta delta);
 
         /**
-         * Function to take the current leaf object and produce a new one (possibly the same)
+         * Take the current leaf object and produce a new one (possibly the same)
          * with the specified key removed.  If the key was previously present in the leaf
-         * the function must subtract 1 from the delta so that the size of the array can be
+         * the method must subtract 1 from the delta so that the size of the array can be
          * properly maintained.
          */
-        public final Func3<Object, K, MutableDelta, Holder<Object>> deleter;
+        Holder<Object> delete(Object leaf,
+                              K key,
+                              MutableDelta delta);
 
         /**
-         * Function to look for the specified key in the leaf object and return a Holder
+         * Look for the specified key in the leaf object and return a Holder
          * that is empty if the key is not in the leaf or else contains the value associated
          * with the key.
          */
-        public final Func2<Object, K, Holder<V>> valueGetter;
+        Holder<V> findValue(Object leaf,
+                            K key);
 
         /**
-         * Function to look for the specified key in the leaf object and return a Holder
+         * Look for the specified key in the leaf object and return a Holder
          * that is empty if the key is not in the leaf or else contains a JImmutableMap.Entry
          * associated with the key and value.
          */
-        public final Func2<Object, K, Holder<JImmutableMap.Entry<K, V>>> entryGetter;
+        Holder<JImmutableMap.Entry<K, V>> findEntry(Object leaf,
+                                                    K key);
 
         /**
-         * Function to return a (possibly empty) Cursor over all of the JImmutableMap.Entries
+         * Return a (possibly empty) Cursor over all of the JImmutableMap.Entries
          * in the specified leaf object.
          */
-        public final Func1<Object, Cursor<JImmutableMap.Entry<K, V>>> cursorGetter;
-
-        public Transforms(Func4<Holder<Object>, K, V, MutableDelta, Object> updater,
-                          Func3<Object, K, MutableDelta, Holder<Object>> deleter,
-                          Func2<Object, K, Holder<V>> valueGetter,
-                          Func2<Object, K, Holder<JImmutableMap.Entry<K, V>>> entryGetter,
-                          Func1<Object, Cursor<JImmutableMap.Entry<K, V>>> cursorGetter)
-        {
-            this.updater = updater;
-            this.deleter = deleter;
-            this.valueGetter = valueGetter;
-            this.entryGetter = entryGetter;
-            this.cursorGetter = cursorGetter;
-        }
+        Cursor<JImmutableMap.Entry<K, V>> cursor(Object leaf);
     }
 
     private Trie32HashTable(Transforms<K, V> transforms,
@@ -161,7 +162,7 @@ public class Trie32HashTable<K, V>
         if (entry.isEmpty()) {
             return defaultValue;
         } else {
-            return transforms.valueGetter.apply(entry.getValue(), key).getValue();
+            return transforms.findValue(entry.getValue(), key).getValueOr(defaultValue);
         }
     }
 
@@ -172,7 +173,7 @@ public class Trie32HashTable<K, V>
         if (entry.isEmpty()) {
             return Holders.of();
         } else {
-            return transforms.valueGetter.apply(entry.getValue(), key);
+            return transforms.findValue(entry.getValue(), key);
         }
     }
 
@@ -183,7 +184,7 @@ public class Trie32HashTable<K, V>
         if (entry.isEmpty()) {
             return Holders.of();
         } else {
-            return transforms.entryGetter.apply(entry.getValue(), key);
+            return transforms.findEntry(entry.getValue(), key);
         }
     }
 
@@ -224,7 +225,7 @@ public class Trie32HashTable<K, V>
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
             // child contains key/value pairs
-            final Bit32Array<Object> newArray = array.assign(childIndex, transforms.updater.apply(array.find(childIndex), key, value, delta));
+            final Bit32Array<Object> newArray = array.assign(childIndex, transforms.update(array.find(childIndex), key, value, delta));
             return (newArray == array) ? array : newArray;
         } else {
             // child contains next level of arrays
@@ -248,7 +249,7 @@ public class Trie32HashTable<K, V>
             if (oldLeaf.isEmpty()) {
                 return array;
             } else {
-                final Holder<Object> newLeaf = transforms.deleter.apply(oldLeaf.getValue(), key, delta);
+                final Holder<Object> newLeaf = transforms.delete(oldLeaf.getValue(), key, delta);
                 final Bit32Array<Object> newArray = newLeaf.isEmpty() ? array.delete(childIndex) : array.assign(childIndex, newLeaf.getValue());
                 return (newArray == array) ? array : newArray;
             }
@@ -291,7 +292,7 @@ public class Trie32HashTable<K, V>
                 return MultiTransformCursor.of(array.valuesCursor(), new CursorTransforminator(shift - 5));
             } else {
                 // the leaf arrays contain value objects as values
-                return transforms.cursorGetter.apply(arrayValue);
+                return transforms.cursor(arrayValue);
             }
         }
     }

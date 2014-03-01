@@ -234,4 +234,62 @@ public class JImmutableHashMapTest
         StandardCursorTest.listCursorTest(expected, map.keysCursor());
         StandardCursorTest.listCursorTest(expected, map.valuesCursor());
     }
+
+    public void testHashCollisions()
+    {
+        ManualHashKey key1 = new ManualHashKey(1000, "a");
+        ManualHashKey key2 = new ManualHashKey(1000, "b");
+        ManualHashKey key3 = new ManualHashKey(1000, "c");
+        JImmutableHashMap<ManualHashKey, String> map = JImmutableHashMap.of();
+        map = map.assign(key1, "1").assign(key2, "2").assign(key3, "3");
+        assertEquals(3, map.size());
+        assertEquals("1", map.getValueOr(key1, "X"));
+        assertEquals("2", map.getValueOr(key2, "X"));
+        assertEquals("3", map.getValueOr(key3, "X"));
+        map = map.delete(key2);
+        assertEquals(2, map.size());
+        assertEquals("1", map.getValueOr(key1, "X"));
+        assertEquals("X", map.getValueOr(key2, "X"));
+        assertEquals("3", map.getValueOr(key3, "X"));
+        map = map.delete(key1);
+        assertEquals(1, map.size());
+        assertEquals("X", map.getValueOr(key1, "X"));
+        assertEquals("X", map.getValueOr(key2, "X"));
+        assertEquals("3", map.getValueOr(key3, "X"));
+        map = map.delete(key3);
+        assertEquals(0, map.size());
+        assertEquals("X", map.getValueOr(key1, "X"));
+        assertEquals("X", map.getValueOr(key2, "X"));
+        assertEquals("X", map.getValueOr(key3, "X"));
+        assertSame(JImmutableHashMap.of(), map);
+    }
+
+    private static class ManualHashKey
+    {
+        private final int hash;
+        private final String value;
+
+        private ManualHashKey(int hash,
+                              String value)
+        {
+            this.hash = hash;
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (!(o instanceof ManualHashKey)) {
+                return false;
+            }
+            ManualHashKey other = (ManualHashKey)o;
+            return other.hash == hash && other.value.equals(value);
+        }
+    }
 }
