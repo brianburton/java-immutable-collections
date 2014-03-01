@@ -54,6 +54,18 @@ public interface Mapped<K, V>
     V get(K key);
 
     /**
+     * Return the value associated with key or defaultValue if no value is associated.
+     * Note that if defaultValue is an acceptable value to the container then this method
+     * will be ambiguous and find() should be used instead.
+     *
+     * @param key          identifies the value to retrieve
+     * @param defaultValue value to return if no entry exists for key
+     * @return value associated with key or defaultValue if no value is associated
+     */
+    V getValueOr(K key,
+                 V defaultValue);
+
+    /**
      * Return a Holder containing the value associated wth the key or an empty
      * Holder if no value is associated with the key.
      *

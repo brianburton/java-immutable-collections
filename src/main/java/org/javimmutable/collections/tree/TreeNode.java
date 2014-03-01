@@ -46,6 +46,10 @@ import java.util.Comparator;
 public interface TreeNode<K, V>
         extends Cursorable<JImmutableMap.Entry<K, V>>
 {
+    public V getValueOr(Comparator<K> props,
+                        K key,
+                        V defaultValue);
+
     public Holder<V> find(Comparator<K> props,
                           K key);
 

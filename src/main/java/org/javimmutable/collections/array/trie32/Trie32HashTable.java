@@ -153,6 +153,18 @@ public class Trie32HashTable<K, V>
         return (newRoot == root) ? this : new Trie32HashTable<K, V>(transforms, newRoot, size + delta.getValue());
     }
 
+    public V getValueOr(int index,
+                        K key,
+                        V defaultValue)
+    {
+        final Holder<Object> entry = find(root, index, 30);
+        if (entry.isEmpty()) {
+            return defaultValue;
+        } else {
+            return transforms.valueGetter.apply(entry.getValue(), key).getValue();
+        }
+    }
+
     public Holder<V> findValue(int index,
                                K key)
     {

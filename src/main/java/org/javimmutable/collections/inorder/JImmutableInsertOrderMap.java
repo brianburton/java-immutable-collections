@@ -84,6 +84,14 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Override
+    public V getValueOr(K key,
+                        V defaultValue)
+    {
+        final Node<K, V> current = hashedNodes.get(key);
+        return (current != null) ? current.getValue() : defaultValue;
+    }
+
+    @Override
     public Holder<V> find(K key)
     {
         final Node<K, V> current = hashedNodes.get(key);

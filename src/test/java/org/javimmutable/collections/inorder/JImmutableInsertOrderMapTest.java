@@ -121,6 +121,8 @@ public class JImmutableInsertOrderMapTest
                 map = map.assign(key, value);
                 expected.put(key, value);
                 assertEquals(value, (int)map.get(key));
+                assertEquals(value, (int)map.getValueOr(key, value - 1000));
+                assertEquals(value, (int)map.find(key).getValueOrNull());
                 assertEquals(Holders.of(value), map.find(key));
                 assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
             }
@@ -142,6 +144,9 @@ public class JImmutableInsertOrderMapTest
                 Integer key = keys.remove(0);
                 assertNotNull(map.get(key));
                 map = map.delete(key);
+                assertEquals(key - 99, (int)map.getValueOr(key, key - 99));
+                assertEquals(null, map.getValueOr(key, null));
+                assertEquals(null, map.find(key).getValueOrNull());
                 assertEquals(keys.size(), map.size());
             }
             assertTrue(map.isEmpty());

@@ -64,6 +64,18 @@ public class TwoNode<K, V>
     }
 
     @Override
+    public V getValueOr(Comparator<K> props,
+                        K key,
+                        V defaultValue)
+    {
+        if (props.compare(key, leftMaxKey) <= 0) {
+            return left.getValueOr(props, key, defaultValue);
+        } else {
+            return right.getValueOr(props, key, defaultValue);
+        }
+    }
+
+    @Override
     public Holder<V> find(Comparator<K> props,
                           K key)
     {

@@ -135,7 +135,7 @@ public class TimingComparison
                 removes += 1;
             } else {
                 Integer key = random.nextInt(maxKey);
-                map.find(key);
+                map.getValueOr(key, null);
                 gets += 1;
             }
         }

@@ -70,6 +70,18 @@ public class ThreeNodeTest
         super.tearDown();
     }
 
+    public void testGetValueOr()
+    {
+        Integer defaultValue = -99;
+        assertSame(defaultValue, node.getValueOr(comparator, 8, defaultValue));
+        assertEquals(Integer.valueOf(10), node.getValueOr(comparator, 10, defaultValue));
+        assertSame(defaultValue, node.getValueOr(comparator, 11, defaultValue));
+        assertEquals(Integer.valueOf(12), node.getValueOr(comparator, 12, defaultValue));
+        assertSame(defaultValue, node.getValueOr(comparator, 13, defaultValue));
+        assertEquals(Integer.valueOf(14), node.getValueOr(comparator, 14, defaultValue));
+        assertSame(defaultValue, node.getValueOr(comparator, 15, defaultValue));
+    }
+
     public void testFind()
     {
         assertEquals(Holders.<Integer>of(), node.find(comparator, 8));

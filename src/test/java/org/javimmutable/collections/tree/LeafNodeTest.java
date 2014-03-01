@@ -58,6 +58,8 @@ public class LeafNodeTest
         assertEquals(true, node.isFilled());
         assertEquals(Integer.valueOf(20), node.getValueOrNull());
         assertEquals(Integer.valueOf(20), node.getValueOr(12));
+        assertEquals(Integer.valueOf(-99), node.getValueOr(comparator, 11, -99));
+        assertEquals(Integer.valueOf(20), node.getValueOr(comparator, 10, -99));
         assertEquals(Holders.<Integer>of(), node.find(comparator, 11));
         assertSame(node, node.find(comparator, 10));
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), node.findEntry(comparator, 11));

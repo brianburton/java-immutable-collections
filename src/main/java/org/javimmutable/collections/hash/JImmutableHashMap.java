@@ -75,6 +75,13 @@ public class JImmutableHashMap<K, V>
     }
 
     @Override
+    public V getValueOr(K key,
+                        V defaultValue)
+    {
+        return values.getValueOr(key.hashCode(), key, defaultValue);
+    }
+
+    @Override
     public Holder<V> find(K key)
     {
         return values.findValue(key.hashCode(), key);

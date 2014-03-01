@@ -70,6 +70,21 @@ public class ThreeNode<K, V>
     }
 
     @Override
+    public V getValueOr(Comparator<K> comparator,
+                        K key,
+                        V defaultValue)
+    {
+        if (comparator.compare(key, leftMaxKey) <= 0) {
+            return left.getValueOr(comparator, key, defaultValue);
+        }
+        if (comparator.compare(key, middleMaxKey) <= 0) {
+            return middle.getValueOr(comparator, key, defaultValue);
+        } else {
+            return right.getValueOr(comparator, key, defaultValue);
+        }
+    }
+
+    @Override
     public Holder<V> find(Comparator<K> comparator,
                           K key)
     {

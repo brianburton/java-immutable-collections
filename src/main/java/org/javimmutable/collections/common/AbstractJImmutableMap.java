@@ -50,7 +50,7 @@ public abstract class AbstractJImmutableMap<K, V>
     @Override
     public V get(K key)
     {
-        return find(key).getValueOrNull();
+        return getValueOr(key, null);
     }
 
     /**

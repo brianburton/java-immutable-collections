@@ -36,6 +36,7 @@
 package org.javimmutable.collections.listmap;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -89,8 +90,13 @@ public abstract class AbstractJImmutableListMapTestTestCase
         assertEquals(Arrays.asList(300, 7, 7, 14), map.getList(3).getList());
         assertSame(map.getList(3), map.get(3));
 
+        final JImmutableList<Integer> defaultValue = JImmutableArrayList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
+        assertNull(map.get(8));
+        assertNull(map.getValueOr(8, null));
+        assertSame(defaultValue, map.getValueOr(8, defaultValue));
         assertSame(map.get(3), map.find(3).getValue());
+        assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 

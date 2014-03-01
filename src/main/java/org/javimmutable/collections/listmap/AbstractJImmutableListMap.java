@@ -138,6 +138,13 @@ public abstract class AbstractJImmutableListMap<K, V>
     }
 
     @Override
+    public JImmutableList<V> getValueOr(K key,
+                                        JImmutableList<V> defaultValue)
+    {
+        return contents.getValueOr(key, defaultValue);
+    }
+
+    @Override
     public Holder<JImmutableList<V>> find(K key)
     {
         return contents.find(key);

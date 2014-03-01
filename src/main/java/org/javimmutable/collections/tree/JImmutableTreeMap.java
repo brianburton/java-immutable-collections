@@ -115,6 +115,20 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
+    public V getValueOr(K key,
+                        V defaultValue)
+    {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+        if (root == null) {
+            return defaultValue;
+        } else {
+            return root.getValueOr(comparator, key, defaultValue);
+        }
+    }
+
+    @Override
     public Holder<V> find(K key)
     {
         if (key == null) {

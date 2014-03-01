@@ -62,6 +62,8 @@ public class JImmutableHashMapTest
         assertEquals(false, map.isEmpty());
         assertEquals(false, map.find(10).isEmpty());
         assertEquals(20, (int)map.find(10).getValue());
+        assertEquals(20, (int)map.getValueOr(10, -99));
+        assertEquals(-99, (int)map.getValueOr(72, -99));
         map = map.delete(10);
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());

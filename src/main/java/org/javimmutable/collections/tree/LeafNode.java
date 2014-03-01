@@ -90,6 +90,14 @@ public class LeafNode<K, V>
     }
 
     @Override
+    public V getValueOr(Comparator<K> props,
+                        K searchKey,
+                        V defaultValue)
+    {
+        return props.compare(searchKey, nodeKey) == 0 ? value : defaultValue;
+    }
+
+    @Override
     public Holder<V> find(Comparator<K> props,
                           K searchKey)
     {
