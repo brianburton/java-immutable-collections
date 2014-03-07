@@ -290,6 +290,12 @@ public class Trie32Array<T>
         return newIndex;
     }
 
+    /**
+     * Enforces the sequence 10b, 11b, 00b, 01b (i.e. -2, -1, 0, 1)
+     *
+     * @param index
+     * @return
+     */
     private static int nextIndex(int index)
     {
         switch (index) {
@@ -306,6 +312,10 @@ public class Trie32Array<T>
         }
     }
 
+    /**
+     * Iterates through the root array's indexes in correct order to put negative values before positive values.
+     * Values returned by the cursor are the values of the trie.
+     */
     private class RootValueCursor
             implements StandardCursor.Source<Object>
     {
@@ -336,11 +346,14 @@ public class Trie32Array<T>
         @Override
         public StandardCursor.Source<Object> advance()
         {
-            int newIndex = firstFilledIndex(root, nextIndex(index));
-            return new RootValueCursor(newIndex);
+            return new RootValueCursor(firstFilledIndex(root, nextIndex(index)));
         }
     }
 
+    /**
+     * Iterates through the root array's indexes in correct order to put negative values before positive values.
+     * Values returned by the cursor are the Entries containing the index and value from the trie.
+     */
     private class RootEntryCursor
             implements StandardCursor.Source<JImmutableMap.Entry<Integer, Object>>
     {
@@ -371,8 +384,7 @@ public class Trie32Array<T>
         @Override
         public StandardCursor.Source<JImmutableMap.Entry<Integer, Object>> advance()
         {
-            int newIndex = firstFilledIndex(root, nextIndex(index));
-            return new RootEntryCursor(newIndex);
+            return new RootEntryCursor(firstFilledIndex(root, nextIndex(index)));
         }
     }
 
@@ -395,13 +407,13 @@ public class Trie32Array<T>
         @Override
         public Cursor<T> apply(Object arrayValue)
         {
-            if (shift > 0) {
+            if (shift == 0) {
+                // the leaf is actually the value
+                return SingleValueCursor.of((T)arrayValue);
+            } else {
                 // the internal arrays contain other arrays as values
                 Bit32Array<Object> array = (Bit32Array<Object>)arrayValue;
                 return MultiTransformCursor.of(array.valuesCursor(), new ValueCursorTransforminator(shift - 5));
-            } else {
-                // the leaf arrays contain value objects as values
-                return SingleValueCursor.of((T)arrayValue);
             }
         }
     }
@@ -428,14 +440,14 @@ public class Trie32Array<T>
         @Override
         public Cursor<JImmutableMap.Entry<Integer, T>> apply(JImmutableMap.Entry<Integer, Object> arrayEntry)
         {
-            int index = (baseIndex << 5) | (arrayEntry.getKey());
-            if (shift > 0) {
+            final int index = (baseIndex << 5) | (arrayEntry.getKey());
+            if (shift == 0) {
+                // the leaf is actually the value
+                return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(new MapEntry<Integer, T>(index, (T)arrayEntry.getValue()));
+            } else {
                 // the internal arrays contain other arrays as values
                 Bit32Array<Object> array = (Bit32Array<Object>)arrayEntry.getValue();
                 return MultiTransformCursor.of(array.cursor(), new EntryCursorTransforminator(shift - 5, index));
-            } else {
-                // the leaf arrays contain value objects as values
-                return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(new MapEntry<Integer, T>(index, (T)arrayEntry.getValue()));
             }
         }
     }
