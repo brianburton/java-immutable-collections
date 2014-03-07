@@ -225,8 +225,7 @@ public class Trie32HashTable<K, V>
         final int childIndex = (index >>> shift) & 0x1f;
         if (shift == 0) {
             // child contains key/value pairs
-            final Bit32Array<Object> newArray = array.assign(childIndex, transforms.update(array.find(childIndex), key, value, delta));
-            return (newArray == array) ? array : newArray;
+            return array.assign(childIndex, transforms.update(array.find(childIndex), key, value, delta));
         } else {
             // child contains next level of arrays
             final Bit32Array<Object> oldChildArray = (Bit32Array<Object>)array.getValueOr(childIndex, EMPTY_ARRAY);
@@ -250,8 +249,7 @@ public class Trie32HashTable<K, V>
                 return array;
             } else {
                 final Holder<Object> newLeaf = transforms.delete(oldLeaf.getValue(), key, delta);
-                final Bit32Array<Object> newArray = newLeaf.isEmpty() ? array.delete(childIndex) : array.assign(childIndex, newLeaf.getValue());
-                return (newArray == array) ? array : newArray;
+                return newLeaf.isEmpty() ? array.delete(childIndex) : array.assign(childIndex, newLeaf.getValue());
             }
         } else {
             // child contains next level of arrays
@@ -286,13 +284,13 @@ public class Trie32HashTable<K, V>
         @Override
         public Cursor<JImmutableMap.Entry<K, V>> apply(Object arrayValue)
         {
-            if (shift > 0) {
-                // the internal arrays contain other arrays as values
-                Bit32Array<Object> array = (Bit32Array<Object>)arrayValue;
-                return MultiTransformCursor.of(array.valuesCursor(), new CursorTransforminator(shift - 5));
-            } else {
+            if (shift == 0) {
                 // the leaf arrays contain value objects as values
                 return transforms.cursor(arrayValue);
+            } else {
+                // the internal arrays contain other arrays as values
+                final Bit32Array<Object> array = (Bit32Array<Object>)arrayValue;
+                return MultiTransformCursor.of(array.valuesCursor(), new CursorTransforminator(shift - 5));
             }
         }
     }
