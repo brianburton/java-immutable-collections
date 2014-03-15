@@ -56,8 +56,12 @@ public class ListTimingComparison
         final int maxCommand = 6;
 
         runTests(seed, loops, 32, maxCommand);
+        System.gc();
+        Thread.sleep(500);
         runTests(seed, loops, 1024, maxCommand);
-        runTests(seed, loops, 100000, maxCommand);
+        System.gc();
+        Thread.sleep(500);
+        runTests(seed, loops, 10000, maxCommand);
     }
 
     private static void runTests(int seed,
@@ -70,20 +74,34 @@ public class ListTimingComparison
             Random random = new Random(seed);
             int adds = 0;
             int sets = 0;
-            int inserts = 0;
             int removes = 0;
             int gets = 0;
             long startMap = System.currentTimeMillis();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if ((expected.size() == 0) || (command <= 1 && expected.size() < maxSize)) {
+                if (expected.size() == 0) {
                     int value = random.nextInt();
                     expected.add(value);
                     adds += 1;
+                } else if (command <= 1) {
+                    int value = random.nextInt();
+                    if (expected.size() < maxSize) {
+                        expected.add(value);
+                        adds += 1;
+                    } else {
+                        int index = random.nextInt(expected.size());
+                        expected.set(index, value);
+                        sets += 1;
+                    }
                 } else if (command == 2) {
                     expected.remove(expected.size() - 1);
                     removes += 1;
+                } else if (command == 3) {
+                    int index = random.nextInt(expected.size());
+                    int value = random.nextInt();
+                    expected.set(index, value);
+                    sets += 1;
                 } else {
                     int index = random.nextInt(expected.size());
                     expected.get(index);
@@ -91,7 +109,7 @@ public class ListTimingComparison
                 }
             }
             long endMap = System.currentTimeMillis();
-            System.out.printf("jlist adds %d inserts %d sets %s removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, expected.size(), (endMap - startMap));
+            System.out.printf("jlist adds %d sets %s removes %d gets %d size %d elapsed %d%n", adds, sets, removes, gets, expected.size(), (endMap - startMap));
 
             random = new Random(seed);
             adds = 0;
@@ -102,13 +120,28 @@ public class ListTimingComparison
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if ((list.size() == 0) || (command <= 1 && list.size() < maxSize)) {
+                if (list.size() == 0) {
                     int value = random.nextInt();
                     list = list.insert(value);
                     adds += 1;
+                } else if (command <= 1) {
+                    int value = random.nextInt();
+                    if (list.size() < maxSize) {
+                        list = list.insert(value);
+                        adds += 1;
+                    } else {
+                        int index = random.nextInt(list.size());
+                        list = list.assign(index, value);
+                        sets += 1;
+                    }
                 } else if (command == 2) {
                     list = list.deleteLast();
                     removes += 1;
+                } else if (command == 3) {
+                    int index = random.nextInt(list.size());
+                    int value = random.nextInt();
+                    list = list.assign(index, value);
+                    sets += 1;
                 } else {
                     int index = random.nextInt(list.size());
                     list.get(index);
@@ -116,7 +149,7 @@ public class ListTimingComparison
                 }
             }
             long endPer = System.currentTimeMillis();
-            System.out.printf("flist adds %d inserts %d sets %d removes %d gets %d size %d elapsed %d%n", adds, inserts, sets, removes, gets, list.size(), (endPer - startPer));
+            System.out.printf("ilist adds %d sets %d removes %d gets %d size %d elapsed %d%n", adds, sets, removes, gets, list.size(), (endPer - startPer));
 
             Iterator<Integer> expectedIterator = expected.iterator();
             Iterator<Integer> listIterator = list.iterator();
