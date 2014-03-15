@@ -88,13 +88,16 @@ public abstract class Bit32Array<T>
                                        int limit)
     {
         final int size = limit - offset;
+        if (startIndex + size > 32) {
+            throw new ArrayIndexOutOfBoundsException(String.format("startIndex + size > 32 (%d)", startIndex + size));
+        }
         switch (size) {
         case 0:
             return of();
         case 1:
             return new SingleBit32Array<T>(startIndex, source.get(offset));
         case 32:
-            return new FullBit32Array<T>(source, startIndex, offset);
+            return new FullBit32Array<T>(source, offset);
         default:
             return new StandardBit32Array(source, startIndex, offset, limit);
         }

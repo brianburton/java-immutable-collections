@@ -57,15 +57,12 @@ public class FullBit32Array<T>
 
     @SuppressWarnings("unchecked")
     FullBit32Array(Indexed<T> source,
-                   int startIndex,
                    int offset)
     {
         assert source.size() - offset >= 32;
         T[] entries = (T[])new Object[32];
-        int index = 0;
-        offset += startIndex;
-        while (index < 32) {
-            entries[index++] = source.get(offset++);
+        for (int index = 0; index < 32; ++index) {
+            entries[index] = source.get(offset++);
         }
         this.entries = entries;
     }
