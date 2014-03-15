@@ -53,9 +53,19 @@ public class ListTimingComparison
         final int seed = Integer.valueOf(argv[0]);
         final int loops = Integer.valueOf(argv[1]);
 
-        final int maxValue = 10 * loops;
         final int maxCommand = 6;
 
+        runTests(seed, loops, 32, maxCommand);
+        runTests(seed, loops, 1024, maxCommand);
+        runTests(seed, loops, 100000, maxCommand);
+    }
+
+    private static void runTests(int seed,
+                                 int loops,
+                                 int maxSize,
+                                 int maxCommand)
+    {
+        System.out.printf("STARTING TEST WITH seed %d loops %d maxSize %d maxCommand %d%n", seed, loops, maxSize, maxCommand);
         for (int outerloop = 0; outerloop < 10; ++outerloop) {
             Random random = new Random(seed);
             int adds = 0;
@@ -67,8 +77,8 @@ public class ListTimingComparison
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if (expected.size() == 0 || command <= 1) {
-                    int value = random.nextInt(maxValue);
+                if ((expected.size() == 0) || (command <= 1 && expected.size() < maxSize)) {
+                    int value = random.nextInt();
                     expected.add(value);
                     adds += 1;
                 } else if (command == 2) {
@@ -92,8 +102,8 @@ public class ListTimingComparison
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if (list.size() == 0 || command <= 1) {
-                    int value = random.nextInt(maxValue);
+                if ((list.size() == 0) || (command <= 1 && list.size() < maxSize)) {
+                    int value = random.nextInt();
                     list = list.insert(value);
                     adds += 1;
                 } else if (command == 2) {
