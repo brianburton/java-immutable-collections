@@ -61,7 +61,7 @@ public class MultiTransformCursorTest
     public void testMultiple()
     {
         RangeTransform transform = new RangeTransform();
-        Cursor<Integer> multi = MultiTransformCursor.of(StandardCursor.forRange(1, 3), transform);
+        Cursor<Integer> multi = MultiTransformCursor.of(StandardCursor.forRange(0, 3), transform);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 1, 2, 3), multi);
     }
 

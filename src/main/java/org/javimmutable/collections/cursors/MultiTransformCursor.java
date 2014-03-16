@@ -90,7 +90,7 @@ public class MultiTransformCursor<S, T>
             if (nextCursor.hasValue()) {
                 return new MultiTransformCursor<S, T>(nextSource, nextCursor, transforminator);
             }
-            nextSource = sourceCursor.next();
+            nextSource = nextSource.next();
         }
 
         return EmptyStartedCursor.of();
