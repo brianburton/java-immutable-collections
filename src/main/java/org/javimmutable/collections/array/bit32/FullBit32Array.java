@@ -48,11 +48,10 @@ public class FullBit32Array<T>
 {
     private final T[] entries;
 
-    @SuppressWarnings("unchecked")
-    FullBit32Array(Object[] entries)
+    FullBit32Array(T[] entries)
     {
         assert entries.length == 32;
-        this.entries = (T[])entries;
+        this.entries = entries;
     }
 
     @SuppressWarnings("unchecked")

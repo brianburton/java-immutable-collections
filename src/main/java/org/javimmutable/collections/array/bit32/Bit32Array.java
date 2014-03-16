@@ -87,8 +87,8 @@ public abstract class Bit32Array<T>
                                        int limit)
     {
         final int size = limit - offset;
-        if (size > 32) {
-            throw new IllegalArgumentException(String.format("size > 32 (%d)", size));
+        if (size < 0 || size > 32) {
+            throw new IllegalArgumentException(String.format("size must be 0..32 (%d)", size));
         }
         switch (size) {
         case 0:

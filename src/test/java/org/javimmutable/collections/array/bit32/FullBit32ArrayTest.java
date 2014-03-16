@@ -49,7 +49,7 @@ public class FullBit32ArrayTest
 {
     public void testVarious()
     {
-        @SuppressWarnings("unchecked") Object[] entries = new Object[32];
+        Integer[] entries = new Integer[32];
         for (int k = 0; k < 32; ++k) {
             entries[k] = k;
         }
@@ -100,7 +100,7 @@ public class FullBit32ArrayTest
     public void testCursor()
     {
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        @SuppressWarnings("unchecked") Object[] entries = new Object[32];
+        Integer[] entries = new Integer[32];
         for (int k = 0; k < 32; ++k) {
             entries[k] = k;
             expected.add(MapEntry.of(k, k));
