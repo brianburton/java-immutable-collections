@@ -72,8 +72,8 @@ public abstract class Bit32Array<T>
     }
 
     /**
-     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 - startIndex elements
-     * from an Indexed collection.  (limit - offset) must be in the range 0 to (32 - startIndex) inclusive.
+     * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 elements
+     * from an Indexed collection.  (limit - offset) must be in the range 0 to 32 inclusive.
      *
      * @param source
      * @param offset
@@ -83,23 +83,22 @@ public abstract class Bit32Array<T>
      */
     @SuppressWarnings("unchecked")
     public static <T> Bit32Array<T> of(Indexed<T> source,
-                                       int startIndex,
                                        int offset,
                                        int limit)
     {
         final int size = limit - offset;
-        if (startIndex + size > 32) {
-            throw new ArrayIndexOutOfBoundsException(String.format("startIndex + size > 32 (%d)", startIndex + size));
+        if (size > 32) {
+            throw new IllegalArgumentException(String.format("size > 32 (%d)", size));
         }
         switch (size) {
         case 0:
             return of();
         case 1:
-            return new SingleBit32Array<T>(startIndex, source.get(offset));
+            return new SingleBit32Array<T>(0, source.get(offset));
         case 32:
             return new FullBit32Array<T>(source, offset);
         default:
-            return new StandardBit32Array(source, startIndex, offset, limit);
+            return new StandardBit32Array(source, offset, limit);
         }
     }
 

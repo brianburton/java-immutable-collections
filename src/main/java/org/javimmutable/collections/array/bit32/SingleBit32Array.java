@@ -48,8 +48,8 @@ public class SingleBit32Array<T>
     private final int index;
     private final T value;
 
-    public SingleBit32Array(int index,
-                            T value)
+    SingleBit32Array(int index,
+                     T value)
     {
         this.index = index;
         this.value = value;

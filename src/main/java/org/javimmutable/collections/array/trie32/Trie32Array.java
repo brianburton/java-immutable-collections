@@ -105,7 +105,7 @@ public class Trie32Array<T>
 
         // small lists can be directly constructed from a single leaf array
         if (size <= 32) {
-            return new Trie32Array<T>(addParentLevels(5, Bit32Array.of(source, 0, offset, limit)), size);
+            return new Trie32Array<T>(addParentLevels(5, Bit32Array.of(source, offset, limit)), size);
         }
 
         // first construct an array containing a single level of arrays of leaves
@@ -115,11 +115,11 @@ public class Trie32Array<T>
         for (int b = 0; b < numBranches; ++b) {
             int branchSize = Math.min(32, limit - offset);
             int branchLimit = offset + branchSize;
-            branchArray[b] = Bit32Array.of(source, 0, offset, branchLimit);
+            branchArray[b] = Bit32Array.of(source, offset, branchLimit);
             offset = branchLimit;
             added += branchSize;
         }
-        Bit32Array<Object> root = Bit32Array.of(IndexedArray.<Object>retained(branchArray), 0, 0, numBranches);
+        Bit32Array<Object> root = Bit32Array.of(IndexedArray.<Object>retained(branchArray), 0, numBranches);
 
         // then add any extras left over above that size
         Trie32Array<T> array = new Trie32Array<T>(addParentLevels(10, root), added);

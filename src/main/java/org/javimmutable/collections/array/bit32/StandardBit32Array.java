@@ -72,12 +72,11 @@ public class StandardBit32Array<T>
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(Indexed<T> source,
-                       int startIndex,
                        int offset,
                        int limit)
     {
         final int size = limit - offset;
-        if (size < 0 || size > (32 - startIndex)) {
+        if (size < 0 || size > 32) {
             throw new IllegalArgumentException("invalid size " + size);
         } else {
             final T[] entries = (T[])new Object[size];
@@ -87,7 +86,7 @@ public class StandardBit32Array<T>
             if (size == 32) {
                 this.bitmask = -1;
             } else {
-                this.bitmask = ((1 << size) - 1) << startIndex;
+                this.bitmask = (1 << size) - 1;
             }
             this.entries = entries;
         }
