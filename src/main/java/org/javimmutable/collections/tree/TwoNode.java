@@ -104,12 +104,12 @@ public class TwoNode<K, V>
     }
 
     @Override
-    UpdateResult<K, V> update(Comparator<K> props,
-                              K key,
-                              V value)
+    UpdateResult<K, V> assignImpl(Comparator<K> props,
+                                  K key,
+                                  V value)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
-            UpdateResult<K, V> result = left.update(props, key, value);
+            UpdateResult<K, V> result = left.assignImpl(props, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -121,7 +121,7 @@ public class TwoNode<K, V>
                 return UpdateResult.createInPlace(result.createLeftThreeNode(right, rightMaxKey), result.sizeDelta);
             }
         } else {
-            UpdateResult<K, V> result = right.update(props, key, value);
+            UpdateResult<K, V> result = right.assignImpl(props, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -155,11 +155,11 @@ public class TwoNode<K, V>
     }
 
     @Override
-    DeleteResult<K, V> delete(Comparator<K> props,
-                              K key)
+    DeleteResult<K, V> deleteImpl(Comparator<K> props,
+                                  K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
-            DeleteResult<K, V> result = left.delete(props, key);
+            DeleteResult<K, V> result = left.deleteImpl(props, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -182,7 +182,7 @@ public class TwoNode<K, V>
                 }
             }
         } else {
-            DeleteResult<K, V> result = right.delete(props, key);
+            DeleteResult<K, V> result = right.deleteImpl(props, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;

@@ -118,9 +118,9 @@ public class LeafNode<K, V>
     }
 
     @Override
-    UpdateResult<K, V> update(Comparator<K> props,
-                              K key,
-                              V value)
+    UpdateResult<K, V> assignImpl(Comparator<K> props,
+                                  K key,
+                                  V value)
     {
         final int diff = props.compare(key, nodeKey);
         if (diff == 0) {
@@ -149,8 +149,8 @@ public class LeafNode<K, V>
     }
 
     @Override
-    DeleteResult<K, V> delete(Comparator<K> props,
-                              K key)
+    DeleteResult<K, V> deleteImpl(Comparator<K> props,
+                                  K key)
     {
         if (props.compare(key, nodeKey) == 0) {
             return DeleteResult.createEliminated();

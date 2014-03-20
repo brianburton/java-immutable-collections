@@ -191,7 +191,7 @@ public class ThreeNodeTest
 
     public void testUpdateLeftUnchanged()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 10, 10));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 10, 10));
     }
 
     public void testUpdateLeftInPlace()
@@ -204,7 +204,7 @@ public class ThreeNodeTest
                                                                            node.getMiddleMaxKey(),
                                                                            node.getRightMaxKey()),
                                            0);
-        assertEquals(expected, node.update(comparator, 10, 20));
+        assertEquals(expected, node.assignImpl(comparator, 10, 20));
     }
 
     public void testUpdateLeftSplit()
@@ -219,12 +219,12 @@ public class ThreeNodeTest
                                                                        node.getMiddleMaxKey(),
                                                                        node.getRightMaxKey()),
                                          1);
-        assertEquals(expected, node.update(comparator, 8, 8));
+        assertEquals(expected, node.assignImpl(comparator, 8, 8));
     }
 
     public void testUpdateMiddleUnchanged()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 12, 12));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 12, 12));
     }
 
     public void testUpdateMiddleInPlace()
@@ -237,7 +237,7 @@ public class ThreeNodeTest
                                                                            node.getMiddleMaxKey(),
                                                                            node.getRightMaxKey()),
                                            0);
-        assertEquals(expected, node.update(comparator, 12, 24));
+        assertEquals(expected, node.assignImpl(comparator, 12, 24));
     }
 
     public void testUpdateMiddleSplit()
@@ -252,12 +252,12 @@ public class ThreeNodeTest
                                                                        node.getMiddleMaxKey(),
                                                                        node.getRightMaxKey()),
                                          1);
-        assertEquals(expected, node.update(comparator, 11, 11));
+        assertEquals(expected, node.assignImpl(comparator, 11, 11));
     }
 
     public void testUpdateRightUnchanged()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 14, 14));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 14, 14));
     }
 
     public void testUpdateRightInPlace()
@@ -270,7 +270,7 @@ public class ThreeNodeTest
                                                                            node.getMiddleMaxKey(),
                                                                            node.getRightMaxKey()),
                                            0);
-        assertEquals(expected, node.update(comparator, 14, 28));
+        assertEquals(expected, node.assignImpl(comparator, 14, 28));
     }
 
     public void testUpdateRightSplit()
@@ -285,12 +285,12 @@ public class ThreeNodeTest
                                                                        node.getRightMaxKey(),
                                                                        16),
                                          1);
-        assertEquals(expected, node.update(comparator, 16, 16));
+        assertEquals(expected, node.assignImpl(comparator, 16, 16));
     }
 
     public void testDeleteLeftUnchanged()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 8));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 8));
     }
 
     public void testDeleteLeftInPlace()
@@ -335,7 +335,7 @@ public class ThreeNodeTest
                                                                                                              10,
                                                                                                              13,
                                                                                                              16));
-        assertEquals(expected, testNode.delete(comparator, 9));
+        assertEquals(expected, testNode.deleteImpl(comparator, 9));
     }
 
     public void testLeftEliminated()
@@ -344,7 +344,7 @@ public class ThreeNodeTest
                                                                               node.getRight(),
                                                                               node.getMiddleMaxKey(),
                                                                               node.getRightMaxKey())),
-                     node.delete(comparator, 10));
+                     node.deleteImpl(comparator, 10));
     }
 
     public void testDeleteLeftRemnant1()
@@ -376,7 +376,7 @@ public class ThreeNodeTest
                                                                                                                                          14),
                                                                                                            12,
                                                                                                            14));
-        assertEquals(expected, testNode.delete(comparator, 8));
+        assertEquals(expected, testNode.deleteImpl(comparator, 8));
     }
 
     public void testDeleteLeftRemnant2()
@@ -413,12 +413,12 @@ public class ThreeNodeTest
                                                                                                              10,
                                                                                                              12,
                                                                                                              14));
-        assertEquals(expected, testNode.delete(comparator, 8));
+        assertEquals(expected, testNode.deleteImpl(comparator, 8));
     }
 
     public void testDeleteMiddleUnchanged()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 11));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 11));
     }
 
     public void testDeleteMiddleInPlace()
@@ -463,7 +463,7 @@ public class ThreeNodeTest
                                                                                                              10,
                                                                                                              13,
                                                                                                              16));
-        assertEquals(expected, testNode.delete(comparator, 12));
+        assertEquals(expected, testNode.deleteImpl(comparator, 12));
     }
 
     public void testMiddleEliminated()
@@ -472,7 +472,7 @@ public class ThreeNodeTest
                                                                               node.getRight(),
                                                                               node.getLeftMaxKey(),
                                                                               node.getRightMaxKey())),
-                     node.delete(comparator, 12));
+                     node.deleteImpl(comparator, 12));
     }
 
     public void testDeleteMiddleRemnant1()
@@ -504,7 +504,7 @@ public class ThreeNodeTest
                                                                                                                                            14),
                                                                                                            10,
                                                                                                            14));
-        assertEquals(expected, testNode.delete(comparator, 11));
+        assertEquals(expected, testNode.deleteImpl(comparator, 11));
     }
 
     public void testDeleteMiddleRemnant2()
@@ -541,12 +541,12 @@ public class ThreeNodeTest
                                                                                                              9,
                                                                                                              12,
                                                                                                              14));
-        assertEquals(expected, testNode.delete(comparator, 10));
+        assertEquals(expected, testNode.deleteImpl(comparator, 10));
     }
 
     public void testDeleteRightUnchanged()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 15));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 15));
     }
 
     public void testDeleteRightInPlace()
@@ -591,7 +591,7 @@ public class ThreeNodeTest
                                                                                                              10,
                                                                                                              13,
                                                                                                              16));
-        assertEquals(expected, testNode.delete(comparator, 15));
+        assertEquals(expected, testNode.deleteImpl(comparator, 15));
     }
 
     public void testRightEliminated()
@@ -600,7 +600,7 @@ public class ThreeNodeTest
                                                                               node.getMiddle(),
                                                                               node.getLeftMaxKey(),
                                                                               node.getMiddleMaxKey())),
-                     node.delete(comparator, 14));
+                     node.deleteImpl(comparator, 14));
     }
 
     public void testDeleteRightRemnant1()
@@ -632,7 +632,7 @@ public class ThreeNodeTest
                                                                                                                                            13),
                                                                                                            10,
                                                                                                            13));
-        assertEquals(expected, testNode.delete(comparator, 14));
+        assertEquals(expected, testNode.deleteImpl(comparator, 14));
     }
 
     public void testDeleteRightRemnant2()
@@ -669,6 +669,6 @@ public class ThreeNodeTest
                                                                                                              9,
                                                                                                              11,
                                                                                                              13));
-        assertEquals(expected, testNode.delete(comparator, 14));
+        assertEquals(expected, testNode.deleteImpl(comparator, 14));
     }
 }

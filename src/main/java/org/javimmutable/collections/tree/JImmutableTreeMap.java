@@ -37,9 +37,8 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +65,7 @@ public class JImmutableTreeMap<K, V>
      */
     private JImmutableTreeMap(Comparator<K> comparator)
     {
-        this(comparator, null, 0);
+        this(comparator, EmptyNode.<K, V>of(), 0);
     }
 
     @SuppressWarnings("unchecked")
@@ -121,11 +120,7 @@ public class JImmutableTreeMap<K, V>
         if (key == null) {
             throw new NullPointerException();
         }
-        if (root == null) {
-            return defaultValue;
-        } else {
-            return root.getValueOr(comparator, key, defaultValue);
-        }
+        return root.getValueOr(comparator, key, defaultValue);
     }
 
     @Override
@@ -134,11 +129,7 @@ public class JImmutableTreeMap<K, V>
         if (key == null) {
             throw new NullPointerException();
         }
-        if (root == null) {
-            return Holders.of();
-        } else {
-            return root.find(comparator, key);
-        }
+        return root.find(comparator, key);
     }
 
     @Override
@@ -147,11 +138,7 @@ public class JImmutableTreeMap<K, V>
         if (key == null) {
             throw new NullPointerException();
         }
-        if (root == null) {
-            return Holders.of();
-        } else {
-            return root.findEntry(comparator, key);
-        }
+        return root.findEntry(comparator, key);
     }
 
     @Override
@@ -161,25 +148,12 @@ public class JImmutableTreeMap<K, V>
         if (key == null) {
             throw new NullPointerException();
         }
-        if (root == null) {
-            return create(new LeafNode<K, V>(key, value), 1);
+        MutableDelta sizeDelta = new MutableDelta();
+        TreeNode<K, V> newRoot = root.assign(comparator, key, value, sizeDelta);
+        if (newRoot == root) {
+            return this;
         } else {
-            UpdateResult<K, V> result = root.update(comparator, key, value);
-            switch (result.type) {
-            case UNCHANGED:
-                return this;
-
-            case INPLACE:
-                return create(result.newNode, result.sizeDelta);
-
-            case SPLIT:
-                return create(new TwoNode<K, V>(result.newNode,
-                                                result.extraNode,
-                                                result.newNode.getMaxKey(),
-                                                result.extraNode.getMaxKey()),
-                              result.sizeDelta);
-            }
-            throw new RuntimeException();
+            return create(newRoot, sizeDelta.getValue());
         }
     }
 
@@ -190,15 +164,12 @@ public class JImmutableTreeMap<K, V>
             throw new NullPointerException();
         }
 
-        if (root == null) {
-            return this;
-        }
-
-        DeleteResult<K, V> result = root.delete(comparator, key);
-        if (result.type == DeleteResult.Type.UNCHANGED) {
+        MutableDelta sizeDelta = new MutableDelta();
+        TreeNode<K, V> newRoot = root.delete(comparator, key, sizeDelta);
+        if (newRoot == root) {
             return this;
         } else {
-            return create(result.node, -1);
+            return create(newRoot, sizeDelta.getValue());
         }
     }
 
@@ -217,7 +188,7 @@ public class JImmutableTreeMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return (root == null) ? StandardCursor.<Entry<K, V>>of() : root.cursor();
+        return root.cursor();
     }
 
     public List<K> getKeysList()
@@ -231,9 +202,7 @@ public class JImmutableTreeMap<K, V>
 
     public void verifyDepthsMatch()
     {
-        if (root != null) {
-            root.verifyDepthsMatch();
-        }
+        root.verifyDepthsMatch();
     }
 
     public Comparator<K> getComparator()

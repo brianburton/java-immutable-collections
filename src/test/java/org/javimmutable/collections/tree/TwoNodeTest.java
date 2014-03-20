@@ -162,7 +162,7 @@ public class TwoNodeTest
 
     public void testUpdateLeftUnchanged()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 10, 10));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 10, 10));
     }
 
     public void testUpdateLeftInPlace()
@@ -173,7 +173,7 @@ public class TwoNodeTest
                                                                          10,
                                                                          node.getRightMaxKey()),
                                            0);
-        assertEquals(expected, node.update(comparator, 10, 20));
+        assertEquals(expected, node.assignImpl(comparator, 10, 20));
     }
 
     public void testUpdateLeftSplit()
@@ -186,12 +186,12 @@ public class TwoNodeTest
                                                                            node.getLeftMaxKey(),
                                                                            node.getRightMaxKey()),
                                            1);
-        assertEquals(expected, node.update(comparator, 8, 8));
+        assertEquals(expected, node.assignImpl(comparator, 8, 8));
     }
 
     public void testUpdateRightUnchanged()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 12, 12));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 12, 12));
     }
 
     public void testUpdateRightInPlace()
@@ -202,7 +202,7 @@ public class TwoNodeTest
                                                                          node.getLeftMaxKey(),
                                                                          12),
                                            0);
-        assertEquals(expected, node.update(comparator, 12, 20));
+        assertEquals(expected, node.assignImpl(comparator, 12, 20));
     }
 
     public void testUpdateRightSplit()
@@ -215,12 +215,12 @@ public class TwoNodeTest
                                                                            node.getRightMaxKey(),
                                                                            14),
                                            1);
-        assertEquals(expected, node.update(comparator, 14, 14));
+        assertEquals(expected, node.assignImpl(comparator, 14, 14));
     }
 
     public void testDeleteLeftUnchanged()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 8));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 8));
     }
 
     public void testDeleteLeftInPlace()
@@ -247,12 +247,12 @@ public class TwoNodeTest
                                                                                                                                          12),
                                                                                                            10,
                                                                                                            12));
-        assertEquals(expected, testNode.delete(comparator, 9));
+        assertEquals(expected, testNode.deleteImpl(comparator, 9));
     }
 
     public void testLeftEliminated()
     {
-        assertEquals(DeleteResult.createRemnant(node.getRight()), node.delete(comparator, 10));
+        assertEquals(DeleteResult.createRemnant(node.getRight()), node.deleteImpl(comparator, 10));
     }
 
     public void testDeleteLeftRemnant()
@@ -273,7 +273,7 @@ public class TwoNodeTest
                                                                                                              8,
                                                                                                              11,
                                                                                                              12));
-        assertEquals(expected, testNode.delete(comparator, 10));
+        assertEquals(expected, testNode.deleteImpl(comparator, 10));
     }
 
     public void testDeleteLeftRemnantInPlace()
@@ -300,12 +300,12 @@ public class TwoNodeTest
                                                                                                                                          13),
                                                                                                            11,
                                                                                                            13));
-        assertEquals(expected, testNode.delete(comparator, 8));
+        assertEquals(expected, testNode.deleteImpl(comparator, 8));
     }
 
     public void testDeleteRightUnchanged()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 14));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 14));
     }
 
     public void testDeleteRightInPlace()
@@ -332,12 +332,12 @@ public class TwoNodeTest
                                                                                                                                          12),
                                                                                                            9,
                                                                                                            12));
-        assertEquals(expected, testNode.delete(comparator, 10));
+        assertEquals(expected, testNode.deleteImpl(comparator, 10));
     }
 
     public void testRightEliminated()
     {
-        assertEquals(DeleteResult.createRemnant(node.getLeft()), node.delete(comparator, 12));
+        assertEquals(DeleteResult.createRemnant(node.getLeft()), node.deleteImpl(comparator, 12));
     }
 
     public void testDeleteRightRemnant()
@@ -358,7 +358,7 @@ public class TwoNodeTest
                                                                                                              8,
                                                                                                              10,
                                                                                                              12));
-        assertEquals(expected, testNode.delete(comparator, 11));
+        assertEquals(expected, testNode.deleteImpl(comparator, 11));
     }
 
     public void testDeleteRightRemnantInPlace()
@@ -385,6 +385,6 @@ public class TwoNodeTest
                                                                                                                                          13),
                                                                                                            10,
                                                                                                            13));
-        assertEquals(expected, testNode.delete(comparator, 12));
+        assertEquals(expected, testNode.deleteImpl(comparator, 12));
     }
 }

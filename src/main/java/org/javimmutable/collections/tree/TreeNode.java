@@ -39,41 +39,142 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Collection;
 import java.util.Comparator;
 
+/**
+ * Abstract base class for 2-3 tree nodes.  Provides public methods for searching and modifying
+ * the tree and package private methods used to implement the public methods.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public abstract class TreeNode<K, V>
         implements Cursorable<JImmutableMap.Entry<K, V>>
 {
-    public abstract V getValueOr(Comparator<K> props,
+    /**
+     * Return the value matching key or defaultValue if no match is found.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public abstract V getValueOr(Comparator<K> comparator,
                                  K key,
                                  V defaultValue);
 
-    public abstract Holder<V> find(Comparator<K> props,
+    /**
+     * Return a (possibly empty) Holder containing the value matching key.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @return
+     */
+    public abstract Holder<V> find(Comparator<K> comparator,
                                    K key);
 
-    public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
+    /**
+     * Return a (possibly empty) Holder containing the an Entry matching key.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @return
+     */
+    public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> comparator,
                                                                 K key);
 
+    /**
+     * Adds this node's value and all of its children's value to the collection.
+     *
+     * @param collection
+     */
     public abstract void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
 
-    public abstract int verifyDepthsMatch();
-
+    /**
+     * Returns a Cursor visiting all entries in sorted order.
+     *
+     * @return
+     */
     public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
+
+    /**
+     * Assign the specified value to the specified key.  Returns a node (possibly this same node)
+     * reflecting the assignment and updates sizeDelta with the change in size (if any).
+     *
+     * @param comparator
+     * @param key
+     * @param value
+     * @param sizeDelta
+     * @return
+     */
+    public TreeNode<K, V> assign(Comparator<K> comparator,
+                                 K key,
+                                 V value,
+                                 MutableDelta sizeDelta)
+    {
+        UpdateResult<K, V> result = assignImpl(comparator, key, value);
+        switch (result.type) {
+        case UNCHANGED:
+            return this;
+
+        case INPLACE:
+            sizeDelta.add(result.sizeDelta);
+            return result.newNode;
+
+        case SPLIT:
+            sizeDelta.add(result.sizeDelta);
+            return new TwoNode<K, V>(result.newNode,
+                                     result.extraNode,
+                                     result.newNode.getMaxKey(),
+                                     result.extraNode.getMaxKey());
+        }
+        throw new RuntimeException();
+    }
+
+    /**
+     * Deletes the specified key.  Returns a node (possibly this same node)
+     * reflecting the deletion and updates sizeDelta with the change in size (if any).
+     *
+     * @param comparator
+     * @param key
+     * @param sizeDelta
+     * @return
+     */
+    public TreeNode<K, V> delete(Comparator<K> comparator,
+                                 K key,
+                                 MutableDelta sizeDelta)
+    {
+        DeleteResult<K, V> result = deleteImpl(comparator, key);
+        switch (result.type) {
+        case UNCHANGED:
+            return this;
+
+        default:
+            sizeDelta.subtract(1);
+            return result.node;
+        }
+    }
+
+    abstract int verifyDepthsMatch();
 
     abstract K getMaxKey();
 
-    abstract UpdateResult<K, V> update(Comparator<K> props,
-                                       K key,
-                                       V value);
+    abstract UpdateResult<K, V> assignImpl(Comparator<K> comparator,
+                                           K key,
+                                           V value);
 
-    abstract DeleteResult<K, V> delete(Comparator<K> props,
-                                       K key);
+    abstract DeleteResult<K, V> deleteImpl(Comparator<K> comparator,
+                                           K key);
 
-    abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
+    abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> comparator,
                                                      TreeNode<K, V> node);
 
-    abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
+    abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> comparator,
                                                       TreeNode<K, V> node);
 }
