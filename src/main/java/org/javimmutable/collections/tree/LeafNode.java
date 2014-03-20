@@ -45,8 +45,8 @@ import java.util.Collection;
 import java.util.Comparator;
 
 public class LeafNode<K, V>
-        implements TreeNode<K, V>,
-                   JImmutableMap.Entry<K, V>,
+        extends TreeNode<K, V>
+        implements JImmutableMap.Entry<K, V>,
                    Holder<V>
 {
     private final K nodeKey;
@@ -112,15 +112,15 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public K getMaxKey()
+    K getMaxKey()
     {
         return nodeKey;
     }
 
     @Override
-    public UpdateResult<K, V> update(Comparator<K> props,
-                                     K key,
-                                     V value)
+    UpdateResult<K, V> update(Comparator<K> props,
+                              K key,
+                              V value)
     {
         final int diff = props.compare(key, nodeKey);
         if (diff == 0) {
@@ -149,8 +149,8 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public DeleteResult<K, V> delete(Comparator<K> props,
-                                     K key)
+    DeleteResult<K, V> delete(Comparator<K> props,
+                              K key)
     {
         if (props.compare(key, nodeKey) == 0) {
             return DeleteResult.createEliminated();
@@ -160,8 +160,8 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                                   TreeNode<K, V> node)
+    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
+                                            TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
                                                              this,
@@ -170,8 +170,8 @@ public class LeafNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                                    TreeNode<K, V> node)
+    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
+                                             TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(this,
                                                              node,

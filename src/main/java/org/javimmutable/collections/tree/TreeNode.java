@@ -43,37 +43,37 @@ import org.javimmutable.collections.JImmutableMap;
 import java.util.Collection;
 import java.util.Comparator;
 
-public interface TreeNode<K, V>
-        extends Cursorable<JImmutableMap.Entry<K, V>>
+public abstract class TreeNode<K, V>
+        implements Cursorable<JImmutableMap.Entry<K, V>>
 {
-    public V getValueOr(Comparator<K> props,
-                        K key,
-                        V defaultValue);
+    public abstract V getValueOr(Comparator<K> props,
+                                 K key,
+                                 V defaultValue);
 
-    public Holder<V> find(Comparator<K> props,
-                          K key);
+    public abstract Holder<V> find(Comparator<K> props,
+                                   K key);
 
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
-                                                       K key);
+    public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
+                                                                K key);
 
-    public K getMaxKey();
+    public abstract void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
 
-    public UpdateResult<K, V> update(Comparator<K> props,
-                                     K key,
-                                     V value);
+    public abstract int verifyDepthsMatch();
 
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
+    public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
 
-    public int verifyDepthsMatch();
+    abstract K getMaxKey();
 
-    public DeleteResult<K, V> delete(Comparator<K> props,
-                                     K key);
+    abstract UpdateResult<K, V> update(Comparator<K> props,
+                                       K key,
+                                       V value);
 
-    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                                   TreeNode<K, V> node);
+    abstract DeleteResult<K, V> delete(Comparator<K> props,
+                                       K key);
 
-    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                                    TreeNode<K, V> node);
+    abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
+                                                     TreeNode<K, V> node);
 
-    public Cursor<JImmutableMap.Entry<K, V>> cursor();
+    abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
+                                                      TreeNode<K, V> node);
 }
