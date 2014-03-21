@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.JImmutableList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +119,7 @@ public class ListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-            JImmutableArrayList<Integer> list = JImmutableArrayList.of();
+            JImmutableList<Integer> list = JImmutableArrayList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.size() == 0) {

@@ -54,6 +54,11 @@ import java.util.Comparator;
 public abstract class TreeNode<K, V>
         implements Cursorable<JImmutableMap.Entry<K, V>>
 {
+    public static <K, V> TreeNode<K, V> of()
+    {
+        return EmptyNode.of();
+    }
+
     /**
      * Return the value matching key or defaultValue if no match is found.  Searches this node
      * and its appropriate children.
@@ -159,6 +164,16 @@ public abstract class TreeNode<K, V>
             sizeDelta.subtract(1);
             return result.node;
         }
+    }
+
+    /**
+     * Return true if this node contains no children or value.
+     *
+     * @return
+     */
+    public boolean isEmpty()
+    {
+        return false;
     }
 
     abstract int verifyDepthsMatch();

@@ -33,109 +33,77 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
-import java.util.Collection;
-import java.util.Comparator;
-
-public class EmptyNode<K, V>
-        extends TreeNode<K, V>
+public class EmptyHashMap<K, V>
+        extends AbstractJImmutableMap<K, V>
 {
-    static final EmptyNode INSTANCE = new EmptyNode();
+    private static EmptyHashMap INSTANCE = new EmptyHashMap();
 
-    private EmptyNode()
+    private EmptyHashMap()
     {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> EmptyNode<K, V> of()
+    public static <K, V> EmptyHashMap<K, V> of()
     {
-        return (EmptyNode<K, V>)INSTANCE;
+        return (EmptyHashMap<K, V>)INSTANCE;
     }
 
     @Override
-    public V getValueOr(Comparator<K> props,
-                        K key,
-                        V defaultValue)
-    {
-        return defaultValue;
-    }
-
-    @Override
-    public Holder<V> find(Comparator<K> props,
-                          K key)
+    public Holder<V> find(K key)
     {
         return Holders.of();
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
-                                                       K key)
+    public Holder<Entry<K, V>> findEntry(K key)
     {
         return Holders.of();
     }
 
     @Override
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
+    public JImmutableMap<K, V> assign(K key,
+                                      V value)
     {
+        return JImmutableHashMap.<K, V>forKey(key).assign(key, value);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor()
+    public JImmutableMap<K, V> delete(K key)
     {
-        return StandardCursor.of();
+        return this;
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        return true;
-    }
-
-    @Override
-    int verifyDepthsMatch()
+    public int size()
     {
         return 0;
     }
 
     @Override
-    K getMaxKey()
+    public JImmutableMap<K, V> deleteAll()
     {
-        return null;
+        return this;
     }
 
     @Override
-    UpdateResult<K, V> assignImpl(Comparator<K> props,
-                                  K key,
-                                  V value)
+    public Cursor<Entry<K, V>> cursor()
     {
-        return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 1);
+        return StandardCursor.of();
     }
 
     @Override
-    DeleteResult<K, V> deleteImpl(Comparator<K> props,
-                                  K key)
+    public V getValueOr(K key,
+                        V defaultValue)
     {
-        return DeleteResult.createUnchanged();
-    }
-
-    @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                            TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<K, V>(node);
-    }
-
-    @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                             TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<K, V>(node);
+        return defaultValue;
     }
 }

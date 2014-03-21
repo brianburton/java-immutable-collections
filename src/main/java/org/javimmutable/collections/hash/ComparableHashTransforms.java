@@ -33,109 +33,73 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.array.trie32.Trie32HashTable;
+import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.tree.ComparableComparator;
+import org.javimmutable.collections.tree.TreeNode;
 
-import java.util.Collection;
 import java.util.Comparator;
 
-public class EmptyNode<K, V>
-        extends TreeNode<K, V>
+public class ComparableHashTransforms<K extends Comparable<K>, V>
+        implements Trie32HashTable.Transforms<K, V>
 {
-    static final EmptyNode INSTANCE = new EmptyNode();
+    private final Comparator<K> comparator = ComparableComparator.of();
 
-    private EmptyNode()
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object update(Holder<Object> leaf,
+                         K key,
+                         V value,
+                         MutableDelta delta)
     {
+        if (leaf.isEmpty()) {
+            return TreeNode.<K, V>of().assign(comparator, key, value, delta);
+        } else {
+            return extractTree(leaf.getValue()).assign(comparator, key, value, delta);
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> EmptyNode<K, V> of()
+    @Override
+    public Holder<Object> delete(Object leaf,
+                                 K key,
+                                 MutableDelta delta)
     {
-        return (EmptyNode<K, V>)INSTANCE;
+        final TreeNode<K, V> newTree = extractTree(leaf).delete(comparator, key, delta);
+        return (newTree.isEmpty()) ? Holders.of() : Holders.<Object>of(newTree);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public V getValueOr(Comparator<K> props,
-                        K key,
-                        V defaultValue)
+    public Holder<V> findValue(Object leaf,
+                               K key)
     {
-        return defaultValue;
+        return extractTree(leaf).find(comparator, key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Holder<V> find(Comparator<K> props,
-                          K key)
-    {
-        return Holders.of();
-    }
-
-    @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(Object leaf,
                                                        K key)
     {
-        return Holders.of();
+        return extractTree(leaf).findEntry(comparator, key);
     }
 
     @Override
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Object leaf)
     {
+        return extractTree(leaf).cursor();
     }
 
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor()
+    @SuppressWarnings("unchecked")
+    private TreeNode<K, V> extractTree(Object leaf)
     {
-        return StandardCursor.of();
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return true;
-    }
-
-    @Override
-    int verifyDepthsMatch()
-    {
-        return 0;
-    }
-
-    @Override
-    K getMaxKey()
-    {
-        return null;
-    }
-
-    @Override
-    UpdateResult<K, V> assignImpl(Comparator<K> props,
-                                  K key,
-                                  V value)
-    {
-        return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 1);
-    }
-
-    @Override
-    DeleteResult<K, V> deleteImpl(Comparator<K> props,
-                                  K key)
-    {
-        return DeleteResult.createUnchanged();
-    }
-
-    @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                            TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<K, V>(node);
-    }
-
-    @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                             TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<K, V>(node);
+        return (TreeNode<K, V>)leaf;
     }
 }

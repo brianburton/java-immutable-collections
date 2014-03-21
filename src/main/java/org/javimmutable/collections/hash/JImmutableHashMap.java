@@ -48,9 +48,16 @@ public class JImmutableHashMap<K, V>
     // we only new one instance of the transformations object
     private static final TransformsImpl TRANSFORMS = new TransformsImpl();
 
+    // we only new one instance of the transformations object
+    private static final ComparableHashTransforms COMPARABLE_TRANSFORMS = new ComparableHashTransforms();
+
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
     private static final JImmutableHashMap EMPTY = new JImmutableHashMap(Trie32HashTable.of(TRANSFORMS));
+
+    // this is safe since the transformations object works for any possible K and V
+    @SuppressWarnings("unchecked")
+    private static final JImmutableHashMap COMPARABLE_EMPTY = new JImmutableHashMap(Trie32HashTable.of(COMPARABLE_TRANSFORMS));
 
     private final Trie32HashTable<K, V> values;
 
@@ -63,6 +70,24 @@ public class JImmutableHashMap<K, V>
     public static <K, V> JImmutableHashMap<K, V> of()
     {
         return (JImmutableHashMap<K, V>)EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<K>, V> JImmutableHashMap<K, V> comparableOf()
+    {
+        return (JImmutableHashMap<K, V>)COMPARABLE_EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> JImmutableHashMap<K, V> of(Class<K> klass)
+    {
+        return klass.isAssignableFrom(Comparable.class) ? COMPARABLE_EMPTY : EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> JImmutableHashMap<K, V> forKey(K key)
+    {
+        return (key instanceof Comparable) ? COMPARABLE_EMPTY : EMPTY;
     }
 
     @Override

@@ -36,12 +36,13 @@
 package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.JImmutableArray;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.MutableDelta;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 public class TimingComparison
 {
@@ -57,7 +58,7 @@ public class TimingComparison
         final int loops = Integer.valueOf(argv[1]);
 
         final int maxValue = 10 * loops;
-        final int maxKey = 100000000;
+        final int maxKey = loops / 4;
         final int maxCommand = 10;
 
         MutableDelta javaElapsed = new MutableDelta();
@@ -92,7 +93,7 @@ public class TimingComparison
         int removes = 0;
         int gets = 0;
         long startMillis = System.currentTimeMillis();
-        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -121,7 +122,7 @@ public class TimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
