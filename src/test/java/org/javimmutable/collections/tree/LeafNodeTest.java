@@ -70,6 +70,7 @@ public class LeafNodeTest
         //noinspection unchecked
         assertEquals(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(node), values);
         assertEquals(1, node.verifyDepthsMatch());
+        assertEquals(false, node.isEmpty());
     }
 
     public void testUpdate()

@@ -117,6 +117,7 @@ public class ThreeNodeTest
         node.addEntriesTo(values);
         //noinspection AssertEqualsBetweenInconvertibleTypes,unchecked
         assertEquals(Arrays.asList(node.getLeft(), node.getMiddle(), node.getRight()), values);
+        assertEquals(false, node.isEmpty());
     }
 
     public void testVerifyDepthsMatch()

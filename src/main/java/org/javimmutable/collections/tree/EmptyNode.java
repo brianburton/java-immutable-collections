@@ -129,13 +129,13 @@ public class EmptyNode<K, V>
     DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
                                             TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(node);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
                                              TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(node);
+        throw new UnsupportedOperationException();
     }
 }

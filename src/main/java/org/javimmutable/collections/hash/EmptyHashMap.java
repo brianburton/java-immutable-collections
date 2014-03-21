@@ -42,6 +42,14 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+/**
+ * Singleton implementation of JImmutableMap that contains no elements.
+ * When a value is assigned to the map a JImmutableHashMap is created that
+ * manages hash collisions using a tree if key is Comparable or a list otherwise.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class EmptyHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {

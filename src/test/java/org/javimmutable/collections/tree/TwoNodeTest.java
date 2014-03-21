@@ -109,6 +109,7 @@ public class TwoNodeTest
         node.addEntriesTo(values);
         //noinspection AssertEqualsBetweenInconvertibleTypes,unchecked
         assertEquals(Arrays.asList(node.getLeft(), node.getRight()), values);
+        assertEquals(false, node.isEmpty());
     }
 
     public void testVerifyDepthsMatch()

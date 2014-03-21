@@ -288,6 +288,13 @@ public class JImmutableHashMapTest
         assertSame(JImmutableHashMap.of(), map);
     }
 
+    public void testTransformSelection()
+    {
+        assertSame(JImmutableHashMap.EMPTY, JImmutableHashMap.forKey(new TimingLoop()));
+        assertSame(JImmutableHashMap.COMPARABLE_EMPTY, JImmutableHashMap.forKey(100));
+        assertSame(JImmutableHashMap.COMPARABLE_EMPTY, JImmutableHashMap.forKey("testing"));
+    }
+
     private static class ManualHashKey
     {
         private final int hash;

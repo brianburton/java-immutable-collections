@@ -198,6 +198,11 @@ public class Trie32HashTable<K, V>
         return MultiTransformCursor.of(root.valuesCursor(), new CursorTransforminator(30));
     }
 
+    public Transforms<K, V> getTransforms()
+    {
+        return transforms;
+    }
+
     @SuppressWarnings("unchecked")
     private Holder<Object> find(Bit32Array<Object> array,
                                 int index,

@@ -46,6 +46,14 @@ import org.javimmutable.collections.tree.TreeNode;
 
 import java.util.Comparator;
 
+/**
+ * Transforms implementation that stores values in TreeNodes (2-3 trees).
+ * Usable with keys that implement Comparable.  Will fail with any other
+ * type of key.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class ComparableHashTransforms<K extends Comparable<K>, V>
         implements Trie32HashTable.Transforms<K, V>
 {
