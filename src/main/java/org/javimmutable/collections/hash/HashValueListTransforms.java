@@ -35,30 +35,62 @@
 
 package org.javimmutable.collections.hash;
 
-import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.array.trie32.Trie32HashTable;
+import org.javimmutable.collections.common.MutableDelta;
 
-public class EmptyHashMapTest
-        extends TestCase
+class HashValueListTransforms<K, V>
+        implements Trie32HashTable.Transforms<K, V>
 {
-    public void testAssign()
+    @Override
+    public Object update(Holder<Object> oldLeaf,
+                         K key,
+                         V value,
+                         MutableDelta delta)
     {
-        JImmutableMap<String, Integer> comparableMap = EmptyHashMap.of();
-        comparableMap = comparableMap.assign("a", 100);
-        assertTrue(comparableMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.COMPARABLE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
-
-        JImmutableMap<TimingLoop, Integer> otherMap = EmptyHashMap.of();
-        otherMap = otherMap.assign(new TimingLoop(), 100);
-        assertTrue(otherMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
-
-        try {
-            otherMap = EmptyHashMap.of();
-            otherMap.assign(null, 100);
-            fail();
-        } catch (NullPointerException ex) {
-            // pass
+        if (oldLeaf.isEmpty()) {
+            delta.add(1);
+            return SingleHashValueListNode.of(key, value);
+        } else {
+            return extractNode(oldLeaf.getValue()).setValueForKey(key, value, delta);
         }
+    }
+
+    @Override
+    public Holder<Object> delete(Object oldLeaf,
+                                 K key,
+                                 MutableDelta delta)
+    {
+        return Holders.<Object>fromNullable(extractNode(oldLeaf).deleteValueForKey(key, delta));
+    }
+
+    @Override
+    public Holder<V> findValue(Object oldLeaf,
+                               K key)
+    {
+        return extractNode(oldLeaf).getValueForKey(key);
+    }
+
+    @Override
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(Object oldLeaf,
+                                                       K key)
+    {
+        return Holders.fromNullable(extractNode(oldLeaf).getEntryForKey(key));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Object leaf)
+    {
+        return extractNode(leaf).cursor();
+    }
+
+    @SuppressWarnings("unchecked")
+    private HashValueListNode<K, V> extractNode(Object leaf)
+    {
+        return (HashValueListNode<K, V>)leaf;
     }
 }

@@ -41,21 +41,26 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class SingleValueLeafNode<K, V>
-        implements LeafNode<K, V>,
+class SingleHashValueListNode<K, V>
+        implements HashValueListNode<K, V>,
                    JImmutableMap.Entry<K, V>,
                    Holder<V>
 {
     private final K key;
     private final V value;
 
-    public SingleValueLeafNode(K key,
-                               V value)
+    private SingleHashValueListNode(K key,
+                                    V value)
     {
         this.key = key;
         this.value = value;
+    }
+
+    static <K, V> SingleHashValueListNode<K, V> of(K key,
+                                                   V value)
+    {
+        return new SingleHashValueListNode<K, V>(key, value);
     }
 
     @Override
@@ -71,22 +76,21 @@ public class SingleValueLeafNode<K, V>
     }
 
     @Override
-    public LeafNode<K, V> setValueForKey(K key,
-                                         V value,
-                                         MutableDelta sizeDelta)
+    public HashValueListNode<K, V> setValueForKey(K key,
+                                                  V value,
+                                                  MutableDelta sizeDelta)
     {
         if (key.equals(this.key)) {
-            return (this.value == value) ? this : new SingleValueLeafNode<K, V>(key, value);
+            return (this.value == value) ? this : new SingleHashValueListNode<K, V>(key, value);
         } else {
             sizeDelta.add(1);
-            JImmutableLinkedStack<SingleValueLeafNode<K, V>> values = JImmutableLinkedStack.of();
-            return new MultiValueLeafNode<K, V>(values.insert(this).insert(new SingleValueLeafNode<K, V>(key, value)));
+            return MultiHashValueListNode.of(this, new SingleHashValueListNode<K, V>(key, value));
         }
     }
 
     @Override
-    public LeafNode<K, V> deleteValueForKey(K key,
-                                            MutableDelta sizeDelta)
+    public HashValueListNode<K, V> deleteValueForKey(K key,
+                                                     MutableDelta sizeDelta)
     {
         if (this.key.equals(key)) {
             sizeDelta.subtract(1);
@@ -94,12 +98,6 @@ public class SingleValueLeafNode<K, V>
         } else {
             return this;
         }
-    }
-
-    @Override
-    public int size()
-    {
-        return 1;
     }
 
     @Override
@@ -154,7 +152,7 @@ public class SingleValueLeafNode<K, V>
             return false;
         }
 
-        SingleValueLeafNode that = (SingleValueLeafNode)o;
+        SingleHashValueListNode that = (SingleHashValueListNode)o;
 
         if (key != null ? !key.equals(that.key) : that.key != null) {
             return false;
@@ -173,5 +171,14 @@ public class SingleValueLeafNode<K, V>
         int result = key != null ? key.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SingleValueLeafNode{" +
+               "key=" + key +
+               ", value=" + value +
+               '}';
     }
 }

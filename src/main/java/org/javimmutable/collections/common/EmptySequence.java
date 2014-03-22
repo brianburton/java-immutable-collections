@@ -33,32 +33,41 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.common;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Sequence;
 
-public class EmptyHashMapTest
-        extends TestCase
+/**
+ * Singleton Sequence implementation for an empty sequence.
+ *
+ * @param <T>
+ */
+public class EmptySequence<T>
+        implements Sequence<T>
 {
-    public void testAssign()
+    private static final EmptySequence INSTANCE = new EmptySequence();
+
+    @SuppressWarnings("unchecked")
+    public static <T> Sequence<T> of()
     {
-        JImmutableMap<String, Integer> comparableMap = EmptyHashMap.of();
-        comparableMap = comparableMap.assign("a", 100);
-        assertTrue(comparableMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.COMPARABLE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
+        return (Sequence<T>)INSTANCE;
+    }
 
-        JImmutableMap<TimingLoop, Integer> otherMap = EmptyHashMap.of();
-        otherMap = otherMap.assign(new TimingLoop(), 100);
-        assertTrue(otherMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
+    @Override
+    public boolean isEmpty()
+    {
+        return true;
+    }
 
-        try {
-            otherMap = EmptyHashMap.of();
-            otherMap.assign(null, 100);
-            fail();
-        } catch (NullPointerException ex) {
-            // pass
-        }
+    @Override
+    public T getHead()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Sequence<T> getTail()
+    {
+        return this;
     }
 }

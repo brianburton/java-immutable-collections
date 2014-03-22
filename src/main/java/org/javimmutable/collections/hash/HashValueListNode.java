@@ -40,19 +40,17 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
-public interface LeafNode<K, V>
+public interface HashValueListNode<K, V>
         extends Cursorable<JImmutableMap.Entry<K, V>>
 {
     Holder<V> getValueForKey(K key);
 
     JImmutableMap.Entry<K, V> getEntryForKey(K key);
 
-    LeafNode<K, V> setValueForKey(K key,
-                                  V value,
-                                  MutableDelta sizeDelta);
+    HashValueListNode<K, V> setValueForKey(K key,
+                                           V value,
+                                           MutableDelta sizeDelta);
 
-    LeafNode<K, V> deleteValueForKey(K key,
-                                     MutableDelta sizeDelta);
-
-    int size();
+    HashValueListNode<K, V> deleteValueForKey(K key,
+                                              MutableDelta sizeDelta);
 }

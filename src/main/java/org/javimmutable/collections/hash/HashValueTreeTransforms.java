@@ -54,7 +54,7 @@ import java.util.Comparator;
  * @param <K>
  * @param <V>
  */
-public class ComparableHashTransforms<K extends Comparable<K>, V>
+class HashValueTreeTransforms<K extends Comparable<K>, V>
         implements Trie32HashTable.Transforms<K, V>
 {
     private final Comparator<K> comparator = ComparableComparator.of();
