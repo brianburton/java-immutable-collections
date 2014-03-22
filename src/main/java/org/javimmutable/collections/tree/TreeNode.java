@@ -39,41 +39,157 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Collection;
 import java.util.Comparator;
 
-public interface TreeNode<K, V>
-        extends Cursorable<JImmutableMap.Entry<K, V>>
+/**
+ * Abstract base class for 2-3 tree nodes.  Provides public methods for searching and modifying
+ * the tree and package private methods used to implement the public methods.
+ *
+ * @param <K>
+ * @param <V>
+ */
+public abstract class TreeNode<K, V>
+        implements Cursorable<JImmutableMap.Entry<K, V>>
 {
-    public V getValueOr(Comparator<K> props,
-                        K key,
-                        V defaultValue);
+    public static <K, V> TreeNode<K, V> of()
+    {
+        return EmptyNode.of();
+    }
 
-    public Holder<V> find(Comparator<K> props,
-                          K key);
+    /**
+     * Return the value matching key or defaultValue if no match is found.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public abstract V getValueOr(Comparator<K> comparator,
+                                 K key,
+                                 V defaultValue);
 
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
-                                                       K key);
+    /**
+     * Return a (possibly empty) Holder containing the value matching key.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @return
+     */
+    public abstract Holder<V> find(Comparator<K> comparator,
+                                   K key);
 
-    public K getMaxKey();
+    /**
+     * Return a (possibly empty) Holder containing the an Entry matching key.  Searches this node
+     * and its appropriate children.
+     *
+     * @param comparator
+     * @param key
+     * @return
+     */
+    public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> comparator,
+                                                                K key);
 
-    public UpdateResult<K, V> update(Comparator<K> props,
-                                     K key,
-                                     V value);
+    /**
+     * Adds this node's value and all of its children's value to the collection.
+     *
+     * @param collection
+     */
+    public abstract void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
 
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
+    /**
+     * Returns a Cursor visiting all entries in sorted order.
+     *
+     * @return
+     */
+    public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
 
-    public int verifyDepthsMatch();
+    /**
+     * Assign the specified value to the specified key.  Returns a node (possibly this same node)
+     * reflecting the assignment and updates sizeDelta with the change in size (if any).
+     *
+     * @param comparator
+     * @param key
+     * @param value
+     * @param sizeDelta
+     * @return
+     */
+    public TreeNode<K, V> assign(Comparator<K> comparator,
+                                 K key,
+                                 V value,
+                                 MutableDelta sizeDelta)
+    {
+        UpdateResult<K, V> result = assignImpl(comparator, key, value);
+        switch (result.type) {
+        case UNCHANGED:
+            return this;
 
-    public DeleteResult<K, V> delete(Comparator<K> props,
-                                     K key);
+        case INPLACE:
+            sizeDelta.add(result.sizeDelta);
+            return result.newNode;
 
-    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                                   TreeNode<K, V> node);
+        case SPLIT:
+            sizeDelta.add(result.sizeDelta);
+            return new TwoNode<K, V>(result.newNode,
+                                     result.extraNode,
+                                     result.newNode.getMaxKey(),
+                                     result.extraNode.getMaxKey());
+        }
+        throw new RuntimeException();
+    }
 
-    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                                    TreeNode<K, V> node);
+    /**
+     * Deletes the specified key.  Returns a node (possibly this same node)
+     * reflecting the deletion and updates sizeDelta with the change in size (if any).
+     *
+     * @param comparator
+     * @param key
+     * @param sizeDelta
+     * @return
+     */
+    public TreeNode<K, V> delete(Comparator<K> comparator,
+                                 K key,
+                                 MutableDelta sizeDelta)
+    {
+        DeleteResult<K, V> result = deleteImpl(comparator, key);
+        switch (result.type) {
+        case UNCHANGED:
+            return this;
 
-    public Cursor<JImmutableMap.Entry<K, V>> cursor();
+        default:
+            sizeDelta.subtract(1);
+            return result.node;
+        }
+    }
+
+    /**
+     * Return true if this node contains no children or value.
+     *
+     * @return
+     */
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    abstract int verifyDepthsMatch();
+
+    abstract K getMaxKey();
+
+    abstract UpdateResult<K, V> assignImpl(Comparator<K> comparator,
+                                           K key,
+                                           V value);
+
+    abstract DeleteResult<K, V> deleteImpl(Comparator<K> comparator,
+                                           K key);
+
+    abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> comparator,
+                                                     TreeNode<K, V> node);
+
+    abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> comparator,
+                                                      TreeNode<K, V> node);
 }

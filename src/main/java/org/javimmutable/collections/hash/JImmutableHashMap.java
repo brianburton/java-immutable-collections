@@ -37,20 +37,25 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.array.trie32.Trie32HashTable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.common.MutableDelta;
 
 public class JImmutableHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
     // we only new one instance of the transformations object
-    private static final TransformsImpl TRANSFORMS = new TransformsImpl();
+    static final HashValueListTransforms TRANSFORMS = new HashValueListTransforms();
+
+    // we only new one instance of the transformations object
+    static final HashValueTreeTransforms COMPARABLE_TRANSFORMS = new HashValueTreeTransforms();
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    private static final JImmutableHashMap EMPTY = new JImmutableHashMap(Trie32HashTable.of(TRANSFORMS));
+    static final JImmutableHashMap EMPTY = new JImmutableHashMap(Trie32HashTable.of(TRANSFORMS));
+
+    // this is safe since the transformations object works for any possible K and V
+    @SuppressWarnings("unchecked")
+    static final JImmutableHashMap COMPARABLE_EMPTY = new JImmutableHashMap(Trie32HashTable.of(COMPARABLE_TRANSFORMS));
 
     private final Trie32HashTable<K, V> values;
 
@@ -63,6 +68,24 @@ public class JImmutableHashMap<K, V>
     public static <K, V> JImmutableHashMap<K, V> of()
     {
         return (JImmutableHashMap<K, V>)EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<K>, V> JImmutableHashMap<K, V> comparableOf()
+    {
+        return (JImmutableHashMap<K, V>)COMPARABLE_EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> JImmutableHashMap<K, V> of(Class<K> klass)
+    {
+        return klass.isAssignableFrom(Comparable.class) ? COMPARABLE_EMPTY : EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> JImmutableHashMap<K, V> forKey(K key)
+    {
+        return (key instanceof Comparable) ? COMPARABLE_EMPTY : EMPTY;
     }
 
     @Override
@@ -117,55 +140,10 @@ public class JImmutableHashMap<K, V>
         return values.cursor();
     }
 
-    private static class TransformsImpl<K, V>
-            implements Trie32HashTable.Transforms<K, V>
+    // for unit test to verify proper transforms selected
+    Trie32HashTable.Transforms getTransforms()
     {
-        @Override
-        public Object update(Holder<Object> oldLeaf,
-                             K key,
-                             V value,
-                             MutableDelta delta)
-        {
-            if (oldLeaf.isEmpty()) {
-                delta.add(1);
-                return new SingleValueLeafNode<K, V>(key, value);
-            } else {
-                @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf.getValue();
-                return oldNode.setValueForKey(key, value, delta);
-            }
-        }
-
-        @Override
-        public Holder<Object> delete(Object oldLeaf,
-                                     K key,
-                                     MutableDelta delta)
-        {
-            @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
-            final LeafNode<K, V> newNode = oldNode.deleteValueForKey(key, delta);
-            return (newNode == null || newNode.size() == 0) ? Holders.of() : Holders.<Object>of(newNode);
-        }
-
-        @Override
-        public Holder<V> findValue(Object oldLeaf,
-                                   K key)
-        {
-            @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
-            return oldNode.getValueForKey(key);
-        }
-
-        @Override
-        public Holder<Entry<K, V>> findEntry(Object oldLeaf,
-                                             K key)
-        {
-            @SuppressWarnings("unchecked") final LeafNode<K, V> oldNode = (LeafNode<K, V>)oldLeaf;
-            return Holders.fromNullable(oldNode.getEntryForKey(key));
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Cursor<Entry<K, V>> cursor(Object leaf)
-        {
-            return ((LeafNode<K, V>)leaf).cursor();
-        }
+        return values.getTransforms();
     }
+
 }

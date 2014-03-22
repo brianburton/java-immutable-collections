@@ -39,18 +39,17 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class MultiValueLeafNodeTest
+public class MultiHashValueListNodeTest
         extends TestCase
 {
     public void testKeyMatches()
     {
-        SingleValueLeafNode<String, String> a = new SingleValueLeafNode<String, String>("a", "aa");
-        SingleValueLeafNode<String, String> b = new SingleValueLeafNode<String, String>("b", "bb");
-        SingleValueLeafNode<String, String> c = new SingleValueLeafNode<String, String>("c", "cc");
-        MultiValueLeafNode<String, String> v = new MultiValueLeafNode<String, String>(JImmutableLinkedStack.<SingleValueLeafNode<String, String>>of(a).insert(b).insert(c));
-        assertEquals(3, v.size());
+        SingleHashValueListNode<String, String> a = SingleHashValueListNode.of("a", "aa");
+        SingleHashValueListNode<String, String> b = SingleHashValueListNode.of("b", "bb");
+        SingleHashValueListNode<String, String> c = SingleHashValueListNode.of("c", "cc");
+        HashValueListNode<String, String> v = MultiHashValueListNode.of(a, b, c);
+        assertEquals(3, size(v));
 
         assertEquals(true, v.getValueForKey("a").isFilled());
         assertEquals("aa", v.getValueForKey("a").getValue());
@@ -65,9 +64,9 @@ public class MultiValueLeafNodeTest
         assertSame(c, v.getEntryForKey("c"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        LeafNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof MultiValueLeafNode);
-        assertEquals(true, nv.getEntryForKey("a") instanceof SingleValueLeafNode);
+        HashValueListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof MultiHashValueListNode);
+        assertEquals(true, nv.getEntryForKey("a") instanceof SingleHashValueListNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("A", nv.getValueForKey("a").getValue());
@@ -77,7 +76,7 @@ public class MultiValueLeafNodeTest
         assertEquals(true, nv.getValueForKey("c").isFilled());
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
-        assertEquals(3, nv.size());
+        assertEquals(3, size(nv));
 
         // test value identity
         assertSame(nv, nv.setValueForKey("a", "A", null));
@@ -86,7 +85,7 @@ public class MultiValueLeafNodeTest
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);
-        assertEquals(true, nv instanceof MultiValueLeafNode);
+        assertEquals(true, nv instanceof MultiHashValueListNode);
         assertEquals(-1, sizeDelta.getValue());
         assertEquals(null, nv.getEntryForKey("a"));
         assertEquals(false, nv.getValueForKey("a").isFilled());
@@ -96,11 +95,11 @@ public class MultiValueLeafNodeTest
         assertEquals(true, nv.getValueForKey("c").isFilled());
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
-        assertEquals(2, nv.size());
+        assertEquals(2, size(nv));
 
         sizeDelta = new MutableDelta();
         nv = nv.deleteValueForKey("b", sizeDelta);
-        assertEquals(true, nv instanceof SingleValueLeafNode);
+        assertEquals(true, nv instanceof SingleHashValueListNode);
         assertEquals(-1, sizeDelta.getValue());
         assertEquals(null, nv.getEntryForKey("a"));
         assertEquals(false, nv.getValueForKey("a").isFilled());
@@ -109,7 +108,7 @@ public class MultiValueLeafNodeTest
         assertEquals(true, nv.getValueForKey("c").isFilled());
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
-        assertEquals(1, nv.size());
+        assertEquals(1, size(nv));
 
         sizeDelta = new MutableDelta();
         nv = nv.deleteValueForKey("c", sizeDelta);
@@ -134,19 +133,19 @@ public class MultiValueLeafNodeTest
 
     public void testKeyMismatches()
     {
-        SingleValueLeafNode<String, String> a = new SingleValueLeafNode<String, String>("a", "aa");
-        SingleValueLeafNode<String, String> b = new SingleValueLeafNode<String, String>("b", "bb");
-        SingleValueLeafNode<String, String> c = new SingleValueLeafNode<String, String>("c", "cc");
-        MultiValueLeafNode<String, String> v = new MultiValueLeafNode<String, String>(JImmutableLinkedStack.<SingleValueLeafNode<String, String>>of(a).insert(b).insert(c));
-        assertEquals(3, v.size());
+        SingleHashValueListNode<String, String> a = SingleHashValueListNode.of("a", "aa");
+        SingleHashValueListNode<String, String> b = SingleHashValueListNode.of("b", "bb");
+        SingleHashValueListNode<String, String> c = SingleHashValueListNode.of("c", "cc");
+        HashValueListNode<String, String> v = MultiHashValueListNode.of(a, b, c);
+        assertEquals(3, size(v));
 
         assertEquals(false, v.getValueForKey("d").isFilled());
         assertSame(null, v.getEntryForKey("d"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        LeafNode<String, String> nv = v.setValueForKey("d", "dd", sizeDelta);
-        assertEquals(true, nv instanceof MultiValueLeafNode);
-        assertEquals(true, nv.getEntryForKey("d") instanceof SingleValueLeafNode);
+        HashValueListNode<String, String> nv = v.setValueForKey("d", "dd", sizeDelta);
+        assertEquals(true, nv instanceof MultiHashValueListNode);
+        assertEquals(true, nv.getEntryForKey("d") instanceof SingleHashValueListNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("d").isFilled());
         assertEquals("dd", nv.getValueForKey("d").getValue());
@@ -159,9 +158,17 @@ public class MultiValueLeafNodeTest
         assertEquals(true, nv.getValueForKey("c").isFilled());
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
-        assertEquals(4, nv.size());
+        assertEquals(4, size(nv));
 
         Cursor<JImmutableMap.Entry<String, String>> cursor = nv.cursor().next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals("c", cursor.getValue().getKey());
+        assertEquals("cc", cursor.getValue().getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
+        assertEquals("b", cursor.getValue().getKey());
+        assertEquals("bb", cursor.getValue().getValue());
+        cursor = cursor.next();
         assertEquals(true, cursor.hasValue());
         assertEquals("d", cursor.getValue().getKey());
         assertEquals("dd", cursor.getValue().getValue());
@@ -170,19 +177,11 @@ public class MultiValueLeafNodeTest
         assertEquals("a", cursor.getValue().getKey());
         assertEquals("aa", cursor.getValue().getValue());
         cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("b", cursor.getValue().getKey());
-        assertEquals("bb", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("c", cursor.getValue().getKey());
-        assertEquals("cc", cursor.getValue().getValue());
-        cursor = cursor.next();
         assertEquals(false, cursor.hasValue());
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("d", sizeDelta);
-        assertEquals(true, nv instanceof MultiValueLeafNode);
+        assertEquals(true, nv instanceof MultiHashValueListNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("aa", nv.getValueForKey("a").getValue());
@@ -193,6 +192,17 @@ public class MultiValueLeafNodeTest
         assertEquals(true, nv.getValueForKey("c").isFilled());
         assertEquals("cc", nv.getValueForKey("c").getValue());
         assertSame(c, nv.getEntryForKey("c"));
-        assertEquals(3, nv.size());
+        assertEquals(3, size(nv));
+    }
+
+    private int size(HashValueListNode node)
+    {
+        int answer = 0;
+        Cursor cursor = node.cursor().next();
+        while (cursor.hasValue()) {
+            answer += 1;
+            cursor = cursor.next();
+        }
+        return answer;
     }
 }

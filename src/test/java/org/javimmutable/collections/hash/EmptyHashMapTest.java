@@ -35,24 +35,30 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Holder;
+import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.MutableDelta;
 
-public interface LeafNode<K, V>
-        extends Cursorable<JImmutableMap.Entry<K, V>>
+public class EmptyHashMapTest
+        extends TestCase
 {
-    Holder<V> getValueForKey(K key);
+    public void testAssign()
+    {
+        JImmutableMap<String, Integer> comparableMap = EmptyHashMap.of();
+        comparableMap = comparableMap.assign("a", 100);
+        assertTrue(comparableMap instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.COMPARABLE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
 
-    JImmutableMap.Entry<K, V> getEntryForKey(K key);
+        JImmutableMap<TimingLoop, Integer> otherMap = EmptyHashMap.of();
+        otherMap = otherMap.assign(new TimingLoop(), 100);
+        assertTrue(otherMap instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
 
-    LeafNode<K, V> setValueForKey(K key,
-                                  V value,
-                                  MutableDelta sizeDelta);
-
-    LeafNode<K, V> deleteValueForKey(K key,
-                                     MutableDelta sizeDelta);
-
-    int size();
+        try {
+            otherMap = EmptyHashMap.of();
+            otherMap.assign(null, 100);
+            fail();
+        } catch (NullPointerException ex) {
+            // pass
+        }
+    }
 }

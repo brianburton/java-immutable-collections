@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.Comparator;
 
 public class TwoNode<K, V>
-        implements TreeNode<K, V>
+        extends TreeNode<K, V>
 {
     private final TreeNode<K, V> left;
     private final TreeNode<K, V> right;
@@ -98,18 +98,18 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public K getMaxKey()
+    K getMaxKey()
     {
         return rightMaxKey;
     }
 
     @Override
-    public UpdateResult<K, V> update(Comparator<K> props,
-                                     K key,
-                                     V value)
+    UpdateResult<K, V> assignImpl(Comparator<K> props,
+                                  K key,
+                                  V value)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
-            UpdateResult<K, V> result = left.update(props, key, value);
+            UpdateResult<K, V> result = left.assignImpl(props, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -121,7 +121,7 @@ public class TwoNode<K, V>
                 return UpdateResult.createInPlace(result.createLeftThreeNode(right, rightMaxKey), result.sizeDelta);
             }
         } else {
-            UpdateResult<K, V> result = right.update(props, key, value);
+            UpdateResult<K, V> result = right.assignImpl(props, key, value);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -155,11 +155,11 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteResult<K, V> delete(Comparator<K> props,
-                                     K key)
+    DeleteResult<K, V> deleteImpl(Comparator<K> props,
+                                  K key)
     {
         if (props.compare(key, leftMaxKey) <= 0) {
-            DeleteResult<K, V> result = left.delete(props, key);
+            DeleteResult<K, V> result = left.deleteImpl(props, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -182,7 +182,7 @@ public class TwoNode<K, V>
                 }
             }
         } else {
-            DeleteResult<K, V> result = right.delete(props, key);
+            DeleteResult<K, V> result = right.deleteImpl(props, key);
             switch (result.type) {
             case UNCHANGED:
                 return result;
@@ -209,8 +209,8 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                                   TreeNode<K, V> node)
+    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
+                                            TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(node,
                                                                left,
@@ -221,8 +221,8 @@ public class TwoNode<K, V>
     }
 
     @Override
-    public DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                                    TreeNode<K, V> node)
+    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
+                                             TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(left,
                                                                right,

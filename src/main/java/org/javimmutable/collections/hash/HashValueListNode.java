@@ -33,41 +33,24 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.hash;
 
-import java.util.Random;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.MutableDelta;
 
-public class TimingLoop
+public interface HashValueListNode<K, V>
+        extends Cursorable<JImmutableMap.Entry<K, V>>
 {
-    public static void main(String[] args)
-            throws Exception
-    {
-        final int maxKey = 25000;
-        Random random = new Random(1000);
-        int adds = 0;
-        int removes = 0;
-        int gets = 0;
-        long startPer = System.currentTimeMillis();
-        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
-        for (int i = 1; i <= 25 * maxKey; ++i) {
-            int command = random.nextInt(8);
-            if (command <= 1) {
-                Integer key = random.nextInt(maxKey);
-                Integer value = random.nextInt(1000000);
-                map = map.assign(key, value);
-                adds += 1;
-            } else if (command == 2) {
-                Integer key = random.nextInt(maxKey);
-                map = map.delete(key);
-                removes += 1;
-            } else {
-                Integer key = random.nextInt(maxKey);
-                map.find(key);
-                gets += 1;
-            }
-        }
-        long endPer = System.currentTimeMillis();
-        System.out.printf("2-3 adds %d removes %d gets %d elapsed %d%n", adds, removes, gets, (endPer - startPer));
-        Thread.sleep(180000L);
-    }
+    Holder<V> getValueForKey(K key);
+
+    JImmutableMap.Entry<K, V> getEntryForKey(K key);
+
+    HashValueListNode<K, V> setValueForKey(K key,
+                                           V value,
+                                           MutableDelta sizeDelta);
+
+    HashValueListNode<K, V> deleteValueForKey(K key,
+                                              MutableDelta sizeDelta);
 }

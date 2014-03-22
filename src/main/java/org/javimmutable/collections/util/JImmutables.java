@@ -39,6 +39,7 @@ import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
+import org.javimmutable.collections.hash.EmptyHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
@@ -184,7 +185,7 @@ public final class JImmutables
      */
     public static <K, V> JImmutableMap<K, V> map()
     {
-        return JImmutableHashMap.of();
+        return EmptyHashMap.of();
     }
 
     /**
@@ -198,7 +199,7 @@ public final class JImmutables
      */
     public static <K, V> JImmutableMap<K, V> map(Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableHashMap.<K, V>of(), source);
+        return Functions.assignAll(EmptyHashMap.<K, V>of(), source);
     }
 
     /**
@@ -216,7 +217,7 @@ public final class JImmutables
         if (source instanceof JImmutableHashMap) {
             return source;
         } else {
-            return Functions.assignAll(JImmutableHashMap.<K, V>of(), source);
+            return Functions.assignAll(EmptyHashMap.<K, V>of(), source);
         }
     }
 

@@ -39,7 +39,7 @@ package org.javimmutable.collections.tree;
 public class DeleteResult<K, V>
 {
     private static DeleteResult UNCHANGED = new DeleteResult(Type.UNCHANGED, null);
-    private static DeleteResult ELIMINATED = new DeleteResult(Type.ELIMINATED, null);
+    private static DeleteResult ELIMINATED = new DeleteResult(Type.ELIMINATED, EmptyNode.INSTANCE);
 
     public enum Type
     {
@@ -95,6 +95,7 @@ public class DeleteResult<K, V>
         throw new IllegalStateException();
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)
     {

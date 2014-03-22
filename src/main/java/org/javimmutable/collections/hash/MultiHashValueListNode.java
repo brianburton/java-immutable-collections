@@ -1,0 +1,220 @@
+///###////////////////////////////////////////////////////////////////////////
+//
+// Burton Computer Corporation
+// http://www.burton-computer.com
+//
+// Copyright (c) 2014, Burton Computer Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//     Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     Neither the name of the Burton Computer Corporation nor the names
+//     of its contributors may be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+package org.javimmutable.collections.hash;
+
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.common.EmptySequence;
+import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.SequenceCursor;
+
+class MultiHashValueListNode<K, V>
+        implements HashValueListNode<K, V>,
+                   Sequence<JImmutableMap.Entry<K, V>>
+{
+    private final MultiHashValueListNode<K, V> next;
+    private final SingleHashValueListNode<K, V> entry;
+
+    private MultiHashValueListNode(MultiHashValueListNode<K, V> next,
+                                   SingleHashValueListNode<K, V> entry)
+    {
+        this.next = next;
+        this.entry = entry;
+    }
+
+    static <K, V> MultiHashValueListNode<K, V> of(K key,
+                                                  V value)
+    {
+        return new MultiHashValueListNode<K, V>(null, SingleHashValueListNode.<K, V>of(key, value));
+    }
+
+    static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
+                                                  SingleHashValueListNode<K, V> entry2)
+    {
+        return new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(null, entry1), entry2);
+    }
+
+    static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
+                                                  SingleHashValueListNode<K, V> entry2,
+                                                  SingleHashValueListNode<K, V> entry3)
+    {
+        return new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(null, entry1), entry2), entry3);
+    }
+
+    @Override
+    public Holder<V> getValueForKey(K key)
+    {
+        if (keyEquals(key)) {
+            return Holders.of(entry.getValue());
+        } else if (next == null) {
+            return Holders.of();
+        } else {
+            return next.getValueForKey(key);
+        }
+    }
+
+    @Override
+    public JImmutableMap.Entry<K, V> getEntryForKey(K key)
+    {
+        if (keyEquals(key)) {
+            return entry;
+        } else if (next == null) {
+            return null;
+        } else {
+            return next.getEntryForKey(key);
+        }
+    }
+
+    @Override
+    public MultiHashValueListNode<K, V> setValueForKey(K key,
+                                                       V value,
+                                                       MutableDelta sizeDelta)
+    {
+        if (keyEquals(key)) {
+            return (value == entry.getValue()) ? this : new MultiHashValueListNode<K, V>(next, SingleHashValueListNode.<K, V>of(key, value));
+        } else if (next == null) {
+            sizeDelta.add(1);
+            return new MultiHashValueListNode<K, V>(this, SingleHashValueListNode.<K, V>of(key, value));
+        } else {
+            final MultiHashValueListNode<K, V> newNext = next.setValueForKey(key, value, sizeDelta);
+            return (newNext == next) ? this : new MultiHashValueListNode<K, V>(newNext, entry);
+        }
+    }
+
+    @Override
+    public HashValueListNode<K, V> deleteValueForKey(K key,
+                                                     MutableDelta sizeDelta)
+    {
+        final MultiHashValueListNode<K, V> newNext = deleteValueForKeyImpl(key, sizeDelta);
+        if (newNext == null || newNext == this) {
+            return newNext;
+        } else if (newNext.next == null) {
+            return newNext.entry;
+        } else {
+            return newNext;
+        }
+    }
+
+    public MultiHashValueListNode<K, V> deleteValueForKeyImpl(K key,
+                                                              MutableDelta sizeDelta)
+    {
+        if (keyEquals(key)) {
+            sizeDelta.subtract(1);
+            return next;
+        } else if (next == null) {
+            return this;
+        } else {
+            final MultiHashValueListNode<K, V> newNext = next.deleteValueForKeyImpl(key, sizeDelta);
+            return (newNext == next) ? this : new MultiHashValueListNode<K, V>(newNext, entry);
+        }
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
+    public JImmutableMap.Entry<K, V> getHead()
+    {
+        return entry;
+    }
+
+    @Override
+    public Sequence<JImmutableMap.Entry<K, V>> getTail()
+    {
+        if (next == null) {
+            return EmptySequence.of();
+        } else {
+            return next;
+        }
+    }
+
+    @Override
+    public Cursor<JImmutableMap.Entry<K, V>> cursor()
+    {
+        return SequenceCursor.of(this);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MultiHashValueListNode that = (MultiHashValueListNode)o;
+
+        if (entry != null ? !entry.equals(that.entry) : that.entry != null) {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if (next != null ? !next.equals(that.next) : that.next != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = next != null ? next.hashCode() : 0;
+        result = 31 * result + (entry != null ? entry.hashCode() : 0);
+        return result;
+    }
+
+    private boolean keyEquals(K key)
+    {
+        return key.equals(entry.getKey());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MultiValueLeafNode{" +
+               "next=" + next +
+               ", entry=" + entry +
+               '}';
+    }
+}

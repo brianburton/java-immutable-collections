@@ -70,20 +70,21 @@ public class LeafNodeTest
         //noinspection unchecked
         assertEquals(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(node), values);
         assertEquals(1, node.verifyDepthsMatch());
+        assertEquals(false, node.isEmpty());
     }
 
     public void testUpdate()
     {
-        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.update(comparator, 10, 20));
-        assertEquals(UpdateResult.createInPlace(new LeafNode<Integer, Integer>(10, 18), 0), node.update(comparator, 10, 18));
-        assertEquals(UpdateResult.createSplit(new LeafNode<Integer, Integer>(8, 16), node, 1), node.update(comparator, 8, 16));
-        assertEquals(UpdateResult.createSplit(node, new LeafNode<Integer, Integer>(12, 24), 1), node.update(comparator, 12, 24));
+        assertEquals(UpdateResult.<Integer, Integer>createUnchanged(), node.assignImpl(comparator, 10, 20));
+        assertEquals(UpdateResult.createInPlace(new LeafNode<Integer, Integer>(10, 18), 0), node.assignImpl(comparator, 10, 18));
+        assertEquals(UpdateResult.createSplit(new LeafNode<Integer, Integer>(8, 16), node, 1), node.assignImpl(comparator, 8, 16));
+        assertEquals(UpdateResult.createSplit(node, new LeafNode<Integer, Integer>(12, 24), 1), node.assignImpl(comparator, 12, 24));
     }
 
     public void testDelete()
     {
-        assertEquals(DeleteResult.<Integer, Integer>createEliminated(), node.delete(comparator, 10));
-        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.delete(comparator, 11));
+        assertEquals(DeleteResult.<Integer, Integer>createEliminated(), node.deleteImpl(comparator, 10));
+        assertEquals(DeleteResult.<Integer, Integer>createUnchanged(), node.deleteImpl(comparator, 11));
     }
 
     public void testLeftDeleteMerge()
