@@ -39,9 +39,9 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.MutableDelta;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 public class TimingComparison
 {
@@ -92,7 +92,7 @@ public class TimingComparison
         int removes = 0;
         int gets = 0;
         long startMillis = System.currentTimeMillis();
-        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
