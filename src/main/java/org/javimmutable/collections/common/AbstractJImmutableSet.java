@@ -66,7 +66,7 @@ public abstract class AbstractJImmutableSet<T>
     public JImmutableSet<T> union(Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             newMap = newMap.assign(value, Boolean.TRUE);
         }
@@ -84,7 +84,7 @@ public abstract class AbstractJImmutableSet<T>
     public JImmutableSet<T> deleteAll(Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             newMap = newMap.delete(value);
         }
@@ -114,7 +114,7 @@ public abstract class AbstractJImmutableSet<T>
     public JImmutableSet<T> intersection(Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = emptyMap();
-        for (Cursor<T> cursor = other.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
             if (map.find(value).isFilled()) {
                 newMap = newMap.assign(value, Boolean.TRUE);
@@ -132,7 +132,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean containsAll(Cursorable<T> value)
     {
-        for (Cursor<T> cursor = value.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = value.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             if (!contains(cursor.getValue())) {
                 return false;
             }
@@ -143,7 +143,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean containsAny(Cursorable<T> value)
     {
-        for (Cursor<T> cursor = value.cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<T> cursor = value.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             if (contains(cursor.getValue())) {
                 return true;
             }

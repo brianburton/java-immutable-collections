@@ -81,10 +81,18 @@ public class StandardCursorTest
         }
 
         // calling next advances through entire sequence
-        for (int i = 0; i < size; ++i) {
-            cursor = cursor.next();
+        cursor = cursor.start();
+        for (int i = 0, last = size - 1; i < size; ++i) {
             assertEquals(true, cursor.hasValue());
             assertEquals(lookup.apply(i), cursor.getValue());
+
+            // calling start in mid-traversal must not disrupt the sequence
+            cursor = cursor.start();
+
+            // ready for next loop
+            if (i < last) {
+                cursor = cursor.next();
+            }
         }
 
         // after expected sequence has no values

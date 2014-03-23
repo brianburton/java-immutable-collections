@@ -93,6 +93,12 @@ public class LazyCursorTest
         }
 
         @Override
+        public Cursor<String> start()
+        {
+            return advanced ? this : next();
+        }
+
+        @Override
         public Cursor<String> next()
         {
             if (advanced) {

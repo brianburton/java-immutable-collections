@@ -141,7 +141,7 @@ public abstract class StandardCursor
     public static <T> List<T> makeList(Cursor<T> cursor)
     {
         List<T> answer = new ArrayList<T>();
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             answer.add(cursor.getValue());
         }
         return answer;
@@ -165,7 +165,7 @@ public abstract class StandardCursor
     }
 
     private static class Started<V>
-            implements Cursor<V>
+            extends AbstractStartedCursor<V>
     {
         private final Source<V> source;
 
@@ -177,7 +177,7 @@ public abstract class StandardCursor
         @Override
         public Cursor<V> next()
         {
-            return source.atEnd() ? EmptyStartedCursor.<V>of() : new Started<V>(source.advance());
+            return source.atEnd() ? super.next() : new Started<V>(source.advance());
         }
 
         @Override

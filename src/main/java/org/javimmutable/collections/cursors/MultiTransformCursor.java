@@ -53,12 +53,6 @@ public class MultiTransformCursor<S, T>
     private final Cursor<T> visitCursor;
     private final Func1<S, Cursor<T>> transforminator;   // BEHOLD!
 
-    public MultiTransformCursor(Cursor<S> sourceCursor,
-                                Func1<S, Cursor<T>> transforminator)
-    {
-        this(sourceCursor, null, transforminator);
-    }
-
     private MultiTransformCursor(Cursor<S> sourceCursor,
                                  Cursor<T> visitCursor,
                                  Func1<S, Cursor<T>> transforminator)
@@ -75,6 +69,12 @@ public class MultiTransformCursor<S, T>
     }
 
     @Override
+    public Cursor<T> start()
+    {
+        return (visitCursor == null) ? next() : this;
+    }
+
+    @Override
     public Cursor<T> next()
     {
         if (visitCursor != null && visitCursor.hasValue()) {
@@ -86,7 +86,7 @@ public class MultiTransformCursor<S, T>
 
         Cursor<S> nextSource = sourceCursor.next();
         while (nextSource.hasValue()) {
-            Cursor<T> nextCursor = transforminator.apply(nextSource.getValue()).next();
+            Cursor<T> nextCursor = transforminator.apply(nextSource.getValue()).start();
             if (nextCursor.hasValue()) {
                 return new MultiTransformCursor<S, T>(nextSource, nextCursor, transforminator);
             }

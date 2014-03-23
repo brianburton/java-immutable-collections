@@ -40,7 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func0;
 
 /**
- * Cursor that creates and returns a real Cursor for a specific iterable only when next() is
+ * Cursor that creates and returns a real Cursor for a specific iterable only when start() or next() is
  * called for the first time.
  *
  * @param <V>
@@ -61,18 +61,18 @@ public class LazyCursor<V>
     }
 
     /**
-     * Creates a new LazyCursor for the specified iterable.
+     * Creates a new LazyCursor for the specified cursorable.
      *
-     * @param iterable to return an actual Cursor to use for iteration
+     * @param cursorable to return an actual Cursor to use for iteration
      */
-    public LazyCursor(final Cursorable<V> iterable)
+    public LazyCursor(final Cursorable<V> cursorable)
     {
         this.factory = new Func0<Cursor<V>>()
         {
             @Override
             public Cursor<V> apply()
             {
-                return iterable.cursor();
+                return cursorable.cursor();
             }
         };
     }
@@ -88,19 +88,19 @@ public class LazyCursor<V>
     }
 
     /**
-     * Creates a new LazyPersistentIterator for the specified iterable.
+     * Creates a new LazyPersistentIterator for the specified cursorable.
      *
-     * @param iterable a PersistentIterable capable of producing a non-empty PersistentIterator
+     * @param cursorable a PersistentIterable capable of producing a non-empty PersistentIterator
      */
-    public static <V> LazyCursor<V> of(Cursorable<V> iterable)
+    public static <V> LazyCursor<V> of(Cursorable<V> cursorable)
     {
-        return new LazyCursor<V>(iterable);
+        return new LazyCursor<V>(cursorable);
     }
 
     /**
      * Creates the real cursor using the factory and returns its next() method's result.
      * Thus when the lazy cursor creates the real cursor it always immediately calls its
-     * next() method to start its iteration and get it into the state expected by the
+     * start() method to start its iteration and get it into the state expected by the
      * caller of this method.
      *
      * @return real cursor's next() value
@@ -108,6 +108,6 @@ public class LazyCursor<V>
     @Override
     public Cursor<V> next()
     {
-        return factory.apply().next();
+        return factory.apply().start();
     }
 }

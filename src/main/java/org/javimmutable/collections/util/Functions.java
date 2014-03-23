@@ -67,7 +67,7 @@ public class Functions
                                     Cursor<T> cursor,
                                     Func2<R, T, R> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             accumulator = func.apply(accumulator, cursor.getValue());
         }
         return accumulator;
@@ -120,7 +120,7 @@ public class Functions
                                                                A list,
                                                                Func1<T, R> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             list = (A)list.insert(func.apply(cursor.getValue()));
         }
         return list;
@@ -141,7 +141,7 @@ public class Functions
                                                                 A list,
                                                                 Func1<T, Holder<R>> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             Holder<R> mappedValue = func.apply(cursor.getValue());
             if (mappedValue.isFilled()) {
                 list = (A)list.insert(mappedValue.getValue());
@@ -163,7 +163,7 @@ public class Functions
     public static <T> Holder<T> find(Cursor<T> cursor,
                                      Func1<T, Boolean> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
                 return Holders.of(cursor.getValue());
             }
@@ -186,7 +186,7 @@ public class Functions
                                                         A list,
                                                         Func1<T, Boolean> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (!func.apply(cursor.getValue())) {
                 list = (A)list.insert(cursor.getValue());
             }
@@ -208,7 +208,7 @@ public class Functions
                                                         A list,
                                                         Func1<T, Boolean> func)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
                 list = (A)list.insert(cursor.getValue());
             }
@@ -243,7 +243,7 @@ public class Functions
     public static <T, A extends Insertable<T>> A insertAll(A addable,
                                                            Cursor<T> cursor)
     {
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             addable = (A)addable.insert(cursor.getValue());
         }
         return addable;

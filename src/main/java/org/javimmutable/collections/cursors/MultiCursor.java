@@ -66,6 +66,17 @@ public class MultiCursor<T>
         this.cursor = cursor;
     }
 
+    /**
+     * Creates an object for building a MultiCursor from an arbitrary sequence of Cursors.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
+    }
+
     public static <T, C extends Cursor<T>> MultiCursor<T> of(C cursor1,
                                                              C cursor2)
     {
@@ -82,6 +93,12 @@ public class MultiCursor<T>
     public static <T, C extends Cursor<T>> MultiCursor<T> of(C... cursors)
     {
         return new MultiCursor<T>(cursors);
+    }
+
+    @Override
+    public Cursor<T> start()
+    {
+        return (cursor == null) ? next() : this;
     }
 
     @Override
@@ -122,11 +139,6 @@ public class MultiCursor<T>
             throw new NotStartedException();
         }
         return cursor.getValue();
-    }
-
-    public static <T> Builder<T> builder()
-    {
-        return new Builder<T>();
     }
 
     /**

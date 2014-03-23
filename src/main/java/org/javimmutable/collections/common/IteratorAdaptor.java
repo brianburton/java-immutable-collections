@@ -69,7 +69,7 @@ public class IteratorAdaptor<T>
     {
         if (starting) {
             starting = false;
-            cursor = cursor.next();
+            cursor = cursor.start();
         }
         return cursor.hasValue();
     }

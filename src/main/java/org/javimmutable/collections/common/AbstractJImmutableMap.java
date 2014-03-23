@@ -119,7 +119,7 @@ public abstract class AbstractJImmutableMap<K, V>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (Cursor<Entry<K, V>> cursor = cursor().next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Cursor<Entry<K, V>> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             if (sb.length() > 1) {
                 sb.append(", ");
             }

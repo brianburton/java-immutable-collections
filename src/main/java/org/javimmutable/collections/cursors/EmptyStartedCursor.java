@@ -55,6 +55,12 @@ public class EmptyStartedCursor<T>
     }
 
     @Override
+    public Cursor<T> start()
+    {
+        return this;
+    }
+
+    @Override
     public Cursor<T> next()
     {
         return this;

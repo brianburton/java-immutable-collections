@@ -49,6 +49,12 @@ public abstract class AbstractStartedCursor<T>
         implements Cursor<T>
 {
     @Override
+    public Cursor<T> start()
+    {
+        return this;
+    }
+
+    @Override
     public Cursor<T> next()
     {
         return EmptyStartedCursor.of();

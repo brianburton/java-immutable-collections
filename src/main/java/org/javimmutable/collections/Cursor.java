@@ -38,7 +38,7 @@ package org.javimmutable.collections;
 /**
  * Implemented by objects used to traverse persistent data structures.
  * The iterators themselves must be immutable and always create a new
- * iterator when next() is called.
+ * iterator when start() or next() is called.
  *
  * @param <V>
  */
@@ -61,12 +61,27 @@ public interface Cursor<V>
     }
 
     /**
+     * All Cursors are created in a pre-start position pointing "before" the first element.  Once traversal has begun a
+     * Cursor points to some element in the collection or to end ("after" the last element).  The start() method
+     * advances to the first element if traversal has not yet started or does nothing if traversal has
+     * already started.  Either next() or start() can be used to initiate a traversal however start() is
+     * safer since it can be used safely on already started cursors as well as not-started ones.  This distinction
+     * is useful when passing a Cursor as parameter to a method that will traverse from the Cursor's current position
+     * forward and using start() prevents it from skipping the current value.
+     * <p/>
+     * Must always return a non-null Cursor.
+     *
+     * @return Cursor for first position or this if already started
+     */
+    Cursor<V> start();
+
+    /**
      * Advances to the next (possibly first) value.  Must always return a non-null Cursor.
-     * A newly created Cursor must always point to "before" the first value because next() will always
-     * be called once before retrieving the first value.  If the Cursor is already at the end
+     * A newly created Cursor must always point to "before" the first value because next() (or start()) must
+     * always be called once before retrieving the first value.  If the Cursor is already at the end
      * of its sequence then it should return a Cursor that will always return false for hasValue().
      *
-     * @return iterator for next position
+     * @return Cursor for next position
      */
     Cursor<V> next();
 

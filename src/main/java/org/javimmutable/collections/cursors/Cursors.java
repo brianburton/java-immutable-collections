@@ -48,7 +48,7 @@ public class Cursors
     public static int computeHashCode(Cursor<?> cursor)
     {
         int answer = 0;
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             Object value = cursor.getValue();
             answer = 31 * answer + (value != null ? value.hashCode() : 0);
         }
@@ -66,8 +66,8 @@ public class Cursors
     public static boolean areEqual(Cursor<?> a,
                                    Cursor<?> b)
     {
-        a = a.next();
-        b = b.next();
+        a = a.start();
+        b = b.start();
         while (a.hasValue() && b.hasValue()) {
             Object av = a.getValue();
             Object bv = b.getValue();
@@ -90,7 +90,7 @@ public class Cursors
     {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (sb.length() > 1) {
                 sb.append(",");
             }

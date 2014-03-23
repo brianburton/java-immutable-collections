@@ -87,6 +87,12 @@ public class TransformCursor<S, T>
     }
 
     @Override
+    public Cursor<T> start()
+    {
+        return new TransformCursor<S, T>(source.start(), transforminator);
+    }
+
+    @Override
     public Cursor<T> next()
     {
         return new TransformCursor<S, T>(source.next(), transforminator);

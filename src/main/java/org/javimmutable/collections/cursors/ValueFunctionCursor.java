@@ -43,7 +43,7 @@ import org.javimmutable.collections.Holder;
  * The cursors are actually created using a factory object that can produce the functions.
  * The factories ensure that a Cursor is restartable and permits lazy evaluation of
  * the beginning of iteration.  The function will only be created if the starting
- * Cursor's next() method is invoked.
+ * Cursor's start() or next() method is invoked.
  * <p/>
  * The Cursors are not immutable but are designed to act as though they are.
  * Cursors remember their next value between invocations so that standard look ahead

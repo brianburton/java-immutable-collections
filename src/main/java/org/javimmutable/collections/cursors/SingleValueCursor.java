@@ -37,12 +37,17 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 
+/**
+ * A Cursor containing exactly one value to be traversed.
+ *
+ * @param <T>
+ */
 public class SingleValueCursor<T>
         extends AbstractStartCursor<T>
 {
     private final T value;
 
-    public SingleValueCursor(T value)
+    private SingleValueCursor(T value)
     {
         this.value = value;
     }
@@ -55,20 +60,8 @@ public class SingleValueCursor<T>
     @Override
     public Cursor<T> next()
     {
-        return new Cursor<T>()
+        return new AbstractStartedCursor<T>()
         {
-            @Override
-            public Cursor<T> next()
-            {
-                return EmptyStartedCursor.of();
-            }
-
-            @Override
-            public boolean hasValue()
-            {
-                return true;
-            }
-
             public T getValue()
             {
                 return value;

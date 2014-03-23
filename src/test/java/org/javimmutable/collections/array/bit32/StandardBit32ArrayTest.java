@@ -238,7 +238,7 @@ public class StandardBit32ArrayTest
 
         int index = 1;
         Cursor<JImmutableMap.Entry<Integer, Integer>> cursor = array.cursor();
-        for (cursor = cursor.next(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             assertEquals(index, (int)cursor.getValue().getKey());
             assertEquals(index, (int)cursor.getValue().getValue());
             index += 5;
