@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.JImmutableMap;
+
 import java.util.Random;
 
 public class TimingLoop
@@ -50,7 +52,7 @@ public class TimingLoop
         int removes = 0;
         int gets = 0;
         long startPer = System.currentTimeMillis();
-        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
         for (int i = 1; i <= maxLoops; ++i) {
             int command = random.nextInt(8);
             if (command <= 1) {

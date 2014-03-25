@@ -53,7 +53,7 @@ public class JImmutableHashMapTest
 {
     public void test()
     {
-        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
@@ -118,7 +118,7 @@ public class JImmutableHashMapTest
         Random random = new Random(100);
         for (int loop = 0; loop < 1000; ++loop) {
             Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
-            JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+            JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(4);
@@ -219,7 +219,7 @@ public class JImmutableHashMapTest
     public void testDeleteAll()
     {
         JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
-        assertSame(JImmutableHashMap.of(), map1.deleteAll());
+        assertSame(EmptyHashMap.of(), map1.deleteAll());
     }
 
     public void testCursor()
@@ -240,7 +240,7 @@ public class JImmutableHashMapTest
         ManualHashKey key1 = new ManualHashKey(1000, "a");
         ManualHashKey key2 = new ManualHashKey(1000, "b");
         ManualHashKey key3 = new ManualHashKey(1000, "c");
-        JImmutableHashMap<ManualHashKey, String> map = JImmutableHashMap.of();
+        JImmutableMap<ManualHashKey, String> map = JImmutableHashMap.of();
         map = map.assign(key1, "1").assign(key2, "2").assign(key3, "3");
         assertEquals(3, map.size());
         assertEquals("1", map.get(key1));
@@ -285,7 +285,7 @@ public class JImmutableHashMapTest
         assertEquals("X", map.find(key1).getValueOr("X"));
         assertEquals("X", map.find(key2).getValueOr("X"));
         assertEquals("X", map.find(key3).getValueOr("X"));
-        assertSame(JImmutableHashMap.of(), map);
+        assertSame(EmptyHashMap.of(), map);
     }
 
     public void testTransformSelection()

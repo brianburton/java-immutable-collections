@@ -37,6 +37,7 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.trie32.Trie32HashTable;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 
@@ -116,10 +117,10 @@ public class JImmutableHashMap<K, V>
     }
 
     @Override
-    public JImmutableHashMap<K, V> delete(K key)
+    public JImmutableMap<K, V> delete(K key)
     {
         final Trie32HashTable<K, V> newValues = values.delete(key.hashCode(), key);
-        return (newValues == values) ? this : ((newValues.size() == 0) ? JImmutableHashMap.<K, V>of() : new JImmutableHashMap<K, V>(newValues));
+        return (newValues == values) ? this : ((newValues.size() == 0) ? EmptyHashMap.<K, V>of() : new JImmutableHashMap<K, V>(newValues));
     }
 
     @Override
@@ -129,9 +130,9 @@ public class JImmutableHashMap<K, V>
     }
 
     @Override
-    public JImmutableHashMap<K, V> deleteAll()
+    public JImmutableMap<K, V> deleteAll()
     {
-        return of();
+        return EmptyHashMap.of();
     }
 
     @Override
