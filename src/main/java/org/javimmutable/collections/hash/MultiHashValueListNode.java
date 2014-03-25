@@ -80,25 +80,18 @@ class MultiHashValueListNode<K, V>
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        if (keyEquals(key)) {
-            return Holders.of(entry.getValue());
-        } else if (next == null) {
-            return Holders.of();
+        SingleHashValueListNode<K, V> answer = getEntryForKeyImpl(key);
+        if (answer != null) {
+            return answer;
         } else {
-            return next.getValueForKey(key);
+            return Holders.of();
         }
     }
 
     @Override
     public JImmutableMap.Entry<K, V> getEntryForKey(K key)
     {
-        if (keyEquals(key)) {
-            return entry;
-        } else if (next == null) {
-            return null;
-        } else {
-            return next.getEntryForKey(key);
-        }
+        return getEntryForKeyImpl(key);
     }
 
     @Override
@@ -106,14 +99,14 @@ class MultiHashValueListNode<K, V>
                                                        V value,
                                                        MutableDelta sizeDelta)
     {
-        if (keyEquals(key)) {
-            return (value == entry.getValue()) ? this : new MultiHashValueListNode<K, V>(next, SingleHashValueListNode.<K, V>of(key, value));
-        } else if (next == null) {
+        SingleHashValueListNode<K, V> entry = getEntryForKeyImpl(key);
+        if (entry == null) {
             sizeDelta.add(1);
-            return new MultiHashValueListNode<K, V>(this, SingleHashValueListNode.<K, V>of(key, value));
+            return new MultiHashValueListNode<K, V>(this, SingleHashValueListNode.of(key, value));
+        } else if (entry.getValue() == value) {
+            return this;
         } else {
-            final MultiHashValueListNode<K, V> newNext = next.setValueForKey(key, value, sizeDelta);
-            return (newNext == next) ? this : new MultiHashValueListNode<K, V>(newNext, entry);
+            return new MultiHashValueListNode<K, V>(removeKeyFromList(key), SingleHashValueListNode.of(key, value));
         }
     }
 
@@ -121,28 +114,12 @@ class MultiHashValueListNode<K, V>
     public HashValueListNode<K, V> deleteValueForKey(K key,
                                                      MutableDelta sizeDelta)
     {
-        final MultiHashValueListNode<K, V> newNext = deleteValueForKeyImpl(key, sizeDelta);
-        if (newNext == null || newNext == this) {
-            return newNext;
-        } else if (newNext.next == null) {
-            return newNext.entry;
-        } else {
-            return newNext;
-        }
-    }
-
-    public MultiHashValueListNode<K, V> deleteValueForKeyImpl(K key,
-                                                              MutableDelta sizeDelta)
-    {
-        if (keyEquals(key)) {
-            sizeDelta.subtract(1);
-            return next;
-        } else if (next == null) {
+        if (getEntryForKey(key) == null) {
             return this;
-        } else {
-            final MultiHashValueListNode<K, V> newNext = next.deleteValueForKeyImpl(key, sizeDelta);
-            return (newNext == next) ? this : new MultiHashValueListNode<K, V>(newNext, entry);
         }
+        MultiHashValueListNode<K, V> newList = removeKeyFromList(key);
+        sizeDelta.subtract(1);
+        return (newList != null && newList.next == null) ? newList.entry : newList;
     }
 
     @Override
@@ -204,11 +181,6 @@ class MultiHashValueListNode<K, V>
         return result;
     }
 
-    private boolean keyEquals(K key)
-    {
-        return key.equals(entry.getKey());
-    }
-
     @Override
     public String toString()
     {
@@ -216,5 +188,31 @@ class MultiHashValueListNode<K, V>
                "next=" + next +
                ", entry=" + entry +
                '}';
+    }
+
+    private MultiHashValueListNode<K, V> removeKeyFromList(K key)
+    {
+        MultiHashValueListNode<K, V> newList = null;
+        for (MultiHashValueListNode<K, V> node = this; node != null; node = node.next) {
+            if (!node.keyEquals(key)) {
+                newList = new MultiHashValueListNode<K, V>(newList, node.entry);
+            }
+        }
+        return newList;
+    }
+
+    private SingleHashValueListNode<K, V> getEntryForKeyImpl(K key)
+    {
+        for (MultiHashValueListNode<K, V> node = this; node != null; node = node.next) {
+            if (node.keyEquals(key)) {
+                return node.entry;
+            }
+        }
+        return null;
+    }
+
+    private boolean keyEquals(K key)
+    {
+        return key.equals(entry.getKey());
     }
 }

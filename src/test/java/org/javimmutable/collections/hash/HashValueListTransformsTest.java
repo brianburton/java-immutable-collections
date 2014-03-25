@@ -128,10 +128,10 @@ public class HashValueListTransformsTest
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(value, 11));
 
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        expected.add(single(18, 180));
         expected.add(single(12, 90));
-        expected.add(single(-6, -60));
         expected.add(single(10, 100));
+        expected.add(single(18, 180));
+        expected.add(single(-6, -60));
         StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
     }
 }

@@ -79,9 +79,9 @@ public class MultiHashValueListNodeTest
         assertEquals(3, size(nv));
 
         // test value identity
-        assertSame(nv, nv.setValueForKey("a", "A", null));
-        assertSame(nv, nv.setValueForKey("b", "bb", null));
-        assertSame(nv, nv.setValueForKey("c", "cc", null));
+        assertSame(nv, nv.setValueForKey("a", "A", new MutableDelta()));
+        assertSame(nv, nv.setValueForKey("b", "bb", new MutableDelta()));
+        assertSame(nv, nv.setValueForKey("c", "cc", new MutableDelta()));
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);
@@ -162,16 +162,16 @@ public class MultiHashValueListNodeTest
 
         Cursor<JImmutableMap.Entry<String, String>> cursor = nv.cursor().next();
         assertEquals(true, cursor.hasValue());
+        assertEquals("d", cursor.getValue().getKey());
+        assertEquals("dd", cursor.getValue().getValue());
+        cursor = cursor.next();
+        assertEquals(true, cursor.hasValue());
         assertEquals("c", cursor.getValue().getKey());
         assertEquals("cc", cursor.getValue().getValue());
         cursor = cursor.next();
         assertEquals(true, cursor.hasValue());
         assertEquals("b", cursor.getValue().getKey());
         assertEquals("bb", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("d", cursor.getValue().getKey());
-        assertEquals("dd", cursor.getValue().getValue());
         cursor = cursor.next();
         assertEquals(true, cursor.hasValue());
         assertEquals("a", cursor.getValue().getKey());
@@ -181,7 +181,7 @@ public class MultiHashValueListNodeTest
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("d", sizeDelta);
-        assertEquals(true, nv instanceof MultiHashValueListNode);
+        assertSame(v, nv);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.getValueForKey("a").isFilled());
         assertEquals("aa", nv.getValueForKey("a").getValue());
