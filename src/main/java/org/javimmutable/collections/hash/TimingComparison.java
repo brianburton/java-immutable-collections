@@ -37,7 +37,7 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.Trie32Array;
+import org.javimmutable.collections.array.int_trie.TrieArray;
 import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.HashMap;
@@ -152,7 +152,7 @@ public class TimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        JImmutableArray<Integer> array = Trie32Array.of();
+        JImmutableArray<Integer> array = TrieArray.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
