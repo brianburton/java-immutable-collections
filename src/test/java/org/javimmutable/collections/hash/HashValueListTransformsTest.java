@@ -64,7 +64,7 @@ public class HashValueListTransformsTest
     {
         HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<Integer, Integer>();
         MutableDelta delta = new MutableDelta();
-        Object value = transforms.update(Holders.of(), 10, 100, delta);
+        HashValueListNode<Integer, Integer> value = transforms.update(Holders.<HashValueListNode<Integer, Integer>>of(), 10, 100, delta);
         assertEquals(1, delta.getValue());
         assertEquals(single(10, 100), value);
 
@@ -84,7 +84,7 @@ public class HashValueListTransformsTest
         assertEquals(multi(single(10, 1000), single(12, 90)), value);
 
         delta = new MutableDelta();
-        Holder<Object> deleted = transforms.delete(value, 87, delta);
+        Holder<HashValueListNode<Integer, Integer>> deleted = transforms.delete(value, 87, delta);
         assertEquals(0, delta.getValue());
         assertEquals(multi(single(10, 1000), single(12, 90)), deleted.getValue());
 
@@ -108,7 +108,7 @@ public class HashValueListTransformsTest
     {
         HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<Integer, Integer>();
         MutableDelta delta = new MutableDelta();
-        Object value = transforms.update(Holders.of(), 10, 100, delta);
+        HashValueListNode<Integer, Integer> value = transforms.update(Holders.<HashValueListNode<Integer, Integer>>of(), 10, 100, delta);
         value = transforms.update(Holders.of(value), 18, 180, delta);
         value = transforms.update(Holders.of(value), 12, 60, delta);
         value = transforms.update(Holders.of(value), -6, -60, delta);

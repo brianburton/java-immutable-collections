@@ -232,7 +232,7 @@ public class MultiBranchTrieNode<T>
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    return SingleBranchTrieNode.forIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
                 }
                 default: {
                     final int newLength = entries.length - 1;
@@ -276,7 +276,7 @@ public class MultiBranchTrieNode<T>
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    return SingleBranchTrieNode.forIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
                 }
                 default: {
                     final int newLength = entries.length - 1;
@@ -299,7 +299,7 @@ public class MultiBranchTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource(bitmask)), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
+        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
         {
             @Override
             public Cursor<JImmutableMap.Entry<Integer, T>> apply(TrieNode<T> node)
@@ -312,7 +312,7 @@ public class MultiBranchTrieNode<T>
     @Override
     public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource(bitmask)), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
+        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
         {
             @Override
             public Cursor<JImmutableMap.Entry<K, V>> apply(TrieNode<T> node)
@@ -325,7 +325,7 @@ public class MultiBranchTrieNode<T>
     @Override
     public Cursor<T> anyOrderValueCursor()
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource(bitmask)), new Func1<TrieNode<T>, Cursor<T>>()
+        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<T>>()
         {
             @Override
             public Cursor<T> apply(TrieNode<T> node)
@@ -338,19 +338,22 @@ public class MultiBranchTrieNode<T>
     private class AnyOrderCursorSource
             implements StandardCursor.Source<TrieNode<T>>
     {
-        private final int remainingMask;
         private final int index;
 
-        private AnyOrderCursorSource(int remainingMask)
+        private AnyOrderCursorSource()
         {
-            this.remainingMask = remainingMask;
-            this.index = Integer.numberOfTrailingZeros(remainingMask);
+            this(0);
+        }
+
+        private AnyOrderCursorSource(int index)
+        {
+            this.index = index;
         }
 
         @Override
         public boolean atEnd()
         {
-            return remainingMask == 0;
+            return index >= entries.length;
         }
 
         @Override
@@ -362,12 +365,7 @@ public class MultiBranchTrieNode<T>
         @Override
         public StandardCursor.Source<TrieNode<T>> advance()
         {
-            if (remainingMask == 0) {
-                return this;
-            } else {
-                final int bit = 1 << index;
-                return new AnyOrderCursorSource(remainingMask & ~bit);
-            }
+            return new AnyOrderCursorSource(index + 1);
         }
     }
 

@@ -39,58 +39,52 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.Trie32HashTable;
+import org.javimmutable.collections.array.int_trie.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
 class HashValueListTransforms<K, V>
-        implements Trie32HashTable.Transforms<K, V>
+        implements Transforms<HashValueListNode<K, V>, K, V>
 {
     @Override
-    public Object update(Holder<Object> oldLeaf,
-                         K key,
-                         V value,
-                         MutableDelta delta)
+    public HashValueListNode<K, V> update(Holder<HashValueListNode<K, V>> oldLeaf,
+                                          K key,
+                                          V value,
+                                          MutableDelta delta)
     {
         if (oldLeaf.isEmpty()) {
             delta.add(1);
             return SingleHashValueListNode.of(key, value);
         } else {
-            return extractNode(oldLeaf.getValue()).setValueForKey(key, value, delta);
+            return oldLeaf.getValue().setValueForKey(key, value, delta);
         }
     }
 
     @Override
-    public Holder<Object> delete(Object oldLeaf,
-                                 K key,
-                                 MutableDelta delta)
+    public Holder<HashValueListNode<K, V>> delete(HashValueListNode<K, V> oldLeaf,
+                                                  K key,
+                                                  MutableDelta delta)
     {
-        return Holders.<Object>fromNullable(extractNode(oldLeaf).deleteValueForKey(key, delta));
+        return Holders.fromNullable(oldLeaf.deleteValueForKey(key, delta));
     }
 
     @Override
-    public Holder<V> findValue(Object oldLeaf,
+    public Holder<V> findValue(HashValueListNode<K, V> oldLeaf,
                                K key)
     {
-        return extractNode(oldLeaf).getValueForKey(key);
+        return oldLeaf.getValueForKey(key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Object oldLeaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(HashValueListNode<K, V> oldLeaf,
                                                        K key)
     {
-        return Holders.fromNullable(extractNode(oldLeaf).getEntryForKey(key));
+        return Holders.fromNullable(oldLeaf.getEntryForKey(key));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Object leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(HashValueListNode<K, V> leaf)
     {
-        return extractNode(leaf).cursor();
-    }
-
-    @SuppressWarnings("unchecked")
-    private HashValueListNode<K, V> extractNode(Object leaf)
-    {
-        return (HashValueListNode<K, V>)leaf;
+        return leaf.cursor();
     }
 }

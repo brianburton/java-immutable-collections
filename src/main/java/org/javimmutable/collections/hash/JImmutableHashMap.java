@@ -37,11 +37,16 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.Trie32HashTable;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.array.int_trie.EmptyTrieNode;
+import org.javimmutable.collections.array.int_trie.Transforms;
+import org.javimmutable.collections.array.int_trie.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.MutableDelta;
 
-public class JImmutableHashMap<K, V>
+public class JImmutableHashMap<T, K, V>
         extends AbstractJImmutableMap<K, V>
 {
     // we only new one instance of the transformations object
@@ -52,39 +57,45 @@ public class JImmutableHashMap<K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap EMPTY = new JImmutableHashMap(Trie32HashTable.of(TRANSFORMS));
+    static final JImmutableHashMap EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TRANSFORMS);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap COMPARABLE_EMPTY = new JImmutableHashMap(Trie32HashTable.of(COMPARABLE_TRANSFORMS));
+    static final JImmutableHashMap COMPARABLE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, COMPARABLE_TRANSFORMS);
 
-    private final Trie32HashTable<K, V> values;
+    private final TrieNode<T> root;
+    private final int size;
+    private final Transforms<T, K, V> transforms;
 
-    private JImmutableHashMap(Trie32HashTable<K, V> values)
+    private JImmutableHashMap(TrieNode<T> root,
+                              int size,
+                              Transforms<T, K, V> transforms)
     {
-        this.values = values;
+        this.root = root;
+        this.size = size;
+        this.transforms = transforms;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableHashMap<K, V> of()
+    public static <K, V> JImmutableMap<K, V> of()
     {
-        return (JImmutableHashMap<K, V>)EMPTY;
+        return (JImmutableMap<K, V>)EMPTY;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> JImmutableHashMap<K, V> comparableOf()
+    public static <K extends Comparable<K>, V> JImmutableMap<K, V> comparableOf()
     {
-        return (JImmutableHashMap<K, V>)COMPARABLE_EMPTY;
+        return (JImmutableMap<K, V>)COMPARABLE_EMPTY;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableHashMap<K, V> of(Class<K> klass)
+    public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
     {
         return klass.isAssignableFrom(Comparable.class) ? COMPARABLE_EMPTY : EMPTY;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableHashMap<K, V> forKey(K key)
+    public static <K, V> JImmutableMap<K, V> forKey(K key)
     {
         return (key instanceof Comparable) ? COMPARABLE_EMPTY : EMPTY;
     }
@@ -93,40 +104,57 @@ public class JImmutableHashMap<K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        return values.getValueOr(key.hashCode(), key, defaultValue);
+        return root.getValueOr(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, defaultValue);
     }
 
     @Override
     public Holder<V> find(K key)
     {
-        return values.findValue(key.hashCode(), key);
+        return root.find(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms);
     }
 
     @Override
     public Holder<Entry<K, V>> findEntry(K key)
     {
-        return values.findEntry(key.hashCode(), key);
+        Holder<V> value = find(key);
+        if (value.isEmpty()) {
+            return Holders.of();
+        } else {
+            return Holders.<Entry<K, V>>of(MapEntry.of(key, value.getValue()));
+        }
     }
 
     @Override
-    public JImmutableHashMap<K, V> assign(K key,
-                                          V value)
+    public JImmutableMap<K, V> assign(K key,
+                                      V value)
     {
-        final Trie32HashTable<K, V> newValues = values.assign(key.hashCode(), key, value);
-        return (newValues == values) ? this : new JImmutableHashMap<K, V>(newValues);
+        MutableDelta sizeDelta = new MutableDelta();
+        TrieNode<T> newRoot = root.assign(TrieNode.ROOT_SHIFT, key.hashCode(), key, value, transforms, sizeDelta);
+        if (newRoot == root) {
+            return this;
+        } else {
+            return new JImmutableHashMap<T, K, V>(newRoot, size + sizeDelta.getValue(), transforms);
+        }
     }
 
     @Override
     public JImmutableMap<K, V> delete(K key)
     {
-        final Trie32HashTable<K, V> newValues = values.delete(key.hashCode(), key);
-        return (newValues == values) ? this : ((newValues.size() == 0) ? EmptyHashMap.<K, V>of() : new JImmutableHashMap<K, V>(newValues));
+        MutableDelta sizeDelta = new MutableDelta();
+        TrieNode<T> newRoot = root.delete(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, sizeDelta);
+        if (newRoot == root) {
+            return this;
+        } else if (newRoot.isEmpty()) {
+            return EmptyHashMap.of();
+        } else {
+            return new JImmutableHashMap<T, K, V>(newRoot, size + sizeDelta.getValue(), transforms);
+        }
     }
 
     @Override
     public int size()
     {
-        return values.size();
+        return size;
     }
 
     @Override
@@ -138,13 +166,13 @@ public class JImmutableHashMap<K, V>
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return values.cursor();
+        return root.anyOrderEntryCursor(transforms);
     }
 
     // for unit test to verify proper transforms selected
-    Trie32HashTable.Transforms getTransforms()
+    Transforms getTransforms()
     {
-        return values.getTransforms();
+        return transforms;
     }
 
 }

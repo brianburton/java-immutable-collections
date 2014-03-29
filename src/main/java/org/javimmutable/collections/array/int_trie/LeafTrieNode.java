@@ -140,7 +140,7 @@ public class LeafTrieNode<T>
                 return withValue(newValue.getValue());
             }
         } else {
-            assert shift > 0;
+            assert shift >= 0;
             return this;
         }
     }

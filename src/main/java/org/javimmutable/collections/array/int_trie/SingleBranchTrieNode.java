@@ -27,8 +27,15 @@ public class SingleBranchTrieNode<T>
                                                        int index,
                                                        TrieNode<T> child)
     {
-        final int childIndex = (index >>> shift) & 0x1f;
-        return new SingleBranchTrieNode<T>(shift, childIndex, child);
+        final int branchIndex = (index >>> shift) & 0x1f;
+        return new SingleBranchTrieNode<T>(shift, branchIndex, child);
+    }
+
+    public static <T> SingleBranchTrieNode<T> forBranchIndex(int shift,
+                                                             int branchIndex,
+                                                             TrieNode<T> child)
+    {
+        return new SingleBranchTrieNode<T>(shift, branchIndex, child);
     }
 
     @Override

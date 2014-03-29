@@ -43,6 +43,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.tree.LeafNode;
+import org.javimmutable.collections.tree.TreeNode;
 import org.javimmutable.collections.tree.TwoNode;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class HashValueTreeTransformsTest
     {
         HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<Integer, Integer>();
         MutableDelta delta = new MutableDelta();
-        Object value = transforms.update(Holders.of(), 10, 100, delta);
+        TreeNode<Integer, Integer> value = transforms.update(Holders.<TreeNode<Integer, Integer>>of(), 10, 100, delta);
         assertEquals(1, delta.getValue());
         assertEquals(new LeafNode<Integer, Integer>(10, 100), value);
 
@@ -75,7 +76,7 @@ public class HashValueTreeTransformsTest
         assertEquals(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 1000), new LeafNode<Integer, Integer>(12, 90), 10, 12), value);
 
         delta = new MutableDelta();
-        Holder<Object> deleted = transforms.delete(value, 87, delta);
+        Holder<TreeNode<Integer, Integer>> deleted = transforms.delete(value, 87, delta);
         assertEquals(0, delta.getValue());
         assertEquals(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 1000), new LeafNode<Integer, Integer>(12, 90), 10, 12), deleted.getValue());
 
@@ -99,7 +100,7 @@ public class HashValueTreeTransformsTest
     {
         HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<Integer, Integer>();
         MutableDelta delta = new MutableDelta();
-        Object value = transforms.update(Holders.of(), 10, 100, delta);
+        TreeNode<Integer, Integer> value = transforms.update(Holders.<TreeNode<Integer, Integer>>of(), 10, 100, delta);
         value = transforms.update(Holders.of(value), 18, 180, delta);
         value = transforms.update(Holders.of(value), 12, 60, delta);
         value = transforms.update(Holders.of(value), -6, -60, delta);

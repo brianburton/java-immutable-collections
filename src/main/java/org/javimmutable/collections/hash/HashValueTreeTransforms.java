@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.Trie32HashTable;
+import org.javimmutable.collections.array.int_trie.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.TreeNode;
@@ -55,59 +55,49 @@ import java.util.Comparator;
  * @param <V>
  */
 class HashValueTreeTransforms<K extends Comparable<K>, V>
-        implements Trie32HashTable.Transforms<K, V>
+        implements Transforms<TreeNode<K, V>, K, V>
 {
     private final Comparator<K> comparator = ComparableComparator.of();
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Object update(Holder<Object> leaf,
-                         K key,
-                         V value,
-                         MutableDelta delta)
+    public TreeNode<K, V> update(Holder<TreeNode<K, V>> leaf,
+                                 K key,
+                                 V value,
+                                 MutableDelta delta)
     {
         if (leaf.isEmpty()) {
             return TreeNode.<K, V>of().assign(comparator, key, value, delta);
         } else {
-            return extractTree(leaf.getValue()).assign(comparator, key, value, delta);
+            return leaf.getValue().assign(comparator, key, value, delta);
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Holder<Object> delete(Object leaf,
-                                 K key,
-                                 MutableDelta delta)
+    public Holder<TreeNode<K, V>> delete(TreeNode<K, V> leaf,
+                                         K key,
+                                         MutableDelta delta)
     {
-        final TreeNode<K, V> newTree = extractTree(leaf).delete(comparator, key, delta);
-        return (newTree.isEmpty()) ? Holders.of() : Holders.<Object>of(newTree);
+        final TreeNode<K, V> newTree = leaf.delete(comparator, key, delta);
+        return (newTree.isEmpty()) ? Holders.<TreeNode<K, V>>of() : Holders.of(newTree);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Holder<V> findValue(Object leaf,
+    public Holder<V> findValue(TreeNode<K, V> leaf,
                                K key)
     {
-        return extractTree(leaf).find(comparator, key);
+        return leaf.find(comparator, key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Object leaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(TreeNode<K, V> leaf,
                                                        K key)
     {
-        return extractTree(leaf).findEntry(comparator, key);
+        return leaf.findEntry(comparator, key);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Object leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(TreeNode<K, V> leaf)
     {
-        return extractTree(leaf).cursor();
-    }
-
-    @SuppressWarnings("unchecked")
-    private TreeNode<K, V> extractTree(Object leaf)
-    {
-        return (TreeNode<K, V>)leaf;
+        return leaf.cursor();
     }
 }

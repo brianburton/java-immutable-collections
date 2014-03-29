@@ -71,7 +71,7 @@ public class JImmutableHashMapTest
 
     public void testValueIdentity()
     {
-        JImmutableHashMap<Integer, String> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, String> map = JImmutableHashMap.of();
         map = map.assign(10, "ab");
         assertSame(map, map.assign(10, "ab"));
         for (int i = 100; i <= 15000; ++i) {
@@ -118,7 +118,7 @@ public class JImmutableHashMapTest
         Random random = new Random(100);
         for (int loop = 0; loop < 1000; ++loop) {
             Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
-            JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
+            JImmutableMap<Integer, Integer> map = JImmutableHashMap.comparableOf();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(4);
@@ -201,6 +201,7 @@ public class JImmutableHashMapTest
             ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
+                assertEquals(false, map.find(key).isEmpty());
                 map = map.delete(key);
                 assertEquals(true, map.find(key).isEmpty());
             }
@@ -224,7 +225,7 @@ public class JImmutableHashMapTest
 
     public void testCursor()
     {
-        JImmutableHashMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
         List<Integer> expected = new ArrayList<Integer>();
         for (int i = 0; i < 100000; ++i) {
             map = map.assign(i, i);
