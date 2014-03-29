@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.int_trie;
+package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableArray;

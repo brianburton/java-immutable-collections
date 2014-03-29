@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.int_trie;
+package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -108,7 +108,7 @@ public abstract class TrieNode<T>
 
         switch (size) {
         case 0:
-            return EmptyTrieNode.of();
+            return of();
 
         case 1:
             return LeafTrieNode.of(index, source.get(offset));

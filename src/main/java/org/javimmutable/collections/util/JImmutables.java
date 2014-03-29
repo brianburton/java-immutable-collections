@@ -36,7 +36,7 @@
 package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.*;
-import org.javimmutable.collections.array.trie32.Trie32Array;
+import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.EmptyHashMap;
@@ -542,7 +542,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array()
     {
-        return Trie32Array.of();
+        return TrieArray.of();
     }
 
     /**
@@ -555,7 +555,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(T... values)
     {
-        return Trie32Array.of(IndexedArray.retained(values));
+        return TrieArray.of(IndexedArray.retained(values), 0, values.length);
     }
 
     /**
@@ -568,7 +568,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(Cursor<JImmutableMap.Entry<Integer, T>> cursor)
     {
-        return Functions.insertAll(Trie32Array.<T>of(), cursor);
+        return Functions.insertAll(TrieArray.<T>of(), cursor);
     }
 
     /**
@@ -596,7 +596,7 @@ public final class JImmutables
                                                int offset,
                                                int limit)
     {
-        return Trie32Array.of(cursorable, offset, limit);
+        return TrieArray.of(cursorable, offset, limit);
     }
 
     /**
@@ -609,6 +609,6 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(List<T> collection)
     {
-        return Trie32Array.of(IndexedList.retained(collection));
+        return TrieArray.of(IndexedList.retained(collection), 0, collection.size());
     }
 }

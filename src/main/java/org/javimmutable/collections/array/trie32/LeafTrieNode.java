@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.int_trie;
+package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -124,7 +124,7 @@ public class LeafTrieNode<T>
         assert shift >= -5;
         if (this.index == index) {
             sizeDelta.subtract(1);
-            return EmptyTrieNode.of();
+            return of();
         } else {
             assert shift > 0;
             return this;
@@ -142,7 +142,7 @@ public class LeafTrieNode<T>
         if (this.index == index) {
             final Holder<T> newValue = transforms.delete(value, key, sizeDelta);
             if (newValue.isEmpty()) {
-                return EmptyTrieNode.of();
+                return of();
             } else if (newValue.getValue() == value) {
                 return this;
             } else {

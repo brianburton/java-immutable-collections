@@ -40,9 +40,9 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.array.int_trie.EmptyTrieNode;
-import org.javimmutable.collections.array.int_trie.Transforms;
-import org.javimmutable.collections.array.int_trie.TrieNode;
+import org.javimmutable.collections.array.trie32.EmptyTrieNode;
+import org.javimmutable.collections.array.trie32.Transforms;
+import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 

@@ -39,9 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.array.trie32.Trie32Array;
+import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
@@ -62,13 +63,13 @@ public class JImmutableInsertOrderMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(Trie32Array.of(), JImmutableHashMap.of(), 1);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 1);
 
-    private final Trie32Array<Node<K, V>> sortedNodes;
+    private final JImmutableArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
     private final int nextIndex;
 
-    private JImmutableInsertOrderMap(Trie32Array<Node<K, V>> sortedNodes,
+    private JImmutableInsertOrderMap(JImmutableArray<Node<K, V>> sortedNodes,
                                      JImmutableMap<K, Node<K, V>> hashedNodes,
                                      int nextIndex)
     {

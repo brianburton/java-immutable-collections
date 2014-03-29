@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.int_trie;
+package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -134,7 +134,7 @@ public class SingleBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                return EmptyTrieNode.of();
+                return of();
             } else {
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
@@ -157,7 +157,7 @@ public class SingleBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                return EmptyTrieNode.of();
+                return of();
             } else {
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }

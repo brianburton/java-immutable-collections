@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.int_trie;
+package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
@@ -253,7 +253,7 @@ public class MultiBranchTrieNode<T>
             if (newChild.isEmpty()) {
                 switch (entries.length) {
                 case 1:
-                    return EmptyTrieNode.of();
+                    return of();
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
@@ -297,7 +297,7 @@ public class MultiBranchTrieNode<T>
             if (newChild.isEmpty()) {
                 switch (entries.length) {
                 case 1:
-                    return EmptyTrieNode.of();
+                    return of();
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
