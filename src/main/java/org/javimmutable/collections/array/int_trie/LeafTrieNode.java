@@ -16,12 +16,19 @@ public class LeafTrieNode<T>
     private final T value;
     private final int shift;
 
-    public LeafTrieNode(int index,
-                        T value)
+    private LeafTrieNode(int index,
+                         T value,
+                         int shift)
     {
         this.index = index;
         this.value = value;
-        this.shift = shiftForIndex(index);
+        this.shift = shift;
+    }
+
+    static <T> LeafTrieNode<T> of(int index,
+                                  T value)
+    {
+        return new LeafTrieNode<T>(index, value, shiftForIndex(index));
     }
 
     @Override
@@ -197,6 +204,6 @@ public class LeafTrieNode<T>
 
     private TrieNode<T> withValue(T newValue)
     {
-        return new LeafTrieNode<T>(index, newValue);
+        return new LeafTrieNode<T>(index, newValue, shift);
     }
 }

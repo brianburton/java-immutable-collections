@@ -2,6 +2,7 @@ package org.javimmutable.collections.array.int_trie;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
@@ -89,6 +90,36 @@ public abstract class TrieNode<T>
     }
 
     public abstract Cursor<T> anyOrderValueCursor();
+
+    public static <T> TrieNode<T> of()
+    {
+        return EmptyTrieNode.instance();
+    }
+
+    public static <T> TrieNode<T> fromSource(int index,
+                                             Indexed<T> source,
+                                             int offset,
+                                             int limit)
+    {
+        final int size = Math.min(32, limit - offset);
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (size) {
+        case 0:
+            return EmptyTrieNode.of();
+
+        case 1:
+            return LeafTrieNode.of(index, source.get(offset));
+
+        case 32:
+            return FullBranchTrieNode.fromSource(index, source, offset);
+
+        default:
+            return MultiBranchTrieNode.forSource(index, size, source, offset);
+        }
+    }
 
     public static int shiftForIndex(int index)
     {

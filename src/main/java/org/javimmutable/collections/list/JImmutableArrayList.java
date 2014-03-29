@@ -80,11 +80,7 @@ public class JImmutableArrayList<T>
         if (size == 0) {
             return of();
         } else {
-            JImmutableArray<T> values = TrieArray.of();
-            int index = 0;
-            while (offset < limit) {
-                values = values.assign(index++, source.get(offset++));
-            }
+            final JImmutableArray<T> values = TrieArray.of(source, offset, limit);
             return new JImmutableArrayList<T>(values, 0, size);
         }
     }

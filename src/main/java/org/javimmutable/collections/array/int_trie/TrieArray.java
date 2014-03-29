@@ -3,6 +3,7 @@ package org.javimmutable.collections.array.int_trie;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
@@ -23,7 +24,40 @@ public class TrieArray<T>
 
     public static <T> TrieArray<T> of()
     {
-        return new TrieArray<T>(EmptyTrieNode.<T>of(), 0);
+        return new TrieArray<T>(TrieNode.<T>of(), 0);
+    }
+
+    public static <T> JImmutableArray<T> of(Indexed<T> source,
+                                            int offset,
+                                            int limit)
+    {
+        final int size = limit - offset;
+        if (size == 0) {
+            return of();
+        }
+
+        // small lists can be directly constructed from a single leaf array
+        if (size <= 32) {
+            return new TrieArray<T>(TrieNode.<T>fromSource(0, source, offset, limit), size);
+        }
+
+        // first construct an array containing a single level of arrays of leaves
+        final int numBranches = Math.min(32, (limit - offset + 31) / 32);
+        @SuppressWarnings("unchecked") final TrieNode<T>[] branchArray = (TrieNode<T>[])new TrieNode[numBranches];
+        int index = 0;
+        for (int b = 0; b < numBranches; ++b) {
+            int branchSize = Math.min(32, limit - offset);
+            branchArray[b] = TrieNode.fromSource(index, source, offset, limit);
+            offset += branchSize;
+            index += branchSize;
+        }
+
+        // then add any extras left over above that size
+        JImmutableArray<T> array = new TrieArray<T>(MultiBranchTrieNode.forEntries(5, branchArray), index);
+        while (offset < limit) {
+            array = array.assign(index++, source.get(offset++));
+        }
+        return array;
     }
 
     @Override

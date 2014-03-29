@@ -4,6 +4,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
@@ -19,14 +20,9 @@ public class MultiBranchTrieNode<T>
     private final int bitmask;
     private final TrieNode<T>[] entries;
 
-    public MultiBranchTrieNode(int shift)
-    {
-        this(shift, 0, MultiBranchTrieNode.<T>allocate(0));
-    }
-
-    public MultiBranchTrieNode(int shift,
-                               int bitmask,
-                               TrieNode<T>[] entries)
+    private MultiBranchTrieNode(int shift,
+                                int bitmask,
+                                TrieNode<T>[] entries)
     {
         assert shift >= 0;
         this.shift = shift;
@@ -34,22 +30,48 @@ public class MultiBranchTrieNode<T>
         this.entries = entries;
     }
 
-    public static <T> MultiBranchTrieNode<T> forIndex(int shift,
-                                                      int index,
-                                                      TrieNode<T> child)
+    static <T> MultiBranchTrieNode<T> forIndex(int shift,
+                                               int index,
+                                               TrieNode<T> child)
     {
         int branchIndex = ((index >>> shift) & 0x1f);
         return forBranchIndex(shift, branchIndex, child);
     }
 
-    public static <T> MultiBranchTrieNode<T> forBranchIndex(int shift,
-                                                            int branchIndex,
-                                                            TrieNode<T> child)
+    static <T> MultiBranchTrieNode<T> forBranchIndex(int shift,
+                                                     int branchIndex,
+                                                     TrieNode<T> child)
     {
         assert branchIndex >= 0 && branchIndex < 32;
         TrieNode<T>[] entries = allocate(1);
         entries[0] = child;
         return new MultiBranchTrieNode<T>(shift, 1 << branchIndex, entries);
+    }
+
+    static <T> MultiBranchTrieNode<T> forEntries(int shift,
+                                                 TrieNode<T>[] entries)
+    {
+        int bitmask = 0;
+        for (int i = entries.length; i > 0; --i) {
+            bitmask = (bitmask << 1) | 1;
+        }
+        return new MultiBranchTrieNode<T>(shift, bitmask, entries);
+    }
+
+    static <T> MultiBranchTrieNode<T> forSource(int index,
+                                                int size,
+                                                Indexed<T> source,
+                                                int offset)
+    {
+        TrieNode<T>[] entries = allocate(size);
+        int bit = 1;
+        int bitmask = 0;
+        for (int i = 0; i < size; ++i) {
+            entries[i] = LeafTrieNode.of(index++, source.get(offset++));
+            bitmask = bitmask | bit;
+            bit = bit << 1;
+        }
+        return new MultiBranchTrieNode<T>(0, bitmask, entries);
     }
 
     static <T> MultiBranchTrieNode<T> fullWithout(int shift,
@@ -154,7 +176,7 @@ public class MultiBranchTrieNode<T>
                 System.arraycopy(entries, 0, newEntries, 0, childIndex);
                 System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
             }
-            newEntries[childIndex] = new LeafTrieNode<T>(index, value);
+            newEntries[childIndex] = LeafTrieNode.of(index, value);
             sizeDelta.add(1);
             if (newEntries.length == 32) {
                 return new FullBranchTrieNode<T>(shift, newEntries);
@@ -194,7 +216,7 @@ public class MultiBranchTrieNode<T>
                 System.arraycopy(entries, 0, newEntries, 0, childIndex);
                 System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
             }
-            newEntries[childIndex] = new LeafTrieNode<T>(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+            newEntries[childIndex] = LeafTrieNode.of(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
             if (newEntries.length == 32) {
                 return new FullBranchTrieNode<T>(shift, newEntries);
             } else {

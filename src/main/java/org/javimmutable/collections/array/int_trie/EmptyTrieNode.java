@@ -13,7 +13,7 @@ public class EmptyTrieNode<T>
     private static final EmptyTrieNode EMPTY = new EmptyTrieNode();
 
     @SuppressWarnings("unchecked")
-    public static <T> EmptyTrieNode<T> of()
+    static <T> EmptyTrieNode<T> instance()
     {
         return (EmptyTrieNode<T>)EMPTY;
     }
@@ -65,7 +65,7 @@ public class EmptyTrieNode<T>
                               MutableDelta sizeDelta)
     {
         sizeDelta.add(1);
-        return new LeafTrieNode<T>(index, value);
+        return LeafTrieNode.of(index, value);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class EmptyTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        return new LeafTrieNode<T>(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+        return LeafTrieNode.of(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
     }
 
     @Override

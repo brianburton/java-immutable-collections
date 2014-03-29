@@ -23,17 +23,17 @@ public class SingleBranchTrieNode<T>
         this.child = child;
     }
 
-    public static <T> SingleBranchTrieNode<T> forIndex(int shift,
-                                                       int index,
-                                                       TrieNode<T> child)
+    static <T> SingleBranchTrieNode<T> forIndex(int shift,
+                                                int index,
+                                                TrieNode<T> child)
     {
         final int branchIndex = (index >>> shift) & 0x1f;
         return new SingleBranchTrieNode<T>(shift, branchIndex, child);
     }
 
-    public static <T> SingleBranchTrieNode<T> forBranchIndex(int shift,
-                                                             int branchIndex,
-                                                             TrieNode<T> child)
+    static <T> SingleBranchTrieNode<T> forBranchIndex(int shift,
+                                                      int branchIndex,
+                                                      TrieNode<T> child)
     {
         return new SingleBranchTrieNode<T>(shift, branchIndex, child);
     }

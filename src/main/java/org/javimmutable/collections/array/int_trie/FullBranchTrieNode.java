@@ -3,6 +3,7 @@ package org.javimmutable.collections.array.int_trie;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
@@ -19,6 +20,17 @@ public class FullBranchTrieNode<T>
     {
         this.shift = shift;
         this.entries = entries;
+    }
+
+    static <T> FullBranchTrieNode<T> fromSource(int index,
+                                                Indexed<T> source,
+                                                int offset)
+    {
+        @SuppressWarnings("unchecked") TrieNode<T>[] entries = (TrieNode<T>[])new TrieNode[32];
+        for (int i = 0; i < 32; ++i) {
+            entries[i] = LeafTrieNode.of(index++, source.get(offset++));
+        }
+        return new FullBranchTrieNode<T>(0, entries);
     }
 
     @Override
