@@ -37,7 +37,9 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.array.int_trie.TrieArray;
 import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -50,15 +52,15 @@ public class JImmutableArrayList<T>
         implements JImmutableList<T>
 {
     @SuppressWarnings("unchecked")
-    private static JImmutableArrayList EMPTY = new JImmutableArrayList(Trie32Array.of(), 0, 0);
+    private static JImmutableArrayList EMPTY = new JImmutableArrayList(TrieArray.of(), 0, 0);
 
     public static final int MAX_INDEXED_CONSTRUCTOR_SIZE = Trie32Array.MAX_INDEXED_CONSTRUCTOR_SIZE;
 
-    private final Trie32Array<T> values;
+    private final JImmutableArray<T> values;
     private final int first;
     private final int next;
 
-    private JImmutableArrayList(Trie32Array<T> values,
+    private JImmutableArrayList(JImmutableArray<T> values,
                                 int first,
                                 int next)
     {
@@ -81,7 +83,12 @@ public class JImmutableArrayList<T>
         if (size == 0) {
             return of();
         } else {
-            return new JImmutableArrayList<T>(Trie32Array.of(source, offset, limit), 0, size);
+            JImmutableArray<T> values = TrieArray.of();
+            int index = 0;
+            while (offset < limit) {
+                values = values.assign(index++, source.get(offset++));
+            }
+            return new JImmutableArrayList<T>(values, 0, size);
         }
     }
 

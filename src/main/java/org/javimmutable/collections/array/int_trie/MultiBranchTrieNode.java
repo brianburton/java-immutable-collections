@@ -12,6 +12,9 @@ import org.javimmutable.collections.cursors.StandardCursor;
 public class MultiBranchTrieNode<T>
         extends TrieNode<T>
 {
+    // used by SignedOrderCursorSource to determine which index to use next
+    private static final IndexList SIGNED_INDEX_LIST = new IndexList(2, new IndexList(3, new IndexList(0, new IndexList(1, null))));
+
     private final int shift;
     private final int bitmask;
     private final TrieNode<T>[] entries;
@@ -299,7 +302,54 @@ public class MultiBranchTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
+        return entryCursor(new AnyOrderCursorSource());
+    }
+
+    @Override
+    public Cursor<JImmutableMap.Entry<Integer, T>> signedOrderEntryCursor()
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderEntryCursor();
+        } else {
+            return entryCursor(new SignedOrderCursorSource());
+        }
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    {
+        return entryCursor(new AnyOrderCursorSource(), transforms);
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> signedOrderEntryCursor(Transforms<T, K, V> transforms)
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderEntryCursor(transforms);
+        } else {
+            return entryCursor(new SignedOrderCursorSource(), transforms);
+        }
+    }
+
+    @Override
+    public Cursor<T> anyOrderValueCursor()
+    {
+        return valueCursor(new AnyOrderCursorSource());
+    }
+
+    @Override
+    public Cursor<T> signedOrderValueCursor()
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderValueCursor();
+        } else {
+            return valueCursor(new SignedOrderCursorSource());
+        }
+    }
+
+    private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)
+    {
+        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
         {
             @Override
             public Cursor<JImmutableMap.Entry<Integer, T>> apply(TrieNode<T> node)
@@ -309,10 +359,10 @@ public class MultiBranchTrieNode<T>
         });
     }
 
-    @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    private <K, V> Cursor<JImmutableMap.Entry<K, V>> entryCursor(StandardCursor.Source<TrieNode<T>> source,
+                                                                 final Transforms<T, K, V> transforms)
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
+        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
         {
             @Override
             public Cursor<JImmutableMap.Entry<K, V>> apply(TrieNode<T> node)
@@ -322,10 +372,9 @@ public class MultiBranchTrieNode<T>
         });
     }
 
-    @Override
-    public Cursor<T> anyOrderValueCursor()
+    private Cursor<T> valueCursor(StandardCursor.Source<TrieNode<T>> source)
     {
-        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource()), new Func1<TrieNode<T>, Cursor<T>>()
+        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<T>>()
         {
             @Override
             public Cursor<T> apply(TrieNode<T> node)
@@ -369,6 +418,53 @@ public class MultiBranchTrieNode<T>
         }
     }
 
+    private class SignedOrderCursorSource
+            implements StandardCursor.Source<TrieNode<T>>
+    {
+        private final IndexList indexList;
+
+        private SignedOrderCursorSource()
+        {
+            this(SIGNED_INDEX_LIST);
+        }
+
+        private SignedOrderCursorSource(IndexList indexList)
+        {
+            assert shift == TrieNode.ROOT_SHIFT;
+            this.indexList = findFirstIndex(indexList);
+        }
+
+        @Override
+        public boolean atEnd()
+        {
+            return indexList == null;
+        }
+
+        @Override
+        public TrieNode<T> currentValue()
+        {
+            return entries[realIndex(bitmask, indexList.bit)];
+        }
+
+        @Override
+        public StandardCursor.Source<TrieNode<T>> advance()
+        {
+            if (indexList == null) {
+                return this;
+            } else {
+                return new SignedOrderCursorSource(findFirstIndex(indexList.next));
+            }
+        }
+    }
+
+    private IndexList findFirstIndex(IndexList next)
+    {
+        while (next != null && (bitmask & next.bit) == 0) {
+            next = next.next;
+        }
+        return next;
+    }
+
     private static int realIndex(int bitmask,
                                  int bit)
     {
@@ -379,5 +475,18 @@ public class MultiBranchTrieNode<T>
     private static <T> TrieNode<T>[] allocate(int size)
     {
         return (TrieNode<T>[])new TrieNode[size];
+    }
+
+    private static class IndexList
+    {
+        private final int bit;
+        private final IndexList next;
+
+        private IndexList(int index,
+                          IndexList next)
+        {
+            this.bit = 1 << index;
+            this.next = next;
+        }
     }
 }

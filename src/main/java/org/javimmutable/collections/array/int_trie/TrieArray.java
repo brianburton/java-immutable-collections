@@ -71,6 +71,6 @@ public class TrieArray<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        throw new UnsupportedOperationException();
+        return root.signedOrderEntryCursor();
     }
 }
