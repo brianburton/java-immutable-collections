@@ -30,13 +30,21 @@ public class TrieArray<T>
     public T getValueOr(int index,
                         T defaultValue)
     {
-        return root.getValueOr(TrieNode.ROOT_SHIFT, index, defaultValue);
+        if (root.getShift() < TrieNode.shiftForIndex(index)) {
+            return defaultValue;
+        } else {
+            return root.getValueOr(root.getShift(), index, defaultValue);
+        }
     }
 
     @Override
     public Holder<T> find(int index)
     {
-        return Holders.fromNullable(getValueOr(index, null));
+        if (root.getShift() < TrieNode.shiftForIndex(index)) {
+            return Holders.of();
+        } else {
+            return root.find(root.getShift(), index);
+        }
     }
 
     @Override
@@ -44,7 +52,8 @@ public class TrieArray<T>
                                      T value)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        final TrieNode<T> newRoot = root.assign(TrieNode.ROOT_SHIFT, index, value, sizeDelta);
+        TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
+        newRoot = newRoot.assign(newRoot.getShift(), index, value, sizeDelta);
         return (newRoot == root) ? this : new TrieArray<T>(newRoot, size + sizeDelta.getValue());
     }
 
@@ -52,7 +61,7 @@ public class TrieArray<T>
     public JImmutableArray<T> delete(int index)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        final TrieNode<T> newRoot = root.delete(TrieNode.ROOT_SHIFT, index, sizeDelta);
+        final TrieNode<T> newRoot = root.delete(root.getShift(), index, sizeDelta).trimmedToMinimumDepth();
         return (newRoot == root) ? this : new TrieArray<T>(newRoot, size + sizeDelta.getValue());
     }
 

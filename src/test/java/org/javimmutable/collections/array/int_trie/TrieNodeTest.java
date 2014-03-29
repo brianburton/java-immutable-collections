@@ -50,5 +50,27 @@ public class TrieNodeTest
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)47, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
         assertEquals(1, delta.getValue());
+
+        for (int i = 30; i < 32; ++i) {
+            assertEquals(30, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 25; i < 30; ++i) {
+            assertEquals(25, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 20; i < 25; ++i) {
+            assertEquals(20, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 15; i < 20; ++i) {
+            assertEquals(15, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 10; i < 15; ++i) {
+            assertEquals(10, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 5; i < 10; ++i) {
+            assertEquals(5, TrieNode.shiftForIndex(1 << i));
+        }
+        for (int i = 0; i < 5; ++i) {
+            assertEquals(0, TrieNode.shiftForIndex(1 << i));
+        }
     }
 }

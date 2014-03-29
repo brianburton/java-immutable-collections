@@ -152,6 +152,12 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
+    public int getShift()
+    {
+        return shift;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return MultiTransformCursor.of(StandardCursor.of(new CursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()

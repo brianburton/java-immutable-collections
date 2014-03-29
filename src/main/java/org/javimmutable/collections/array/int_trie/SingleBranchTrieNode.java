@@ -165,6 +165,18 @@ public class SingleBranchTrieNode<T>
     }
 
     @Override
+    public int getShift()
+    {
+        return shift;
+    }
+
+    @Override
+    public TrieNode<T> trimmedToMinimumDepth()
+    {
+        return branchIndex == 0 ? child.trimmedToMinimumDepth() : this;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return child.anyOrderEntryCursor();

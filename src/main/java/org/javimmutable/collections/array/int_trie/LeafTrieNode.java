@@ -14,12 +14,14 @@ public class LeafTrieNode<T>
 {
     private final int index;
     private final T value;
+    private final int shift;
 
     public LeafTrieNode(int index,
                         T value)
     {
         this.index = index;
         this.value = value;
+        this.shift = shiftForIndex(index);
     }
 
     @Override
@@ -143,6 +145,12 @@ public class LeafTrieNode<T>
             assert shift >= 0;
             return this;
         }
+    }
+
+    @Override
+    public int getShift()
+    {
+        return shift;
     }
 
     @Override

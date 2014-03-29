@@ -98,6 +98,12 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public int getShift()
+    {
+        return 0;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return StandardCursor.of();

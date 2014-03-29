@@ -51,6 +51,24 @@ public abstract class TrieNode<T>
                                               Transforms<T, K, V> transforms,
                                               MutableDelta sizeDelta);
 
+    public abstract int getShift();
+
+    public TrieNode<T> trimmedToMinimumDepth()
+    {
+        return this;
+    }
+
+    public TrieNode<T> paddedToMinimumDepthForShift(int shift)
+    {
+        TrieNode<T> node = this;
+        int nodeShift = node.getShift();
+        while (nodeShift < shift) {
+            nodeShift += 5;
+            node = SingleBranchTrieNode.forBranchIndex(nodeShift, 0, node);
+        }
+        return node;
+    }
+
     public Cursor<JImmutableMap.Entry<Integer, T>> signedOrderEntryCursor()
     {
         return anyOrderEntryCursor();
@@ -72,4 +90,56 @@ public abstract class TrieNode<T>
 
     public abstract Cursor<T> anyOrderValueCursor();
 
+    public static int shiftForIndex(int index)
+    {
+        switch (Integer.numberOfLeadingZeros(index)) {
+        case 0:
+        case 1:
+            return 30;
+
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            return 25;
+
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+            return 20;
+
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+            return 15;
+
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+            return 10;
+
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+        case 26:
+            return 5;
+
+        case 27:
+        case 28:
+        case 29:
+        case 30:
+        case 31:
+        case 32:
+            return 0;
+        }
+        throw new IllegalArgumentException();
+    }
 }

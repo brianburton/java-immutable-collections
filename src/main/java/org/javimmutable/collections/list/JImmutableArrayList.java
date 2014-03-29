@@ -40,7 +40,6 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.int_trie.TrieArray;
-import org.javimmutable.collections.array.trie32.Trie32Array;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -53,8 +52,6 @@ public class JImmutableArrayList<T>
 {
     @SuppressWarnings("unchecked")
     private static JImmutableArrayList EMPTY = new JImmutableArrayList(TrieArray.of(), 0, 0);
-
-    public static final int MAX_INDEXED_CONSTRUCTOR_SIZE = Trie32Array.MAX_INDEXED_CONSTRUCTOR_SIZE;
 
     private final JImmutableArray<T> values;
     private final int first;

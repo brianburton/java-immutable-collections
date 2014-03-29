@@ -300,6 +300,18 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
+    public int getShift()
+    {
+        return shift;
+    }
+
+    @Override
+    public TrieNode<T> trimmedToMinimumDepth()
+    {
+        return bitmask == 1 ? entries[0].trimmedToMinimumDepth() : this;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return entryCursor(new AnyOrderCursorSource());
