@@ -10,17 +10,12 @@ import org.javimmutable.collections.cursors.StandardCursor;
 public class EmptyTrieNode<T>
         extends TrieNode<T>
 {
-    private final int shift;
+    private static final EmptyTrieNode EMPTY = new EmptyTrieNode();
 
-    EmptyTrieNode(int shift)
+    @SuppressWarnings("unchecked")
+    public static <T> EmptyTrieNode<T> of()
     {
-        assert shift >= 0;
-        this.shift = shift;
-    }
-
-    public static <T> EmptyTrieNode<T> of(int shift)
-    {
-        return new EmptyTrieNode<T>(shift);
+        return (EmptyTrieNode<T>)EMPTY;
     }
 
     @Override
@@ -34,7 +29,6 @@ public class EmptyTrieNode<T>
                         int index,
                         T defaultValue)
     {
-        assert this.shift == shift;
         return defaultValue;
     }
 
@@ -45,7 +39,6 @@ public class EmptyTrieNode<T>
                                Transforms<T, K, V> transforms,
                                V defaultValue)
     {
-        assert this.shift == shift;
         return defaultValue;
     }
 
@@ -53,7 +46,6 @@ public class EmptyTrieNode<T>
     public Holder<T> find(int shift,
                           int index)
     {
-        assert this.shift == shift;
         return Holders.of();
     }
 
@@ -63,7 +55,6 @@ public class EmptyTrieNode<T>
                                  K key,
                                  Transforms<T, K, V> transforms)
     {
-        assert this.shift == shift;
         return Holders.of();
     }
 
@@ -73,9 +64,8 @@ public class EmptyTrieNode<T>
                               T value,
                               MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
         sizeDelta.add(1);
-        return new LeafTrieNode<T>(shift, index, value);
+        return new LeafTrieNode<T>(index, value);
     }
 
     @Override
@@ -86,8 +76,7 @@ public class EmptyTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
-        return new LeafTrieNode<T>(shift, index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+        return new LeafTrieNode<T>(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
     }
 
     @Override
@@ -95,7 +84,6 @@ public class EmptyTrieNode<T>
                               int index,
                               MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
         return this;
     }
 
@@ -106,7 +94,6 @@ public class EmptyTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
         return this;
     }
 

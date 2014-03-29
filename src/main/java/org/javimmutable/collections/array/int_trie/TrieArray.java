@@ -23,7 +23,7 @@ public class TrieArray<T>
 
     public static <T> TrieArray<T> of()
     {
-        return new TrieArray<T>(EmptyTrieNode.<T>of(TrieNode.ROOT_SHIFT), 0);
+        return new TrieArray<T>(EmptyTrieNode.<T>of(), 0);
     }
 
     @Override

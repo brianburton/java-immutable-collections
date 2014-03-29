@@ -127,7 +127,7 @@ public class SingleBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                return new EmptyTrieNode<T>(shift);
+                return EmptyTrieNode.of();
             } else {
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
@@ -150,7 +150,7 @@ public class SingleBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                return new EmptyTrieNode<T>(shift);
+                return EmptyTrieNode.of();
             } else {
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }

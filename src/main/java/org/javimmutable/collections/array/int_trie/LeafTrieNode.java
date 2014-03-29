@@ -12,16 +12,12 @@ public class LeafTrieNode<T>
         extends TrieNode<T>
         implements Holder<T>
 {
-    private final int shift;
     private final int index;
     private final T value;
 
-    public LeafTrieNode(int shift,
-                        int index,
+    public LeafTrieNode(int index,
                         T value)
     {
-        assert shift >= -5;
-        this.shift = shift;
         this.index = index;
         this.value = value;
     }
@@ -37,7 +33,7 @@ public class LeafTrieNode<T>
                         int index,
                         T defaultValue)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         return (this.index == index) ? value : defaultValue;
     }
 
@@ -48,7 +44,7 @@ public class LeafTrieNode<T>
                                Transforms<T, K, V> transforms,
                                V defaultValue)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         return (this.index == index) ? transforms.findValue(value, key).getValueOr(defaultValue) : defaultValue;
     }
 
@@ -56,7 +52,7 @@ public class LeafTrieNode<T>
     public Holder<T> find(int shift,
                           int index)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         return (this.index == index) ? this : Holders.<T>of();
     }
 
@@ -66,7 +62,7 @@ public class LeafTrieNode<T>
                                  K key,
                                  Transforms<T, K, V> transforms)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         return (this.index == index) ? transforms.findValue(value, key) : Holders.<V>of();
     }
 
@@ -76,16 +72,16 @@ public class LeafTrieNode<T>
                               T value,
                               MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         if (this.index == index) {
             if (this.value == value) {
                 return this;
             } else {
-                return new LeafTrieNode<T>(shift, index, value);
+                return withValue(value);
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.<T>forIndex(shift, this.index, withShift(shift - 5)).assign(shift, index, value, sizeDelta);
+            return SingleBranchTrieNode.<T>forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
         }
     }
 
@@ -97,17 +93,17 @@ public class LeafTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         if (this.index == index) {
             final T newValue = transforms.update(Holders.of(this.value), key, value, sizeDelta);
             if (this.value == newValue) {
                 return this;
             } else {
-                return new LeafTrieNode<T>(shift, index, newValue);
+                return withValue(newValue);
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.<T>forIndex(shift, this.index, withShift(shift - 5)).assign(shift, index, key, value, transforms, sizeDelta);
+            return SingleBranchTrieNode.<T>forIndex(shift, this.index, this).assign(shift, index, key, value, transforms, sizeDelta);
         }
     }
 
@@ -116,10 +112,10 @@ public class LeafTrieNode<T>
                               int index,
                               MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         if (this.index == index) {
             sizeDelta.subtract(1);
-            return new EmptyTrieNode<T>(shift);
+            return EmptyTrieNode.of();
         } else {
             assert shift > 0;
             return this;
@@ -133,11 +129,11 @@ public class LeafTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        assert this.shift == shift;
+        assert shift >= -5;
         if (this.index == index) {
             final Holder<T> newValue = transforms.delete(value, key, sizeDelta);
             if (newValue.isEmpty()) {
-                return new EmptyTrieNode<T>(shift);
+                return EmptyTrieNode.of();
             } else if (newValue.getValue() == value) {
                 return this;
             } else {
@@ -191,13 +187,8 @@ public class LeafTrieNode<T>
         return value;
     }
 
-    private TrieNode<T> withShift(int newShift)
-    {
-        return new LeafTrieNode<T>(newShift, index, value);
-    }
-
     private TrieNode<T> withValue(T newValue)
     {
-        return new LeafTrieNode<T>(shift, index, newValue);
+        return new LeafTrieNode<T>(index, newValue);
     }
 }

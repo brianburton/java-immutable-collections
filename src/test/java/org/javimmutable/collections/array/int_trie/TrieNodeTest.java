@@ -9,7 +9,7 @@ public class TrieNodeTest
 
     public void testVarious()
     {
-        TrieNode<Integer> root = new EmptyTrieNode<Integer>(TrieNode.ROOT_SHIFT);
+        TrieNode<Integer> root = EmptyTrieNode.of();
         assertEquals((Integer)1, root.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
 
         MutableDelta delta = new MutableDelta();

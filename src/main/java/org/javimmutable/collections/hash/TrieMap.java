@@ -30,7 +30,7 @@ public class TrieMap<T, K, V>
 
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> of()
     {
-        return new TrieMap<TreeNode<K, V>, K, V>(EmptyTrieNode.<TreeNode<K, V>>of(TrieNode.ROOT_SHIFT), 0, new HashValueTreeTransforms2<K, V>());
+        return new TrieMap<TreeNode<K, V>, K, V>(EmptyTrieNode.<TreeNode<K, V>>of(), 0, new HashValueTreeTransforms2<K, V>());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class TrieMap<T, K, V>
     @Override
     public JImmutableMap<K, V> deleteAll()
     {
-        return new TrieMap<T, K, V>(EmptyTrieNode.<T>of(TrieNode.ROOT_SHIFT), 0, transforms);
+        return new TrieMap<T, K, V>(EmptyTrieNode.<T>of(), 0, transforms);
     }
 
     @Override

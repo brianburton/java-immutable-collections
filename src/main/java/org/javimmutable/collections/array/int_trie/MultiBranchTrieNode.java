@@ -151,7 +151,7 @@ public class MultiBranchTrieNode<T>
                 System.arraycopy(entries, 0, newEntries, 0, childIndex);
                 System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
             }
-            newEntries[childIndex] = new LeafTrieNode<T>(shift - 5, index, value);
+            newEntries[childIndex] = new LeafTrieNode<T>(index, value);
             sizeDelta.add(1);
             if (newEntries.length == 32) {
                 return new FullBranchTrieNode<T>(shift, newEntries);
@@ -191,7 +191,7 @@ public class MultiBranchTrieNode<T>
                 System.arraycopy(entries, 0, newEntries, 0, childIndex);
                 System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
             }
-            newEntries[childIndex] = new LeafTrieNode<T>(shift - 5, index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+            newEntries[childIndex] = new LeafTrieNode<T>(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
             if (newEntries.length == 32) {
                 return new FullBranchTrieNode<T>(shift, newEntries);
             } else {
@@ -228,7 +228,7 @@ public class MultiBranchTrieNode<T>
             if (newChild.isEmpty()) {
                 switch (entries.length) {
                 case 1:
-                    return new EmptyTrieNode<T>(shift);
+                    return EmptyTrieNode.of();
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
@@ -272,7 +272,7 @@ public class MultiBranchTrieNode<T>
             if (newChild.isEmpty()) {
                 switch (entries.length) {
                 case 1:
-                    return new EmptyTrieNode<T>(shift);
+                    return EmptyTrieNode.of();
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);

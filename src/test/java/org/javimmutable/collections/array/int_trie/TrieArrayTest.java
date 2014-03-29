@@ -26,4 +26,18 @@ public class TrieArrayTest
             assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
         }
     }
+
+    public void testSequential()
+    {
+        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        JImmutableArray<Integer> array = TrieArray.of();
+        for (int i = 0; i <= 20000; ++i) {
+            array = array.assign(i, i);
+            expected.put(i, i);
+        }
+        assertEquals(expected.size(), array.size());
+        for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
+            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
+        }
+    }
 }
