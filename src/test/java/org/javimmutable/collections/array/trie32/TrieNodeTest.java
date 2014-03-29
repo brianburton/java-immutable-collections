@@ -36,12 +36,19 @@
 package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.SingleValueCursor;
+
+import java.util.List;
 
 public class TrieNodeTest
         extends TestCase
 {
-
     public void testVarious()
     {
         TrieNode<Integer> root = EmptyTrieNode.of();
@@ -106,6 +113,93 @@ public class TrieNodeTest
         }
         for (int i = 0; i < 5; ++i) {
             assertEquals(0, TrieNode.shiftForIndex(1 << i));
+        }
+    }
+
+    public void testTransforms()
+    {
+        List<Integer> indexes = TrieArrayTest.createBranchIndexes();
+        for (int length = indexes.size(); length > 0; --length) {
+            TrieNode<Integer> table = TrieNode.of();
+            Transforms<Integer, Integer, Integer> transforms = new TrivialTransforms();
+            assertEquals(true, table.isEmpty());
+            for (int i = 0; i < length; ++i) {
+                Integer key = indexes.get(i);
+                MutableDelta delta = new MutableDelta();
+                table = table.assign(table.getShift(), key.hashCode(), key, key, transforms, delta);
+                assertEquals(1, delta.getValue());
+            }
+            for (int i = 0; i < length; ++i) {
+                Integer key = indexes.get(i);
+                assertEquals(key, table.getValueOr(table.getShift(), key.hashCode(), key, transforms, -99));
+                assertEquals(Holders.of(key), table.find(table.getShift(), key.hashCode(), key, transforms));
+            }
+            for (int i = 0; i < length; ++i) {
+                Integer key = indexes.get(i);
+                MutableDelta delta = new MutableDelta();
+                table = table.assign(table.getShift(), key.hashCode(), key, key - 10, transforms, delta);
+                assertEquals(0, delta.getValue());
+                assertEquals(Integer.valueOf(key - 10), table.getValueOr(table.getShift(), key.hashCode(), key, transforms, -99));
+                assertEquals(Holders.of(key - 10), table.find(table.getShift(), key.hashCode(), key, transforms));
+            }
+            for (int i = 0; i < length; ++i) {
+                Integer key = indexes.get(i);
+                MutableDelta delta = new MutableDelta();
+                table = table.delete(table.getShift(), key.hashCode(), key, transforms, delta);
+                assertEquals(-1, delta.getValue());
+                assertEquals(Integer.valueOf(-99), table.getValueOr(table.getShift(), key.hashCode(), key, transforms, -99));
+                assertEquals(Holders.<Integer>of(), table.find(table.getShift(), key.hashCode(), key, transforms));
+            }
+        }
+    }
+
+    private static class TrivialTransforms
+            implements Transforms<Integer, Integer, Integer>
+    {
+        @Override
+        public Integer update(Holder<Integer> leaf,
+                              Integer key,
+                              Integer value,
+                              MutableDelta delta)
+        {
+            if (leaf.isEmpty()) {
+                delta.add(1);
+                return value;
+            } else {
+                Integer oldValue = leaf.getValue();
+                return (oldValue != null && oldValue.equals(value)) ? oldValue : value;
+            }
+        }
+
+        @Override
+        public Holder<Integer> delete(Integer leaf,
+                                      Integer key,
+                                      MutableDelta delta)
+        {
+            delta.subtract(1);
+            return Holders.of();
+        }
+
+        @Override
+        public Holder<Integer> findValue(Integer leaf,
+                                         Integer key)
+        {
+            return Holders.of(leaf);
+        }
+
+        @Override
+        public Holder<JImmutableMap.Entry<Integer, Integer>> findEntry(Integer leaf,
+                                                                       Integer key)
+        {
+            return Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(key, leaf));
+        }
+
+        // this is wrong since its guessing the key but ok for unit tests
+        @Override
+        public Cursor<JImmutableMap.Entry<Integer, Integer>> cursor(Integer leaf)
+        {
+            Integer value = leaf;
+            return SingleValueCursor.of(findEntry(leaf, value).getValue());
         }
     }
 }
