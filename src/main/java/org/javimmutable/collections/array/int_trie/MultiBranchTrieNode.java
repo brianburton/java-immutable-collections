@@ -84,6 +84,24 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
+    public <K, V> V getValueOr(int shift,
+                               int index,
+                               K key,
+                               Transforms<T, K, V> transforms,
+                               V defaultValue)
+    {
+        assert this.shift == shift;
+        final int bit = 1 << ((index >>> shift) & 0x1f);
+        final int bitmask = this.bitmask;
+        if ((bitmask & bit) == 0) {
+            return defaultValue;
+        } else {
+            final int childIndex = realIndex(bitmask, bit);
+            return entries[childIndex].getValueOr(shift - 5, index, key, transforms, defaultValue);
+        }
+    }
+
+    @Override
     public Holder<T> find(int shift,
                           int index)
     {
@@ -95,6 +113,23 @@ public class MultiBranchTrieNode<T>
         } else {
             final int childIndex = realIndex(bitmask, bit);
             return entries[childIndex].find(shift - 5, index);
+        }
+    }
+
+    @Override
+    public <K, V> Holder<V> find(int shift,
+                                 int index,
+                                 K key,
+                                 Transforms<T, K, V> transforms)
+    {
+        assert this.shift == shift;
+        final int bit = 1 << ((index >>> shift) & 0x1f);
+        final int bitmask = this.bitmask;
+        if ((bitmask & bit) == 0) {
+            return Holders.of();
+        } else {
+            final int childIndex = realIndex(bitmask, bit);
+            return entries[childIndex].find(shift - 5, index, key, transforms);
         }
     }
 
@@ -112,12 +147,12 @@ public class MultiBranchTrieNode<T>
         if ((bitmask & bit) == 0) {
             final int oldLength = entries.length;
             final TrieNode<T>[] newEntries = allocate(oldLength + 1);
-            sizeDelta.add(1);
             if (bitmask != 0) {
                 System.arraycopy(entries, 0, newEntries, 0, childIndex);
                 System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
             }
             newEntries[childIndex] = new LeafTrieNode<T>(shift - 5, index, value);
+            sizeDelta.add(1);
             if (newEntries.length == 32) {
                 return new FullBranchTrieNode<T>(shift, newEntries);
             } else {
@@ -126,6 +161,45 @@ public class MultiBranchTrieNode<T>
         } else {
             final TrieNode<T> child = entries[childIndex];
             final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+            if (newChild == child) {
+                return this;
+            } else {
+                final TrieNode<T>[] newEntries = entries.clone();
+                newEntries[childIndex] = newChild;
+                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
+            }
+        }
+    }
+
+    @Override
+    public <K, V> TrieNode<T> assign(int shift,
+                                     int index,
+                                     K key,
+                                     V value,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        final int bit = 1 << ((index >>> shift) & 0x1f);
+        final int bitmask = this.bitmask;
+        final int childIndex = realIndex(bitmask, bit);
+        final TrieNode<T>[] entries = this.entries;
+        if ((bitmask & bit) == 0) {
+            final int oldLength = entries.length;
+            final TrieNode<T>[] newEntries = allocate(oldLength + 1);
+            if (bitmask != 0) {
+                System.arraycopy(entries, 0, newEntries, 0, childIndex);
+                System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
+            }
+            newEntries[childIndex] = new LeafTrieNode<T>(shift - 5, index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+            if (newEntries.length == 32) {
+                return new FullBranchTrieNode<T>(shift, newEntries);
+            } else {
+                return new MultiBranchTrieNode<T>(shift, bitmask | bit, newEntries);
+            }
+        } else {
+            final TrieNode<T> child = entries[childIndex];
+            final TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
             if (newChild == child) {
                 return this;
             } else {
@@ -149,7 +223,8 @@ public class MultiBranchTrieNode<T>
             return this;
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            TrieNode<T> newChild = entries[childIndex].delete(shift - 5, index, sizeDelta);
+            final TrieNode<T> child = entries[childIndex];
+            final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
             if (newChild.isEmpty()) {
                 switch (entries.length) {
                 case 1:
@@ -167,6 +242,52 @@ public class MultiBranchTrieNode<T>
                     return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
                 }
                 }
+            } else if (newChild == child) {
+                return this;
+            } else {
+                final TrieNode<T>[] newEntries = entries.clone();
+                newEntries[childIndex] = newChild;
+                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
+            }
+        }
+    }
+
+    @Override
+    public <K, V> TrieNode<T> delete(int shift,
+                                     int index,
+                                     K key,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        final int bit = 1 << ((index >>> shift) & 0x1f);
+        final int bitmask = this.bitmask;
+        final TrieNode<T>[] entries = this.entries;
+        if ((bitmask & bit) == 0) {
+            return this;
+        } else {
+            final int childIndex = realIndex(bitmask, bit);
+            final TrieNode<T> child = entries[childIndex];
+            TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
+            if (newChild.isEmpty()) {
+                switch (entries.length) {
+                case 1:
+                    return new EmptyTrieNode<T>(shift);
+                case 2: {
+                    final int newBitmask = bitmask & ~bit;
+                    final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
+                    return SingleBranchTrieNode.forIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                }
+                default: {
+                    final int newLength = entries.length - 1;
+                    final TrieNode<T>[] newArray = allocate(newLength);
+                    System.arraycopy(entries, 0, newArray, 0, childIndex);
+                    System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
+                    return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
+                }
+                }
+            } else if (newChild == child) {
+                return this;
             } else {
                 final TrieNode<T>[] newEntries = entries.clone();
                 newEntries[childIndex] = newChild;
@@ -184,6 +305,19 @@ public class MultiBranchTrieNode<T>
             public Cursor<JImmutableMap.Entry<Integer, T>> apply(TrieNode<T> node)
             {
                 return node.anyOrderEntryCursor();
+            }
+        });
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    {
+        return MultiTransformCursor.of(StandardCursor.of(new AnyOrderCursorSource(bitmask)), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
+        {
+            @Override
+            public Cursor<JImmutableMap.Entry<K, V>> apply(TrieNode<T> node)
+            {
+                return node.anyOrderEntryCursor(transforms);
             }
         });
     }

@@ -42,11 +42,32 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public <K, V> V getValueOr(int shift,
+                               int index,
+                               K key,
+                               Transforms<T, K, V> transforms,
+                               V defaultValue)
+    {
+        assert this.shift == shift;
+        return (this.index == index) ? transforms.findValue(value, key).getValueOr(defaultValue) : defaultValue;
+    }
+
+    @Override
     public Holder<T> find(int shift,
                           int index)
     {
         assert this.shift == shift;
         return (this.index == index) ? this : Holders.<T>of();
+    }
+
+    @Override
+    public <K, V> Holder<V> find(int shift,
+                                 int index,
+                                 K key,
+                                 Transforms<T, K, V> transforms)
+    {
+        assert this.shift == shift;
+        return (this.index == index) ? transforms.findValue(value, key) : Holders.<V>of();
     }
 
     @Override
@@ -69,6 +90,28 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public <K, V> TrieNode<T> assign(int shift,
+                                     int index,
+                                     K key,
+                                     V value,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        if (this.index == index) {
+            final T newValue = transforms.update(Holders.of(this.value), key, value, sizeDelta);
+            if (this.value == newValue) {
+                return this;
+            } else {
+                return new LeafTrieNode<T>(shift, index, newValue);
+            }
+        } else {
+            assert shift >= 0;
+            return SingleBranchTrieNode.<T>forIndex(shift, this.index, withShift(shift - 5)).assign(shift, index, key, value, transforms, sizeDelta);
+        }
+    }
+
+    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
@@ -84,9 +127,38 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public <K, V> TrieNode<T> delete(int shift,
+                                     int index,
+                                     K key,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        if (this.index == index) {
+            final Holder<T> newValue = transforms.delete(value, key, sizeDelta);
+            if (newValue.isEmpty()) {
+                return new EmptyTrieNode<T>(shift);
+            } else if (newValue.getValue() == value) {
+                return this;
+            } else {
+                return withValue(newValue.getValue());
+            }
+        } else {
+            assert shift > 0;
+            return this;
+        }
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.<Integer, T>of(index, value));
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(Transforms<T, K, V> transforms)
+    {
+        return transforms.cursor(value);
     }
 
     @Override
@@ -122,5 +194,10 @@ public class LeafTrieNode<T>
     private TrieNode<T> withShift(int newShift)
     {
         return new LeafTrieNode<T>(newShift, index, value);
+    }
+
+    private TrieNode<T> withValue(T newValue)
+    {
+        return new LeafTrieNode<T>(shift, index, newValue);
     }
 }

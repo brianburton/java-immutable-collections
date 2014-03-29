@@ -38,12 +38,35 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
+    public <K, V> V getValueOr(int shift,
+                               int index,
+                               K key,
+                               Transforms<T, K, V> transforms,
+                               V defaultValue)
+    {
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        return entries[childIndex].getValueOr(shift - 5, index, key, transforms, defaultValue);
+    }
+
+    @Override
     public Holder<T> find(int shift,
                           int index)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         return entries[childIndex].find(shift - 5, index);
+    }
+
+    @Override
+    public <K, V> Holder<V> find(int shift,
+                                 int index,
+                                 K key,
+                                 Transforms<T, K, V> transforms)
+    {
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        return entries[childIndex].find(shift - 5, index, key, transforms);
     }
 
     @Override
@@ -66,6 +89,27 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
+    public <K, V> TrieNode<T> assign(int shift,
+                                     int index,
+                                     K key,
+                                     V value,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        final TrieNode<T> child = entries[childIndex];
+        final TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
+        if (newChild == child) {
+            return this;
+        } else {
+            TrieNode<T>[] newEntries = entries.clone();
+            newEntries[childIndex] = newChild;
+            return new FullBranchTrieNode<T>(shift, newEntries);
+        }
+    }
+
+    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
@@ -74,6 +118,28 @@ public class FullBranchTrieNode<T>
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
         final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+        if (newChild == child) {
+            return this;
+        } else if (newChild.isEmpty()) {
+            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
+        } else {
+            TrieNode<T>[] newEntries = entries.clone();
+            newEntries[childIndex] = newChild;
+            return new FullBranchTrieNode<T>(shift, newEntries);
+        }
+    }
+
+    @Override
+    public <K, V> TrieNode<T> delete(int shift,
+                                     int index,
+                                     K key,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        final TrieNode<T> child = entries[childIndex];
+        final TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
         if (newChild == child) {
             return this;
         } else if (newChild.isEmpty()) {
@@ -107,6 +173,19 @@ public class FullBranchTrieNode<T>
             public Cursor<T> apply(TrieNode<T> node)
             {
                 return node.anyOrderValueCursor();
+            }
+        });
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    {
+        return MultiTransformCursor.of(StandardCursor.of(new CursorSource()), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
+        {
+            @Override
+            public Cursor<JImmutableMap.Entry<K, V>> apply(TrieNode<T> node)
+            {
+                return node.anyOrderEntryCursor(transforms);
             }
         });
     }

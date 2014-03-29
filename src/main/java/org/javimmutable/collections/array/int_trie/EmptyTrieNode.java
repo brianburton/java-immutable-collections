@@ -18,7 +18,7 @@ public class EmptyTrieNode<T>
         this.shift = shift;
     }
 
-    static <T> EmptyTrieNode<T> of(int shift)
+    public static <T> EmptyTrieNode<T> of(int shift)
     {
         return new EmptyTrieNode<T>(shift);
     }
@@ -39,8 +39,29 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public <K, V> V getValueOr(int shift,
+                               int index,
+                               K key,
+                               Transforms<T, K, V> transforms,
+                               V defaultValue)
+    {
+        assert this.shift == shift;
+        return defaultValue;
+    }
+
+    @Override
     public Holder<T> find(int shift,
                           int index)
+    {
+        assert this.shift == shift;
+        return Holders.of();
+    }
+
+    @Override
+    public <K, V> Holder<V> find(int shift,
+                                 int index,
+                                 K key,
+                                 Transforms<T, K, V> transforms)
     {
         assert this.shift == shift;
         return Holders.of();
@@ -58,6 +79,18 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public <K, V> TrieNode<T> assign(int shift,
+                                     int index,
+                                     K key,
+                                     V value,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        return new LeafTrieNode<T>(shift, index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+    }
+
+    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
@@ -67,7 +100,24 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public <K, V> TrieNode<T> delete(int shift,
+                                     int index,
+                                     K key,
+                                     Transforms<T, K, V> transforms,
+                                     MutableDelta sizeDelta)
+    {
+        assert this.shift == shift;
+        return this;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
+    {
+        return StandardCursor.of();
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(Transforms<T, K, V> transforms)
     {
         return StandardCursor.of();
     }
