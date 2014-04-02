@@ -237,6 +237,41 @@ public class LeafTrieNode<T>
         return value;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        LeafTrieNode that = (LeafTrieNode)o;
+
+        if (index != that.index) {
+            return false;
+        }
+        if (shift != that.shift) {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if (value != null ? !value.equals(that.value) : that.value != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = index;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + shift;
+        return result;
+    }
+
     private TrieNode<T> withValue(T newValue)
     {
         return new LeafTrieNode<T>(index, newValue, shift);

@@ -86,11 +86,9 @@ public class MultiBranchTrieNode<T>
     static <T> MultiBranchTrieNode<T> forEntries(int shift,
                                                  TrieNode<T>[] entries)
     {
-        int bitmask = 0;
-        for (int i = entries.length; i > 0; --i) {
-            bitmask = (bitmask << 1) | 1;
-        }
-        return new MultiBranchTrieNode<T>(shift, bitmask, entries);
+        final int length = entries.length;
+        final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
+        return new MultiBranchTrieNode<T>(shift, bitmask, entries.clone());
     }
 
     static <T> MultiBranchTrieNode<T> forSource(int index,
@@ -98,14 +96,11 @@ public class MultiBranchTrieNode<T>
                                                 Indexed<T> source,
                                                 int offset)
     {
-        TrieNode<T>[] entries = allocate(size);
-        int bit = 1;
-        int bitmask = 0;
+        final TrieNode<T>[] entries = allocate(size);
         for (int i = 0; i < size; ++i) {
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
-            bitmask = bitmask | bit;
-            bit = bit << 1;
         }
+        final int bitmask = (size == 32) ? -1 : ((1 << size) - 1);
         return new MultiBranchTrieNode<T>(0, bitmask, entries);
     }
 
@@ -416,6 +411,18 @@ public class MultiBranchTrieNode<T>
         }
     }
 
+    // for use by unit tests
+    int getBitmask()
+    {
+        return bitmask;
+    }
+
+    // for use by unit tests
+    TrieNode<T>[] getEntries()
+    {
+        return entries.clone();
+    }
+
     private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)
     {
         return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
@@ -541,7 +548,7 @@ public class MultiBranchTrieNode<T>
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> TrieNode<T>[] allocate(int size)
+    static <T> TrieNode<T>[] allocate(int size)
     {
         return (TrieNode<T>[])new TrieNode[size];
     }
