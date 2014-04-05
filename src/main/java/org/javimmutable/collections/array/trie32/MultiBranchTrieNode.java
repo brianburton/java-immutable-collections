@@ -206,30 +206,13 @@ public class MultiBranchTrieNode<T>
         final int childIndex = realIndex(bitmask, bit);
         final TrieNode<T>[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final int oldLength = entries.length;
-            final TrieNode<T>[] newEntries = allocate(oldLength + 1);
-            if (bitmask != 0) {
-                System.arraycopy(entries, 0, newEntries, 0, childIndex);
-                System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
-            }
-            newEntries[childIndex] = LeafTrieNode.of(index, value);
+            final TrieNode<T> newChild = LeafTrieNode.of(index, value);
             sizeDelta.add(1);
-            if (newEntries.length == 32) {
-                return new FullBranchTrieNode<T>(shift, newEntries);
-            } else {
-                return new MultiBranchTrieNode<T>(shift, bitmask | bit, newEntries);
-            }
+            return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
         } else {
             final TrieNode<T> child = entries[childIndex];
             final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
-            if (newChild == child) {
-                return this;
-            } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-                final TrieNode<T>[] newEntries = entries.clone();
-                newEntries[childIndex] = newChild;
-                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
-            }
+            return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);
         }
     }
 
@@ -247,29 +230,12 @@ public class MultiBranchTrieNode<T>
         final int childIndex = realIndex(bitmask, bit);
         final TrieNode<T>[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final int oldLength = entries.length;
-            final TrieNode<T>[] newEntries = allocate(oldLength + 1);
-            if (bitmask != 0) {
-                System.arraycopy(entries, 0, newEntries, 0, childIndex);
-                System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
-            }
-            newEntries[childIndex] = LeafTrieNode.of(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
-            if (newEntries.length == 32) {
-                return new FullBranchTrieNode<T>(shift, newEntries);
-            } else {
-                return new MultiBranchTrieNode<T>(shift, bitmask | bit, newEntries);
-            }
+            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+            return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
         } else {
             final TrieNode<T> child = entries[childIndex];
             final TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
-            if (newChild == child) {
-                return this;
-            } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-                final TrieNode<T>[] newEntries = entries.clone();
-                newEntries[childIndex] = newChild;
-                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
-            }
+            return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);
         }
     }
 
@@ -288,36 +254,7 @@ public class MultiBranchTrieNode<T>
             final int childIndex = realIndex(bitmask, bit);
             final TrieNode<T> child = entries[childIndex];
             final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
-            if (newChild.isEmpty()) {
-                switch (entries.length) {
-                case 1:
-                    return of();
-                case 2: {
-                    final int newBitmask = bitmask & ~bit;
-                    final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
-                    if (remainingChild.isLeaf()) {
-                        return remainingChild;
-                    } else {
-                        return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
-                    }
-                }
-                default: {
-                    final int newLength = entries.length - 1;
-                    final TrieNode<T>[] newArray = allocate(newLength);
-                    System.arraycopy(entries, 0, newArray, 0, childIndex);
-                    System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
-                    return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
-                }
-                }
-            } else if (newChild == child) {
-                return this;
-            } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-                final TrieNode<T>[] newEntries = entries.clone();
-                newEntries[childIndex] = newChild;
-                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
-            }
+            return selectNodeForDeleteResult(shift, bit, bitmask, entries, childIndex, child, newChild);
         }
     }
 
@@ -338,36 +275,7 @@ public class MultiBranchTrieNode<T>
             final int childIndex = realIndex(bitmask, bit);
             final TrieNode<T> child = entries[childIndex];
             TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
-            if (newChild.isEmpty()) {
-                switch (entries.length) {
-                case 1:
-                    return of();
-                case 2: {
-                    final int newBitmask = bitmask & ~bit;
-                    final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
-                    if (remainingChild.isLeaf()) {
-                        return remainingChild;
-                    } else {
-                        return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
-                    }
-                }
-                default: {
-                    final int newLength = entries.length - 1;
-                    final TrieNode<T>[] newArray = allocate(newLength);
-                    System.arraycopy(entries, 0, newArray, 0, childIndex);
-                    System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
-                    return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
-                }
-                }
-            } else if (newChild == child) {
-                return this;
-            } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-                final TrieNode<T>[] newEntries = entries.clone();
-                newEntries[childIndex] = newChild;
-                return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
-            }
+            return selectNodeForDeleteResult(shift, bit, bitmask, entries, childIndex, child, newChild);
         }
     }
 
@@ -447,6 +355,79 @@ public class MultiBranchTrieNode<T>
     TrieNode<T>[] getEntries()
     {
         return entries.clone();
+    }
+
+    private TrieNode<T> selectNodeForUpdateResult(int shift,
+                                                  int bitmask,
+                                                  int childIndex,
+                                                  TrieNode<T>[] entries,
+                                                  TrieNode<T> child,
+                                                  TrieNode<T> newChild)
+    {
+        if (newChild == child) {
+            return this;
+        } else {
+            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+            final TrieNode<T>[] newEntries = entries.clone();
+            newEntries[childIndex] = newChild;
+            return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
+        }
+    }
+
+    private TrieNode<T> selectNodeForInsertResult(int shift,
+                                                  int bit,
+                                                  int bitmask,
+                                                  int childIndex,
+                                                  TrieNode<T>[] entries,
+                                                  TrieNode<T> newChild)
+    {
+        final int oldLength = entries.length;
+        final TrieNode<T>[] newEntries = allocate(oldLength + 1);
+        if (bitmask != 0) {
+            System.arraycopy(entries, 0, newEntries, 0, childIndex);
+            System.arraycopy(entries, childIndex, newEntries, childIndex + 1, oldLength - childIndex);
+        }
+        newEntries[childIndex] = newChild;
+        if (newEntries.length == 32) {
+            return new FullBranchTrieNode<T>(shift, newEntries);
+        } else {
+            return new MultiBranchTrieNode<T>(shift, bitmask | bit, newEntries);
+        }
+    }
+
+    private TrieNode<T> selectNodeForDeleteResult(int shift,
+                                                  int bit,
+                                                  int bitmask,
+                                                  TrieNode<T>[] entries,
+                                                  int childIndex,
+                                                  TrieNode<T> child,
+                                                  TrieNode<T> newChild)
+    {
+        if (newChild.isEmpty()) {
+            switch (entries.length) {
+            case 1:
+                return of();
+            case 2: {
+                final int newBitmask = bitmask & ~bit;
+                final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
+                final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
+                if (remainingChild.isLeaf()) {
+                    return remainingChild;
+                } else {
+                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
+                }
+            }
+            default: {
+                final int newLength = entries.length - 1;
+                final TrieNode<T>[] newArray = allocate(newLength);
+                System.arraycopy(entries, 0, newArray, 0, childIndex);
+                System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
+                return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
+            }
+            }
+        } else {
+            return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);
+        }
     }
 
     private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)

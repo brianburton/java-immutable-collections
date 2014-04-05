@@ -60,8 +60,8 @@ public class TrieArrayTest
         array = array.assign(0, 0);
         array = array.assign(33, 33);
         array = array.assign(-1, -1);
-        array = array.delete(33);
         array = array.delete(-1);
+        array = array.delete(33);
         array = array.delete(0);
     }
 
