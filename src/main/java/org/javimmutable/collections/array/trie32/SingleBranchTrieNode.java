@@ -171,8 +171,10 @@ public class SingleBranchTrieNode<T>
                 return this;
             } else if (newChild.isEmpty()) {
                 return of();
+            } else if (newChild.isLeaf()) {
+                return newChild;
             } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+                assert newChild.getShift() == shift - 5;
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
         }
@@ -195,8 +197,10 @@ public class SingleBranchTrieNode<T>
                 return this;
             } else if (newChild.isEmpty()) {
                 return of();
+            } else if (newChild.isLeaf()) {
+                return newChild;
             } else {
-                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+                assert newChild.getShift() == shift - 5;
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
         }

@@ -295,7 +295,12 @@ public class MultiBranchTrieNode<T>
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                    final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
+                    if (remainingChild.isLeaf()) {
+                        return remainingChild;
+                    } else {
+                        return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
+                    }
                 }
                 default: {
                     final int newLength = entries.length - 1;
@@ -340,7 +345,12 @@ public class MultiBranchTrieNode<T>
                 case 2: {
                     final int newBitmask = bitmask & ~bit;
                     final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                    final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
+                    if (remainingChild.isLeaf()) {
+                        return remainingChild;
+                    } else {
+                        return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
+                    }
                 }
                 default: {
                     final int newLength = entries.length - 1;

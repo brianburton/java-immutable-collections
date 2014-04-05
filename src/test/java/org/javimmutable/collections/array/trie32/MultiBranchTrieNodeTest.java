@@ -253,7 +253,7 @@ public class MultiBranchTrieNodeTest
             if (i > 1) {
                 assertTrue(node instanceof MultiBranchTrieNode);
             } else if (i == 1) {
-                assertTrue(node instanceof SingleBranchTrieNode);
+                assertTrue(node instanceof LeafTrieNode);
             } else if (i == 0) {
                 assertTrue(node instanceof EmptyTrieNode);
             }

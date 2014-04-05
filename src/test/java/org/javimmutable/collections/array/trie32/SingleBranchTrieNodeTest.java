@@ -51,7 +51,7 @@ public class SingleBranchTrieNodeTest
 
         delta = new MutableDelta();
         newNode = newNode.delete(20, 18 << 20, delta);
-        assertTrue(newNode instanceof SingleBranchTrieNode);
+        assertTrue(newNode instanceof LeafTrieNode);
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
