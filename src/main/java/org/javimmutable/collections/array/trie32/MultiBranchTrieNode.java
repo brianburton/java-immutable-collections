@@ -65,6 +65,12 @@ public class MultiBranchTrieNode<T>
         this.entries = entries;
     }
 
+    static <T> MultiBranchTrieNode<T> forTesting(int shift)
+    {
+        TrieNode<T>[] entries = allocate(0);
+        return new MultiBranchTrieNode<T>(shift, 0, entries);
+    }
+
     static <T> MultiBranchTrieNode<T> forIndex(int shift,
                                                int index,
                                                TrieNode<T> child)
