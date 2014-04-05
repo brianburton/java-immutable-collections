@@ -131,8 +131,7 @@ public class SingleBranchTrieNode<T>
         final int branchIndex = (index >>> shift) & 0x1f;
         if (this.branchIndex == branchIndex) {
             TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-            return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+            return selectNodeForUpdateResult(shift, branchIndex, newChild);
         } else {
             return MultiBranchTrieNode.forBranchIndex(shift, this.branchIndex, child).assign(shift, index, value, sizeDelta);
         }
@@ -150,7 +149,7 @@ public class SingleBranchTrieNode<T>
         final int branchIndex = (index >>> shift) & 0x1f;
         if (this.branchIndex == branchIndex) {
             TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
-            return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+            return selectNodeForUpdateResult(shift, branchIndex, newChild);
         } else {
             return MultiBranchTrieNode.forBranchIndex(shift, this.branchIndex, child).assign(shift, index, key, value, transforms, sizeDelta);
         }
@@ -167,16 +166,7 @@ public class SingleBranchTrieNode<T>
             return this;
         } else {
             final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
-            if (newChild == child) {
-                return this;
-            } else if (newChild.isEmpty()) {
-                return of();
-            } else if (newChild.isLeaf()) {
-                return newChild;
-            } else {
-                assert newChild.getShift() == shift - 5;
-                return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
-            }
+            return selectNodeForDeleteResult(shift, branchIndex, newChild);
         }
     }
 
@@ -193,16 +183,7 @@ public class SingleBranchTrieNode<T>
             return this;
         } else {
             final TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
-            if (newChild == child) {
-                return this;
-            } else if (newChild.isEmpty()) {
-                return of();
-            } else if (newChild.isLeaf()) {
-                return newChild;
-            } else {
-                assert newChild.getShift() == shift - 5;
-                return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
-            }
+            return selectNodeForDeleteResult(shift, branchIndex, newChild);
         }
     }
 
@@ -252,5 +233,29 @@ public class SingleBranchTrieNode<T>
     TrieNode<T> getChild()
     {
         return child;
+    }
+
+    private TrieNode<T> selectNodeForUpdateResult(int shift,
+                                                  int branchIndex,
+                                                  TrieNode<T> newChild)
+    {
+        assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+        return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+    }
+
+    private TrieNode<T> selectNodeForDeleteResult(int shift,
+                                                  int branchIndex,
+                                                  TrieNode<T> newChild)
+    {
+        if (newChild == child) {
+            return this;
+        } else if (newChild.isEmpty()) {
+            return of();
+        } else if (newChild.isLeaf()) {
+            return newChild;
+        } else {
+            assert newChild.getShift() == shift - 5;
+            return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+        }
     }
 }
