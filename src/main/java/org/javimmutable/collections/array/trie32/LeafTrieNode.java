@@ -202,6 +202,16 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public TrieNode<T> paddedToMinimumDepthForShift(int shift)
+    {
+        if (this.shift >= shift) {
+            return this;
+        } else {
+            return SingleBranchTrieNode.forIndex(shift, index, this);
+        }
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.<Integer, T>of(index, value));

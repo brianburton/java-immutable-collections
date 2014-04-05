@@ -50,7 +50,7 @@ import java.util.TreeMap;
 
 /**
  * A Transforms implementation intended solely for unit tests because it uses a mutable
- * collection to store its values.
+ * map to store its values and makes frequent complete copies of the map.
  */
 class TestOnlyTransforms<K, V>
         implements Transforms<Map<K, V>, K, V>
@@ -67,12 +67,17 @@ class TestOnlyTransforms<K, V>
             map.put(key, value);
             return map;
         } else {
-            Map<K, V> map = leaf.getValue();
+            Map<K, V> map = new TreeMap<K, V>(leaf.getValue());
             if (!map.containsKey(key)) {
                 delta.add(1);
+                map.put(key, value);
+                return map;
+            } else if (map.get(key) != value) {
+                map.put(key, value);
+                return map;
+            } else {
+                return leaf.getValue();
             }
-            map.put(key, value);
-            return map;
         }
     }
 
@@ -82,11 +87,14 @@ class TestOnlyTransforms<K, V>
                                     MutableDelta delta)
     {
         if (leaf.containsKey(key)) {
+            Map<K, V> map = new TreeMap<K, V>(leaf);
             delta.subtract(1);
-            leaf.remove(key);
-        }
-        if (leaf.isEmpty()) {
-            return Holders.of();
+            map.remove(key);
+            if (map.isEmpty()) {
+                return Holders.of();
+            } else {
+                return Holders.of(map);
+            }
         } else {
             return Holders.of(leaf);
         }

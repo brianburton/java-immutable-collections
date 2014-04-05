@@ -37,7 +37,17 @@ package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.StandardCursorTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SingleBranchTrieNodeTest
         extends TestCase
@@ -64,6 +74,10 @@ public class SingleBranchTrieNodeTest
         assertEquals("value", node.getValueOr(20, 30 << 20, null));
         assertEquals(Holders.<String>of(), node.find(20, 31 << 20));
         assertEquals(Holders.of("value"), node.find(20, 30 << 20));
+        StandardCursorTest.listCursorTest(Arrays.asList("value"), node.anyOrderValueCursor());
+        StandardCursorTest.listCursorTest(Arrays.asList("value"), node.signedOrderValueCursor());
+        StandardCursorTest.listCursorTest(Collections.<JImmutableMap.Entry<Integer, String>>singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryCursor());
+        StandardCursorTest.listCursorTest(Collections.<JImmutableMap.Entry<Integer, String>>singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryCursor());
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "value", delta));
@@ -78,7 +92,13 @@ public class SingleBranchTrieNodeTest
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
-        TrieNode<String> newNode = node.assign(20, 18 << 20, "18", delta);
+        TrieNode<String> newNode = node.assign(20, 30 << 20, "30", delta);
+        assertEquals(0, delta.getValue());
+        assertTrue(newNode instanceof SingleBranchTrieNode);
+        assertEquals("30", newNode.getValueOr(20, 30 << 20, null));
+
+        delta = new MutableDelta();
+        newNode = node.assign(20, 18 << 20, "18", delta);
         assertEquals(1, delta.getValue());
         assertTrue(newNode instanceof MultiBranchTrieNode);
         assertEquals("value", newNode.getValueOr(20, 30 << 20, null));
@@ -92,5 +112,120 @@ public class SingleBranchTrieNodeTest
         delta = new MutableDelta();
         assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, delta));
         assertEquals(-1, delta.getValue());
+    }
+
+    public void testTransforms()
+    {
+        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<String, String>();
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("a", "A");
+        map.put("b", "B");
+        LeafTrieNode<Map<String, String>> child = LeafTrieNode.of(30 << 20, map);
+        SingleBranchTrieNode<Map<String, String>> node = SingleBranchTrieNode.forBranchIndex(20, 30, child);
+        assertEquals(null, node.getValueOr(20, 31 << 20, null));
+        assertEquals("A", node.getValueOr(20, 30 << 20, "a", tx, null));
+        assertEquals("B", node.getValueOr(20, 30 << 20, "b", tx, null));
+        assertEquals(null, node.getValueOr(20, 30 << 20, "c", tx, null));
+        assertEquals(Holders.<String>of(), node.find(20, 31 << 20, "a", tx));
+        assertEquals(Holders.of("A"), node.find(20, 30 << 20, "a", tx));
+        assertEquals(Holders.of("B"), node.find(20, 30 << 20, "b", tx));
+        assertEquals(Holders.<String>of(), node.find(20, 30 << 20, "c", tx));
+        List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
+        expectedEntries.add(MapEntry.of("a", "A"));
+        expectedEntries.add(MapEntry.of("b", "B"));
+        StandardCursorTest.listCursorTest(expectedEntries, node.anyOrderEntryCursor(tx));
+        StandardCursorTest.listCursorTest(expectedEntries, node.signedOrderEntryCursor(tx));
+
+        MutableDelta delta = new MutableDelta();
+        assertSame(node, node.assign(20, 30 << 20, "a", "A", tx, delta));
+        assertEquals(0, delta.getValue());
+
+        delta = new MutableDelta();
+        assertSame(node, node.delete(20, 18 << 20, "a", tx, delta));
+        assertEquals(0, delta.getValue());
+
+        delta = new MutableDelta();
+        TrieNode<Map<String, String>> newNode = node.delete(20, 30 << 20, "a", tx, delta);
+        assertTrue(newNode instanceof LeafTrieNode);
+        assertEquals(-1, delta.getValue());
+        assertEquals(null, newNode.getValueOr(20, 30 << 20, "a", tx, null));
+        assertEquals("B", newNode.getValueOr(20, 30 << 20, "b", tx, null));
+
+        delta = new MutableDelta();
+        assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, "b", tx, delta));
+        assertEquals(-1, delta.getValue());
+
+        delta = new MutableDelta();
+        newNode = node.assign(20, 30 << 20, "a", "AA", tx, delta);
+        assertEquals(0, delta.getValue());
+        assertTrue(newNode instanceof SingleBranchTrieNode);
+        assertEquals("AA", newNode.getValueOr(20, 30 << 20, "a", tx, null));
+
+        delta = new MutableDelta();
+        newNode = node.assign(20, 18 << 20, "x", "X", tx, delta);
+        assertEquals(1, delta.getValue());
+        assertTrue(newNode instanceof MultiBranchTrieNode);
+        assertEquals("A", newNode.getValueOr(20, 30 << 20, "a", tx, null));
+        assertEquals("X", newNode.getValueOr(20, 18 << 20, "x", tx, null));
+
+        delta = new MutableDelta();
+        newNode = newNode.delete(20, 18 << 20, "x", tx, delta);
+        assertTrue(newNode instanceof LeafTrieNode);
+        assertEquals(-1, delta.getValue());
+
+        delta = new MutableDelta();
+        assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, "a", tx, delta).delete(20, 30 << 20, "b", tx, delta));
+        assertEquals(-2, delta.getValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testDeleteTurnsChildIntoLeaf()
+    {
+        LeafTrieNode<String> leaf1 = LeafTrieNode.of(0 << 20, "value1");
+        LeafTrieNode<String> leaf2 = LeafTrieNode.of(1 << 20, "value2");
+        MultiBranchTrieNode<String> child = MultiBranchTrieNode.<String>forEntries(20, new TrieNode[]{leaf1, leaf2});
+        assertEquals("value1", child.getValueOr(20, 0 << 20, null));
+        assertEquals("value2", child.getValueOr(20, 1 << 20, null));
+
+        SingleBranchTrieNode<String> node = SingleBranchTrieNode.forBranchIndex(25, 0, child);
+        assertEquals("value1", node.getValueOr(25, 0 << 20, null));
+        assertEquals("value2", node.getValueOr(25, 1 << 20, null));
+
+        MutableDelta delta = new MutableDelta();
+        assertSame(leaf2, node.delete(25, 0 << 20, delta));
+        assertEquals(-1, delta.getValue());
+
+        delta = new MutableDelta();
+        assertSame(leaf1, node.delete(25, 1 << 20, delta));
+        assertEquals(-1, delta.getValue());
+    }
+
+    public void testPadding()
+    {
+        LeafTrieNode<String> child = LeafTrieNode.of(30 << 20, "value");
+        SingleBranchTrieNode<String> node = SingleBranchTrieNode.forBranchIndex(20, 30, child);
+
+        TrieNode<String> newNode = node.paddedToMinimumDepthForShift(20);
+        assertSame(node, newNode);
+
+        newNode = node.paddedToMinimumDepthForShift(25);
+        assertTrue(newNode instanceof SingleBranchTrieNode);
+        assertEquals(25, newNode.getShift());
+
+        newNode = node.paddedToMinimumDepthForShift(30);
+        assertTrue(newNode instanceof SingleBranchTrieNode);
+        assertEquals(30, newNode.getShift());
+        assertEquals(0, ((SingleBranchTrieNode)newNode).getBranchIndex());
+
+        TrieNode<String> newChild = ((SingleBranchTrieNode<String>)newNode).getChild();
+        assertTrue(newChild instanceof SingleBranchTrieNode);
+        assertEquals(25, newChild.getShift());
+        assertEquals(0, ((SingleBranchTrieNode)newChild).getBranchIndex());
+
+        newChild = ((SingleBranchTrieNode<String>)newChild).getChild();
+        assertSame(node, newChild);
+
+        assertSame(node, node.trimmedToMinimumDepth());
+        assertSame(node, newNode.trimmedToMinimumDepth());
     }
 }

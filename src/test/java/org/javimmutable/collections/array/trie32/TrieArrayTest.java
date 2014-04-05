@@ -54,14 +54,20 @@ import java.util.TreeMap;
 public class TrieArrayTest
         extends TestCase
 {
+    // this method is intended for use in debugger to what the structural changes
+    @SuppressWarnings("UnusedAssignment")
     public void testTrimming()
     {
         JImmutableArray<Integer> array = TrieArray.of();
         array = array.assign(0, 0);
+//        array = array.assign(-1, -1);
         array = array.assign(33, 33);
-        array = array.assign(-1, -1);
+        array = array.assign(65, 65);
+        array = array.assign(97, 97);
         array = array.delete(-1);
         array = array.delete(33);
+        array = array.delete(97);
+        array = array.delete(65);
         array = array.delete(0);
     }
 
