@@ -89,6 +89,8 @@ public abstract class TrieNode<T>
 
     public abstract int getShift();
 
+    public abstract boolean isLeaf();
+
     public TrieNode<T> trimmedToMinimumDepth()
     {
         return this;

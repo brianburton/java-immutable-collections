@@ -196,6 +196,12 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public boolean isLeaf()
+    {
+        return true;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.<Integer, T>of(index, value));

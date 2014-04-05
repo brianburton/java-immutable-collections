@@ -139,6 +139,12 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public boolean isLeaf()
+    {
+        return true;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return StandardCursor.of();

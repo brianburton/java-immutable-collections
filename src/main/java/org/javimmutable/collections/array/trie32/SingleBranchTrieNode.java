@@ -131,6 +131,7 @@ public class SingleBranchTrieNode<T>
         final int branchIndex = (index >>> shift) & 0x1f;
         if (this.branchIndex == branchIndex) {
             TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
             return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
         } else {
             return MultiBranchTrieNode.forBranchIndex(shift, this.branchIndex, child).assign(shift, index, value, sizeDelta);
@@ -171,6 +172,7 @@ public class SingleBranchTrieNode<T>
             } else if (newChild.isEmpty()) {
                 return of();
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
         }
@@ -194,6 +196,7 @@ public class SingleBranchTrieNode<T>
             } else if (newChild.isEmpty()) {
                 return of();
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
             }
         }
@@ -203,6 +206,12 @@ public class SingleBranchTrieNode<T>
     public int getShift()
     {
         return shift;
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+        return false;
     }
 
     @Override
@@ -227,5 +236,17 @@ public class SingleBranchTrieNode<T>
     public Cursor<T> anyOrderValueCursor()
     {
         return child.anyOrderValueCursor();
+    }
+
+    // for tests
+    int getBranchIndex()
+    {
+        return branchIndex;
+    }
+
+    // for tests
+    TrieNode<T> getChild()
+    {
+        return child;
     }
 }

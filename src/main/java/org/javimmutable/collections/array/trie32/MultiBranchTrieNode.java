@@ -225,6 +225,7 @@ public class MultiBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 final TrieNode<T>[] newEntries = entries.clone();
                 newEntries[childIndex] = newChild;
                 return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
@@ -264,6 +265,7 @@ public class MultiBranchTrieNode<T>
             if (newChild == child) {
                 return this;
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 final TrieNode<T>[] newEntries = entries.clone();
                 newEntries[childIndex] = newChild;
                 return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
@@ -306,6 +308,7 @@ public class MultiBranchTrieNode<T>
             } else if (newChild == child) {
                 return this;
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 final TrieNode<T>[] newEntries = entries.clone();
                 newEntries[childIndex] = newChild;
                 return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
@@ -350,6 +353,7 @@ public class MultiBranchTrieNode<T>
             } else if (newChild == child) {
                 return this;
             } else {
+                assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
                 final TrieNode<T>[] newEntries = entries.clone();
                 newEntries[childIndex] = newChild;
                 return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
@@ -361,6 +365,12 @@ public class MultiBranchTrieNode<T>
     public int getShift()
     {
         return shift;
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+        return false;
     }
 
     @Override
