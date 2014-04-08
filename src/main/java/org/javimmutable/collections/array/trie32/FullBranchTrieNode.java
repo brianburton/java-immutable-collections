@@ -130,7 +130,7 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
-            return createNewEntriesFor(shift, childIndex, newChild);
+            return createUpdatedEntries(shift, childIndex, newChild);
         }
     }
 
@@ -149,7 +149,7 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
-            return createNewEntriesFor(shift, childIndex, newChild);
+            return createUpdatedEntries(shift, childIndex, newChild);
         }
     }
 
@@ -167,7 +167,7 @@ public class FullBranchTrieNode<T>
         } else if (newChild.isEmpty()) {
             return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
         } else {
-            return createNewEntriesFor(shift, childIndex, newChild);
+            return createUpdatedEntries(shift, childIndex, newChild);
         }
     }
 
@@ -187,7 +187,7 @@ public class FullBranchTrieNode<T>
         } else if (newChild.isEmpty()) {
             return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
         } else {
-            return createNewEntriesFor(shift, childIndex, newChild);
+            return createUpdatedEntries(shift, childIndex, newChild);
         }
     }
 
@@ -242,9 +242,9 @@ public class FullBranchTrieNode<T>
         });
     }
 
-    private TrieNode<T> createNewEntriesFor(int shift,
-                                            int childIndex,
-                                            TrieNode<T> newChild)
+    private TrieNode<T> createUpdatedEntries(int shift,
+                                             int childIndex,
+                                             TrieNode<T> newChild)
     {
         assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
         TrieNode<T>[] newEntries = entries.clone();

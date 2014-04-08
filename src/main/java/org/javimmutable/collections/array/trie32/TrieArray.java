@@ -47,6 +47,9 @@ import org.javimmutable.collections.common.MutableDelta;
 public class TrieArray<T>
         extends AbstractJImmutableArray<T>
 {
+    @SuppressWarnings("unchecked")
+    private static final TrieArray EMPTY = new TrieArray(TrieNode.of(), 0);
+
     private final TrieNode<T> root;
     private final int size;
 
@@ -57,9 +60,10 @@ public class TrieArray<T>
         this.size = size;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> TrieArray<T> of()
     {
-        return new TrieArray<T>(TrieNode.<T>of(), 0);
+        return (TrieArray<T>)EMPTY;
     }
 
     public static <T> JImmutableArray<T> of(Indexed<T> source,
