@@ -36,6 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * Base class for started (i.e. actively traversing the collection) Cursors.
@@ -64,5 +67,11 @@ public abstract class AbstractStartedCursor<T>
     public boolean hasValue()
     {
         return true;
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

@@ -36,6 +36,7 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -147,37 +148,43 @@ public abstract class StandardCursor
         return answer;
     }
 
-    private static class Start<V>
-            extends AbstractStartCursor<V>
+    private static class Start<T>
+            extends AbstractStartCursor<T>
     {
-        private final Source<V> source;
+        private final Source<T> source;
 
-        private Start(Source<V> source)
+        private Start(Source<T> source)
         {
             this.source = source;
         }
 
         @Override
-        public Cursor<V> next()
+        public Cursor<T> next()
         {
-            return new Started<V>(source);
+            return new Started<T>(source);
+        }
+
+        @Override
+        public Iterator<T> iterator()
+        {
+            return IteratorAdaptor.of(this);
         }
     }
 
-    private static class Started<V>
-            extends AbstractStartedCursor<V>
+    private static class Started<T>
+            extends AbstractStartedCursor<T>
     {
-        private final Source<V> source;
+        private final Source<T> source;
 
-        private Started(Source<V> source)
+        private Started(Source<T> source)
         {
             this.source = source;
         }
 
         @Override
-        public Cursor<V> next()
+        public Cursor<T> next()
         {
-            return source.atEnd() ? super.next() : new Started<V>(source.advance());
+            return source.atEnd() ? super.next() : new Started<T>(source.advance());
         }
 
         @Override
@@ -187,12 +194,18 @@ public abstract class StandardCursor
         }
 
         @Override
-        public V getValue()
+        public T getValue()
         {
             if (source.atEnd()) {
                 throw new NoValueException();
             }
             return source.currentValue();
+        }
+
+        @Override
+        public Iterator<T> iterator()
+        {
+            return IteratorAdaptor.of(this);
         }
     }
 
@@ -250,12 +263,12 @@ public abstract class StandardCursor
         }
     }
 
-    private static class SourceIterator<V>
-            implements Iterator<V>
+    private static class SourceIterator<T>
+            implements Iterator<T>
     {
-        private Source<V> source;
+        private Source<T> source;
 
-        private SourceIterator(Source<V> source)
+        private SourceIterator(Source<T> source)
         {
             this.source = source;
         }
@@ -267,9 +280,9 @@ public abstract class StandardCursor
         }
 
         @Override
-        public V next()
+        public T next()
         {
-            final V value = source.currentValue();
+            final T value = source.currentValue();
             source = source.advance();
             return value;
         }

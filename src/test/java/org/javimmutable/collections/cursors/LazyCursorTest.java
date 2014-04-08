@@ -38,8 +38,10 @@ package org.javimmutable.collections.cursors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.common.IteratorAdaptor;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class LazyCursorTest
         extends TestCase
@@ -126,6 +128,12 @@ public class LazyCursorTest
             } else {
                 return "not advanced";
             }
+        }
+
+        @Override
+        public Iterator<String> iterator()
+        {
+            return IteratorAdaptor.of(this);
         }
     }
 

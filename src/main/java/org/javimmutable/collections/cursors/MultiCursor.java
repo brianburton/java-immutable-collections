@@ -36,6 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * A Cursor that combines multiple Cursors into a single virtual Cursor
@@ -139,6 +142,12 @@ public class MultiCursor<T>
             throw new NotStartedException();
         }
         return cursor.getValue();
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 
     /**

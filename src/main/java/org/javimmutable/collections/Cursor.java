@@ -40,9 +40,10 @@ package org.javimmutable.collections;
  * The iterators themselves must be immutable and always create a new
  * iterator when start() or next() is called.
  *
- * @param <V>
+ * @param <T>
  */
-public interface Cursor<V>
+public interface Cursor<T>
+        extends Iterable<T>
 {
     /**
      * Thrown by hasValue() and getValue() if the cursor has not been started by calling next() yet.
@@ -73,7 +74,7 @@ public interface Cursor<V>
      *
      * @return Cursor for first position or this if already started
      */
-    Cursor<V> start();
+    Cursor<T> start();
 
     /**
      * Advances to the next (possibly first) value.  Must always return a non-null Cursor.
@@ -83,7 +84,7 @@ public interface Cursor<V>
      *
      * @return Cursor for next position
      */
-    Cursor<V> next();
+    Cursor<T> next();
 
     /**
      * Read-only method with no side effects that determines if the Cursor currently has a value.
@@ -101,5 +102,5 @@ public interface Cursor<V>
      * @return current value
      * @throws IllegalStateException if getValue() is not allowed for this iterator
      */
-    V getValue();
+    T getValue();
 }

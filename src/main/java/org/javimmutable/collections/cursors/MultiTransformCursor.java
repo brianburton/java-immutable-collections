@@ -37,6 +37,9 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * Cursor that produces values by visiting all values in a Cursor of objects and
@@ -112,5 +115,11 @@ public class MultiTransformCursor<S, T>
             throw new NotStartedException();
         }
         return visitCursor.getValue();
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

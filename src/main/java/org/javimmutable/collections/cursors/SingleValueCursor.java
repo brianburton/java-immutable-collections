@@ -36,6 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * A Cursor containing exactly one value to be traversed.
@@ -67,5 +70,11 @@ public class SingleValueCursor<T>
                 return value;
             }
         };
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

@@ -36,6 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * Base implementation for unstarted Cursor classes.
@@ -70,5 +73,11 @@ public abstract class AbstractStartCursor<T>
     public T getValue()
     {
         throw new NotStartedException();
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

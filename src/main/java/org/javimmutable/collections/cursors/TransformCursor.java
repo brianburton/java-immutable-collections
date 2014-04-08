@@ -38,6 +38,9 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * A Cursor that visits all values in another Cursor and transforms each value
@@ -108,5 +111,11 @@ public class TransformCursor<S, T>
     public T getValue()
     {
         return transforminator.apply(source.getValue());
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

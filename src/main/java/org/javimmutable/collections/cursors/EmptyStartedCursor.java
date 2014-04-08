@@ -36,6 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.common.IteratorAdaptor;
+
+import java.util.Iterator;
 
 /**
  * Cursor implementation intended solely for internal use in the cursors package.
@@ -76,5 +79,11 @@ public class EmptyStartedCursor<T>
     public T getValue()
     {
         throw new NoValueException();
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return IteratorAdaptor.of(this);
     }
 }

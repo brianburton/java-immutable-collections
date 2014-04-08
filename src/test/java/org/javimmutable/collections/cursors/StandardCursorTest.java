@@ -80,11 +80,16 @@ public class StandardCursorTest
             // expected
         }
 
+        final int iteratorTestMultiple = Math.max(1, size / 5);
         // calling next advances through entire sequence
         cursor = cursor.start();
         for (int i = 0, last = size - 1; i < size; ++i) {
             assertEquals(true, cursor.hasValue());
             assertEquals(lookup.apply(i), cursor.getValue());
+
+            if ((i % iteratorTestMultiple) == 0) {
+                verifyIterableCursor(lookup, i, size, cursor);
+            }
 
             // calling start in mid-traversal must not disrupt the sequence
             cursor = cursor.start();
@@ -110,6 +115,18 @@ public class StandardCursorTest
         assertEquals(false, cursor.hasValue());
         cursor = cursor.next();
         assertEquals(false, cursor.hasValue());
+    }
+
+    private static <T> void verifyIterableCursor(Func1<Integer, T> lookup,
+                                                 int offset,
+                                                 int size,
+                                                 Cursor<T> cursor)
+    {
+        for (T value : cursor) {
+            assertEquals(lookup.apply(offset), value);
+            offset += 1;
+        }
+        assertEquals(size, offset);
     }
 
     public static <T> void indexedCursorTest(Indexed<T> indexed,
