@@ -176,7 +176,11 @@ public final class JImmutables
     }
 
     /**
-     * Constructs an empty unsorted map.
+     * Constructs an empty unsorted map.  The map will adopt a hash code collision strategy based on
+     * the first key assigned to the map.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param <K>
      * @param <V>
@@ -190,6 +194,12 @@ public final class JImmutables
     /**
      * Constructs an unsorted map.
      * All key/value pairs from source are copied into the newly created map.
+     * <p/>
+     * The map will adopt a hash code collision strategy based on
+     * the first key in source.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param source
      * @param <K>
@@ -205,6 +215,12 @@ public final class JImmutables
      * Constructs an unsorted map.
      * If source is already an unsorted map it is returned directly, otherwise a new map
      * is created and all key/value pairs from source are copied into the newly created map.
+     * <p/>
+     * The map will adopt a hash code collision strategy based on
+     * the first key in source.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param source
      * @param <K>
@@ -311,6 +327,12 @@ public final class JImmutables
     /**
      * Constructs an empty map whose cursors traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
+     * <p/>
+     * The map will adopt a hash code collision strategy based on
+     * the first key assigned to the map.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param <K>
      * @param <V>
@@ -325,6 +347,12 @@ public final class JImmutables
      * Constructs a map whose cursors traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
      * All key/value pairs from source are copied into the newly created map.
+     * <p/>
+     * The map will adopt a hash code collision strategy based on
+     * the first key in source.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param source
      * @param <K>
@@ -343,6 +371,12 @@ public final class JImmutables
      * is created and all key/value pairs from source are copied into the newly created map.
      * In this case the iteration order for those entries would be based on the order of elements
      * returned by source's cursor.
+     * <p/>
+     * The map will adopt a hash code collision strategy based on
+     * the first key in source.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
      *
      * @param source
      * @param <K>
@@ -358,34 +392,106 @@ public final class JImmutables
         }
     }
 
+    /**
+     * Constructs an unsorted set.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableSet<T> set()
     {
         return JImmutableHashSet.of();
     }
 
-    public static <T> JImmutableSet<T> set(Cursor<T> cursor)
+    /**
+     * Constructs an unsorted set containing the values from source.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> set(Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableHashSet.<T>of(), cursor);
+        return Functions.insertAll(JImmutableHashSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> set(T... values)
+    /**
+     * Constructs an unsorted set containing the values from source.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> set(T... source)
     {
-        return Functions.insertAll(JImmutableHashSet.<T>of(), values);
+        return Functions.insertAll(JImmutableHashSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> set(Cursorable<T> cursorable)
+    /**
+     * Constructs an unsorted set containing the values from source.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> set(Cursorable<T> source)
     {
-        return Functions.insertAll(JImmutableHashSet.<T>of(), cursorable.cursor());
+        return Functions.insertAll(JImmutableHashSet.<T>of(), source.cursor());
     }
 
-    public static <T> JImmutableSet<T> set(Iterator<T> iterator)
+    /**
+     * Constructs an unsorted set containing the values from source.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> set(Iterator<T> source)
     {
-        return Functions.insertAll(JImmutableHashSet.<T>of(), iterator);
+        return Functions.insertAll(JImmutableHashSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> set(Collection<T> collection)
+    /**
+     * Constructs an unsorted set containing the values from source.
+     * <p/>
+     * The set will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> set(Collection<T> source)
     {
-        return Functions.insertAll(JImmutableHashSet.<T>of(), collection.iterator());
+        return Functions.insertAll(JImmutableHashSet.<T>of(), source.iterator());
     }
 
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet()

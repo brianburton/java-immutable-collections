@@ -76,30 +76,78 @@ public class JImmutableHashMap<T, K, V>
         this.transforms = transforms;
     }
 
+    /**
+     * Returns an empty hash map.  The empty map will automatically select a collision handling strategy
+     * on the first call to assign() based on the key for that call.  For this reason all keys used for a
+     * given map must either implement or not implement Comparable.  If some keys implement it and some do
+     * not the collision handling code will likely fail due to a class cast exception or a method
+     * not defined exception.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> EmptyHashMap<K, V> of()
     {
         return (EmptyHashMap<K, V>)EmptyHashMap.INSTANCE;
     }
 
+    /**
+     * Returns an empty map using the appropriate collision handling strategy for keys of the given
+     * class.  All keys used with that map should derive from the specified class to avoid runtime
+     * problems with incompatible keys.
+     *
+     * @param klass
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
     {
         return klass.isAssignableFrom(Comparable.class) ? TREE_EMPTY : LIST_EMPTY;
     }
 
+    /**
+     * Returns an empty map using the appropriate collision handling strategy for the given key's
+     * class.  All keys used with that map should derive from the specified key's class to avoid runtime
+     * problems with incompatible keys.
+     *
+     * @param key
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> forKey(K key)
     {
         return (key instanceof Comparable) ? TREE_EMPTY : LIST_EMPTY;
     }
 
+    /**
+     * Returns an empty map using linked lists for handling hash code collisions.  This is safe
+     * for any type of key but is slower when many keys have the same hash code.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> usingList()
     {
         return (JImmutableMap<K, V>)LIST_EMPTY;
     }
 
+    /**
+     * Returns an empty map using linked lists for handling hash code collisions.  This is faster
+     * than the list based collision handling but depends on all keys implementing Comparable and
+     * being able to compare themselves to all other keys.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> usingTree()
     {
