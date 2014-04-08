@@ -311,6 +311,16 @@ public class RandomLoop
                 map = map.assign(key, key);
             }
             verifyContents(expected, map);
+            System.out.printf("updating %d%n", map.size());
+            for (int i = 0; i < map.size(); ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                String key = pkeys.get(keyIndex);
+                int valueIndex = random.nextInt(keys.size());
+                String value = pkeys.get(valueIndex);
+                expected.put(key, value);
+                map = map.assign(key, value);
+            }
+            verifyContents(expected, map);
             System.out.printf("shrinking %d%n", map.size());
             for (int i = 0; i < tokenCount / 6; ++i) {
                 int keyIndex = random.nextInt(keys.size());

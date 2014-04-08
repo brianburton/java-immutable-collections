@@ -49,19 +49,19 @@ import org.javimmutable.collections.common.MutableDelta;
 public class JImmutableHashMap<T, K, V>
         extends AbstractJImmutableMap<K, V>
 {
-    // we only new one instance of the transformations object
-    static final HashValueListTransforms TRANSFORMS = new HashValueListTransforms();
+    // we only need one instance of the transformations object
+    static final HashValueListTransforms LIST_TRANSFORMS = new HashValueListTransforms();
 
-    // we only new one instance of the transformations object
-    static final HashValueTreeTransforms COMPARABLE_TRANSFORMS = new HashValueTreeTransforms();
-
-    // this is safe since the transformations object works for any possible K and V
-    @SuppressWarnings("unchecked")
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TRANSFORMS);
+    // we only need one instance of the transformations object
+    static final HashValueTreeTransforms TREE_TRANSFORMS = new HashValueTreeTransforms();
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, COMPARABLE_TRANSFORMS);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, LIST_TRANSFORMS);
+
+    // this is safe since the transformations object works for any possible K and V
+    @SuppressWarnings("unchecked")
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TREE_TRANSFORMS);
 
     private final TrieNode<T> root;
     private final int size;
@@ -180,5 +180,4 @@ public class JImmutableHashMap<T, K, V>
     {
         return transforms;
     }
-
 }

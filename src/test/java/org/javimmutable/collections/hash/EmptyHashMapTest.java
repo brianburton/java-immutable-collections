@@ -46,12 +46,12 @@ public class EmptyHashMapTest
         JImmutableMap<String, Integer> comparableMap = JImmutableHashMap.of();
         comparableMap = comparableMap.assign("a", 100);
         assertTrue(comparableMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.COMPARABLE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
 
         JImmutableMap<TimingLoop, Integer> otherMap = JImmutableHashMap.of();
         otherMap = otherMap.assign(new TimingLoop(), 100);
         assertTrue(otherMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
+        assertSame(JImmutableHashMap.LIST_TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
 
         try {
             otherMap = JImmutableHashMap.of();
