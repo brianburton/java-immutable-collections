@@ -53,16 +53,10 @@ import org.javimmutable.collections.cursors.StandardCursor;
 public class EmptyHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
-    private static EmptyHashMap INSTANCE = new EmptyHashMap();
+    static EmptyHashMap INSTANCE = new EmptyHashMap();
 
     private EmptyHashMap()
     {
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K, V> EmptyHashMap<K, V> of()
-    {
-        return (EmptyHashMap<K, V>)INSTANCE;
     }
 
     @Override

@@ -53,7 +53,7 @@ public class JImmutableHashMapTest
 {
     public void test()
     {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
@@ -71,7 +71,7 @@ public class JImmutableHashMapTest
 
     public void testValueIdentity()
     {
-        JImmutableMap<Integer, String> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, String> map = JImmutableHashMap.usingList();
         map = map.assign(10, "ab");
         assertSame(map, map.assign(10, "ab"));
         for (int i = 100; i <= 15000; ++i) {
@@ -83,7 +83,7 @@ public class JImmutableHashMapTest
 
     public void testNullKeys()
     {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
         map = map.assign(1, 3);
         try {
             map.assign(null, 18);
@@ -118,7 +118,7 @@ public class JImmutableHashMapTest
         Random random = new Random(100);
         for (int loop = 0; loop < 1000; ++loop) {
             Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
-            JImmutableMap<Integer, Integer> map = JImmutableHashMap.comparableOf();
+            JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingTree();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(4);
@@ -211,21 +211,21 @@ public class JImmutableHashMapTest
 
     public void testEquals()
     {
-        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
-        JImmutableMap<Integer, Integer> map2 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
+        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        JImmutableMap<Integer, Integer> map2 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }
 
     public void testDeleteAll()
     {
-        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>of().assign(1, 3).assign(2, 4).assign(3, 5);
-        assertSame(EmptyHashMap.of(), map1.deleteAll());
+        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        assertSame(JImmutableHashMap.of(), map1.deleteAll());
     }
 
     public void testCursor()
     {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
         List<Integer> expected = new ArrayList<Integer>();
         for (int i = 0; i < 100000; ++i) {
             map = map.assign(i, i);
@@ -241,7 +241,7 @@ public class JImmutableHashMapTest
         ManualHashKey key1 = new ManualHashKey(1000, "a");
         ManualHashKey key2 = new ManualHashKey(1000, "b");
         ManualHashKey key3 = new ManualHashKey(1000, "c");
-        JImmutableMap<ManualHashKey, String> map = JImmutableHashMap.of();
+        JImmutableMap<ManualHashKey, String> map = JImmutableHashMap.usingList();
         map = map.assign(key1, "1").assign(key2, "2").assign(key3, "3");
         assertEquals(3, map.size());
         assertEquals("1", map.get(key1));
@@ -286,14 +286,14 @@ public class JImmutableHashMapTest
         assertEquals("X", map.find(key1).getValueOr("X"));
         assertEquals("X", map.find(key2).getValueOr("X"));
         assertEquals("X", map.find(key3).getValueOr("X"));
-        assertSame(EmptyHashMap.of(), map);
+        assertSame(JImmutableHashMap.of(), map);
     }
 
     public void testTransformSelection()
     {
-        assertSame(JImmutableHashMap.EMPTY, JImmutableHashMap.forKey(new TimingLoop()));
-        assertSame(JImmutableHashMap.COMPARABLE_EMPTY, JImmutableHashMap.forKey(100));
-        assertSame(JImmutableHashMap.COMPARABLE_EMPTY, JImmutableHashMap.forKey("testing"));
+        assertSame(JImmutableHashMap.LIST_EMPTY, JImmutableHashMap.forKey(new TimingLoop()));
+        assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey(100));
+        assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey("testing"));
     }
 
     private static class ManualHashKey

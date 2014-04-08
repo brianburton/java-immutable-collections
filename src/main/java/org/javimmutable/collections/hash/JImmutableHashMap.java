@@ -57,11 +57,11 @@ public class JImmutableHashMap<T, K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TRANSFORMS);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TRANSFORMS);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap COMPARABLE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, COMPARABLE_TRANSFORMS);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, COMPARABLE_TRANSFORMS);
 
     private final TrieNode<T> root;
     private final int size;
@@ -77,27 +77,33 @@ public class JImmutableHashMap<T, K, V>
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableMap<K, V> of()
+    public static <K, V> EmptyHashMap<K, V> of()
     {
-        return (JImmutableMap<K, V>)EMPTY;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> JImmutableMap<K, V> comparableOf()
-    {
-        return (JImmutableMap<K, V>)COMPARABLE_EMPTY;
+        return (EmptyHashMap<K, V>)EmptyHashMap.INSTANCE;
     }
 
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
     {
-        return klass.isAssignableFrom(Comparable.class) ? COMPARABLE_EMPTY : EMPTY;
+        return klass.isAssignableFrom(Comparable.class) ? TREE_EMPTY : LIST_EMPTY;
     }
 
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> forKey(K key)
     {
-        return (key instanceof Comparable) ? COMPARABLE_EMPTY : EMPTY;
+        return (key instanceof Comparable) ? TREE_EMPTY : LIST_EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> JImmutableMap<K, V> usingList()
+    {
+        return (JImmutableMap<K, V>)LIST_EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<K>, V> JImmutableMap<K, V> usingTree()
+    {
+        return (JImmutableMap<K, V>)TREE_EMPTY;
     }
 
     @Override
@@ -145,7 +151,7 @@ public class JImmutableHashMap<T, K, V>
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty()) {
-            return EmptyHashMap.of();
+            return of();
         } else {
             return new JImmutableHashMap<T, K, V>(newRoot, size + sizeDelta.getValue(), transforms);
         }
@@ -160,7 +166,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public JImmutableMap<K, V> deleteAll()
     {
-        return EmptyHashMap.of();
+        return of();
     }
 
     @Override

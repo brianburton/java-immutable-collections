@@ -43,7 +43,7 @@ public class JImmutableHashSet<T>
         extends AbstractJImmutableSet<T>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableHashSet EMPTY = new JImmutableHashSet(EmptyHashMap.of());
+    private static final JImmutableHashSet EMPTY = new JImmutableHashSet(JImmutableHashMap.of());
 
     private JImmutableHashSet(JImmutableMap<T, Boolean> map)
     {
@@ -71,6 +71,6 @@ public class JImmutableHashSet<T>
     @Override
     protected JImmutableMap<T, Boolean> emptyMap()
     {
-        return EmptyHashMap.of();
+        return JImmutableHashMap.of();
     }
 }
