@@ -61,7 +61,8 @@ public class FullBranchTrieNode<T>
                                                 Indexed<T> source,
                                                 int offset)
     {
-        @SuppressWarnings("unchecked") TrieNode<T>[] entries = (TrieNode<T>[])new TrieNode[32];
+        assert source.size() - offset >= 32;
+        TrieNode<T>[] entries = MultiBranchTrieNode.allocate(32);
         for (int i = 0; i < 32; ++i) {
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
         }
@@ -129,10 +130,7 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-            TrieNode<T>[] newEntries = entries.clone();
-            newEntries[childIndex] = newChild;
-            return new FullBranchTrieNode<T>(shift, newEntries);
+            return createNewEntriesFor(shift, childIndex, newChild);
         }
     }
 
@@ -151,10 +149,7 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-            TrieNode<T>[] newEntries = entries.clone();
-            newEntries[childIndex] = newChild;
-            return new FullBranchTrieNode<T>(shift, newEntries);
+            return createNewEntriesFor(shift, childIndex, newChild);
         }
     }
 
@@ -172,10 +167,7 @@ public class FullBranchTrieNode<T>
         } else if (newChild.isEmpty()) {
             return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
         } else {
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-            TrieNode<T>[] newEntries = entries.clone();
-            newEntries[childIndex] = newChild;
-            return new FullBranchTrieNode<T>(shift, newEntries);
+            return createNewEntriesFor(shift, childIndex, newChild);
         }
     }
 
@@ -195,10 +187,7 @@ public class FullBranchTrieNode<T>
         } else if (newChild.isEmpty()) {
             return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
         } else {
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
-            TrieNode<T>[] newEntries = entries.clone();
-            newEntries[childIndex] = newChild;
-            return new FullBranchTrieNode<T>(shift, newEntries);
+            return createNewEntriesFor(shift, childIndex, newChild);
         }
     }
 
@@ -251,6 +240,16 @@ public class FullBranchTrieNode<T>
                 return node.anyOrderEntryCursor(transforms);
             }
         });
+    }
+
+    private TrieNode<T> createNewEntriesFor(int shift,
+                                            int childIndex,
+                                            TrieNode<T> newChild)
+    {
+        assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+        TrieNode<T>[] newEntries = entries.clone();
+        newEntries[childIndex] = newChild;
+        return new FullBranchTrieNode<T>(shift, newEntries);
     }
 
     private class CursorSource

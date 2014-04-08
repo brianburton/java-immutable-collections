@@ -145,6 +145,12 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public TrieNode<T> paddedToMinimumDepthForShift(int shift)
+    {
+        return this;
+    }
+
+    @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
         return StandardCursor.of();
