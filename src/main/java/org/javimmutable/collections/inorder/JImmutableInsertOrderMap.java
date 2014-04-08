@@ -45,7 +45,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
-import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.hash.EmptyHashMap;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -63,7 +63,7 @@ public class JImmutableInsertOrderMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 1);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), EmptyHashMap.of(), 1);
 
     private final JImmutableArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
