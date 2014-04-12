@@ -35,6 +35,12 @@
 
 package org.javimmutable.collections;
 
+/**
+ * Interface for maps that map keys to lists of values.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public interface JImmutableListMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, JImmutableList<V>>,

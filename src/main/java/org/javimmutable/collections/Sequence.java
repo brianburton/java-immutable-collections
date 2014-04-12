@@ -35,6 +35,11 @@
 
 package org.javimmutable.collections;
 
+/**
+ * Interface for collections that contain a head value and a tail containing the remainder of the sequence.
+ *
+ * @param <T>
+ */
 public interface Sequence<T>
 {
     /**

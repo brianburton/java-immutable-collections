@@ -37,6 +37,11 @@ package org.javimmutable.collections;
 
 import java.util.Set;
 
+/**
+ * Interface for immutable sets.
+ *
+ * @param <T>
+ */
 public interface JImmutableSet<T>
         extends Insertable<T>,
                 Cursorable<T>,
