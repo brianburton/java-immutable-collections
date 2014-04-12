@@ -92,6 +92,8 @@ public class RandomLoop
             testRandomAccessList(random);
             testSets(tokens, random);
             testMaps(factory, tokens, random);
+            testBadHashMap(tokens, random);
+            testComparableBadHashMap(tokens, random);
         }
     }
 
@@ -355,6 +357,134 @@ public class RandomLoop
         System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
     }
 
+    private void testBadHashMap(JImmutableList<String> tokens,
+                                Random random)
+            throws Exception
+    {
+        final int tokenCount = 1 + random.nextInt(100000);
+        final List<BadHash<String>> keys = new ArrayList<BadHash<String>>();
+        final Map<BadHash<String>, String> expected = new HashMap<BadHash<String>, String>();
+        JImmutableMap<BadHash<String>, String> map = JImmutables.map();
+        JImmutableRandomAccessList<BadHash<String>> pkeys = JImmutables.ralist();
+        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", map.size());
+            for (int i = 0; i < tokenCount / 3; ++i) {
+                BadHash<String> key = new BadHash<String>(makeKey(tokens, random));
+                keys.add(key);
+                pkeys = pkeys.insert(key);
+                expected.put(key, key.value);
+                map = map.assign(key, key.value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("updating %d%n", map.size());
+            for (int i = 0; i < map.size(); ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                BadHash<String> key = pkeys.get(keyIndex);
+                int valueIndex = random.nextInt(keys.size());
+                String value = pkeys.get(valueIndex).value;
+                expected.put(key, value);
+                map = map.assign(key, value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("shrinking %d%n", map.size());
+            for (int i = 0; i < tokenCount / 6; ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                BadHash<String> key = pkeys.get(keyIndex);
+                expected.remove(key);
+                map = map.delete(key);
+                keys.remove(keyIndex);
+                pkeys = pkeys.delete(keyIndex);
+            }
+            verifyContents(expected, map);
+        }
+        if (keys.size() != pkeys.size()) {
+            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
+        }
+        System.out.printf("comparing %d keys%n", pkeys.size());
+        for (int i = 0; i < pkeys.size(); ++i) {
+            BadHash<String> key = keys.get(i);
+            BadHash<String> pkey = pkeys.get(i);
+            if (!key.equals(pkey)) {
+                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
+            }
+        }
+        System.out.printf("cleanup %d%n", map.size());
+        for (BadHash<String> key : keys) {
+            expected.remove(key);
+            map = map.delete(key);
+        }
+        if (map.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
+        }
+        verifyContents(expected, map);
+        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
+    }
+
+    private void testComparableBadHashMap(JImmutableList<String> tokens,
+                                          Random random)
+            throws Exception
+    {
+        final int tokenCount = 1 + random.nextInt(100000);
+        final List<ComparableBadHash<String>> keys = new ArrayList<ComparableBadHash<String>>();
+        final Map<ComparableBadHash<String>, String> expected = new HashMap<ComparableBadHash<String>, String>();
+        JImmutableMap<ComparableBadHash<String>, String> map = JImmutables.map();
+        JImmutableRandomAccessList<ComparableBadHash<String>> pkeys = JImmutables.ralist();
+        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", map.size());
+            for (int i = 0; i < tokenCount / 3; ++i) {
+                ComparableBadHash<String> key = new ComparableBadHash<String>(makeKey(tokens, random));
+                keys.add(key);
+                pkeys = pkeys.insert(key);
+                expected.put(key, key.value);
+                map = map.assign(key, key.value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("updating %d%n", map.size());
+            for (int i = 0; i < map.size(); ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                ComparableBadHash<String> key = pkeys.get(keyIndex);
+                int valueIndex = random.nextInt(keys.size());
+                String value = pkeys.get(valueIndex).value;
+                expected.put(key, value);
+                map = map.assign(key, value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("shrinking %d%n", map.size());
+            for (int i = 0; i < tokenCount / 6; ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                ComparableBadHash<String> key = pkeys.get(keyIndex);
+                expected.remove(key);
+                map = map.delete(key);
+                keys.remove(keyIndex);
+                pkeys = pkeys.delete(keyIndex);
+            }
+            verifyContents(expected, map);
+        }
+        if (keys.size() != pkeys.size()) {
+            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
+        }
+        System.out.printf("comparing %d keys%n", pkeys.size());
+        for (int i = 0; i < pkeys.size(); ++i) {
+            ComparableBadHash<String> key = keys.get(i);
+            ComparableBadHash<String> pkey = pkeys.get(i);
+            if (!key.equals(pkey)) {
+                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
+            }
+        }
+        System.out.printf("cleanup %d%n", map.size());
+        for (ComparableBadHash<String> key : keys) {
+            expected.remove(key);
+            map = map.delete(key);
+        }
+        if (map.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
+        }
+        verifyContents(expected, map);
+        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
+    }
+
     private void verifyContents(List<Integer> expected,
                                 JImmutableList<Integer> list)
     {
@@ -399,23 +529,23 @@ public class RandomLoop
         }
     }
 
-    private void verifyContents(Map<String, String> expected,
-                                JImmutableMap<String, String> map)
+    private <K, V> void verifyContents(Map<K, V> expected,
+                                       JImmutableMap<K, V> map)
     {
         System.out.printf("checking contents with size %d%n", map.size());
         if (map.size() != expected.size()) {
             throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), map.size()));
         }
-        for (JImmutableMap.Entry<String, String> entry : map) {
-            String mapValue = map.find(entry.getKey()).getValueOrNull();
-            String expectedValue = expected.get(entry.getKey());
+        for (JImmutableMap.Entry<K, V> entry : map) {
+            V mapValue = map.find(entry.getKey()).getValueOrNull();
+            V expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
                 throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
         }
-        for (Map.Entry<String, String> entry : expected.entrySet()) {
-            String mapValue = map.find(entry.getKey()).getValueOrNull();
-            String expectedValue = expected.get(entry.getKey());
+        for (Map.Entry<K, V> entry : expected.entrySet()) {
+            V mapValue = map.find(entry.getKey()).getValueOrNull();
+            V expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
                 throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
@@ -459,5 +589,60 @@ public class RandomLoop
             inp.close();
         }
         return tokens;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static class BadHash<T>
+    {
+        private final T value;
+
+        private BadHash(T value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return value.hashCode() >>> 8;
+        }
+
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+        @Override
+        public boolean equals(Object o)
+        {
+            return value.equals(((BadHash<T>)o).value);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static class ComparableBadHash<T extends Comparable<T>>
+            implements Comparable<ComparableBadHash<T>>
+    {
+        private T value;
+
+        private ComparableBadHash(T value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return value.hashCode() >>> 8;
+        }
+
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+        @Override
+        public boolean equals(Object o)
+        {
+            return value.equals(((ComparableBadHash<T>)o).value);
+        }
+
+        @Override
+        public int compareTo(ComparableBadHash<T> other)
+        {
+            return value.compareTo(other.value);
+        }
     }
 }
