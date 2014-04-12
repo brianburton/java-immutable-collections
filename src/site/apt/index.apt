@@ -3,7 +3,7 @@
     -----
     Brian Burton
     -----
-    2013-10-03
+    2014-04-12
     -----
 
 Overview
@@ -27,3 +27,87 @@ Resources
      * {{{https://sourceforge.net/projects/javimmutablecollections/}Project Website}}
 
      * {{{./apidocs/index.html}Javadocs}}
+
+Factory Methods
+
+	Internally JImmutable Collections uses integer tries and 2-3 trees for the collection implementations but it strives to hide that fact from its users. There is no reason to directly create objects of the implementation classes. Your code will be cleaner and more future proof if you always create new collections using the factory methods in the JImmutables class.
+
+	Static methods in JImmutables can be used to create new instances of each collection interface. For example:
+
+------------------------
+	import org.javimmutable.collections.util.JImmutables;
+
+	...
+
+	// create a new empty list
+	JImmutableList<String> es = JImmutables.list();
+
+	// create a new list containing all the same values as a java List
+	JImmutableList<String> copied = JImmutables.list(Arrays.asList("a", "b", "c"));
+------------------------
+
+	The second example shows how to create a new list with starting values copied from another source. Variations of the list() method are defined to copy values from a Java array, a Cursor, a Cursorable (any JImmutable collection), a Java Iterator, or a Java Collection. When copying values from another source the list() method preserves their original order.
+
+	Equivalent constructor methods exist for creating JImmutableStacks (stack()), JImmutableRandomAccessLists (ralist()), unsorted JImmutableMaps (map()), and sorted JImmutableMaps (sortedMap()). (see [Collections Overview])
+
+	Important note about stack() - when copying from another source the objects in the source will be added to the stack in the same order they appear in the source. Because of the nature of stacks that means that when you remove values from the stack or iterate over them you will encounter them in the opposite order.
+
+	The versions of map() and sortedMap() methods that accept a JImmutableMap to copy from will detect when you are copying from a compatible map and in that case will just return the source map itself. This might happen when you want to produce a sorted map from a map passed to you and don't know the type of the map you are copying.
+
+	The sortedMap() method can create maps that sort keys based on their natural order (for keys that implement Comparable) but it can also create maps that sort keys based on a Comparator provided by the caller. When providing your own Comparator class be extremely careful to ensure that your Comparator is immutable and repeatable. The map will share your Comparator across all child instances of the map. If your Comparator is mutable and is somehow modified that could easily break the map and cause undefined behavior. Similarly if your Comparator can be affected by any outside entity that would change its comparisons of keys over time that also could break any maps that use it. If you haven't already done so be sure to read the section on Comparator in the JDK's javadoc and also the advice on how to write a well behaved Comparator in Effective Java.
+
+Collections
+
+	javimmutable-collections contains a variety of fully immutable collections designed to suit different needs in an application. This page describes the various collections (as of version 1.5) and their general performance characteristics. For each collection the summary lists the JImmutables factory method used to create an instance, the general algorithmic complexity of the collection, and a description of the collection's uses and characteristics.
+
+	The complexity is expressed in big-oh notation which means "on the order of" or "within some constant multiple of" the value in parentheses. logX(n) means log to the base X of the number of elements in the collection. To give an idea of scale log32(100000) is 3.3 while log2(100000) is 16.6. "Within some constant factor" means that there will be fixed costs associated with the implementation so one algorithm with a given big-oh complexity might be 2-3 times faster than another with the same complexity.
+
+	Generally speaking ArrayList will be much faster than JImmutableList since it simply updates an array but for most algorithms the difference will not be significant to overall run time. JImmutableMaps are generally comparable in performance (i.e. within acceptable limits for most algorithms) to java.util.Maps. See the [Comparative Performance] page for an idea of how the immutable maps and arrays compare to java.util.Maps.
+
+	<Factory:> JImmutables.map()\
+	<Complexity:> O(log32(n))\
+	<Description:> A hash map using hashCode() and equals() methods of keys. Keys and values are stored in hash mapped array tries using linked lists or 2-3 trees for collision handling (two keys having same hash code). Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Intended as a replacement for java.util.HashMap. Cursors visit elements in an unspecified order.
+
+	<Factory:> JImmutables.sortedMap()\
+	<Complexity:> O(log2(n))\
+	<Description:> A tree map using a Comparator object to sort and compare keys. Keys and values are stored in 2-3 trees. Intended as a replacement for java.util.TreeMap. Cursors visit elements in sort order of keys as specified by the Comparator.
+
+	<Factory:> JImmutables.insertOrderMap()\
+	<Complexity:> O(2 * log32(n))\
+	<Description:> A hash map using hashCode() and equals() methods of keys. Keys and values are stored in hash mapped array tries using linked lists or 2-3 trees for collision handling (two keys having same hash code). A second integer trie is also used to govern cursor order. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a map() since it maintains two data structures internally. Intended as a replacement for java.util.LinkedHashMap. Cursors visit elements in the order they were originally inserted into the map.
+
+	<Factory:> JImmutables.stack()\
+	<Complexity:> O(1) inserts/deletes at head, O(n) searches\
+	<Description:> A singly linked linear list of elements maintained in reverse insertion order. Extremely fast inserts and deletes from the head but searches require looping through all elements to find a match. Does not support insertion or deletion inside the list. Useful as a stack or a fast temporary list of items where LIFO order is acceptable. Cursors visit elements in LIFO (last in first out) order.
+
+	<Factory:> JImmutables.list()\
+	<Complexity:> O(log32(n))\
+	<Description:> A "list" implemented internally as an integer mapped trie. Allows elements to be inserted or removed only at either end of the list. Allows elements to be replaced anywhere within the list. Intended as a replacement for java.util.List. Cursors visit elements in order by index.
+
+	<Factory:> JImmutables.ralist()\
+	<Complexity:> O(log2(n))\
+	<Description:> A "list" implemented internally as a 2-3 tree. Allows elements to be inserted, removed, and updated anywhere within the list. Intended as a replacement for java.util.List in algorithms that require insertion or removal from the middle of the list. Otherwise use list(). Cursors visit elements in order by index.
+
+	<Factory:> JImmutables.set()\
+	<Complexity:> O(log32(n))\
+	<Description:> A set implemented internally using a hash map. Keys are stored in hash mapped array tries using hashCode() and equals() methods to compare keys. Intended as a replacement for HashSet. Cursors visit elements in an unspecified order.
+
+	<Factory:> JImmutables.sortedSet()\
+	<Complexity:> O(log2(n))\
+	<Description:> A set implemented internally using a 2-3 tree. Keys are compared using a Comparator. Intended as a replacement for TreeSet. Cursors visit elements in sort order of keys as specified by the Comparator.
+
+	<Factory:> JImmutables.insertOrderSet()\
+	<Complexity:> O(2 * log32(n))\
+	<Description:> A set implemented internally using an integer trie for sort order and a hash mapped trie for searching. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a set() since it maintains two data structures internally. Intended as a replacement for java.util.LinkedHashSet. Cursors visit elements in the order they were originally inserted into the map.
+
+	<Factory:> JImmutables.listMap()\
+	<Complexity:> O(log32(n))\
+	<Description:> A hash map mapping keys to JImmutableLists. Performance similar to JImmutables.map(). Cursors visit elements in an unspecified order.
+
+	<Factory:> JImmutables.sortedListMap()\
+	<Complexity:> O(log2(n))\
+	<Description:> A sorted map mapping keys to JImmutableLists. Performance similar to JImmutables.sortedMap(). Cursors visit elements in sort order of keys as specified by the Comparator.
+
+	<Factory:> JImmutables.array()\
+	<Complexity:> O(log32(n))\
+	<Description:> A sparse array allowing any integer (positive or negative) as index. Indexes do not need to be consecutive and the array allocates memory only for indexes actually inserted into the array. Implemented internally as an integer trie with 32-way branching. Cursors visit elements in order by index with negative indexes visited before positive indexes. No direct java.util analog but similar to a TreeMap but with better performance.
