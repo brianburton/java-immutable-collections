@@ -65,7 +65,7 @@ public class Functions
      */
     public static <T, R> R foldLeft(R accumulator,
                                     Cursor<? extends T> cursor,
-                                    Func2<R, T, R> func)
+                                    Func2<R, ? super T, R> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             accumulator = func.apply(accumulator, cursor.getValue());
@@ -87,7 +87,7 @@ public class Functions
      */
     public static <T, R> R foldRight(R accumulator,
                                      Cursor<? extends T> cursor,
-                                     Func2<R, T, R> func)
+                                     Func2<R, ? super T, R> func)
     {
         return foldLeft(accumulator, reverse(cursor), func);
     }
@@ -118,7 +118,7 @@ public class Functions
     @SuppressWarnings("unchecked")
     public static <T, R, A extends Insertable<R>> A collectAll(Cursor<? extends T> cursor,
                                                                A list,
-                                                               Func1<T, R> func)
+                                                               Func1<? super T, R> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             list = (A)list.insert(func.apply(cursor.getValue()));
@@ -139,7 +139,7 @@ public class Functions
     @SuppressWarnings("unchecked")
     public static <T, R, A extends Insertable<R>> A collectSome(Cursor<? extends T> cursor,
                                                                 A list,
-                                                                Func1<T, Holder<R>> func)
+                                                                Func1<? super T, Holder<R>> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             Holder<R> mappedValue = func.apply(cursor.getValue());
@@ -161,7 +161,7 @@ public class Functions
      * @return
      */
     public static <T> Holder<T> find(Cursor<? extends T> cursor,
-                                     Func1<T, Boolean> func)
+                                     Func1<? super T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
@@ -184,7 +184,7 @@ public class Functions
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A reject(Cursor<? extends T> cursor,
                                                         A list,
-                                                        Func1<T, Boolean> func)
+                                                        Func1<? super T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (!func.apply(cursor.getValue())) {
@@ -206,7 +206,7 @@ public class Functions
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A select(Cursor<? extends T> cursor,
                                                         A list,
-                                                        Func1<T, Boolean> func)
+                                                        Func1<? super T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
