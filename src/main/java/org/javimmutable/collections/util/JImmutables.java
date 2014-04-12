@@ -68,115 +68,359 @@ import java.util.Map;
  */
 public final class JImmutables
 {
+    /**
+     * Produces an empty JImmutableStack.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableStack<T> stack()
     {
         return JImmutableLinkedStack.of();
     }
 
-    public static <T> JImmutableStack<T> stack(T... values)
+    /**
+     * Produces a JImmutableStack containing all of the specified values.  Note that values
+     * are added to the stack in the order they appear in source which means they will be
+     * retrieved in the opposite order from the stack (i.e. the last value in source will
+     * be the first value retrieved from the stack).
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableStack<T> stack(T... source)
     {
-        return Functions.insertAll(JImmutableLinkedStack.<T>of(), values);
+        return Functions.insertAll(JImmutableLinkedStack.<T>of(), source);
     }
 
-    public static <T> JImmutableStack<T> stack(Cursor<T> cursor)
+    /**
+     * Produces a JImmutableStack containing all of the values in source.  Note that values
+     * are added to the stack in the order they appear in source which means they will be
+     * retrieved in the opposite order from the stack (i.e. the last value in source will
+     * be the first value retrieved from the stack).
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableStack<T> stack(Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableLinkedStack.<T>of(), cursor);
+        return Functions.insertAll(JImmutableLinkedStack.<T>of(), source);
     }
 
-    public static <T> JImmutableStack<T> stack(Cursorable<T> cursorable)
+    /**
+     * Produces a JImmutableStack containing all of the values in source.  Note that values
+     * are added to the stack in the order they appear in source which means they will be
+     * retrieved in the opposite order from the stack (i.e. the last value in source will
+     * be the first value retrieved from the stack).
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableStack<T> stack(Cursorable<T> source)
     {
-        return Functions.insertAll(JImmutableLinkedStack.<T>of(), cursorable.cursor());
+        return Functions.insertAll(JImmutableLinkedStack.<T>of(), source.cursor());
     }
 
-    public static <T> JImmutableStack<T> stack(Iterator<T> iterator)
+    /**
+     * Produces a JImmutableStack containing all of the values in source.  Note that values
+     * are added to the stack in the order they appear in source which means they will be
+     * retrieved in the opposite order from the stack (i.e. the last value in source will
+     * be the first value retrieved from the stack).
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableStack<T> stack(Iterator<T> source)
     {
-        return Functions.insertAll(JImmutableLinkedStack.<T>of(), iterator);
+        return Functions.insertAll(JImmutableLinkedStack.<T>of(), source);
     }
 
-    public static <T> JImmutableStack<T> stack(Collection<T> collection)
+    /**
+     * Produces a JImmutableStack containing all of the values in source.  Note that values
+     * are added to the stack in the order they appear in source which means they will be
+     * retrieved in the opposite order from the stack (i.e. the last value in source will
+     * be the first value retrieved from the stack).
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableStack<T> stack(Collection<T> source)
     {
-        return Functions.insertAll(JImmutableLinkedStack.<T>of(), collection.iterator());
+        return Functions.insertAll(JImmutableLinkedStack.<T>of(), source.iterator());
     }
 
+    /**
+     * Produces an empty JImmutableList built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableList<T> list()
     {
         return JImmutableArrayList.of();
     }
 
+    /**
+     * Produces a JImmutableList containing all of the specified values built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableList<T> list(T... values)
     {
         return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
-    public static <T> JImmutableList<T> list(Cursor<T> cursor)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), cursor);
+        return Functions.insertAll(JImmutableArrayList.<T>of(), source);
     }
 
-    public static <T> JImmutableList<T> list(Indexed<T> cursorable)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(Indexed<T> source)
     {
-        return list(cursorable, 0, cursorable.size());
+        return list(source, 0, source.size());
     }
 
-    public static <T> JImmutableList<T> list(Indexed<T> cursorable,
+    /**
+     * Produces a JImmutableList containing all of the values in the specified range from source
+     * built atop a sparse array.  The values copied from source are those whose index are in the
+     * range offset to (limit - 1).
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(Indexed<T> source,
                                              int offset,
                                              int limit)
     {
-        return JImmutableArrayList.of(cursorable, offset, limit);
+        return JImmutableArrayList.of(source, offset, limit);
     }
 
-    public static <T> JImmutableList<T> list(JImmutableSet<T> cursorable)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(JImmutableSet<T> source)
     {
-        return list(cursorable.cursor());
+        return list(source.cursor());
     }
 
-    public static <T> JImmutableList<T> list(Iterator<T> iterator)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(JImmutableArray<T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), iterator);
+        return list(source.valuesCursor());
     }
 
-    public static <T> JImmutableList<T> list(List<T> collection)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(Iterator<T> source)
     {
-        return JImmutableArrayList.of(IndexedList.retained(collection));
+        return Functions.insertAll(JImmutableArrayList.<T>of(), source);
     }
 
-    public static <T> JImmutableList<T> list(Collection<T> collection)
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(List<T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), collection.iterator());
+        return JImmutableArrayList.of(IndexedList.retained(source));
     }
 
+    /**
+     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
+     * <p/>
+     * Implementation note: Using a sparse array internally provides excellent performance
+     * but also imposes a small limitation.  Making any combination of calls to insert(),
+     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
+     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
+     * If your program might run into this limitation (wow!) use ralist() instead since
+     * tree based lists do not have this limitation.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableList<T> list(Collection<T> source)
+    {
+        return Functions.insertAll(JImmutableArrayList.<T>of(), source.iterator());
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableRandomAccessList<T> ralist()
     {
         return JImmutableTreeList.of();
     }
 
-    public static <T> JImmutableRandomAccessList ralist(Cursor<T> cursor)
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList ralist(T... source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), cursor);
-    }
-
-    public static <T> JImmutableRandomAccessList ralist(T... values)
-    {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), values);
-    }
-
-    public static <T> JImmutableRandomAccessList ralist(Cursorable<T> cursorable)
-    {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), cursorable.cursor());
-    }
-
-    public static <T> JImmutableRandomAccessList<T> ralist(Iterator<T> iterator)
-    {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), iterator);
-    }
-
-    public static <T> JImmutableRandomAccessList<T> ralist(Collection<T> collection)
-    {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), collection.iterator());
+        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
     }
 
     /**
-     * Constructs an empty unsorted map.  The map will adopt a hash code collision strategy based on
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList ralist(Cursor<T> source)
+    {
+        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList ralist(Cursorable<T> source)
+    {
+        return Functions.insertAll(JImmutableTreeList.<T>of(), source.cursor());
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList<T> ralist(Iterator<T> source)
+    {
+        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList<T> ralist(Collection<T> source)
+    {
+        return Functions.insertAll(JImmutableTreeList.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an empty unsorted map.
+     * <p/>
+     * Implementation note: The map will adopt a hash code collision strategy based on
      * the first key assigned to the map.  All keys in the map must either implement Comparable (and
      * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -195,7 +439,7 @@ public final class JImmutables
      * Constructs an unsorted map.
      * All key/value pairs from source are copied into the newly created map.
      * <p/>
-     * The map will adopt a hash code collision strategy based on
+     * Implementation note: The map will adopt a hash code collision strategy based on
      * the first key in source.  All keys in the map must either implement Comparable (and
      * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -216,7 +460,7 @@ public final class JImmutables
      * If source is already an unsorted map it is returned directly, otherwise a new map
      * is created and all key/value pairs from source are copied into the newly created map.
      * <p/>
-     * The map will adopt a hash code collision strategy based on
+     * Implementation note: The map will adopt a hash code collision strategy based on
      * the first key in source.  All keys in the map must either implement Comparable (and
      * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -395,7 +639,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value assigned to the set.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -412,7 +656,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set containing the values from source.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value in source.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -429,7 +673,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set containing the values from source.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value in source.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -446,7 +690,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set containing the values from source.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value in source.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -463,7 +707,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set containing the values from source.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value in source.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -480,7 +724,7 @@ public final class JImmutables
     /**
      * Constructs an unsorted set containing the values from source.
      * <p/>
-     * The set will adopt a hash code collision strategy based on
+     * Implementation note: The set will adopt a hash code collision strategy based on
      * the first value in source.  All values in the map must either implement Comparable (and
      * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
      * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
@@ -494,99 +738,205 @@ public final class JImmutables
         return Functions.insertAll(JImmutableHashSet.<T>of(), source.iterator());
     }
 
+    /**
+     * Constructs an empty set that sorts values in their natural sort order (using ComparableComparator).
+     */
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet()
     {
         return JImmutableTreeSet.of();
     }
 
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(T... values)
+    /**
+     * Constructs a set containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(T... source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(), values);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(), source);
     }
 
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursor<T> cursor)
+    /**
+     * Constructs a set containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(), cursor);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(), source);
     }
 
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursorable<T> cursorable)
+    /**
+     * Constructs a set containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursorable<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(), cursorable.cursor());
+        return Functions.insertAll(JImmutableTreeSet.<T>of(), source.cursor());
     }
 
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Iterator<T> iterator)
+    /**
+     * Constructs a set containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Iterator<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(), iterator);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(), source);
     }
 
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Collection<T> collection)
+    /**
+     * Constructs a set containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Collection<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(), collection.iterator());
+        return Functions.insertAll(JImmutableTreeSet.<T>of(), source.iterator());
     }
 
+    /**
+     * Constructs an empty set that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator)
     {
         return JImmutableTreeSet.of(comparator);
     }
 
+    /**
+     * Constructs a set containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Cursor<T> cursor)
+                                                 Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), cursor);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
     }
 
+    /**
+     * Constructs a set containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 T... values)
+                                                 T... source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), values);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
     }
 
+    /**
+     * Constructs a set containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Cursorable<T> cursorable)
+                                                 Cursorable<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), cursorable.cursor());
+        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.cursor());
     }
 
+    /**
+     * Constructs a set containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Iterator<T> iterator)
+                                                 Iterator<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), iterator);
+        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
     }
 
+    /**
+     * Constructs a set containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Collection<T> collection)
+                                                 Collection<T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), collection.iterator());
+        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.iterator());
     }
 
+    /**
+     * Constructs an empty set that sorts values based on the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
     public static <T> JImmutableSet<T> insertOrderSet()
     {
         return JImmutableInsertOrderSet.of();
     }
 
-    public static <T> JImmutableSet<T> insertOrderSet(Cursor<T> cursor)
+    /**
+     * Constructs a set containing all of the values in source that sorts values based on
+     * the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> insertOrderSet(Cursor<T> source)
     {
-        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), cursor);
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> insertOrderSet(T... values)
+    /**
+     * Constructs a set containing all of the values in source that sorts values based on
+     * the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> insertOrderSet(T... source)
     {
-        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), values);
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> insertOrderSet(Cursorable<T> cursorable)
+    /**
+     * Constructs a set containing all of the values in source that sorts values based on
+     * the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> insertOrderSet(Cursorable<T> source)
     {
-        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), cursorable.cursor());
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source.cursor());
     }
 
-    public static <T> JImmutableSet<T> insertOrderSet(Iterator<T> iterator)
+    /**
+     * Constructs a set containing all of the values in source that sorts values based on
+     * the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> insertOrderSet(Iterator<T> source)
     {
-        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), iterator);
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source);
     }
 
-    public static <T> JImmutableSet<T> insertOrderSet(Collection<T> collection)
+    /**
+     * Constructs a set containing all of the values in source that sorts values based on
+     * the order they were originally added to the set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableSet<T> insertOrderSet(Collection<T> source)
     {
-        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), collection.iterator());
+        return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source.iterator());
     }
 
     /**
@@ -664,56 +1014,61 @@ public final class JImmutables
     }
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
-     * Copies all entries into the array using each key as an index for storing the corresponding value.
+     * Creates a sparse array containing all of the values from source that supports any integer
+     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
+     * of any size between indexes. Copies all entries into the array using each key as an index
+     * for storing the corresponding value.
      *
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(Cursor<JImmutableMap.Entry<Integer, T>> cursor)
+    public static <T> JImmutableArray<T> array(Cursor<JImmutableMap.Entry<Integer, T>> source)
     {
-        return Functions.insertAll(TrieArray.<T>of(), cursor);
+        return Functions.insertAll(TrieArray.<T>of(), source);
     }
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
-     * Copies all values into the array starting at index zero.
+     * Creates a sparse array containing all of the values from source that supports any integer
+     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
+     * of any size between indexes. Copies all entries into the array using each key as an index
+     * for storing the corresponding value.
      *
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(Indexed<T> cursorable)
+    public static <T> JImmutableArray<T> array(Indexed<T> source)
     {
-        return array(cursorable, 0, cursorable.size());
+        return array(source, 0, source.size());
     }
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
-     * Copies all values into the array starting at index zero.
+     * Creates a sparse array containing all of the values in the specified range from source that
+     * supports any integer (positive or negative) as an index.  Indexes do not need to be
+     * consecutive there can be gaps of any size between indexes. Copies all entries into the
+     * array using each key as an index for storing the corresponding value.  The values copied
+     * from source are those whose index are in the range offset to (limit - 1).
      *
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(Indexed<T> cursorable,
+    public static <T> JImmutableArray<T> array(Indexed<T> source,
                                                int offset,
                                                int limit)
     {
-        return TrieArray.of(cursorable, offset, limit);
+        return TrieArray.of(source, offset, limit);
     }
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
-     * Copies all values into the array starting at index zero.
+     * Creates a sparse array containing all of the values from source that supports any integer
+     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
+     * of any size between indexes. Copies all entries into the array using each key as an index
+     * for storing the corresponding value.
      *
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(List<T> collection)
+    public static <T> JImmutableArray<T> array(List<T> source)
     {
-        return TrieArray.of(IndexedList.retained(collection), 0, collection.size());
+        return TrieArray.of(IndexedList.retained(source), 0, source.size());
     }
 }
