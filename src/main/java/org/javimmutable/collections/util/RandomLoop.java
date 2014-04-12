@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.util;
 
+import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
@@ -94,6 +95,7 @@ public class RandomLoop
             testMaps(factory, tokens, random);
             testBadHashMap(tokens, random);
             testComparableBadHashMap(tokens, random);
+            testArray(tokens, random);
         }
     }
 
@@ -357,6 +359,75 @@ public class RandomLoop
         System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
     }
 
+    private void testArray(JImmutableList<String> tokens,
+                           Random random)
+            throws Exception
+    {
+        final int tokenCount = 1 + random.nextInt(100000);
+        final List<Integer> keys = new ArrayList<Integer>();
+        final Map<Integer, String> expected = new HashMap<Integer, String>();
+        JImmutableArray<String> map = JImmutables.array();
+        JImmutableRandomAccessList<Integer> pkeys = JImmutables.ralist();
+        JImmutableRandomAccessList<String> pvalues = JImmutables.ralist();
+        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
+        for (int loops = 1; loops <= 6; ++loops) {
+            System.out.printf("growing %d%n", map.size());
+            for (int i = 0; i < tokenCount / 3; ++i) {
+                int key = random.nextInt();
+                String value = makeKey(tokens, random);
+                keys.add(key);
+                pkeys = pkeys.insert(key);
+                pvalues = pvalues.insert(value);
+                expected.put(key, value);
+                map = map.assign(key, value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("updating %d%n", map.size());
+            for (int i = 0; i < map.size(); ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                int key = pkeys.get(keyIndex);
+                int valueIndex = random.nextInt(keys.size());
+                String value = pvalues.get(valueIndex);
+                expected.put(key, value);
+                pvalues = pvalues.assign(keyIndex, value);
+                map = map.assign(key, value);
+            }
+            verifyContents(expected, map);
+            System.out.printf("shrinking %d%n", map.size());
+            for (int i = 0; i < tokenCount / 6; ++i) {
+                int keyIndex = random.nextInt(keys.size());
+                int key = pkeys.get(keyIndex);
+                expected.remove(key);
+                map = map.delete(key);
+                keys.remove(keyIndex);
+                pkeys = pkeys.delete(keyIndex);
+                pvalues = pvalues.delete(keyIndex);
+            }
+            verifyContents(expected, map);
+        }
+        if (keys.size() != pkeys.size()) {
+            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
+        }
+        System.out.printf("comparing %d keys%n", pkeys.size());
+        for (int i = 0; i < pkeys.size(); ++i) {
+            int key = keys.get(i);
+            int pkey = pkeys.get(i);
+            if (key != pkey) {
+                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
+            }
+        }
+        System.out.printf("cleanup %d%n", map.size());
+        for (Integer key : keys) {
+            expected.remove(key);
+            map = map.delete(key);
+        }
+        if (map.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
+        }
+        verifyContents(expected, map);
+        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
+    }
+
     private void testBadHashMap(JImmutableList<String> tokens,
                                 Random random)
             throws Exception
@@ -544,6 +615,29 @@ public class RandomLoop
             }
         }
         for (Map.Entry<K, V> entry : expected.entrySet()) {
+            V mapValue = map.find(entry.getKey()).getValueOrNull();
+            V expectedValue = expected.get(entry.getKey());
+            if (!mapValue.equals(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
+            }
+        }
+    }
+
+    private <V> void verifyContents(Map<Integer, V> expected,
+                                    JImmutableArray<V> map)
+    {
+        System.out.printf("checking contents with size %d%n", map.size());
+        if (map.size() != expected.size()) {
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), map.size()));
+        }
+        for (JImmutableMap.Entry<Integer, V> entry : map) {
+            V mapValue = map.find(entry.getKey()).getValueOrNull();
+            V expectedValue = expected.get(entry.getKey());
+            if (!mapValue.equals(expectedValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
+            }
+        }
+        for (Map.Entry<Integer, V> entry : expected.entrySet()) {
             V mapValue = map.find(entry.getKey()).getValueOrNull();
             V expectedValue = expected.get(entry.getKey());
             if (!mapValue.equals(expectedValue)) {
