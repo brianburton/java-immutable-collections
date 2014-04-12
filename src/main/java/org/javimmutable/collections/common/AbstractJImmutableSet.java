@@ -116,7 +116,7 @@ public abstract class AbstractJImmutableSet<T>
         JImmutableMap<T, Boolean> newMap = emptyMap();
         for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             T value = cursor.getValue();
-            if (map.find(value).isFilled()) {
+            if (map.getValueOr(value, Boolean.FALSE)) {
                 newMap = newMap.assign(value, Boolean.TRUE);
             }
         }
@@ -126,7 +126,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean contains(T value)
     {
-        return value != null && map.find(value).isFilled();
+        return value != null && map.getValueOr(value, Boolean.FALSE);
     }
 
     @Override
