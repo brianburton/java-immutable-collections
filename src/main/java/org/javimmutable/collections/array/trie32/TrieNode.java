@@ -134,7 +134,7 @@ public abstract class TrieNode<T>
     }
 
     public static <T> TrieNode<T> fromSource(int index,
-                                             Indexed<T> source,
+                                             Indexed<? extends T> source,
                                              int offset,
                                              int limit)
     {

@@ -72,7 +72,7 @@ public class JImmutableArrayList<T>
         return (JImmutableArrayList<T>)EMPTY;
     }
 
-    public static <T> JImmutableArrayList<T> of(Indexed<T> source,
+    public static <T> JImmutableArrayList<T> of(Indexed<? extends T> source,
                                                 int offset,
                                                 int limit)
     {

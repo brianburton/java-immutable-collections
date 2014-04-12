@@ -99,7 +99,7 @@ public class MultiBranchTrieNode<T>
 
     static <T> MultiBranchTrieNode<T> forSource(int index,
                                                 int size,
-                                                Indexed<T> source,
+                                                Indexed<? extends T> source,
                                                 int offset)
     {
         final TrieNode<T>[] entries = allocate(size);

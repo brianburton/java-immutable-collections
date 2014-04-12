@@ -58,7 +58,7 @@ public class FullBranchTrieNode<T>
     }
 
     static <T> FullBranchTrieNode<T> fromSource(int index,
-                                                Indexed<T> source,
+                                                Indexed<? extends T> source,
                                                 int offset)
     {
         assert source.size() - offset >= 32;

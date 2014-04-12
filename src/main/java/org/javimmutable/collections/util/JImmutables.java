@@ -102,7 +102,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableStack<T> stack(Cursor<T> source)
+    public static <T> JImmutableStack<T> stack(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableLinkedStack.<T>of(), source);
     }
@@ -116,7 +116,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableStack<T> stack(Cursorable<T> source)
+    public static <T> JImmutableStack<T> stack(Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableLinkedStack.<T>of(), source.cursor());
     }
@@ -130,7 +130,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableStack<T> stack(Iterator<T> source)
+    public static <T> JImmutableStack<T> stack(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableLinkedStack.<T>of(), source);
     }
@@ -144,7 +144,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableStack<T> stack(Collection<T> source)
+    public static <T> JImmutableStack<T> stack(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableLinkedStack.<T>of(), source.iterator());
     }
@@ -198,7 +198,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(Cursor<T> source)
+    public static <T> JImmutableList<T> list(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableArrayList.<T>of(), source);
     }
@@ -216,7 +216,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(Indexed<T> source)
+    public static <T> JImmutableList<T> list(Indexed<? extends T> source)
     {
         return list(source, 0, source.size());
     }
@@ -236,7 +236,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(Indexed<T> source,
+    public static <T> JImmutableList<T> list(Indexed<? extends T> source,
                                              int offset,
                                              int limit)
     {
@@ -256,7 +256,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(JImmutableSet<T> source)
+    public static <T> JImmutableList<T> list(JImmutableSet<? extends T> source)
     {
         return list(source.cursor());
     }
@@ -274,7 +274,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(JImmutableArray<T> source)
+    public static <T> JImmutableList<T> list(JImmutableArray<? extends T> source)
     {
         return list(source.valuesCursor());
     }
@@ -292,7 +292,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(Iterator<T> source)
+    public static <T> JImmutableList<T> list(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableArrayList.<T>of(), source);
     }
@@ -310,7 +310,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(List<T> source)
+    public static <T> JImmutableList<T> list(List<? extends T> source)
     {
         return JImmutableArrayList.of(IndexedList.retained(source));
     }
@@ -328,7 +328,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableList<T> list(Collection<T> source)
+    public static <T> JImmutableList<T> list(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableArrayList.<T>of(), source.iterator());
     }
@@ -356,7 +356,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableRandomAccessList ralist(T... source)
+    public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
         return Functions.insertAll(JImmutableTreeList.<T>of(), source);
     }
@@ -370,7 +370,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableRandomAccessList ralist(Cursor<T> source)
+    public static <T> JImmutableRandomAccessList<T> ralist(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeList.<T>of(), source);
     }
@@ -384,7 +384,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableRandomAccessList ralist(Cursorable<T> source)
+    public static <T> JImmutableRandomAccessList<T> ralist(Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeList.<T>of(), source.cursor());
     }
@@ -398,7 +398,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableRandomAccessList<T> ralist(Iterator<T> source)
+    public static <T> JImmutableRandomAccessList<T> ralist(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeList.<T>of(), source);
     }
@@ -412,7 +412,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableRandomAccessList<T> ralist(Collection<T> source)
+    public static <T> JImmutableRandomAccessList<T> ralist(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeList.<T>of(), source.iterator());
     }
@@ -665,7 +665,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> set(Cursor<T> source)
+    public static <T> JImmutableSet<T> set(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableHashSet.<T>of(), source);
     }
@@ -699,7 +699,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> set(Cursorable<T> source)
+    public static <T> JImmutableSet<T> set(Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableHashSet.<T>of(), source.cursor());
     }
@@ -716,7 +716,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> set(Iterator<T> source)
+    public static <T> JImmutableSet<T> set(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableHashSet.<T>of(), source);
     }
@@ -733,7 +733,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> set(Collection<T> source)
+    public static <T> JImmutableSet<T> set(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableHashSet.<T>of(), source.iterator());
     }
@@ -759,7 +759,7 @@ public final class JImmutables
      * Constructs a set containing all of the values in source that sorts values in their
      * natural sort order (using ComparableComparator).
      */
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursor<T> source)
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(), source);
     }
@@ -768,7 +768,7 @@ public final class JImmutables
      * Constructs a set containing all of the values in source that sorts values in their
      * natural sort order (using ComparableComparator).
      */
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursorable<T> source)
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(), source.cursor());
     }
@@ -777,7 +777,7 @@ public final class JImmutables
      * Constructs a set containing all of the values in source that sorts values in their
      * natural sort order (using ComparableComparator).
      */
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Iterator<T> source)
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(), source);
     }
@@ -786,7 +786,7 @@ public final class JImmutables
      * Constructs a set containing all of the values in source that sorts values in their
      * natural sort order (using ComparableComparator).
      */
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Collection<T> source)
+    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(), source.iterator());
     }
@@ -811,7 +811,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Cursor<T> source)
+                                                 Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
     }
@@ -837,7 +837,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Cursorable<T> source)
+                                                 Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.cursor());
     }
@@ -850,7 +850,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Iterator<T> source)
+                                                 Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
     }
@@ -863,7 +863,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
-                                                 Collection<T> source)
+                                                 Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.iterator());
     }
@@ -886,7 +886,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> insertOrderSet(Cursor<T> source)
+    public static <T> JImmutableSet<T> insertOrderSet(Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source);
     }
@@ -910,7 +910,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> insertOrderSet(Cursorable<T> source)
+    public static <T> JImmutableSet<T> insertOrderSet(Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source.cursor());
     }
@@ -922,7 +922,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> insertOrderSet(Iterator<T> source)
+    public static <T> JImmutableSet<T> insertOrderSet(Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source);
     }
@@ -934,7 +934,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableSet<T> insertOrderSet(Collection<T> source)
+    public static <T> JImmutableSet<T> insertOrderSet(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source.iterator());
     }
@@ -1036,7 +1036,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(Indexed<T> source)
+    public static <T> JImmutableArray<T> array(Indexed<? extends T> source)
     {
         return array(source, 0, source.size());
     }
@@ -1051,7 +1051,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(Indexed<T> source,
+    public static <T> JImmutableArray<T> array(Indexed<? extends T> source,
                                                int offset,
                                                int limit)
     {
@@ -1067,7 +1067,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(List<T> source)
+    public static <T> JImmutableArray<T> array(List<? extends T> source)
     {
         return TrieArray.of(IndexedList.retained(source), 0, source.size());
     }

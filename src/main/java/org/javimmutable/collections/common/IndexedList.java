@@ -43,9 +43,9 @@ import java.util.List;
 public class IndexedList<T>
         implements Indexed<T>
 {
-    private final List<T> values;
+    private final List<? extends T> values;
 
-    private IndexedList(List<T> values)
+    private IndexedList(List<? extends T> values)
     {
         this.values = values;
     }
@@ -59,7 +59,7 @@ public class IndexedList<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedList<T> copied(List<T> values)
+    public static <T> IndexedList<T> copied(List<? extends T> values)
     {
         return new IndexedList<T>(new ArrayList<T>(values));
     }
@@ -74,7 +74,7 @@ public class IndexedList<T>
      * @param <T>
      * @return
      */
-    public static <T> IndexedList<T> retained(List<T> values)
+    public static <T> IndexedList<T> retained(List<? extends T> values)
     {
         return new IndexedList<T>(values);
     }

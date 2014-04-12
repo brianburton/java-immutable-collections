@@ -66,7 +66,7 @@ public class TrieArray<T>
         return (TrieArray<T>)EMPTY;
     }
 
-    public static <T> JImmutableArray<T> of(Indexed<T> source,
+    public static <T> JImmutableArray<T> of(Indexed<? extends T> source,
                                             int offset,
                                             int limit)
     {
