@@ -107,6 +107,9 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insert(T value)
     {
+        if (next == Integer.MAX_VALUE) {
+            throw new IndexOutOfBoundsException();
+        }
         final int index = next;
         return new JImmutableArrayList<T>(values.assign(index, value), first, index + 1);
     }
@@ -114,6 +117,9 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertFirst(T value)
     {
+        if (first == Integer.MIN_VALUE) {
+            throw new IndexOutOfBoundsException();
+        }
         final int index = first - 1;
         return new JImmutableArrayList<T>(values.assign(index, value), index, next);
     }
