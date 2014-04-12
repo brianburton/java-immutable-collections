@@ -64,7 +64,7 @@ public class Functions
      * @return
      */
     public static <T, R> R foldLeft(R accumulator,
-                                    Cursor<T> cursor,
+                                    Cursor<? extends T> cursor,
                                     Func2<R, T, R> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -86,7 +86,7 @@ public class Functions
      * @return
      */
     public static <T, R> R foldRight(R accumulator,
-                                     Cursor<T> cursor,
+                                     Cursor<? extends T> cursor,
                                      Func2<R, T, R> func)
     {
         return foldLeft(accumulator, reverse(cursor), func);
@@ -100,7 +100,7 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T> Cursor<T> reverse(Cursor<T> cursor)
+    public static <T> Cursor<T> reverse(Cursor<? extends T> cursor)
     {
         return insertAll(JImmutableLinkedStack.<T>of(), cursor).cursor();
     }
@@ -116,7 +116,7 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R>> A collectAll(Cursor<T> cursor,
+    public static <T, R, A extends Insertable<R>> A collectAll(Cursor<? extends T> cursor,
                                                                A list,
                                                                Func1<T, R> func)
     {
@@ -137,7 +137,7 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R>> A collectSome(Cursor<T> cursor,
+    public static <T, R, A extends Insertable<R>> A collectSome(Cursor<? extends T> cursor,
                                                                 A list,
                                                                 Func1<T, Holder<R>> func)
     {
@@ -160,7 +160,7 @@ public class Functions
      * @param <T>
      * @return
      */
-    public static <T> Holder<T> find(Cursor<T> cursor,
+    public static <T> Holder<T> find(Cursor<? extends T> cursor,
                                      Func1<T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -182,7 +182,7 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A reject(Cursor<T> cursor,
+    public static <T, A extends Insertable<T>> A reject(Cursor<? extends T> cursor,
                                                         A list,
                                                         Func1<T, Boolean> func)
     {
@@ -204,7 +204,7 @@ public class Functions
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A select(Cursor<T> cursor,
+    public static <T, A extends Insertable<T>> A select(Cursor<? extends T> cursor,
                                                         A list,
                                                         Func1<T, Boolean> func)
     {
@@ -225,7 +225,7 @@ public class Functions
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A insertAll(A addable,
-                                                           Iterator<T> iterator)
+                                                           Iterator<? extends T> iterator)
     {
         while (iterator.hasNext()) {
             addable = (A)addable.insert(iterator.next());
@@ -241,7 +241,7 @@ public class Functions
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A insertAll(A addable,
-                                                           Cursor<T> cursor)
+                                                           Cursor<? extends T> cursor)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             addable = (A)addable.insert(cursor.getValue());
