@@ -366,7 +366,7 @@ public class RandomLoop
         final Map<BadHash<String>, String> expected = new HashMap<BadHash<String>, String>();
         JImmutableMap<BadHash<String>, String> map = JImmutables.map();
         JImmutableRandomAccessList<BadHash<String>> pkeys = JImmutables.ralist();
-        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
+        System.out.printf("starting %s BadHash test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
@@ -430,7 +430,7 @@ public class RandomLoop
         final Map<ComparableBadHash<String>, String> expected = new HashMap<ComparableBadHash<String>, String>();
         JImmutableMap<ComparableBadHash<String>, String> map = JImmutables.map();
         JImmutableRandomAccessList<ComparableBadHash<String>> pkeys = JImmutables.ralist();
-        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
+        System.out.printf("starting %s ComparableBadHash test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
