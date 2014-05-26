@@ -244,6 +244,31 @@ public class TrieArrayTest
         }
     }
 
+    public void testBuilder()
+    {
+        List<Integer> source = new ArrayList<Integer>();
+        for (int length = 1; length <= 1024; ++length) {
+            source.add(length);
+            TrieArray.Builder<Integer> builder = TrieArray.builder();
+            builder.add(source);
+            JImmutableArray<Integer> array = builder.build();
+            JImmutableArray<Integer> stdarray = TrieArray.of(IndexedList.retained(source), 0, source.size());
+            assertEquals(array.getMap(), stdarray.getMap());
+            assertEquals(length, array.size());
+            for (int i = 0; i < source.size(); ++i) {
+                assertEquals(source.get(i), array.get(i));
+            }
+        }
+        for (int length = 1025; length <= 10000; ++length) {
+            source.add(length);
+            JImmutableArray<Integer> array = TrieArray.<Integer>builder().add(source).build();
+            assertEquals(length, array.size());
+            for (int i = 0; i < source.size(); ++i) {
+                assertEquals(source.get(i), array.get(i));
+            }
+        }
+    }
+
     static List<Integer> createBranchIndexes()
     {
         List<Integer> answer = new ArrayList<Integer>();
