@@ -64,15 +64,41 @@ public class TrieArray<T>
         this.size = size;
     }
 
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> TrieArray<T> of()
     {
         return (TrieArray<T>)EMPTY;
     }
 
+    /**
+     * Efficiently constructs a TrieArray containing the objects from source (in the specified range).
+     * In the constructed TrieArray objects will have array indexes starting at 0 (i.e. indexes
+     * from the source are not carried over) so if offset is 10 then source.get(10) will map to
+     * array.get(0).
+     *
+     * @param source
+     * @param offset
+     * @param limit
+     * @param <T>
+     * @return
+     * @deprecated use builder() instead
+     */
     public static <T> JImmutableArray<T> of(Indexed<? extends T> source,
                                             int offset,
                                             int limit)
+    {
+        return TrieArray.<T>builder().add(source, offset, limit).build();
+    }
+
+    // made obsolete by Builder but retained for use in unit test
+    static <T> JImmutableArray<T> oldof(Indexed<? extends T> source,
+                                        int offset,
+                                        int limit)
     {
         final int size = limit - offset;
         if (size == 0) {
@@ -162,11 +188,6 @@ public class TrieArray<T>
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return root.signedOrderEntryCursor();
-    }
-
-    public static <T> Builder<T> builder()
-    {
-        return new Builder<T>();
     }
 
     public static class Builder<T>

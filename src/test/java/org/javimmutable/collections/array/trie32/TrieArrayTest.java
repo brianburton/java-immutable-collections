@@ -227,6 +227,7 @@ public class TrieArrayTest
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void testIndexedConstructor()
     {
         List<Integer> source = new ArrayList<Integer>();
@@ -256,7 +257,7 @@ public class TrieArrayTest
             TrieArray.Builder<Integer> builder = TrieArray.builder();
             builder.add(source);
             JImmutableArray<Integer> array = builder.build();
-            JImmutableArray<Integer> stdarray = TrieArray.of(IndexedList.retained(source), 0, source.size());
+            JImmutableArray<Integer> stdarray = TrieArray.oldof(IndexedList.retained(source), 0, source.size());
             assertEquals(array.getMap(), stdarray.getMap());
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
