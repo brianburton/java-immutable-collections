@@ -173,6 +173,7 @@ public class TrieArray<T>
             implements MutableBuilder<T, TrieArray<T>>
     {
         private BuilderImpl<T> builderImpl = new LeafBuilderImpl<T>();
+        private boolean built;
 
         @Override
         public Builder<T> add(T value)
@@ -184,6 +185,11 @@ public class TrieArray<T>
         @Override
         public TrieArray<T> build()
         {
+            if (built) {
+                throw new IllegalStateException();
+            }
+            built = true;
+
             builderImpl = builderImpl.finish();
             return builderImpl.build();
         }
@@ -191,7 +197,7 @@ public class TrieArray<T>
         @Override
         public Builder<T> add(Cursor<? extends T> source)
         {
-            for (Cursor<? extends T> cursor = source.start(); source.hasValue(); cursor = cursor.next()) {
+            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
                 add(cursor.getValue());
             }
             return this;

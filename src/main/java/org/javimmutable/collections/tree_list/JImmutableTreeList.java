@@ -36,13 +36,17 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -75,6 +79,17 @@ public class JImmutableTreeList<T>
     {
         this.root = root;
         this.size = size;
+    }
+
+    /**
+     * Creates a MutableBuilder instance for efficiently constructing JImmutableTreeLists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
     }
 
     @Override
@@ -247,5 +262,115 @@ public class JImmutableTreeList<T>
     private JImmutableTreeList<T> create(TreeNode<T> root)
     {
         return new JImmutableTreeList<T>(root, root.getSize());
+    }
+
+    public static class Builder<T>
+            implements MutableBuilder<T, JImmutableTreeList<T>>
+    {
+        private final List<TreeNode<T>> nodes = new ArrayList<TreeNode<T>>();
+        private boolean built;
+
+        @Override
+        public Builder<T> add(T value)
+        {
+            nodes.add(new LeafNode<T>(value));
+            return this;
+        }
+
+        @Override
+        public JImmutableTreeList<T> build()
+        {
+            if (built) {
+                throw new IllegalStateException();
+            }
+            built = true;
+
+            int nodeCount = nodes.size();
+            if (nodeCount == 0) {
+                return of();
+            }
+
+            while (nodeCount > 1) {
+                int setIndex = 0;
+                int getIndex = 0;
+                int remaining = nodeCount;
+                while (remaining > 1) {
+                    if (remaining == 3 || remaining >= 5) {
+                        final TreeNode<T> left = nodes.get(getIndex);
+                        final TreeNode<T> middle = nodes.get(getIndex + 1);
+                        final TreeNode<T> right = nodes.get(getIndex + 2);
+                        nodes.set(setIndex, new ThreeNode<T>(left, middle, right, left.getSize(), middle.getSize(), right.getSize()));
+                        remaining -= 3;
+                        getIndex += 3;
+                        setIndex += 1;
+                    } else {
+                        final TreeNode<T> left = nodes.get(getIndex);
+                        final TreeNode<T> right = nodes.get(getIndex + 1);
+                        nodes.set(setIndex, new TwoNode<T>(left, right, left.getSize(), right.getSize()));
+                        remaining -= 2;
+                        getIndex += 2;
+                        setIndex += 1;
+                    }
+                }
+                if (remaining == 1) {
+                    nodes.set(setIndex, nodes.get(getIndex));
+                    setIndex += 1;
+                }
+                nodeCount = setIndex;
+            }
+            TreeNode<T> root = nodes.get(0);
+            return new JImmutableTreeList<T>(root, root.getSize());
+        }
+
+        @Override
+        public Builder<T> add(Cursor<? extends T> source)
+        {
+            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
+                add(cursor.getValue());
+            }
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            while (source.hasNext()) {
+                add(source.next());
+            }
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Collection<? extends T> source)
+        {
+            add(source.iterator());
+            return this;
+        }
+
+        @Override
+        public <K extends T> Builder<T> add(K... source)
+        {
+            for (T value : source) {
+                add(value);
+            }
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            return add(source, 0, source.size());
+        }
+
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
+            return this;
+        }
     }
 }

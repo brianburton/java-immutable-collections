@@ -358,7 +358,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -372,7 +372,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursor<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -386,7 +386,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursorable<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), source.cursor());
+        return JImmutableTreeList.<T>builder().add(source.cursor()).build();
     }
 
     /**
@@ -400,7 +400,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Iterator<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), source);
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -414,7 +414,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Collection<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeList.<T>of(), source.iterator());
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**

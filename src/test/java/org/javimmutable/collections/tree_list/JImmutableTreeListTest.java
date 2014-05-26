@@ -474,4 +474,14 @@ public class JImmutableTreeListTest
         list = list.insert(1).insert(2);
         assertSame(JImmutableTreeList.of(), list.deleteAll());
     }
+
+    public void testBuilder()
+    {
+        List<Integer> source = new ArrayList<Integer>();
+        for (int i = 1; i <= 8500; ++i) {
+            source.add(i);
+            JImmutableTreeList<Integer> list = JImmutableTreeList.<Integer>builder().add(source).build();
+            assertEquals(source, list.getList());
+        }
+    }
 }
