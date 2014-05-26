@@ -39,11 +39,13 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,18 +78,17 @@ public class JImmutableArrayList<T>
                                                 int offset,
                                                 int limit)
     {
-        final int size = limit - offset;
-        if (size == 0) {
-            return of();
-        } else {
-            final JImmutableArray<T> values = TrieArray.of(source, offset, limit);
-            return new JImmutableArrayList<T>(values, 0, size);
-        }
+        return JImmutableArrayList.<T>builder().add(source, offset, limit).build();
     }
 
     public static <T> JImmutableArrayList<T> of(Indexed<T> source)
     {
-        return of(source, 0, source.size());
+        return JImmutableArrayList.<T>builder().add(source).build();
+    }
+
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
     }
 
     @Override
@@ -203,6 +204,73 @@ public class JImmutableArrayList<T>
     public String toString()
     {
         return Cursors.makeString(cursor());
+    }
+
+    public static class Builder<T>
+            implements MutableBuilder<T, JImmutableArrayList<T>>
+    {
+        private final TrieArray.Builder<T> builder = TrieArray.builder();
+
+        @Override
+        public Builder<T> add(T value)
+        {
+            builder.add(value);
+            return this;
+        }
+
+        @Override
+        public JImmutableArrayList<T> build()
+        {
+            final JImmutableArray<T> values = builder.build();
+            if (values.isEmpty()) {
+                return of();
+            } else {
+                return new JImmutableArrayList<T>(values, 0, values.size());
+            }
+        }
+
+        @Override
+        public Builder<T> add(Cursor<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Collection<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Override
+        public <K extends T> Builder<T> add(K... source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            builder.add(source, offset, limit);
+            return this;
+        }
     }
 
     private int calcRealIndex(int index)

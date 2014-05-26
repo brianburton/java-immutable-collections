@@ -221,6 +221,23 @@ public class TrieArray<T>
             }
             return this;
         }
+
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            return add(source, 0, source.size());
+        }
+
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
+            return this;
+        }
     }
 
     private static abstract class BuilderImpl<T>

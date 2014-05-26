@@ -182,7 +182,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(T... values)
     {
-        return JImmutableArrayList.of(IndexedArray.retained(values));
+        return JImmutableArrayList.<T>builder().add(values).build();
     }
 
     /**
@@ -200,7 +200,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(Cursor<? extends T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), source);
+        return JImmutableArrayList.<T>builder().add(source).build();
     }
 
     /**
@@ -218,7 +218,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(Indexed<? extends T> source)
     {
-        return list(source, 0, source.size());
+        return JImmutableArrayList.<T>builder().add(source).build();
     }
 
     /**
@@ -240,7 +240,7 @@ public final class JImmutables
                                              int offset,
                                              int limit)
     {
-        return JImmutableArrayList.of(source, offset, limit);
+        return JImmutableArrayList.<T>builder().add(source, offset, limit).build();
     }
 
     /**
@@ -294,7 +294,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(Iterator<? extends T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), source);
+        return JImmutableArrayList.<T>builder().add(source).build();
     }
 
     /**
@@ -312,7 +312,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(List<? extends T> source)
     {
-        return JImmutableArrayList.of(IndexedList.retained(source));
+        return JImmutableArrayList.<T>builder().add(source).build();
     }
 
     /**
@@ -330,7 +330,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(Collection<? extends T> source)
     {
-        return Functions.insertAll(JImmutableArrayList.<T>of(), source.iterator());
+        return JImmutableArrayList.<T>builder().add(source).build();
     }
 
     /**

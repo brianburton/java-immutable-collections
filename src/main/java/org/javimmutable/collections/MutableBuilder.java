@@ -21,4 +21,10 @@ public interface MutableBuilder<T, C>
     MutableBuilder<T, C> add(Collection<? extends T> source);
 
     <K extends T> MutableBuilder<T, C> add(K... source);
+
+    MutableBuilder<T, C> add(Indexed<? extends T> source,
+                             int offset,
+                             int limit);
+
+    MutableBuilder<T, C> add(Indexed<? extends T> source);
 }
