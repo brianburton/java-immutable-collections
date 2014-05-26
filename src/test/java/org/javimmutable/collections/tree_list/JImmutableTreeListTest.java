@@ -504,6 +504,7 @@ public class JImmutableTreeListTest
             public Boolean apply(List<Integer> list,
                                  JImmutableTreeList<Integer> tree)
             {
+                tree.verifyDepthsMatch();
                 for (int i = 0; i < list.size(); ++i) {
                     assertEquals(list.get(i), tree.get(i));
                 }

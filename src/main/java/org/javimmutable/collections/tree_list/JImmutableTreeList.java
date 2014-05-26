@@ -296,25 +296,20 @@ public class JImmutableTreeList<T>
                 int remaining = nodeCount;
                 while (remaining > 1) {
                     if (remaining == 3 || remaining >= 5) {
-                        final TreeNode<T> left = nodes.get(getIndex);
-                        final TreeNode<T> middle = nodes.get(getIndex + 1);
-                        final TreeNode<T> right = nodes.get(getIndex + 2);
-                        nodes.set(setIndex, new ThreeNode<T>(left, middle, right, left.getSize(), middle.getSize(), right.getSize()));
+                        final TreeNode<T> left = nodes.get(getIndex++);
+                        final TreeNode<T> middle = nodes.get(getIndex++);
+                        final TreeNode<T> right = nodes.get(getIndex++);
+                        nodes.set(setIndex++, new ThreeNode<T>(left, middle, right, left.getSize(), middle.getSize(), right.getSize()));
                         remaining -= 3;
-                        getIndex += 3;
-                        setIndex += 1;
                     } else {
-                        final TreeNode<T> left = nodes.get(getIndex);
-                        final TreeNode<T> right = nodes.get(getIndex + 1);
-                        nodes.set(setIndex, new TwoNode<T>(left, right, left.getSize(), right.getSize()));
+                        final TreeNode<T> left = nodes.get(getIndex++);
+                        final TreeNode<T> right = nodes.get(getIndex++);
+                        nodes.set(setIndex++, new TwoNode<T>(left, right, left.getSize(), right.getSize()));
                         remaining -= 2;
-                        getIndex += 2;
-                        setIndex += 1;
                     }
                 }
                 if (remaining == 1) {
-                    nodes.set(setIndex, nodes.get(getIndex));
-                    setIndex += 1;
+                    nodes.set(setIndex++, nodes.get(getIndex));
                 }
                 nodeCount = setIndex;
             }
