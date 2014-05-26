@@ -39,7 +39,9 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.common.IndexedList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,15 +53,22 @@ public class StandardCursorTest
     public static void testVarious()
     {
         emptyCursorTest(StandardCursor.<Integer>of());
-        listCursorTest(Arrays.<Integer>asList(1), StandardCursor.forRange(1, 1));
-        listCursorTest(Arrays.<Integer>asList(1, 2), StandardCursor.forRange(1, 2));
-        listCursorTest(Arrays.<Integer>asList(-1, 0, 1, 2, 3), StandardCursor.forRange(-1, 3));
-        assertEquals(Arrays.<Integer>asList(-1, 0, 1, 2, 3), StandardCursor.makeList(StandardCursor.forRange(-1, 3)));
+        listCursorTest(Arrays.asList(1), StandardCursor.forRange(1, 1));
+        listCursorTest(Arrays.asList(1, 2), StandardCursor.forRange(1, 2));
+        listCursorTest(Arrays.asList(-1, 0, 1, 2, 3), StandardCursor.forRange(-1, 3));
+        assertEquals(Arrays.asList(-1, 0, 1, 2, 3), StandardCursor.makeList(StandardCursor.forRange(-1, 3)));
 
         emptyIteratorTest(StandardCursor.iterator(new StandardCursor.RangeSource(1, -1)));
         listIteratorTest(Arrays.asList(1), StandardCursor.iterator(new StandardCursor.RangeSource(1, 1)));
         listIteratorTest(Arrays.asList(1, 2), StandardCursor.iterator(new StandardCursor.RangeSource(1, 2)));
         listIteratorTest(Arrays.asList(1, 2, 3), StandardCursor.iterator(new StandardCursor.RangeSource(1, 3)));
+
+        emptyCursorTest(StandardCursor.of(IndexedList.retained(Collections.<Integer>emptyList())));
+        List<Integer> source = new ArrayList<Integer>();
+        for (int i = 1; i < 10; ++i) {
+            source.add(i);
+            listCursorTest(source, StandardCursor.of(IndexedList.retained(source)));
+        }
     }
 
     public static <T> void cursorTest(Func1<Integer, T> lookup,

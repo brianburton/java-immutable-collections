@@ -36,6 +36,7 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
 import java.util.ArrayList;
@@ -102,6 +103,18 @@ public abstract class StandardCursor
     public static <T> Cursor<T> of(Source<T> source)
     {
         return new Start<T>(source);
+    }
+
+    /**
+     * Creates a Cursor for the given Indexed.
+     *
+     * @param source
+     * @param <T>
+     * @return
+     */
+    public static <T> Cursor<T> of(Indexed<T> source)
+    {
+        return new Start<T>(new IndexedSource<T>(source, 0));
     }
 
     /**
@@ -291,6 +304,38 @@ public abstract class StandardCursor
         public void remove()
         {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class IndexedSource<T>
+            implements StandardCursor.Source<T>
+    {
+        private final Indexed<T> list;
+        private final int index;
+
+        private IndexedSource(Indexed<T> list,
+                              int index)
+        {
+            this.list = list;
+            this.index = index;
+        }
+
+        @Override
+        public boolean atEnd()
+        {
+            return index >= list.size();
+        }
+
+        @Override
+        public T currentValue()
+        {
+            return list.get(index);
+        }
+
+        @Override
+        public StandardCursor.Source<T> advance()
+        {
+            return new IndexedSource<T>(list, index + 1);
         }
     }
 }

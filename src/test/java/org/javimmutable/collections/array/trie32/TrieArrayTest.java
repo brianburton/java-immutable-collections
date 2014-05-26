@@ -36,11 +36,15 @@
 package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IndexedList;
+import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -267,6 +271,30 @@ public class TrieArrayTest
                 assertEquals(source.get(i), array.get(i));
             }
         }
+
+        Func0<MutableBuilder<Integer, TrieArray<Integer>>> factory = new Func0<MutableBuilder<Integer, TrieArray<Integer>>>()
+        {
+            @Override
+            public MutableBuilder<Integer, TrieArray<Integer>> apply()
+            {
+                return TrieArray.builder();
+            }
+        };
+
+        Func2<List<Integer>, TrieArray<Integer>, Boolean> comparator = new Func2<List<Integer>, TrieArray<Integer>, Boolean>()
+        {
+            @Override
+            public Boolean apply(List<Integer> list,
+                                 TrieArray<Integer> tree)
+            {
+                for (int i = 0; i < list.size(); ++i) {
+                    assertEquals(list.get(i), tree.get(i));
+                }
+                return true;
+            }
+        };
+
+        StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
     }
 
     static List<Integer> createBranchIndexes()

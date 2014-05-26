@@ -37,6 +37,10 @@ package org.javimmutable.collections.tree_list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -478,10 +482,35 @@ public class JImmutableTreeListTest
     public void testBuilder()
     {
         List<Integer> source = new ArrayList<Integer>();
-        for (int i = 1; i <= 8500; ++i) {
+        for (int i = 0; i <= 2537; ++i) {
             source.add(i);
             JImmutableTreeList<Integer> list = JImmutableTreeList.<Integer>builder().add(source).build();
             assertEquals(source, list.getList());
+            list.verifyDepthsMatch();
         }
+
+        Func0<MutableBuilder<Integer, JImmutableTreeList<Integer>>> factory = new Func0<MutableBuilder<Integer, JImmutableTreeList<Integer>>>()
+        {
+            @Override
+            public MutableBuilder<Integer, JImmutableTreeList<Integer>> apply()
+            {
+                return JImmutableTreeList.builder();
+            }
+        };
+
+        Func2<List<Integer>, JImmutableTreeList<Integer>, Boolean> comparator = new Func2<List<Integer>, JImmutableTreeList<Integer>, Boolean>()
+        {
+            @Override
+            public Boolean apply(List<Integer> list,
+                                 JImmutableTreeList<Integer> tree)
+            {
+                for (int i = 0; i < list.size(); ++i) {
+                    assertEquals(list.get(i), tree.get(i));
+                }
+                return true;
+            }
+        };
+
+        StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
     }
 }
