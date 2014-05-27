@@ -37,8 +37,6 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
@@ -813,7 +811,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
                                                  Cursor<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
+        return Functions.insertAll(JImmutableTreeSet.of(comparator), source);
     }
 
     /**
@@ -826,7 +824,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
                                                  T... source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
+        return Functions.insertAll(JImmutableTreeSet.of(comparator), source);
     }
 
     /**
@@ -839,7 +837,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
                                                  Cursorable<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.cursor());
+        return Functions.insertAll(JImmutableTreeSet.of(comparator), source.cursor());
     }
 
     /**
@@ -852,7 +850,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
                                                  Iterator<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source);
+        return Functions.insertAll(JImmutableTreeSet.of(comparator), source);
     }
 
     /**
@@ -865,7 +863,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(Comparator<T> comparator,
                                                  Collection<? extends T> source)
     {
-        return Functions.insertAll(JImmutableTreeSet.<T>of(comparator), source.iterator());
+        return Functions.insertAll(JImmutableTreeSet.of(comparator), source.iterator());
     }
 
     /**
@@ -1008,9 +1006,9 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> JImmutableArray<T> array(T... values)
+    public static <T> JImmutableArray<T> array(T... source)
     {
-        return TrieArray.of(IndexedArray.retained(values), 0, values.length);
+        return TrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -1038,7 +1036,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(Indexed<? extends T> source)
     {
-        return array(source, 0, source.size());
+        return TrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -1055,7 +1053,7 @@ public final class JImmutables
                                                int offset,
                                                int limit)
     {
-        return TrieArray.of(source, offset, limit);
+        return TrieArray.<T>builder().add(source, offset, limit).build();
     }
 
     /**
@@ -1069,6 +1067,6 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(List<? extends T> source)
     {
-        return TrieArray.of(IndexedList.retained(source), 0, source.size());
+        return TrieArray.<T>builder().add(source).build();
     }
 }
