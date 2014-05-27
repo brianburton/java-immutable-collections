@@ -41,6 +41,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class SingleBranchTrieNode<T>
         extends TrieNode<T>
 {

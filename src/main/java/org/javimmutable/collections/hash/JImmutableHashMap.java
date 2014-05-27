@@ -46,6 +46,9 @@ import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class JImmutableHashMap<T, K, V>
         extends AbstractJImmutableMap<K, V>
 {

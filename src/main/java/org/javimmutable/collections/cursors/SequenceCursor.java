@@ -38,6 +38,9 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Sequence;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public abstract class SequenceCursor<T>
         implements Cursor<T>
 {
@@ -46,6 +49,7 @@ public abstract class SequenceCursor<T>
         return StandardCursor.of(new SequenceSource<T>(sequence));
     }
 
+    @Immutable
     private static class SequenceSource<T>
             implements StandardCursor.Source<T>
     {

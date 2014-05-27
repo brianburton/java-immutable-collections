@@ -40,12 +40,15 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableListMap using a hash map for fast lookup.
  *
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class JImmutableHashListMap<K, V>
         extends AbstractJImmutableListMap<K, V>
 {

@@ -39,12 +39,15 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func0;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Cursor that creates and returns a real Cursor for a specific iterable only when start() or next() is
  * called for the first time.
  *
  * @param <V>
  */
+@Immutable
 public class LazyCursor<V>
         extends AbstractStartCursor<V>
 {

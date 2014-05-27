@@ -45,9 +45,11 @@ import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Immutable
 public class TrieArray<T>
         extends AbstractJImmutableArray<T>
 {

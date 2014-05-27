@@ -44,6 +44,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.TreeNode;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
@@ -54,6 +55,7 @@ import java.util.Comparator;
  * @param <K>
  * @param <V>
  */
+@Immutable
 class HashValueTreeTransforms<K extends Comparable<K>, V>
         implements Transforms<TreeNode<K, V>, K, V>
 {

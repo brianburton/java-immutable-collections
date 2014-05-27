@@ -37,11 +37,14 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Sequence;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Singleton Sequence implementation for an empty sequence.
  *
  * @param <T>
  */
+@Immutable
 public class EmptySequence<T>
         implements Sequence<T>
 {

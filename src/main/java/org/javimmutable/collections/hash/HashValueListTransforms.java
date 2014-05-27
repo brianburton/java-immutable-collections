@@ -42,6 +42,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 class HashValueListTransforms<K, V>
         implements Transforms<HashValueListNode<K, V>, K, V>
 {

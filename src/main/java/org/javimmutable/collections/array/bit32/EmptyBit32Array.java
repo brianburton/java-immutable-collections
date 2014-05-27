@@ -41,6 +41,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class EmptyBit32Array<T>
         extends Bit32Array<T>
 {

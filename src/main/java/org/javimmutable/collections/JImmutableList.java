@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@Immutable
 public interface JImmutableList<T>
         extends Insertable<T>,
                 Indexed<T>,

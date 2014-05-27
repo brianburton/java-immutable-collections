@@ -41,6 +41,9 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public abstract class TrieNode<T>
 {
     public static final int ROOT_SHIFT = 30;

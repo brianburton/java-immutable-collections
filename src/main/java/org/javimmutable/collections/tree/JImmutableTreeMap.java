@@ -40,12 +40,14 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Immutable
 public class JImmutableTreeMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {

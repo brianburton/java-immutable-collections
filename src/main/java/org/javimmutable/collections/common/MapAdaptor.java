@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -50,9 +51,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An immutable Map implementation backed by a PersistentHashMap.
+ * An immutable Map implementation backed by a JImmutableMap.
  */
 @SuppressWarnings({"unchecked", "NullableProblems"})
+@Immutable
 public class MapAdaptor<K, V>
         extends AbstractMap<K, V>
 {

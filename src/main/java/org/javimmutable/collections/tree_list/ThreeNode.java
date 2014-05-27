@@ -39,6 +39,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class ThreeNode<T>
         extends TreeNode<T>
 {
@@ -265,7 +268,8 @@ public class ThreeNode<T>
                                         new TwoNode<T>(middle,
                                                        right,
                                                        middleSize,
-                                                       rightSize));
+                                                       rightSize)
+        );
     }
 
     @Override
@@ -278,7 +282,8 @@ public class ThreeNode<T>
                                         new TwoNode<T>(right,
                                                        node,
                                                        rightSize,
-                                                       node.getSize()));
+                                                       node.getSize())
+        );
     }
 
     @Override
@@ -311,7 +316,8 @@ public class ThreeNode<T>
                                             new TwoNode<T>(middle,
                                                            right,
                                                            middleSize,
-                                                           rightSize));
+                                                           rightSize)
+            );
         }
         throw new RuntimeException();
     }
@@ -337,7 +343,8 @@ public class ThreeNode<T>
                                             new TwoNode<T>(result.extraNode,
                                                            right,
                                                            result.extraNode.getSize(),
-                                                           rightSize));
+                                                           rightSize)
+            );
         }
         throw new RuntimeException();
     }
@@ -361,7 +368,8 @@ public class ThreeNode<T>
                                                            middle,
                                                            leftSize,
                                                            middleSize),
-                                            result.createTwoNode());
+                                            result.createTwoNode()
+            );
         }
         throw new RuntimeException();
     }

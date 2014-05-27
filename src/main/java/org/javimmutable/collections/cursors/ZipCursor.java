@@ -38,10 +38,13 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Tuple2;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Provides static factory method to create a cursor to combines corresponding values from
  * other cursors into Tuples.
  */
+@Immutable
 public class ZipCursor
 {
     public static <C1, C2> Cursor<Tuple2<C1, C2>> of(final Cursor<C1> cursor1,

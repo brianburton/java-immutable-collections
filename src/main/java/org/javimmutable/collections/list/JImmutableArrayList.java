@@ -45,15 +45,17 @@ import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+@Immutable
 public class JImmutableArrayList<T>
         implements JImmutableList<T>
 {
     @SuppressWarnings("unchecked")
-    private static JImmutableArrayList EMPTY = new JImmutableArrayList(TrieArray.of(), 0, 0);
+    private static final JImmutableArrayList EMPTY = new JImmutableArrayList(TrieArray.of(), 0, 0);
 
     private final JImmutableArray<T> values;
     private final int first;

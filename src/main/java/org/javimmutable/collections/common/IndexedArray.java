@@ -37,9 +37,12 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Indexed implementation backed by a java array.
  */
+@Immutable
 public class IndexedArray<T>
         implements Indexed<T>
 {

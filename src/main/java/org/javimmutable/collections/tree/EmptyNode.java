@@ -41,9 +41,11 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
 
+@Immutable
 public class EmptyNode<K, V>
         extends TreeNode<K, V>
 {

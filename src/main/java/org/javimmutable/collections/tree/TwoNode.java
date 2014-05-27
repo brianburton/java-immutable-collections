@@ -41,9 +41,11 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
 
+@Immutable
 public class TwoNode<K, V>
         extends TreeNode<K, V>
 {

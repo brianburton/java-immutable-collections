@@ -40,6 +40,7 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
@@ -49,10 +50,11 @@ import java.util.Comparator;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class JImmutableTreeListMap<K, V>
         extends AbstractJImmutableListMap<K, V>
 {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
     private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.<Comparable, Object>of());
 
     private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents)

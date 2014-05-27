@@ -43,6 +43,9 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class LeafTrieNode<T>
         extends TrieNode<T>
         implements Holder<T>
@@ -125,7 +128,7 @@ public class LeafTrieNode<T>
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.<T>forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
+            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
         }
     }
 
@@ -147,7 +150,7 @@ public class LeafTrieNode<T>
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.<T>forIndex(shift, this.index, this).assign(shift, index, key, value, transforms, sizeDelta);
+            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, key, value, transforms, sizeDelta);
         }
     }
 
@@ -214,7 +217,7 @@ public class LeafTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.<Integer, T>of(index, value));
+        return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.of(index, value));
     }
 
     @Override

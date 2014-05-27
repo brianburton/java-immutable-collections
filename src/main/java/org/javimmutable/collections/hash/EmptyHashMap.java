@@ -42,6 +42,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Singleton implementation of JImmutableMap that contains no elements.
  * When a value is assigned to the map a JImmutableHashMap is created that
@@ -50,10 +52,11 @@ import org.javimmutable.collections.cursors.StandardCursor;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class EmptyHashMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
-    static EmptyHashMap INSTANCE = new EmptyHashMap();
+    static final EmptyHashMap INSTANCE = new EmptyHashMap();
 
     private EmptyHashMap()
     {

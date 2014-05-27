@@ -41,6 +41,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class SingleBit32Array<T>
         extends Bit32Array<T>
         implements JImmutableMap.Entry<Integer, T>

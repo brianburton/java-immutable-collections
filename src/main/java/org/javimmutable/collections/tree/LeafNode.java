@@ -41,9 +41,11 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
 
+@Immutable
 public class LeafNode<K, V>
         extends TreeNode<K, V>
         implements JImmutableMap.Entry<K, V>,

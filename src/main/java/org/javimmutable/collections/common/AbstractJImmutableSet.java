@@ -42,9 +42,11 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
 
+@Immutable
 public abstract class AbstractJImmutableSet<T>
         implements JImmutableSet<T>
 {

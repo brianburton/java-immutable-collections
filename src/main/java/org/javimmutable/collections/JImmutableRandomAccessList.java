@@ -35,12 +35,15 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Extension of PersistentList that allows insertion and deletion at arbitrary
  * indexes within the list.
  *
  * @param <T>
  */
+@Immutable
 public interface JImmutableRandomAccessList<T>
         extends JImmutableList<T>
 {

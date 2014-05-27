@@ -35,11 +35,14 @@
 
 package org.javimmutable.collections.tree;
 
+import javax.annotation.concurrent.Immutable;
+
 @SuppressWarnings("unchecked")
+@Immutable
 public class DeleteResult<K, V>
 {
-    private static DeleteResult UNCHANGED = new DeleteResult(Type.UNCHANGED, null);
-    private static DeleteResult ELIMINATED = new DeleteResult(Type.ELIMINATED, EmptyNode.INSTANCE);
+    private static final DeleteResult UNCHANGED = new DeleteResult(Type.UNCHANGED, null);
+    private static final DeleteResult ELIMINATED = new DeleteResult(Type.ELIMINATED, EmptyNode.INSTANCE);
 
     public enum Type
     {

@@ -42,6 +42,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 class SingleHashValueListNode<K, V>
         implements HashValueListNode<K, V>,
                    JImmutableMap.Entry<K, V>,

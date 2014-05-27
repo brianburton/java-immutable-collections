@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ import java.util.List;
  * does not start until the next() method is called and does not progress beyond the
  * point where atEnd() is true.
  */
+@Immutable
 public abstract class StandardCursor
 {
     @SuppressWarnings("unchecked")
@@ -161,6 +163,7 @@ public abstract class StandardCursor
         return answer;
     }
 
+    @Immutable
     private static class Start<T>
             extends AbstractStartCursor<T>
     {
@@ -184,6 +187,7 @@ public abstract class StandardCursor
         }
     }
 
+    @Immutable
     private static class Started<T>
             extends AbstractStartedCursor<T>
     {
@@ -222,6 +226,7 @@ public abstract class StandardCursor
         }
     }
 
+    @Immutable
     private static class EmptySource<T>
             implements Source<T>
     {
@@ -244,6 +249,7 @@ public abstract class StandardCursor
         }
     }
 
+    @Immutable
     static class RangeSource
             implements Source<Integer>
     {
@@ -307,6 +313,7 @@ public abstract class StandardCursor
         }
     }
 
+    @Immutable
     private static class IndexedSource<T>
             implements StandardCursor.Source<T>
     {

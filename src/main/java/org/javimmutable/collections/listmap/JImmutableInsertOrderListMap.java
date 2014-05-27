@@ -40,6 +40,8 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableListMap implementation that allows keys to be traversed in the same order as they
  * were inserted into the collection.
@@ -47,6 +49,7 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class JImmutableInsertOrderListMap<K, V>
         extends AbstractJImmutableListMap<K, V>
 {

@@ -44,8 +44,10 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
+@Immutable
 public abstract class AbstractJImmutableListMap<K, V>
         implements JImmutableListMap<K, V>
 {

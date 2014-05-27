@@ -54,8 +54,8 @@ public class TimingComparison
             System.exit(1);
         }
 
-        final int seed = Integer.valueOf(argv[0]);
-        final int loops = Integer.valueOf(argv[1]);
+        final int seed = Integer.parseInt(argv[0]);
+        final int loops = Integer.parseInt(argv[1]);
 
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;

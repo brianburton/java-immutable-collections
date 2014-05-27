@@ -44,6 +44,9 @@ import org.javimmutable.collections.common.EmptySequence;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SequenceCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 class MultiHashValueListNode<K, V>
         implements HashValueListNode<K, V>,
                    Sequence<JImmutableMap.Entry<K, V>>
@@ -61,7 +64,7 @@ class MultiHashValueListNode<K, V>
     static <K, V> MultiHashValueListNode<K, V> of(K key,
                                                   V value)
     {
-        return new MultiHashValueListNode<K, V>(null, SingleHashValueListNode.<K, V>of(key, value));
+        return new MultiHashValueListNode<K, V>(null, SingleHashValueListNode.of(key, value));
     }
 
     static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,

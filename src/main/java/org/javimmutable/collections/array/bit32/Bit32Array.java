@@ -39,11 +39,14 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableArray implementation that only accepts indexes in the range [0, 31].
  *
  * @param <T>
  */
+@Immutable
 public abstract class Bit32Array<T>
         extends AbstractJImmutableArray<T>
 {

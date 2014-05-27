@@ -52,8 +52,8 @@ public class ListTimingComparison
             System.exit(1);
         }
 
-        final int seed = Integer.valueOf(argv[0]);
-        final int loops = Integer.valueOf(argv[1]);
+        final int seed = Integer.parseInt(argv[0]);
+        final int loops = Integer.parseInt(argv[1]);
 
         final int maxCommand = 6;
 

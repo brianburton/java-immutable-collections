@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -46,6 +47,7 @@ import java.util.Iterator;
  *
  * @param <T>
  */
+@Immutable
 public class MultiCursor<T>
         implements Cursor<T>
 {
@@ -185,6 +187,7 @@ public class MultiCursor<T>
         }
     }
 
+    @Immutable
     private static class Node<T>
     {
         private final Cursor<T> cursor;

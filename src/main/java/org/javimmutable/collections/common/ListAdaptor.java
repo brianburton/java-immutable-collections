@@ -37,14 +37,16 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.JImmutableList;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.AbstractList;
 import java.util.List;
 
 /**
- * Immutable List implementation backed by a PersistentIndexedList.
+ * Immutable List implementation backed by a JImmutableList.
  *
  * @param <T>
  */
+@Immutable
 public class ListAdaptor<T>
         extends AbstractList<T>
         implements List<T>

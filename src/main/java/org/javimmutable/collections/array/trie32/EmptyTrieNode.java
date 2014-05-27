@@ -42,6 +42,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class EmptyTrieNode<T>
         extends TrieNode<T>
 {

@@ -41,9 +41,11 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
 
+@Immutable
 public class ThreeNode<K, V>
         extends TreeNode<K, V>
 {
@@ -136,14 +138,16 @@ public class ThreeNode<K, V>
                                                                       result.newNode.getMaxKey(),
                                                                       middleMaxKey,
                                                                       rightMaxKey),
-                                                  result.sizeDelta);
+                                                  result.sizeDelta
+                );
             case SPLIT:
                 return UpdateResult.createSplit(result.createTwoNode(),
                                                 new TwoNode<K, V>(middle,
                                                                   right,
                                                                   middleMaxKey,
                                                                   rightMaxKey),
-                                                result.sizeDelta);
+                                                result.sizeDelta
+                );
             }
         } else if (comparator.compare(key, middleMaxKey) <= 0) {
             UpdateResult<K, V> result = middle.assignImpl(comparator, key, value);
@@ -158,7 +162,8 @@ public class ThreeNode<K, V>
                                                                       leftMaxKey,
                                                                       result.newNode.getMaxKey(),
                                                                       rightMaxKey),
-                                                  result.sizeDelta);
+                                                  result.sizeDelta
+                );
             case SPLIT:
                 return UpdateResult.createSplit(new TwoNode<K, V>(left,
                                                                   result.newNode,
@@ -168,7 +173,8 @@ public class ThreeNode<K, V>
                                                                   right,
                                                                   result.extraNode.getMaxKey(),
                                                                   rightMaxKey),
-                                                result.sizeDelta);
+                                                result.sizeDelta
+                );
             }
         } else {
             UpdateResult<K, V> result = right.assignImpl(comparator, key, value);
@@ -183,7 +189,8 @@ public class ThreeNode<K, V>
                                                                       leftMaxKey,
                                                                       middleMaxKey,
                                                                       result.newNode.getMaxKey()),
-                                                  result.sizeDelta);
+                                                  result.sizeDelta
+                );
 
             case SPLIT:
                 return UpdateResult.createSplit(new TwoNode<K, V>(left,
@@ -191,7 +198,8 @@ public class ThreeNode<K, V>
                                                                   leftMaxKey,
                                                                   middleMaxKey),
                                                 result.createTwoNode(),
-                                                result.sizeDelta);
+                                                result.sizeDelta
+                );
             }
         }
         throw new RuntimeException();
@@ -320,7 +328,8 @@ public class ThreeNode<K, V>
                                            new TwoNode<K, V>(middle,
                                                              right,
                                                              middleMaxKey,
-                                                             rightMaxKey));
+                                                             rightMaxKey)
+        );
     }
 
     @Override
@@ -334,7 +343,8 @@ public class ThreeNode<K, V>
                                            new TwoNode<K, V>(right,
                                                              node,
                                                              rightMaxKey,
-                                                             node.getMaxKey()));
+                                                             node.getMaxKey())
+        );
     }
 
     public TreeNode<K, V> getLeft()

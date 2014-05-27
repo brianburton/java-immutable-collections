@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -49,6 +50,7 @@ import java.util.Iterator;
  *
  * @param <T>
  */
+@Immutable
 public class MultiTransformCursor<S, T>
         implements Cursor<T>
 {

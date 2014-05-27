@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Instances are immutable containers for at most a single object.  A Holder is either empty or filled
  * and always remain in the same state once created, i.e. value returned by isEmpty() and isFilled()
@@ -43,6 +45,7 @@ package org.javimmutable.collections;
  *
  * @param <T>
  */
+@Immutable
 public interface Holder<T>
 {
     /**

@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -50,6 +51,7 @@ import java.util.Iterator;
  * Also their next() methods can throw exceptions due to concurrent modification
  * of the collection.
  */
+@Immutable
 public abstract class IterableCursor
 {
     /**

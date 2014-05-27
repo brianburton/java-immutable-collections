@@ -47,6 +47,8 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
  * were inserted into the map.  Maintains two parallel data structures, one for sorting and
@@ -59,6 +61,7 @@ import org.javimmutable.collections.hash.JImmutableHashMap;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class JImmutableInsertOrderMap<K, V>
         extends AbstractJImmutableMap<K, V>
 {
@@ -171,6 +174,7 @@ public class JImmutableInsertOrderMap<K, V>
      * @param <K>
      * @param <V>
      */
+    @Immutable
     private static class Node<K, V>
             extends MapEntry<K, V>
             implements Holder<V>
@@ -212,6 +216,18 @@ public class JImmutableInsertOrderMap<K, V>
         private Node<K, V> withValue(V value)
         {
             return new Node<K, V>(key, value, index);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            return super.equals(o);
         }
     }
 }

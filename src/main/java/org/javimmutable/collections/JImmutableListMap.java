@@ -35,12 +35,15 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Interface for maps that map keys to lists of values.
  *
  * @param <K>
  * @param <V>
  */
+@Immutable
 public interface JImmutableListMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, JImmutableList<V>>,

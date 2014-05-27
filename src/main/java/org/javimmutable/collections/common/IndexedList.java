@@ -37,9 +37,11 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Immutable
 public class IndexedList<T>
         implements Indexed<T>
 {

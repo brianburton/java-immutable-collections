@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Immutable container for 3 values.
  *
@@ -42,6 +44,7 @@ package org.javimmutable.collections;
  * @param <B>
  * @param <C>
  */
+@Immutable
 public class Tuple3<A, B, C>
 {
     private final A first;

@@ -41,9 +41,11 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
 
+@Immutable
 public abstract class AbstractJImmutableMap<K, V>
         implements JImmutableMap<K, V>
 {

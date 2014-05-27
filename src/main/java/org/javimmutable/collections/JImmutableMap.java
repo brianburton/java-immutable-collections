@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
@@ -45,6 +46,7 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public interface JImmutableMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, V>,
@@ -58,6 +60,7 @@ public interface JImmutableMap<K, V>
      * @param <K>
      * @param <V>
      */
+    @Immutable
     interface Entry<K, V>
     {
         K getKey();

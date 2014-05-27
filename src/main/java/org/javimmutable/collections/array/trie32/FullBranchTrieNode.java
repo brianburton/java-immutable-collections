@@ -44,6 +44,9 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class FullBranchTrieNode<T>
         extends TrieNode<T>
 {

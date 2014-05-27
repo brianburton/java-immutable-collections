@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
 /**
@@ -42,6 +43,7 @@ import java.util.Set;
  *
  * @param <T>
  */
+@Immutable
 public interface JImmutableSet<T>
         extends Insertable<T>,
                 Cursorable<T>,

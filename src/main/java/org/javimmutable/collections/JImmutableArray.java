@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
@@ -47,6 +48,7 @@ import java.util.Map;
  * to keep them consecutive (like a List).  Memory is managed to use no more than necessary
  * for the number of elements currently in the array.
  */
+@Immutable
 public interface JImmutableArray<T>
         extends Indexed<T>,
                 Insertable<JImmutableMap.Entry<Integer, T>>,

@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.tree;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class DeleteMergeResult<K, V>
 {
     public final TreeNode<K, V> left;

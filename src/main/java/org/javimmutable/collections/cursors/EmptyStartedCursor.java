@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -46,10 +47,11 @@ import java.util.Iterator;
  *
  * @param <T>
  */
+@Immutable
 public class EmptyStartedCursor<T>
         implements Cursor<T>
 {
-    private static EmptyStartedCursor EMPTY = new EmptyStartedCursor();
+    private static final EmptyStartedCursor EMPTY = new EmptyStartedCursor();
 
     @SuppressWarnings("unchecked")
     public static <V> EmptyStartedCursor<V> of()

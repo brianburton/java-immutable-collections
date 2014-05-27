@@ -44,8 +44,9 @@ import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +63,7 @@ import java.util.StringTokenizer;
  */
 public class RandomLoop
 {
-    private class MapFactory
+    private static class MapFactory
     {
         private int count;
 
@@ -153,6 +154,8 @@ public class RandomLoop
                     list = list.insertFirst(value);
                     expected.add(0, value);
                     break;
+                default:
+                    throw new RuntimeException();
                 }
             }
             verifyContents(expected, list);
@@ -566,7 +569,7 @@ public class RandomLoop
         int index = 0;
         for (Integer expectedValue : expected) {
             Integer listValue = list.get(index);
-            if (!expectedValue.equals(expectedValue)) {
+            if (!expectedValue.equals(listValue)) {
                 throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
             }
             index += 1;
@@ -574,7 +577,7 @@ public class RandomLoop
         index = 0;
         for (Integer listValue : list) {
             Integer expectedValue = expected.get(index);
-            if (!expectedValue.equals(expectedValue)) {
+            if (!expectedValue.equals(listValue)) {
                 throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
             }
             index += 1;
@@ -671,7 +674,7 @@ public class RandomLoop
                                                     String filename)
             throws IOException
     {
-        BufferedReader inp = new BufferedReader(new FileReader(filename));
+        BufferedReader inp = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
         try {
             for (String line = inp.readLine(); line != null; line = inp.readLine()) {
                 StringTokenizer tokenizer = new StringTokenizer(line);
@@ -705,7 +708,7 @@ public class RandomLoop
         @Override
         public boolean equals(Object o)
         {
-            return value.equals(((BadHash<T>)o).value);
+            return (o instanceof BadHash) && value.equals(((BadHash<T>)o).value);
         }
     }
 
@@ -730,7 +733,7 @@ public class RandomLoop
         @Override
         public boolean equals(Object o)
         {
-            return value.equals(((ComparableBadHash<T>)o).value);
+            return (o instanceof ComparableBadHash) && value.equals(((ComparableBadHash<T>)o).value);
         }
 
         @Override

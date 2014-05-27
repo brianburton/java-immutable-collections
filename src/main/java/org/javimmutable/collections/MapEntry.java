@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
@@ -44,6 +45,7 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class MapEntry<K, V>
         implements JImmutableMap.Entry<K, V>,
                    Map.Entry<K, V>

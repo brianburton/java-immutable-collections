@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.tree;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class UpdateResult<K, V>
 {
     public enum Type
@@ -126,6 +129,7 @@ public class UpdateResult<K, V>
                                    extraNode.getMaxKey());
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)
     {

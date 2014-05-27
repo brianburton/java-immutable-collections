@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.tree;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
@@ -43,6 +44,7 @@ import java.util.Comparator;
  *
  * @param <V>
  */
+@Immutable
 public final class ComparableComparator<V extends Comparable<V>>
         implements Comparator<V>
 {

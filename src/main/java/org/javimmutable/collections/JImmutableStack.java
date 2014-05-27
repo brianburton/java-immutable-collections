@@ -35,12 +35,15 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
  * at the front of the list so elements are traversed in reverse order.
  *
  * @param <T>
  */
+@Immutable
 public interface JImmutableStack<T>
         extends Insertable<T>,
                 Sequence<T>,

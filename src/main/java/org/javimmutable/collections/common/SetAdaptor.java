@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.JImmutableSet;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import java.util.Set;
  *
  * @param <T>
  */
+@Immutable
 public class SetAdaptor<T>
         extends AbstractSet<T>
 {

@@ -39,6 +39,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
  * elements are returned in the same order they were inserted into the set.  Performance is
@@ -47,6 +49,7 @@ import org.javimmutable.collections.common.AbstractJImmutableSet;
  *
  * @param <T>
  */
+@Immutable
 public class JImmutableInsertOrderSet<T>
         extends AbstractJImmutableSet<T>
 {

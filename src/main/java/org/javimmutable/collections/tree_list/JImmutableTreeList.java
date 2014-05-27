@@ -45,6 +45,7 @@ import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,6 +60,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@Immutable
 public class JImmutableTreeList<T>
         implements JImmutableRandomAccessList<T>
 {

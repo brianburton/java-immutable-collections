@@ -43,6 +43,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class FullBit32Array<T>
         extends Bit32Array<T>
 {

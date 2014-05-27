@@ -43,6 +43,7 @@ import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +56,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@Immutable
 public abstract class JImmutableLinkedStack<T>
         implements JImmutableStack<T>
 {

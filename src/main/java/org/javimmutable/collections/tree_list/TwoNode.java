@@ -39,6 +39,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class TwoNode<T>
         extends TreeNode<T>
 {

@@ -38,6 +38,9 @@ package org.javimmutable.collections.tree_list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public abstract class TreeNode<T>
         implements Cursorable<T>
 {

@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -45,6 +46,7 @@ import java.util.Iterator;
  *
  * @param <T>
  */
+@Immutable
 public class SingleValueCursor<T>
         extends AbstractStartCursor<T>
 {

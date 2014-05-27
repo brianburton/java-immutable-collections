@@ -40,12 +40,14 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
  * A Cursor that visits all values in another Cursor and transforms each value
  * using a Func1 object.
  */
+@Immutable
 public class TransformCursor<S, T>
         implements Cursor<T>
 {

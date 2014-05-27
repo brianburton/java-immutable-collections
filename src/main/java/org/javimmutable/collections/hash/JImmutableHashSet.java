@@ -39,6 +39,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class JImmutableHashSet<T>
         extends AbstractJImmutableSet<T>
 {
