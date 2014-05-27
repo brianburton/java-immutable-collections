@@ -83,6 +83,7 @@ public class JImmutablesTest
         assertEquals(list, JImmutables.list(list));
         assertEquals(list, JImmutables.list(list.cursor()));
         assertEquals(list, JImmutables.list(1, 2, 3));
+        assertEquals(list, JImmutables.<Integer>listBuilder().add(input).build());
     }
 
     public void testLargeList()
@@ -105,6 +106,7 @@ public class JImmutablesTest
         assertEquals(list, JImmutables.ralist(list));
         assertEquals(list, JImmutables.ralist(list.cursor()));
         assertEquals(list, JImmutables.ralist(1, 2, 3));
+        assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
     }
 
     public void testMap()
