@@ -109,6 +109,22 @@ public class JImmutablesTest
         assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
     }
 
+    @SuppressWarnings("AssertEqualsBetweenInconvertibleTypes")
+    public void testLargeRandomAccessList()
+    {
+        List<Integer> input = new ArrayList<Integer>();
+        for (int i = 0; i < 2000; ++i) {
+            input.add(i);
+        }
+        JImmutableRandomAccessList<Integer> list = JImmutables.ralist(input);
+        assertEquals(input, list.getList());
+        assertEquals(list, JImmutables.ralist(input.iterator()));
+        assertEquals(list, JImmutables.ralist(list));
+        assertEquals(list, JImmutables.ralist(list.cursor()));
+        assertEquals(list, JImmutables.ralist(input.toArray()));
+        assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
+    }
+
     public void testMap()
     {
         Map<Integer, Integer> input = new HashMap<Integer, Integer>();
