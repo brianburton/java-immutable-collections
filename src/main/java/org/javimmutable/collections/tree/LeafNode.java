@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
@@ -67,6 +68,7 @@ public class LeafNode<K, V>
         return nodeKey;
     }
 
+    @Nullable
     public V getValue()
     {
         return value;
@@ -82,12 +84,14 @@ public class LeafNode<K, V>
         return true;
     }
 
+    @Nullable
     public V getValueOrNull()
     {
         return value;
     }
 
-    public V getValueOr(V defaultValue)
+    @Nullable
+    public V getValueOr(@Nullable V defaultValue)
     {
         return value;
     }

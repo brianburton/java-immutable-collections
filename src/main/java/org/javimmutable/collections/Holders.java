@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nullable;
+
 /**
  * Provides static utility methods for constructing Holder instances.
  *
@@ -121,19 +123,22 @@ public abstract class Holders<V>
             return false;
         }
 
+        @Nullable
         public V getValue()
         {
             throw new UnsupportedOperationException("cannot get empty value");
         }
 
+        @Nullable
         @Override
         public V getValueOrNull()
         {
             return null;
         }
 
+        @Nullable
         @Override
-        public V getValueOr(V defaultValue)
+        public V getValueOr(@Nullable V defaultValue)
         {
             return defaultValue;
         }
@@ -165,19 +170,22 @@ public abstract class Holders<V>
             return true;
         }
 
+        @Nullable
         public V getValue()
         {
             return value;
         }
 
+        @Nullable
         @Override
         public V getValueOrNull()
         {
             return value;
         }
 
+        @Nullable
         @Override
-        public V getValueOr(V defaultValue)
+        public V getValueOr(@Nullable V defaultValue)
         {
             return value;
         }

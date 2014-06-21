@@ -43,6 +43,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -110,6 +111,7 @@ class SingleHashValueListNode<K, V>
         return key;
     }
 
+    @Nullable
     @Override
     public V getValue()
     {
@@ -128,14 +130,16 @@ class SingleHashValueListNode<K, V>
         return true;
     }
 
+    @Nullable
     @Override
     public V getValueOrNull()
     {
         return value;
     }
 
+    @Nullable
     @Override
-    public V getValueOr(V defaultValue)
+    public V getValueOr(@Nullable V defaultValue)
     {
         return value;
     }
