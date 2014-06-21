@@ -39,6 +39,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -115,6 +116,7 @@ public abstract class Bit32Array<T>
     public abstract int firstIndex();
 
     @Override
+    @Nullable
     public T get(int index)
     {
         return getValueOr(index, null);

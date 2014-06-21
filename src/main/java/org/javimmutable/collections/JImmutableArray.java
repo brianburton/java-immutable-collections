@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
@@ -63,6 +64,7 @@ public interface JImmutableArray<T>
      * @param index identifies the value to retrieve
      * @return value associated with index or null if no value is associated
      */
+    @Nullable
     T get(int index);
 
 

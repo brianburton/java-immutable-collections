@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -83,6 +84,7 @@ public class IndexedArray<T>
     }
 
     @Override
+    @Nullable
     public T get(int index)
     {
         return values[index];

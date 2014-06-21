@@ -45,6 +45,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,6 +55,7 @@ public abstract class AbstractJImmutableArray<T>
         implements JImmutableArray<T>
 {
     @Override
+    @Nullable
     public T get(int index)
     {
         return find(index).getValueOrNull();

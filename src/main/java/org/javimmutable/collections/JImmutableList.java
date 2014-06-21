@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public interface JImmutableList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
+    @Nullable
     T get(int index);
 
     /**

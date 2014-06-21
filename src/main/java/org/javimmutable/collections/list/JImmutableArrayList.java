@@ -46,6 +46,7 @@ import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -168,6 +169,7 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    @Nullable
     public T get(int index)
     {
         final int realIndex = calcRealIndex(index);

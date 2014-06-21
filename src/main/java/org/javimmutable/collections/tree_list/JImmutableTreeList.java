@@ -46,6 +46,7 @@ import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -153,6 +154,7 @@ public class JImmutableTreeList<T>
     }
 
     @Override
+    @Nullable
     public T get(int index)
     {
         if (index < 0 || index >= size) {
