@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -74,7 +75,7 @@ public interface JImmutableStack<T>
      * @return
      */
     @Nonnull
-    JImmutableStack<T> insert(T value);
+    JImmutableStack<T> insert(@Nullable T value);
 
     /**
      * Returns a list without the element returned by getHead().

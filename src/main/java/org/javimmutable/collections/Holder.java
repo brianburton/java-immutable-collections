@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -65,7 +64,6 @@ public interface Holder<T>
      * @return the (possibly null) value
      * @throws UnsupportedOperationException if Holder is empty
      */
-    @Nullable
     T getValue();
 
     /**
@@ -73,7 +71,6 @@ public interface Holder<T>
      *
      * @return null (empty) or value (filled)
      */
-    @Nullable
     T getValueOrNull();
 
     /**
@@ -82,6 +79,5 @@ public interface Holder<T>
      * @param defaultValue value to return if Holder is empty
      * @return value or defaultValue
      */
-    @Nullable
-    T getValueOr(@Nullable T defaultValue);
+    T getValueOr(T defaultValue);
 }

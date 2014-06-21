@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -56,7 +58,8 @@ public interface JImmutableListMap<K, V>
      * @param key identifies the value to retrieve
      * @return list associated with key or an empty list if no value is associated
      */
-    JImmutableList<V> getList(K key);
+    @Nonnull
+    JImmutableList<V> getList(@Nonnull K key);
 
     /**
      * Sets the list associated with a specific key.  Key and value must be non-null.
@@ -65,11 +68,12 @@ public interface JImmutableListMap<K, V>
      * any changes.  The original map is always left unchanged.
      *
      * @param key   non-null key
-     * @param value possibly null value
+     * @param value list of possibly null values to use for this key
      * @return new map reflecting the change
      */
-    JImmutableListMap<K, V> assign(K key,
-                                   JImmutableList<V> value);
+    @Nonnull
+    JImmutableListMap<K, V> assign(@Nonnull K key,
+                                   @Nonnull JImmutableList<V> value);
 
     /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
@@ -79,8 +83,9 @@ public interface JImmutableListMap<K, V>
      * @param value
      * @return
      */
-    JImmutableListMap<K, V> insert(K key,
-                                   V value);
+    @Nonnull
+    JImmutableListMap<K, V> insert(@Nonnull K key,
+                                   @Nullable V value);
 
     /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
@@ -89,7 +94,8 @@ public interface JImmutableListMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    JImmutableListMap<K, V> delete(K key);
+    @Nonnull
+    JImmutableListMap<K, V> delete(@Nonnull K key);
 
     /**
      * Return the number of keys in the map.
@@ -106,6 +112,7 @@ public interface JImmutableListMap<K, V>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableListMap<K, V> deleteAll();
 
     /**
@@ -113,6 +120,7 @@ public interface JImmutableListMap<K, V>
      *
      * @return
      */
+    @Nonnull
     Cursor<K> keysCursor();
 
     /**
@@ -121,5 +129,6 @@ public interface JImmutableListMap<K, V>
      *
      * @return a (possibly empty) cursor for traversing the values associated with key
      */
-    Cursor<V> valuesCursor(K key);
+    @Nonnull
+    Cursor<V> valuesCursor(@Nonnull K key);
 }

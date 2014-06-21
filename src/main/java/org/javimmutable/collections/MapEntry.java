@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
@@ -93,7 +92,6 @@ public class MapEntry<K, V>
         return key;
     }
 
-    @Nullable
     @Override
     public V getValue()
     {

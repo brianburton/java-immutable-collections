@@ -84,9 +84,9 @@ public abstract class AbstractJImmutableArray<T>
      */
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<Integer, T>> insert(JImmutableMap.Entry<Integer, T> e)
+    public Insertable<JImmutableMap.Entry<Integer, T>> insert(@Nullable JImmutableMap.Entry<Integer, T> e)
     {
-        return assign(e.getKey(), e.getValue());
+        return (e == null) ? this : assign(e.getKey(), e.getValue());
     }
 
     @Nonnull

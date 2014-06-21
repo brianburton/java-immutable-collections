@@ -43,6 +43,7 @@ import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
@@ -60,7 +61,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insert(T value)
+    public JImmutableSet<T> insert(@Nullable T value)
     {
         JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;

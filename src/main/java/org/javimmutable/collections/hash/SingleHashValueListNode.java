@@ -111,7 +111,6 @@ class SingleHashValueListNode<K, V>
         return key;
     }
 
-    @Nullable
     @Override
     public V getValue()
     {
@@ -130,14 +129,12 @@ class SingleHashValueListNode<K, V>
         return true;
     }
 
-    @Nullable
     @Override
     public V getValueOrNull()
     {
         return value;
     }
 
-    @Nullable
     @Override
     public V getValueOr(@Nullable V defaultValue)
     {

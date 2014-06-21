@@ -43,7 +43,6 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -239,23 +238,20 @@ public class LeafTrieNode<T>
         return true;
     }
 
-    @Nullable
     @Override
     public T getValue()
     {
         return value;
     }
 
-    @Nullable
     @Override
     public T getValueOrNull()
     {
         return value;
     }
 
-    @Nullable
     @Override
-    public T getValueOr(@Nullable T defaultValue)
+    public T getValueOr(T defaultValue)
     {
         return value;
     }

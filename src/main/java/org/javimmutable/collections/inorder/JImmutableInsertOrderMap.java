@@ -48,7 +48,6 @@ import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -204,16 +203,14 @@ public class JImmutableInsertOrderMap<K, V>
             return true;
         }
 
-        @Nullable
         @Override
         public V getValueOrNull()
         {
             return value;
         }
 
-        @Nullable
         @Override
-        public V getValueOr(@Nullable V defaultValue)
+        public V getValueOr(V defaultValue)
         {
             return value;
         }

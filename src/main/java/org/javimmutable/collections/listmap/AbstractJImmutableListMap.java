@@ -41,10 +41,12 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -59,35 +61,35 @@ public abstract class AbstractJImmutableListMap<K, V>
         this.contents = contents;
     }
 
+    @Nonnull
     @Override
-    public JImmutableList<V> getList(K key)
+    public JImmutableList<V> getList(@Nonnull K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key);
         Holder<JImmutableList<V>> current = contents.find(key);
         return current.isFilled() ? current.getValue() : emptyList();
     }
 
+    @Nonnull
     @Override
-    public JImmutableListMap<K, V> assign(K key,
-                                          JImmutableList<V> value)
+    public JImmutableListMap<K, V> assign(@Nonnull K key,
+                                          @Nonnull JImmutableList<V> value)
     {
-        if (key == null || value == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key, value);
         return create(contents.assign(key, copyList(value)));
     }
 
+    @Nonnull
     @Override
-    public JImmutableListMap<K, V> insert(K key,
-                                          V value)
+    public JImmutableListMap<K, V> insert(@Nonnull K key,
+                                          @Nullable V value)
     {
         return create(contents.assign(key, insertInList(getList(key), value)));
     }
 
+    @Nonnull
     @Override
-    public JImmutableListMap<K, V> delete(K key)
+    public JImmutableListMap<K, V> delete(@Nonnull K key)
     {
         return create(contents.delete(key));
     }
@@ -104,14 +106,16 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.size() == 0;
     }
 
+    @Nonnull
     @Override
     public Cursor<K> keysCursor()
     {
         return contents.keysCursor();
     }
 
+    @Nonnull
     @Override
-    public Cursor<V> valuesCursor(K key)
+    public Cursor<V> valuesCursor(@Nonnull K key)
     {
         return getList(key).cursor();
     }
@@ -125,9 +129,9 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<K, V>> insert(JImmutableMap.Entry<K, V> e)
+    public Insertable<JImmutableMap.Entry<K, V>> insert(@Nullable JImmutableMap.Entry<K, V> e)
     {
-        return insert(e.getKey(), e.getValue());
+        return (e == null) ? this : insert(e.getKey(), e.getValue());
     }
 
     @Override
@@ -155,6 +159,7 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.find(key);
     }
 
+    @Nonnull
     @Override
     public JImmutableListMap<K, V> deleteAll()
     {
@@ -185,6 +190,7 @@ public abstract class AbstractJImmutableListMap<K, V>
      *
      * @return
      */
+    @Nonnull
     protected JImmutableList<V> emptyList()
     {
         return JImmutableArrayList.of();

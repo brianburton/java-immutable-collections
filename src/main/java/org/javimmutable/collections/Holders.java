@@ -127,22 +127,19 @@ public abstract class Holders<V>
             return false;
         }
 
-        @Nullable
         public V getValue()
         {
             throw new UnsupportedOperationException("cannot get empty value");
         }
 
-        @Nullable
         @Override
         public V getValueOrNull()
         {
             return null;
         }
 
-        @Nullable
         @Override
-        public V getValueOr(@Nullable V defaultValue)
+        public V getValueOr(V defaultValue)
         {
             return defaultValue;
         }
@@ -174,22 +171,19 @@ public abstract class Holders<V>
             return true;
         }
 
-        @Nullable
         public V getValue()
         {
             return value;
         }
 
-        @Nullable
         @Override
         public V getValueOrNull()
         {
             return value;
         }
 
-        @Nullable
         @Override
-        public V getValueOr(@Nullable V defaultValue)
+        public V getValueOr(V defaultValue)
         {
             return value;
         }

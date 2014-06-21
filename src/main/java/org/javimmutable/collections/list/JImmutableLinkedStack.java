@@ -44,6 +44,7 @@ import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -92,7 +93,7 @@ public abstract class JImmutableLinkedStack<T>
         return list;
     }
 
-    public abstract JImmutableLinkedStack<T> insert(T value);
+    public abstract JImmutableLinkedStack<T> insert(@Nullable T value);
 
     public abstract JImmutableLinkedStack<T> getTail();
 
@@ -157,7 +158,7 @@ public abstract class JImmutableLinkedStack<T>
         }
 
         @Override
-        public JImmutableLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(@Nullable V value)
         {
             return new Single<V>(value);
         }
@@ -195,7 +196,7 @@ public abstract class JImmutableLinkedStack<T>
         }
 
         @Override
-        public JImmutableLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(@Nullable V value)
         {
             return new Chain<V>(value, this);
         }
@@ -237,7 +238,7 @@ public abstract class JImmutableLinkedStack<T>
 
         @Override
         @Nonnull
-        public JImmutableLinkedStack<V> insert(V value)
+        public JImmutableLinkedStack<V> insert(@Nullable V value)
         {
             return new Chain<V>(value, this);
         }

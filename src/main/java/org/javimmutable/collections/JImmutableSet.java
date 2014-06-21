@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the value
      */
     @Nonnull
-    JImmutableSet<T> insert(T value);
+    JImmutableSet<T> insert(@Nullable T value);
 
     /**
      * Determines if the Set contains the specified value.
