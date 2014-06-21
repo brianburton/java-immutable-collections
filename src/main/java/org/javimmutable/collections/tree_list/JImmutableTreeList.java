@@ -251,6 +251,7 @@ public class JImmutableTreeList<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Nonnull
     public Cursor<T> cursor()
     {
         return (size == 0) ? StandardCursor.<T>of() : root.cursor();

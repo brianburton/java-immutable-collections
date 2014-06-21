@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -211,6 +212,7 @@ public class TwoNode<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<T> cursor()
     {
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));

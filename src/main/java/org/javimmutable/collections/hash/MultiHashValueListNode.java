@@ -44,6 +44,7 @@ import org.javimmutable.collections.common.EmptySequence;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SequenceCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -148,6 +149,7 @@ class MultiHashValueListNode<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return SequenceCursor.of(this);

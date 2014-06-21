@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -140,6 +141,7 @@ class SingleHashValueListNode<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);

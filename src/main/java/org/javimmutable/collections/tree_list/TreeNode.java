@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree_list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -65,5 +66,6 @@ public abstract class TreeNode<T>
 
     public abstract DeleteMergeResult<T> rightDeleteMerge(TreeNode<T> node);
 
+    @Nonnull
     public abstract Cursor<T> cursor();
 }

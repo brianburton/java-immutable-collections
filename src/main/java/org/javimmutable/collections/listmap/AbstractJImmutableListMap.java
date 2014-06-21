@@ -117,6 +117,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<K, JImmutableList<V>>> cursor()
     {
         return contents.cursor();

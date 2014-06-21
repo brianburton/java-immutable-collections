@@ -242,6 +242,8 @@ public abstract class JImmutableLinkedStack<T>
             return new Chain<V>(value, this);
         }
 
+        @Override
+        @Nonnull
         public Cursor<V> cursor()
         {
             return SequenceCursor.of(this);

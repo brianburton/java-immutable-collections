@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
@@ -108,6 +109,7 @@ public abstract class TreeNode<K, V>
      *
      * @return
      */
+    @Nonnull
     public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
 
     /**

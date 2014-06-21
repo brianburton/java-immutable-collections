@@ -174,6 +174,7 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<T> cursor()
     {
         return TransformCursor.ofKeys(map.cursor());

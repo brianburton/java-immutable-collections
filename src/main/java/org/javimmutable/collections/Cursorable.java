@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implemented by objects that can create a Cursor for a given type.
  *
@@ -42,5 +44,6 @@ package org.javimmutable.collections;
  */
 public interface Cursorable<T>
 {
+    @Nonnull
     Cursor<T> cursor();
 }

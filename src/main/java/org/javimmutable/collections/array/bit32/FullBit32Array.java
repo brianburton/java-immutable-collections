@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -115,6 +116,7 @@ public class FullBit32Array<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return StandardCursor.of(new CursorSource(0));

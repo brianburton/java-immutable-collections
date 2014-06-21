@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -57,6 +58,7 @@ public class SingleValueCursor<T>
         this.value = value;
     }
 
+    @Nonnull
     public static <V> SingleValueCursor<V> of(V value)
     {
         return new SingleValueCursor<V>(value);

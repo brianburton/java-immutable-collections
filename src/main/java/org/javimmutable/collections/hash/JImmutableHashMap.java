@@ -46,6 +46,7 @@ import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -221,6 +222,7 @@ public class JImmutableHashMap<T, K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
         return root.anyOrderEntryCursor(transforms);

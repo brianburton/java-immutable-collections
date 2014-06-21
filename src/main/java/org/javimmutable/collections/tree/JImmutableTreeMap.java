@@ -40,6 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Comparator;
@@ -188,6 +189,7 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
         return root.cursor();

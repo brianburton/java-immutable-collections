@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
@@ -89,6 +90,7 @@ public class EmptyNode<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return StandardCursor.of();

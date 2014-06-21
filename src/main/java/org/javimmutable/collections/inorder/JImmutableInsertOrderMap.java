@@ -47,6 +47,7 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -156,6 +157,7 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
         return TransformCursor.of(sortedNodes.valuesCursor(), new Func1<Node<K, V>, Entry<K, V>>()

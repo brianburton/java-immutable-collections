@@ -45,6 +45,7 @@ import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -189,6 +190,7 @@ public class TrieArray<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return root.signedOrderEntryCursor();

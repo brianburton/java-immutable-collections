@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -123,6 +124,7 @@ public class SingleBit32Array<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(this);

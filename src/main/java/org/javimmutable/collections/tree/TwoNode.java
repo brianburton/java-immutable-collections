@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Comparator;
@@ -261,6 +262,7 @@ public class TwoNode<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));

@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -100,6 +101,7 @@ public class EmptyHashMap<K, V>
     }
 
     @Override
+    @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
         return StandardCursor.of();

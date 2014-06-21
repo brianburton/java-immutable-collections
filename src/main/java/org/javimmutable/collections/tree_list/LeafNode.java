@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree_list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -138,6 +139,7 @@ public class LeafNode<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<T> cursor()
     {
         return SingleValueCursor.of(value);

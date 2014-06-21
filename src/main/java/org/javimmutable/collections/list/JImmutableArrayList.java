@@ -181,6 +181,7 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    @Nonnull
     public Cursor<T> cursor()
     {
         return values.valuesCursor();
