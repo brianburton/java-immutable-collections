@@ -76,6 +76,16 @@ public interface JImmutableListMap<K, V>
                                    @Nonnull JImmutableList<V> value);
 
     /**
+     * Add key/value entry to the map, replacing any existing entry with same key.
+     *
+     * @param value
+     * @return
+     */
+    @Nonnull
+    @Override
+    Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> value);
+
+    /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
      * in the list.
      *

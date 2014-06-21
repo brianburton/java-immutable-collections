@@ -71,6 +71,16 @@ public interface JImmutableMap<K, V>
     }
 
     /**
+     * Add key/value entry to the map, replacing any existing entry with same key.
+     *
+     * @param value
+     * @return
+     */
+    @Nonnull
+    @Override
+    Insertable<Entry<K, V>> insert(@Nonnull Entry<K, V> value);
+
+    /**
      * Search for a value within the map and return a Holder indicating if the value
      * was found and, if it was found, the value itself.  Holder allows null values
      * to be returned unambiguously.

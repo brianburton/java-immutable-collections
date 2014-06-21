@@ -129,9 +129,9 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<K, V>> insert(@Nullable JImmutableMap.Entry<K, V> e)
+    public Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> e)
     {
-        return (e == null) ? this : insert(e.getKey(), e.getValue());
+        return insert(e.getKey(), e.getValue());
     }
 
     @Override

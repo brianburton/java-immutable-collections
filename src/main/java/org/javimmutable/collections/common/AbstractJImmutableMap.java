@@ -67,9 +67,9 @@ public abstract class AbstractJImmutableMap<K, V>
      */
     @Override
     @Nonnull
-    public Insertable<Entry<K, V>> insert(@Nullable Entry<K, V> e)
+    public Insertable<Entry<K, V>> insert(@Nonnull Entry<K, V> e)
     {
-        return (e == null) ? this : assign(e.getKey(), e.getValue());
+        return assign(e.getKey(), e.getValue());
     }
 
     @Override
