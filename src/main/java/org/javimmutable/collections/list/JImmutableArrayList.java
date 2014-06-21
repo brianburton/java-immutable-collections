@@ -101,9 +101,10 @@ public class JImmutableArrayList<T>
         return first == next;
     }
 
+    @Nonnull
     @Override
     public JImmutableArrayList<T> assign(int index,
-                                         T value)
+                                         @Nullable T value)
     {
         final int realIndex = calcRealIndex(index);
         return new JImmutableArrayList<T>(values.assign(realIndex, value), first, next);
@@ -111,7 +112,7 @@ public class JImmutableArrayList<T>
 
     @Override
     @Nonnull
-    public JImmutableArrayList<T> insert(T value)
+    public JImmutableArrayList<T> insert(@Nullable T value)
     {
         if (next == Integer.MAX_VALUE) {
             throw new IndexOutOfBoundsException();
@@ -120,8 +121,9 @@ public class JImmutableArrayList<T>
         return new JImmutableArrayList<T>(values.assign(index, value), first, index + 1);
     }
 
+    @Nonnull
     @Override
-    public JImmutableArrayList<T> insertFirst(T value)
+    public JImmutableArrayList<T> insertFirst(@Nullable T value)
     {
         if (first == Integer.MIN_VALUE) {
             throw new IndexOutOfBoundsException();
@@ -130,12 +132,14 @@ public class JImmutableArrayList<T>
         return new JImmutableArrayList<T>(values.assign(index, value), index, next);
     }
 
+    @Nonnull
     @Override
-    public JImmutableArrayList<T> insertLast(T value)
+    public JImmutableArrayList<T> insertLast(@Nullable T value)
     {
         return insert(value);
     }
 
+    @Nonnull
     @Override
     public JImmutableArrayList<T> deleteFirst()
     {
@@ -146,6 +150,7 @@ public class JImmutableArrayList<T>
         return new JImmutableArrayList<T>(values.delete(index), first + 1, next);
     }
 
+    @Nonnull
     @Override
     public JImmutableArrayList<T> deleteLast()
     {
@@ -162,6 +167,7 @@ public class JImmutableArrayList<T>
         return next - first;
     }
 
+    @Nonnull
     @Override
     public JImmutableList<T> deleteAll()
     {
@@ -176,6 +182,7 @@ public class JImmutableArrayList<T>
         return values.get(realIndex);
     }
 
+    @Nonnull
     @Override
     public List<T> getList()
     {

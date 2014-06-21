@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -57,8 +58,9 @@ public interface JImmutableRandomAccessList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
+    @Nonnull
     JImmutableRandomAccessList<T> assign(int index,
-                                         T value);
+                                         @Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -67,7 +69,7 @@ public interface JImmutableRandomAccessList<T>
      * @return
      */
     @Nonnull
-    JImmutableRandomAccessList<T> insert(T value);
+    JImmutableRandomAccessList<T> insert(@Nullable T value);
 
     /**
      * Insert value at index (which must be within 0 to size).
@@ -88,7 +90,8 @@ public interface JImmutableRandomAccessList<T>
      * @param value
      * @return
      */
-    JImmutableRandomAccessList<T> insertFirst(T value);
+    @Nonnull
+    JImmutableRandomAccessList<T> insertFirst(@Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -97,7 +100,8 @@ public interface JImmutableRandomAccessList<T>
      * @param value
      * @return
      */
-    JImmutableRandomAccessList<T> insertLast(T value);
+    @Nonnull
+    JImmutableRandomAccessList<T> insertLast(@Nullable T value);
 
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
@@ -105,6 +109,7 @@ public interface JImmutableRandomAccessList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
+    @Nonnull
     JImmutableRandomAccessList<T> deleteFirst();
 
     /**
@@ -113,6 +118,7 @@ public interface JImmutableRandomAccessList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
+    @Nonnull
     JImmutableRandomAccessList<T> deleteLast();
 
     /**
@@ -128,5 +134,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableRandomAccessList<T> deleteAll();
 }

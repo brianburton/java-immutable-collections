@@ -112,24 +112,28 @@ public class JImmutableTreeList<T>
         }
     }
 
+    @Nonnull
     @Override
-    public JImmutableTreeList<T> insertFirst(T value)
+    public JImmutableTreeList<T> insertFirst(@Nullable T value)
     {
         return insert(0, value);
     }
 
+    @Nonnull
     @Override
-    public JImmutableTreeList<T> insertLast(T value)
+    public JImmutableTreeList<T> insertLast(@Nullable T value)
     {
         return insert(value);
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeList<T> deleteFirst()
     {
         return delete(0);
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeList<T> deleteLast()
     {
@@ -164,9 +168,10 @@ public class JImmutableTreeList<T>
         return root.get(index);
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeList<T> assign(int index,
-                                        T value)
+                                        @Nullable T value)
     {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -176,6 +181,7 @@ public class JImmutableTreeList<T>
         return update(result);
     }
 
+    @Nonnull
     @Override
     public List<T> getList()
     {
@@ -190,7 +196,7 @@ public class JImmutableTreeList<T>
 
     @Override
     @Nonnull
-    public JImmutableTreeList<T> insert(T value)
+    public JImmutableTreeList<T> insert(@Nullable T value)
     {
         if (size == 0) {
             return create(new LeafNode<T>(value));
@@ -224,6 +230,7 @@ public class JImmutableTreeList<T>
         return size;
     }
 
+    @Nonnull
     @Override
     public JImmutableRandomAccessList<T> deleteAll()
     {

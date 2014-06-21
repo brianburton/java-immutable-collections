@@ -80,8 +80,9 @@ public interface JImmutableList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
+    @Nonnull
     JImmutableList<T> assign(int index,
-                             T value);
+                             @Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -90,7 +91,7 @@ public interface JImmutableList<T>
      * @return
      */
     @Nonnull
-    JImmutableList<T> insert(T value);
+    JImmutableList<T> insert(@Nullable T value);
 
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
@@ -99,7 +100,8 @@ public interface JImmutableList<T>
      * @param value
      * @return
      */
-    JImmutableList<T> insertFirst(T value);
+    @Nonnull
+    JImmutableList<T> insertFirst(@Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
@@ -108,7 +110,8 @@ public interface JImmutableList<T>
      * @param value
      * @return
      */
-    JImmutableList<T> insertLast(T value);
+    @Nonnull
+    JImmutableList<T> insertLast(@Nullable T value);
 
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
@@ -116,6 +119,7 @@ public interface JImmutableList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
+    @Nonnull
     JImmutableList<T> deleteFirst();
 
     /**
@@ -124,6 +128,7 @@ public interface JImmutableList<T>
      * @return new PersistentList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
+    @Nonnull
     JImmutableList<T> deleteLast();
 
     /**
@@ -134,6 +139,7 @@ public interface JImmutableList<T>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableList<T> deleteAll();
 
     /**
@@ -141,5 +147,6 @@ public interface JImmutableList<T>
      *
      * @return
      */
+    @Nonnull
     public List<T> getList();
 }
