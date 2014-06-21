@@ -269,53 +269,54 @@ public class JImmutableTreeList<T>
     public static class Builder<T>
             implements MutableBuilder<T, JImmutableTreeList<T>>
     {
-        private final List<TreeNode<T>> nodes = new ArrayList<TreeNode<T>>();
-        private boolean built;
+        private final List<TreeNode<T>> leaves = new ArrayList<TreeNode<T>>();
 
         @Override
         public Builder<T> add(T value)
         {
-            nodes.add(new LeafNode<T>(value));
+            leaves.add(new LeafNode<T>(value));
             return this;
         }
 
         @Override
         public JImmutableTreeList<T> build()
         {
-            if (built) {
-                throw new IllegalStateException();
-            }
-            built = true;
-
-            int nodeCount = nodes.size();
+            int nodeCount = leaves.size();
             if (nodeCount == 0) {
                 return of();
             }
 
+            if (nodeCount == 1) {
+                return new JImmutableTreeList<T>(leaves.get(0), 1);
+            }
+
+            List<TreeNode<T>> dst = new ArrayList<TreeNode<T>>();
+            List<TreeNode<T>> src = leaves;
             while (nodeCount > 1) {
-                int setIndex = 0;
-                int getIndex = 0;
+                int dstOffset = 0;
+                int srcOffset = 0;
                 int remaining = nodeCount;
                 while (remaining > 1) {
                     if (remaining == 3 || remaining >= 5) {
-                        final TreeNode<T> left = nodes.get(getIndex++);
-                        final TreeNode<T> middle = nodes.get(getIndex++);
-                        final TreeNode<T> right = nodes.get(getIndex++);
-                        nodes.set(setIndex++, new ThreeNode<T>(left, middle, right, left.getSize(), middle.getSize(), right.getSize()));
+                        final TreeNode<T> left = src.get(srcOffset++);
+                        final TreeNode<T> middle = src.get(srcOffset++);
+                        final TreeNode<T> right = src.get(srcOffset++);
+                        set(dst, dstOffset++, new ThreeNode<T>(left, middle, right, left.getSize(), middle.getSize(), right.getSize()));
                         remaining -= 3;
                     } else {
-                        final TreeNode<T> left = nodes.get(getIndex++);
-                        final TreeNode<T> right = nodes.get(getIndex++);
-                        nodes.set(setIndex++, new TwoNode<T>(left, right, left.getSize(), right.getSize()));
+                        final TreeNode<T> left = src.get(srcOffset++);
+                        final TreeNode<T> right = src.get(srcOffset++);
+                        set(dst, dstOffset++, new TwoNode<T>(left, right, left.getSize(), right.getSize()));
                         remaining -= 2;
                     }
                 }
                 if (remaining == 1) {
-                    nodes.set(setIndex++, nodes.get(getIndex));
+                    set(dst, dstOffset++, src.get(srcOffset));
                 }
-                nodeCount = setIndex;
+                nodeCount = dstOffset;
+                src = dst;
             }
-            TreeNode<T> root = nodes.get(0);
+            TreeNode<T> root = dst.get(0);
             return new JImmutableTreeList<T>(root, root.getSize());
         }
 
@@ -368,6 +369,18 @@ public class JImmutableTreeList<T>
                 add(source.get(i));
             }
             return this;
+        }
+
+        private void set(List<TreeNode<T>> dst,
+                         int index,
+                         TreeNode<T> node)
+        {
+            if (index < dst.size()) {
+                dst.set(index, node);
+            } else {
+                assert index == dst.size();
+                dst.add(node);
+            }
         }
     }
 }
