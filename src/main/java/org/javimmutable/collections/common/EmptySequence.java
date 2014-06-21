@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Sequence;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -68,6 +69,7 @@ public class EmptySequence<T>
         throw new UnsupportedOperationException();
     }
 
+    @Nonnull
     @Override
     public Sequence<T> getTail()
     {

@@ -95,6 +95,7 @@ public abstract class JImmutableLinkedStack<T>
 
     public abstract JImmutableLinkedStack<T> insert(@Nullable T value);
 
+    @Nonnull
     public abstract JImmutableLinkedStack<T> getTail();
 
     public Iterator<T> iterator()
@@ -132,6 +133,7 @@ public abstract class JImmutableLinkedStack<T>
         return Cursors.makeString(cursor());
     }
 
+    @Nonnull
     @Override
     public JImmutableStack<T> remove()
     {
@@ -151,6 +153,7 @@ public abstract class JImmutableLinkedStack<T>
             throw new UnsupportedOperationException();
         }
 
+        @Nonnull
         @Override
         public JImmutableLinkedStack<V> getTail()
         {
@@ -189,6 +192,7 @@ public abstract class JImmutableLinkedStack<T>
             return value;
         }
 
+        @Nonnull
         @Override
         public JImmutableLinkedStack<V> getTail()
         {
@@ -230,6 +234,7 @@ public abstract class JImmutableLinkedStack<T>
             return value;
         }
 
+        @Nonnull
         @Override
         public JImmutableLinkedStack<V> getTail()
         {

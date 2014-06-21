@@ -138,6 +138,7 @@ class MultiHashValueListNode<K, V>
         return entry;
     }
 
+    @Nonnull
     @Override
     public Sequence<JImmutableMap.Entry<K, V>> getTail()
     {

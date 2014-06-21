@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+
 /**
  * Interface for collections that contain a head value and a tail containing the remainder of the sequence.
  *
@@ -63,5 +65,6 @@ public interface Sequence<T>
      *
      * @return
      */
+    @Nonnull
     Sequence<T> getTail();
 }

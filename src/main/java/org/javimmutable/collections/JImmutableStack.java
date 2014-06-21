@@ -66,6 +66,7 @@ public interface JImmutableStack<T>
      *
      * @return
      */
+    @Nonnull
     JImmutableStack<T> getTail();
 
     /**
@@ -82,5 +83,6 @@ public interface JImmutableStack<T>
      *
      * @return
      */
+    @Nonnull
     JImmutableStack<T> remove();
 }
