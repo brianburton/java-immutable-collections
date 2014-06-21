@@ -51,6 +51,7 @@ import java.util.Map;
 public abstract class AbstractJImmutableMap<K, V>
         implements JImmutableMap<K, V>
 {
+    @Nullable
     @Override
     public V get(K key)
     {

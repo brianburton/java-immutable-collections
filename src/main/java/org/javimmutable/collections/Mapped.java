@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Interface for containers that associate keys with values.
  *
@@ -51,6 +54,7 @@ public interface Mapped<K, V>
      * @param key identifies the value to retrieve
      * @return value associated with key or null if no value is associated
      */
+    @Nullable
     V get(K key);
 
     /**
@@ -72,5 +76,6 @@ public interface Mapped<K, V>
      * @param key identifies the value to retrieve
      * @return possibly empty Holder containing any value associated with the key
      */
+    @Nonnull
     Holder<V> find(K key);
 }

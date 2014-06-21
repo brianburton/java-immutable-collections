@@ -140,6 +140,7 @@ public abstract class AbstractJImmutableListMap<K, V>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Nullable
     @Override
     public JImmutableList<V> get(K key)
     {
@@ -153,6 +154,7 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.getValueOr(key, defaultValue);
     }
 
+    @Nonnull
     @Override
     public Holder<JImmutableList<V>> find(K key)
     {
