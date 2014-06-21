@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-public class ListTimingComparison
+public final class ListTimingComparison
 {
     public static void main(String[] argv)
             throws Exception

@@ -10,8 +10,12 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-public class StandardMutableBuilderTests
+public final class StandardMutableBuilderTests
 {
+    private StandardMutableBuilderTests()
+    {
+    }
+
     /**
      * Tests all of the standard MutableBuilder add methods using the specified build and comparison functions.
      *

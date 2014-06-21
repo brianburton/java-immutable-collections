@@ -79,7 +79,7 @@ public class MapAdaptor<K, V>
     @Override
     public boolean isEmpty()
     {
-        return map.size() == 0;
+        return map.isEmpty();
     }
 
     @Override
@@ -151,7 +151,7 @@ public class MapAdaptor<K, V>
             @Override
             public boolean isEmpty()
             {
-                return map.size() == 0;
+                return map.isEmpty();
             }
 
             @Override
@@ -201,7 +201,7 @@ public class MapAdaptor<K, V>
             @Override
             public boolean isEmpty()
             {
-                return map.size() == 0;
+                return map.isEmpty();
             }
 
             @Override

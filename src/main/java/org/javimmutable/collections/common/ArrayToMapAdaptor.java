@@ -77,7 +77,7 @@ public class ArrayToMapAdaptor<T>
     @Override
     public boolean isEmpty()
     {
-        return map.size() == 0;
+        return map.isEmpty();
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ArrayToMapAdaptor<T>
             @Override
             public boolean isEmpty()
             {
-                return map.size() == 0;
+                return map.isEmpty();
             }
 
             @Override
@@ -199,7 +199,7 @@ public class ArrayToMapAdaptor<T>
             @Override
             public boolean isEmpty()
             {
-                return map.size() == 0;
+                return map.isEmpty();
             }
 
             @Override

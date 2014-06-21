@@ -45,10 +45,6 @@ public class MutableDelta
 {
     private int value;
 
-    public MutableDelta()
-    {
-    }
-
     public void add(int increment)
     {
         value += increment;

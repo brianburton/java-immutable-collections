@@ -45,8 +45,12 @@ import javax.annotation.concurrent.Immutable;
  * other cursors into Tuples.
  */
 @Immutable
-public class ZipCursor
+public final class ZipCursor
 {
+    private ZipCursor()
+    {
+    }
+
     public static <C1, C2> Cursor<Tuple2<C1, C2>> of(final Cursor<C1> cursor1,
                                                      final Cursor<C2> cursor2)
     {

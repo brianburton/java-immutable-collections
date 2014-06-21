@@ -44,8 +44,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class TimingComparison
+public final class TimingComparison
 {
+    private TimingComparison()
+    {
+    }
+
     public static void main(String[] argv)
     {
         if (argv.length != 2) {

@@ -42,8 +42,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-public class TimingComparison
+public final class TimingComparison
 {
+    private TimingComparison()
+    {
+    }
+
     public static void main(String[] argv)
     {
         if (argv.length != 2) {

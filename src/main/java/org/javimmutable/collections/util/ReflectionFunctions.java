@@ -49,8 +49,12 @@ import java.lang.reflect.Modifier;
  * Contains static constructors for creating FuncN objects that call methods using reflection.
  */
 @SuppressWarnings("unchecked")
-public class ReflectionFunctions
+public final class ReflectionFunctions
 {
+    private ReflectionFunctions()
+    {
+    }
+
     /**
      * Encapsulates the various checked exceptions that can be thrown by the java reflection methods.
      */

@@ -291,7 +291,7 @@ public class JImmutableHashMapTest
 
     public void testTransformSelection()
     {
-        assertSame(JImmutableHashMap.LIST_EMPTY, JImmutableHashMap.forKey(new TimingLoop()));
+        assertSame(JImmutableHashMap.LIST_EMPTY, JImmutableHashMap.forKey(new Object()));
         assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey(100));
         assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey("testing"));
     }

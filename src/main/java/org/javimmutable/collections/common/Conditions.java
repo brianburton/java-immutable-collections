@@ -3,7 +3,7 @@ package org.javimmutable.collections.common;
 /**
  * Utility class containing static methods for implementing pre and post conditions.
  */
-public class Conditions
+public final class Conditions
 {
     private Conditions()
     {

@@ -52,8 +52,12 @@ import java.util.Map;
 /**
  * Library of static functions that perform various operations on Cursors.
  */
-public class Functions
+public final class Functions
 {
+    private Functions()
+    {
+    }
+
     /**
      * Calls func for every value in cursor passing in the accumulator and each value as parameters
      * and setting accumulator to the result.  The final accumulator value is returned.

@@ -43,8 +43,12 @@ import org.javimmutable.collections.Func4;
 /**
  * Contains static factory methods to produce Curried versions of functions.
  */
-public class Curry
+public final class Curry
 {
+    private Curry()
+    {
+    }
+
     /**
      * Produces a Curried Func1 that calls the provided Func4 passing it the fixed parameters
      * param1-param3 along with the actual parameter to the apply() method as the fourth parameter.

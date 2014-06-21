@@ -39,8 +39,12 @@ import org.javimmutable.collections.JImmutableMap;
 
 import java.util.Random;
 
-public class TimingLoop
+public final class TimingLoop
 {
+    private TimingLoop()
+    {
+    }
+
     public static void main(String[] args)
     {
         final int maxLoops = 250000;

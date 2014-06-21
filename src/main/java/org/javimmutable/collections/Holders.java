@@ -113,9 +113,6 @@ public abstract class Holders<V>
     private static class Empty<V>
             extends Holders<V>
     {
-        private Empty()
-        {
-        }
 
         public boolean isEmpty()
         {

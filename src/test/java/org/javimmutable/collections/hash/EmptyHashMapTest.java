@@ -48,8 +48,8 @@ public class EmptyHashMapTest
         assertTrue(comparableMap instanceof JImmutableHashMap);
         assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
 
-        JImmutableMap<TimingLoop, Integer> otherMap = JImmutableHashMap.of();
-        otherMap = otherMap.assign(new TimingLoop(), 100);
+        JImmutableMap<Object, Integer> otherMap = JImmutableHashMap.of();
+        otherMap = otherMap.assign(new Object(), 100);
         assertTrue(otherMap instanceof JImmutableHashMap);
         assertSame(JImmutableHashMap.LIST_TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
 

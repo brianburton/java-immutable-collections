@@ -169,7 +169,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean isEmpty()
     {
-        return map.size() == 0;
+        return map.isEmpty();
     }
 
     @Nonnull

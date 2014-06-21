@@ -191,7 +191,7 @@ public class RandomLoop
             System.out.printf("growing %d%n", list.size());
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
-                if (list.size() == 0) {
+                if (list.isEmpty()) {
                     list = list.insert(value);
                     expected.add(value);
                 } else {

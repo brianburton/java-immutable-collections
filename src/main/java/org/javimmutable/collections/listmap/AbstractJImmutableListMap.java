@@ -103,7 +103,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     @Override
     public boolean isEmpty()
     {
-        return contents.size() == 0;
+        return contents.isEmpty();
     }
 
     @Nonnull

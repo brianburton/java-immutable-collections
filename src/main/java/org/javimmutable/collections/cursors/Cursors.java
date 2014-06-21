@@ -37,8 +37,12 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 
-public class Cursors
+public final class Cursors
 {
+    private Cursors()
+    {
+    }
+
     /**
      * Computes a hash code from the hash codes of all values in the cursor.
      *
