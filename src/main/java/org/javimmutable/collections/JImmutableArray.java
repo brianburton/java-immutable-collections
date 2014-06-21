@@ -77,8 +77,9 @@ public interface JImmutableArray<T>
      * @param defaultValue value to return if no entry exists for index
      * @return value associated with index or defaultValue if no value is associated
      */
+    @Nullable
     T getValueOr(int index,
-                 T defaultValue);
+                 @Nullable T defaultValue);
 
     /**
      * Return a Holder containing the value associated wth the index or an empty

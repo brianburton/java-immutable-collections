@@ -46,6 +46,7 @@ import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,8 +136,9 @@ public class TrieArray<T>
     }
 
     @Override
+    @Nullable
     public T getValueOr(int index,
-                        T defaultValue)
+                        @Nullable T defaultValue)
     {
         if (root.getShift() < TrieNode.shiftForIndex(index)) {
             return defaultValue;

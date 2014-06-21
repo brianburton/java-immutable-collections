@@ -44,6 +44,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -129,8 +130,9 @@ public class StandardBit32Array<T>
     }
 
     @Override
+    @Nullable
     public T getValueOr(int index,
-                        T defaultValue)
+                        @Nullable T defaultValue)
     {
         checkIndex(index);
         final int bit = 1 << index;

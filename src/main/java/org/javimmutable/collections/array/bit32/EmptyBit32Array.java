@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -49,8 +50,9 @@ public class EmptyBit32Array<T>
         extends Bit32Array<T>
 {
     @Override
+    @Nullable
     public T getValueOr(int index,
-                        T defaultValue)
+                        @Nullable T defaultValue)
     {
         checkIndex(index);
         return defaultValue;
