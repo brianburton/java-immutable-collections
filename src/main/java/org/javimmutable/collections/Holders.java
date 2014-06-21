@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -55,6 +56,7 @@ public abstract class Holders<V>
      * @return the Holder
      */
     @SuppressWarnings("unchecked")
+    @Nonnull
     public static <V> Holders<V> of()
     {
         return (Holders<V>)EMPTY;
@@ -67,7 +69,8 @@ public abstract class Holders<V>
      * @param <V>
      * @return the Holder
      */
-    public static <V> Holders<V> of(V value)
+    @Nonnull
+    public static <V> Holders<V> of(@Nullable V value)
     {
         return new Filled<V>(value);
     }
@@ -79,7 +82,8 @@ public abstract class Holders<V>
      * @param <V>
      * @return the Holder
      */
-    public static <V> Holders<V> fromNullable(V value)
+    @Nonnull
+    public static <V> Holders<V> fromNullable(@Nullable V value)
     {
         if (value == null) {
             return of();
