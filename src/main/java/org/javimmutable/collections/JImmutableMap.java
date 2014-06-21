@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
@@ -63,6 +64,7 @@ public interface JImmutableMap<K, V>
     @Immutable
     interface Entry<K, V>
     {
+        @Nonnull
         K getKey();
 
         V getValue();
@@ -76,7 +78,8 @@ public interface JImmutableMap<K, V>
      * @param key non-null key to search for
      * @return empty Holder if not found, otherwise filled Holder with value
      */
-    Holder<V> find(K key);
+    @Nonnull
+    Holder<V> find(@Nonnull K key);
 
     /**
      * Search for an Entry within the map and return a Holder indicating if the Entry
@@ -85,7 +88,8 @@ public interface JImmutableMap<K, V>
      * @param key non-null key to search for
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
-    Holder<Entry<K, V>> findEntry(K key);
+    @Nonnull
+    Holder<Entry<K, V>> findEntry(@Nonnull K key);
 
     /**
      * Sets the value associated with a specific key.  Key must be non-null but value
@@ -97,7 +101,8 @@ public interface JImmutableMap<K, V>
      * @param value possibly null value
      * @return new map reflecting the change
      */
-    JImmutableMap<K, V> assign(K key,
+    @Nonnull
+    JImmutableMap<K, V> assign(@Nonnull K key,
                                V value);
 
     /**
@@ -107,7 +112,8 @@ public interface JImmutableMap<K, V>
      * @param key non-null key
      * @return same or different map depending on whether key was removed
      */
-    JImmutableMap<K, V> delete(K key);
+    @Nonnull
+    JImmutableMap<K, V> delete(@Nonnull K key);
 
     /**
      * Return the number of entries in the map.
@@ -124,6 +130,7 @@ public interface JImmutableMap<K, V>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableMap<K, V> deleteAll();
 
     /**
@@ -131,6 +138,7 @@ public interface JImmutableMap<K, V>
      *
      * @return Map view of this PersistentMap
      */
+    @Nonnull
     Map<K, V> getMap();
 
     /**
@@ -138,6 +146,7 @@ public interface JImmutableMap<K, V>
      *
      * @return
      */
+    @Nonnull
     Cursor<K> keysCursor();
 
     /**
@@ -145,5 +154,6 @@ public interface JImmutableMap<K, V>
      *
      * @return
      */
+    @Nonnull
     Cursor<V> valuesCursor();
 }

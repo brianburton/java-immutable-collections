@@ -97,22 +97,25 @@ public class JImmutableInsertOrderMap<K, V>
         return (current != null) ? current.getValue() : defaultValue;
     }
 
+    @Nonnull
     @Override
-    public Holder<V> find(K key)
+    public Holder<V> find(@Nonnull K key)
     {
         final Node<K, V> current = hashedNodes.get(key);
         return (current != null) ? current : Holders.<V>of();
     }
 
+    @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<K, V> current = hashedNodes.get(key);
         return (current != null) ? Holders.<Entry<K, V>>of(current) : Holders.<Entry<K, V>>of();
     }
 
+    @Nonnull
     @Override
-    public JImmutableInsertOrderMap<K, V> assign(K key,
+    public JImmutableInsertOrderMap<K, V> assign(@Nonnull K key,
                                                  V value)
     {
         final Node<K, V> current = hashedNodes.get(key);
@@ -131,8 +134,9 @@ public class JImmutableInsertOrderMap<K, V>
         }
     }
 
+    @Nonnull
     @Override
-    public JImmutableInsertOrderMap<K, V> delete(K key)
+    public JImmutableInsertOrderMap<K, V> delete(@Nonnull K key)
     {
         final Node<K, V> current = hashedNodes.get(key);
         if (current != null) {
@@ -150,6 +154,7 @@ public class JImmutableInsertOrderMap<K, V>
         return hashedNodes.size();
     }
 
+    @Nonnull
     @Override
     public JImmutableInsertOrderMap<K, V> deleteAll()
     {

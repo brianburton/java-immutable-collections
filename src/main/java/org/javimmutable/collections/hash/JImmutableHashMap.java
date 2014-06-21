@@ -165,14 +165,16 @@ public class JImmutableHashMap<T, K, V>
         return root.getValueOr(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, defaultValue);
     }
 
+    @Nonnull
     @Override
-    public Holder<V> find(K key)
+    public Holder<V> find(@Nonnull K key)
     {
         return root.find(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms);
     }
 
+    @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
         Holder<V> value = find(key);
         if (value.isEmpty()) {
@@ -182,8 +184,9 @@ public class JImmutableHashMap<T, K, V>
         }
     }
 
+    @Nonnull
     @Override
-    public JImmutableMap<K, V> assign(K key,
+    public JImmutableMap<K, V> assign(@Nonnull K key,
                                       V value)
     {
         MutableDelta sizeDelta = new MutableDelta();
@@ -195,8 +198,9 @@ public class JImmutableHashMap<T, K, V>
         }
     }
 
+    @Nonnull
     @Override
-    public JImmutableMap<K, V> delete(K key)
+    public JImmutableMap<K, V> delete(@Nonnull K key)
     {
         MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.delete(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, sizeDelta);
@@ -215,6 +219,7 @@ public class JImmutableHashMap<T, K, V>
         return size;
     }
 
+    @Nonnull
     @Override
     public JImmutableMap<K, V> deleteAll()
     {

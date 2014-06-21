@@ -105,6 +105,7 @@ class SingleHashValueListNode<K, V>
         }
     }
 
+    @Nonnull
     @Override
     public K getKey()
     {

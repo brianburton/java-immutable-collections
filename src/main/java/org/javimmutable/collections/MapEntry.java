@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
@@ -86,6 +87,7 @@ public class MapEntry<K, V>
         return new MapEntry<K, V>(key, value);
     }
 
+    @Nonnull
     @Override
     public K getKey()
     {
@@ -116,6 +118,7 @@ public class MapEntry<K, V>
     {
         if (o instanceof JImmutableMap.Entry) {
             JImmutableMap.Entry jentry = (JImmutableMap.Entry)o;
+            //noinspection ConstantConditions
             return (key == null ?
                     jentry.getKey() == null : key.equals(jentry.getKey())) &&
                    (value == null ?

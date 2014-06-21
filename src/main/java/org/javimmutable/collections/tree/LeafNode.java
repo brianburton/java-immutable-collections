@@ -62,6 +62,7 @@ public class LeafNode<K, V>
         this.value = value;
     }
 
+    @Nonnull
     public K getKey()
     {
         return nodeKey;

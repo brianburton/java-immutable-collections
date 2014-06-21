@@ -110,6 +110,7 @@ public class SingleBit32Array<T>
         return index;
     }
 
+    @Nonnull
     @Override
     public Integer getKey()
     {

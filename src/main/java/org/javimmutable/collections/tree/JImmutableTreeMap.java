@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
@@ -126,31 +127,28 @@ public class JImmutableTreeMap<K, V>
         return root.getValueOr(comparator, key, defaultValue);
     }
 
+    @Nonnull
     @Override
-    public Holder<V> find(K key)
+    public Holder<V> find(@Nonnull K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key);
         return root.find(comparator, key);
     }
 
+    @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key);
         return root.findEntry(comparator, key);
     }
 
+    @Nonnull
     @Override
-    public JImmutableTreeMap<K, V> assign(K key,
+    public JImmutableTreeMap<K, V> assign(@Nonnull K key,
                                           V value)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key);
         MutableDelta sizeDelta = new MutableDelta();
         TreeNode<K, V> newRoot = root.assign(comparator, key, value, sizeDelta);
         if (newRoot == root) {
@@ -160,13 +158,11 @@ public class JImmutableTreeMap<K, V>
         }
     }
 
+    @Nonnull
     @Override
-    public JImmutableTreeMap<K, V> delete(K key)
+    public JImmutableTreeMap<K, V> delete(@Nonnull K key)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-
+        Conditions.stopNull(key);
         MutableDelta sizeDelta = new MutableDelta();
         TreeNode<K, V> newRoot = root.delete(comparator, key, sizeDelta);
         if (newRoot == root) {
@@ -182,6 +178,7 @@ public class JImmutableTreeMap<K, V>
         return size;
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeMap<K, V> deleteAll()
     {

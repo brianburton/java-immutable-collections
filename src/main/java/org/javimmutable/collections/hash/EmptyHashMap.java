@@ -63,27 +63,31 @@ public class EmptyHashMap<K, V>
     {
     }
 
+    @Nonnull
     @Override
-    public Holder<V> find(K key)
+    public Holder<V> find(@Nonnull K key)
     {
         return Holders.of();
     }
 
+    @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
         return Holders.of();
     }
 
+    @Nonnull
     @Override
-    public JImmutableMap<K, V> assign(K key,
+    public JImmutableMap<K, V> assign(@Nonnull K key,
                                       V value)
     {
         return JImmutableHashMap.<K, V>forKey(key).assign(key, value);
     }
 
+    @Nonnull
     @Override
-    public JImmutableMap<K, V> delete(K key)
+    public JImmutableMap<K, V> delete(@Nonnull K key)
     {
         return this;
     }
@@ -94,6 +98,7 @@ public class EmptyHashMap<K, V>
         return 0;
     }
 
+    @Nonnull
     @Override
     public JImmutableMap<K, V> deleteAll()
     {

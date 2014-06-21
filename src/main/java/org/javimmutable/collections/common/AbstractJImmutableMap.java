@@ -77,18 +77,21 @@ public abstract class AbstractJImmutableMap<K, V>
         return size() == 0;
     }
 
+    @Nonnull
     @Override
     public Cursor<K> keysCursor()
     {
         return TransformCursor.ofKeys(cursor());
     }
 
+    @Nonnull
     @Override
     public Cursor<V> valuesCursor()
     {
         return TransformCursor.ofValues(cursor());
     }
 
+    @Nonnull
     @Override
     public Map<K, V> getMap()
     {
