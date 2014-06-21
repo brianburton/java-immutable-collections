@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -174,6 +175,7 @@ public abstract class StandardCursor
             this.source = source;
         }
 
+        @Nonnull
         @Override
         public Cursor<T> next()
         {
@@ -198,6 +200,7 @@ public abstract class StandardCursor
             this.source = source;
         }
 
+        @Nonnull
         @Override
         public Cursor<T> next()
         {

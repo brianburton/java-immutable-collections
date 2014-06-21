@@ -64,6 +64,7 @@ public class SingleValueCursor<T>
         return new SingleValueCursor<V>(value);
     }
 
+    @Nonnull
     @Override
     public Cursor<T> next()
     {

@@ -195,8 +195,8 @@ public abstract class Holders<V>
     public static <T> boolean areEqual(Holder<T> a,
                                        Holder<T> b)
     {
-        if (a == null || b == null) {
-            return a == null && b == null;
+        if ((a == null) || (b == null)) {
+            return (a == null) && (b == null);
         } else if (a.isEmpty()) {
             return b.isEmpty();
         } else if (b.isEmpty()) {
@@ -204,8 +204,8 @@ public abstract class Holders<V>
         } else {
             T v1 = a.getValue();
             T v2 = b.getValue();
-            if (v1 == null || v2 == null) {
-                return v1 == null && v2 == null;
+            if ((v1 == null) || (v2 == null)) {
+                return (v1 == null) && (v2 == null);
             } else {
                 return v1.equals(v2);
             }

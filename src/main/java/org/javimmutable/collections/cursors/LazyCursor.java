@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func0;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -108,6 +109,7 @@ public class LazyCursor<V>
      *
      * @return real cursor's next() value
      */
+    @Nonnull
     @Override
     public Cursor<V> next()
     {

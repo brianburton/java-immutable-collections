@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -73,12 +74,14 @@ public class MultiTransformCursor<S, T>
         return new MultiTransformCursor<S, T>(source, null, transforminator);
     }
 
+    @Nonnull
     @Override
     public Cursor<T> start()
     {
         return (visitCursor == null) ? next() : this;
     }
 
+    @Nonnull
     @Override
     public Cursor<T> next()
     {

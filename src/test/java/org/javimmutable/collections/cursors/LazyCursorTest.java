@@ -95,12 +95,14 @@ public class LazyCursorTest
             advanced = false;
         }
 
+        @Nonnull
         @Override
         public Cursor<String> start()
         {
             return advanced ? this : next();
         }
 
+        @Nonnull
         @Override
         public Cursor<String> next()
         {

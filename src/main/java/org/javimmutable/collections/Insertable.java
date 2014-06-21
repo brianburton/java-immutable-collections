@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Implemented by classes that can "insert" some type of value into themselves.
@@ -55,5 +54,5 @@ public interface Insertable<T>
      * @return
      */
     @Nonnull
-    Insertable<T> insert(@Nullable T value);
+    Insertable<T> insert(T value);
 }

@@ -150,5 +150,5 @@ public interface JImmutableSet<T>
      * @return an unmodifiable Set implementation backed by this set.
      */
     @Nonnull
-    public Set<T> getSet();
+    Set<T> getSet();
 }

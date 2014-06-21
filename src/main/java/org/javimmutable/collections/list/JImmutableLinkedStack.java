@@ -93,6 +93,7 @@ public abstract class JImmutableLinkedStack<T>
         return list;
     }
 
+    @Nonnull
     public abstract JImmutableLinkedStack<T> insert(@Nullable T value);
 
     @Nonnull
@@ -160,12 +161,14 @@ public abstract class JImmutableLinkedStack<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public JImmutableLinkedStack<V> insert(@Nullable V value)
         {
             return new Single<V>(value);
         }
 
+        @Nonnull
         public Cursor<V> cursor()
         {
             return StandardCursor.of();
@@ -199,12 +202,14 @@ public abstract class JImmutableLinkedStack<T>
             return of();
         }
 
+        @Nonnull
         @Override
         public JImmutableLinkedStack<V> insert(@Nullable V value)
         {
             return new Chain<V>(value, this);
         }
 
+        @Nonnull
         public Cursor<V> cursor()
         {
             return SingleValueCursor.of(value);

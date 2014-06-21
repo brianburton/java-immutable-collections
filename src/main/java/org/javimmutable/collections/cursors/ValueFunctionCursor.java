@@ -38,6 +38,8 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 
+import javax.annotation.Nonnull;
+
 /**
  * Provides standard Cursor objects for iterating over the values of arbitrary functions.
  * The cursors are actually created using a factory object that can produce the functions.
@@ -78,6 +80,7 @@ public abstract class ValueFunctionCursor
             this.factory = factory;
         }
 
+        @Nonnull
         @Override
         public Cursor<T> next()
         {
@@ -112,6 +115,7 @@ public abstract class ValueFunctionCursor
             return value;
         }
 
+        @Nonnull
         @Override
         public Cursor<T> next()
         {

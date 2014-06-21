@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -100,12 +101,14 @@ public class MultiCursor<T>
         return new MultiCursor<T>(cursors);
     }
 
+    @Nonnull
     @Override
     public Cursor<T> start()
     {
         return (cursor == null) ? next() : this;
     }
 
+    @Nonnull
     @Override
     public Cursor<T> next()
     {

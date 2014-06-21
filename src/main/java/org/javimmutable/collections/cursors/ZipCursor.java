@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Tuple2;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -56,6 +57,7 @@ public final class ZipCursor
     {
         return new AbstractStartCursor<Tuple2<C1, C2>>()
         {
+            @Nonnull
             @Override
             public Cursor<Tuple2<C1, C2>> next()
             {
@@ -73,6 +75,7 @@ public final class ZipCursor
 
         return new AbstractStartedCursor<Tuple2<C1, C2>>()
         {
+            @Nonnull
             @Override
             public Cursor<Tuple2<C1, C2>> next()
             {

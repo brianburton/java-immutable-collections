@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -91,12 +92,14 @@ public class TransformCursor<S, T>
         });
     }
 
+    @Nonnull
     @Override
     public Cursor<T> start()
     {
         return new TransformCursor<S, T>(source.start(), transforminator);
     }
 
+    @Nonnull
     @Override
     public Cursor<T> next()
     {

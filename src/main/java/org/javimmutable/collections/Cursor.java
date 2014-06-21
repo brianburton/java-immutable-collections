@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implemented by objects used to traverse persistent data structures.
  * The iterators themselves must be immutable and always create a new
@@ -48,7 +50,7 @@ public interface Cursor<T>
     /**
      * Thrown by hasValue() and getValue() if the cursor has not been started by calling next() yet.
      */
-    public static class NotStartedException
+    class NotStartedException
             extends IllegalStateException
     {
     }
@@ -56,7 +58,7 @@ public interface Cursor<T>
     /**
      * Thrown by getValue() if the Cursor's hasValue() method returns false.
      */
-    public static class NoValueException
+    class NoValueException
             extends IllegalStateException
     {
     }
@@ -74,6 +76,7 @@ public interface Cursor<T>
      *
      * @return Cursor for first position or this if already started
      */
+    @Nonnull
     Cursor<T> start();
 
     /**
@@ -84,6 +87,7 @@ public interface Cursor<T>
      *
      * @return Cursor for next position
      */
+    @Nonnull
     Cursor<T> next();
 
     /**

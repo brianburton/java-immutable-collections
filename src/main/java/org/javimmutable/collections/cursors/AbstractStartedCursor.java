@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -53,12 +54,14 @@ import java.util.Iterator;
 public abstract class AbstractStartedCursor<T>
         implements Cursor<T>
 {
+    @Nonnull
     @Override
     public Cursor<T> start()
     {
         return this;
     }
 
+    @Nonnull
     @Override
     public Cursor<T> next()
     {

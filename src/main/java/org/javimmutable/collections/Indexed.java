@@ -56,5 +56,5 @@ public interface Indexed<T>
      *
      * @return
      */
-    public int size();
+    int size();
 }
