@@ -80,8 +80,9 @@ public interface JImmutableRandomAccessList<T>
      * @param value
      * @return
      */
+    @Nonnull
     JImmutableRandomAccessList<T> insert(int index,
-                                         T value);
+                                         @Nullable T value);
 
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
@@ -129,6 +130,7 @@ public interface JImmutableRandomAccessList<T>
      * @param index
      * @return
      */
+    @Nonnull
     JImmutableRandomAccessList<T> delete(int index);
 
     /**

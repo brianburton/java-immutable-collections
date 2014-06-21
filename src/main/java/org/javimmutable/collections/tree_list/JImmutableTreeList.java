@@ -96,9 +96,10 @@ public class JImmutableTreeList<T>
         return new Builder<T>();
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeList<T> insert(int index,
-                                        T value)
+                                        @Nullable T value)
     {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
@@ -140,6 +141,7 @@ public class JImmutableTreeList<T>
         return delete(size - 1);
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeList<T> delete(int index)
     {
