@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
@@ -63,6 +64,7 @@ public abstract class AbstractJImmutableMap<K, V>
      * @return
      */
     @Override
+    @Nonnull
     public Insertable<Entry<K, V>> insert(Entry<K, V> e)
     {
         return assign(e.getKey(), e.getValue());

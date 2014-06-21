@@ -43,6 +43,7 @@ import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -235,6 +236,7 @@ public abstract class JImmutableLinkedStack<T>
         }
 
         @Override
+        @Nonnull
         public JImmutableLinkedStack<V> insert(V value)
         {
             return new Chain<V>(value, this);

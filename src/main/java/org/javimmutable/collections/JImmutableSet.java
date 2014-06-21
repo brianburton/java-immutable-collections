@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
@@ -55,6 +56,7 @@ public interface JImmutableSet<T>
      * @param value
      * @return instance of set containing the value
      */
+    @Nonnull
     JImmutableSet<T> insert(T value);
 
     /**

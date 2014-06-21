@@ -45,6 +45,7 @@ import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -108,6 +109,7 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    @Nonnull
     public JImmutableArrayList<T> insert(T value)
     {
         if (next == Integer.MAX_VALUE) {

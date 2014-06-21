@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.TransformCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
@@ -79,6 +80,7 @@ public abstract class AbstractJImmutableArray<T>
      * @return
      */
     @Override
+    @Nonnull
     public Insertable<JImmutableMap.Entry<Integer, T>> insert(JImmutableMap.Entry<Integer, T> e)
     {
         return assign(e.getKey(), e.getValue());

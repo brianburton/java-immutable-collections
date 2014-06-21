@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implemented by classes that can "insert" some type of value into themselves.
  * The meaning of "insert" can vary between implementations but must be sensible in the
@@ -51,5 +53,6 @@ public interface Insertable<T>
      * @param value
      * @return
      */
+    @Nonnull
     Insertable<T> insert(T value);
 }

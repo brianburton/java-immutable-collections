@@ -45,6 +45,7 @@ import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -186,6 +187,7 @@ public class JImmutableTreeList<T>
     }
 
     @Override
+    @Nonnull
     public JImmutableTreeList<T> insert(T value)
     {
         if (size == 0) {

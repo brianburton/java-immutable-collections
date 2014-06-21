@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -72,6 +73,7 @@ public interface JImmutableStack<T>
      * @param value
      * @return
      */
+    @Nonnull
     JImmutableStack<T> insert(T value);
 
     /**

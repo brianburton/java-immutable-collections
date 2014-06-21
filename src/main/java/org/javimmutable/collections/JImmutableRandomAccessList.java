@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -65,6 +66,7 @@ public interface JImmutableRandomAccessList<T>
      * @param value
      * @return
      */
+    @Nonnull
     JImmutableRandomAccessList<T> insert(T value);
 
     /**
