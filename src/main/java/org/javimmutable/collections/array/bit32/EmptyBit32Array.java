@@ -58,6 +58,7 @@ public class EmptyBit32Array<T>
         return defaultValue;
     }
 
+    @Nonnull
     @Override
     public Holder<T> find(int index)
     {
@@ -65,14 +66,16 @@ public class EmptyBit32Array<T>
         return Holders.of();
     }
 
+    @Nonnull
     @Override
     public Bit32Array<T> assign(int index,
-                                T value)
+                                @Nullable T value)
     {
         checkIndex(index);
         return new SingleBit32Array<T>(index, value);
     }
 
+    @Nonnull
     @Override
     public Bit32Array<T> delete(int index)
     {

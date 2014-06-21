@@ -39,6 +39,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -106,10 +107,12 @@ public abstract class Bit32Array<T>
         }
     }
 
+    @Nonnull
     @Override
     public abstract Bit32Array<T> assign(int key,
-                                         T value);
+                                         @Nullable T value);
 
+    @Nonnull
     @Override
     public abstract Bit32Array<T> delete(int key);
 
@@ -122,6 +125,7 @@ public abstract class Bit32Array<T>
         return getValueOr(index, null);
     }
 
+    @Nonnull
     @Override
     public JImmutableArray<T> deleteAll()
     {

@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
@@ -88,6 +89,7 @@ public interface JImmutableArray<T>
      * @param index identifies the value to retrieve
      * @return possibly empty Holder containing any value associated with the index
      */
+    @Nonnull
     Holder<T> find(int index);
 
     /**
@@ -97,6 +99,7 @@ public interface JImmutableArray<T>
      * @param index index to search for
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
+    @Nonnull
     Holder<JImmutableMap.Entry<Integer, T>> findEntry(int index);
 
     /**
@@ -109,8 +112,9 @@ public interface JImmutableArray<T>
      * @param value possibly null value
      * @return new map reflecting the change
      */
+    @Nonnull
     JImmutableArray<T> assign(int index,
-                              T value);
+                              @Nullable T value);
 
     /**
      * Deletes the entry for the specified index (if any).  Returns a new map if the value
@@ -119,6 +123,7 @@ public interface JImmutableArray<T>
      * @param index index
      * @return same or different map depending on whether index was removed
      */
+    @Nonnull
     JImmutableArray<T> delete(int index);
 
     /**
@@ -136,6 +141,7 @@ public interface JImmutableArray<T>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableArray<T> deleteAll();
 
     /**
@@ -143,6 +149,7 @@ public interface JImmutableArray<T>
      *
      * @return Map view of this PersistentMap
      */
+    @Nonnull
     Map<Integer, T> getMap();
 
     /**
@@ -150,6 +157,7 @@ public interface JImmutableArray<T>
      *
      * @return
      */
+    @Nonnull
     Cursor<Integer> keysCursor();
 
     /**
@@ -157,5 +165,6 @@ public interface JImmutableArray<T>
      *
      * @return
      */
+    @Nonnull
     Cursor<T> valuesCursor();
 }

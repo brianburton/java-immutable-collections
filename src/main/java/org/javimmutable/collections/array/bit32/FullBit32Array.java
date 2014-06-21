@@ -71,9 +71,10 @@ public class FullBit32Array<T>
         this.entries = entries;
     }
 
+    @Nonnull
     @Override
     public Bit32Array<T> assign(int key,
-                                T value)
+                                @Nullable T value)
     {
         T current = entries[key];
         if (current == value) {
@@ -85,6 +86,7 @@ public class FullBit32Array<T>
         }
     }
 
+    @Nonnull
     @Override
     public Bit32Array<T> delete(int key)
     {
@@ -105,6 +107,7 @@ public class FullBit32Array<T>
         return entries[index];
     }
 
+    @Nonnull
     @Override
     public Holder<T> find(int index)
     {

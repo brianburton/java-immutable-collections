@@ -144,6 +144,7 @@ public class StandardBit32Array<T>
         }
     }
 
+    @Nonnull
     public Holder<T> find(int index)
     {
         checkIndex(index);
@@ -156,9 +157,10 @@ public class StandardBit32Array<T>
         }
     }
 
+    @Nonnull
     @SuppressWarnings("unchecked")
     public Bit32Array<T> assign(int index,
-                                T value)
+                                @Nullable T value)
     {
         checkIndex(index);
         final int bit = 1 << index;
@@ -187,6 +189,7 @@ public class StandardBit32Array<T>
         }
     }
 
+    @Nonnull
     @SuppressWarnings("unchecked")
     public Bit32Array<T> delete(int index)
     {

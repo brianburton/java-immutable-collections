@@ -147,6 +147,7 @@ public class TrieArray<T>
         }
     }
 
+    @Nonnull
     @Override
     public Holder<T> find(int index)
     {
@@ -157,9 +158,10 @@ public class TrieArray<T>
         }
     }
 
+    @Nonnull
     @Override
     public JImmutableArray<T> assign(int index,
-                                     T value)
+                                     @Nullable T value)
     {
         MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
@@ -167,6 +169,7 @@ public class TrieArray<T>
         return (newRoot == root) ? this : new TrieArray<T>(newRoot, size + sizeDelta.getValue());
     }
 
+    @Nonnull
     @Override
     public JImmutableArray<T> delete(int index)
     {
@@ -185,6 +188,7 @@ public class TrieArray<T>
         return size;
     }
 
+    @Nonnull
     @Override
     public JImmutableArray<T> deleteAll()
     {

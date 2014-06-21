@@ -61,6 +61,7 @@ public abstract class AbstractJImmutableArray<T>
         return find(index).getValueOrNull();
     }
 
+    @Nonnull
     @Override
     public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int key)
     {
@@ -88,12 +89,14 @@ public abstract class AbstractJImmutableArray<T>
         return assign(e.getKey(), e.getValue());
     }
 
+    @Nonnull
     @Override
     public Cursor<Integer> keysCursor()
     {
         return TransformCursor.ofKeys(cursor());
     }
 
+    @Nonnull
     @Override
     public Cursor<T> valuesCursor()
     {
@@ -106,6 +109,7 @@ public abstract class AbstractJImmutableArray<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Nonnull
     @Override
     public Map<Integer, T> getMap()
     {
