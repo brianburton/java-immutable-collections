@@ -63,7 +63,7 @@ public class FullBit32Array<T>
     FullBit32Array(Indexed<T> source,
                    int offset)
     {
-        assert source.size() - offset >= 32;
+        assert (source.size() - offset) >= 32;
         T[] entries = (T[])new Object[32];
         for (int index = 0; index < 32; ++index) {
             entries[index] = source.get(offset++);
@@ -130,7 +130,7 @@ public class FullBit32Array<T>
     private class CursorSource
             implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
     {
-        private int index;
+        private final int index;
 
         private CursorSource(int index)
         {

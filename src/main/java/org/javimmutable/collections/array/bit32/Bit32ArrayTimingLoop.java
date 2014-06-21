@@ -37,10 +37,13 @@ package org.javimmutable.collections.array.bit32;
 
 import java.util.Random;
 
-public class Bit32ArrayTimingLoop
+public final class Bit32ArrayTimingLoop
 {
+    private Bit32ArrayTimingLoop()
+    {
+    }
+
     public static void main(String[] argv)
-            throws Exception
     {
         final int seed = 100;
         final int loops = 25000;

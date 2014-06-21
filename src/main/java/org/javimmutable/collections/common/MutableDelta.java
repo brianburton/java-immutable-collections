@@ -51,12 +51,12 @@ public class MutableDelta
 
     public void add(int increment)
     {
-        value = value + increment;
+        value += increment;
     }
 
     public void subtract(int decrement)
     {
-        value = value - decrement;
+        value -= decrement;
     }
 
     public int getValue()

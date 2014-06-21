@@ -175,7 +175,7 @@ public abstract class JImmutableLinkedStack<T>
     private static class Single<V>
             extends JImmutableLinkedStack<V>
     {
-        private V value;
+        private final V value;
 
         private Single(V value)
         {
@@ -214,8 +214,8 @@ public abstract class JImmutableLinkedStack<T>
     private static class Chain<V>
             extends JImmutableLinkedStack<V>
     {
-        private V value;
-        private JImmutableLinkedStack<V> next;
+        private final V value;
+        private final JImmutableLinkedStack<V> next;
 
         private Chain(V value,
                       JImmutableLinkedStack<V> next)

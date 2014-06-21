@@ -164,8 +164,7 @@ public class LeafNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                            TreeNode<K, V> node)
+    DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
                                                              this,
@@ -174,8 +173,7 @@ public class LeafNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                             TreeNode<K, V> node)
+    DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(this,
                                                              node,

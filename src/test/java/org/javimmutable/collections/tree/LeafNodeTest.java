@@ -90,12 +90,12 @@ public class LeafNodeTest
     public void testLeftDeleteMerge()
     {
         assertEquals(new DeleteMergeResult<Integer, Integer>(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8), node, 8, 10)),
-                     node.leftDeleteMerge(comparator, new LeafNode<Integer, Integer>(8, 8)));
+                     node.leftDeleteMerge(new LeafNode<Integer, Integer>(8, 8)));
     }
 
     public void testRightDeleteMerge()
     {
         assertEquals(new DeleteMergeResult<Integer, Integer>(new TwoNode<Integer, Integer>(node, new LeafNode<Integer, Integer>(12, 18), 10, 12)),
-                     node.rightDeleteMerge(comparator, new LeafNode<Integer, Integer>(12, 18)));
+                     node.rightDeleteMerge(new LeafNode<Integer, Integer>(12, 18)));
     }
 }

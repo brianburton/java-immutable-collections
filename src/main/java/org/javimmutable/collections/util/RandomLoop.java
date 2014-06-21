@@ -300,7 +300,6 @@ public class RandomLoop
     private void testMaps(MapFactory factory,
                           JImmutableList<String> tokens,
                           Random random)
-            throws Exception
     {
         final int tokenCount = 1 + random.nextInt(100000);
         final List<String> keys = new ArrayList<String>();
@@ -364,7 +363,6 @@ public class RandomLoop
 
     private void testArray(JImmutableList<String> tokens,
                            Random random)
-            throws Exception
     {
         final int tokenCount = 1 + random.nextInt(100000);
         final List<Integer> keys = new ArrayList<Integer>();
@@ -433,7 +431,6 @@ public class RandomLoop
 
     private void testBadHashMap(JImmutableList<String> tokens,
                                 Random random)
-            throws Exception
     {
         final int tokenCount = 1 + random.nextInt(100000);
         final List<BadHash<String>> keys = new ArrayList<BadHash<String>>();
@@ -497,7 +494,6 @@ public class RandomLoop
 
     private void testComparableBadHashMap(JImmutableList<String> tokens,
                                           Random random)
-            throws Exception
     {
         final int tokenCount = 1 + random.nextInt(100000);
         final List<ComparableBadHash<String>> keys = new ArrayList<ComparableBadHash<String>>();
@@ -716,7 +712,7 @@ public class RandomLoop
     private static class ComparableBadHash<T extends Comparable<T>>
             implements Comparable<ComparableBadHash<T>>
     {
-        private T value;
+        private final T value;
 
         private ComparableBadHash(T value)
         {

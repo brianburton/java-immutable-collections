@@ -191,9 +191,7 @@ public abstract class TreeNode<K, V>
     abstract DeleteResult<K, V> deleteImpl(Comparator<K> comparator,
                                            K key);
 
-    abstract DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> comparator,
-                                                     TreeNode<K, V> node);
+    abstract DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node);
 
-    abstract DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> comparator,
-                                                      TreeNode<K, V> node);
+    abstract DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node);
 }

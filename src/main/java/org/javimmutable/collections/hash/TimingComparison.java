@@ -47,7 +47,6 @@ import java.util.Random;
 public class TimingComparison
 {
     public static void main(String[] argv)
-            throws Exception
     {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
@@ -57,19 +56,20 @@ public class TimingComparison
         final int seed = Integer.parseInt(argv[0]);
         final int loops = Integer.parseInt(argv[1]);
 
-        final int maxValue = 10 * loops;
-        final int maxKey = 100000000;
-        final int maxCommand = 10;
-
         MutableDelta javaElapsed = new MutableDelta();
         MutableDelta hashElapsed = new MutableDelta();
         MutableDelta arrayElapsed = new MutableDelta();
         System.out.println("warm up runs");
+
+        final int maxValue = 10 * loops;
+        final int maxKey = 100000000;
+        final int maxCommand = 10;
         runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
         runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
         runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
         runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta());
         System.out.println();
+
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
             runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaElapsed, hashElapsed, arrayElapsed);

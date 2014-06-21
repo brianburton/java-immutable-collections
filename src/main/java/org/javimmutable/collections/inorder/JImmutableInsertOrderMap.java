@@ -224,17 +224,5 @@ public class JImmutableInsertOrderMap<K, V>
         {
             return new Node<K, V>(key, value, index);
         }
-
-        @Override
-        public int hashCode()
-        {
-            return super.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            return super.equals(o);
-        }
     }
 }

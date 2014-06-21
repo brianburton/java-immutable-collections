@@ -66,7 +66,7 @@ public class SingleBit32Array<T>
                         @Nullable T defaultValue)
     {
         checkIndex(index);
-        return this.index == index ? value : defaultValue;
+        return (this.index == index) ? value : defaultValue;
     }
 
     @Nonnull
@@ -74,7 +74,7 @@ public class SingleBit32Array<T>
     public Holder<T> find(int index)
     {
         checkIndex(index);
-        return this.index == index ? Holders.of(value) : Holders.<T>of();
+        return (this.index == index) ? Holders.of(value) : Holders.<T>of();
     }
 
     @Nonnull
@@ -95,7 +95,7 @@ public class SingleBit32Array<T>
     public Bit32Array<T> delete(int index)
     {
         checkIndex(index);
-        return this.index == index ? Bit32Array.<T>of() : this;
+        return (this.index == index) ? Bit32Array.<T>of() : this;
     }
 
     @Override

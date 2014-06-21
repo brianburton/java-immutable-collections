@@ -42,7 +42,6 @@ import java.util.Random;
 public class TimingLoop
 {
     public static void main(String[] args)
-            throws Exception
     {
         final int maxLoops = 250000;
         final int maxKey = 999999999;

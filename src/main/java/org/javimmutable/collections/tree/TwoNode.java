@@ -177,7 +177,7 @@ public class TwoNode<K, V>
                 return DeleteResult.createRemnant(right);
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(props, result.node);
+                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createRemnant(mergeResult.left);
                 } else {
@@ -200,7 +200,7 @@ public class TwoNode<K, V>
                 return DeleteResult.createRemnant(left);
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = left.rightDeleteMerge(props, result.node);
+                DeleteMergeResult<K, V> mergeResult = left.rightDeleteMerge(result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createRemnant(mergeResult.left);
                 } else {
@@ -212,8 +212,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                            TreeNode<K, V> node)
+    DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(node,
                                                                left,
@@ -224,8 +223,7 @@ public class TwoNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                             TreeNode<K, V> node)
+    DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new ThreeNode<K, V>(left,
                                                                right,

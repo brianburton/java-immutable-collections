@@ -81,7 +81,7 @@ public class StandardBit32Array<T>
                        int limit)
     {
         final int size = limit - offset;
-        if (size < 0 || size > 32) {
+        if ((size < 0) || (size > 32)) {
             throw new IllegalArgumentException("invalid size " + size);
         } else {
             final T[] entries = (T[])new Object[size];
@@ -114,7 +114,7 @@ public class StandardBit32Array<T>
     {
         assert index1 != index2;
         bitmask = (1 << index1) | (1 << index2);
-        entries = (T[])(index1 > index2 ? new Object[]{value2, value1} : new Object[]{value1, value2});
+        entries = (T[])((index1 > index2) ? new Object[]{value2, value1} : new Object[]{value1, value2});
     }
 
     @SuppressWarnings({"unchecked", "RedundantCast"})

@@ -94,6 +94,7 @@ public class TrieArray<T>
      * @return
      * @deprecated use builder() instead
      */
+    @Deprecated
     public static <T> JImmutableArray<T> of(Indexed<? extends T> source,
                                             int offset,
                                             int limit)
@@ -117,7 +118,7 @@ public class TrieArray<T>
         }
 
         // first construct an array containing a single level of arrays of leaves
-        final int numBranches = Math.min(32, (limit - offset + 31) / 32);
+        final int numBranches = Math.min(32, ((limit - offset) + 31) / 32);
         @SuppressWarnings("unchecked") final TrieNode<T>[] branchArray = (TrieNode<T>[])new TrieNode[numBranches];
         int index = 0;
         for (int b = 0; b < numBranches; ++b) {
@@ -205,7 +206,7 @@ public class TrieArray<T>
     public static class Builder<T>
             implements MutableBuilder<T, TrieArray<T>>
     {
-        private List<TrieNode<T>> leaves = new ArrayList<TrieNode<T>>();
+        private final List<TrieNode<T>> leaves = new ArrayList<TrieNode<T>>();
 
         @Override
         public Builder<T> add(T value)
@@ -220,7 +221,7 @@ public class TrieArray<T>
         {
             int nodeCount = leaves.size();
             if (nodeCount == 0) {
-                return TrieArray.of();
+                return of();
             }
 
             if (nodeCount == 1) {

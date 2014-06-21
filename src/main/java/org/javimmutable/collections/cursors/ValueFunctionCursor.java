@@ -95,7 +95,7 @@ public abstract class ValueFunctionCursor
     private static class Started<T, F extends ValueFunction<T>>
             extends AbstractStartedCursor<T>
     {
-        private F function;
+        private final F function;
         private Cursor<T> next;
         private final T value;
 

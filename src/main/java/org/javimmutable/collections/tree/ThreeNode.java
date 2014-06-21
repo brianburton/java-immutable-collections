@@ -251,7 +251,7 @@ public class ThreeNode<K, V>
                                                                     rightMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = middle.leftDeleteMerge(comparator, result.node);
+                DeleteMergeResult<K, V> mergeResult = middle.leftDeleteMerge(result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createLeftTwoNode(right, rightMaxKey));
                 } else {
@@ -279,7 +279,7 @@ public class ThreeNode<K, V>
                                                                     rightMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(comparator, result.node);
+                DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createRightTwoNode(left, leftMaxKey));
                 } else {
@@ -307,7 +307,7 @@ public class ThreeNode<K, V>
                                                                     middleMaxKey));
 
             case REMNANT:
-                DeleteMergeResult<K, V> mergeResult = middle.rightDeleteMerge(comparator, result.node);
+                DeleteMergeResult<K, V> mergeResult = middle.rightDeleteMerge(result.node);
                 if (mergeResult.right == null) {
                     return DeleteResult.createInPlace(mergeResult.createRightTwoNode(left, leftMaxKey));
                 } else {
@@ -319,8 +319,7 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(Comparator<K> props,
-                                            TreeNode<K, V> node)
+    DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
                                                              left,
@@ -334,8 +333,7 @@ public class ThreeNode<K, V>
     }
 
     @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(Comparator<K> props,
-                                             TreeNode<K, V> node)
+    DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
     {
         return new DeleteMergeResult<K, V>(new TwoNode<K, V>(left,
                                                              middle,

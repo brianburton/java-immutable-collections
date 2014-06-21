@@ -147,7 +147,8 @@ public class TwoNodeTest
                                                                                              8,
                                                                                              10,
                                                                                              12)),
-                     node.leftDeleteMerge(comparator, new LeafNode<Integer, Integer>(8, 8)));
+                     node.leftDeleteMerge(new LeafNode<Integer, Integer>(8, 8))
+        );
     }
 
     public void testRightDeleteMerge()
@@ -158,7 +159,8 @@ public class TwoNodeTest
                                                                                              10,
                                                                                              12,
                                                                                              14)),
-                     node.rightDeleteMerge(comparator, new LeafNode<Integer, Integer>(14, 14)));
+                     node.rightDeleteMerge(new LeafNode<Integer, Integer>(14, 14))
+        );
     }
 
     public void testUpdateLeftUnchanged()
@@ -173,7 +175,8 @@ public class TwoNodeTest
                                                                          node.getRight(),
                                                                          10,
                                                                          node.getRightMaxKey()),
-                                           0);
+                                           0
+                );
         assertEquals(expected, node.assignImpl(comparator, 10, 20));
     }
 
@@ -186,7 +189,8 @@ public class TwoNodeTest
                                                                            8,
                                                                            node.getLeftMaxKey(),
                                                                            node.getRightMaxKey()),
-                                           1);
+                                           1
+                );
         assertEquals(expected, node.assignImpl(comparator, 8, 8));
     }
 
@@ -202,7 +206,8 @@ public class TwoNodeTest
                                                                          new LeafNode<Integer, Integer>(12, 20),
                                                                          node.getLeftMaxKey(),
                                                                          12),
-                                           0);
+                                           0
+                );
         assertEquals(expected, node.assignImpl(comparator, 12, 20));
     }
 
@@ -215,7 +220,8 @@ public class TwoNodeTest
                                                                            node.getLeftMaxKey(),
                                                                            node.getRightMaxKey(),
                                                                            14),
-                                           1);
+                                           1
+                );
         assertEquals(expected, node.assignImpl(comparator, 14, 14));
     }
 
@@ -237,7 +243,8 @@ public class TwoNodeTest
                                                                                                          11,
                                                                                                          12),
                                                                            10,
-                                                                           12);
+                                                                           12
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createInPlace(new TwoNode<Integer, Integer>(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
                                                                                                                                          new LeafNode<Integer, Integer>(10, 10),
                                                                                                                                          8,
@@ -247,7 +254,8 @@ public class TwoNodeTest
                                                                                                                                          11,
                                                                                                                                          12),
                                                                                                            10,
-                                                                                                           12));
+                                                                                                           12
+        ));
         assertEquals(expected, testNode.deleteImpl(comparator, 9));
     }
 
@@ -267,7 +275,8 @@ public class TwoNodeTest
                                                                                                          11,
                                                                                                          12),
                                                                            10,
-                                                                           12);
+                                                                           12
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createRemnant(new ThreeNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
                                                                                                              new LeafNode<Integer, Integer>(11, 11),
                                                                                                              new LeafNode<Integer, Integer>(12, 12),
@@ -290,7 +299,8 @@ public class TwoNodeTest
                                                                                                            12,
                                                                                                            13),
                                                                            10,
-                                                                           13);
+                                                                           13
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createInPlace(new TwoNode<Integer, Integer>(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 10),
                                                                                                                                          new LeafNode<Integer, Integer>(11, 11),
                                                                                                                                          10,
@@ -300,7 +310,8 @@ public class TwoNodeTest
                                                                                                                                          12,
                                                                                                                                          13),
                                                                                                            11,
-                                                                                                           13));
+                                                                                                           13
+        ));
         assertEquals(expected, testNode.deleteImpl(comparator, 8));
     }
 
@@ -322,7 +333,8 @@ public class TwoNodeTest
                                                                                                            11,
                                                                                                            12),
                                                                            9,
-                                                                           12);
+                                                                           12
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createInPlace(new TwoNode<Integer, Integer>(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
                                                                                                                                          new LeafNode<Integer, Integer>(9, 9),
                                                                                                                                          8,
@@ -332,7 +344,8 @@ public class TwoNodeTest
                                                                                                                                          11,
                                                                                                                                          12),
                                                                                                            9,
-                                                                                                           12));
+                                                                                                           12
+        ));
         assertEquals(expected, testNode.deleteImpl(comparator, 10));
     }
 
@@ -352,7 +365,8 @@ public class TwoNodeTest
                                                                                                          11,
                                                                                                          12),
                                                                            10,
-                                                                           12);
+                                                                           12
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createRemnant(new ThreeNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
                                                                                                              new LeafNode<Integer, Integer>(10, 10),
                                                                                                              new LeafNode<Integer, Integer>(12, 12),
@@ -375,7 +389,8 @@ public class TwoNodeTest
                                                                                                          12,
                                                                                                          13),
                                                                            11,
-                                                                           13);
+                                                                           13
+        );
         DeleteResult<Integer, Integer> expected = DeleteResult.createInPlace(new TwoNode<Integer, Integer>(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(8, 8),
                                                                                                                                          new LeafNode<Integer, Integer>(10, 10),
                                                                                                                                          8,
@@ -385,7 +400,8 @@ public class TwoNodeTest
                                                                                                                                          11,
                                                                                                                                          13),
                                                                                                            10,
-                                                                                                           13));
+                                                                                                           13
+        ));
         assertEquals(expected, testNode.deleteImpl(comparator, 12));
     }
 }

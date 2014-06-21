@@ -45,7 +45,6 @@ import java.util.TreeMap;
 public class TimingComparison
 {
     public static void main(String[] argv)
-            throws Exception
     {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
