@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
@@ -58,7 +57,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the value
      */
     @Nonnull
-    JImmutableSet<T> insert(@Nullable T value);
+    JImmutableSet<T> insert(@Nonnull T value);
 
     /**
      * Determines if the Set contains the specified value.
@@ -74,7 +73,7 @@ public interface JImmutableSet<T>
      * @param value
      * @return true if the Set contains the values
      */
-    boolean containsAll(Cursorable<T> value);
+    boolean containsAll(@Nonnull Cursorable<T> value);
 
     /**
      * Determines if the Set contains any values in the specified collection.
@@ -82,7 +81,7 @@ public interface JImmutableSet<T>
      * @param value
      * @return true if the Set contains a value
      */
-    boolean containsAny(Cursorable<T> value);
+    boolean containsAny(@Nonnull Cursorable<T> value);
 
     /**
      * Removes the value from the Set.  Has no effect if the value is not in the Set.
@@ -90,6 +89,7 @@ public interface JImmutableSet<T>
      * @param value
      * @return instance of set without the value
      */
+    @Nonnull
     JImmutableSet<T> delete(T value);
 
     /**
@@ -98,7 +98,8 @@ public interface JImmutableSet<T>
      * @param other
      * @return instance of set without the values
      */
-    JImmutableSet<T> deleteAll(Cursorable<T> other);
+    @Nonnull
+    JImmutableSet<T> deleteAll(@Nonnull Cursorable<T> other);
 
     /**
      * Adds all values from other to the Set.
@@ -106,7 +107,8 @@ public interface JImmutableSet<T>
      * @param other source of values to add
      * @return instance of set containing the values
      */
-    JImmutableSet<T> union(Cursorable<T> other);
+    @Nonnull
+    JImmutableSet<T> union(@Nonnull Cursorable<T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other Set.
@@ -114,7 +116,8 @@ public interface JImmutableSet<T>
      * @param other
      * @return instance of set with unmatched values removed
      */
-    JImmutableSet<T> intersection(JImmutableSet<T> other);
+    @Nonnull
+    JImmutableSet<T> intersection(@Nonnull JImmutableSet<T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -122,7 +125,8 @@ public interface JImmutableSet<T>
      * @param other
      * @return instance of set with unmatched values removed
      */
-    JImmutableSet<T> intersection(Cursorable<T> other);
+    @Nonnull
+    JImmutableSet<T> intersection(@Nonnull Cursorable<T> other);
 
     /**
      * Determines the number of values in the Set.
@@ -139,10 +143,12 @@ public interface JImmutableSet<T>
     /**
      * @return an equivalent collection with no values
      */
+    @Nonnull
     JImmutableSet<T> deleteAll();
 
     /**
      * @return an unmodifiable Set implementation backed by this set.
      */
+    @Nonnull
     public Set<T> getSet();
 }

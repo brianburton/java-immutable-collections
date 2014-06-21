@@ -39,6 +39,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
@@ -63,6 +64,7 @@ public class JImmutableTreeSet<T>
         this.comparator = comparator;
     }
 
+    @Nonnull
     @Override
     public JImmutableTreeSet<T> deleteAll()
     {

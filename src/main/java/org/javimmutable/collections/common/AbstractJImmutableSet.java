@@ -43,7 +43,6 @@ import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
@@ -61,14 +60,15 @@ public abstract class AbstractJImmutableSet<T>
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insert(@Nullable T value)
+    public JImmutableSet<T> insert(@Nonnull T value)
     {
         JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
     @Override
-    public JImmutableSet<T> union(Cursorable<T> other)
+    public JImmutableSet<T> union(@Nonnull Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -78,6 +78,7 @@ public abstract class AbstractJImmutableSet<T>
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
     @Override
     public JImmutableSet<T> delete(T value)
     {
@@ -85,8 +86,9 @@ public abstract class AbstractJImmutableSet<T>
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(Cursorable<T> other)
+    public JImmutableSet<T> deleteAll(@Nonnull Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = map;
         for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -96,8 +98,9 @@ public abstract class AbstractJImmutableSet<T>
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
     @Override
-    public JImmutableSet<T> intersection(JImmutableSet<T> other)
+    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<T> other)
     {
         JImmutableSet<T> smaller, larger;
         if (other.getClass() == getClass() && other.size() < size()) {
@@ -115,8 +118,9 @@ public abstract class AbstractJImmutableSet<T>
         return smaller;
     }
 
+    @Nonnull
     @Override
-    public JImmutableSet<T> intersection(Cursorable<T> other)
+    public JImmutableSet<T> intersection(@Nonnull Cursorable<T> other)
     {
         JImmutableMap<T, Boolean> newMap = emptyMap();
         for (Cursor<T> cursor = other.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -135,7 +139,7 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
-    public boolean containsAll(Cursorable<T> value)
+    public boolean containsAll(@Nonnull Cursorable<T> value)
     {
         for (Cursor<T> cursor = value.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             if (!contains(cursor.getValue())) {
@@ -146,7 +150,7 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
-    public boolean containsAny(Cursorable<T> value)
+    public boolean containsAny(@Nonnull Cursorable<T> value)
     {
         for (Cursor<T> cursor = value.cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
             if (contains(cursor.getValue())) {
@@ -168,6 +172,7 @@ public abstract class AbstractJImmutableSet<T>
         return map.size() == 0;
     }
 
+    @Nonnull
     @Override
     public Set<T> getSet()
     {

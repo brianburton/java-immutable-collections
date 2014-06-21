@@ -39,6 +39,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -67,6 +68,7 @@ public class JImmutableInsertOrderSet<T>
         return (JImmutableInsertOrderSet<T>)EMPTY;
     }
 
+    @Nonnull
     @Override
     public JImmutableSet<T> deleteAll()
     {
