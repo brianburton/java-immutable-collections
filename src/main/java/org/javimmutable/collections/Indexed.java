@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nullable;
-
 /**
  * Interface for containers that allow access to values by an integer index.
  *
@@ -51,7 +49,6 @@ public interface Indexed<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
-    @Nullable
     T get(int index);
 
     /**

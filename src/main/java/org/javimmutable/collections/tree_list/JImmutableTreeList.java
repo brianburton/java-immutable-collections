@@ -158,7 +158,6 @@ public class JImmutableTreeList<T>
     }
 
     @Override
-    @Nullable
     public T get(int index)
     {
         if (index < 0 || index >= size) {

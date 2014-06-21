@@ -68,7 +68,6 @@ public interface JImmutableList<T>
      * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
-    @Nullable
     T get(int index);
 
     /**

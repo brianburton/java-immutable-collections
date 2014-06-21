@@ -179,7 +179,6 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    @Nullable
     public T get(int index)
     {
         final int realIndex = calcRealIndex(index);
