@@ -71,16 +71,19 @@ public class MapEntry<K, V>
         this.value = value;
     }
 
+    @Nonnull
     public static <K, V> MapEntry<K, V> of(Map.Entry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }
 
+    @Nonnull
     public static <K, V> MapEntry<K, V> of(JImmutableMap.Entry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }
 
+    @Nonnull
     public static <K, V> MapEntry<K, V> of(K key,
                                            V value)
     {
@@ -109,8 +112,8 @@ public class MapEntry<K, V>
     @Override
     public int hashCode()
     {
-        return (key == null ? 0 : key.hashCode()) ^
-               (value == null ? 0 : value.hashCode());
+        return ((key == null) ? 0 : key.hashCode()) ^
+               ((value == null) ? 0 : value.hashCode());
     }
 
     @Override
@@ -119,10 +122,8 @@ public class MapEntry<K, V>
         if (o instanceof JImmutableMap.Entry) {
             JImmutableMap.Entry jentry = (JImmutableMap.Entry)o;
             //noinspection ConstantConditions
-            return (key == null ?
-                    jentry.getKey() == null : key.equals(jentry.getKey())) &&
-                   (value == null ?
-                    jentry.getValue() == null : value.equals(jentry.getValue()));
+            return ((key == null) ? (jentry.getKey() == null) : key.equals(jentry.getKey())) &&
+                   ((value == null) ? (jentry.getValue() == null) : value.equals(jentry.getValue()));
         }
 
         if (!(o instanceof Map.Entry)) {
@@ -130,10 +131,8 @@ public class MapEntry<K, V>
         }
 
         Map.Entry entry2 = (Map.Entry)o;
-        return (key == null ?
-                entry2.getKey() == null : key.equals(entry2.getKey())) &&
-               (value == null ?
-                entry2.getValue() == null : value.equals(entry2.getValue()));
+        return ((key == null) ? (entry2.getKey() == null) : key.equals(entry2.getKey())) &&
+               ((value == null) ? (entry2.getValue() == null) : value.equals(entry2.getValue()));
     }
 
     @Override

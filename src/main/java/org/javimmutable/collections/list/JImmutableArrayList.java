@@ -208,7 +208,7 @@ public class JImmutableArrayList<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || (o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
+        return (o == this) || ((o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
     }
 
     @Override
@@ -228,6 +228,7 @@ public class JImmutableArrayList<T>
     {
         private final TrieArray.Builder<T> builder = TrieArray.builder();
 
+        @Nonnull
         @Override
         public Builder<T> add(T value)
         {
@@ -235,6 +236,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public JImmutableArrayList<T> build()
         {
@@ -246,6 +248,7 @@ public class JImmutableArrayList<T>
             }
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)
         {
@@ -253,6 +256,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Iterator<? extends T> source)
         {
@@ -260,6 +264,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Collection<? extends T> source)
         {
@@ -267,6 +272,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public <K extends T> Builder<T> add(K... source)
         {
@@ -274,6 +280,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Indexed<? extends T> source)
         {
@@ -281,6 +288,7 @@ public class JImmutableArrayList<T>
             return this;
         }
 
+        @Nonnull
         public Builder<T> add(Indexed<? extends T> source,
                               int offset,
                               int limit)
@@ -293,7 +301,7 @@ public class JImmutableArrayList<T>
     private int calcRealIndex(int index)
     {
         final int realIndex = first + index;
-        if (realIndex < first || realIndex >= next) {
+        if ((realIndex < first) || (realIndex >= next)) {
             throw new IndexOutOfBoundsException();
         }
         return realIndex;

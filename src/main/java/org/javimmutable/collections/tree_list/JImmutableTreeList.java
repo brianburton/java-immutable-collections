@@ -101,7 +101,7 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insert(int index,
                                         @Nullable T value)
     {
-        if (index < 0 || index > size) {
+        if ((index < 0) || (index > size)) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -145,7 +145,7 @@ public class JImmutableTreeList<T>
     @Override
     public JImmutableTreeList<T> delete(int index)
     {
-        if (index < 0 || index >= size) {
+        if ((index < 0) || (index >= size)) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -162,7 +162,7 @@ public class JImmutableTreeList<T>
     @Override
     public T get(int index)
     {
-        if (index < 0 || index >= size) {
+        if ((index < 0) || (index >= size)) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -174,7 +174,7 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> assign(int index,
                                         @Nullable T value)
     {
-        if (index < 0 || index >= size) {
+        if ((index < 0) || (index >= size)) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -241,7 +241,7 @@ public class JImmutableTreeList<T>
     @Override
     public boolean equals(Object o)
     {
-        return o instanceof JImmutableList && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());
+        return (o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor());
     }
 
     @Override
@@ -284,6 +284,7 @@ public class JImmutableTreeList<T>
     {
         private final List<TreeNode<T>> leaves = new ArrayList<TreeNode<T>>();
 
+        @Nonnull
         @Override
         public Builder<T> add(T value)
         {
@@ -291,6 +292,7 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public JImmutableTreeList<T> build()
         {
@@ -310,7 +312,7 @@ public class JImmutableTreeList<T>
                 int srcOffset = 0;
                 int remaining = nodeCount;
                 while (remaining > 1) {
-                    if (remaining == 3 || remaining >= 5) {
+                    if ((remaining == 3) || (remaining >= 5)) {
                         final TreeNode<T> left = src.get(srcOffset++);
                         final TreeNode<T> middle = src.get(srcOffset++);
                         final TreeNode<T> right = src.get(srcOffset++);
@@ -333,6 +335,7 @@ public class JImmutableTreeList<T>
             return new JImmutableTreeList<T>(root, root.getSize());
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)
         {
@@ -342,6 +345,7 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Iterator<? extends T> source)
         {
@@ -351,6 +355,7 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Collection<? extends T> source)
         {
@@ -358,6 +363,7 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public <K extends T> Builder<T> add(K... source)
         {
@@ -367,12 +373,14 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Indexed<? extends T> source)
         {
             return add(source, 0, source.size());
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Indexed<? extends T> source,
                               int offset,

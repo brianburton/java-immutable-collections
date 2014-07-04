@@ -208,6 +208,7 @@ public class TrieArray<T>
     {
         private final List<TrieNode<T>> leaves = new ArrayList<TrieNode<T>>();
 
+        @Nonnull
         @Override
         public Builder<T> add(T value)
         {
@@ -216,6 +217,7 @@ public class TrieArray<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public TrieArray<T> build()
         {
@@ -262,6 +264,7 @@ public class TrieArray<T>
             return new TrieArray<T>(dst.get(0), leaves.size());
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)
         {
@@ -271,6 +274,7 @@ public class TrieArray<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Iterator<? extends T> source)
         {
@@ -280,6 +284,7 @@ public class TrieArray<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Collection<? extends T> source)
         {
@@ -287,6 +292,7 @@ public class TrieArray<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public <K extends T> Builder<T> add(K... source)
         {
@@ -296,12 +302,14 @@ public class TrieArray<T>
             return this;
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Indexed<? extends T> source)
         {
             return add(source, 0, source.size());
         }
 
+        @Nonnull
         @Override
         public Builder<T> add(Indexed<? extends T> source,
                               int offset,
