@@ -84,7 +84,6 @@ class HashValueListTransforms<K, V>
         return Holders.fromNullable(oldLeaf.getEntryForKey(key));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor(HashValueListNode<K, V> leaf)
     {

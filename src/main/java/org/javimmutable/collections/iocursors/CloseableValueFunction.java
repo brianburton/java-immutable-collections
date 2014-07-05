@@ -45,5 +45,5 @@ import org.javimmutable.collections.cursors.ValueFunction;
 public interface CloseableValueFunction<T>
         extends ValueFunction<T>
 {
-    public void close();
+    void close();
 }

@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -700,7 +701,6 @@ public class RandomLoop
             return value.hashCode() >>> 8;
         }
 
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override
         public boolean equals(Object o)
         {
@@ -725,7 +725,6 @@ public class RandomLoop
             return value.hashCode() >>> 8;
         }
 
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override
         public boolean equals(Object o)
         {
@@ -733,7 +732,7 @@ public class RandomLoop
         }
 
         @Override
-        public int compareTo(ComparableBadHash<T> other)
+        public int compareTo(@Nonnull ComparableBadHash<T> other)
         {
             return value.compareTo(other.value);
         }

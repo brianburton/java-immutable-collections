@@ -45,5 +45,5 @@ import org.javimmutable.collections.Cursor;
 public interface CloseableCursor<T>
         extends Cursor<T>
 {
-    public void close();
+    void close();
 }

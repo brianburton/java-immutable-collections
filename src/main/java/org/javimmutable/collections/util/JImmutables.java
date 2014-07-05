@@ -64,8 +64,13 @@ import java.util.Map;
  * factory methods always return the fastest implementation of each interface (i.e. hash when sort not
  * required, trie when random access not required, etc).
  */
+@SuppressWarnings("ClassWithTooManyMethods")
 public final class JImmutables
 {
+    private JImmutables()
+    {
+    }
+
     /**
      * Produces an empty JImmutableStack.
      *
