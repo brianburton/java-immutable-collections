@@ -37,6 +37,7 @@ package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class MutableMapAdaptorTest
         assertEquals(true, iter.hasNext());
         assertEquals(new AbstractMap.SimpleEntry<Integer, Integer>(1, 10), iter.next());
         assertEquals(false, iter.hasNext());
+        StandardCursorTest.listIteratorTest(new ArrayList<Map.Entry<Integer, Integer>>(adaptor.entrySet()), adaptor.entrySet().iterator());
 
         adaptor.put(2, 20);
         assertEquals(false, adaptor.isEmpty());

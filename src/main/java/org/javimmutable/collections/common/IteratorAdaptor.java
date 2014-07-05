@@ -38,6 +38,7 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Cursor;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Adaptor to traverse a Cursor using the Iterator API.   Evaluation of the Cursor
@@ -76,9 +77,13 @@ public class IteratorAdaptor<T>
 
     public T next()
     {
-        T answer = cursor.getValue();
-        cursor = cursor.next();
-        return answer;
+        try {
+            T answer = cursor.getValue();
+            cursor = cursor.next();
+            return answer;
+        } catch (Cursor.NoValueException ignored) {
+            throw new NoSuchElementException();
+        }
     }
 
     public void remove()

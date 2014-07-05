@@ -43,6 +43,7 @@ import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -177,9 +178,13 @@ public abstract class MutableMapAdaptor<K, V>
             if (accessMap() != startingMap) {
                 throw new ConcurrentModificationException();
             }
-            current = next;
-            next = next.next();
-            return new MutableMapEntry(current.getValue());
+            try {
+                current = next;
+                next = next.next();
+                return new MutableMapEntry(current.getValue());
+            } catch (Cursor.NoValueException ignored) {
+                throw new NoSuchElementException();
+            }
         }
 
         @Override

@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class StandardCursorTest
         extends TestCase
@@ -168,6 +169,14 @@ public class StandardCursorTest
 
         // after expected sequence has no values
         assertEquals(false, iterator.hasNext());
+
+        // calling next() at end throws
+        try {
+            iterator.next();
+            fail();
+        } catch (NoSuchElementException ignored) {
+            // expected
+        }
 
         // safe to call multiple times once at end
         assertEquals(false, iterator.hasNext());

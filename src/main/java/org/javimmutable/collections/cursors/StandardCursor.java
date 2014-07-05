@@ -44,6 +44,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Utility class that implements standard Cursor behavior for classes that do not
@@ -304,6 +305,9 @@ public abstract class StandardCursor
         @Override
         public T next()
         {
+            if (source.atEnd()) {
+                throw new NoSuchElementException();
+            }
             final T value = source.currentValue();
             source = source.advance();
             return value;
