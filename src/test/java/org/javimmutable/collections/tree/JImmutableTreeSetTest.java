@@ -36,10 +36,11 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,10 +52,17 @@ import java.util.TreeSet;
 public class JImmutableTreeSetTest
         extends TestCase
 {
+    public void testStandard()
+    {
+        StandardJImmutableSetTests.verifySet(JImmutableTreeSet.<Integer>of());
+        StandardCursorTest.emptyCursorTest(JImmutableTreeSet.<Integer>of().cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableTreeSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
+    }
+
+    @SuppressWarnings("OverlyLongMethod")
     public void test()
     {
-        JImmutableStack<String> expected = JImmutableLinkedStack.of();
-        expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
+        Cursorable<String> expected = IterableCursorable.of(Arrays.asList("fred", "wilma", "betty", "barney"));
 
         JImmutableSet<String> set = JImmutableTreeSet.of();
         assertTrue(set.isEmpty());
@@ -156,12 +164,12 @@ public class JImmutableTreeSetTest
 
     public void testRandom()
     {
-        Random random = new Random(2500);
+        Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
             Set<Integer> expected = new TreeSet<Integer>();
             JImmutableSet<Integer> set = JImmutableTreeSet.of();
-            for (int loops = 0; loops < 4 * size; ++loops) {
+            for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
                 switch (command) {
@@ -214,7 +222,7 @@ public class JImmutableTreeSetTest
 
         Set<Integer> expected = new TreeSet<Integer>(reverser);
         JImmutableSet<Integer> set = JImmutableTreeSet.of(reverser);
-        Random random = new Random(2500);
+        Random random = new Random(2500L);
         for (int i = 0; i < 10000; ++i) {
             int value = random.nextInt(100000) - 50000;
             expected.add(value);

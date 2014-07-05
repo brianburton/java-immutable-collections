@@ -47,6 +47,7 @@ import java.util.Set;
  *
  * @param <T>
  */
+@SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
 public interface JImmutableSet<T>
         extends Insertable<T>,

@@ -38,16 +38,23 @@ package org.javimmutable.collections.hash;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 
 public class JImmutableHashSetTest
         extends TestCase
 {
+    public void testStandard()
+    {
+        StandardJImmutableSetTests.verifySet(JImmutableHashSet.<Integer>of());
+        StandardCursorTest.emptyCursorTest(JImmutableHashSet.<Integer>of().cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableHashSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
+    }
+
     public void test()
     {
         JImmutableStack<String> expected = JImmutableLinkedStack.of();
@@ -135,51 +142,5 @@ public class JImmutableHashSetTest
         assertEquals(JImmutableHashSet.<String>of(), set.intersection(set2));
         assertEquals(JImmutableHashSet.<String>of(), set2.intersection(set));
         assertEquals(JImmutableHashSet.<String>of(), set3.deleteAll(set3));
-    }
-
-    public void testRandom()
-    {
-        Random random = new Random(2500);
-        for (int i = 0; i < 50; ++i) {
-            int size = 1 + random.nextInt(20000);
-            Set<Integer> expected = new HashSet<Integer>();
-            JImmutableSet<Integer> set = JImmutableHashSet.of();
-            for (int loops = 0; loops < 4 * size; ++loops) {
-                int command = random.nextInt(4);
-                int value = random.nextInt(size);
-                switch (command) {
-                case 0:
-                case 1:
-                    set = set.insert(value);
-                    expected.add(value);
-                    assertEquals(true, set.contains(value));
-                    break;
-                case 2:
-                    assertEquals(expected.contains(value), set.contains(value));
-                    break;
-                case 3:
-                    set = set.delete(value);
-                    expected.remove(value);
-                    assertEquals(false, set.contains(value));
-                    break;
-                }
-                assertEquals(expected.size(), set.size());
-            }
-            assertEquals(expected, set.getSet());
-            for (Integer value : set) {
-                assertSame(set, set.insert(value));
-            }
-            for (Integer value : set) {
-                set = set.delete(value);
-            }
-            assertEquals(0, set.size());
-            assertEquals(true, set.isEmpty());
-        }
-    }
-
-    public void testDeleteAll()
-    {
-        JImmutableSet<String> set = JImmutableHashSet.<String>of().insert("FRED").insert("WILMA");
-        assertSame(JImmutableHashSet.of(), set.deleteAll());
     }
 }
