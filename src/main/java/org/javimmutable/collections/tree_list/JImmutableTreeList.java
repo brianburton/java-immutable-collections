@@ -113,6 +113,33 @@ public class JImmutableTreeList<T>
         }
     }
 
+    @Override
+    @Nonnull
+    public JImmutableTreeList<T> insert(@Nullable T value)
+    {
+        if (size == 0) {
+            return create(new LeafNode<T>(value));
+        } else {
+            UpdateResult<T> result = root.insertAfter(size - 1, value);
+            return update(result);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insert(@Nonnull Iterable<? extends T> values)
+    {
+        if (size == 0) {
+            return JImmutableTreeList.<T>builder().add(values.iterator()).build();
+        } else {
+            JImmutableTreeList<T> answer = this;
+            for (T value : values) {
+                answer = answer.insert(value);
+            }
+            return answer;
+        }
+    }
+
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertFirst(@Nullable T value)
@@ -193,18 +220,6 @@ public class JImmutableTreeList<T>
     public boolean isEmpty()
     {
         return size == 0;
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableTreeList<T> insert(@Nullable T value)
-    {
-        if (size == 0) {
-            return create(new LeafNode<T>(value));
-        } else {
-            UpdateResult<T> result = root.insertAfter(size - 1, value);
-            return update(result);
-        }
     }
 
     private JImmutableTreeList<T> update(UpdateResult<T> result)

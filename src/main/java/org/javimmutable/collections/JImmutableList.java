@@ -93,6 +93,15 @@ public interface JImmutableList<T>
     JImmutableList<T> insert(@Nullable T value);
 
     /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return
+     */
+    @Nonnull
+    JImmutableList<T> insert(@Nonnull Iterable<? extends T> values);
+
+    /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
      *
@@ -147,5 +156,5 @@ public interface JImmutableList<T>
      * @return
      */
     @Nonnull
-    public List<T> getList();
+    List<T> getList();
 }

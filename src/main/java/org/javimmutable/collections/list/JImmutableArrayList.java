@@ -127,6 +127,23 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
+    public JImmutableArrayList<T> insert(@Nonnull Iterable<? extends T> values)
+    {
+        if (first == next) {
+            return JImmutableArrayList.<T>builder().add(values.iterator()).build();
+        } else {
+            int index = next;
+            JImmutableArray<T> newValues = this.values;
+            for (T value : values) {
+                newValues = newValues.assign(index, value);
+                index += 1;
+            }
+            return new JImmutableArrayList<T>(newValues, first, index);
+        }
+    }
+
+    @Nonnull
+    @Override
     public JImmutableArrayList<T> insertFirst(@Nullable T value)
     {
         if (first == Integer.MIN_VALUE) {

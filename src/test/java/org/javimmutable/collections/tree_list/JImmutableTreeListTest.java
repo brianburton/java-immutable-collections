@@ -39,11 +39,13 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -133,6 +135,18 @@ public class JImmutableTreeListTest
         list.verifyDepthsMatch();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+    }
+
+    public void testInsertIterable()
+    {
+        JImmutableList<Integer> list = JImmutableTreeList.of();
+        StandardCursorTest.emptyCursorTest(list.cursor());
+
+        list = list.insert(Arrays.asList(1, 2, 3));
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), list.cursor());
+
+        list = list.insert(6).insert(Arrays.asList(10, 11, 12)).insert(20);
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 6, 10, 11, 12, 20), list.cursor());
     }
 
     public void testInsertDeleteFirst()
