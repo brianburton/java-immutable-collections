@@ -40,7 +40,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.array.trie32.EmptyTrieNode;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
@@ -61,11 +60,11 @@ public class JImmutableHashMap<T, K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, LIST_TRANSFORMS);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(TrieNode.of(), 0, LIST_TRANSFORMS);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(EmptyTrieNode.of(), 0, TREE_TRANSFORMS);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(TrieNode.of(), 0, TREE_TRANSFORMS);
 
     private final TrieNode<T> root;
     private final int size;
