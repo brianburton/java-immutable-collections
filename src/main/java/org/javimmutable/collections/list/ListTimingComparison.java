@@ -44,6 +44,7 @@ import java.util.Random;
 
 public final class ListTimingComparison
 {
+    @SuppressWarnings("CallToSystemExit")
     public static void main(String[] argv)
             throws Exception
     {
@@ -52,21 +53,22 @@ public final class ListTimingComparison
             System.exit(1);
         }
 
-        final int seed = Integer.parseInt(argv[0]);
+        final long seed = Long.parseLong(argv[0]);
         final int loops = Integer.parseInt(argv[1]);
 
         final int maxCommand = 6;
 
         runTests(seed, loops, 32, maxCommand);
         System.gc();
-        Thread.sleep(500);
+        Thread.sleep(500L);
         runTests(seed, loops, 1024, maxCommand);
         System.gc();
-        Thread.sleep(500);
+        Thread.sleep(500L);
         runTests(seed, loops, 10000, maxCommand);
     }
 
-    private static void runTests(int seed,
+    @SuppressWarnings({"OverlyComplexMethod", "OverlyLongMethod"})
+    private static void runTests(final long seed,
                                  int loops,
                                  int maxSize,
                                  int maxCommand)
@@ -82,7 +84,7 @@ public final class ListTimingComparison
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if (expected.size() == 0) {
+                if (expected.isEmpty()) {
                     int value = random.nextInt();
                     expected.add(value);
                     adds += 1;
@@ -122,7 +124,7 @@ public final class ListTimingComparison
             JImmutableList<Integer> list = JImmutableArrayList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
-                if (list.size() == 0) {
+                if (list.isEmpty()) {
                     int value = random.nextInt();
                     list = list.insert(value);
                     adds += 1;

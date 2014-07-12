@@ -80,13 +80,13 @@ public class StandardCursorTest
         try {
             cursor.hasValue();
             fail();
-        } catch (Cursor.NotStartedException ex) {
+        } catch (Cursor.NotStartedException ignored) {
             // expected
         }
         try {
             cursor.getValue();
             fail();
-        } catch (Cursor.NotStartedException ex) {
+        } catch (Cursor.NotStartedException ignored) {
             // expected
         }
 
@@ -116,7 +116,7 @@ public class StandardCursorTest
         try {
             cursor.getValue();
             fail();
-        } catch (Cursor.NoValueException ex) {
+        } catch (Cursor.NoValueException ignored) {
             // expected
         }
 

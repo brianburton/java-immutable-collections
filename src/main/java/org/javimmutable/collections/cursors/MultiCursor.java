@@ -112,7 +112,7 @@ public class MultiCursor<T>
     @Override
     public Cursor<T> next()
     {
-        if (cursor != null && cursor.hasValue()) {
+        if ((cursor != null) && cursor.hasValue()) {
             Cursor<T> nextCursor = cursor.next();
             if (nextCursor.hasValue()) {
                 return new MultiCursor<T>(nodes, nextCursor);

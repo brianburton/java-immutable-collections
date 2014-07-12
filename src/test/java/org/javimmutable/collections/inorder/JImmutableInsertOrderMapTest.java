@@ -111,7 +111,7 @@ public class JImmutableInsertOrderMapTest
 
     public void testRandomAdds()
     {
-        Random r = new Random(0);
+        Random r = new Random(0L);
         for (int loop = 1; loop <= 20; ++loop) {
             JImmutableInsertOrderMap<Integer, Integer> map = JImmutableInsertOrderMap.of();
             Map<Integer, Integer> expected = new LinkedHashMap<Integer, Integer>();
@@ -120,6 +120,7 @@ public class JImmutableInsertOrderMapTest
                 int value = r.nextInt(500);
                 map = map.assign(key, value);
                 expected.put(key, value);
+                //noinspection ConstantConditions
                 assertEquals(value, (int)map.get(key));
                 assertEquals(value, (int)map.getValueOr(key, value - 1000));
                 assertEquals(value, (int)map.find(key).getValueOrNull());
@@ -139,7 +140,7 @@ public class JImmutableInsertOrderMapTest
             StandardCursorTest.listCursorTest(entries, map.cursor());
             StandardCursorTest.listCursorTest(keys, map.keysCursor());
             StandardCursorTest.listCursorTest(values, map.valuesCursor());
-            while (keys.size() > 0) {
+            while (!keys.isEmpty()) {
                 assertFalse(map.isEmpty());
                 Integer key = keys.remove(0);
                 assertNotNull(map.get(key));

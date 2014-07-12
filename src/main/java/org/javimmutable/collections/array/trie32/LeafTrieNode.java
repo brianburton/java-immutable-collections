@@ -262,7 +262,7 @@ public class LeafTrieNode<T>
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
 
@@ -275,7 +275,7 @@ public class LeafTrieNode<T>
             return false;
         }
         //noinspection RedundantIfStatement
-        if (value != null ? !value.equals(that.value) : that.value != null) {
+        if ((value != null) ? !value.equals(that.value) : (that.value != null)) {
             return false;
         }
 
@@ -286,7 +286,7 @@ public class LeafTrieNode<T>
     public int hashCode()
     {
         int result = index;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + ((value != null) ? value.hashCode() : 0);
         result = 31 * result + shift;
         return result;
     }

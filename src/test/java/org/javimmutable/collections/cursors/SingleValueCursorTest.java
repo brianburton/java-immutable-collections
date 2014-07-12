@@ -44,6 +44,6 @@ public class SingleValueCursorTest
 {
     public void testVarious()
     {
-        StandardCursorTest.listCursorTest(Arrays.<Integer>asList(1), SingleValueCursor.of(1));
+        StandardCursorTest.listCursorTest(Arrays.asList(1), SingleValueCursor.of(1));
     }
 }

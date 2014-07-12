@@ -88,7 +88,7 @@ public class SingleBranchTrieNodeTest
         assertEquals(0, delta.getValue());
 
         delta = new MutableDelta();
-        assertSame(EmptyTrieNode.of(), node.delete(20, 30 << 20, delta));
+        assertSame(EmptyTrieNode.instance(), node.delete(20, 30 << 20, delta));
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
@@ -110,7 +110,7 @@ public class SingleBranchTrieNodeTest
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
-        assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, delta));
+        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, delta));
         assertEquals(-1, delta.getValue());
     }
 
@@ -152,7 +152,7 @@ public class SingleBranchTrieNodeTest
         assertEquals("B", newNode.getValueOr(20, 30 << 20, "b", tx, null));
 
         delta = new MutableDelta();
-        assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, "b", tx, delta));
+        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, "b", tx, delta));
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
@@ -174,7 +174,7 @@ public class SingleBranchTrieNodeTest
         assertEquals(-1, delta.getValue());
 
         delta = new MutableDelta();
-        assertSame(EmptyTrieNode.of(), newNode.delete(20, 30 << 20, "a", tx, delta).delete(20, 30 << 20, "b", tx, delta));
+        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, "a", tx, delta).delete(20, 30 << 20, "b", tx, delta));
         assertEquals(-2, delta.getValue());
     }
 

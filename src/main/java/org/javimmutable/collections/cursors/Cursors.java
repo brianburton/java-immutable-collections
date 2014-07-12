@@ -54,7 +54,7 @@ public final class Cursors
         int answer = 0;
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             Object value = cursor.getValue();
-            answer = 31 * answer + (value != null ? value.hashCode() : 0);
+            answer = 31 * answer + ((value != null) ? value.hashCode() : 0);
         }
         return answer;
     }
@@ -102,7 +102,7 @@ public final class Cursors
             if (value == null) {
                 sb.append("null");
             } else {
-                sb.append(value.toString());
+                sb.append(value);
             }
         }
         sb.append("]");

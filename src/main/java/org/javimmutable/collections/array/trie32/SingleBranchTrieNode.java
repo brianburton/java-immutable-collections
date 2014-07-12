@@ -205,7 +205,7 @@ public class SingleBranchTrieNode<T>
     @Override
     public TrieNode<T> trimmedToMinimumDepth()
     {
-        return branchIndex == 0 ? child.trimmedToMinimumDepth() : this;
+        return (branchIndex == 0) ? child.trimmedToMinimumDepth() : this;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class SingleBranchTrieNode<T>
                                                   int branchIndex,
                                                   TrieNode<T> newChild)
     {
-        assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+        assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
         return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
     }
 
@@ -257,7 +257,7 @@ public class SingleBranchTrieNode<T>
         } else if (newChild.isLeaf()) {
             return newChild;
         } else {
-            assert newChild.getShift() == shift - 5;
+            assert newChild.getShift() == (shift - 5);
             return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
         }
     }

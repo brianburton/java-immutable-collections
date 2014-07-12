@@ -102,7 +102,7 @@ public class ArrayToMapAdaptor<T>
                     return true;
                 }
             } else {
-                if (value != null && value.equals(o)) {
+                if ((value != null) && value.equals(o)) {
                     return true;
                 }
             }
@@ -205,10 +205,10 @@ public class ArrayToMapAdaptor<T>
             @Override
             public boolean contains(Object o)
             {
-                if (!(o instanceof Map.Entry)) {
+                if (!(o instanceof Entry)) {
                     return false;
                 }
-                Map.Entry<Integer, T> oEntry = (Entry<Integer, T>)o;
+                Entry<Integer, T> oEntry = (Entry<Integer, T>)o;
                 Holder<JImmutableMap.Entry<Integer, T>> eHolder = map.findEntry(oEntry.getKey());
                 return eHolder.isFilled() && new MapEntry(eHolder.getValue()).equals(oEntry);
             }

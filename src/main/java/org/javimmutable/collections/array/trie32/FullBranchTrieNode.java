@@ -64,7 +64,7 @@ public class FullBranchTrieNode<T>
                                                 Indexed<? extends T> source,
                                                 int offset)
     {
-        assert source.size() - offset >= 32;
+        assert (source.size() - offset) >= 32;
         TrieNode<T>[] entries = MultiBranchTrieNode.allocate(32);
         for (int i = 0; i < 32; ++i) {
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
@@ -249,7 +249,7 @@ public class FullBranchTrieNode<T>
                                              int childIndex,
                                              TrieNode<T> newChild)
     {
-        assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+        assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
         TrieNode<T>[] newEntries = entries.clone();
         newEntries[childIndex] = newChild;
         return new FullBranchTrieNode<T>(shift, newEntries);

@@ -51,7 +51,7 @@ public class TrieNodeTest
 {
     public void testVarious()
     {
-        TrieNode<Integer> root = EmptyTrieNode.of();
+        TrieNode<Integer> root = EmptyTrieNode.instance();
         assertEquals((Integer)1, root.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
 
         MutableDelta delta = new MutableDelta();
@@ -167,7 +167,7 @@ public class TrieNodeTest
                 return value;
             } else {
                 Integer oldValue = leaf.getValue();
-                return (oldValue != null && oldValue.equals(value)) ? oldValue : value;
+                return ((oldValue != null) && oldValue.equals(value)) ? oldValue : value;
             }
         }
 
@@ -198,8 +198,7 @@ public class TrieNodeTest
         @Override
         public Cursor<JImmutableMap.Entry<Integer, Integer>> cursor(Integer leaf)
         {
-            Integer value = leaf;
-            return SingleValueCursor.of(findEntry(leaf, value).getValue());
+            return SingleValueCursor.of(findEntry(leaf, leaf).getValue());
         }
     }
 }

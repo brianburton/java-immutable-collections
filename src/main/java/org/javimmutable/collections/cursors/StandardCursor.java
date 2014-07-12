@@ -145,7 +145,7 @@ public abstract class StandardCursor
     public static Cursor<Integer> forRange(int low,
                                            int high)
     {
-        return StandardCursor.of(new RangeSource(low, high));
+        return of(new RangeSource(low, high));
     }
 
     /**
@@ -322,7 +322,7 @@ public abstract class StandardCursor
 
     @Immutable
     private static class IndexedSource<T>
-            implements StandardCursor.Source<T>
+            implements Source<T>
     {
         private final Indexed<T> list;
         private final int index;
@@ -347,7 +347,7 @@ public abstract class StandardCursor
         }
 
         @Override
-        public StandardCursor.Source<T> advance()
+        public Source<T> advance()
         {
             return new IndexedSource<T>(list, index + 1);
         }

@@ -58,7 +58,7 @@ public class TransformCursorTest
 
     public void testRange()
     {
-        StandardCursorTest.listCursorTest(Arrays.<String>asList("3", "4", "5", "6"), TransformCursor.of(StandardCursor.forRange(3, 6), new Func1<Integer, String>()
+        StandardCursorTest.listCursorTest(Arrays.asList("3", "4", "5", "6"), TransformCursor.of(StandardCursor.forRange(3, 6), new Func1<Integer, String>()
         {
             @Override
             public String apply(Integer value)

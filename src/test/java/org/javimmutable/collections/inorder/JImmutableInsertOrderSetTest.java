@@ -141,12 +141,12 @@ public class JImmutableInsertOrderSetTest
 
     public void testRandom()
     {
-        Random random = new Random(2500);
+        Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
             Set<Integer> expected = new LinkedHashSet<Integer>();
             JImmutableSet<Integer> set = JImmutableInsertOrderSet.of();
-            for (int loops = 0; loops < 4 * size; ++loops) {
+            for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
                 switch (command) {

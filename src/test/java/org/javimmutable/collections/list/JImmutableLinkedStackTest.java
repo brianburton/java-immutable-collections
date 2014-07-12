@@ -51,7 +51,7 @@ public class JImmutableLinkedStackTest
         try {
             list.getHead();
             fail();
-        } catch (UnsupportedOperationException ex) {
+        } catch (UnsupportedOperationException ignored) {
             // expected
         }
         assertSame(list, list.getTail());

@@ -84,6 +84,6 @@ public final class ComparableComparator<V extends Comparable<V>>
     @Override
     public boolean equals(Object o)
     {
-        return o == this || o.getClass() == this.getClass();
+        return (o == this) || (o.getClass() == this.getClass());
     }
 }

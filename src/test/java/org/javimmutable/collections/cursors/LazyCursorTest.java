@@ -57,7 +57,7 @@ public class LazyCursorTest
         try {
             lazyIterator.hasValue();
             fail();
-        } catch (Cursor.NotStartedException ex) {
+        } catch (Cursor.NotStartedException ignored) {
             // expected
         }
         assertEquals(false, source.isCreated());
@@ -65,7 +65,7 @@ public class LazyCursorTest
         try {
             lazyIterator.getValue();
             fail();
-        } catch (Cursor.NotStartedException ex) {
+        } catch (Cursor.NotStartedException ignored) {
             // expected
         }
         assertEquals(false, source.isCreated());

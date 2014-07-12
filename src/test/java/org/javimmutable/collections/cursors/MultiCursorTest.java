@@ -54,23 +54,24 @@ public class MultiCursorTest
 
     public void testOneNonEmpty()
     {
-        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of(), StandardCursor.<Integer>of()));
-        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100), StandardCursor.<Integer>of()));
-        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), SingleValueCursor.<Integer>of(100)));
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(SingleValueCursor.of(100), StandardCursor.<Integer>of(), StandardCursor.<Integer>of()));
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), SingleValueCursor.of(100), StandardCursor.<Integer>of()));
+        StandardCursorTest.listCursorTest(Arrays.asList(100), MultiCursor.of(StandardCursor.<Integer>of(), StandardCursor.<Integer>of(), SingleValueCursor.of(100)));
     }
 
     public void testNoneEmpty()
     {
-        StandardCursorTest.listCursorTest(Arrays.asList(100, 200), MultiCursor.of(SingleValueCursor.<Integer>of(100), SingleValueCursor.<Integer>of(200)));
-        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300), MultiCursor.of(SingleValueCursor.<Integer>of(100), SingleValueCursor.<Integer>of(200), SingleValueCursor.<Integer>of(300)));
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200), MultiCursor.of(SingleValueCursor.of(100), SingleValueCursor.of(200)));
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300), MultiCursor.of(SingleValueCursor.of(100), SingleValueCursor.of(200), SingleValueCursor.of(300)));
     }
 
     public void testNested()
     {
-        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300, 400, 500), MultiCursor.of(MultiCursor.of(SingleValueCursor.<Integer>of(100),
-                                                                                                                SingleValueCursor.<Integer>of(200)),
-                                                                                                 MultiCursor.of(SingleValueCursor.<Integer>of(300),
-                                                                                                                SingleValueCursor.<Integer>of(400),
-                                                                                                                SingleValueCursor.of(500))));
+        StandardCursorTest.listCursorTest(Arrays.asList(100, 200, 300, 400, 500), MultiCursor.of(MultiCursor.of(SingleValueCursor.of(100),
+                                                                                                                SingleValueCursor.of(200)),
+                                                                                                 MultiCursor.of(SingleValueCursor.of(300),
+                                                                                                                SingleValueCursor.of(400),
+                                                                                                                SingleValueCursor.of(500))
+        ));
     }
 }

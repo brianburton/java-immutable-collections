@@ -104,7 +104,7 @@ public class MapAdaptor<K, V>
                     return true;
                 }
             } else {
-                if (value != null && value.equals(o)) {
+                if ((value != null) && value.equals(o)) {
                     return true;
                 }
             }
@@ -207,10 +207,10 @@ public class MapAdaptor<K, V>
             @Override
             public boolean contains(Object o)
             {
-                if (!(o instanceof Map.Entry)) {
+                if (!(o instanceof Entry)) {
                     return false;
                 }
-                Map.Entry<K, V> oEntry = (Entry<K, V>)o;
+                Entry<K, V> oEntry = (Entry<K, V>)o;
                 Holder<JImmutableMap.Entry<K, V>> eHolder = map.findEntry(oEntry.getKey());
                 return eHolder.isFilled() && new MapEntry(eHolder.getValue()).equals(oEntry);
             }

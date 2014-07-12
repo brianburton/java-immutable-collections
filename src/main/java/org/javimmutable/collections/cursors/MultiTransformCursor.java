@@ -85,7 +85,7 @@ public class MultiTransformCursor<S, T>
     @Override
     public Cursor<T> next()
     {
-        if (visitCursor != null && visitCursor.hasValue()) {
+        if ((visitCursor != null) && visitCursor.hasValue()) {
             Cursor<T> nextCursor = visitCursor.next();
             if (nextCursor.hasValue()) {
                 return new MultiTransformCursor<S, T>(sourceCursor, nextCursor, transforminator);

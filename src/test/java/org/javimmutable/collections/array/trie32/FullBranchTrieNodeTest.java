@@ -57,7 +57,7 @@ public class FullBranchTrieNodeTest
             try {
                 FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
                 fail();
-            } catch (AssertionError ex) {
+            } catch (AssertionError ignored) {
                 // expected
             }
             list.add(String.valueOf(length));
@@ -66,7 +66,7 @@ public class FullBranchTrieNodeTest
             try {
                 FullBranchTrieNode.fromSource(0, IndexedList.retained(list), offset);
                 fail();
-            } catch (AssertionError ex) {
+            } catch (AssertionError ignored) {
                 // expected
             }
         }

@@ -86,7 +86,7 @@ public class MultiBranchTrieNode<T>
                                                      int branchIndex,
                                                      TrieNode<T> child)
     {
-        assert branchIndex >= 0 && branchIndex < 32;
+        assert (branchIndex >= 0) && (branchIndex < 32);
         TrieNode<T>[] entries = allocate(1);
         entries[0] = child;
         return new MultiBranchTrieNode<T>(shift, 1 << branchIndex, entries);
@@ -297,7 +297,7 @@ public class MultiBranchTrieNode<T>
     @Override
     public TrieNode<T> trimmedToMinimumDepth()
     {
-        return bitmask == 1 ? entries[0].trimmedToMinimumDepth() : this;
+        return (bitmask == 1) ? entries[0].trimmedToMinimumDepth() : this;
     }
 
     @Override
@@ -370,7 +370,7 @@ public class MultiBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
-            assert newChild.isLeaf() || (newChild.getShift() == shift - 5);
+            assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
             final TrieNode<T>[] newEntries = entries.clone();
             newEntries[childIndex] = newChild;
             return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
@@ -545,7 +545,7 @@ public class MultiBranchTrieNode<T>
 
     private IndexList findFirstIndex(IndexList next)
     {
-        while (next != null && (bitmask & next.bit) == 0) {
+        while ((next != null) && ((bitmask & next.bit) == 0)) {
             next = next.next;
         }
         return next;

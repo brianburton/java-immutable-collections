@@ -102,7 +102,7 @@ public class Bit32ArrayTest
 
     public void testRandomOrder()
     {
-        Random random = new Random(100);
+        Random random = new Random(100L);
         Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
         for (int loop = 1; loop < 10000; ++loop) {
             expected.clear();

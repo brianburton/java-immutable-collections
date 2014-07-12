@@ -122,12 +122,10 @@ public class JImmutableArrayListTest
             for (int k = 0; k <= index; ++k) {
                 assertEquals(index - k, (int)list.get(k));
             }
-            {
-                int kk = 0;
-                for (Integer value : list) {
-                    assertEquals(index - kk, (int)value);
-                    kk += 1;
-                }
+            int kk = 0;
+            for (Integer value : list) {
+                assertEquals(index - kk, (int)value);
+                kk += 1;
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
@@ -140,12 +138,10 @@ public class JImmutableArrayListTest
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(list.size() - k - 1, (int)list.get(k));
             }
-            {
-                int kk = 0;
-                for (Integer value : list) {
-                    assertEquals(list.size() - kk - 1, (int)value);
-                    kk += 1;
-                }
+            int kk = 0;
+            for (Integer value : list) {
+                assertEquals(list.size() - kk - 1, (int)value);
+                kk += 1;
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
@@ -157,7 +153,7 @@ public class JImmutableArrayListTest
         try {
             list.deleteFirst();
             fail();
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ignored) {
             // expected
         }
     }
@@ -171,12 +167,10 @@ public class JImmutableArrayListTest
             for (int k = 0; k <= index; ++k) {
                 assertEquals(k, (int)list.get(k));
             }
-            {
-                int kk = 0;
-                for (Integer value : list) {
-                    assertEquals(kk, (int)value);
-                    kk += 1;
-                }
+            int kk = 0;
+            for (Integer value : list) {
+                assertEquals(kk, (int)value);
+                kk += 1;
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
@@ -188,12 +182,10 @@ public class JImmutableArrayListTest
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));
             }
-            {
-                int kk = 0;
-                for (Integer value : list) {
-                    assertEquals(kk, (int)value);
-                    kk += 1;
-                }
+            int kk = 0;
+            for (Integer value : list) {
+                assertEquals(kk, (int)value);
+                kk += 1;
             }
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
@@ -205,22 +197,22 @@ public class JImmutableArrayListTest
         try {
             list.deleteLast();
             fail();
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ignored) {
             // expected
         }
     }
 
     public void testRandom()
     {
-        Random random = new Random(100);
+        Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(4000);
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
-                if (value % 2 == 0) {
-                    list = (value % 3 == 0) ? list.insert(value) : list.insertLast(value);
+                if ((value % 2) == 0) {
+                    list = ((value % 3) == 0) ? list.insert(value) : list.insertLast(value);
                     expected.add(value);
                 } else {
                     list = list.insertFirst(value);
@@ -366,6 +358,6 @@ public class JImmutableArrayListTest
             }
         }
 
-        assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.<Integer>of(JImmutableArrayList.<Integer>of()));
+        assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.of(JImmutableArrayList.<Integer>of()));
     }
 }

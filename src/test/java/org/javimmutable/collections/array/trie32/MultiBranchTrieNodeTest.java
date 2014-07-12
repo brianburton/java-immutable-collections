@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("StringConcatenationMissingWhitespace")
 public class MultiBranchTrieNodeTest
         extends TestCase
 {
@@ -143,7 +144,7 @@ public class MultiBranchTrieNodeTest
             try {
                 node.getValueOr(15, shiftIndex(20, i), null);
                 fail();
-            } catch (AssertionError e) {
+            } catch (AssertionError ignored) {
                 // expected
             }
         }
@@ -162,7 +163,7 @@ public class MultiBranchTrieNodeTest
             try {
                 node.getValueOr(15, shiftIndex(20, i), null);
                 fail();
-            } catch (AssertionError e) {
+            } catch (AssertionError ignored) {
                 // expected
             }
         }
@@ -184,7 +185,7 @@ public class MultiBranchTrieNodeTest
             try {
                 node.find(15, shiftIndex(20, i));
                 fail();
-            } catch (AssertionError e) {
+            } catch (AssertionError ignored) {
                 // expected
             }
         }
@@ -203,7 +204,7 @@ public class MultiBranchTrieNodeTest
             try {
                 node.find(15, shiftIndex(20, i));
                 fail();
-            } catch (AssertionError e) {
+            } catch (AssertionError ignored) {
                 // expected
             }
         }

@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 public class EmptyHashMapTest
         extends TestCase
 {
+    @SuppressWarnings("ConstantConditions")
     public void testAssign()
     {
         JImmutableMap<String, Integer> comparableMap = JImmutableHashMap.of();
@@ -57,7 +58,7 @@ public class EmptyHashMapTest
             otherMap = JImmutableHashMap.of();
             otherMap.assign(null, 100);
             fail();
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ignored) {
             // pass
         }
     }
