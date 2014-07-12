@@ -183,7 +183,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> MutableBuilder<T, ? extends JImmutableList<T>> listBuilder()
+    public static <T> JImmutableList.Builder<T> listBuilder()
     {
         return JImmutableArrayList.builder();
     }
@@ -377,7 +377,7 @@ public final class JImmutables
      * @param <T>
      * @return
      */
-    public static <T> MutableBuilder<T, ? extends JImmutableList<T>> ralistBuilder()
+    public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
     {
         return JImmutableTreeList.builder();
     }

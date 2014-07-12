@@ -39,7 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -241,7 +240,7 @@ public class JImmutableArrayList<T>
     }
 
     public static class Builder<T>
-            implements MutableBuilder<T, JImmutableArrayList<T>>
+            implements JImmutableList.Builder<T>
     {
         private final TrieArray.Builder<T> builder = TrieArray.builder();
 

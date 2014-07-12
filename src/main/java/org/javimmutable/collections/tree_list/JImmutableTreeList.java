@@ -39,7 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -295,7 +294,7 @@ public class JImmutableTreeList<T>
     }
 
     public static class Builder<T>
-            implements MutableBuilder<T, JImmutableTreeList<T>>
+            implements JImmutableRandomAccessList.Builder<T>
     {
         private final List<TreeNode<T>> leaves = new ArrayList<TreeNode<T>>();
 

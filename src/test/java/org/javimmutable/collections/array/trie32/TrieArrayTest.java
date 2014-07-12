@@ -77,7 +77,7 @@ public class TrieArrayTest
 
     public void testRandom()
     {
-        Random r = new Random(20);
+        Random r = new Random(20L);
         Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
         JImmutableArray<Integer> array = TrieArray.of();
         for (int loop = 1; loop <= 20000; ++loop) {

@@ -49,6 +49,11 @@ import javax.annotation.concurrent.Immutable;
 public interface JImmutableRandomAccessList<T>
         extends JImmutableList<T>
 {
+    interface Builder<T>
+            extends MutableBuilder<T, JImmutableRandomAccessList<T>>
+    {
+    }
+
     /**
      * Replaces the value at the specified index (which must be within current
      * bounds of the list) with the new value.

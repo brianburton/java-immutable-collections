@@ -26,10 +26,10 @@ public final class StandardMutableBuilderTests
      * @param <C>
      */
     public static <T, C> void verifyBuilder(List<T> values,
-                                            Func0<MutableBuilder<T, C>> builderFactory,
+                                            Func0<? extends MutableBuilder<T, C>> builderFactory,
                                             Func2<List<T>, C, Boolean> comparator)
     {
-        C collection;
+        @SuppressWarnings("TooBroadScope") C collection;
 
         Indexed<T> indexed = IndexedList.retained(values);
 

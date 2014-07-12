@@ -55,6 +55,11 @@ public interface JImmutableList<T>
                 Cursorable<T>,
                 Iterable<T>
 {
+    interface Builder<T>
+            extends MutableBuilder<T, JImmutableList<T>>
+    {
+    }
+
     /**
      * @return number of values in the list
      */
