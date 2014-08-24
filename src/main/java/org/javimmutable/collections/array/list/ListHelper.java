@@ -17,6 +17,13 @@ class ListHelper
         return (T[])((size == 0) ? EMPTY_VALUES : new Object[size]);
     }
 
+    static <T> Node<T>[] allocateSingleNode(Node<T> node)
+    {
+        Node<T>[] answer = allocateNodes(1);
+        answer[0] = node;
+        return answer;
+    }
+
     static int sizeForDepth(int depth)
     {
         return 1 << (5 * depth);

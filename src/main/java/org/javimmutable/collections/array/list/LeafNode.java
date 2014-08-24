@@ -82,7 +82,7 @@ public class LeafNode<T>
     public Node<T> insertFirst(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(this).insertFirst(value);
+            return new BranchNode<T>(value, this);
         }
         T[] newValues = ListHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 1, values.length);
@@ -94,7 +94,7 @@ public class LeafNode<T>
     public Node<T> insertLast(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(this).insertLast(value);
+            return new BranchNode<T>(this, value);
         }
         T[] newValues = ListHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 0, values.length);

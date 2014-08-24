@@ -32,15 +32,26 @@ public class BranchNode<T>
         this.suffix = suffix;
     }
 
-    BranchNode(Node<T> node)
+    BranchNode(T prefixValue,
+               Node<T> node)
     {
+        this(node.getDepth() + 1,
+             node.size() + 1,
+             new LeafNode<T>(prefixValue),
+             ListHelper.allocateSingleNode(node),
+             EmptyNode.<T>of());
         assert node.isFull();
-        depth = node.getDepth() + 1;
-        size = node.size();
-        prefix = EmptyNode.of();
-        nodes = ListHelper.allocateNodes(1);
-        nodes[0] = node;
-        suffix = EmptyNode.of();
+    }
+
+    BranchNode(Node<T> node,
+               T suffixValue)
+    {
+        this(node.getDepth() + 1,
+             node.size() + 1,
+             EmptyNode.<T>of(),
+             ListHelper.allocateSingleNode(node),
+             new LeafNode<T>(suffixValue));
+        assert node.isFull();
     }
 
     @Override
@@ -107,8 +118,7 @@ public class BranchNode<T>
     public Node<T> insertFirst(T value)
     {
         if (isFull()) {
-            // create a new parent containing us as a node and tell it to insert the value
-            return new BranchNode<T>(this).insertFirst(value);
+            return new BranchNode<T>(value, this);
         }
         if (prefix.getDepth() < (depth - 1)) {
             return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
@@ -132,8 +142,7 @@ public class BranchNode<T>
     public Node<T> insertLast(T value)
     {
         if (isFull()) {
-            // create a new parent containing us as a node and tell it to insert the value
-            return new BranchNode<T>(this).insertLast(value);
+            return new BranchNode<T>(this, value);
         }
         if (suffix.getDepth() < (depth - 1)) {
             return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
