@@ -27,4 +27,6 @@ public interface Node<T>
 
     Node<T> assign(int index,
                    T value);
+
+    void checkInvariants();
 }

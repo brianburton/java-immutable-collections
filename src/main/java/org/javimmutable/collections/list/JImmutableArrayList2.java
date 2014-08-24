@@ -136,4 +136,9 @@ public class JImmutableArrayList2<T>
     {
         return IteratorAdaptor.of(cursor());
     }
+
+    void checkInvariants()
+    {
+        root.checkInvariants();
+    }
 }

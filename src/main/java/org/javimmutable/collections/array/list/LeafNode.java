@@ -16,11 +16,13 @@ import javax.annotation.concurrent.Immutable;
 public class LeafNode<T>
         implements Node<T>
 {
+    @Nonnull
     private final T[] values;
 
-    private LeafNode(T[] values)
+    private LeafNode(@Nonnull T[] values)
     {
         assert values.length > 0;
+        assert values.length <= 32;
         this.values = values;
     }
 
@@ -126,5 +128,13 @@ public class LeafNode<T>
     public Cursor<T> cursor()
     {
         return StandardCursor.of(IndexedArray.retained(values));
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if ((values.length == 0) || (values.length > 32)) {
+            throw new IllegalStateException();
+        }
     }
 }

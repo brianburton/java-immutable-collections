@@ -91,4 +91,9 @@ public class EmptyNode<T>
     {
         return StandardCursor.of();
     }
+
+    @Override
+    public void checkInvariants()
+    {
+    }
 }

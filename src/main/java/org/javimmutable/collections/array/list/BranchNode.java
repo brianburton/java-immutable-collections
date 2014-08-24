@@ -34,9 +34,7 @@ public class BranchNode<T>
 
     BranchNode(Node<T> node)
     {
-        if (!node.isFull()) {
-            throw new IllegalStateException();
-        }
+        assert node.isFull();
         depth = node.getDepth() + 1;
         size = node.size();
         prefix = EmptyNode.of();
@@ -213,5 +211,34 @@ public class BranchNode<T>
         }
         builder = builder.add(LazyCursor.of(suffix));
         return builder.build();
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if (nodes.length > 32) {
+            throw new IllegalStateException();
+        }
+        if ((nodes.length == 32) && !(prefix.isEmpty() && suffix.isEmpty())) {
+            throw new IllegalStateException();
+        }
+        for (Node<T> node : nodes) {
+            if ((node.getDepth() != (depth - 1)) || !node.isFull()) {
+                throw new IllegalStateException();
+            }
+        }
+        int computedSize = prefix.size() + suffix.size();
+        for (Node<T> node : nodes) {
+            computedSize += node.size();
+        }
+        if (computedSize != size) {
+            throw new IllegalStateException();
+        }
+        if (prefix.isFull() && (prefix.getDepth() == (depth - 1))) {
+            throw new IllegalStateException();
+        }
+        if (suffix.isFull() && (suffix.getDepth() == (depth - 1))) {
+            throw new IllegalStateException();
+        }
     }
 }
