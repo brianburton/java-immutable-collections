@@ -43,25 +43,25 @@ public class EmptyNode<T>
     }
 
     @Override
-    public TakeValueResult<T> takeFirstValue()
+    public Node<T> deleteFirst()
     {
         throw new IllegalStateException();
     }
 
     @Override
-    public TakeValueResult<T> takeLastValue()
+    public Node<T> deleteLast()
     {
         throw new IllegalStateException();
     }
 
     @Override
-    public Node<T> insertFirstValue(T value)
+    public Node<T> insertFirst(T value)
     {
         return new LeafNode<T>(value);
     }
 
     @Override
-    public Node<T> insertLastValue(T value)
+    public Node<T> insertLast(T value)
     {
         return new LeafNode<T>(value);
     }

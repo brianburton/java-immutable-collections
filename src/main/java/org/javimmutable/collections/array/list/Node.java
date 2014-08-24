@@ -5,8 +5,6 @@ import org.javimmutable.collections.Cursorable;
 public interface Node<T>
         extends Cursorable<T>
 {
-    int LEAF_DEPTH = 1;
-
     boolean isEmpty();
 
     boolean isFull();
@@ -15,13 +13,13 @@ public interface Node<T>
 
     int getDepth();
 
-    TakeValueResult<T> takeFirstValue();
+    Node<T> deleteFirst();
 
-    TakeValueResult<T> takeLastValue();
+    Node<T> deleteLast();
 
-    Node<T> insertFirstValue(T value);
+    Node<T> insertFirst(T value);
 
-    Node<T> insertLastValue(T value);
+    Node<T> insertLast(T value);
 
     boolean containsIndex(int index);
 

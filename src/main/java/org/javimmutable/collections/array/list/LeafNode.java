@@ -20,6 +20,7 @@ public class LeafNode<T>
 
     private LeafNode(T[] values)
     {
+        assert values.length > 0;
         this.values = values;
     }
 
@@ -54,38 +55,32 @@ public class LeafNode<T>
     }
 
     @Override
-    public TakeValueResult<T> takeFirstValue()
+    public Node<T> deleteFirst()
     {
-        if (values.length == 0) {
-            throw new IllegalStateException();
-        }
         if (values.length == 1) {
-            return new TakeValueResult<T>(values[0], EmptyNode.<T>of());
+            return EmptyNode.of();
         }
         T[] newValues = ListHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 1, newValues, 0, newValues.length);
-        return new TakeValueResult<T>(values[0], new LeafNode<T>(newValues));
+        return new LeafNode<T>(newValues);
     }
 
     @Override
-    public TakeValueResult<T> takeLastValue()
+    public Node<T> deleteLast()
     {
-        if (values.length == 0) {
-            throw new IllegalStateException();
-        }
         if (values.length == 1) {
-            return new TakeValueResult<T>(values[0], EmptyNode.<T>of());
+            return EmptyNode.of();
         }
         T[] newValues = ListHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 0, newValues, 0, newValues.length);
-        return new TakeValueResult<T>(values[values.length - 1], new LeafNode<T>(newValues));
+        return new LeafNode<T>(newValues);
     }
 
     @Override
-    public Node<T> insertFirstValue(T value)
+    public Node<T> insertFirst(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(this).insertFirstValue(value);
+            return new BranchNode<T>(this).insertFirst(value);
         }
         T[] newValues = ListHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 1, values.length);
@@ -94,10 +89,10 @@ public class LeafNode<T>
     }
 
     @Override
-    public Node<T> insertLastValue(T value)
+    public Node<T> insertLast(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(this).insertLastValue(value);
+            return new BranchNode<T>(this).insertLast(value);
         }
         T[] newValues = ListHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 0, values.length);

@@ -70,83 +70,77 @@ public class BranchNode<T>
     }
 
     @Override
-    public TakeValueResult<T> takeFirstValue()
+    public Node<T> deleteFirst()
     {
         if (!prefix.isEmpty()) {
-            TakeValueResult<T> rc = prefix.takeFirstValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, rc.getRoot(), nodes, suffix));
+            return new BranchNode<T>(depth, size - 1, prefix.deleteFirst(), nodes, suffix);
         }
         if (nodes.length > 0) {
             Node<T> newPrefix = nodes[0];
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
             System.arraycopy(nodes, 1, newNodes, 0, newNodes.length);
-            TakeValueResult<T> rc = newPrefix.takeFirstValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, rc.getRoot(), newNodes, suffix));
+            return new BranchNode<T>(depth, size - 1, newPrefix.deleteFirst(), newNodes, suffix);
         }
         if (!suffix.isEmpty()) {
-            TakeValueResult<T> rc = suffix.takeFirstValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, prefix, nodes, rc.getRoot()));
+            return new BranchNode<T>(depth, size - 1, prefix, nodes, suffix.deleteFirst());
         }
         throw new IllegalStateException();
     }
 
     @Override
-    public TakeValueResult<T> takeLastValue()
+    public Node<T> deleteLast()
     {
         if (!suffix.isEmpty()) {
-            TakeValueResult<T> rc = suffix.takeLastValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, prefix, nodes, rc.getRoot()));
+            return new BranchNode<T>(depth, size - 1, prefix, nodes, suffix.deleteLast());
         }
         if (nodes.length > 0) {
             Node<T> newSuffix = nodes[nodes.length - 1];
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
             System.arraycopy(nodes, 0, newNodes, 0, newNodes.length);
-            TakeValueResult<T> rc = newSuffix.takeLastValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, prefix, newNodes, rc.getRoot()));
+            return new BranchNode<T>(depth, size - 1, prefix, newNodes, newSuffix.deleteLast());
         }
         if (!prefix.isEmpty()) {
-            TakeValueResult<T> rc = prefix.takeLastValue();
-            return new TakeValueResult<T>(rc.getValue(), new BranchNode<T>(depth, size - 1, rc.getRoot(), nodes, suffix));
+            return new BranchNode<T>(depth, size - 1, prefix.deleteLast(), nodes, suffix);
         }
         throw new IllegalStateException();
     }
 
     @Override
-    public Node<T> insertFirstValue(T value)
+    public Node<T> insertFirst(T value)
     {
         if (isFull()) {
             // create a new parent containing us as a node and tell it to insert the value
-            return new BranchNode<T>(this).insertFirstValue(value);
+            return new BranchNode<T>(this).insertFirst(value);
         }
         if (prefix.isFull()) {
             if (prefix.getDepth() < (depth - 1)) {
-                return new BranchNode<T>(depth, size + 1, prefix.insertFirstValue(value), nodes, suffix);
+                return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
             }
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
             System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
             newNodes[0] = prefix;
             return new BranchNode<T>(depth, size + 1, new LeafNode<T>(value), newNodes, suffix);
         }
-        return new BranchNode<T>(depth, size + 1, prefix.insertFirstValue(value), nodes, suffix);
+        return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
     }
 
     @Override
-    public Node<T> insertLastValue(T value)
+    public Node<T> insertLast(T value)
     {
         if (isFull()) {
             // create a new parent containing us as a node and tell it to insert the value
-            return new BranchNode<T>(this).insertLastValue(value);
+            return new BranchNode<T>(this).insertLast(value);
         }
         if (suffix.isFull()) {
             if (suffix.getDepth() < (depth - 1)) {
-                return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLastValue(value));
+                return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
             }
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
             System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
             newNodes[nodes.length] = suffix;
             return new BranchNode<T>(depth, size + 1, prefix, newNodes, new LeafNode<T>(value));
         }
-        return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLastValue(value));
+        return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
     }
 
     @Override

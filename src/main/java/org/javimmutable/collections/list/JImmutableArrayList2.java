@@ -56,7 +56,7 @@ public class JImmutableArrayList2<T>
     @Override
     public JImmutableArrayList2<T> insert(@Nullable T value)
     {
-        return new JImmutableArrayList2<T>(root.insertLastValue(value));
+        return new JImmutableArrayList2<T>(root.insertLast(value));
     }
 
     @Nonnull
@@ -65,7 +65,7 @@ public class JImmutableArrayList2<T>
     {
         Node<T> newRoot = root;
         for (T value : values) {
-            newRoot = newRoot.insertLastValue(value);
+            newRoot = newRoot.insertLast(value);
         }
         return new JImmutableArrayList2<T>(newRoot);
     }
@@ -74,14 +74,14 @@ public class JImmutableArrayList2<T>
     @Override
     public JImmutableArrayList2<T> insertFirst(@Nullable T value)
     {
-        return new JImmutableArrayList2<T>(root.insertFirstValue(value));
+        return new JImmutableArrayList2<T>(root.insertFirst(value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList2<T> insertLast(@Nullable T value)
     {
-        return new JImmutableArrayList2<T>(root.insertLastValue(value));
+        return new JImmutableArrayList2<T>(root.insertLast(value));
     }
 
     @Nonnull
@@ -91,7 +91,7 @@ public class JImmutableArrayList2<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new JImmutableArrayList2<T>(root.takeFirstValue().getRoot());
+        return new JImmutableArrayList2<T>(root.deleteFirst());
     }
 
     @Nonnull
@@ -101,7 +101,7 @@ public class JImmutableArrayList2<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new JImmutableArrayList2<T>(root.takeLastValue().getRoot());
+        return new JImmutableArrayList2<T>(root.deleteLast());
     }
 
     @Override
