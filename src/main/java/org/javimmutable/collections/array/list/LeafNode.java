@@ -5,12 +5,14 @@ import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Node that forms the bottom of the tree and contains up to 32 values.
  *
  * @param <T>
  */
+@Immutable
 public class LeafNode<T>
         implements Node<T>
 {
@@ -25,11 +27,6 @@ public class LeafNode<T>
     {
         values = ListHelper.allocateValues(1);
         values[0] = value;
-    }
-
-    public LeafNode()
-    {
-        values = ListHelper.allocateValues(0);
     }
 
     @Override
@@ -59,8 +56,11 @@ public class LeafNode<T>
     @Override
     public TakeValueResult<T> takeFirstValue()
     {
-        if (isEmpty()) {
+        if (values.length == 0) {
             throw new IllegalStateException();
+        }
+        if (values.length == 1) {
+            return new TakeValueResult<T>(values[0], EmptyNode.<T>of());
         }
         T[] newValues = ListHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 1, newValues, 0, newValues.length);
@@ -70,8 +70,11 @@ public class LeafNode<T>
     @Override
     public TakeValueResult<T> takeLastValue()
     {
-        if (isEmpty()) {
+        if (values.length == 0) {
             throw new IllegalStateException();
+        }
+        if (values.length == 1) {
+            return new TakeValueResult<T>(values[0], EmptyNode.<T>of());
         }
         T[] newValues = ListHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 0, newValues, 0, newValues.length);
@@ -109,7 +112,7 @@ public class LeafNode<T>
     }
 
     @Override
-    public T getValue(int index)
+    public T get(int index)
     {
         return values[index];
     }

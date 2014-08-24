@@ -5,7 +5,9 @@ import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class BranchNode<T>
         implements Node<T>
 {
@@ -21,6 +23,8 @@ public class BranchNode<T>
                        Node<T>[] nodes,
                        Node<T> suffix)
     {
+        assert nodes.length <= 32;
+        assert size <= ListHelper.sizeForDepth(depth);
         this.depth = depth;
         this.size = size;
         this.prefix = prefix;
@@ -35,10 +39,10 @@ public class BranchNode<T>
         }
         depth = node.getDepth() + 1;
         size = node.size();
-        prefix = new LeafNode<T>();
+        prefix = EmptyNode.of();
         nodes = ListHelper.allocateNodes(1);
         nodes[0] = node;
-        suffix = new LeafNode<T>();
+        suffix = EmptyNode.of();
     }
 
     @Override
@@ -145,7 +149,6 @@ public class BranchNode<T>
         return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLastValue(value));
     }
 
-
     @Override
     public boolean containsIndex(int index)
     {
@@ -153,20 +156,20 @@ public class BranchNode<T>
     }
 
     @Override
-    public T getValue(int index)
+    public T get(int index)
     {
         if (prefix.containsIndex(index)) {
-            return prefix.getValue(index);
+            return prefix.get(index);
         }
         index -= prefix.size();
         final int fullNodeSize = ListHelper.sizeForDepth(depth - 1);
         int arrayIndex = index / fullNodeSize;
         if (arrayIndex < nodes.length) {
-            return nodes[arrayIndex].getValue(index - (arrayIndex * fullNodeSize));
+            return nodes[arrayIndex].get(index - (arrayIndex * fullNodeSize));
         }
         index -= nodes.length * fullNodeSize;
         if (suffix.containsIndex(index)) {
-            return suffix.getValue(index);
+            return suffix.get(index);
         }
         throw new IndexOutOfBoundsException();
     }

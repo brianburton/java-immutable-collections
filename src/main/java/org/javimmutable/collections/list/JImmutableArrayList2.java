@@ -2,7 +2,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.array.list.LeafNode;
+import org.javimmutable.collections.array.list.EmptyNode;
 import org.javimmutable.collections.array.list.Node;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -16,7 +16,7 @@ public class JImmutableArrayList2<T>
         implements JImmutableList<T>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableArrayList2 EMPTY = new JImmutableArrayList2(new LeafNode());
+    private static final JImmutableArrayList2 EMPTY = new JImmutableArrayList2(EmptyNode.of());
 
     private final Node<T> root;
 
@@ -41,7 +41,7 @@ public class JImmutableArrayList2<T>
     @Override
     public T get(int index)
     {
-        return root.getValue(index);
+        return root.get(index);
     }
 
     @Nonnull

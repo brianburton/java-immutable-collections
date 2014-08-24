@@ -25,7 +25,7 @@ public interface Node<T>
 
     boolean containsIndex(int index);
 
-    T getValue(int index);
+    T get(int index);
 
     Node<T> assign(int index,
                    T value);
