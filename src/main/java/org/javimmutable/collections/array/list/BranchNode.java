@@ -82,7 +82,7 @@ public class BranchNode<T>
             return new BranchNode<T>(depth, size - 1, newPrefix.deleteFirst(), newNodes, suffix);
         }
         if (!suffix.isEmpty()) {
-            return new BranchNode<T>(depth, size - 1, prefix, nodes, suffix.deleteFirst());
+            return suffix.deleteFirst();
         }
         throw new IllegalStateException();
     }
@@ -100,7 +100,7 @@ public class BranchNode<T>
             return new BranchNode<T>(depth, size - 1, prefix, newNodes, newSuffix.deleteLast());
         }
         if (!prefix.isEmpty()) {
-            return new BranchNode<T>(depth, size - 1, prefix.deleteLast(), nodes, suffix);
+            return prefix.deleteLast();
         }
         throw new IllegalStateException();
     }
@@ -112,16 +112,22 @@ public class BranchNode<T>
             // create a new parent containing us as a node and tell it to insert the value
             return new BranchNode<T>(this).insertFirst(value);
         }
-        if (prefix.isFull()) {
-            if (prefix.getDepth() < (depth - 1)) {
-                return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
-            }
-            Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
-            newNodes[0] = prefix;
-            return new BranchNode<T>(depth, size + 1, new LeafNode<T>(value), newNodes, suffix);
+        if (prefix.getDepth() < (depth - 1)) {
+            return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
         }
-        return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
+        assert prefix.getDepth() == (depth - 1);
+        assert !prefix.isFull();
+        Node<T>[] newNodes;
+        Node<T> newPrefix = prefix.insertFirst(value);
+        if (newPrefix.isFull()) {
+            newNodes = ListHelper.allocateNodes(nodes.length + 1);
+            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
+            newNodes[0] = newPrefix;
+            newPrefix = EmptyNode.of();
+        } else {
+            newNodes = nodes;
+        }
+        return new BranchNode<T>(depth, size + 1, newPrefix, newNodes, suffix);
     }
 
     @Override
@@ -131,16 +137,22 @@ public class BranchNode<T>
             // create a new parent containing us as a node and tell it to insert the value
             return new BranchNode<T>(this).insertLast(value);
         }
-        if (suffix.isFull()) {
-            if (suffix.getDepth() < (depth - 1)) {
-                return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
-            }
-            Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
-            newNodes[nodes.length] = suffix;
-            return new BranchNode<T>(depth, size + 1, prefix, newNodes, new LeafNode<T>(value));
+        if (suffix.getDepth() < (depth - 1)) {
+            return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
         }
-        return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
+        assert suffix.getDepth() == (depth - 1);
+        assert !suffix.isFull();
+        Node<T>[] newNodes;
+        Node<T> newSuffix = suffix.insertLast(value);
+        if (newSuffix.isFull()) {
+            newNodes = ListHelper.allocateNodes(nodes.length + 1);
+            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
+            newNodes[nodes.length] = newSuffix;
+            newSuffix = EmptyNode.of();
+        } else {
+            newNodes = nodes;
+        }
+        return new BranchNode<T>(depth, size + 1, prefix, newNodes, newSuffix);
     }
 
     @Override
