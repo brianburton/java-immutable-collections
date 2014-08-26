@@ -32,6 +32,11 @@ public class LeafNode<T>
         values[0] = value;
     }
 
+    static <T> LeafNode<T> forTesting(T[] values)
+    {
+        return new LeafNode<T>(values.clone());
+    }
+
     @Override
     public boolean isEmpty()
     {

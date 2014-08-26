@@ -54,6 +54,18 @@ public class BranchNode<T>
         assert node.isFull();
     }
 
+    static <T> BranchNode<T> forTesting(int depth,
+                                        Node<T> prefix,
+                                        Node<T>[] nodes,
+                                        Node<T> suffix)
+    {
+        return new BranchNode<T>(depth,
+                                 prefix.size() + (nodes.length * 32) + suffix.size(),
+                                 prefix,
+                                 nodes.clone(),
+                                 suffix);
+    }
+
     @Override
     public boolean isEmpty()
     {
