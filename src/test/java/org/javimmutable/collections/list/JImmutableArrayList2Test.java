@@ -3,6 +3,7 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -314,27 +315,27 @@ public class JImmutableArrayList2Test
         assertSame(JImmutableArrayList2.of(), list.deleteAll());
     }
 
-//    public void testIndexedConstructor()
-//    {
-//        Integer[] values = new Integer[33 * 32];
-//        for (int i = 0; i < values.length; ++i) {
-//            values[i] = i;
-//        }
-//        final IndexedArray<Integer> source = IndexedArray.retained(values);
-//        for (int offset = 0; offset < values.length; ++offset) {
-//            for (int limit = offset; limit <= values.length; ++limit) {
-//                final int size = limit - offset;
-//                JImmutableArrayList2<Integer> list = JImmutableArrayList2.of(source, offset, limit);
-//                if (size == 0) {
-//                    assertSame(JImmutableArrayList2.<Integer>of(), list);
-//                }
-//                for (int i = 0; i < size; ++i) {
-//                    final Integer value = list.get(i);
-//                    assertEquals(values[offset + i], value);
-//                }
-//            }
-//        }
-//
-//        assertSame(JImmutableArrayList2.<Integer>of(), JImmutableArrayList2.of(JImmutableArrayList2.<Integer>of()));
-//    }
+    public void testIndexedConstructor()
+    {
+        Integer[] values = new Integer[33 * 32];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = i;
+        }
+        final IndexedArray<Integer> source = IndexedArray.retained(values);
+        for (int offset = 0; offset < values.length; ++offset) {
+            for (int limit = offset; limit <= values.length; ++limit) {
+                final int size = limit - offset;
+                JImmutableArrayList2<Integer> list = JImmutableArrayList2.of(source, offset, limit);
+                if (size == 0) {
+                    assertSame(JImmutableArrayList2.<Integer>of(), list);
+                }
+                for (int i = 0; i < size; ++i) {
+                    final Integer value = list.get(i);
+                    assertEquals(values[offset + i], value);
+                }
+            }
+        }
+
+        assertSame(JImmutableArrayList2.<Integer>of(), JImmutableArrayList2.of(JImmutableArrayList2.<Integer>of()));
+    }
 }

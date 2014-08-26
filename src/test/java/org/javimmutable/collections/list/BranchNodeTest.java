@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.cursors.StandardCursorTest;

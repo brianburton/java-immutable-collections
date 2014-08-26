@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Immutable
-public class BranchNode<T>
+class BranchNode<T>
         implements Node<T>
 {
     private final int depth;
@@ -274,7 +274,7 @@ public class BranchNode<T>
         }
     }
 
-    public static class Builder<T>
+    static class Builder<T>
             implements MutableBuilder<T, Node<T>>
     {
         private final List<T> leaves = new ArrayList<T>();

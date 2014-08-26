@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class EmptyNode<T>
+class EmptyNode<T>
         implements Node<T>
 {
     private static final EmptyNode INSTANCE = new EmptyNode();

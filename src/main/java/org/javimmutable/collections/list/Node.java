@@ -1,8 +1,8 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
 
-public interface Node<T>
+interface Node<T>
         extends Cursorable<T>
 {
     boolean isEmpty();

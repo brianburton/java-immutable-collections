@@ -1,6 +1,6 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
-class ListHelper
+final class ListHelper
 {
     private static final Object[] EMPTY_VALUES = new Object[0];
     private static final Node[] EMPTY_NODES = new Node[0];

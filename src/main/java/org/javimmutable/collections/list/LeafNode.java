@@ -1,4 +1,4 @@
-package org.javimmutable.collections.array.list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.common.IndexedArray;
@@ -14,7 +14,7 @@ import java.util.List;
  * @param <T>
  */
 @Immutable
-public class LeafNode<T>
+class LeafNode<T>
         implements Node<T>
 {
     @Nonnull
@@ -27,7 +27,7 @@ public class LeafNode<T>
         this.values = values;
     }
 
-    public LeafNode(T value)
+    LeafNode(T value)
     {
         values = ListHelper.allocateValues(1);
         values[0] = value;

@@ -1,14 +1,14 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.array.list.EmptyNode;
-import org.javimmutable.collections.array.list.Node;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +30,26 @@ public class JImmutableArrayList2<T>
     public static <T> JImmutableArrayList2<T> of()
     {
         return (JImmutableArrayList2<T>)EMPTY;
+    }
+
+    @Nonnull
+    public static <T> JImmutableArrayList2<T> of(Indexed<? extends T> source,
+                                                 int offset,
+                                                 int limit)
+    {
+        return JImmutableArrayList2.<T>builder().add(source, offset, limit).build();
+    }
+
+    @Nonnull
+    public static <T> JImmutableArrayList2<T> of(Indexed<T> source)
+    {
+        return JImmutableArrayList2.<T>builder().add(source).build();
+    }
+
+    @Nonnull
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
     }
 
     @Override
@@ -140,5 +160,82 @@ public class JImmutableArrayList2<T>
     void checkInvariants()
     {
         root.checkInvariants();
+    }
+
+    public static class Builder<T>
+            implements JImmutableList.Builder<T>
+    {
+        private final BranchNode.Builder<T> builder;
+
+        public Builder()
+        {
+            this.builder = BranchNode.builder();
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(T value)
+        {
+            builder.add(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public JImmutableArrayList2<T> build()
+        {
+            final Node<T> node = builder.build();
+            return node.isEmpty() ? JImmutableArrayList2.<T>of() : new JImmutableArrayList2<T>(builder.build());
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Cursor<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Collection<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <K extends T> Builder<T> add(K... source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            builder.add(source, offset, limit);
+            return this;
+        }
     }
 }
