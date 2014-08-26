@@ -37,6 +37,12 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
 
+/**
+ * Interface for classes used to implement 32-way trees that restrict inserts and deletions
+ * to the head and tail of the list but allow updates at any index within the list.
+ *
+ * @param <T>
+ */
 interface Node<T>
         extends Cursorable<T>
 {

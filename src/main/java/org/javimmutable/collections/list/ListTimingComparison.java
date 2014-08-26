@@ -121,7 +121,7 @@ public final class ListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-            JImmutableList<Integer> list = JImmutableArrayList2.of();
+            JImmutableList<Integer> list = JImmutableArrayList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {

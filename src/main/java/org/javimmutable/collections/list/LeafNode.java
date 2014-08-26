@@ -44,7 +44,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 /**
- * Node that forms the bottom of the tree and contains up to 32 values.
+ * Node that forms the bottom of the 32-way tree and contains up to 32 values.
  *
  * @param <T>
  */

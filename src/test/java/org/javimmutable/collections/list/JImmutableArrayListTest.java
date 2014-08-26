@@ -56,6 +56,7 @@ public class JImmutableArrayListTest
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
+        list.checkInvariants();
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
@@ -63,6 +64,7 @@ public class JImmutableArrayListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.insert(200);
+        list.checkInvariants();
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
@@ -71,6 +73,7 @@ public class JImmutableArrayListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.insertFirst(80);
+        list.checkInvariants();
         assertEquals(3, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(80, (int)list.get(0));
@@ -80,6 +83,7 @@ public class JImmutableArrayListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
+        list.checkInvariants();
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(80, (int)list.get(0));
@@ -88,6 +92,7 @@ public class JImmutableArrayListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteFirst();
+        list.checkInvariants();
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
@@ -95,6 +100,7 @@ public class JImmutableArrayListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
+        list.checkInvariants();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
@@ -103,7 +109,7 @@ public class JImmutableArrayListTest
 
     public void testInsertIterable()
     {
-        JImmutableList<Integer> list = JImmutableArrayList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         StandardCursorTest.emptyCursorTest(list.cursor());
 
         list = list.insert(Arrays.asList(1, 2, 3));
@@ -111,6 +117,8 @@ public class JImmutableArrayListTest
 
         list = list.insert(6).insert(Arrays.asList(10, 11, 12)).insert(20);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 6, 10, 11, 12, 20), list.cursor());
+
+        list.checkInvariants();
     }
 
     public void testInsertDeleteFirst()
@@ -127,6 +135,7 @@ public class JImmutableArrayListTest
                 assertEquals(index - kk, (int)value);
                 kk += 1;
             }
+            list.checkInvariants();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
@@ -143,6 +152,7 @@ public class JImmutableArrayListTest
                 assertEquals(list.size() - kk - 1, (int)value);
                 kk += 1;
             }
+            list.checkInvariants();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
@@ -172,6 +182,7 @@ public class JImmutableArrayListTest
                 assertEquals(kk, (int)value);
                 kk += 1;
             }
+            list.checkInvariants();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
@@ -187,6 +198,7 @@ public class JImmutableArrayListTest
                 assertEquals(kk, (int)value);
                 kk += 1;
             }
+            list.checkInvariants();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
@@ -221,6 +233,7 @@ public class JImmutableArrayListTest
                 assertEquals(expected.size(), list.size());
             }
             assertEquals(expected, list.getList());
+            list.checkInvariants();
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < size; ++i) {

@@ -41,14 +41,23 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Node implementation containing no values.  Implemented as a singleton.
+ *
+ * @param <T>
+ */
 @Immutable
-class EmptyNode<T>
+final class EmptyNode<T>
         implements Node<T>
 {
     private static final EmptyNode INSTANCE = new EmptyNode();
 
+    private EmptyNode()
+    {
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T> EmptyNode<T> of()
+    static <T> EmptyNode<T> of()
     {
         return (EmptyNode<T>)INSTANCE;
     }

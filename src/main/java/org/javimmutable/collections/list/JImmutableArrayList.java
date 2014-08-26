@@ -37,38 +37,33 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
-import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-@Immutable
+/**
+ * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
+ * only allow values to be inserted or deleted from the head or tail of the list.
+ *
+ * @param <T>
+ */
 public class JImmutableArrayList<T>
         implements JImmutableList<T>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableArrayList EMPTY = new JImmutableArrayList(TrieArray.of(), 0, 0);
+    private static final JImmutableArrayList EMPTY = new JImmutableArrayList(EmptyNode.of());
 
-    private final JImmutableArray<T> values;
-    private final int first;
-    private final int next;
+    private final Node<T> root;
 
-    private JImmutableArrayList(JImmutableArray<T> values,
-                                int first,
-                                int next)
+    private JImmutableArrayList(Node<T> root)
     {
-        this.values = values;
-        this.first = first;
-        this.next = next;
+        this.root = root;
     }
 
     @SuppressWarnings("unchecked")
@@ -99,9 +94,15 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    public boolean isEmpty()
+    public int size()
     {
-        return first == next;
+        return root.size();
+    }
+
+    @Override
+    public T get(int index)
+    {
+        return root.get(index);
     }
 
     @Nonnull
@@ -109,96 +110,72 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> assign(int index,
                                          @Nullable T value)
     {
-        final int realIndex = calcRealIndex(index);
-        return new JImmutableArrayList<T>(values.assign(realIndex, value), first, next);
+        return new JImmutableArrayList<T>(root.assign(index, value));
     }
 
-    @Override
     @Nonnull
+    @Override
     public JImmutableArrayList<T> insert(@Nullable T value)
     {
-        if (next == Integer.MAX_VALUE) {
-            throw new IndexOutOfBoundsException();
-        }
-        final int index = next;
-        return new JImmutableArrayList<T>(values.assign(index, value), first, index + 1);
+        return new JImmutableArrayList<T>(root.insertLast(value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insert(@Nonnull Iterable<? extends T> values)
     {
-        if (first == next) {
-            return JImmutableArrayList.<T>builder().add(values.iterator()).build();
-        } else {
-            int index = next;
-            JImmutableArray<T> newValues = this.values;
-            for (T value : values) {
-                newValues = newValues.assign(index, value);
-                index += 1;
-            }
-            return new JImmutableArrayList<T>(newValues, first, index);
+        Node<T> newRoot = root;
+        for (T value : values) {
+            newRoot = newRoot.insertLast(value);
         }
+        return new JImmutableArrayList<T>(newRoot);
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertFirst(@Nullable T value)
     {
-        if (first == Integer.MIN_VALUE) {
-            throw new IndexOutOfBoundsException();
-        }
-        final int index = first - 1;
-        return new JImmutableArrayList<T>(values.assign(index, value), index, next);
+        return new JImmutableArrayList<T>(root.insertFirst(value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertLast(@Nullable T value)
     {
-        return insert(value);
+        return new JImmutableArrayList<T>(root.insertLast(value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> deleteFirst()
     {
-        if (first == next) {
+        if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        final int index = first;
-        return new JImmutableArrayList<T>(values.delete(index), first + 1, next);
+        return new JImmutableArrayList<T>(root.deleteFirst());
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> deleteLast()
     {
-        if (first == next) {
+        if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        final int index = next - 1;
-        return new JImmutableArrayList<T>(values.delete(index), first, index);
+        return new JImmutableArrayList<T>(root.deleteLast());
     }
 
     @Override
-    public int size()
+    public boolean isEmpty()
     {
-        return next - first;
+        return root.isEmpty();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> deleteAll()
+    public JImmutableArrayList<T> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    public T get(int index)
-    {
-        final int realIndex = calcRealIndex(index);
-        return values.get(realIndex);
     }
 
     @Nonnull
@@ -208,11 +185,11 @@ public class JImmutableArrayList<T>
         return ListAdaptor.of(this);
     }
 
-    @Override
     @Nonnull
+    @Override
     public Cursor<T> cursor()
     {
-        return values.valuesCursor();
+        return root.cursor();
     }
 
     @Override
@@ -221,28 +198,20 @@ public class JImmutableArrayList<T>
         return IteratorAdaptor.of(cursor());
     }
 
-    @Override
-    public boolean equals(Object o)
+    void checkInvariants()
     {
-        return (o == this) || ((o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Cursors.computeHashCode(cursor());
-    }
-
-    @Override
-    public String toString()
-    {
-        return Cursors.makeString(cursor());
+        root.checkInvariants();
     }
 
     public static class Builder<T>
             implements JImmutableList.Builder<T>
     {
-        private final TrieArray.Builder<T> builder = TrieArray.builder();
+        private final BranchNode.Builder<T> builder;
+
+        public Builder()
+        {
+            this.builder = BranchNode.builder();
+        }
 
         @Nonnull
         @Override
@@ -256,12 +225,8 @@ public class JImmutableArrayList<T>
         @Override
         public JImmutableArrayList<T> build()
         {
-            final JImmutableArray<T> values = builder.build();
-            if (values.isEmpty()) {
-                return of();
-            } else {
-                return new JImmutableArrayList<T>(values, 0, values.size());
-            }
+            final Node<T> node = builder.build();
+            return node.isEmpty() ? JImmutableArrayList.<T>of() : new JImmutableArrayList<T>(builder.build());
         }
 
         @Nonnull
@@ -305,6 +270,7 @@ public class JImmutableArrayList<T>
         }
 
         @Nonnull
+        @Override
         public Builder<T> add(Indexed<? extends T> source,
                               int offset,
                               int limit)
@@ -312,14 +278,5 @@ public class JImmutableArrayList<T>
             builder.add(source, offset, limit);
             return this;
         }
-    }
-
-    private int calcRealIndex(int index)
-    {
-        final int realIndex = first + index;
-        if ((realIndex < first) || (realIndex >= next)) {
-            throw new IndexOutOfBoundsException();
-        }
-        return realIndex;
     }
 }

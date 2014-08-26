@@ -45,6 +45,25 @@ import java.util.Random;
 public class LeafNodeTest
         extends TestCase
 {
+    public void testFromList()
+    {
+        List<Integer> expected = new ArrayList<Integer>();
+        for (int i = 1; i <= 32; ++i) {
+            expected.add(0, i);
+            Node<Integer> node = LeafNode.fromList(expected, 0, expected.size());
+            node.checkInvariants();
+            StandardCursorTest.listCursorTest(expected, node.cursor());
+        }
+
+        List<Integer> reduced = new ArrayList<Integer>(expected);
+        for (int i = 1; i <= 31; ++i) {
+            reduced.remove(0);
+            Node<Integer> node = LeafNode.fromList(expected, i, expected.size());
+            node.checkInvariants();
+            StandardCursorTest.listCursorTest(reduced, node.cursor());
+        }
+    }
+
     public void testRandomInserts()
     {
         Random r = new Random(10L);
