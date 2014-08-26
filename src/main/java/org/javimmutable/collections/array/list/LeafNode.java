@@ -6,6 +6,7 @@ import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
 /**
  * Node that forms the bottom of the tree and contains up to 32 values.
@@ -30,6 +31,17 @@ public class LeafNode<T>
     {
         values = ListHelper.allocateValues(1);
         values[0] = value;
+    }
+
+    static <T> LeafNode<T> fromList(List<T> values,
+                                    int offset,
+                                    int limit)
+    {
+        T[] array = ListHelper.allocateValues(limit - offset);
+        for (int i = offset; i < limit; ++i) {
+            array[i - offset] = values.get(i);
+        }
+        return new LeafNode<T>(array);
     }
 
     static <T> LeafNode<T> forTesting(T[] values)

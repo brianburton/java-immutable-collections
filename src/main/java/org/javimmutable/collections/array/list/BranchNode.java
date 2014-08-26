@@ -1,11 +1,17 @@
 package org.javimmutable.collections.array.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 @Immutable
 public class BranchNode<T>
@@ -13,9 +19,9 @@ public class BranchNode<T>
 {
     private final int depth;
     private final int size;
-    private final Node<T> prefix;
+    private final Node<T> prefix;  // possibly empty and can be any depth
     private final Node<T>[] nodes; // all of these are full and have depth - 1
-    private final Node<T> suffix;
+    private final Node<T> suffix;  // possibly empty and can be any depth
 
     private BranchNode(int depth,
                        int size,
@@ -52,6 +58,11 @@ public class BranchNode<T>
              ListHelper.allocateSingleNode(node),
              new LeafNode<T>(suffixValue));
         assert node.isFull();
+    }
+
+    public static <T> Builder<T> builder()
+    {
+        return new Builder<T>();
     }
 
     static <T> BranchNode<T> forTesting(int depth,
@@ -260,6 +271,137 @@ public class BranchNode<T>
         }
         if (suffix.isFull() && (suffix.getDepth() == (depth - 1))) {
             throw new IllegalStateException();
+        }
+    }
+
+    public static class Builder<T>
+            implements MutableBuilder<T, Node<T>>
+    {
+        private final List<T> leaves = new ArrayList<T>();
+
+        @Nonnull
+        @Override
+        public Builder<T> add(T value)
+        {
+            leaves.add(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Node<T> build()
+        {
+            int nodeCount = leaves.size();
+            if (nodeCount == 0) {
+                return EmptyNode.of();
+            }
+
+            if (nodeCount <= 32) {
+                return LeafNode.fromList(leaves, 0, nodeCount);
+            }
+
+            List<Node<T>> nodes = new ArrayList<Node<T>>();
+            int offset = 0;
+            while (offset < nodeCount) {
+                nodes.add(LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount)));
+                offset += 32;
+            }
+            nodeCount = nodes.size();
+
+            // loop invariant - all nodes except last one are always full
+            // last one is possibly full
+            int depth = 2;
+            while (nodeCount > 1) {
+                int dstOffset = 0;
+                int srcOffset = 0;
+                // fill all full nodes
+                while (nodeCount > 32) {
+                    Node<T>[] newNodes = ListHelper.allocateNodes(32);
+                    for (int i = 0; i < 32; ++i) {
+                        newNodes[i] = nodes.get(srcOffset++);
+                    }
+                    nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth), EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+                    nodeCount -= 32;
+                }
+                // collect remaining nodes
+                Node<T> lastNode = nodes.get(srcOffset + (nodeCount - 1));
+                if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
+                    // all remaining nodes are full
+                    Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
+                    for (int i = 0; i < newNodes.length; ++i) {
+                        newNodes[i] = nodes.get(srcOffset++);
+                    }
+                    nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+                } else {
+                    // all but last remaining nodes are full
+                    Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount - 1);
+                    for (int i = 0; i < newNodes.length; ++i) {
+                        newNodes[i] = nodes.get(srcOffset++);
+                    }
+                    nodes.set(dstOffset++, new BranchNode<T>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.<T>of(), newNodes, lastNode));
+                }
+                nodeCount = dstOffset;
+                depth += 1;
+            }
+            assert nodeCount == 1;
+            return nodes.get(0);
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Cursor<? extends T> source)
+        {
+            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
+                add(cursor.getValue());
+            }
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            while (source.hasNext()) {
+                add(source.next());
+            }
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Collection<? extends T> source)
+        {
+            add(source.iterator());
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <K extends T> Builder<T> add(K... source)
+        {
+            for (T value : source) {
+                add(value);
+            }
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            return add(source, 0, source.size());
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
+            return this;
         }
     }
 }

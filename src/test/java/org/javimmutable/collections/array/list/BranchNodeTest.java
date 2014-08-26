@@ -6,6 +6,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class BranchNodeTest
         extends TestCase
@@ -221,6 +222,31 @@ public class BranchNodeTest
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             // expected
+        }
+    }
+
+    public void testBuilder()
+    {
+        List<Integer> expected = new ArrayList<Integer>();
+        assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
+
+        for (int size = 1; size <= 33000; ++size) {
+            expected.add(size);
+            Node<Integer> node = BranchNode.<Integer>builder().add(expected).build();
+            node.checkInvariants();
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), node.get(i));
+            }
+        }
+
+        Random r = new Random(10L);
+        for (int loop = 1; loop <= 100; ++loop) {
+            expected = values(1, 32768 + r.nextInt(1500000));
+            Node<Integer> node = BranchNode.<Integer>builder().add(expected).build();
+            node.checkInvariants();
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), node.get(i));
+            }
         }
     }
 
