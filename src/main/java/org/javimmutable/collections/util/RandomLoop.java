@@ -135,7 +135,7 @@ public class RandomLoop
     {
         JImmutableList<Integer> list = JImmutables.list();
         ArrayList<Integer> expected = new ArrayList<Integer>();
-        int size = random.nextInt(10000);
+        int size = random.nextInt(100000);
         System.out.printf("Testing PersistentList of size %d%n", size);
 
         for (int loops = 1; loops <= 6; ++loops) {
