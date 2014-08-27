@@ -147,17 +147,39 @@ class BranchNode<T>
         return depth;
     }
 
+    private static <T> Node<T> forDelete(int size,
+                                         Node<T> prefix,
+                                         Node<T>[] nodes,
+                                         Node<T> suffix)
+    {
+        if (nodes.length == 0) {
+            if (prefix.isEmpty()) {
+                return suffix;
+            } else if (suffix.isEmpty()) {
+                return prefix;
+            } else {
+                int depth = 1 + Math.max(prefix.getDepth(), suffix.getDepth());
+                return new BranchNode<T>(depth, size, prefix, nodes, suffix);
+            }
+        } else if ((nodes.length == 1) && prefix.isEmpty() && suffix.isEmpty()) {
+            return nodes[0];
+        } else {
+            int depth = 1 + nodes[0].getDepth();
+            return new BranchNode<T>(depth, size, prefix, nodes, suffix);
+        }
+    }
+
     @Override
     public Node<T> deleteFirst()
     {
         if (!prefix.isEmpty()) {
-            return new BranchNode<T>(depth, size - 1, prefix.deleteFirst(), nodes, suffix);
+            return forDelete(size - 1, prefix.deleteFirst(), nodes, suffix);
         }
         if (nodes.length > 0) {
             Node<T> newPrefix = nodes[0];
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
             System.arraycopy(nodes, 1, newNodes, 0, newNodes.length);
-            return new BranchNode<T>(depth, size - 1, newPrefix.deleteFirst(), newNodes, suffix);
+            return forDelete(size - 1, newPrefix.deleteFirst(), newNodes, suffix);
         }
         if (!suffix.isEmpty()) {
             return suffix.deleteFirst();
@@ -169,13 +191,13 @@ class BranchNode<T>
     public Node<T> deleteLast()
     {
         if (!suffix.isEmpty()) {
-            return new BranchNode<T>(depth, size - 1, prefix, nodes, suffix.deleteLast());
+            return forDelete(size - 1, prefix, nodes, suffix.deleteLast());
         }
         if (nodes.length > 0) {
             Node<T> newSuffix = nodes[nodes.length - 1];
             Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
             System.arraycopy(nodes, 0, newNodes, 0, newNodes.length);
-            return new BranchNode<T>(depth, size - 1, prefix, newNodes, newSuffix.deleteLast());
+            return forDelete(size - 1, prefix, newNodes, newSuffix.deleteLast());
         }
         if (!prefix.isEmpty()) {
             return prefix.deleteLast();

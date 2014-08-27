@@ -260,6 +260,169 @@ public class BranchNodeTest
         }
     }
 
+    public void testInsertFirstDeleteFirstDepthReduction()
+    {
+        Node<Integer> node = EmptyNode.of();
+        for (int i = 1; i <= 32769; ++i) {
+            node = node.insertFirst(i);
+        }
+        node.checkInvariants();
+        assertEquals(4, node.getDepth());
+        assertEquals(32769, node.size());
+
+        node = node.deleteFirst();
+        node.checkInvariants();
+        assertEquals(3, node.getDepth());
+        assertEquals(32768, node.size());
+
+        for (int i = 1; i <= 31743; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 3, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(1025, node.size());
+
+        for (int i = 1; i <= 992; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 2, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(33, node.size());
+
+        for (int i = 1; i <= 32; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 1, node.getDepth());
+            assertTrue(node instanceof LeafNode);
+        }
+        node.checkInvariants();
+        assertEquals(1, node.size());
+
+        node = node.deleteFirst();
+        assertSame(EmptyNode.of(), node);
+        assertEquals(1, node.getDepth());
+        assertEquals(0, node.size());
+    }
+
+    public void testInsertLastDeleteFirstDepthReduction()
+    {
+        Node<Integer> node = EmptyNode.of();
+        for (int i = 1; i <= 32769; ++i) {
+            node = node.insertLast(i);
+        }
+        node.checkInvariants();
+        assertEquals(4, node.getDepth());
+        assertEquals(32769, node.size());
+
+        for (int i = 1; i <= 31743; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 4, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(1026, node.size());
+
+        for (int i = 1; i <= 992; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 3, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(34, node.size());
+
+        for (int i = 1; i <= 32; ++i) {
+            node = node.deleteFirst();
+            assertEquals(String.valueOf(i), 2, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(2, node.size());
+
+        node = node.deleteFirst();
+        assertEquals(1, node.getDepth());
+        assertEquals(1, node.size());
+
+        node = node.deleteFirst();
+        assertSame(EmptyNode.of(), node);
+        assertEquals(1, node.getDepth());
+        assertEquals(0, node.size());
+    }
+
+    public void testInsertFirstDeleteLastDepthReduction()
+    {
+        Node<Integer> node = EmptyNode.of();
+        for (int i = 1; i <= 32769; ++i) {
+            node = node.insertFirst(i);
+        }
+        node.checkInvariants();
+        assertEquals(4, node.getDepth());
+        assertEquals(32769, node.size());
+
+        for (int i = 1; i <= 31743; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 4, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(1026, node.size());
+
+        for (int i = 1; i <= 992; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 3, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(34, node.size());
+
+        for (int i = 1; i <= 32; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 2, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(2, node.size());
+
+        node = node.deleteLast();
+        assertEquals(1, node.getDepth());
+        assertEquals(1, node.size());
+
+        node = node.deleteLast();
+        assertSame(EmptyNode.of(), node);
+        assertEquals(1, node.getDepth());
+        assertEquals(0, node.size());
+    }
+
+    public void testInsertLastDeleteLastDepthReduction()
+    {
+        Node<Integer> node = EmptyNode.of();
+        for (int i = 1; i <= 32769; ++i) {
+            node = node.insertLast(i);
+        }
+        node.checkInvariants();
+        assertEquals(4, node.getDepth());
+        assertEquals(32769, node.size());
+
+        for (int i = 1; i <= 31744; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 3, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(1025, node.size());
+
+        for (int i = 1; i <= 992; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 2, node.getDepth());
+        }
+        node.checkInvariants();
+        assertEquals(33, node.size());
+
+        for (int i = 1; i <= 32; ++i) {
+            node = node.deleteLast();
+            assertEquals(String.valueOf(i), 1, node.getDepth());
+            assertTrue(node instanceof LeafNode);
+        }
+        node.checkInvariants();
+        assertEquals(1, node.size());
+
+        node = node.deleteLast();
+        assertSame(EmptyNode.of(), node);
+        assertEquals(1, node.getDepth());
+        assertEquals(0, node.size());
+    }
+
     public void testBuilder()
     {
         List<Integer> expected = new ArrayList<Integer>();
