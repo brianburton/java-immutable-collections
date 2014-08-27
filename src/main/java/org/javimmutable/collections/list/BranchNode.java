@@ -318,6 +318,12 @@ class BranchNode<T>
         if (suffix.isFull() && (suffix.getDepth() == (depth - 1))) {
             throw new IllegalStateException();
         }
+
+        prefix.checkInvariants();
+        for (Node<T> node : nodes) {
+            node.checkInvariants();
+        }
+        suffix.checkInvariants();
     }
 
     static class Builder<T>
