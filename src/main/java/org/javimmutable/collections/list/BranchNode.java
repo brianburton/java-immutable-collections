@@ -48,6 +48,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
+ * of any depth and size (including empty) while body nodes array contains only full nodes
+ * of exactly depth - 1.  This allows fast access to the body nodes by a computed offset
+ * based on size but also quick adds and deletes from either end using the prefix and suffix
+ * nodes.  Once a BranchNode reaches its theoretical limit based on depth any insert triggers
+ * the creation of a new higher depth node containing the branch so that the new parent's prefix
+ * or suffix can contain the new value.
+ *
+ * @param <T>
+ */
 @Immutable
 class BranchNode<T>
         implements Node<T>
@@ -95,7 +106,7 @@ class BranchNode<T>
         assert node.isFull();
     }
 
-    public static <T> Builder<T> builder()
+    static <T> Builder<T> builder()
     {
         return new Builder<T>();
     }
