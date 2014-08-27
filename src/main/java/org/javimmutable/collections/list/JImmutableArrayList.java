@@ -40,6 +40,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -201,6 +202,24 @@ public class JImmutableArrayList<T>
     void checkInvariants()
     {
         root.checkInvariants();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o == this) || ((o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Cursors.computeHashCode(cursor());
+    }
+
+    @Override
+    public String toString()
+    {
+        return Cursors.makeString(cursor());
     }
 
     public static class Builder<T>
