@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -133,7 +134,7 @@ public class RandomLoop
 
     private void testList(Random random)
     {
-        JImmutableList<Integer> list = JImmutables.list();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         ArrayList<Integer> expected = new ArrayList<Integer>();
         int size = random.nextInt(100000);
         System.out.printf("Testing PersistentList of size %d%n", size);
@@ -159,6 +160,7 @@ public class RandomLoop
                     throw new RuntimeException();
                 }
             }
+            list.checkInvariants();
             verifyContents(expected, list);
             System.out.printf("shrinking %d%n", list.size());
             for (int i = 0; i < size / 6; ++i) {
@@ -171,6 +173,7 @@ public class RandomLoop
                 }
             }
             verifyContents(expected, list);
+            list.checkInvariants();
         }
         System.out.printf("cleanup %d%n", expected.size());
         while (list.size() > 0) {

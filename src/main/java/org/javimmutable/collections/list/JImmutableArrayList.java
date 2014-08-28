@@ -199,7 +199,7 @@ public class JImmutableArrayList<T>
         return IteratorAdaptor.of(cursor());
     }
 
-    void checkInvariants()
+    public void checkInvariants()
     {
         root.checkInvariants();
     }
