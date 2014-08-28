@@ -60,4 +60,23 @@ public class JImmutableHashListMapTest
                                                                                                                  MapEntry.of(3, map.getList(3))),
                                             map.iterator());
     }
+
+    public void testEquals()
+    {
+        JImmutableListMap<Integer, Integer> a = JImmutableHashListMap.of();
+        JImmutableListMap<Integer, Integer> b = JImmutableHashListMap.of();
+        assertEquals(a, b);
+        assertEquals(b, a);
+
+        a = a.insert(1, 10);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 10);
+        assertEquals(a, b);
+        assertEquals(b, a);
+        a = a.insert(1, 12);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 12);
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
 }

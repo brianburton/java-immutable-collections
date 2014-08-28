@@ -84,4 +84,23 @@ public class JImmutableTreeListMapTest
                                                                                                                  MapEntry.of(1, map.getList(1))),
                                             map.iterator());
     }
+
+    public void testEquals()
+    {
+        JImmutableListMap<Integer, Integer> a = JImmutableTreeListMap.of();
+        JImmutableListMap<Integer, Integer> b = JImmutableTreeListMap.of();
+        assertEquals(a, b);
+        assertEquals(b, a);
+
+        a = a.insert(1, 10);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 10);
+        assertEquals(a, b);
+        assertEquals(b, a);
+        a = a.insert(1, 12);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 12);
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
 }

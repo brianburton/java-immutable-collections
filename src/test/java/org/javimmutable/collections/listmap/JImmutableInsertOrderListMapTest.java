@@ -60,4 +60,23 @@ public class JImmutableInsertOrderListMapTest
                                                                                                                  MapEntry.of(2, map.getList(2))),
                                             map.iterator());
     }
+
+    public void testEquals()
+    {
+        JImmutableListMap<Integer, Integer> a = JImmutableInsertOrderListMap.of();
+        JImmutableListMap<Integer, Integer> b = JImmutableInsertOrderListMap.of();
+        assertEquals(a, b);
+        assertEquals(b, a);
+
+        a = a.insert(1, 10);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 10);
+        assertEquals(a, b);
+        assertEquals(b, a);
+        a = a.insert(1, 12);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 12);
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
 }

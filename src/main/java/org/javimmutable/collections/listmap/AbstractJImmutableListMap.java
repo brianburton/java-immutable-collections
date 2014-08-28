@@ -168,6 +168,24 @@ public abstract class AbstractJImmutableListMap<K, V>
         return create(contents.deleteAll());
     }
 
+    @Override
+    public int hashCode()
+    {
+        return contents.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o instanceof AbstractJImmutableListMap) && contents.equals(((AbstractJImmutableListMap)o).contents);
+    }
+
+    @Override
+    public String toString()
+    {
+        return contents.toString();
+    }
+
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *
