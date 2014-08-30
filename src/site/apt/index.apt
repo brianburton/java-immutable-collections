@@ -3,7 +3,7 @@
     -----
     Brian Burton
     -----
-    2014-04-12
+    2014-08-30
     -----
 
 Overview
@@ -82,7 +82,7 @@ Collections
 
 	<Factory:> JImmutables.list()\
 	<Complexity:> O(log32(n))\
-	<Description:> A "list" implemented internally as an integer mapped trie. Allows elements to be inserted or removed only at either end of the list. Allows elements to be replaced anywhere within the list. Intended as a replacement for java.util.List. Cursors visit elements in order by index.
+	<Description:> A "list" implemented internally as a 32-way tree. Allows elements to be inserted or removed only at either end of the list. Allows elements to be replaced anywhere within the list. Intended as a replacement for java.util.List. Cursors visit elements in order by index.
 
 	<Factory:> JImmutables.ralist()\
 	<Complexity:> O(log2(n))\

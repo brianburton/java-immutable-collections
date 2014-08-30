@@ -153,14 +153,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableList built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces an empty JImmutableList built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -171,14 +164,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -189,14 +175,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the specified values built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the specified values built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -207,14 +186,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -225,14 +197,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -244,15 +209,8 @@ public final class JImmutables
 
     /**
      * Produces a JImmutableList containing all of the values in the specified range from source
-     * built atop a sparse array.  The values copied from source are those whose index are in the
+     * built atop a 32-way tree.  The values copied from source are those whose index are in the
      * range offset to (limit - 1).
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
      *
      * @param <T>
      * @return
@@ -265,14 +223,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -283,14 +234,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -301,14 +245,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -319,14 +256,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -337,14 +267,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -358,7 +281,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -372,7 +295,7 @@ public final class JImmutables
      * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -386,7 +309,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -400,7 +323,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -414,7 +337,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -428,7 +351,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
@@ -442,7 +365,7 @@ public final class JImmutables
      * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
      * <p/>
      * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
