@@ -68,16 +68,14 @@ public class IteratorAdaptor<T>
 
     public boolean hasNext()
     {
-        if (starting) {
-            starting = false;
-            cursor = cursor.start();
-        }
+        start();
         return cursor.hasValue();
     }
 
     public T next()
     {
         try {
+            start();
             T answer = cursor.getValue();
             cursor = cursor.next();
             return answer;
@@ -89,5 +87,13 @@ public class IteratorAdaptor<T>
     public void remove()
     {
         throw new UnsupportedOperationException();
+    }
+
+    private void start()
+    {
+        if (starting) {
+            starting = false;
+            cursor = cursor.start();
+        }
     }
 }
