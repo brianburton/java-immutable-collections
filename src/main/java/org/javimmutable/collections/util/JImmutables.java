@@ -37,6 +37,8 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
+import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
@@ -182,7 +184,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(T... values)
     {
-        return JImmutableArrayList.<T>builder().add(values).build();
+        return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
     /**
@@ -204,7 +206,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(Indexed<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableArrayList.of(source);
     }
 
     /**
@@ -219,7 +221,7 @@ public final class JImmutables
                                              int offset,
                                              int limit)
     {
-        return JImmutableArrayList.<T>builder().add(source, offset, limit).build();
+        return JImmutableArrayList.of(source, offset, limit);
     }
 
     /**
@@ -263,7 +265,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(List<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableArrayList.of(IndexedList.retained(source));
     }
 
     /**
