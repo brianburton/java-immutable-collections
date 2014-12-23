@@ -37,6 +37,7 @@ package org.javimmutable.collections.tree_list;
 
 import javax.annotation.concurrent.Immutable;
 
+@Deprecated
 @Immutable
 public class UpdateResult<T>
 {

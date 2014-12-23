@@ -37,6 +37,7 @@ package org.javimmutable.collections.tree_list;
 
 import javax.annotation.concurrent.Immutable;
 
+@Deprecated
 @SuppressWarnings("unchecked")
 @Immutable
 public class DeleteResult<T>

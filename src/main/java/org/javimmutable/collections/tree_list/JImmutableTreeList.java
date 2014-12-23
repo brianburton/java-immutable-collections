@@ -61,6 +61,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@Deprecated
 @Immutable
 public class JImmutableTreeList<T>
         implements JImmutableRandomAccessList<T>

@@ -33,40 +33,43 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-@Deprecated
-@Immutable
-public abstract class TreeNode<T>
-        implements Cursorable<T>
+class BtreeInsertResult<T>
 {
-    public abstract T get(int index);
+    enum Type
+    {
+        INPLACE,
+        SPLIT
+    }
 
-    public abstract int getSize();
+    final Type type;
+    final BtreeNode<T> newNode;
+    final BtreeNode<T> extraNode;
 
-    public abstract UpdateResult<T> insertBefore(int index,
-                                                 T value);
+    private BtreeInsertResult(Type type,
+                              BtreeNode<T> newNode,
+                              BtreeNode<T> extraNode)
+    {
+        this.type = type;
+        this.newNode = newNode;
+        this.extraNode = extraNode;
+    }
 
-    public abstract UpdateResult<T> insertAfter(int index,
-                                                T value);
+    static <T> BtreeInsertResult<T> createInPlace(BtreeNode<T> newNode)
+    {
+        return new BtreeInsertResult<T>(Type.INPLACE, newNode, null);
+    }
 
-    public abstract UpdateResult<T> assign(int index,
-                                           T value);
+    static <T> BtreeInsertResult<T> createSplit(BtreeNode<T> newNode,
+                                                BtreeNode<T> extraNode)
+    {
+        return new BtreeInsertResult<T>(Type.SPLIT, newNode, extraNode);
+    }
 
-    public abstract DeleteResult<T> delete(int index);
-
-    public abstract int verifyDepthsMatch();
-
-    public abstract DeleteMergeResult<T> leftDeleteMerge(TreeNode<T> node);
-
-    public abstract DeleteMergeResult<T> rightDeleteMerge(TreeNode<T> node);
-
-    @Nonnull
-    public abstract Cursor<T> cursor();
+    @Override
+    public String toString()
+    {
+        return String.format("<%s,%s,%s>", type, newNode, extraNode);
+    }
 }

@@ -51,7 +51,7 @@ import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
+import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -290,7 +290,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist()
     {
-        return JImmutableTreeList.of();
+        return JImmutableBtreeList.of();
     }
 
     /**
@@ -304,7 +304,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
     {
-        return JImmutableTreeList.builder();
+        return JImmutableBtreeList.builder();
     }
 
     /**
@@ -318,7 +318,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.of(IndexedArray.retained(source));
     }
 
     /**
@@ -332,7 +332,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursor<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -346,7 +346,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursorable<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source.cursor()).build();
+        return JImmutableBtreeList.<T>builder().add(source.cursor()).build();
     }
 
     /**
@@ -360,7 +360,21 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Iterator<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * <p/>
+     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList<T> ralist(List<? extends T> source)
+    {
+        return JImmutableBtreeList.of(IndexedList.retained(source));
     }
 
     /**
@@ -374,7 +388,7 @@ public final class JImmutables
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Collection<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
     }
 
     /**

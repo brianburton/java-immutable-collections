@@ -33,116 +33,122 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.Tuple2;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-@Deprecated
 @Immutable
-public class LeafNode<T>
-        extends TreeNode<T>
+class BtreeEmptyNode<T>
+        implements BtreeNode<T>
 {
-    private final T value;
+    private static final BtreeEmptyNode EMPTY = new BtreeEmptyNode();
 
-    public LeafNode(T value)
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    public static <T> BtreeEmptyNode<T> of()
     {
-        this.value = value;
+        return (BtreeEmptyNode<T>)EMPTY;
     }
 
     @Override
-    public int getSize()
+    public int childCount()
     {
-        return 1;
+        return 0;
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return 0;
     }
 
     @Override
     public T get(int index)
     {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        return value;
+        throw new IndexOutOfBoundsException();
     }
 
-    @Override
-    public UpdateResult<T> insertBefore(int index,
-                                        T value)
-    {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        return UpdateResult.createSplit(new LeafNode<T>(value),
-                                        this);
-    }
-
-    @Override
-    public UpdateResult<T> insertAfter(int index,
-                                       T value)
-    {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        return UpdateResult.createSplit(this,
-                                        new LeafNode<T>(value));
-    }
-
-    @Override
-    public UpdateResult<T> assign(int index,
-                                  T value)
-    {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        return UpdateResult.createInPlace(new LeafNode<T>(value));
-    }
-
-    @Override
-    public DeleteResult<T> delete(int index)
-    {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        return DeleteResult.createEliminated();
-    }
-
-    @Override
-    public int verifyDepthsMatch()
-    {
-        return 1;
-    }
-
-    @Override
-    public DeleteMergeResult<T> leftDeleteMerge(TreeNode<T> node)
-    {
-        return new DeleteMergeResult<T>(new TwoNode<T>(node,
-                                                       this,
-                                                       node.getSize(),
-                                                       1));
-    }
-
-    @Override
-    public DeleteMergeResult<T> rightDeleteMerge(TreeNode<T> node)
-    {
-        return new DeleteMergeResult<T>(new TwoNode<T>(this,
-                                                       node,
-                                                       1,
-                                                       node.getSize()));
-    }
-
-    @Override
-    public String toString()
-    {
-        return String.format("(%s)", value != null ? value.toString() : "null");
-    }
-
-    @Override
     @Nonnull
+    @Override
+    public BtreeNode<T> assign(int index,
+                               T value)
+    {
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> insertAt(int index,
+                                         T value)
+    {
+        if (index == 0) {
+            return BtreeInsertResult.createInPlace(new BtreeLeafNode<T>(value));
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> append(T value)
+    {
+        return BtreeInsertResult.createInPlace(new BtreeLeafNode<T>(value));
+    }
+
+    @Nonnull
+    @Override
+    public BtreeNode<T> delete(int index)
+    {
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Nonnull
+    @Override
+    public BtreeNode<T> mergeChildren(BtreeNode<T> sibling)
+    {
+        return sibling;
+    }
+
+    @Nonnull
+    @Override
+    public Tuple2<BtreeNode<T>, BtreeNode<T>> distributeChildren(BtreeNode<T> sibling)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public BtreeNode<T> firstChild()
+    {
+        return this;
+    }
+
+    @Override
+    public boolean containsIndex(int index)
+    {
+        return false;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+    }
+
+    @Nonnull
+    @Override
     public Cursor<T> cursor()
     {
-        return SingleValueCursor.of(value);
+        return StandardCursor.of();
+    }
+
+    @Override
+    public int depth()
+    {
+        return 1;
     }
 }

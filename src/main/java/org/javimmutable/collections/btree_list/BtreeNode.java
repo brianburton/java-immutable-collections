@@ -33,40 +33,59 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Tuple2;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
-@Deprecated
-@Immutable
-public abstract class TreeNode<T>
-        implements Cursorable<T>
+interface BtreeNode<T>
 {
-    public abstract T get(int index);
+    int MIN_CHILDREN = 9;
+    int MAX_CHILDREN = 2 * MIN_CHILDREN;
 
-    public abstract int getSize();
+    /**
+     * @return number of direct children of this node
+     */
+    int childCount();
 
-    public abstract UpdateResult<T> insertBefore(int index,
-                                                 T value);
+    /**
+     * @return number of values of descendants of this node
+     */
+    int valueCount();
 
-    public abstract UpdateResult<T> insertAfter(int index,
-                                                T value);
-
-    public abstract UpdateResult<T> assign(int index,
-                                           T value);
-
-    public abstract DeleteResult<T> delete(int index);
-
-    public abstract int verifyDepthsMatch();
-
-    public abstract DeleteMergeResult<T> leftDeleteMerge(TreeNode<T> node);
-
-    public abstract DeleteMergeResult<T> rightDeleteMerge(TreeNode<T> node);
+    T get(int index);
 
     @Nonnull
-    public abstract Cursor<T> cursor();
+    BtreeNode<T> assign(int index,
+                        T value);
+
+    @Nonnull
+    BtreeInsertResult<T> insertAt(int index,
+                                  T value);
+
+    @Nonnull
+    BtreeInsertResult<T> append(T value);
+
+    @Nonnull
+    BtreeNode<T> delete(int index);
+
+    @Nonnull
+    BtreeNode<T> mergeChildren(BtreeNode<T> sibling);
+
+    @Nonnull
+    Tuple2<BtreeNode<T>, BtreeNode<T>> distributeChildren(BtreeNode<T> sibling);
+
+    @Nonnull
+    BtreeNode<T> firstChild();
+
+    boolean containsIndex(int index);
+
+    void checkInvariants();
+
+    @Nonnull
+    Cursor<T> cursor();
+
+    int depth();
 }

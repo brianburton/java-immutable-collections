@@ -42,6 +42,7 @@ import org.javimmutable.collections.cursors.MultiCursor;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+@Deprecated
 @Immutable
 public class ThreeNode<T>
         extends TreeNode<T>
