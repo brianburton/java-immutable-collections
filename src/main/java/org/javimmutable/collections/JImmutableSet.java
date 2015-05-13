@@ -64,6 +64,15 @@ public interface JImmutableSet<T>
     JImmutableSet<T> insert(@Nonnull T value);
 
     /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    /**
      * Determines if the Set contains the specified value.
      *
      * @param value
