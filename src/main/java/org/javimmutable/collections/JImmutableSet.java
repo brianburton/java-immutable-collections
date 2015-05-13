@@ -70,7 +70,34 @@ public interface JImmutableSet<T>
      * @return instance of set containing the collection
      */
     @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
     JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Determines if the Set contains the specified value.
