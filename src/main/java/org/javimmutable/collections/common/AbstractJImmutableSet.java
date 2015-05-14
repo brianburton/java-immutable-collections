@@ -100,7 +100,7 @@ public abstract class AbstractJImmutableSet<T>
 
         JImmutableSet<T> answer = this;
         while (values.hasNext()) {
-            answer.insert(values.next());
+            answer = answer.insert(values.next());
         }
         return answer;
     }
