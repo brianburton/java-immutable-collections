@@ -14,7 +14,7 @@
         themselves. Each copy shares almost all of its structure with
         other copies to minimize memory consumption.
     </description>
-    <url>https://sourceforge.net/projects/javimmutablecollections/</url>
+    <url>https://github.com/brianburton/java-immutable-collections</url>
 
     <licenses>
         <license>
@@ -32,7 +32,7 @@
 
     <developers>
         <developer>
-            <id>bburton</id>
+            <id>brianburton</id>
             <name>Brian Burton</name>
             <email>bburton@users.sourceforge.net</email>
             <url>http://www.burton-computer.com</url>
@@ -47,8 +47,8 @@
     </developers>
 
     <issueManagement>
-        <system>Sourceforge</system>
-        <url>https://sourceforge.net/p/javimmutablecollections/tickets/</url>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brianburton/java-immutable-collections/issues</url>
     </issueManagement>
 
     <parent>
@@ -58,10 +58,10 @@
     </parent>
 
     <scm>
-        <connection>scm:git:git://git.code.sf.net/p/javimmutablecollections/code</connection>
-        <developerConnection>scm:git:ssh://git.code.sf.net/p/javimmutablecollections/code</developerConnection>
+        <connection>scm:git:git://github.com/brianburton/java-immutable-collections.git</connection>
+        <developerConnection>scm:git:git@github.com:brianburton/java-immutable-collections.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://sourceforge.net/p/javimmutablecollections/code/ci/master/tree/</url>
+        <url>https://github.com/brianburton/java-immutable-collections</url>
     </scm>
 
     <properties>
