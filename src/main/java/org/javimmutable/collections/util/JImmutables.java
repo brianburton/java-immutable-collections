@@ -37,6 +37,7 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
+import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
@@ -51,7 +52,6 @@ import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
-import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -280,9 +280,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -294,9 +294,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a 2-3 tree.
+     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -308,9 +308,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -322,9 +322,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -336,9 +336,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -350,9 +350,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -364,9 +364,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
@@ -378,9 +378,9 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
      * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
