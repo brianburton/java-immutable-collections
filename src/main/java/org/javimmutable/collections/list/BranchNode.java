@@ -60,7 +60,6 @@ import java.util.List;
  *
  * @param <T>
  */
-@Deprecated
 @Immutable
 class BranchNode<T>
         implements Node<T>
