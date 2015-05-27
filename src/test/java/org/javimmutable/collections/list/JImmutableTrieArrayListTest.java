@@ -39,13 +39,10 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class JImmutableTrieArrayListTest
         extends TestCase
@@ -111,6 +108,163 @@ public class JImmutableTrieArrayListTest
 
         list = list.insert(6).insert(Arrays.asList(10, 11, 12)).insert(20);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 6, 10, 11, 12, 20), list.cursor());
+    }
+
+    public void testInsertAllFirst()
+    {
+        //empty into empty
+        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableTrieArrayList<Integer> expected = list;
+        JImmutableTrieArrayList<Integer> checkCursorable = list.insertAllFirst(getCursorable(Collections.EMPTY_LIST));
+        JImmutableTrieArrayList<Integer> checkCollection = list.insertAllFirst(Collections.EMPTY_LIST);
+        JImmutableTrieArrayList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.EMPTY_LIST));
+        JImmutableTrieArrayList<Integer> checkIterator = list.insertAllFirst(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into empty
+        expected = list.insert(4).insert(5);
+        checkCursorable = list.insertAllFirst(getCursorable(Arrays.asList(4, 5)));
+        checkCollection = list.insertAllFirst(Arrays.asList(4, 5));
+        checkCursor = list.insertAllFirst(getCursor(Arrays.asList(4, 5)));
+        checkIterator = list.insertAllFirst(Arrays.asList(4, 5).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //empty into values
+        list = list.insert(4).insert(5);
+        expected = list;
+        checkCursorable = list.insertAllFirst(getCursorable(Collections.EMPTY_LIST));
+        checkCollection = list.insertAllFirst(Collections.EMPTY_LIST);
+        checkCursor = list.insertAllFirst(getCursor(Collections.EMPTY_LIST));
+        checkIterator = list.insertAllFirst(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into values
+        expected = JImmutableTrieArrayList.of();
+        expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
+        checkCursorable = list.insertAllFirst(getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCollection = list.insertAllFirst(Arrays.asList(0, 1, 2, 3));
+        checkCursor = list.insertAllFirst(getCursor(Arrays.asList(0, 1, 2, 3)));
+        checkIterator = list.insertAllFirst(Arrays.asList(0, 1, 2, 3).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+    }
+
+    public void testInsertAllLast()
+    {
+        //test insertAll
+        //empty into empty
+        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableTrieArrayList<Integer> expected = list;
+        JImmutableTrieArrayList<Integer> checkCursorable = list.insertAll(getCursorable(Collections.EMPTY_LIST));
+        JImmutableTrieArrayList<Integer> checkCollection = list.insertAll(Collections.EMPTY_LIST);
+        JImmutableTrieArrayList<Integer> checkCursor = list.insertAll(getCursor(Collections.EMPTY_LIST));
+        JImmutableTrieArrayList<Integer> checkIterator = list.insertAll(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into empty
+        expected = list.insert(0);
+        checkCursorable = list.insertAll(getCursorable(Arrays.asList(0)));
+        checkCollection = list.insertAll(Arrays.asList(0));
+        checkCursor = list.insertAll(getCursor(Arrays.asList(0)));
+        checkIterator = list.insertAll(Arrays.asList(0).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //empty into values
+        list = list.insert(0);
+        expected = list;
+        checkCursorable = list.insertAll(getCursorable(Collections.EMPTY_LIST));
+        checkCollection = list.insertAll(Collections.EMPTY_LIST);
+        checkCursor = list.insertAll(getCursor(Collections.EMPTY_LIST));
+        checkIterator = list.insertAll(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into values
+        expected = list.insert(1).insert(2).insert(3);
+        checkCursorable = list.insertAll(getCursorable(Arrays.asList(1, 2, 3)));
+        checkCollection = list.insertAll(Arrays.asList(1, 2, 3));
+        checkCursor = list.insertAll(getCursor(Arrays.asList(1, 2, 3)));
+        checkIterator = list.insertAll(Arrays.asList(1, 2, 3).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //test insertAllLast
+        //empty into empty
+        list = JImmutableTrieArrayList.of();
+        expected = list;
+        checkCursorable = list.insertAllLast(getCursorable(Collections.EMPTY_LIST));
+        checkCollection = list.insertAllLast(Collections.EMPTY_LIST);
+        checkCursor = list.insertAllLast(getCursor(Collections.EMPTY_LIST));
+        checkIterator = list.insertAllLast(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into empty
+        expected = list.insert(0).insert(1).insert(2).insert(3);
+        checkCursorable = list.insertAllLast(getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCollection = list.insertAllLast(Arrays.asList(0, 1, 2, 3));
+        checkCursor = list.insertAllLast(getCursor(Arrays.asList(0, 1, 2, 3)));
+        checkIterator = list.insertAll(Arrays.asList(0, 1, 2, 3).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //empty into values
+        list = list.insert(0).insert(1).insert(2).insert(3);
+        expected = list;
+        checkCursorable = list.insertAllLast(getCursorable(Collections.EMPTY_LIST));
+        checkCollection = list.insertAllLast(Collections.EMPTY_LIST);
+        checkCursor = list.insertAllLast(getCursor(Collections.EMPTY_LIST));
+        checkIterator = list.insertAllLast(Collections.EMPTY_LIST.iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+
+        //values into values
+        expected = list.insert(4).insert(5);
+        checkCursorable = list.insertAllLast(getCursorable(Arrays.asList(4, 5)));
+        checkCollection = list.insertAllLast(Arrays.asList(4, 5));
+        checkCursor = list.insertAllLast(getCursor(Arrays.asList(4, 5)));
+        checkIterator = list.insertAllLast(Arrays.asList(4, 5).iterator());
+        assertEquals(expected, checkCursorable);
+        assertEquals(expected, checkCollection);
+        assertEquals(expected, checkCursor);
+        assertEquals(expected, checkIterator);
+    }
+
+    private IterableCursorable<Integer> getCursorable(List<Integer> values)
+    {
+        return IterableCursorable.of(values);
+    }
+
+    private Cursor<Integer> getCursor(List<Integer> values)
+    {
+        return IterableCursorable.of(values).cursor();
     }
 
     public void testInsertDeleteFirst()

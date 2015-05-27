@@ -44,6 +44,7 @@ import org.javimmutable.collections.cursors.Cursors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -175,7 +176,8 @@ public class JImmutableTrieArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableTrieArrayList<T> insertAll(@Nonnull Collection<? extends T> values) {
+    public JImmutableTrieArrayList<T> insertAll(@Nonnull Collection<? extends T> values)
+    {
         return insertAllLast(values);
     }
 
@@ -221,9 +223,13 @@ public class JImmutableTrieArrayList<T>
         if (first == next) {
             return JImmutableTrieArrayList.<T>builder().add(values).build();
         } else {
+            ArrayList<T> temp = new ArrayList<T>();
+            while (values.hasNext()) {
+                temp.add(values.next());
+            }
             JImmutableTrieArrayList<T> answer = this;
-            while(values.hasNext()) {
-                answer = answer.insertFirst(values.next());
+            for(int x = temp.size()-1; x>=0; x--) {
+                answer = answer.insertFirst(temp.get(x));
             }
             return answer;
         }

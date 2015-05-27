@@ -207,6 +207,9 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insertAll(int index,
                                            @Nonnull Iterator<? extends T> values)
     {
+        if ((index < 0) || (index > size)) {
+            throw new IndexOutOfBoundsException();
+        }
         int i = index;
         JImmutableTreeList<T> answer = this;
         while(values.hasNext()) {

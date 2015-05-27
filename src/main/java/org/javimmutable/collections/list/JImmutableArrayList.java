@@ -210,7 +210,7 @@ public class JImmutableArrayList<T>
     private JImmutableArrayList<T> insertAllFirstReverse(ArrayList<T> temp) {
         Node<T> newRoot = root;
         for(int x = temp.size()-1; x >= 0; x--) {
-            newRoot = root.insertFirst(temp.get(x));
+            newRoot = newRoot.insertFirst(temp.get(x));
         }
         return new JImmutableArrayList<T>(newRoot);
     }
@@ -233,11 +233,7 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
     {
-        Node<T> newRoot = root;
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            newRoot = newRoot.insertLast(c.getValue());
-        }
-        return new JImmutableArrayList<T>(newRoot);
+        return insertAllLast(values.iterator());
     }
 
     @Nonnull

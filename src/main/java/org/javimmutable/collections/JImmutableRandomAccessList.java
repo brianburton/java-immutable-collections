@@ -118,7 +118,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Cursorable<? extends T> values);
+    JImmutableRandomAccessList<T> insertAll(@Nonnull Cursorable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -128,7 +128,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Collection<? extends T> values);
+    JImmutableRandomAccessList<T> insertAll(@Nonnull Collection<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -138,7 +138,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values);
+    JImmutableRandomAccessList<T> insertAll(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -148,7 +148,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
+    JImmutableRandomAccessList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Inserts all elements at index (which must be within 0 to size) in the same
@@ -213,7 +213,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -222,7 +222,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -231,7 +231,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -240,7 +240,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -250,7 +250,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -260,7 +260,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Collection<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Collection<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -270,7 +270,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -280,7 +280,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
