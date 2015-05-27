@@ -35,10 +35,7 @@
 
 package org.javimmutable.collections.tree_list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -152,6 +149,130 @@ public class JImmutableTreeList<T>
     {
         return insert(value);
     }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(index, values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Collection<? extends T> values)
+    {
+        return insertAll(index, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(index, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Iterator<? extends T> values)
+    {
+        int i = index;
+        JImmutableTreeList<T> answer = this;
+        while(values.hasNext()) {
+            answer = answer.insert(i, values.next());
+            i++;
+        }
+        return answer;
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(0, values);
+
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(size, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Collection<? extends T> values)
+    {
+        return insertAll(size, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(size, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAll(size, values);
+    }
+
 
     @Nonnull
     @Override

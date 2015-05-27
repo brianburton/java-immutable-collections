@@ -35,10 +35,7 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -166,6 +163,109 @@ public class JImmutableTrieArrayList<T>
     public JImmutableTrieArrayList<T> insertLast(@Nullable T value)
     {
         return insert(value);
+    }
+
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAll(@Nonnull Collection<? extends T> values) {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAll(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAll(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllFirst(values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllFirst(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllFirst(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
+    {
+        if (first == next) {
+            return JImmutableTrieArrayList.<T>builder().add(values).build();
+        } else {
+            JImmutableTrieArrayList<T> answer = this;
+            while(values.hasNext()) {
+                answer = answer.insertFirst(values.next());
+            }
+            return answer;
+        }
+
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllLast(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllLast(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTrieArrayList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
+    {
+        if (first == next) {
+            return JImmutableTrieArrayList.<T>builder().add(values).build();
+        } else {
+            int index = next;
+            JImmutableArray<T> newValues = this.values;
+            while(values.hasNext()) {
+                newValues = newValues.assign(index, values.next());
+                index += 1;
+            }
+            return new JImmutableTrieArrayList<T>(newValues, first, index);
+        }
     }
 
     @Nonnull
