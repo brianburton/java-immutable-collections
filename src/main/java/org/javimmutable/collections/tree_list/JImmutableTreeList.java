@@ -371,7 +371,7 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableRandomAccessList<T> deleteAll()
+    public JImmutableTreeList<T> deleteAll()
     {
         return of();
     }

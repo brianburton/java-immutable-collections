@@ -382,7 +382,7 @@ public class JImmutableArrayListTest
         }
     }
 
-    public void testInsertRandom()
+    public void testRandom()
     {
         Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
@@ -416,7 +416,7 @@ public class JImmutableArrayListTest
         }
     }
 
-    public void testDeleteInsertAllRandom()
+    public void testRandom2()
     {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {

@@ -389,6 +389,86 @@ public class JImmutableTrieArrayListTest
         }
     }
 
+    public void testRandom2()
+    {
+        Random random = new Random(2500L);
+        for (int i = 0; i < 50; ++i) {
+            int size = 1 + random.nextInt(20000);
+            List<Integer> expected = new ArrayList<Integer>();
+            JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+            List<Integer> col = new ArrayList<Integer>();
+
+            for (int loops = 0; loops < (4 * size); ++loops) {
+                int command = random.nextInt(5);
+                switch (command) {
+                    case 0:
+                    case 1:
+                    case 2:
+                        int pos = random.nextInt(2);
+                        int times = random.nextInt(3);
+                        for(int rep = 0; rep < times; rep++) {
+                            col.add(random.nextInt(size));
+                        }
+                        if(pos==0) {
+                            expected.addAll(0, col);
+                        } else {
+                            expected.addAll(col);
+                        }
+                        int parameter = random.nextInt(4);
+                        switch (parameter) {
+                            case 0:  //cursorable insertAll
+                                list = (pos == 0) ? list.insertAllFirst(getCursorable(col)) : list.insertAllLast(getCursorable(col));
+                                break;
+                            case 1: //collection insertAll
+                                list = (pos == 0) ? list.insertAllFirst(col) : list.insertAllLast(col);
+                                break;
+                            case 2: //cursor insertAll
+                                list = (pos == 0) ? list.insertAllFirst(getCursor(col)) : list.insertAllLast(getCursor(col));
+                                break;
+                            case 3: //iterator insertAll
+                                list = (pos == 0) ? list.insertAllFirst(col.iterator()) : list.insertAllLast(col.iterator());
+                                break;
+                        }
+                        col = new ArrayList<Integer>();
+                        break;
+
+                    case 3: //deleteFirst
+                        if(list.size() > 0) {
+                            list = list.deleteFirst();
+                            expected.remove(0);
+                        } else {
+                            try {
+                                list = list.deleteFirst();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
+                        }
+                        break;
+                    case 4: //deleteLast
+                        if(list.size() > 0) {
+                            list = list.deleteLast();
+                            expected.remove(expected.size() - 1);
+                        } else {
+                            try {
+                                list = list.deleteLast();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
+                        }
+                        break;
+
+                }
+                assertEquals(expected.size(), list.size());
+            }
+            assertEquals(expected, list.getList());
+            list = list.deleteAll();
+            assertEquals(0, list.size());
+            assertEquals(true, list.isEmpty());
+        }
+    }
+
     public void testCursor()
     {
         JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();

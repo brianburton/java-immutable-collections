@@ -304,7 +304,7 @@ public class JImmutableTrieArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> deleteAll()
+    public JImmutableTrieArrayList<T> deleteAll()
     {
         return of();
     }
