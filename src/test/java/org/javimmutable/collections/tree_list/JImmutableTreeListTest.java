@@ -1035,7 +1035,21 @@ public class JImmutableTreeListTest
                 }
                 int index = (list.size() == 0) ? 0: random.nextInt(list.size());
                 expected.addAll(index, col);
-                list = list.insertAll(index, col);
+                int parameter = random.nextInt(4);
+                switch (parameter) {
+                    case 0:  //cursorable insertAll
+                        list = list.insertAll(index, getCursorable(col));
+                        break;
+                    case 1: //collection insertAll
+                        list = list.insertAll(index, col);
+                        break;
+                    case 2: //cursor insertAll
+                        list = list.insertAll(index, getCursor(col));
+                        break;
+                    case 3: //iterator insertAll
+                        list = list.insertAll(index, col.iterator());
+                        break;
+                }
                 col = new ArrayList<Integer>();
                 assertEquals(expected.size(), list.size());
             }
