@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -166,6 +166,24 @@ public abstract class AbstractJImmutableListMap<K, V>
     public JImmutableListMap<K, V> deleteAll()
     {
         return create(contents.deleteAll());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return contents.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o instanceof AbstractJImmutableListMap) && contents.equals(((AbstractJImmutableListMap)o).contents);
+    }
+
+    @Override
+    public String toString()
+    {
+        return contents.toString();
     }
 
     /**

@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,29 +33,39 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.btree_list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
-public class JImmutableTrieArrayListTest
+public class JImmutableBtreeListTest
         extends TestCase
 {
     public void test()
     {
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
@@ -64,8 +74,11 @@ public class JImmutableTrieArrayListTest
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
         assertEquals(200, (int)list.get(1));
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+        JImmutableBtreeList<Integer> saved = list;
 
         list = list.insertFirst(80);
         assertEquals(3, list.size());
@@ -73,6 +86,7 @@ public class JImmutableTrieArrayListTest
         assertEquals(80, (int)list.get(0));
         assertEquals(100, (int)list.get(1));
         assertEquals(200, (int)list.get(2));
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
@@ -81,6 +95,7 @@ public class JImmutableTrieArrayListTest
         assertEquals(false, list.isEmpty());
         assertEquals(80, (int)list.get(0));
         assertEquals(100, (int)list.get(1));
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
@@ -88,19 +103,46 @@ public class JImmutableTrieArrayListTest
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
         assertEquals(100, (int)list.get(0));
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+        list = saved;
+        list = list.assign(1, 210);
+        assertEquals(2, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(100, (int)list.get(0));
+        assertEquals(210, (int)list.get(1));
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+        list = list.delete(0);
+        assertEquals(1, list.size());
+        assertEquals(false, list.isEmpty());
+        assertEquals(210, (int)list.get(0));
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+        list = list.delete(0);
+        assertEquals(0, list.size());
+        assertEquals(true, list.isEmpty());
+        list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
     public void testInsertIterable()
     {
-        JImmutableList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableList<Integer> list = JImmutableBtreeList.of();
         StandardCursorTest.emptyCursorTest(list.cursor());
 
         list = list.insert(Arrays.asList(1, 2, 3));
@@ -113,12 +155,12 @@ public class JImmutableTrieArrayListTest
     public void testInsertAllFirst()
     {
         //empty into empty
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
-        JImmutableTrieArrayList<Integer> expected = list;
-        JImmutableTrieArrayList<Integer> checkCursorable = list.insertAllFirst(getCursorable(Collections.EMPTY_LIST));
-        JImmutableTrieArrayList<Integer> checkCollection = list.insertAllFirst(Collections.EMPTY_LIST);
-        JImmutableTrieArrayList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.EMPTY_LIST));
-        JImmutableTrieArrayList<Integer> checkIterator = list.insertAllFirst(Collections.EMPTY_LIST.iterator());
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
+        JImmutableBtreeList<Integer> expected = list;
+        JImmutableBtreeList<Integer> checkCursorable = list.insertAllFirst(getCursorable(Collections.EMPTY_LIST));
+        JImmutableBtreeList<Integer> checkCollection = list.insertAllFirst(Collections.EMPTY_LIST);
+        JImmutableBtreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.EMPTY_LIST));
+        JImmutableBtreeList<Integer> checkIterator = list.insertAllFirst(Collections.EMPTY_LIST.iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
@@ -269,13 +311,15 @@ public class JImmutableTrieArrayListTest
 
     public void testInsertDeleteFirst()
     {
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insertFirst(index);
+            list.checkInvariants();
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
                 assertEquals(index - k, (int)list.get(k));
             }
+
             int kk = 0;
             for (Integer value : list) {
                 assertEquals(index - kk, (int)value);
@@ -288,10 +332,12 @@ public class JImmutableTrieArrayListTest
         for (int index = 0; index < 100; ++index) {
             assertEquals(list.size() - 1, (int)list.get(0));
             list = list.deleteFirst();
+            list.checkInvariants();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(list.size() - k - 1, (int)list.get(k));
             }
+
             int kk = 0;
             for (Integer value : list) {
                 assertEquals(list.size() - kk - 1, (int)value);
@@ -314,13 +360,14 @@ public class JImmutableTrieArrayListTest
 
     public void testDeleteLast()
     {
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insert(index);
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
                 assertEquals(k, (int)list.get(k));
             }
+
             int kk = 0;
             for (Integer value : list) {
                 assertEquals(kk, (int)value);
@@ -336,6 +383,7 @@ public class JImmutableTrieArrayListTest
             for (int k = 0; k < list.size(); ++k) {
                 assertEquals(k, (int)list.get(k));
             }
+
             int kk = 0;
             for (Integer value : list) {
                 assertEquals(kk, (int)value);
@@ -356,12 +404,51 @@ public class JImmutableTrieArrayListTest
         }
     }
 
+    public void testInsert()
+    {
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
+        List<Integer> expected = new ArrayList<Integer>();
+        list = list.insert(0);
+        expected.add(0);
+        for (int i = 1; i <= 1000; ++i) {
+            list = list.insert(0, i);
+            expected.add(0, i);
+        }
+        assertEquals(expected, list.getList());
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+        for (int i = 1; i <= 1000; ++i) {
+            list = list.insert(999, i);
+            expected.add(999, i);
+        }
+        assertEquals(expected, list.getList());
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+    }
+
+    public void testInsertAtSize()
+    {
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
+        List<Integer> expected = new ArrayList<Integer>();
+        for (int i = 1; i <= 1000; ++i) {
+            list = list.insert(list.size(), i);
+            expected.add(i);
+        }
+        assertEquals(expected, list.getList());
+        list.checkInvariants();
+        StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+        StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+    }
+
     public void testRandom()
     {
         Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
-            int size = random.nextInt(4000);
-            JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+            int size = random.nextInt(500);
+            JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
             List<Integer> expected = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
@@ -373,8 +460,11 @@ public class JImmutableTrieArrayListTest
                     expected.add(0, value);
                 }
                 assertEquals(expected.size(), list.size());
+                list.checkInvariants();
             }
             assertEquals(expected, list.getList());
+            StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < size; ++i) {
@@ -384,6 +474,20 @@ public class JImmutableTrieArrayListTest
                 cursor = cursor.next();
             }
             assertEquals(false, cursor.hasValue());
+            StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+            while (!list.isEmpty()) {
+                int index = random.nextInt(list.size());
+                list = list.delete(index);
+                expected.remove(index);
+                if ((list.size() % 100) == 0) {
+                    assertEquals(expected, list.getList());
+                }
+                list.checkInvariants();
+            }
+            assertEquals(true, list.isEmpty());
+            assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
         }
@@ -469,9 +573,62 @@ public class JImmutableTrieArrayListTest
         }
     }
 
+    public void testRandom3()
+    {
+        Random random = new Random(100L);
+        for (int loop = 1; loop <= 200; ++loop) {
+            int size = random.nextInt(3000);
+            JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
+            List<Integer> expected = new ArrayList<Integer>();
+            for (int i = 0; i < size; ++i) {
+                int value = random.nextInt(10000000);
+                if (list.isEmpty()) {
+                    list = list.insert(value);
+                    expected.add(value);
+                } else {
+                    int index = random.nextInt(list.size());
+                    if (random.nextInt(3) == 0) {
+                        list = list.delete(index);
+                        expected.remove(index);
+                    } else {
+                        list = list.insert(index, value);
+                        expected.add(index, value);
+                    }
+                }
+                assertEquals(expected.size(), list.size());
+            }
+            assertEquals(expected, list.getList());
+            list.checkInvariants();
+            StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+            Cursor<Integer> cursor = list.cursor().next();
+            for (int i = 0; i < list.size(); ++i) {
+                assertEquals(true, cursor.hasValue());
+                assertEquals(expected.get(i), list.get(i));
+                assertEquals(expected.get(i), cursor.getValue());
+                cursor = cursor.next();
+            }
+            assertEquals(false, cursor.hasValue());
+            StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+
+            while (!list.isEmpty()) {
+                int index = random.nextInt(list.size());
+                list = list.delete(index);
+                expected.remove(index);
+                assertEquals(expected.size(), list.size());
+            }
+            assertEquals(true, list.isEmpty());
+            assertEquals(0, list.size());
+            StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+        }
+    }
+
     public void testCursor()
     {
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         Cursor<Integer> cursor = list.cursor().next();
         assertEquals(false, cursor.hasValue());
 
@@ -487,7 +644,7 @@ public class JImmutableTrieArrayListTest
             assertEquals(false, cursor.hasValue());
         }
 
-        list = JImmutableTrieArrayList.of();
+        list = JImmutableBtreeList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertFirst(size);
             cursor = list.cursor();
@@ -500,7 +657,7 @@ public class JImmutableTrieArrayListTest
             assertEquals(false, cursor.hasValue());
         }
 
-        list = JImmutableTrieArrayList.of();
+        list = JImmutableBtreeList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertLast(size);
             cursor = list.cursor();
@@ -528,7 +685,7 @@ public class JImmutableTrieArrayListTest
 
     public void testIterator()
     {
-        JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of();
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         Iterator<Integer> iterator = list.iterator();
         assertEquals(false, iterator.hasNext());
 
@@ -542,7 +699,7 @@ public class JImmutableTrieArrayListTest
             assertEquals(false, iterator.hasNext());
         }
 
-        list = JImmutableTrieArrayList.of();
+        list = JImmutableBtreeList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertFirst(size);
             iterator = list.iterator();
@@ -553,7 +710,7 @@ public class JImmutableTrieArrayListTest
             assertEquals(false, iterator.hasNext());
         }
 
-        list = JImmutableTrieArrayList.of();
+        list = JImmutableBtreeList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertLast(size);
             iterator = list.iterator();
@@ -567,31 +724,44 @@ public class JImmutableTrieArrayListTest
 
     public void testDeleteAll()
     {
-        JImmutableList<Integer> list = JImmutableTrieArrayList.<Integer>of().insert(1).insert(2);
-        assertSame(JImmutableTrieArrayList.of(), list.deleteAll());
+        JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
+        list = list.insert(1).insert(2);
+        assertSame(JImmutableBtreeList.of(), list.deleteAll());
     }
 
-    public void testIndexedConstructor()
+    public void testBuilder()
     {
-        Integer[] values = new Integer[33 * 32];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = i;
-        }
-        final IndexedArray<Integer> source = IndexedArray.retained(values);
-        for (int offset = 0; offset < values.length; ++offset) {
-            for (int limit = offset; limit <= values.length; ++limit) {
-                final int size = limit - offset;
-                JImmutableTrieArrayList<Integer> list = JImmutableTrieArrayList.of(source, offset, limit);
-                if (size == 0) {
-                    assertSame(JImmutableTrieArrayList.<Integer>of(), list);
-                }
-                for (int i = 0; i < size; ++i) {
-                    final Integer value = list.get(i);
-                    assertEquals(values[offset + i], value);
-                }
-            }
+        List<Integer> source = new ArrayList<Integer>();
+        for (int i = 0; i <= 11842; ++i) {
+            source.add(i);
+            JImmutableBtreeList<Integer> list = JImmutableBtreeList.<Integer>builder().add(source).build();
+            assertEquals(source, list.getList());
+            list.checkInvariants();
         }
 
-        assertSame(JImmutableTrieArrayList.<Integer>of(), JImmutableTrieArrayList.of(JImmutableTrieArrayList.<Integer>of()));
+        Func0<? extends MutableBuilder<Integer, JImmutableRandomAccessList<Integer>>> factory = new Func0<JImmutableBtreeList.Builder<Integer>>()
+        {
+            @Override
+            public JImmutableBtreeList.Builder<Integer> apply()
+            {
+                return JImmutableBtreeList.builder();
+            }
+        };
+
+        Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean> comparator = new Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean>()
+        {
+            @Override
+            public Boolean apply(List<Integer> list,
+                                 JImmutableRandomAccessList<Integer> tree)
+            {
+                ((JImmutableBtreeList<Integer>)tree).checkInvariants();
+                for (int i = 0; i < list.size(); ++i) {
+                    assertEquals(list.get(i), tree.get(i));
+                }
+                return true;
+            }
+        };
+
+        StandardMutableBuilderTests.verifyBuilder(source, factory, (comparator));
     }
 }
