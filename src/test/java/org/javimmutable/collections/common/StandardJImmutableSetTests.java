@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -143,6 +143,30 @@ public final class StandardJImmutableSetTests
         verifyContents(jet.deleteAll(withExtra), empty);
         verifyContents(jet.deleteAll(IterableCursor.of(withExtra)), empty);
         verifyContents(jet.deleteAll(withExtra.iterator()), empty);
+
+        //insertAll to empty set
+        jet = template;
+        verifyContents(jet.insertAll(IterableCursorable.of(values)), values);
+        verifyContents(jet.insertAll(values), values);
+        verifyContents(jet.insertAll(IterableCursor.of(values)), values);
+        verifyContents(jet.insertAll(values.iterator()), values);
+
+        //insertAll to non-empty set
+        jet = template.union(values);
+        verifyContents(jet.insertAll(IterableCursorable.of(withExtra)), withExtra);
+        verifyContents(jet.insertAll(withExtra), withExtra);
+        verifyContents(jet.insertAll(IterableCursor.of(withExtra)), withExtra);
+        verifyContents(jet.insertAll(withExtra.iterator()), withExtra);
+
+        //insertAll to different set
+        final List<Integer> higher = Arrays.asList(4, 5, 6, 7);
+        jet = template.union(higher);
+        final List<Integer> combinedSet = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
+        verifyContents(jet.insertAll(IterableCursorable.of(withExtra)), combinedSet);
+        verifyContents(jet.insertAll(withExtra), combinedSet);
+        verifyContents(jet.insertAll(IterableCursor.of(withExtra)), combinedSet);
+        verifyContents(jet.insertAll(withExtra.iterator()), combinedSet);
+
     }
 
     private static void testVarious(JImmutableSet<Integer> template)
@@ -208,6 +232,21 @@ public final class StandardJImmutableSetTests
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
+        set2 = set2.insertAll(set);
+        assertFalse(set2.isEmpty());
+        assertEquals(4, set2.size());
+        assertEquals(true, set2.contains(100));
+        assertEquals(true, set2.contains(200));
+        assertEquals(true, set2.contains(300));
+        assertEquals(true, set2.contains(400));
+        assertEquals(true, set2.containsAny(expected));
+        assertEquals(true, set2.containsAny(set));
+        assertEquals(true, set2.containsAll(expected));
+        assertEquals(true, set2.containsAll(set));
+        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300, 400)), set2.getSet());
+
+        set2 = set2.deleteAll(set);
+
         JImmutableSet<Integer> set3 = set.union(expected).insert(500).insert(600);
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
@@ -240,8 +279,10 @@ public final class StandardJImmutableSetTests
             int size = 1 + random.nextInt(20000);
             Set<Integer> expected = new HashSet<Integer>();
             JImmutableSet<Integer> set = template;
+            JImmutableSet<Integer> col = template;
+
             for (int loops = 0; loops < (4 * size); ++loops) {
-                int command = random.nextInt(4);
+                int command = random.nextInt(5);
                 int value = random.nextInt(size);
                 switch (command) {
                 case 0:
@@ -258,6 +299,18 @@ public final class StandardJImmutableSetTests
                     expected.remove(value);
                     assertEquals(false, set.contains(value));
                     break;
+                case 4:
+                    int times = random.nextInt(4);
+                    for(int rep = 0; rep < times; ++rep) {
+                        int num = random.nextInt(size);
+                        expected.add(num);
+                        col = col.insert(num);
+                    }
+                    set = set.insertAll(col);
+                    assertEquals(true, set.containsAll(col));
+                    col = template;
+                    break;
+
                 }
                 assertEquals(expected.size(), set.size());
             }

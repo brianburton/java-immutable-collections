@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,9 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
@@ -69,6 +71,13 @@ class LeafNode<T>
     }
 
     static <T> LeafNode<T> fromList(List<T> values,
+                                    int offset,
+                                    int limit)
+    {
+        return fromList(IndexedList.retained(values), offset, limit);
+    }
+
+    static <T> LeafNode<T> fromList(Indexed<? extends T> values,
                                     int offset,
                                     int limit)
     {

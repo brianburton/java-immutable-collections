@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import org.javimmutable.collections.cursors.MultiCursor;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+@Deprecated
 @Immutable
 public class TwoNode<T>
         extends TreeNode<T>
