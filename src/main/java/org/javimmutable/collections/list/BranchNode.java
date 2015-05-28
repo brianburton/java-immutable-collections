@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.LazyCursor;
 import org.javimmutable.collections.cursors.MultiCursor;
 
@@ -104,6 +105,64 @@ class BranchNode<T>
              ListHelper.allocateSingleNode(node),
              new LeafNode<T>(suffixValue));
         assert node.isFull();
+    }
+
+    static <T> Node<T> of(Indexed<? extends T> leaves)
+    {
+        int nodeCount = leaves.size();
+        if (nodeCount == 0) {
+            return EmptyNode.of();
+        }
+
+        if (nodeCount <= 32) {
+            return LeafNode.fromList(leaves, 0, nodeCount);
+        }
+
+        List<Node<T>> nodes = new ArrayList<Node<T>>();
+        int offset = 0;
+        while (offset < nodeCount) {
+            nodes.add(LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount)));
+            offset += 32;
+        }
+        nodeCount = nodes.size();
+
+        // loop invariant - all nodes except last one are always full
+        // last one is possibly full
+        int depth = 2;
+        while (nodeCount > 1) {
+            int dstOffset = 0;
+            int srcOffset = 0;
+            // fill all full nodes
+            while (nodeCount > 32) {
+                Node<T>[] newNodes = ListHelper.allocateNodes(32);
+                for (int i = 0; i < 32; ++i) {
+                    newNodes[i] = nodes.get(srcOffset++);
+                }
+                nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth), EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+                nodeCount -= 32;
+            }
+            // collect remaining nodes
+            Node<T> lastNode = nodes.get(srcOffset + (nodeCount - 1));
+            if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
+                // all remaining nodes are full
+                Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
+                for (int i = 0; i < newNodes.length; ++i) {
+                    newNodes[i] = nodes.get(srcOffset++);
+                }
+                nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+            } else {
+                // all but last remaining nodes are full
+                Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount - 1);
+                for (int i = 0; i < newNodes.length; ++i) {
+                    newNodes[i] = nodes.get(srcOffset++);
+                }
+                nodes.set(dstOffset++, new BranchNode<T>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.<T>of(), newNodes, lastNode));
+            }
+            nodeCount = dstOffset;
+            depth += 1;
+        }
+        assert nodeCount == 1;
+        return nodes.get(0);
     }
 
     static <T> Builder<T> builder()
@@ -365,60 +424,7 @@ class BranchNode<T>
         @Override
         public Node<T> build()
         {
-            int nodeCount = leaves.size();
-            if (nodeCount == 0) {
-                return EmptyNode.of();
-            }
-
-            if (nodeCount <= 32) {
-                return LeafNode.fromList(leaves, 0, nodeCount);
-            }
-
-            List<Node<T>> nodes = new ArrayList<Node<T>>();
-            int offset = 0;
-            while (offset < nodeCount) {
-                nodes.add(LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount)));
-                offset += 32;
-            }
-            nodeCount = nodes.size();
-
-            // loop invariant - all nodes except last one are always full
-            // last one is possibly full
-            int depth = 2;
-            while (nodeCount > 1) {
-                int dstOffset = 0;
-                int srcOffset = 0;
-                // fill all full nodes
-                while (nodeCount > 32) {
-                    Node<T>[] newNodes = ListHelper.allocateNodes(32);
-                    for (int i = 0; i < 32; ++i) {
-                        newNodes[i] = nodes.get(srcOffset++);
-                    }
-                    nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth), EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
-                    nodeCount -= 32;
-                }
-                // collect remaining nodes
-                Node<T> lastNode = nodes.get(srcOffset + (nodeCount - 1));
-                if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
-                    // all remaining nodes are full
-                    Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
-                    for (int i = 0; i < newNodes.length; ++i) {
-                        newNodes[i] = nodes.get(srcOffset++);
-                    }
-                    nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
-                } else {
-                    // all but last remaining nodes are full
-                    Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount - 1);
-                    for (int i = 0; i < newNodes.length; ++i) {
-                        newNodes[i] = nodes.get(srcOffset++);
-                    }
-                    nodes.set(dstOffset++, new BranchNode<T>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.<T>of(), newNodes, lastNode));
-                }
-                nodeCount = dstOffset;
-                depth += 1;
-            }
-            assert nodeCount == 1;
-            return nodes.get(0);
+            return of(IndexedList.retained(leaves));
         }
 
         @Nonnull

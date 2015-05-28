@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
@@ -79,13 +80,15 @@ public class JImmutableArrayList<T>
                                                 int offset,
                                                 int limit)
     {
-        return JImmutableArrayList.<T>builder().add(source, offset, limit).build();
+        return of(Subindexed.of(source, offset, limit));
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> JImmutableArrayList<T> of(Indexed<T> source)
+    public static <T> JImmutableArrayList<T> of(Indexed<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        final Node<T> root = BranchNode.of(source);
+        return root.isEmpty() ? (JImmutableArrayList<T>)EMPTY : new JImmutableArrayList<T>(root);
     }
 
     @Nonnull

@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -121,7 +122,9 @@ public final class ListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-            JImmutableList<Integer> list = JImmutableArrayList.of();
+//            JImmutableList<Integer> list = JImmutableArrayList.of();
+//            JImmutableList<Integer> list = JImmutableTreeList.of();
+            JImmutableList<Integer> list = JImmutableBtreeList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {
