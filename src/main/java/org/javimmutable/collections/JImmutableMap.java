@@ -116,6 +116,25 @@ public interface JImmutableMap<K, V>
                                V value);
 
     /**
+     * Copies all key-value pairs from the given map. The map itself and its keys must be
+     * nonnull, but values can be null.  If a key already has a value in the map, the old
+     * value is replaced with the new value. Returns a new PersistentMap with the changes.
+     * @param map JImmutableMap to take values from
+     * @return new map reflecting the change
+     */
+    JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map);
+
+
+    /**
+     * Copies all key-value pairs from the given map. The map itself and its keys must be
+     * nonnull, but values can be null.  If a key already has a value in the map, the old
+     * value is replaced with the new value. Returns a new PersistentMap with the changes.
+     * @param map Map to take values from
+     * @return new map reflecting the change
+     */
+    JImmutableMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map);
+
+    /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
      *
