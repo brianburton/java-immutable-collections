@@ -19,7 +19,7 @@ The library is designed to have no dependencies on other libraries but it should
 [Array Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/Array-Tutorial)  
 [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance)  
 [Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys)  
-[Project Javadoc](http://javimmutablecollections.sourceforge.net/apidocs/index.html)  
+[Project Javadoc](http://brianburton.github.io/java-immutable-collections/apidocs/index.html)  
 
 Note: Keep in mind that while the javimmutable-collections themselves are immutable the values you store in them might not be.  Always use immutable objects as keys and if you use mutable objects as values be aware that they could change between when you add them to a javimmutable-collection and when you retrieve them later.
 
