@@ -92,7 +92,8 @@ public class EmptyHashMapTest
 
         try {
             map = JImmutableHashMap.of();
-            map.assign(null, 100);
+            JImmutableHashMap x = null;
+            map.assignAll(x);
             fail();
         } catch (NullPointerException ignored) {
             // pass

@@ -92,6 +92,12 @@ public class JImmutableHashMapTest
             // expected
         }
         try {
+            JImmutableHashMap x = null;
+            map.assignAll(x);
+        } catch (NullPointerException ignored) {
+            // expected
+        }
+        try {
             map.get(null);
         } catch (NullPointerException ignored) {
             // expected
@@ -222,6 +228,60 @@ public class JImmutableHashMapTest
     {
         JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertSame(JImmutableHashMap.of(), map1.deleteAll());
+    }
+
+    public void testAssignAll()
+    {
+        //assignAll(JImmutableMap)
+        JImmutableMap<String, Number> empty = JImmutableHashMap.of();
+        JImmutableMap<String, Number> map = empty;
+        JImmutableMap<String, Integer> expected = JImmutableHashMap.<String, Integer>usingList();
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(0, map.size());
+        assertTrue(map.isEmpty());
+
+        expected = expected.assign("a", 10);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+
+        assertEquals(map, map.assignAll(empty));
+
+        expected = expected.assign("a", 8).assign("b", 12).assign("c", 14);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+
+        //assignAll(Map)
+        map = empty;
+        Map<String, Integer> expectedMutable = new HashMap();
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(0, map.size());
+
+        expectedMutable.put("a", 10);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+
+        assertEquals(map, map.assignAll(Collections.EMPTY_MAP));
+
+        expectedMutable.put("a", 8);
+        expectedMutable.put("b", 12);
+        expectedMutable.put("c", 14);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+
     }
 
     public void testCursor()
