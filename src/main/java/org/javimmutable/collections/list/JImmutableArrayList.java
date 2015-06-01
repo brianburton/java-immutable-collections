@@ -210,9 +210,10 @@ public class JImmutableArrayList<T>
         return insertAllFirstReverse(temp);
     }
 
-    private JImmutableArrayList<T> insertAllFirstReverse(ArrayList<T> temp) {
+    private JImmutableArrayList<T> insertAllFirstReverse(ArrayList<T> temp)
+    {
         Node<T> newRoot = root;
-        for(int x = temp.size()-1; x >= 0; x--) {
+        for (int x = temp.size() - 1; x >= 0; x--) {
             newRoot = newRoot.insertFirst(temp.get(x));
         }
         return new JImmutableArrayList<T>(newRoot);
@@ -244,7 +245,7 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
         Node<T> newRoot = root;
-        while(values.hasNext()) {
+        while (values.hasNext()) {
             newRoot = newRoot.insertLast(values.next());
         }
         return new JImmutableArrayList<T>(newRoot);

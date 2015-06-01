@@ -131,7 +131,7 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAll(@Nonnull Cursorable<? extends T> values);
@@ -140,7 +140,7 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAll(@Nonnull Collection<? extends T> values);
@@ -149,7 +149,7 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values);
@@ -158,7 +158,7 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
@@ -167,7 +167,7 @@ public interface JImmutableList<T>
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
@@ -176,7 +176,7 @@ public interface JImmutableList<T>
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
@@ -185,7 +185,7 @@ public interface JImmutableList<T>
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
@@ -194,7 +194,7 @@ public interface JImmutableList<T>
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
@@ -204,7 +204,7 @@ public interface JImmutableList<T>
      * Synonym for insertAll()
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
@@ -214,7 +214,7 @@ public interface JImmutableList<T>
      * Synonym for insertAll()
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Collection<? extends T> values);
@@ -224,7 +224,7 @@ public interface JImmutableList<T>
      * Synonym for insertAll()
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
@@ -234,7 +234,7 @@ public interface JImmutableList<T>
      * Synonym for insertAll()
      *
      * @param values
-     * @return instance of set containing the collection
+     * @return instance of list containing the collection
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Iterator<? extends T> values);

@@ -92,14 +92,14 @@ public class RandomLoop
         System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
-//            testStack(random);
-//            testList(random);
-//            testRandomAccessList(random);
-//            testSets(tokens, random);
+            testStack(random);
+            testList(random);
+            testRandomAccessList(random);
+            testSets(tokens, random);
             testMaps(factory, tokens, random);
-//            testBadHashMap(tokens, random);
-//            testComparableBadHashMap(tokens, random);
-//            testArray(tokens, random);
+            testBadHashMap(tokens, random);
+            testComparableBadHashMap(tokens, random);
+            testArray(tokens, random);
         }
     }
 
@@ -381,7 +381,7 @@ public class RandomLoop
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
                 int x = random.nextInt(2);
-                if(x==0) {
+                if (x == 0) {
                     String key = makeKey(tokens, random);
                     keys.add(key);
                     pkeys = pkeys.insert(key);

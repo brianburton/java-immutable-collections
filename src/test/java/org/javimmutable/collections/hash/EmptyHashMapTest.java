@@ -79,20 +79,20 @@ public class EmptyHashMapTest
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
         map = JImmutableHashMap.of();
         expected = expected.assign("b", 12).assign("c", 14);
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
 
         try {
             map = JImmutableHashMap.of();
-            JImmutableHashMap x = null;
-            map.assignAll(x);
+            //noinspection ConstantConditions
+            map.assignAll((JImmutableMap<String, Integer>)null);
             fail();
         } catch (NullPointerException ignored) {
             // pass
@@ -109,7 +109,7 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
         map = JImmutableHashMap.of();
         expected2.put("b", 12);
@@ -117,6 +117,6 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
     }
 }

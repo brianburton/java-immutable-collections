@@ -92,8 +92,7 @@ public class JImmutableHashMapTest
             // expected
         }
         try {
-            JImmutableHashMap x = null;
-            map.assignAll(x);
+            map.assignAll((JImmutableMap<Integer, Integer>)null);
         } catch (NullPointerException ignored) {
             // expected
         }
@@ -129,33 +128,33 @@ public class JImmutableHashMapTest
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(5);
-                switch(command) {
-                    case 0:
-                    case 1:
-                        Integer key = random.nextInt(maxKey);
-                        Integer value = random.nextInt(1000000);
-                        expected.put(key, value);
-                        map = map.assign(key, value);
-                        break;
-                    case 2:
-                        JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
-                        int times = random.nextInt(3);
-                        for(int rep = 0; rep < times; rep++) {
-                            key = random.nextInt(maxKey);
-                            value = random.nextInt(1000000);
-                            col = col.assign(key, value);
-                        }
-                        expected.putAll(col.getMap());
-                        map = (random.nextInt(2)==0) ? map.assignAll(col) : map.assignAll(col.getMap());
-                        break;
-                    case 3:
+                switch (command) {
+                case 0:
+                case 1:
+                    Integer key = random.nextInt(maxKey);
+                    Integer value = random.nextInt(1000000);
+                    expected.put(key, value);
+                    map = map.assign(key, value);
+                    break;
+                case 2:
+                    JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
+                    int times = random.nextInt(3);
+                    for (int rep = 0; rep < times; rep++) {
                         key = random.nextInt(maxKey);
-                        expected.remove(key);
-                        map = map.delete(key);
-                        break;
-                    case 4:
-                        key = random.nextInt(maxKey);
-                        assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                        value = random.nextInt(1000000);
+                        col = col.assign(key, value);
+                    }
+                    expected.putAll(col.getMap());
+                    map = (random.nextInt(2) == 0) ? map.assignAll(col) : map.assignAll(col.getMap());
+                    break;
+                case 3:
+                    key = random.nextInt(maxKey);
+                    expected.remove(key);
+                    map = map.delete(key);
+                    break;
+                case 4:
+                    key = random.nextInt(maxKey);
+                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
 
                     assertEquals(expected.size(), map.size());
                 }
@@ -262,7 +261,7 @@ public class JImmutableHashMapTest
         assertEquals(expected, map);
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
         assertEquals(map, map.assignAll(empty));
 
@@ -271,7 +270,7 @@ public class JImmutableHashMapTest
         assertEquals(expected, map);
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
         //assignAll(Map)
         map = empty;
@@ -285,7 +284,7 @@ public class JImmutableHashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
         assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
 
@@ -296,7 +295,7 @@ public class JImmutableHashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
     }
 

@@ -40,7 +40,6 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

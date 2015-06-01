@@ -213,7 +213,7 @@ public class JImmutableTreeList<T>
         }
         int i = index;
         JImmutableTreeList<T> answer = this;
-        while(values.hasNext()) {
+        while (values.hasNext()) {
             answer = answer.insert(i, values.next());
             i++;
         }

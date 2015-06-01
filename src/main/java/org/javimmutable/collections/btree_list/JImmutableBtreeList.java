@@ -231,7 +231,7 @@ public class JImmutableBtreeList<T>
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
-                                           @Nonnull Cursorable<? extends T> values)
+                                            @Nonnull Cursorable<? extends T> values)
     {
         return insertAll(index, values.cursor());
     }
@@ -239,7 +239,7 @@ public class JImmutableBtreeList<T>
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
-                                           @Nonnull Collection<? extends T> values)
+                                            @Nonnull Collection<? extends T> values)
     {
         return insertAll(index, values.iterator());
     }
@@ -247,7 +247,7 @@ public class JImmutableBtreeList<T>
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
-                                           @Nonnull Cursor<? extends T> values)
+                                            @Nonnull Cursor<? extends T> values)
     {
         return insertAll(index, values.iterator());
     }
@@ -255,14 +255,14 @@ public class JImmutableBtreeList<T>
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
-                                           @Nonnull Iterator<? extends T> values)
+                                            @Nonnull Iterator<? extends T> values)
     {
         if ((index < 0) || (index > size())) {
             throw new IndexOutOfBoundsException();
         }
         int i = index;
         JImmutableBtreeList<T> answer = this;
-        while(values.hasNext()) {
+        while (values.hasNext()) {
             answer = answer.insert(i, values.next());
             i++;
         }

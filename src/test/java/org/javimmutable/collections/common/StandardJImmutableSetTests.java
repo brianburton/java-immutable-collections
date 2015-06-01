@@ -301,7 +301,7 @@ public final class StandardJImmutableSetTests
                     break;
                 case 4:
                     int times = random.nextInt(4);
-                    for(int rep = 0; rep < times; ++rep) {
+                    for (int rep = 0; rep < times; ++rep) {
                         int num = random.nextInt(size);
                         expected.add(num);
                         col = col.insert(num);
