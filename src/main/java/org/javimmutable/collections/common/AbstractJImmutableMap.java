@@ -98,8 +98,6 @@ public abstract class AbstractJImmutableMap<K, V>
         for(Map.Entry<? extends K, ? extends V> e : map.entrySet()) {
             answer = answer.assign(e.getKey(), e.getValue());
         }
-
-
         return answer;
     }
 

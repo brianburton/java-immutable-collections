@@ -128,21 +128,43 @@ public class JImmutableHashMapTest
             JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingTree();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
-                int command = random.nextInt(4);
-                if (command <= 1) {
-                    Integer key = random.nextInt(maxKey);
-                    Integer value = random.nextInt(1000000);
-                    expected.put(key, value);
-                    map = map.assign(key, value);
-                } else if (command == 2) {
-                    Integer key = random.nextInt(maxKey);
-                    expected.remove(key);
-                    map = map.delete(key);
-                } else {
-                    Integer key = random.nextInt(maxKey);
-                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                int command = random.nextInt(5);
+                switch(command) {
+                    case 0:
+                    case 1:
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        expected.put(key, value);
+                        map = map.assign(key, value);
+                        break;
+                    case 2:
+                        Map<Integer, Integer> mutable= new HashMap<Integer, Integer>();
+                        JImmutableMap<Integer, Integer> immutable = JImmutableHashMap.usingTree();
+                        int type = random.nextInt(2);
+                        int times = random.nextInt(3);
+                        for(int rep = 0; rep < times; rep++) {
+                            key = random.nextInt(maxKey);
+                            value = random.nextInt(1000000);
+                            if(type==0) {
+                                mutable.put(key, value);
+                            } else {
+                                immutable = immutable.assign(key, value);
+                            }
+                            expected.put(key, value);
+                        }
+                        map = (type==0) ? map.assignAll(mutable) : map.assignAll(immutable);
+                        break;
+                    case 3:
+                        key = random.nextInt(maxKey);
+                        expected.remove(key);
+                        map = map.delete(key);
+                        break;
+                    case 4:
+                        key = random.nextInt(maxKey);
+                        assertEquals(expected.get(key), map.find(key).getValueOrNull());
+
+                    assertEquals(expected.size(), map.size());
                 }
-                assertEquals(expected.size(), map.size());
             }
 
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
@@ -235,7 +257,7 @@ public class JImmutableHashMapTest
         //assignAll(JImmutableMap)
         JImmutableMap<String, Number> empty = JImmutableHashMap.of();
         JImmutableMap<String, Number> map = empty;
-        JImmutableMap<String, Integer> expected = JImmutableHashMap.<String, Integer>usingList();
+        JImmutableMap<String, Integer> expected = JImmutableHashMap.usingList();
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());
@@ -259,7 +281,7 @@ public class JImmutableHashMapTest
 
         //assignAll(Map)
         map = empty;
-        Map<String, Integer> expectedMutable = new HashMap();
+        Map<String, Integer> expectedMutable = new HashMap<String, Integer>();
         map = map.assignAll(expectedMutable);
         assertEquals(expectedMutable, map.getMap());
         assertEquals(0, map.size());
@@ -271,7 +293,7 @@ public class JImmutableHashMapTest
         assertEquals(10, map.get("a"));
         assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
 
-        assertEquals(map, map.assignAll(Collections.EMPTY_MAP));
+        assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
 
         expectedMutable.put("a", 8);
         expectedMutable.put("b", 12);

@@ -41,15 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 public class JImmutableTreeMapTest
         extends TestCase
@@ -163,35 +155,58 @@ public class JImmutableTreeMapTest
         Random random = new Random();
         for (int loop = 0; loop < 10; ++loop) {
             Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
-            JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
+            JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(4);
-                if (command <= 1) {
-                    Integer key = random.nextInt(maxKey);
-                    Integer value = random.nextInt(1000000);
-                    expected.put(key, value);
-                    map = add(map, key, value);
-                    assertEquals(expected.get(key), map.get(key));
-                    assertEquals(expected.get(key), map.getValueOr(key, -99));
-                    assertEquals(expected.get(key), map.find(key).getValue());
-                } else if (command == 2) {
-                    Integer key = random.nextInt(maxKey);
-                    expected.remove(key);
-                    map = remove(map, key);
-                    assertEquals(null, map.get(key));
-                    assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
-                    assertEquals(true, map.find(key).isEmpty());
-                } else {
-                    Integer key = random.nextInt(maxKey);
-                    if (expected.containsKey(key)) {
+                switch(command) {
+                    case 0:
+                    case 1:
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        expected.put(key, value);
+                        map = add(map, key, value);
                         assertEquals(expected.get(key), map.get(key));
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
                         assertEquals(expected.get(key), map.find(key).getValue());
-                    } else {
+                        break;
+                    case 2:
+                        Map<Integer, Integer> mutable = new TreeMap<Integer, Integer>();
+                        JImmutableTreeMap<Integer, Integer> immutable = JImmutableTreeMap.of();
+                        int type = random.nextInt(2);
+                        int times = random.nextInt(3);
+
+                        for(int rep = 0; rep < times; rep++) {
+                            key = random.nextInt(maxKey);
+                            value = random.nextInt(1000000);
+                            if(type==0) {
+                                mutable.put(key, value);
+                            } else {
+                                immutable = immutable.assign(key, value);
+                            }
+                            expected.put(key, value);
+                        }
+                        map = (type==0) ? addAll(map, mutable) : addAll(map, immutable);
+                        break;
+                    case 3:
+                        key = random.nextInt(maxKey);
+                        expected.remove(key);
+                        map = remove(map, key);
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                         assertEquals(true, map.find(key).isEmpty());
-                    }
+                        break;
+                    case 4:
+                        key = random.nextInt(maxKey);
+                        if (expected.containsKey(key)) {
+                            assertEquals(expected.get(key), map.get(key));
+                            assertEquals(expected.get(key), map.getValueOr(key, -99));
+                            assertEquals(expected.get(key), map.find(key).getValue());
+                        } else {
+                            assertEquals(null, map.get(key));
+                            assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
+                            assertEquals(true, map.find(key).isEmpty());
+                        }
+
                 }
                 assertEquals(expected.size(), map.size());
             }
@@ -232,33 +247,112 @@ public class JImmutableTreeMapTest
         StandardCursorTest.emptyCursorTest(cleared.cursor());
     }
 
-    private JImmutableTreeMap<Integer, Integer> add(JImmutableTreeMap<Integer, Integer> map,
-                                                    Integer value)
+    public void testAssignAll()
     {
-        map = map.assign(value, value);
-        map.verifyDepthsMatch();
-        assertEquals(true, map.find(value).isFilled());
-        assertEquals(value, map.find(value).getValue());
-        return map;
+        //assignAll(JImmutableMap)
+        JImmutableMap<String, Number> empty = JImmutableTreeMap.of();
+        JImmutableMap<String, Number> map = empty;
+        JImmutableMap<String, Integer> expected = JImmutableTreeMap.of();
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(0, map.size());
+        assertTrue(map.isEmpty());
+
+        expected = expected.assign("a", 10);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+
+        assertEquals(map, map.assignAll(empty));
+
+        expected = expected.assign("a", 8).assign("b", 12).assign("c", 14);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+
+        //assignAll(Map)
+        map = empty;
+        Map<String, Integer> expectedMutable = new TreeMap<String, Integer>();
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(0, map.size());
+
+        expectedMutable.put("a", 10);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+
+        assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
+
+        expectedMutable.put("a", 8);
+        expectedMutable.put("b", 12);
+        expectedMutable.put("c", 14);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+
     }
 
-    private JImmutableTreeMap<Integer, Integer> add(JImmutableTreeMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
+                                                    Integer value)
+    {
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>) map;
+        treeMap = treeMap.assign(value, value);
+        treeMap.verifyDepthsMatch();
+        assertEquals(true, treeMap.find(value).isFilled());
+        assertEquals(value, treeMap.find(value).getValue());
+        return treeMap;
+    }
+
+    private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
                                                     Integer key,
                                                     Integer value)
     {
-        map = map.assign(key, value);
-        map.verifyDepthsMatch();
-        assertEquals(true, map.find(key).isFilled());
-        assertEquals(value, map.find(key).getValue());
-        return map;
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>) map;
+        treeMap = treeMap.assign(key, value);
+        treeMap.verifyDepthsMatch();
+        assertEquals(true, treeMap.find(key).isFilled());
+        assertEquals(value, treeMap.find(key).getValue());
+        return treeMap;
     }
 
-    private JImmutableTreeMap<Integer, Integer> remove(JImmutableTreeMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
+                                                       JImmutableMap<Integer, Integer> extra)
+    {
+        map = map.assignAll(extra);
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>) map;
+        treeMap.verifyDepthsMatch();
+        for(JImmutableMap.Entry<Integer, Integer> entry : extra) {
+            assertEquals(true, treeMap.find(entry.getKey()).isFilled());
+            assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
+        }
+        return treeMap;
+    }
+
+    private JImmutableTreeMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
+                                                       Map<Integer, Integer> extra)
+    {
+        map = map.assignAll(extra);
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>) map;
+        treeMap.verifyDepthsMatch();
+        for(Map.Entry<Integer, Integer> entry : extra.entrySet()) {
+            assertEquals(true, treeMap.find(entry.getKey()).isFilled());
+            assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
+        }
+        return treeMap;
+    }
+
+    private JImmutableTreeMap<Integer, Integer> remove(JImmutableMap<Integer, Integer> map,
                                                        Integer value)
     {
-        map = map.delete(value);
-        map.verifyDepthsMatch();
-        assertEquals(true, map.find(value).isEmpty());
-        return map;
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>) map;
+        treeMap = treeMap.delete(value);
+        treeMap.verifyDepthsMatch();
+        assertEquals(true, treeMap.find(value).isEmpty());
+        return treeMap;
     }
 }

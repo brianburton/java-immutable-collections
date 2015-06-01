@@ -69,7 +69,6 @@ public class EmptyHashMapTest
     public void testAssignAll()
     {
         JImmutableMap<String, Number> map = JImmutableHashMap.of();
-        assertTrue(!(map instanceof JImmutableHashMap));
         JImmutableMap<String, Integer> expected = JImmutableHashMap.of();
         map = map.assignAll(expected);
         assertEquals(expected, map);
@@ -100,7 +99,7 @@ public class EmptyHashMapTest
         }
 
         map = JImmutableHashMap.of();
-        Map<String, Integer> expected2 = new HashMap();
+        Map<String, Integer> expected2 = new HashMap<String, Integer>();
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertEquals(0, map.size());
@@ -113,7 +112,6 @@ public class EmptyHashMapTest
         assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap) map).getTransforms());
 
         map = JImmutableHashMap.of();
-        assertTrue(!(map instanceof JImmutableHashMap));
         expected2.put("b", 12);
         expected2.put("c", 14);
         map = map.assignAll(expected2);
