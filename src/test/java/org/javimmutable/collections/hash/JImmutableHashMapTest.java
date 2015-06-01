@@ -138,21 +138,15 @@ public class JImmutableHashMapTest
                         map = map.assign(key, value);
                         break;
                     case 2:
-                        Map<Integer, Integer> mutable= new HashMap<Integer, Integer>();
-                        JImmutableMap<Integer, Integer> immutable = JImmutableHashMap.usingTree();
-                        int type = random.nextInt(2);
+                        JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
                         int times = random.nextInt(3);
                         for(int rep = 0; rep < times; rep++) {
                             key = random.nextInt(maxKey);
                             value = random.nextInt(1000000);
-                            if(type==0) {
-                                mutable.put(key, value);
-                            } else {
-                                immutable = immutable.assign(key, value);
-                            }
-                            expected.put(key, value);
+                            col = col.assign(key, value);
                         }
-                        map = (type==0) ? map.assignAll(mutable) : map.assignAll(immutable);
+                        expected.putAll(col.getMap());
+                        map = (random.nextInt(2)==0) ? map.assignAll(col) : map.assignAll(col.getMap());
                         break;
                     case 3:
                         key = random.nextInt(maxKey);

@@ -128,22 +128,17 @@ public class JImmutableInsertOrderMapTest
                         assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
                         break;
                     case 2:
-                        Map<Integer, Integer> mutable = new LinkedHashMap<Integer, Integer>();
-                        JImmutableInsertOrderMap<Integer, Integer> immutable = JImmutableInsertOrderMap.of();
+                        JImmutableInsertOrderMap<Integer, Integer> col = JImmutableInsertOrderMap.of();
                         int type = r.nextInt(2);
                         int times = r.nextInt(3);
 
                         for (int rep = 0; rep < times; rep++) {
                             key = r.nextInt(500);
                             value = r.nextInt(500);
-                            if (type == 0) {
-                                mutable.put(key, value);
-                            } else {
-                                immutable = immutable.assign(key, value);
-                            }
-                            expected.put(key, value);
+                            col = col.assign(key, value);
                         }
-                        map = (type == 0) ? addAll(map, mutable) : addAll(map, immutable);
+                        expected.putAll(col.getMap());
+                        map = (r.nextInt(2)==0) ? map.assignAll(col) : map.assignAll(col.getMap());
                         break;
                 }
 

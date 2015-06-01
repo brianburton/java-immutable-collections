@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -92,10 +93,10 @@ public class RandomLoop
         //noinspection InfiniteLoopStatement
         while (true) {
 //            testStack(random);
-            testList(random);
-            testRandomAccessList(random);
-            testSets(tokens, random);
-//            testMaps(factory, tokens, random);
+//            testList(random);
+//            testRandomAccessList(random);
+//            testSets(tokens, random);
+            testMaps(factory, tokens, random);
 //            testBadHashMap(tokens, random);
 //            testComparableBadHashMap(tokens, random);
 //            testArray(tokens, random);
@@ -379,11 +380,25 @@ public class RandomLoop
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
-                String key = makeKey(tokens, random);
-                keys.add(key);
-                pkeys = pkeys.insert(key);
-                expected.put(key, key);
-                map = map.assign(key, key);
+                int x = random.nextInt(2);
+                if(x==0) {
+                    String key = makeKey(tokens, random);
+                    keys.add(key);
+                    pkeys = pkeys.insert(key);
+                    expected.put(key, key);
+                    map = map.assign(key, key);
+                } else {
+                    int times = random.nextInt(3);
+                    JImmutableMap<String, String> col = JImmutableTreeMap.of();
+                    for(int n = 0; n<times; n++) {
+                        String key = makeKey(tokens, random);
+                        keys.add(key);
+                        pkeys = pkeys.insert(key);
+                        col.assign(key, key);
+                    }
+                    expected.putAll(col.getMap());
+                    map = (random.nextInt(2)==0) ? map.assignAll(col) : map.assignAll(col.getMap());
+                }
             }
             verifyContents(expected, map);
             System.out.printf("updating %d%n", map.size());

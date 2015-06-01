@@ -170,22 +170,17 @@ public class JImmutableTreeMapTest
                         assertEquals(expected.get(key), map.find(key).getValue());
                         break;
                     case 2:
-                        Map<Integer, Integer> mutable = new TreeMap<Integer, Integer>();
-                        JImmutableTreeMap<Integer, Integer> immutable = JImmutableTreeMap.of();
+                        JImmutableTreeMap<Integer, Integer> col = JImmutableTreeMap.of();
                         int type = random.nextInt(2);
                         int times = random.nextInt(3);
 
                         for(int rep = 0; rep < times; rep++) {
                             key = random.nextInt(maxKey);
                             value = random.nextInt(1000000);
-                            if(type==0) {
-                                mutable.put(key, value);
-                            } else {
-                                immutable = immutable.assign(key, value);
-                            }
-                            expected.put(key, value);
+                            col.assign(key, value);
                         }
-                        map = (type==0) ? addAll(map, mutable) : addAll(map, immutable);
+                        expected.putAll(col.getMap());
+                        map = (random.nextInt(2) == 0) ? map.assignAll(col) : map.assignAll(col.getMap());
                         break;
                     case 3:
                         key = random.nextInt(maxKey);
