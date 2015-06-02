@@ -44,6 +44,7 @@ import org.javimmutable.collections.hash.JImmutableHashSet;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public abstract class AbstractJImmutableSetMapTestTestCase
@@ -108,6 +109,15 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         StandardCursorTest.listCursorTest(Arrays.asList(7, 14, 300), map.valuesCursor(3));
         StandardCursorTest.listCursorTest(Collections.<Integer>emptyList(), map.valuesCursor(4));
         return map;
+    }
+
+    private void verifySetOperations()
+    {
+        JImmutableSetMap<Integer, Integer> template = JImmutableHashSetMap.of();
+
+        assertEquals(0, template.size());
+        assertEquals(true, template.isEmpty());
+        assertEquals(template, new HashMap<Integer, Integer>());
     }
 
 }

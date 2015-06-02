@@ -40,11 +40,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -482,4 +480,5 @@ public abstract class AbstractJImmutableSetMap<K, V>
     {
         return set.intersection(other);
     }
+
 }
