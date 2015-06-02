@@ -37,6 +37,7 @@ package org.javimmutable.collections.setmap;
 
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableList;
@@ -51,7 +52,9 @@ import org.javimmutable.collections.hash.JImmutableHashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 @Immutable
 public abstract class AbstractJImmutableSetMap<K, V>
@@ -92,9 +95,219 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Nonnull
     @Override
+    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                            @Nonnull Cursorable<? extends V> values)
+    {
+        return insertAll(key, values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                            @Nonnull Collection<? extends V> values)
+    {
+        return insertAll(key, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                            @Nonnull Cursor<? extends V> values)
+    {
+        return insertAll(key, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                            @Nonnull Iterator<? extends V> values)
+    {
+        return create(contents.assign(key, insertAllInSet(getSet(key), values)));
+    }
+
+    @Override
+    public boolean contains(@Nonnull K key,
+                            @Nullable V value)
+    {
+        return getSet(key).contains(value);
+    }
+
+    @Override
+    public boolean containsAll(@Nonnull K key,
+                               @Nonnull Cursorable<? extends V> values)
+    {
+        return containsAll(key, values.cursor());
+    }
+
+    @Override
+    public boolean containsAll(@Nonnull K key,
+                               @Nonnull Collection<? extends V> values)
+    {
+        return containsAll(key, values.iterator());
+
+    }
+
+    @Override
+    public boolean containsAll(@Nonnull K key,
+                               @Nonnull Cursor<? extends V> values)
+    {
+        return containsAll(key, values.iterator());
+
+    }
+
+    @Override
+    public boolean containsAll(@Nonnull K key,
+                               @Nonnull Iterator<? extends V> values)
+    {
+        return getSet(key).containsAll(values);
+    }
+
+    @Override
+    public boolean containsAny(@Nonnull K key,
+                               @Nonnull Cursorable<? extends V> values)
+    {
+        return containsAny(key, values.cursor());
+    }
+
+    @Override
+    public boolean containsAny(@Nonnull K key,
+                               @Nonnull Collection<? extends V> values)
+    {
+        return containsAny(key, values.iterator());
+    }
+
+    @Override
+    public boolean containsAny(@Nonnull K key,
+                               @Nonnull Cursor<? extends V> values)
+    {
+        return containsAny(key, values.iterator());
+    }
+
+    @Override
+    public boolean containsAny(@Nonnull K key,
+                               @Nonnull Iterator<? extends V> values)
+    {
+        return getSet(key).containsAny(values);
+    }
+
+    @Nonnull
+    @Override
     public JImmutableSetMap<K, V> delete(@Nonnull K key)
     {
         return create(contents.delete(key));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                            @Nonnull Cursorable<? extends V> other)
+    {
+        return deleteAll(key, other.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                            @Nonnull Collection<? extends V> other)
+    {
+        return deleteAll(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                            @Nonnull Cursor<? extends V> other)
+    {
+        return deleteAll(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                            @Nonnull Iterator<? extends V> other)
+    {
+        return create(contents.assign(key, deleteAllInSet(getSet(key), other)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> union(@Nonnull K key,
+                                        @Nonnull Cursorable<? extends V> other)
+    {
+        return union(key, other.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> union(@Nonnull K key,
+                                        @Nonnull Collection<? extends V> other)
+    {
+        return union(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> union(@Nonnull K key,
+                                        @Nonnull Cursor<? extends V> other)
+    {
+        return union(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> union(@Nonnull K key,
+                                        @Nonnull Iterator<? extends V> other)
+    {
+        return create(contents.assign(key, unionInSet(getSet(key), other)));
+    }
+
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Cursorable<? extends V> other)
+    {
+        return intersection(key, other.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Collection<? extends V> other)
+    {
+        return intersection(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Cursor<? extends V> other)
+    {
+        return intersection(key, other.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Iterator<? extends V> other)
+    {
+        return create(contents.assign(key, intersectionInSet(getSet(key), other)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull JImmutableSet<? extends V> other)
+    {
+        return create(contents.assign(key, intersectionInSet(getSet(key), other)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Set<? extends V> other)
+    {
+        return create(contents.assign(key, intersectionInSet(getSet(key), other)));
     }
 
     @Override
@@ -232,5 +445,41 @@ public abstract class AbstractJImmutableSetMap<K, V>
                                            V value)
     {
         return set.insert(value);
+    }
+
+    protected JImmutableSet<V> insertAllInSet(JImmutableSet<V> set,
+                                              Iterator<? extends V> values)
+    {
+        return set.insertAll(values);
+    }
+
+    protected JImmutableSet<V> deleteAllInSet(JImmutableSet<V> set,
+                                              Iterator<? extends V> other)
+    {
+        return set.deleteAll(other);
+    }
+
+    protected JImmutableSet<V> unionInSet(JImmutableSet<V> set,
+                                          Iterator<? extends V> other)
+    {
+        return set.union(other);
+    }
+
+    protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
+                                                 Iterator<? extends V> other)
+    {
+        return set.intersection(other);
+    }
+
+    protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
+                                                 JImmutableSet<? extends V> other)
+    {
+        return set.intersection(other);
+    }
+
+    protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
+                                                 Set<? extends V> other)
+    {
+        return set.intersection(other);
     }
 }

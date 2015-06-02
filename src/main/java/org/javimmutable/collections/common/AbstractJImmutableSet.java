@@ -85,11 +85,6 @@ public abstract class AbstractJImmutableSet<T>
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
-//        JImmutableSet<T> answer = this;
-//        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-//            answer = answer.insert(c.getValue());
-//        }
-//        return answer;
         return insertAll(values.iterator());
     }
 
@@ -126,12 +121,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean containsAll(@Nonnull Cursor<? extends T> values)
     {
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            if (!contains(c.getValue())) {
-                return false;
-            }
-        }
-        return true;
+        return containsAll(values.iterator());
     }
 
     @Override
@@ -160,12 +150,8 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public boolean containsAny(@Nonnull Cursor<? extends T> values)
     {
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            if (contains(c.getValue())) {
-                return true;
-            }
-        }
-        return false;
+        return containsAny(values.iterator());
+
     }
 
     @Override
@@ -205,14 +191,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public JImmutableSet<T> deleteAll(@Nonnull Cursor<? extends T> values)
     {
-        JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            final T value = c.getValue();
-            if (value != null) {
-                newMap = newMap.delete(value);
-            }
-        }
-        return (newMap != map) ? create(newMap) : this;
+        return deleteAll(values.iterator());
     }
 
     @Nonnull
@@ -247,14 +226,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public JImmutableSet<T> union(@Nonnull Cursor<? extends T> values)
     {
-        JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            final T value = c.getValue();
-            if (value != null) {
-                newMap = newMap.assign(value, Boolean.TRUE);
-            }
-        }
-        return (newMap != map) ? create(newMap) : this;
+        return union(values.iterator());
     }
 
     @Nonnull

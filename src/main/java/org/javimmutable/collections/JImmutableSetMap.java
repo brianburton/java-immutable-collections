@@ -38,6 +38,9 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Interface for maps that map keys to sets of values.
@@ -97,6 +100,51 @@ public interface JImmutableSetMap<K, V>
     JImmutableSetMap<K, V> insert(@Nonnull K key,
                                   @Nonnull V value);
 
+    @Nonnull
+    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Cursorable<? extends V> values);
+
+    @Nonnull
+    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Collection<? extends V> values);
+
+    @Nonnull
+    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Cursor<? extends V> values);
+
+    @Nonnull
+    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Iterator<? extends V> values);
+
+    boolean contains(@Nonnull K key,
+                     @Nullable V value);
+
+    boolean containsAll(@Nonnull K key,
+                        @Nonnull Cursorable<? extends V> values);
+
+    boolean containsAll(@Nonnull K key,
+                        @Nonnull Collection<? extends V> values);
+
+    boolean containsAll(@Nonnull K key,
+                        @Nonnull Cursor<? extends V> values);
+
+    boolean containsAll(@Nonnull K key,
+                        @Nonnull Iterator<? extends V> values);
+
+
+    boolean containsAny(@Nonnull K key,
+                        @Nonnull Cursorable<? extends V> values);
+
+    boolean containsAny(@Nonnull K key,
+                        @Nonnull Collection<? extends V> values);
+
+    boolean containsAny(@Nonnull K key,
+                        @Nonnull Cursor<? extends V> values);
+
+    boolean containsAny(@Nonnull K key,
+                        @Nonnull Iterator<? extends V> values);
+
+
     /**
      * Deletes the entry for the specified key (if any). Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
@@ -106,6 +154,65 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> delete(@Nonnull K key);
+
+    @Nonnull
+    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                     @Nonnull Cursorable<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                     @Nonnull Collection<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                     @Nonnull Cursor<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
+                                     @Nonnull Iterator<? extends V> other);
+
+
+    @Nonnull
+    JImmutableSetMap<K, V> union(@Nonnull K key,
+                                 @Nonnull Cursorable<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> union(@Nonnull K key,
+                                 @Nonnull Collection<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> union(@Nonnull K key,
+                                 @Nonnull Cursor<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> union(@Nonnull K key,
+                                 @Nonnull Iterator<? extends V> other);
+
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Cursorable<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Collection<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Cursor<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Iterator<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull JImmutableSet<? extends V> other);
+
+    @Nonnull
+    JImmutableSetMap<K, V> intersection(@Nonnull K key,
+                                        @Nonnull Set<? extends V> other);
+
 
     /**
      * Return the number of keys in the map.
