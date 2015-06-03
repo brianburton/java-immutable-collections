@@ -224,7 +224,8 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
                                             @Nonnull Iterator<? extends V> other)
     {
-        return create(contents.assign(key, deleteAllInSet(getSet(key), other)));
+        JImmutableSet<V> set = getSet(key);
+        return set.isEmpty() ? this : create(contents.assign(key, deleteAllInSet(set, other)));
     }
 
     @Nonnull

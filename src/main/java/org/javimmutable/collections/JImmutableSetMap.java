@@ -155,6 +155,13 @@ public interface JImmutableSetMap<K, V>
     @Nonnull
     JImmutableSetMap<K, V> delete(@Nonnull K key);
 
+    /**
+     * Deletes the elements in other at the specified key. Returns a new map if the
+     * values were deleted or the current map if the key was not contained in the map.
+     * @param key
+     * @param other
+     * @return
+     */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
                                      @Nonnull Cursorable<? extends V> other);

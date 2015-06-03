@@ -43,6 +43,12 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 public class JImmutableHashSetMapTest
         extends AbstractJImmutableSetMapTestTestCase
@@ -79,5 +85,88 @@ public class JImmutableHashSetMapTest
         b = b.insert(1, 12);
         assertEquals(a, b);
         assertEquals(b, a);
+    }
+
+    public void testRandom()
+    {
+        Random random = new Random(2500L);
+        for (int i = 0; i < 50; ++i) {
+            int size = 1 + random.nextInt(20000);
+
+            JImmutableSetMap<Integer, Integer> jetMap = JImmutableHashSetMap.of();
+            HashMap<Integer, Set<Integer>> expected = new HashMap<Integer, Set<Integer>>();
+
+            for (int loops = 0; loops < (4 * size); ++loops) {
+                Integer key = random.nextInt(size);
+                Set<Integer> set = new HashSet<Integer>();
+                for (int n = random.nextInt(3); n > 0; --n) {
+                    set.add(random.nextInt(size));
+                }
+                int command = random.nextInt(8);
+                switch (command) {
+                case 0:
+                    jetMap = jetMap.insert(key, key);
+                    if (expected.containsKey(key)) {
+                        expected.get(key).add(key);
+                    } else {
+                        expected.put(key, asSet(key));
+                    }
+                    break;
+                case 1:
+                    jetMap = jetMap.insertAll(key, set);
+                    if (expected.containsKey(key)) {
+                        expected.get(key).addAll(set);
+                    } else {
+                        expected.put(key, set);
+                    }
+                    break;
+                case 2:
+                    jetMap = jetMap.delete(key);
+                    if (expected.containsKey(key)) {
+                        expected.remove(key);
+                    }
+                    break;
+                case 3:
+                    jetMap = jetMap.deleteAll(key, set);
+                    if (expected.containsKey(key)) {
+                        expected.get(key).removeAll(set);
+                    }
+                    break;
+                case 4:
+                    if (expected.containsKey(key)) {
+                        assertEquals(jetMap.contains(key, key), expected.get(key).contains(key));
+                    }
+                    break;
+                case 5:
+                    if (expected.containsKey(key)) {
+                        assertEquals(jetMap.containsAll(key, set), expected.get(key).containsAll(set));
+                    }
+                case 6:
+                    jetMap = jetMap.union(key, set);
+                    if (expected.containsKey(key)) {
+                        expected.get(key).addAll(set);
+                    } else {
+                        expected.put(key, set);
+                    }
+                    break;
+                case 7:
+                    jetMap = jetMap.intersection(key, set);
+                    if (expected.containsKey(key)) {
+                        expected.get(key).retainAll(set);
+                    } else {
+                        expected.put(key, new HashSet<Integer>());
+                    }
+                    break;
+                }
+                assertEquals(expected.size(), jetMap.size());
+            }
+            verifyContents(jetMap, expected);
+            for (JImmutableMap.Entry<Integer, JImmutableSet<Integer>> e : jetMap) {
+                jetMap = jetMap.delete(e.getKey());
+            }
+            assertEquals(0, jetMap.size());
+            assertEquals(true, jetMap.isEmpty());
+
+        }
     }
 }
