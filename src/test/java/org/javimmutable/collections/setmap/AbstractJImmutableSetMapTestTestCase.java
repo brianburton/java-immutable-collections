@@ -146,6 +146,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         final Set<Integer> values = asSet(1, 2, 3, 4);
         HashMap<Integer, Set<Integer>> expected = new HashMap<Integer, Set<Integer>>();
         expected.put(1, values);
+        verifyExpected(expected, 1, values);
         verifyContents(jetMap.union(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.union(1, values), expected);
         verifyContents(jetMap.union(1, IterableCursor.of(values)), expected);
@@ -176,6 +177,8 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 
         //empty set intersection with non-empty set
         expected.put(1, emptySet);
+        verifyExpected(expected, 1, emptySet);
+        verifyExpected(expected, 1, emptySet);
         verifyContents(emptyMap.intersection(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(emptyMap.intersection(1, withExtra), expected);
         verifyContents(emptyMap.intersection(1, IterableCursor.of(withExtra)), expected);
@@ -193,6 +196,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 
         //deleteAll from smaller set
         expected.put(1, asSet(0, 5));
+        verifyExpected(expected, 1, asSet(0, 5));
         jetMap = emptyMap.union(1, withExtra);
         verifyContents(jetMap.deleteAll(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.deleteAll(1, values), expected);
@@ -202,6 +206,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         //deleteAll from larger set
         jetMap = emptyMap.union(1, values);
         expected.put(1, emptySet);
+        verifyExpected(expected, 1, emptySet);
         verifyContents(jetMap.deleteAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.deleteAll(1, withExtra), expected);
         verifyContents(jetMap.deleteAll(1, IterableCursor.of(withExtra)), expected);
@@ -210,6 +215,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         //insertAll to empty set
         jetMap = emptyMap;
         expected.put(1, values);
+        verifyExpected(expected, 1, values);
         verifyContents(jetMap.insertAll(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.insertAll(1, values), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(values)), expected);
@@ -218,6 +224,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         //insertAll to non-empty set
         jetMap = emptyMap.union(1, values);
         expected.put(1, withExtra);
+        verifyExpected(expected, 1, withExtra);
         verifyContents(jetMap.insertAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(withExtra)), expected);
@@ -226,6 +233,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         //insertAll to smaller set
         jetMap = emptyMap.union(1, Arrays.asList(4, 5, 6, 7));
         expected.put(1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
+        verifyExpected(expected, 1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyContents(jetMap.insertAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(withExtra)), expected);
@@ -234,7 +242,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
     }
 
 
-    protected void verifyContents(JImmutableSetMap<Integer, Integer> jetMap,
+    public void verifyContents(JImmutableSetMap<Integer, Integer> jetMap,
                                 HashMap<Integer, Set<Integer>> expected)
     {
         assertEquals(expected.isEmpty(), jetMap.isEmpty());
@@ -279,6 +287,12 @@ public abstract class AbstractJImmutableSetMapTestTestCase
             set.add(arg);
         }
         return set;
+    }
+
+    protected void verifyExpected(HashMap<Integer, Set<Integer>> expected, int key, Set<Integer> values)
+    {
+        assertEquals(true, expected.containsKey(key));
+        assertEquals(true, expected.get(key).containsAll(values));
     }
 
 }

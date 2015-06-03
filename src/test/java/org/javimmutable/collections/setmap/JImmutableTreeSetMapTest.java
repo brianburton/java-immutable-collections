@@ -35,47 +35,70 @@
 
 package org.javimmutable.collections.setmap;
 
-
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class JImmutableHashSetMapTest
-        extends AbstractJImmutableSetMapTestTestCase
+public class JImmutableTreeSetMapTest
+    extends AbstractJImmutableSetMapTestTestCase
 {
     @SuppressWarnings("unchecked")
-    public void test()
+    public void testNormalOrder()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.<Integer, Integer>of());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.<Integer, Integer>of());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                              MapEntry.of(2, map.getSet(2)),
-                                                                                                              MapEntry.of(3, map.getSet(3))),
+                                                                                                               MapEntry.of(2, map.getSet(2)),
+                                                                                                               MapEntry.of(3, map.getSet(3))),
                                           map.cursor());
         StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                                MapEntry.of(2, map.getSet(2)),
-                                                                                                                MapEntry.of(3, map.getSet(3))),
+                                                                                                                 MapEntry.of(2, map.getSet(2)),
+                                                                                                                 MapEntry.of(3, map.getSet(3))),
+                                            map.iterator());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testReverseOrder()
+    {
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.<Integer, Integer>of(new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return b.compareTo(a);
+            }
+        }));
+        StandardCursorTest.listCursorTest(Arrays.asList(3, 2, 1), map.keysCursor());
+        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(3, map.getSet(3)),
+                                                                                                               MapEntry.of(2, map.getSet(2)),
+                                                                                                               MapEntry.of(1, map.getSet(1))),
+                                          map.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(3, map.getSet(3)),
+                                                                                                                 MapEntry.of(2, map.getSet(2)),
+                                                                                                                 MapEntry.of(1, map.getSet(1))),
                                             map.iterator());
     }
 
     public void testEquals()
     {
-        JImmutableSetMap<Integer, Integer> a = JImmutableHashSetMap.of();
-        JImmutableSetMap<Integer, Integer> b = JImmutableHashSetMap.of();
+        JImmutableSetMap<Integer, Integer> a = JImmutableTreeSetMap.of();
+        JImmutableSetMap<Integer, Integer> b = JImmutableTreeSetMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
         a = a.insert(1, 10);
         assertFalse(a.equals(b));
-        b = b.insert(1, 10).insert(1, 10);
+        b = b.insert(1, 10);
         assertEquals(a, b);
         assertEquals(b, a);
         a = a.insert(1, 12);
@@ -169,5 +192,15 @@ public class JImmutableHashSetMapTest
             assertEquals(true, jetMap.isEmpty());
 
         }
+    }
+
+    private JImmutableTreeSetMap<Integer, Integer> remove(JImmutableSetMap<Integer, Integer> map,
+                                                          Integer value)
+    {
+        map = map.delete(value);
+        JImmutableTreeSetMap<Integer, Integer> treeMap = (JImmutableTreeSetMap<Integer, Integer>)map;
+        treeMap.verifyDepthsMatch();
+        assertEquals(true, treeMap.find(value).isEmpty());
+        return treeMap;
     }
 }
