@@ -42,6 +42,8 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class JImmutableInsertOrderSetMapTest
         extends AbstractJImmutableSetMapTestTestCase
@@ -50,6 +52,7 @@ public class JImmutableInsertOrderSetMapTest
     public void test()
     {
         JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.<Integer, Integer>of());
+        verifyRandom(JImmutableInsertOrderSetMap.<Integer, Integer>of(), new LinkedHashMap<Integer, Set<Integer>>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
                                                                                                               MapEntry.of(3, map.getSet(3)),
