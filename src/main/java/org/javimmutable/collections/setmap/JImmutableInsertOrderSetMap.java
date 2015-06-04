@@ -40,10 +40,16 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in the same order as they
  * were inserted into the collection
+ *
+ * @param <K>
+ * @param <V>
  */
+@Immutable
 public class JImmutableInsertOrderSetMap<K, V>
         extends AbstractJImmutableSetMap<K, V>
 {

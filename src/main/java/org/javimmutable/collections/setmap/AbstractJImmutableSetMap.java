@@ -264,7 +264,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Cursorable<? extends V> other)
+                                               @Nonnull Cursorable<? extends V> other)
     {
         return intersection(key, other.cursor());
     }
@@ -272,7 +272,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Collection<? extends V> other)
+                                               @Nonnull Collection<? extends V> other)
     {
         return intersection(key, other.iterator());
     }
@@ -280,7 +280,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Cursor<? extends V> other)
+                                               @Nonnull Cursor<? extends V> other)
     {
         return intersection(key, other.iterator());
     }
@@ -288,7 +288,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Iterator<? extends V> other)
+                                               @Nonnull Iterator<? extends V> other)
     {
         return create(contents.assign(key, intersectionInSet(getSet(key), other)));
     }
@@ -296,7 +296,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull JImmutableSet<? extends V> other)
+                                               @Nonnull JImmutableSet<? extends V> other)
     {
         return create(contents.assign(key, intersectionInSet(getSet(key), other)));
     }
@@ -304,7 +304,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Set<? extends V> other)
+                                               @Nonnull Set<? extends V> other)
     {
         return create(contents.assign(key, intersectionInSet(getSet(key), other)));
     }
@@ -446,36 +446,84 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return set.insert(value);
     }
 
+    /**
+     * Overridable by derived classes to insert all values from an iterator into
+     * a set in some way
+     *
+     * @param set
+     * @param values
+     * @return
+     */
     protected JImmutableSet<V> insertAllInSet(JImmutableSet<V> set,
                                               Iterator<? extends V> values)
     {
         return set.insertAll(values);
     }
 
+    /**
+     * Overridable by derived classes to delete all values from an iterator into
+     * a set in some way
+     *
+     * @param set
+     * @param other
+     * @return
+     */
     protected JImmutableSet<V> deleteAllInSet(JImmutableSet<V> set,
                                               Iterator<? extends V> other)
     {
         return set.deleteAll(other);
     }
 
+    /**
+     * Overridable by derived classes to create a union from an iterator in the
+     * Set for key
+     *
+     * @param set
+     * @param other
+     * @return
+     */
     protected JImmutableSet<V> unionInSet(JImmutableSet<V> set,
                                           Iterator<? extends V> other)
     {
         return set.union(other);
     }
 
+    /**
+     * Overridable by derived classes to create an intersection from an iterator in
+     * the Set for key
+     *
+     * @param set
+     * @param other
+     * @return
+     */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  Iterator<? extends V> other)
     {
         return set.intersection(other);
     }
 
+    /**
+     * Overridable by derived classes to create an intersection from a JImmutableSet in
+     * the Set for key
+     *
+     * @param set
+     * @param other
+     * @return
+     */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  JImmutableSet<? extends V> other)
     {
         return set.intersection(other);
     }
 
+    /**
+     * Overridable by derived classes to create an intersection from a Set in
+     * the JImmutableSet for key
+     *
+     * @param set
+     * @param other
+     * @return
+     */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  Set<? extends V> other)
     {

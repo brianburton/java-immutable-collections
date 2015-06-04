@@ -40,12 +40,16 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
+import javax.annotation.concurrent.Immutable;
+
+
 /**
  * JImmutableSetMap using a hash map for fast lookup.
  *
  * @param <K>
  * @param <V>
  */
+@Immutable
 public class JImmutableHashSetMap<K, V>
         extends AbstractJImmutableSetMap<K, V>
 {
