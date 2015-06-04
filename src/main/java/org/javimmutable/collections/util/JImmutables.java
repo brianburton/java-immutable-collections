@@ -49,6 +49,9 @@ import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
+import org.javimmutable.collections.setmap.JImmutableHashSetMap;
+import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
+import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
@@ -960,6 +963,54 @@ public final class JImmutables
     public static <K, V> JImmutableListMap<K, V> sortedListMap(Comparator<K> comparator)
     {
         return JImmutableTreeListMap.of(comparator);
+    }
+    /**
+     * Creates a set map with higher performance but no specific ordering of keys.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> setMap()
+    {
+        return JImmutableHashSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by order they are inserted.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> insertOrderSetMap()
+    {
+        return JImmutableInsertOrderSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by their natural ordering.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K extends Comparable<K>, V> JImmutableSetMap<K, V> sortedSetMap()
+    {
+        return JImmutableTreeSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
+     *
+     * @param comparator
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> sortedSettMap(Comparator<K> comparator)
+    {
+        return JImmutableTreeSetMap.of(comparator);
     }
 
     /**
