@@ -199,7 +199,7 @@ public class JImmutableTreeSetMapTest
     {
         map = map.delete(value);
         JImmutableTreeSetMap<Integer, Integer> treeMap = (JImmutableTreeSetMap<Integer, Integer>)map;
-        treeMap.verifyDepthsMatch();
+//        treeMap.verifyDepthsMatch();
         assertEquals(true, treeMap.find(value).isEmpty());
         return treeMap;
     }

@@ -38,61 +38,46 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
+import java.util.Arrays;
 
-/**
- * JImmutableSetMap implementation that allows keys to be traversed in sorted order using a Comparator
- * of the natural ordering of the keys if they implement Comparable.
- *
- * @param <K>
- * @param <V>
- */
-@Immutable
-public class JImmutableTreeSetMap<K, V>
-        extends AbstractJImmutableSetMap<K, V>
+public class JImmutableInsertOrderSetMapTest
+        extends AbstractJImmutableSetMapTestTestCase
 {
-    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
-    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.<Comparable, Object>of());
-
-    private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
-    {
-        super(contents);
-    }
-
-    /**
-     * Constructs an empty set map whose keys are sorted in their natural ordering. The keys must
-     * implement Comparable.
-     *
-     * @param <K>
-     * @param <V>
-     * @return
-     */
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> JImmutableTreeSetMap<K, V> of()
+    public void test()
     {
-        return (JImmutableTreeSetMap<K, V>)EMPTY;
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.<Integer, Integer>of());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
+        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
+                                                                                                              MapEntry.of(3, map.getSet(3)),
+                                                                                                              MapEntry.of(2, map.getSet(2))),
+                                          map.cursor());
+        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
+                                                                                                                 MapEntry.of(3, map.getSet(3)),
+                                                                                                                 MapEntry.of(2, map.getSet(2))),
+                                            map.iterator());
     }
 
-    /**
-     * Constructs an empty set map using the specified Comparator. Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared, so it is imperative that the Comparator be completely immutable.
-     *
-     * @param comparator
-     */
-    public static <K, V> JImmutableTreeSetMap<K, V> of(Comparator<K> comparator)
+    public void testEquals()
     {
-        return new JImmutableTreeSetMap<K, V>(JImmutableTreeMap.<K, JImmutableSet<V>>of(comparator));
-    }
+        JImmutableSetMap<Integer, Integer> a = JImmutableInsertOrderSetMap.of();
+        JImmutableSetMap<Integer, Integer> b = JImmutableInsertOrderSetMap.of();
+        assertEquals(a, b);
+        assertEquals(b, a);
 
-    @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
-    {
-        return new JImmutableTreeSetMap<K, V>(map);
+        a = a.insert(1, 10);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 10);
+        assertEquals(a, b);
+        assertEquals(b, a);
+        a = a.insert(1, 12);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 12);
+        assertEquals(a, b);
+        assertEquals(b, a);
     }
-
 
 }
