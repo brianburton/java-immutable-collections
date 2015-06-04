@@ -48,11 +48,38 @@ public interface JImmutableCountingSet<T>
                 Iterable<T>
 {
 
+    JImmutableSet<T> getSet();
+
+    int count(T value);
+
+    @Nonnull
+    JImmutableCountingSet<T> setCount(@Nonnull T value, int count);
+
     @Nonnull
     JImmutableCountingSet<T> insert(@Nonnull T value);
 
     @Nonnull
-    JImmutableCountingSet<T> insert(@Nonnull T value, @Nonnull int count);
+    JImmutableCountingSet<T> insert(@Nonnull T value, int count);
+
+    @Nonnull
+    JImmutableCountingSet<T> insertAll(@Nonnull Cursorable<? extends T> values);
+
+    @Nonnull
+    JImmutableCountingSet<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    @Nonnull
+    JImmutableCountingSet<T> insertAll(@Nonnull Cursor<? extends T> values);
+
+    @Nonnull
+    JImmutableCountingSet<T> insertAll(@Nonnull Iterator<? extends T> values);
+
+    @Nonnull
+    JImmutableCountingSet<T> delete(@Nonnull T value);
+
+    @Nonnull
+    JImmutableCountingSet<T> delete(@Nonnull T value, int count);
+
+    boolean contains(@Nonnull T value);
 
     boolean containsAll(@Nonnull Cursorable<? extends T> values);
 
@@ -70,7 +97,8 @@ public interface JImmutableCountingSet<T>
 
     boolean containsAny(@Nonnull Iterator<? extends T> values);
 
-    boolean contains(@Nullable T value);
+    boolean isEmpty();
 
+    int size();
 
 }
