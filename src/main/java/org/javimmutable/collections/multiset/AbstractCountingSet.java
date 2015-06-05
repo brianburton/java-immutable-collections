@@ -33,12 +33,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.countingset;
+package org.javimmutable.collections.multiset;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableCountingSet;
+import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 
@@ -47,7 +47,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public abstract class AbstractCountingSet<T>
-        implements JImmutableCountingSet<T>
+        implements JImmutableMultiset<T>
 {
     private final JImmutableMap<T, Integer> map;
 
@@ -66,7 +66,7 @@ public abstract class AbstractCountingSet<T>
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> setCount(@Nonnull T value,
+    public JImmutableMultiset<T> setCount(@Nonnull T value,
                                              int count)
     {
         Conditions.stopNull(value, count);
@@ -75,14 +75,14 @@ public abstract class AbstractCountingSet<T>
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insert(@Nonnull T value)
+    public JImmutableMultiset<T> insert(@Nonnull T value)
     {
         return insert(value, 1);
     }
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insert(@Nonnull T value,
+    public JImmutableMultiset<T> insert(@Nonnull T value,
                                            int count)
     {
         Conditions.stopNull(value, count);
@@ -91,28 +91,28 @@ public abstract class AbstractCountingSet<T>
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    public JImmutableMultiset<T> insertAll(@Nonnull Cursorable<? extends T> values)
     {
         return insertAll(values.cursor());
     }
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insertAll(@Nonnull Collection<? extends T> values)
+    public JImmutableMultiset<T> insertAll(@Nonnull Collection<? extends T> values)
     {
         return insertAll(values.iterator());
     }
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insertAll(@Nonnull Cursor<? extends T> values)
+    public JImmutableMultiset<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
         return insertAll(values.iterator());
     }
 
     @Nonnull
     @Override
-    public JImmutableCountingSet<T> insertAll(@Nonnull Iterator<? extends T> values)
+    public JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         JImmutableMap<T, Integer> newMap = map;
         while (values.hasNext()) {
@@ -129,7 +129,7 @@ public abstract class AbstractCountingSet<T>
      * @param map
      * @return
      */
-    protected abstract JImmutableCountingSet<T> create(JImmutableMap<T, Integer> map);
+    protected abstract JImmutableMultiset<T> create(JImmutableMap<T, Integer> map);
 
     private JImmutableMap<T, Integer> increaseCount(T value,
                                                     int addBy)
