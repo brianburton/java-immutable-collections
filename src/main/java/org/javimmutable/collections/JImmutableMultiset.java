@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,7 +54,7 @@ public interface JImmutableMultiset<T>
 {
 
     /**
-     * Adds one occurance of value to the multiset.
+     * Adds one occurence of value to the multiset.
      *
      * @param value
      * @return
@@ -63,7 +64,8 @@ public interface JImmutableMultiset<T>
     JImmutableMultiset<T> insert(@Nonnull T value);
 
     /**
-     * Adds count number of occurances of value to the multiset.
+     * Adds count number of occurences of value to the multiset.
+     * Count must be greater than or equal to zero.
      *
      * @param value
      * @param count
@@ -80,37 +82,23 @@ public interface JImmutableMultiset<T>
      * @return
      */
     @Override
-    boolean contains(@Nonnull T value);
+    boolean contains(@Nullable T value);
 
     /**
-     * Determines if the multiset contains at least count occurances of value
+     * Determines if the multiset contains at least count occurences of value.
+     * Count must be greater than zero.
      *
      * @param value
      * @param count
      * @return
      */
-    boolean contains(@Nonnull T value,
+    boolean contains(@Nullable T value,
                      int count);
 
     /**
-     * Determines if the multiset contains at least as many occurances of
-     * each value as other.
-     * Slow operation.
-     *
-     * @param other
-     * @return
-     */
-    boolean containsAllOccurances(@Nonnull Cursorable<? extends T> other);
-
-    boolean containsAllOccurances(@Nonnull Collection<? extends T> other);
-
-    boolean containsAllOccurances(@Nonnull Cursor<? extends T> other);
-
-    boolean containsAllOccurances(@Nonnull Iterator<? extends T> other);
-
-    /**
-     * Determines if the multiset contains every value in other. If containsAll(other)
+     * Determines if the multiset contains every value in other. If containsAllOccurences(values)
      * is true, this must be true as well.
+     * Synonymous to calling contains() on each element of other.
      *
      * @param other
      * @return
@@ -126,6 +114,29 @@ public interface JImmutableMultiset<T>
 
     @Override
     boolean containsAll(@Nonnull Iterator<? extends T> other);
+
+    /**
+     * Determines if the multiset contains at least as many occurences of
+     * each value as other.
+     * Slow operation.
+     *
+     * @param other
+     * @return
+     */
+    boolean containsAllOccurences(@Nonnull Cursorable<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull Collection<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull Cursor<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull Iterator<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull JImmutableMultiset<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull JImmutableSet<? extends T> other);
+
+    boolean containsAllOccurences(@Nonnull Set<? extends T> other);
+
 
     /**
      * Determines if the multiset and other have at least one value in common.
@@ -145,28 +156,9 @@ public interface JImmutableMultiset<T>
     @Override
     boolean containsAny(@Nonnull Iterator<? extends T> other);
 
-    /**
-     * Removes one occurance of value from the multiset.
-     *
-     * @param value
-     * @return
-     */
-    @Nonnull
-    JImmutableMultiset<T> deleteOccurance(@Nonnull T value);
 
     /**
-     * Removes count number of occurances of value from the multiset.
-     *
-     * @param value
-     * @param count
-     * @return
-     */
-    @Nonnull
-    JImmutableMultiset<T> deleteOccurance(@Nonnull T value,
-                                          int count);
-
-    /**
-     * Removes every occurance of value from the multiset.
+     * Removes every occurence of value from the multiset.
      *
      * @param value
      * @return
@@ -176,27 +168,37 @@ public interface JImmutableMultiset<T>
     JImmutableMultiset<T> delete(@Nonnull T value);
 
     /**
-     * Removes each element in other from the multiset.
-     * Synonymous to calling delete() on each element of values.
+     * @return an equivalent collection with no values
+     */
+    @Nonnull
+    JImmutableSet<T> deleteAll();
+
+    /**
+     * Removes one occurence of value from the multiset.
      *
-     * @param other
+     * @param value
      * @return
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAllOccurances(@Nonnull Cursorable<? extends T> other);
+    JImmutableMultiset<T> deleteOccurence(@Nonnull T value);
 
-    @Nonnull
-    JImmutableMultiset<T> deleteAllOccurances(@Nonnull Collection<? extends T> other);
-
-    @Nonnull
-    JImmutableMultiset<T> deleteAllOccurances(@Nonnull Cursor<? extends T> other);
-
-    @Nonnull
-    JImmutableMultiset<T> deleteAllOccurances(@Nonnull Iterator<? extends T> other);
 
     /**
-     * For each element in other, removes all occurances of that value from the multiset.
-     * Synonymous to calling deleteValue() on each element of other.
+     * Removes count number of occurences of value from the multiset. If there are fewer than
+     * count occurrences in the multimap, then all the occurrences that do exist are deleted.
+     * Count must be greater than or equal to zero.
+     *
+     * @param value
+     * @param count
+     * @return
+     */
+    @Nonnull
+    JImmutableMultiset<T> deleteOccurrence(@Nonnull T value,
+                                           int count);
+
+    /**
+     * For each element in other, removes all occurences of that value from the multiset.
+     * Synonymous to calling delete() on each element of other.
      *
      * @param other
      * @return
@@ -212,6 +214,26 @@ public interface JImmutableMultiset<T>
 
     @Nonnull
     JImmutableMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other);
+
+    /**
+     * Removes each element in other from the multiset.
+     * Synonymous to calling deleteOccurrence() on each element of other.
+     *
+     * @param other
+     * @return
+     */
+    @Nonnull
+    JImmutableMultiset<T> deleteAllOccurences(@Nonnull Cursorable<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> deleteAllOccurences(@Nonnull Collection<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> deleteAllOccurences(@Nonnull Cursor<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> deleteAllOccurences(@Nonnull Iterator<? extends T> other);
+
 
     /**
      * Adds each element in values to the multiset.
@@ -232,9 +254,8 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
-
     /**
-     * Combines all occurances in other and the multiset. If only the multiset or
+     * Combines all occurences in other and the multiset. If only the multiset or
      * other contains a value, that value's count is used. If both contain a value,
      * the greater count is used.
      * Slow operation.
@@ -258,9 +279,18 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> union(@Nonnull Iterator<? extends T> other);
 
+    @Nonnull
+    JImmutableMultiset<T> union(@Nonnull JImmutableMultiset<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> union(@Nonnull JImmutableSet<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> union(@Nonnull Set<? extends T> other);
+
 
     /**
-     * Removes all occurances from the multiset that are not contained in other.
+     * Removes all occurences from the multiset that are not contained in other.
      * If neither the multiset nor other contains a value, it is removed. If both
      * contain a value, the lesser count is used.
      * Slow operation.
@@ -285,29 +315,25 @@ public interface JImmutableMultiset<T>
     JImmutableMultiset<T> intersection(@Nonnull Iterator<? extends T> other);
 
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<T> other);
+    JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other);
 
-    @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<T> other);
+    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other);
 
     @Override
     @Nonnull
     JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other);
 
-
     /**
-     * Cursor iterates through each occurance in the multiset the correct number of times.
-     * Synonymous to a cursor from getList()
+     * Cursor iterates through each occurence in the multiset the correct number of times.
      *
      * @return
      */
     @Nonnull
-    Cursor<T> occuranceCursor();
+    Cursor<T> occurenceCursor();
 
     /**
-     * Cursor iterates through each uniqe value in the multiset once.
-     * Synonymous to a cursor from getSet()
+     * Cursor iterates through each unique value in the multiset once.
      *
      * @return
      */
@@ -315,27 +341,16 @@ public interface JImmutableMultiset<T>
     Cursor<T> cursor();
 
     /**
-     * Cursor iterates through each Entry, that contains a unique value and the count of occurances.
-     * Synonymous to a cursor from getEntrySet()
+     * Cursor iterates through each Entry, that contains a unique value and the count of occurences.
      *
      * @return
      */
     @Nonnull
     Cursor<JImmutableMap.Entry<T, Integer>> entryCursor();
 
-
     /**
-     * Returns a JImmutableSet of the unique values in the multiset
-     *
-     * @return
-     */
-    @Override
-    @Nonnull
-    Set<T> getSet();
-
-
-    /**
-     * Returns the number of occurances associated with the specified value.
+     * Returns the number of occurences associated with the specified value. If the value is not
+     * contained in the mulitset, 0 is returned.
      *
      * @param value
      * @return
@@ -343,7 +358,7 @@ public interface JImmutableMultiset<T>
     int count(@Nonnull T value);
 
     /**
-     * Manually sets the number of occurances associated with the specified value.
+     * Manually sets the number of occurences associated with the specified value.
      * Count must be greater than or equal to zero.
      *
      * @param value
@@ -362,7 +377,7 @@ public interface JImmutableMultiset<T>
     boolean isEmpty();
 
     /**
-     * Determines the total number of occurances in the multiset.
+     * Determines the total number of occurences in the multiset.
      *
      * @return
      */
@@ -374,4 +389,13 @@ public interface JImmutableMultiset<T>
      * @return
      */
     int valueCount();
+
+    /**
+     * Returns a JImmutableSet of the unique values in the multiset
+     *
+     * @return
+     */
+    @Override
+    @Nonnull
+    Set<T> getSet();
 }
