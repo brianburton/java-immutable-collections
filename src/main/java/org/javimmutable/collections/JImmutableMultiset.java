@@ -359,7 +359,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Manually sets the number of occurences associated with the specified value.
-     * Count must be greater than or equal to zero.
+     * Count must be greater than or equal to zero. If count == 0, is synoymous to delete(value)
      *
      * @param value
      * @param count
