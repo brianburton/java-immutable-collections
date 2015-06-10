@@ -317,8 +317,9 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other);
 
+    @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other);
+    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<T> other);
 
     @Override
     @Nonnull
@@ -390,12 +391,4 @@ public interface JImmutableMultiset<T>
      */
     int valueCount();
 
-    /**
-     * Returns a JImmutableSet of the unique values in the multiset
-     *
-     * @return
-     */
-    @Override
-    @Nonnull
-    Set<T> getSet();
 }
