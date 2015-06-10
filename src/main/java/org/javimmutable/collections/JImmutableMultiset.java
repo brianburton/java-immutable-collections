@@ -255,7 +255,7 @@ public interface JImmutableMultiset<T>
     JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Combines all occurences in other and the multiset. If only the multiset or
+     * Combines all occurrences from other or the multiset. If only the multiset or
      * other contains a value, that value's count is used. If both contain a value,
      * the greater count is used.
      * Slow operation.
@@ -290,7 +290,7 @@ public interface JImmutableMultiset<T>
 
 
     /**
-     * Removes all occurences from the multiset that are not contained in other.
+     * Removes all occurrences from the multiset that are not contained in other.
      * If neither the multiset nor other contains a value, it is removed. If both
      * contain a value, the lesser count is used.
      * Slow operation.
@@ -330,7 +330,7 @@ public interface JImmutableMultiset<T>
      * @return
      */
     @Nonnull
-    Cursor<T> occurenceCursor();
+    Cursor<T> occurrenceCursor();
 
     /**
      * Cursor iterates through each unique value in the multiset once.
