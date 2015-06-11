@@ -37,10 +37,13 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
@@ -666,7 +669,15 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public Cursor<T> occurrenceCursor()
     {
-        return StandardCursor.<T>of(new OccurrenceCursorSource(entryCursor()));
+        return MultiTransformCursor.of(entryCursor(), new Func1<JImmutableMap.Entry<T, Integer>, Cursor<T>>()
+        {
+            @Override
+            public Cursor<T> apply(JImmutableMap.Entry<T, Integer> entry)
+            {
+                return StandardCursor.of(new OccurrenceCursorSource(entry));
+            }
+        });
+
     }
 
     @Override
@@ -682,6 +693,32 @@ public abstract class AbstractJImmutableMultiset<T>
     {
         return map.cursor();
     }
+
+    @Override
+    public int hashCode()
+    {
+        return Cursors.computeHashCode(occurrenceCursor());
+    }
+
+//    @Override
+//    public boolean equals(Object o)
+//    {
+//        if (o == this) {
+//            return true;
+//        } else if (o == null) {
+//            return false;
+//        } else if (o instanceof JImmutableSet) {
+//            return getSet().equals(((JImmutableSet)o).getSet());
+//        } else {
+//            return (o instanceof Set) && getSet().equals(o);
+//        }
+//    }
+//
+//    @Override
+//    public String toString()
+//    {
+//        return Cursors.makeString(entryCursor());
+//    }
 
 
     private JImmutableMap<T, Integer> increaseCount(T value,
@@ -735,46 +772,37 @@ public abstract class AbstractJImmutableMultiset<T>
     private class OccurrenceCursorSource
             implements StandardCursor.Source<T>
     {
-        Cursor<JImmutableMap.Entry<T, Integer>> entryCursor;
-        private final JImmutableMap.Entry<T, Integer> entry;
-        int count;
+        private int count;
+        private final T value;
 
-        private OccurrenceCursorSource(Cursor<JImmutableMap.Entry<T, Integer>> entryCursor)
+        private OccurrenceCursorSource(JImmutableMap.Entry<T, Integer> entry)
         {
-            this.entryCursor = entryCursor.start();
-            this.entry = entryCursor.start().getValue();
             this.count = entry.getValue();
+            this.value = entry.getKey();
         }
 
-        private OccurrenceCursorSource(Cursor<JImmutableMap.Entry<T, Integer>> entryCursor,
-                                       JImmutableMap.Entry<T, Integer> entry,
-                                       int count)
+        private OccurrenceCursorSource(int count, T value)
         {
-            this.entryCursor = entryCursor;
-            this.entry = entry;
             this.count = count;
+            this.value = value;
         }
 
         @Override
         public boolean atEnd()
         {
-            return !entryCursor.hasValue();
+            return count <= 0;
         }
 
         @Override
         public T currentValue()
         {
-            return entry.getKey();
+            return value;
         }
 
         @Override
         public StandardCursor.Source<T> advance()
         {
-            if(count - 1 > 0) {
-                return new OccurrenceCursorSource(entryCursor, entry, count - 1);
-            } else {
-                return new OccurrenceCursorSource(entryCursor.next());
-            }
+            return new OccurrenceCursorSource(count - 1, value);
         }
 
     }

@@ -35,41 +35,29 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.JImmutableMap;
+
+import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import javax.annotation.Nonnull;
+import java.util.Arrays;
 
-public class JImmutableHashMultiset<T>
-        extends AbstractJImmutableMultiset<T>
+public class JImmutableHashMultisetTest
+    extends TestCase
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
-
-    private JImmutableHashMultiset(JImmutableMap<T, Integer> map, int occurrences) {
-        super(map, occurrences);
-    }
-
-    @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                           int occurrences)
+    public void test()
     {
-        return new JImmutableHashMultiset<T>(map, occurrences);
-    }
+        JImmutableMultiset<String> jet = JImmutableHashMultiset.<String>of();
+        jet = jet.insert("c").insert("a").insert("a").insert("c").insert("c").insert("c").insert("b");
+        Cursor<String> cursor = jet.occurrenceCursor();
+        for(cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
+            System.out.println(cursor.getValue());
+        }
 
-    @SuppressWarnings("unchecked")
-    public static <T> JImmutableHashMultiset<T> of()
-    {
-        return (JImmutableHashMultiset<T>)EMPTY;
+        StandardCursorTest.listCursorTest(Arrays.asList("a", "a", "b", "c", "c", "c", "c"), jet.occurrenceCursor());
+        StandardJImmutableMultisetTests.standardTests(JImmutableHashMultiset.<Integer>of());
     }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> deleteAll()
-    {
-        return of();
-    }
-
 }

@@ -33,43 +33,27 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.JImmutableMap;
+
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import javax.annotation.Nonnull;
+import java.util.Arrays;
 
-public class JImmutableHashMultiset<T>
-        extends AbstractJImmutableMultiset<T>
+public class StandardJImmutableMultisetTests
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
-
-    private JImmutableHashMultiset(JImmutableMap<T, Integer> map, int occurrences) {
-        super(map, occurrences);
-    }
-
-    @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                           int occurrences)
+    public static void standardTests(JImmutableMultiset<Integer> template)
     {
-        return new JImmutableHashMultiset<T>(map, occurrences);
-    }
+        JImmutableSet<Integer> t = template;
+        StandardJImmutableSetTests.verifySet(t);
+        StandardCursorTest.emptyCursorTest(template.cursor());
+        StandardCursorTest.emptyCursorTest(template.entryCursor());
+        StandardCursorTest.emptyCursorTest(template.occurrenceCursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 3, 3), template.union(Arrays.asList(1, 1, 2, 3, 3)).cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 3, 3), template.union(Arrays.asList(1, 1, 2, 3, 3)).occurrenceCursor());
 
-    @SuppressWarnings("unchecked")
-    public static <T> JImmutableHashMultiset<T> of()
-    {
-        return (JImmutableHashMultiset<T>)EMPTY;
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> deleteAll()
-    {
-        return of();
     }
 
 }
