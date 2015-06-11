@@ -707,18 +707,21 @@ public abstract class AbstractJImmutableMultiset<T>
             return true;
         } else if (o == null) {
             return false;
-        } else if (o instanceof JImmutableSet) {
+        } else if (o instanceof JImmutableMultiset) {
+            return (valueCount() == ((JImmutableMultiset)o).valueCount()) && this.containsAllOccurrences(((JImmutableMultiset)o));
+        }
+        else if (o instanceof JImmutableSet) {
             return (size() == occurrences) && getSet().equals(((JImmutableSet)o).getSet());
         } else {
             return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
         }
     }
 
-//    @Override
-//    public String toString()
-//    {
-//        return Cursors.makeString(entryCursor());
-//    }
+    @Override
+    public String toString()
+    {
+        return Cursors.makeString(occurrenceCursor());
+    }
 
 
     private JImmutableMap<T, Integer> increaseCount(T value,

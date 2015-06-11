@@ -52,13 +52,8 @@ public class JImmutableHashMultisetTest
     {
         JImmutableMultiset<String> jet = JImmutableHashMultiset.<String>of();
         jet = jet.insert("c").insert("a").insert("a").insert("c").insert("c").insert("c").insert("b");
-        Cursor<String> cursor = jet.occurrenceCursor();
-        for(cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            System.out.println(cursor.getValue());
-        }
-
         StandardCursorTest.listCursorTest(Arrays.asList("a", "a", "b", "c", "c", "c", "c"), jet.occurrenceCursor());
-        StandardJImmutableMultisetTests.verifySet(JImmutableHashMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
         StandardJImmutableMultisetTests.cursorTest(JImmutableHashMultiset.<Integer>of());
 
     }
