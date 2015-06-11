@@ -58,6 +58,8 @@ public class JImmutableHashMultisetTest
         }
 
         StandardCursorTest.listCursorTest(Arrays.asList("a", "a", "b", "c", "c", "c", "c"), jet.occurrenceCursor());
-        StandardJImmutableMultisetTests.standardTests(JImmutableHashMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.verifySet(JImmutableHashMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.cursorTest(JImmutableHashMultiset.<Integer>of());
+
     }
 }

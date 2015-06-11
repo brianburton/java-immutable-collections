@@ -38,6 +38,7 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
 
@@ -368,7 +369,10 @@ public abstract class AbstractJImmutableSet<T>
             return true;
         } else if (o == null) {
             return false;
-        } else if (o instanceof JImmutableSet) {
+        } else if (o instanceof JImmutableMultiset) {
+            return ((JImmutableMultiset)o).equals(this);
+        }
+        else if (o instanceof JImmutableSet) {
             return getSet().equals(((JImmutableSet)o).getSet());
         } else {
             return (o instanceof Set) && getSet().equals(o);

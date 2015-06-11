@@ -59,10 +59,10 @@ public abstract class AbstractJImmutableMultiset<T>
     private final int occurrences;
 
     protected AbstractJImmutableMultiset(JImmutableMap<T, Integer> map,
-                                         int occurences)
+                                         int occurrences)
     {
         this.map = map;
-        this.occurrences = occurences;
+        this.occurrences = occurrences;
     }
 
     @Override
@@ -135,25 +135,25 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull Cursorable<? extends T> other)
+    public boolean containsAllOccurrences(@Nonnull Cursorable<? extends T> other)
     {
-        return containsAllOccurences(other.cursor());
+        return containsAllOccurrences(other.cursor());
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull Collection<? extends T> other)
+    public boolean containsAllOccurrences(@Nonnull Collection<? extends T> other)
     {
-        return containsAllOccurences(other.iterator());
+        return containsAllOccurrences(other.iterator());
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull Cursor<? extends T> other)
+    public boolean containsAllOccurrences(@Nonnull Cursor<? extends T> other)
     {
-        return containsAllOccurences(other.iterator());
+        return containsAllOccurrences(other.iterator());
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull Iterator<? extends T> other)
+    public boolean containsAllOccurrences(@Nonnull Iterator<? extends T> other)
     {
         JImmutableMap<T, Integer> checkMap = map;
         while (other.hasNext()) {
@@ -170,12 +170,12 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull JImmutableMultiset<? extends T> values)
+    public boolean containsAllOccurrences(@Nonnull JImmutableMultiset<? extends T> values)
     {
-        return containsAllOccurencesMultisetHelper(values);
+        return containsAllOccurrencesMultisetHelper(values);
     }
 
-    private <T1 extends T> boolean containsAllOccurencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
+    private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
         Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
         for (e = e.start(); e.hasValue(); e = e.next()) {
@@ -189,18 +189,18 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull JImmutableSet<? extends T> values)
+    public boolean containsAllOccurrences(@Nonnull JImmutableSet<? extends T> values)
     {
-        return containsAllOccurencesSetHelper(values.cursor().iterator());
+        return containsAllOccurrencesSetHelper(values.cursor().iterator());
     }
 
     @Override
-    public boolean containsAllOccurences(@Nonnull Set<? extends T> values)
+    public boolean containsAllOccurrences(@Nonnull Set<? extends T> values)
     {
-        return containsAllOccurencesSetHelper(values.iterator());
+        return containsAllOccurrencesSetHelper(values.iterator());
     }
 
-    private boolean containsAllOccurencesSetHelper(@Nonnull Iterator<? extends T> i)
+    private boolean containsAllOccurrencesSetHelper(@Nonnull Iterator<? extends T> i)
     {
         while (i.hasNext()) {
             final T value = i.next();
@@ -246,13 +246,13 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> delete(@Nonnull T value)
     {
         JImmutableMap<T, Integer> newMap = map.delete(value);
-        int newOccurences = occurrences - this.count(value);
-        return (newMap != map) ? create(newMap, newOccurences) : this;
+        int newOccurrences = occurrences - this.count(value);
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteOccurence(@Nonnull T value)
+    public JImmutableMultiset<T> deleteOccurrence(@Nonnull T value)
     {
         if (this.count(value) == 0) {
             return this;
@@ -312,52 +312,52 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other)
     {
         JImmutableMap<T, Integer> newMap = map;
-        int newOccurences = occurrences;
+        int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
             if ((value != null) && (getCount(newMap, value) > 0)) {
                 newMap = newMap.delete(value);
-                newOccurences = newOccurences - this.count(value);
+                newOccurrences = newOccurrences - this.count(value);
             }
         }
-        return (newMap != map) ? create(newMap, newOccurences) : this;
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurences(@Nonnull Cursorable<? extends T> other)
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Cursorable<? extends T> other)
     {
-        return deleteAllOccurences(other.cursor());
+        return deleteAllOccurrences(other.cursor());
     }
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurences(@Nonnull Collection<? extends T> other)
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Collection<? extends T> other)
     {
-        return deleteAllOccurences(other.iterator());
+        return deleteAllOccurrences(other.iterator());
     }
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurences(@Nonnull Cursor<? extends T> other)
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Cursor<? extends T> other)
     {
-        return deleteAllOccurences(other.iterator());
+        return deleteAllOccurrences(other.iterator());
     }
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurences(@Nonnull Iterator<? extends T> other)
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other)
     {
         JImmutableMap<T, Integer> newMap = map;
-        int newOccurences = occurrences;
+        int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
             if ((value != null) && (getCount(newMap, value) > 0)) {
                 newMap = decrementCount(newMap, value);
-                newOccurences = newOccurences - 1;
+                newOccurrences = newOccurrences - 1;
             }
         }
-        return (newMap != map) ? create(newMap, newOccurences) : this;
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
     @Override
@@ -386,15 +386,15 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         JImmutableMap<T, Integer> newMap = map;
-        int newOccurences = occurrences;
+        int newOccurrences = occurrences;
         while (values.hasNext()) {
             final T value = values.next();
             if (value != null) {
                 newMap = incrementCount(newMap, value);
-                newOccurences = newOccurences + 1;
+                newOccurrences = newOccurrences + 1;
             }
         }
-        return (newMap != map) ? create(newMap, newOccurences) : this;
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
 
@@ -630,7 +630,7 @@ public abstract class AbstractJImmutableMultiset<T>
      * @return
      */
     protected abstract JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                                    int occurences);
+                                                    int occurrences);
 
 
     @Override
@@ -700,20 +700,20 @@ public abstract class AbstractJImmutableMultiset<T>
         return Cursors.computeHashCode(occurrenceCursor());
     }
 
-//    @Override
-//    public boolean equals(Object o)
-//    {
-//        if (o == this) {
-//            return true;
-//        } else if (o == null) {
-//            return false;
-//        } else if (o instanceof JImmutableSet) {
-//            return getSet().equals(((JImmutableSet)o).getSet());
-//        } else {
-//            return (o instanceof Set) && getSet().equals(o);
-//        }
-//    }
-//
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) {
+            return true;
+        } else if (o == null) {
+            return false;
+        } else if (o instanceof JImmutableSet) {
+            return (size() == occurrences) && getSet().equals(((JImmutableSet)o).getSet());
+        } else {
+            return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
+        }
+    }
+
 //    @Override
 //    public String toString()
 //    {
@@ -781,7 +781,8 @@ public abstract class AbstractJImmutableMultiset<T>
             this.value = entry.getKey();
         }
 
-        private OccurrenceCursorSource(int count, T value)
+        private OccurrenceCursorSource(int count,
+                                       T value)
         {
             this.count = count;
             this.value = value;
