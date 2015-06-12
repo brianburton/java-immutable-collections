@@ -305,7 +305,7 @@ public class StandardJImmutableMultisetTests
 
     private static void verifyInsertAll(JImmutableMultiset<Integer> empty)
     {
-        final List<Integer> values = Arrays.asList(1, 3, 3, 4);
+        List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final JImmutableMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<Integer>();
         List<Integer> expected = emptyList;
@@ -333,17 +333,58 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.insertAll(asJMSet(emptyList)), expected);
 
         //values into values
+        //with overlap
+        values = Arrays.asList(0, 0, 1, 2, 3);
+        expected = Arrays.asList(0, 0, 1, 1, 2, 3, 3, 3, 4);
+        verifyContents(jmet.insertAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.insertAll(values), expected);
+        verifyContents(jmet.insertAll(IterableCursor.of(values)), expected);
+        verifyContents(jmet.insertAll(values.iterator()), expected);
+        verifyContents(jmet.insertAll(asJMSet(values)), expected);
+
+        //without overlap
+        values = Arrays.asList(0, 0, 2);
+        expected = Arrays.asList(0, 0, 1, 2, 3, 3, 4);
+        verifyContents(jmet.insertAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.insertAll(values), expected);
+        verifyContents(jmet.insertAll(IterableCursor.of(values)), expected);
+        verifyContents(jmet.insertAll(values.iterator()), expected);
+        verifyContents(jmet.insertAll(asJMSet(values)), expected);
     }
 
     private static void verifyDeleteAll(JImmutableMultiset<Integer> empty)
     {
+        List<Integer> values = Arrays.asList(1, 3, 3, 4);
+        final JImmutableMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
+        final List<Integer> emptyList = new ArrayList<Integer>();
+        List<Integer> expected = emptyList;
+
         //empty from empty
+        verifyContents(empty.deleteAll(IterableCursorable.of(emptyList)), expected);
+        verifyContents(empty.deleteAll(emptyList), expected);
+        verifyContents(empty.deleteAll(IterableCursor.of(emptyList)), expected);
+        verifyContents(empty.deleteAll(emptyList.iterator()), expected);
+        verifyContents(empty.deleteAll(asJMSet(emptyList)), expected);
 
         //values from empty
+        verifyContents(empty.deleteAll(IterableCursorable.of(values)), expected);
+        verifyContents(empty.deleteAll(values), expected);
+        verifyContents(empty.deleteAll(IterableCursor.of(values)), expected);
+        verifyContents(empty.deleteAll(values.iterator()), expected);
+        verifyContents(empty.deleteAll(asJMSet(values)), expected);
 
         //empty from values
+        expected = values;
+        verifyContents(jmet.deleteAll(IterableCursorable.of(emptyList)), expected);
+        verifyContents(jmet.deleteAll(emptyList), expected);
+        verifyContents(jmet.deleteAll(IterableCursor.of(emptyList)), expected);
+        verifyContents(jmet.deleteAll(emptyList.iterator()), expected);
+        verifyContents(jmet.deleteAll(asJMSet(emptyList)), expected);
 
         //values from values
+        //from smaller
+
+        //from larger
     }
 
     private static void verifyDeleteAllOccurrences(JImmutableMultiset<Integer> empty)
