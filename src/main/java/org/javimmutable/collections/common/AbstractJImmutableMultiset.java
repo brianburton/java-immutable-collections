@@ -565,7 +565,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<T> other)
+    public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other)
     {
         return intersectionSetHelper(other.cursor().iterator());
     }

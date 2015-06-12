@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
@@ -286,7 +287,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<T> other)
+    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other)
     {
         if (isEmpty()) {
             return this;
@@ -294,15 +295,22 @@ public abstract class AbstractJImmutableSet<T>
             return deleteAll();
         }
 
-        JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<JImmutableMap.Entry<T, Boolean>> c = map.cursor().start(); c.hasValue(); c = c.next()) {
-            final T value = c.getValue().getKey();
-            if (!other.contains(value)) {
-                newMap = newMap.delete(value);
+        return intersectionHelper(other);
+    }
+
+    private <T1 extends T> JImmutableSet<T> intersectionHelper(@Nonnull JImmutableSet<T1> other)
+    {
+        JImmutableMap<T, Boolean> newMap = emptyMap();
+        for(Cursor<T1> c = other.cursor().start(); c.hasValue(); c = c.next()) {
+            final T value = c.getValue();
+            Holder<Boolean> holder = map.find(value);
+            if(holder.isFilled()) {
+                newMap = map.assign(value, Boolean.TRUE);
             }
         }
         return (newMap != map) ? create(newMap) : this;
     }
+
 
     @Nonnull
     @Override

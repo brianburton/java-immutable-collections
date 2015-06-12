@@ -176,6 +176,7 @@ public class StandardJImmutableMultisetTests
         StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
         testVarious(empty);
         testRandom(empty);
+        verifyContents(empty, new ArrayList<Integer>());
 
         assertEquals(0, empty.size());
         assertEquals(true, empty.isEmpty());
@@ -212,6 +213,7 @@ public class StandardJImmutableMultisetTests
         assertEquals(empty, jmet.deleteAll());
 
         verifyUnion(empty);
+        verifyIntersection(empty);
 
         jmet = empty;
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
@@ -231,30 +233,175 @@ public class StandardJImmutableMultisetTests
 
     public static void verifyUnion(JImmutableMultiset<Integer> empty)
     {
-        JImmutableMultiset<Integer> jmet = empty;
-        final List<Integer> values = Arrays.asList(1, 1, 1, 2, 3, 3, 4);
-        List<Integer> expected = values;
-
-        //values into empty
-        verifyContents(jmet.union(IterableCursorable.of(values)), expected);
-        verifyContents(jmet.union(values), expected);
-        verifyContents(jmet.union(IterableCursor.of(values)), expected);
-        verifyContents(jmet.union(values.iterator()), expected);
-        verifyContents(jmet.union(asJMSet(values)), expected);
-        verifyContents(jmet.union(asJSet(values)), expected);
-        verifyContents(jmet.union(asSet(values)), expected);
+        final List<Integer> values = Arrays.asList(1, 3, 3, 4);
+        final JImmutableMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
+        final List<Integer> emptyList = new ArrayList<Integer>();
+        List<Integer> expected = emptyList;
+        List<Integer> setExpected = emptyList;
 
         //empty into empty
-        final List<Integer> emptyList = new ArrayList<Integer>();
-        expected = emptyList;
+        verifyContents(empty.union(IterableCursorable.of(emptyList)), expected);
+        verifyContents(empty.union(emptyList), expected);
+        verifyContents(empty.union(IterableCursor.of(emptyList)), expected);
+        verifyContents(empty.union(emptyList.iterator()), expected);
+        verifyContents(empty.union(asJMSet(emptyList)), expected);
+        verifyContents(empty.union(asJSet(emptyList)), setExpected);
+        verifyContents(empty.union(asSet(emptyList)), setExpected);
+
+        //values into empty
+        expected = values;
+        setExpected = Arrays.asList(1, 3, 4);
+        verifyContents(empty.union(IterableCursorable.of(values)), expected);
+        verifyContents(empty.union(values), expected);
+        verifyContents(empty.union(IterableCursor.of(values)), expected);
+        verifyContents(empty.union(values.iterator()), expected);
+        verifyContents(empty.union(asJMSet(values)), expected);
+        verifyContents(empty.union(asJSet(values)), setExpected);
+        verifyContents(empty.union(asSet(values)), setExpected);
+
+        //empty into values
+        setExpected = values;
         verifyContents(jmet.union(IterableCursorable.of(emptyList)), expected);
         verifyContents(jmet.union(emptyList), expected);
         verifyContents(jmet.union(IterableCursor.of(emptyList)), expected);
         verifyContents(jmet.union(emptyList.iterator()), expected);
         verifyContents(jmet.union(asJMSet(emptyList)), expected);
-        verifyContents(jmet.union(asJSet(emptyList)), expected);
-        verifyContents(jmet.union(asSet(emptyList)), expected);
+        verifyContents(jmet.union(asJSet(emptyList)), setExpected);
+        verifyContents(jmet.union(asSet(emptyList)), setExpected);
 
+        //values into values
+        //with wider and deeper
+        final List<Integer> wideDeep = Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4);
+        expected = wideDeep;
+        setExpected = Arrays.asList(1, 2, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(wideDeep)), expected);
+        verifyContents(jmet.union(wideDeep), expected);
+        verifyContents(jmet.union(IterableCursor.of(wideDeep)), expected);
+        verifyContents(jmet.union(wideDeep.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(wideDeep)), expected);
+        verifyContents(jmet.union(asJSet(wideDeep)), setExpected);
+        verifyContents(jmet.union(asSet(wideDeep)), setExpected);
+
+        //with wider and shallower
+        final List<Integer> wideShallow = Arrays.asList(1, 2, 3, 4);
+        expected = Arrays.asList(1, 2, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(wideShallow)), expected);
+        verifyContents(jmet.union(wideShallow), expected);
+        verifyContents(jmet.union(IterableCursor.of(wideShallow)), expected);
+        verifyContents(jmet.union(wideShallow.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(wideShallow)), expected);
+        verifyContents(jmet.union(asJSet(wideShallow)), setExpected);
+        verifyContents(jmet.union(asSet(wideShallow)), setExpected);
+
+        //with narrower and deeper
+        final List<Integer> narrowDeep = Arrays.asList(2, 2, 2, 4, 4, 4);
+        expected = Arrays.asList(1, 2, 2, 2, 3, 3, 4, 4, 4);
+        verifyContents(jmet.union(IterableCursorable.of(narrowDeep)), expected);
+        verifyContents(jmet.union(narrowDeep), expected);
+        verifyContents(jmet.union(IterableCursor.of(narrowDeep)), expected);
+        verifyContents(jmet.union(narrowDeep.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(narrowDeep)), expected);
+        verifyContents(jmet.union(asJSet(narrowDeep)), setExpected);
+        verifyContents(jmet.union(asSet(narrowDeep)), setExpected);
+
+        //with narrower shallower
+        final List<Integer> narrowShallow = Arrays.asList(3, 4);
+        expected = values;
+        setExpected = Arrays.asList(1, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(narrowShallow)), expected);
+        verifyContents(jmet.union(narrowShallow), expected);
+        verifyContents(jmet.union(IterableCursor.of(narrowShallow)), expected);
+        verifyContents(jmet.union(narrowShallow.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(narrowShallow)), expected);
+        verifyContents(jmet.union(asJSet(narrowShallow)), setExpected);
+        verifyContents(jmet.union(asSet(narrowShallow)), setExpected);
+
+    }
+
+    public static void verifyIntersection(JImmutableMultiset<Integer> empty)
+    {
+        final List<Integer> values = Arrays.asList(1, 3, 3, 4);
+        final JImmutableMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
+        final List<Integer> emptyList = new ArrayList<Integer>();
+        List<Integer> expected = emptyList;
+        List<Integer> setExpected = emptyList;
+
+        //empty into empty
+        verifyContents(empty.intersection(IterableCursorable.of(emptyList)), expected);
+        verifyContents(empty.intersection(emptyList), expected);
+        verifyContents(empty.intersection(IterableCursor.of(emptyList)), expected);
+        verifyContents(empty.intersection(emptyList.iterator()), expected);
+        verifyContents(empty.intersection(asJMSet(emptyList)), expected);
+        verifyContents(empty.intersection(asJSet(emptyList)), setExpected);
+        verifyContents(empty.intersection(asSet(emptyList)), setExpected);
+
+        //values into empty
+        expected = values;
+        setExpected = Arrays.asList(1, 3, 4);
+        verifyContents(empty.intersection(IterableCursorable.of(values)), expected);
+        verifyContents(empty.intersection(values), expected);
+        verifyContents(empty.intersection(IterableCursor.of(values)), expected);
+        verifyContents(empty.intersection(values.iterator()), expected);
+        verifyContents(empty.intersection(asJMSet(values)), expected);
+        verifyContents(empty.intersection(asJSet(values)), setExpected);
+        verifyContents(empty.intersection(asSet(values)), setExpected);
+
+        //empty into values
+        setExpected = values;
+        verifyContents(jmet.intersection(IterableCursorable.of(emptyList)), expected);
+        verifyContents(jmet.intersection(emptyList), expected);
+        verifyContents(jmet.intersection(IterableCursor.of(emptyList)), expected);
+        verifyContents(jmet.intersection(emptyList.iterator()), expected);
+        verifyContents(jmet.intersection(asJMSet(emptyList)), expected);
+        verifyContents(jmet.intersection(asJSet(emptyList)), setExpected);
+        verifyContents(jmet.intersection(asSet(emptyList)), setExpected);
+
+        //values into values
+        //with wider and deeper
+        final List<Integer> wideDeep = Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4);
+        expected = wideDeep;
+        setExpected = Arrays.asList(1, 2, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(wideDeep)), expected);
+        verifyContents(jmet.union(wideDeep), expected);
+        verifyContents(jmet.union(IterableCursor.of(wideDeep)), expected);
+        verifyContents(jmet.union(wideDeep.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(wideDeep)), expected);
+        verifyContents(jmet.union(asJSet(wideDeep)), setExpected);
+        verifyContents(jmet.union(asSet(wideDeep)), setExpected);
+
+        //with wider and shallower
+        final List<Integer> wideShallow = Arrays.asList(1, 2, 3, 4);
+        expected = Arrays.asList(1, 2, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(wideShallow)), expected);
+        verifyContents(jmet.union(wideShallow), expected);
+        verifyContents(jmet.union(IterableCursor.of(wideShallow)), expected);
+        verifyContents(jmet.union(wideShallow.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(wideShallow)), expected);
+        verifyContents(jmet.union(asJSet(wideShallow)), setExpected);
+        verifyContents(jmet.union(asSet(wideShallow)), setExpected);
+
+        //with narrower and deeper
+        final List<Integer> narrowDeep = Arrays.asList(2, 2, 2, 4, 4, 4);
+        expected = Arrays.asList(1, 2, 2, 2, 3, 3, 4, 4, 4);
+        verifyContents(jmet.union(IterableCursorable.of(narrowDeep)), expected);
+        verifyContents(jmet.union(narrowDeep), expected);
+        verifyContents(jmet.union(IterableCursor.of(narrowDeep)), expected);
+        verifyContents(jmet.union(narrowDeep.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(narrowDeep)), expected);
+        verifyContents(jmet.union(asJSet(narrowDeep)), setExpected);
+        verifyContents(jmet.union(asSet(narrowDeep)), setExpected);
+
+        //with narrower shallower
+        final List<Integer> narrowShallow = Arrays.asList(3, 4);
+        expected = values;
+        setExpected = Arrays.asList(1, 3, 3, 4);
+        verifyContents(jmet.union(IterableCursorable.of(narrowShallow)), expected);
+        verifyContents(jmet.union(narrowShallow), expected);
+        verifyContents(jmet.union(IterableCursor.of(narrowShallow)), expected);
+        verifyContents(jmet.union(narrowShallow.iterator()), expected);
+        verifyContents(jmet.union(asJMSet(narrowShallow)), expected);
+        verifyContents(jmet.union(asJSet(narrowShallow)), setExpected);
+        verifyContents(jmet.union(asSet(narrowShallow)), setExpected);
 
     }
 
@@ -277,10 +424,12 @@ public class StandardJImmutableMultisetTests
 
         for (Cursor<JImmutableMap.Entry<Integer, Integer>> e = jmet.entryCursor().start(); e.hasValue(); e = e.next()) {
             List<Integer> eList = entryAsList(e.getValue());
+            Integer value = eList.get(0);
             assertEquals(true, expected.containsAll(eList));
-            assertEquals(true, jmet.contains(eList.get(0)));
-            assertEquals(true, jmet.contains(eList.get(0), eList.size()));
+            assertEquals(true, jmet.contains(value));
+            assertEquals(true, jmet.contains(value, eList.size()));
             assertEquals(true, jmet.containsAll(eList));
+            assertEquals(eList.size(), jmet.count(value));
         }
 
         assertEquals(true, jmet.containsAll(IterableCursorable.of(expected)));

@@ -319,7 +319,7 @@ public interface JImmutableMultiset<T>
 
     @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<T> other);
+    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other);
 
     @Override
     @Nonnull
