@@ -37,21 +37,27 @@ package org.javimmutable.collections.common;
 
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
@@ -66,14 +72,108 @@ public class StandardJImmutableMultisetTests
         StandardCursorTest.emptyCursorTest(empty.cursor());
         StandardCursorTest.emptyCursorTest(empty.entryCursor());
         StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), empty.union(Arrays.asList(1, 1, 2, 3, 3)).cursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 3, 3), empty.union(Arrays.asList(1, 1, 2, 3, 3)).occurrenceCursor());
+        JImmutableMultiset<Integer> jmet = empty.insert(1).insert(1).insert(2).insert(3).insert(3);
+
+        final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        entries.add(new MapEntry<Integer, Integer>(1, 2));
+        entries.add(new MapEntry<Integer, Integer>(2, 1));
+        entries.add(new MapEntry<Integer, Integer>(3, 2));
+
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), jmet.cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 3, 3), jmet.occurrenceCursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList(1, 2, 3), jmet.iterator());
+
+        StandardCursorTest.listCursorTest(entries, jmet.entryCursor());
+
+        verifyCursor(jmet.insert(5), Arrays.asList(1, 1, 2, 3, 3, 5));
+
+    }
+
+    public static void verifyCursor(JImmutableMultiset<Integer> jmet,
+                                    final List<Integer> expected)
+    {
+        List<Integer> setValues = new ArrayList<Integer>();
+        setValues.addAll(asSet(expected));
+
+        final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        JImmutableMap<Integer, Integer> expectedMap = JImmutableHashMap.<Integer, Integer>of();
+        for (int value : expected) {
+            Holder<Integer> holder = expectedMap.find(value);
+            int count = holder.getValueOr(0);
+            expectedMap = expectedMap.assign(value, count + 1);
+        }
+        for (JImmutableMap.Entry<Integer, Integer> entry : expectedMap) {
+            entries.add(entry);
+        }
+        assertEquals(expectedMap.size(), entries.size());
+        assertEquals(entries.size(), jmet.size());
+
+        StandardCursorTest.listCursorTest(setValues, jmet.cursor());
+        StandardCursorTest.listIteratorTest(setValues, jmet.iterator());
+        StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+        {
+            @Override
+            public Integer apply(Integer value)
+            {
+                return entries.get(value).getKey();
+            }
+        }, entries.size(), jmet.cursor());
+        StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+        {
+            @Override
+            public Integer apply(Integer value)
+            {
+                return entries.get(value).getKey();
+            }
+        }, entries.size(), jmet.iterator());
+
+
+        StandardCursorTest.listCursorTest(expected, jmet.occurrenceCursor());
+        StandardCursorTest.listIteratorTest(expected, jmet.occurrenceCursor().iterator());
+        StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+        {
+            @Override
+            public Integer apply(Integer value)
+            {
+                return expected.get(value);
+            }
+        }, expected.size(), jmet.occurrenceCursor());
+        StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+        {
+            @Override
+            public Integer apply(Integer value)
+            {
+                return expected.get(value);
+            }
+        }, expected.size(), jmet.occurrenceCursor().iterator());
+
+        StandardCursorTest.listCursorTest(entries, jmet.entryCursor());
+        StandardCursorTest.listIteratorTest(entries, jmet.entryCursor().iterator());
+        StandardCursorTest.cursorTest(new Func1<Integer, JImmutableMap.Entry<Integer, Integer>>()
+        {
+            @Override
+            public JImmutableMap.Entry<Integer, Integer> apply(Integer value)
+            {
+                return entries.get(value);
+            }
+        }, entries.size(), jmet.entryCursor());
+        StandardCursorTest.iteratorTest(new Func1<Integer, JImmutableMap.Entry<Integer, Integer>>()
+        {
+            @Override
+            public JImmutableMap.Entry<Integer, Integer> apply(Integer value)
+            {
+                return entries.get(value);
+            }
+        }, entries.size(), jmet.entryCursor().iterator());
 
     }
 
     //based on StandardJImmutableSetTests, modified for multisets
     public static void verifyMultiset(JImmutableMultiset<Integer> empty)
     {
+        StandardCursorTest.emptyCursorTest(empty.cursor());
+        StandardCursorTest.emptyCursorTest(empty.entryCursor());
+        StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
         testVarious(empty);
         testRandom(empty);
 
