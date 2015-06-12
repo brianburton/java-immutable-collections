@@ -397,6 +397,29 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
+    //neccessary, because otherwise goes to insertAll(Cursorable), which only adds one of each
+    //value instead of the correct number, because default cursor is like set's cursor
+    @Override
+    @Nonnull
+    public JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values)
+    {
+        return insertAllHelper(values);
+    }
+
+    private <T1 extends T> JImmutableMultiset<T> insertAllHelper(@Nonnull JImmutableMultiset<T1> values)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
+        for(e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            newMap = newMap.assign(value, entryCount + count(value));
+            newOccurrences += entryCount;
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
 
     @Override
     @Nonnull

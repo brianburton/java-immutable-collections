@@ -254,6 +254,9 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
+    @Nonnull
+    JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values);
+
     /**
      * Combines all occurrences from other or the multiset. If only the multiset or
      * other contains a value, that value's count is used. If both contain a value,
@@ -360,7 +363,8 @@ public interface JImmutableMultiset<T>
 
     /**
      * Manually sets the number of occurrences associated with the specified value.
-     * Count must be greater than or equal to zero. If count == 0, is synoymous to delete(value)
+     * Count must be greater than or equal to zero. If count == 0, is synonymous to delete(value).
+     * If value is not currently in the multiset, is equivalent to insert(value, count).
      *
      * @param value
      * @param count
