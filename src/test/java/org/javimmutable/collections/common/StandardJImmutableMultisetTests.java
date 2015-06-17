@@ -52,13 +52,7 @@ import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -365,6 +359,8 @@ public class StandardJImmutableMultisetTests
         verifyContents(empty.deleteAll(IterableCursor.of(emptyList)), expected);
         verifyContents(empty.deleteAll(emptyList.iterator()), expected);
         verifyContents(empty.deleteAll(asJMSet(emptyList)), expected);
+        verifyContents(empty.deleteAll(asJSet(emptyList)), expected);
+        verifyContents(empty.deleteAll(asSet(emptyList)), expected);
 
         //values from empty
         verifyContents(empty.deleteAll(IterableCursorable.of(values)), expected);
@@ -372,6 +368,8 @@ public class StandardJImmutableMultisetTests
         verifyContents(empty.deleteAll(IterableCursor.of(values)), expected);
         verifyContents(empty.deleteAll(values.iterator()), expected);
         verifyContents(empty.deleteAll(asJMSet(values)), expected);
+        verifyContents(empty.deleteAll(asJSet(values)), expected);
+        verifyContents(empty.deleteAll(asSet(values)), expected);
 
         //empty from values
         expected = values;
@@ -380,22 +378,91 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.deleteAll(IterableCursor.of(emptyList)), expected);
         verifyContents(jmet.deleteAll(emptyList.iterator()), expected);
         verifyContents(jmet.deleteAll(asJMSet(emptyList)), expected);
+        verifyContents(jmet.deleteAll(asJSet(emptyList)), expected);
+        verifyContents(jmet.deleteAll(asSet(emptyList)), expected);
 
         //values from values
         //from smaller
+        values = Arrays.asList(3, 4);
+        expected = Arrays.asList(1);
+        verifyContents(jmet.deleteAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.deleteAll(values), expected);
+        verifyContents(jmet.deleteAll(IterableCursor.of(values)), expected);
+        verifyContents(jmet.deleteAll(values.iterator()), expected);
+        verifyContents(jmet.deleteAll(asJMSet(values)), expected);
+        verifyContents(jmet.deleteAll(asJSet(values)), expected);
+        verifyContents(jmet.deleteAll(asSet(values)), expected);
 
         //from larger
+        values = Arrays.asList(1, 1, 2, 3, 4, 5);
+        expected = emptyList;
+        verifyContents(jmet.deleteAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.deleteAll(values), expected);
+        verifyContents(jmet.deleteAll(IterableCursor.of(values)), expected);
+        verifyContents(jmet.deleteAll(values.iterator()), expected);
+        verifyContents(jmet.deleteAll(asJMSet(values)), expected);
+        verifyContents(jmet.deleteAll(asJSet(values)), expected);
+        verifyContents(jmet.deleteAll(asSet(values)), expected);
     }
 
     private static void verifyDeleteAllOccurrences(JImmutableMultiset<Integer> empty)
     {
+        List<Integer> values = Arrays.asList(1, 3, 3, 4);
+        final JImmutableMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
+        final List<Integer> emptyList = new ArrayList<Integer>();
+        List<Integer> expected = emptyList;
+
         //empty from empty
+        verifyContents(empty.deleteAllOccurrences(IterableCursorable.of(emptyList)), expected);
+        verifyContents(empty.deleteAllOccurrences(emptyList), expected);
+        verifyContents(empty.deleteAllOccurrences(IterableCursor.of(emptyList)), expected);
+        verifyContents(empty.deleteAllOccurrences(emptyList.iterator()), expected);
+        verifyContents(empty.deleteAllOccurrences(asJMSet(emptyList)), expected);
+        verifyContents(empty.deleteAllOccurrences(asJSet(emptyList)), expected);
+        verifyContents(empty.deleteAllOccurrences(asSet(emptyList)), expected);
 
         //values from empty
+        verifyContents(empty.deleteAllOccurrences(IterableCursorable.of(values)), expected);
+        verifyContents(empty.deleteAllOccurrences(values), expected);
+        verifyContents(empty.deleteAllOccurrences(IterableCursor.of(values)), expected);
+        verifyContents(empty.deleteAllOccurrences(values.iterator()), expected);
+        verifyContents(empty.deleteAllOccurrences(asJMSet(values)), expected);
+        verifyContents(empty.deleteAllOccurrences(asJSet(values)), expected);
+        verifyContents(empty.deleteAllOccurrences(asSet(values)), expected);
 
         //empty from values
+        expected = values;
+        verifyContents(jmet.deleteAllOccurrences(IterableCursorable.of(emptyList)), expected);
+        verifyContents(jmet.deleteAllOccurrences(emptyList), expected);
+        verifyContents(jmet.deleteAllOccurrences(IterableCursor.of(emptyList)), expected);
+        verifyContents(jmet.deleteAllOccurrences(emptyList.iterator()), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJMSet(emptyList)), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJSet(emptyList)), expected);
+        verifyContents(jmet.deleteAllOccurrences(asSet(emptyList)), expected);
 
         //values from values
+        //from smaller
+        values = Arrays.asList(3, 4);
+        expected = Arrays.asList(1, 3);
+        verifyContents(jmet.deleteAllOccurrences(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(values), expected);
+        verifyContents(jmet.deleteAllOccurrences(IterableCursor.of(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(values.iterator()), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJMSet(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJSet(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(asSet(values)), expected);
+
+        //from larger
+        values = Arrays.asList(1, 1, 2, 3, 3, 4, 5);
+        expected = emptyList;
+        List<Integer> setExpected = Arrays.asList(3);
+        verifyContents(jmet.deleteAllOccurrences(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(values), expected);
+        verifyContents(jmet.deleteAllOccurrences(IterableCursor.of(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(values.iterator()), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJMSet(values)), expected);
+        verifyContents(jmet.deleteAllOccurrences(asJSet(values)), setExpected);
+        verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
     }
 
     private static void testVarious(JImmutableMultiset<Integer> empty)
@@ -405,6 +472,63 @@ public class StandardJImmutableMultisetTests
 
     private static void testRandom(JImmutableMultiset<Integer> empty)
     {
+        Random random = new Random(2500L);
+        for (int i = 0; i < 50; ++i) {
+            System.out.println(i);
+            int size = 1 + random.nextInt(20000);
+            List<Integer> expected = new ArrayList<Integer>();
+            JImmutableMultiset<Integer> jmet = empty;
+            for (int loops = 0; loops < (4 * size); ++loops) {
+                int command = random.nextInt(4);
+                Integer value = random.nextInt(size);
+                int count = random.nextInt(3) + 1;
+                switch (command) {
+                case 0:
+                case 1:
+                    jmet = jmet.insert(value);
+                    expected.add(value);
+//                    jmet = jmet.insert(value, count);
+//                    for (int n = 0; n < count; ++n) {
+//                        expected.add(value);
+//                    }
+//                    assertEquals(true, jmet.contains(value, count));
+                    assertEquals(true, jmet.contains(value));
+                    break;
+                case 2:
+                    jmet = jmet.deleteOccurrence(value);
+                    expected.remove(value);
+//                    jmet = jmet.deleteOccurrence(value, count);
+//                    for (int n = 0; n < count; ++n) {
+//                        expected.remove(value);
+//                    }
+
+                    break;
+                case 3:
+                    assertEquals(expected.contains(value), jmet.contains(value));
+//                    jmet = jmet.setCount(value, count);
+//                    while(expected.contains(value)) {
+//                        expected.remove(value);
+//                    }
+//                    for (int n = 0; n < count; ++n) {
+//                        expected.add(value);
+//                    }
+//                    break;
+                }
+                assertEquals(expected.size(), jmet.valueCount());
+            }
+            Collections.sort(expected);
+            verifyContents(jmet, expected);
+            verifyCursor(jmet, expected);
+            for (Integer value : expected) {
+                assertEquals(true, jmet.contains(value));
+                jmet = jmet.deleteOccurrence(value);
+            }
+            assertEquals(0, jmet.size());
+            assertEquals(0, jmet.valueCount());
+            assertEquals(true, jmet.isEmpty());
+
+        }
+
 
     }
 
@@ -549,7 +673,7 @@ public class StandardJImmutableMultisetTests
 
     private static Set<Integer> asSet(List<Integer> list)
     {
-        Set<Integer> set = new HashSet<Integer>();
+        Set<Integer> set = new TreeSet<Integer>();
         set.addAll(list);
         return set;
     }

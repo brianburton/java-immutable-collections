@@ -305,7 +305,7 @@ public abstract class AbstractJImmutableSet<T>
             final T value = c.getValue();
             Holder<Boolean> holder = map.find(value);
             if(holder.isFilled()) {
-                newMap = map.assign(value, Boolean.TRUE);
+                newMap = newMap.assign(value, Boolean.TRUE);
             }
         }
         return (newMap != map) ? create(newMap) : this;

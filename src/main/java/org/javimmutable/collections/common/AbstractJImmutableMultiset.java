@@ -70,6 +70,7 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> insert(@Nonnull T value)
     {
         JImmutableMap<T, Integer> newMap = increaseCount(value, 1);
+                                          //map.assign(value, 1 + map.getValueOr(value, 0);
         return (newMap != map) ? create(newMap, 1 + occurrences) : this;
     }
 
@@ -259,9 +260,6 @@ public abstract class AbstractJImmutableMultiset<T>
         } else {
             JImmutableMap<T, Integer> newMap = decreaseCount(value, 1);
             return (newMap != map) ? create(newMap, occurrences - 1) : this;
-            //logic: if value is in map, then newMap will not equal map. Therefore, the total number of occurrences
-            //should decrease by one. If newMap does equal map, then value was not in map. The number of occurrences
-            //did not change, and this should be returned with no changes.
         }
     }
 
@@ -356,6 +354,28 @@ public abstract class AbstractJImmutableMultiset<T>
                 newMap = decrementCount(newMap, value);
                 newOccurrences = newOccurrences - 1;
             }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other)
+    {
+        return deleteAllOccurrencesHelper(other);
+    }
+
+    private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesHelper(@Nonnull JImmutableMultiset<T1> values)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            final int mapCount = this.count(value);
+            newMap = (mapCount > entryCount) ? newMap.assign(value, mapCount - entryCount) : newMap.delete(value);
+            newOccurrences = (mapCount > entryCount) ? newOccurrences - entryCount : newOccurrences - mapCount;
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
@@ -620,13 +640,11 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
-    //would it work better to just do getValueOr?
     @Override
     public int count(T value)
     {
         Conditions.stopNull(value);
-        Holder<Integer> current = map.find(value);
-        return current.isFilled() ? current.getValue() : 0;
+        return map.getValueOr(value, 0);
     }
 
     @Nonnull

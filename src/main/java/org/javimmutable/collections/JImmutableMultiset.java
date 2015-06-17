@@ -76,7 +76,7 @@ public interface JImmutableMultiset<T>
                                  int count);
 
     /**
-     * Determines if the multiset contains the specified value
+     * Determines if the multiset contains at least one occurrence of the specified value
      *
      * @param value
      * @return
@@ -96,8 +96,9 @@ public interface JImmutableMultiset<T>
                      int count);
 
     /**
-     * Determines if the multiset contains every value in other. If containsAllOccurrences(values)
-     * is true, this must be true as well.
+     * Determines if the multiset contains every value (but not necessarily the same number of
+     * occurrences of each value) in other. If containsAllOccurrences(values) is true, this
+     * must be true as well.
      * Synonymous to calling contains() on each element of other.
      *
      * @param other
@@ -233,6 +234,9 @@ public interface JImmutableMultiset<T>
 
     @Nonnull
     JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other);
+
+    @Nonnull
+    JImmutableMultiset<T> deleteAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other);
 
 
     /**

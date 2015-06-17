@@ -48,11 +48,9 @@ import java.util.Arrays;
 public class JImmutableHashMultisetTest
     extends TestCase
 {
-    public void test()
+    public void testStandard()
     {
         JImmutableMultiset<String> jet = JImmutableHashMultiset.<String>of();
-        jet = jet.insert("c").insert("a").insert("a").insert("c").insert("c").insert("c").insert("b");
-        StandardCursorTest.listCursorTest(Arrays.asList("a", "a", "b", "c", "c", "c", "c"), jet.occurrenceCursor());
         StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
 
     }
