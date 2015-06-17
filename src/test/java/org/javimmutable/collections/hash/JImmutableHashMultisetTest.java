@@ -50,8 +50,10 @@ public class JImmutableHashMultisetTest
 {
     public void testStandard()
     {
-        JImmutableMultiset<String> jet = JImmutableHashMultiset.<String>of();
-        StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.testRandom(JImmutableHashMultiset.<Integer>of());
+
+        // JImmutableMultiset<String> jet = JImmutableHashMultiset.<String>of();
+       // StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
 
     }
 }

@@ -470,57 +470,90 @@ public class StandardJImmutableMultisetTests
 
     }
 
-    private static void testRandom(JImmutableMultiset<Integer> empty)
+    public static void testRandom2(JImmutableMultiset<Integer> empty)
     {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
-            System.out.println(i);
             int size = 1 + random.nextInt(20000);
-            List<Integer> expected = new ArrayList<Integer>();
+            //Set<Integer> expected = new HashSet<Integer>();
             JImmutableMultiset<Integer> jmet = empty;
             for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
+                Integer value = random.nextInt(size);
+                switch (command) {
+                case 0:
+                case 1:
+                    jmet = jmet.insert(value);
+                    // expected.add(value);
+                    assertEquals(true, jmet.contains(value));
+                    break;
+                case 2:
+                    //assertEquals(expected.contains(value), jmet.contains(value));
+                    //break;
+                case 3:
+                    jmet = jmet.delete(value);
+                    //expected.remove(value);
+                    break;
+                }
+                //assertEquals(expected.size(), jmet.size());
+            }
+
+            for (Integer value : jmet) {
+                jmet = jmet.delete(value);
+            }
+            assertEquals(0, jmet.size());
+            assertEquals(true, jmet.isEmpty());
+        }
+    }
+
+    public static void testRandom(JImmutableMultiset<Integer> empty)
+    {
+        Random random = new Random(2500L);
+        for (int i = 0; i < 50; ++i) {
+            int size = 1 + random.nextInt(20000);
+            List<Integer> expected = new ArrayList<Integer>();
+            JImmutableMultiset<Integer> jmet = empty;
+            for (int loops = 0; loops < size; ++loops) {
+                int command = random.nextInt(5);
                 Integer value = random.nextInt(size);
                 int count = random.nextInt(3) + 1;
                 switch (command) {
                 case 0:
                 case 1:
-                    jmet = jmet.insert(value);
-                    expected.add(value);
-//                    jmet = jmet.insert(value, count);
-//                    for (int n = 0; n < count; ++n) {
-//                        expected.add(value);
-//                    }
-//                    assertEquals(true, jmet.contains(value, count));
+                    jmet = jmet.insert(value, count);
+                    for (int n = 0; n < count; ++n) {
+                        expected.add(value);
+                    }
                     assertEquals(true, jmet.contains(value));
                     break;
                 case 2:
-                    jmet = jmet.deleteOccurrence(value);
-                    expected.remove(value);
-//                    jmet = jmet.deleteOccurrence(value, count);
-//                    for (int n = 0; n < count; ++n) {
-//                        expected.remove(value);
-//                    }
-
+                    assertEquals(expected.contains(value), jmet.contains(value));
                     break;
                 case 3:
-                    assertEquals(expected.contains(value), jmet.contains(value));
-//                    jmet = jmet.setCount(value, count);
-//                    while(expected.contains(value)) {
-//                        expected.remove(value);
-//                    }
-//                    for (int n = 0; n < count; ++n) {
-//                        expected.add(value);
-//                    }
-//                    break;
+                    jmet = jmet.deleteOccurrence(value, count);
+                    for (int n = 0; n < count; ++n) {
+                        expected.remove(value);
+                    }
+                    break;
+
+                case 4:
+                    jmet = jmet.setCount(value, count);
+                    while (expected.contains(value)) {
+                        expected.remove(value);
+                    }
+                    for (int n = 0; n < count; ++n) {
+                        expected.add(value);
+                    }
+                    break;
                 }
                 assertEquals(expected.size(), jmet.valueCount());
             }
+
+
             Collections.sort(expected);
             verifyContents(jmet, expected);
             verifyCursor(jmet, expected);
             for (Integer value : expected) {
-                assertEquals(true, jmet.contains(value));
                 jmet = jmet.deleteOccurrence(value);
             }
             assertEquals(0, jmet.size());
