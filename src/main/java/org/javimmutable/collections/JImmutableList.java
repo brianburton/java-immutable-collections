@@ -110,6 +110,7 @@ public interface JImmutableList<T>
 
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
+     * Synonym for insert()
      *
      * @param value
      * @return

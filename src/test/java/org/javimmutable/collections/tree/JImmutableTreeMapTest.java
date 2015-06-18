@@ -164,7 +164,7 @@ public class JImmutableTreeMapTest
             Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
             JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
             for (int i = 1; i <= 25 * maxKey; ++i) {
-                int command = random.nextInt(4);
+                int command = random.nextInt(5);
                 switch (command) {
                 case 0:
                 case 1:
