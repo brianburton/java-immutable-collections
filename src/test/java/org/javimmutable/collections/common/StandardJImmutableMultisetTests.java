@@ -69,6 +69,7 @@ public class StandardJImmutableMultisetTests
         StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
         testVarious(empty);
         testRandom(empty);
+
         verifyContents(empty, new ArrayList<Integer>());
 
         assertEquals(0, empty.size());
@@ -467,44 +468,104 @@ public class StandardJImmutableMultisetTests
 
     private static void testVarious(JImmutableMultiset<Integer> empty)
     {
+        List<Integer> values = Arrays.asList(100, 200, 300, 300);
+
+        JImmutableMultiset<Integer> jmet = empty;
+        assertTrue(jmet.isEmpty());
+        assertEquals(0, jmet.size());
+        assertEquals(0, jmet.valueCount());
+        assertEquals(false, jmet.contains(100));
+        assertEquals(false, jmet.contains(200));
+        assertEquals(false, jmet.contains(300));
+        assertEquals(false, jmet.containsAny(values));
+        assertEquals(false, jmet.containsAll(values));
+        assertEquals(false, jmet.containsAllOccurrences(values));
+
+        jmet = jmet.insert(100);
+        assertFalse(jmet.isEmpty());
+        assertEquals(1, jmet.size());
+        assertEquals(1, jmet.valueCount());
+        assertEquals(true, jmet.contains(100));
+        assertEquals(false, jmet.contains(200));
+        assertEquals(false, jmet.contains(300));
+        assertEquals(true, jmet.containsAny(values));
+        assertEquals(false, jmet.containsAll(values));
+        assertEquals(false, jmet.containsAllOccurrences(values));
+
+        jmet = jmet.insert(200);
+        assertFalse(jmet.isEmpty());
+        assertEquals(2, jmet.size());
+        assertEquals(2, jmet.valueCount());
+        assertEquals(true, jmet.contains(100));
+        assertEquals(true, jmet.contains(200));
+        assertEquals(false, jmet.contains(300));
+        assertEquals(true, jmet.containsAny(values));
+        assertEquals(false, jmet.containsAll(values));
+        assertEquals(false, jmet.containsAllOccurrences(values));
+
+        assertSame(jmet, jmet.union(Arrays.asList(100)));
+        assertSame(jmet, jmet.union(Arrays.asList(200)));
+
+        JImmutableMultiset<Integer> jmet2 = jmet.union(values);
+        assertFalse(jmet2.isEmpty());
+        assertEquals(3, jmet2.size());
+        assertEquals(4, jmet2.valueCount());
+        assertEquals(true, jmet2.contains(100));
+        assertEquals(true, jmet2.contains(200));
+        assertEquals(true, jmet2.contains(300, 2));
+        assertEquals(true, jmet2.containsAny(values));
+        assertEquals(true, jmet2.containsAll(values));
+        assertEquals(true, jmet2.containsAllOccurrences(values));
+        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300)), jmet2.getSet());
+
+        assertEquals(jmet, jmet.intersection(jmet2));
+        assertEquals(jmet, jmet2.intersection(jmet));
+        assertEquals(jmet, jmet2.delete(300));
+        assertEquals(jmet, jmet2.deleteOccurrence(300).deleteOccurrence(300));
+
+        jmet2 = jmet2.deleteAll(jmet);
+        assertFalse(jmet2.isEmpty());
+        assertEquals(1, jmet2.size());
+        assertEquals(2, jmet2.valueCount());
+        assertEquals(false, jmet2.contains(100));
+        assertEquals(false, jmet2.contains(200));
+        assertEquals(true, jmet2.contains(300, 2));
+        assertEquals(true, jmet2.containsAny(values));
+        assertEquals(false, jmet2.containsAny(jmet));
+        assertEquals(false, jmet2.containsAll(values));
+        assertEquals(false, jmet2.containsAllOccurrences(values));
+
+        JImmutableMultiset<Integer> jmet3 = jmet.union(values).insert(400).insert(500, 3);
+        assertFalse(jmet3.isEmpty());
+        assertEquals(5, jmet3.size());
+        assertEquals(8, jmet3.valueCount());
+        assertEquals(true, jmet3.contains(100));
+        assertEquals(true, jmet3.contains(200));
+        assertEquals(true, jmet3.contains(300, 2));
+        assertEquals(true, jmet3.contains(400));
+        assertEquals(true, jmet3.contains(500, 3));
+        assertEquals(false, jmet3.contains(600));
+        assertEquals(true, jmet3.containsAny(values));
+        assertEquals(true, jmet3.containsAny(jmet));
+        assertEquals(true, jmet3.containsAny(jmet2));
+        assertEquals(true, jmet3.containsAll(values));
+        assertEquals(true, jmet3.containsAll(jmet));
+        assertEquals(true, jmet3.containsAll(jmet2));
+        assertEquals(true, jmet3.containsAllOccurrences(values));
+        assertEquals(true, jmet3.containsAllOccurrences(jmet));
+        assertEquals(true, jmet3.containsAllOccurrences(jmet2));
+        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300, 400, 500)), jmet3.getSet());
+        assertEquals(jmet, jmet3.intersection(jmet));
+        assertEquals(jmet, jmet.intersection(jmet3));
+        assertEquals(jmet2, jmet3.intersection(jmet2));
+        assertEquals(jmet2, jmet2.intersection(jmet3));
+        assertEquals(empty, jmet.intersection(jmet2));
+        assertEquals(empty, jmet2.intersection(jmet));
+        assertEquals(empty, jmet3.deleteAll(jmet3));
+
 
     }
 
-    public static void testRandom2(JImmutableMultiset<Integer> empty)
-    {
-        Random random = new Random(2500L);
-        for (int i = 0; i < 50; ++i) {
-            int size = 1 + random.nextInt(20000);
-            //Set<Integer> expected = new HashSet<Integer>();
-            JImmutableMultiset<Integer> jmet = empty;
-            for (int loops = 0; loops < (4 * size); ++loops) {
-                int command = random.nextInt(4);
-                Integer value = random.nextInt(size);
-                switch (command) {
-                case 0:
-                case 1:
-                    jmet = jmet.insert(value);
-                    // expected.add(value);
-                    assertEquals(true, jmet.contains(value));
-                    break;
-                case 2:
-                    //assertEquals(expected.contains(value), jmet.contains(value));
-                    //break;
-                case 3:
-                    jmet = jmet.delete(value);
-                    //expected.remove(value);
-                    break;
-                }
-                //assertEquals(expected.size(), jmet.size());
-            }
-
-            for (Integer value : jmet) {
-                jmet = jmet.delete(value);
-            }
-            assertEquals(0, jmet.size());
-            assertEquals(true, jmet.isEmpty());
-        }
-    }
 
     public static void testRandom(JImmutableMultiset<Integer> empty)
     {
@@ -561,8 +622,6 @@ public class StandardJImmutableMultisetTests
             assertEquals(true, jmet.isEmpty());
 
         }
-
-
     }
 
     private static void verifyContents(JImmutableMultiset<Integer> jmet,
