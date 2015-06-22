@@ -67,7 +67,7 @@ public class JImmutableHashMultiset<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll()
+    public JImmutableMultiset<T> deleteAll()
     {
         return of();
     }

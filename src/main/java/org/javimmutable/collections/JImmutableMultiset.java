@@ -172,7 +172,7 @@ public interface JImmutableMultiset<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll();
+    JImmutableMultiset<T> deleteAll();
 
     /**
      * Removes one occurrence of value from the multiset.

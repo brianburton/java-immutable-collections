@@ -35,28 +35,25 @@
 
 package org.javimmutable.collections.tree;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultiset;
 import junit.framework.TestCase;
 
-import com.google.common.collect.LinkedHashMultiset;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
-import java.util.Collection;
+import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
+import java.util.Collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class JImmutableTreeMultisetTest
@@ -134,7 +131,6 @@ public class JImmutableTreeMultisetTest
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
         StandardJImmutableMultisetTests.verifyCursor(jmet.union(Arrays.asList("tennant", "smith")), expected);
 
-
         JImmutableMultiset<String> jmet2 = jmet.union(valueSet);
         Multiset<String> expected2 = TreeMultiset.create();
         expected2.addAll(values);
@@ -152,9 +148,7 @@ public class JImmutableTreeMultisetTest
         assertEquals(true, jmet2.containsAllOccurrences(valueSet));
         assertEquals(false, jmet2.containsAllOccurrences(valueList));
         assertEquals(asSet("tennant", "smith", "capaldi", "eccleston"), jmet2.getSet());
-        System.out.println(expected2);
         StandardJImmutableMultisetTests.verifyCursor(jmet2, expected2);
-
 
         assertEquals(jmet, jmet.intersection(jmet2));
         assertEquals(jmet, jmet2.intersection(jmet));
@@ -177,7 +171,6 @@ public class JImmutableTreeMultisetTest
         assertEquals(true, jmet2.containsAllOccurrences(valueList));
         StandardJImmutableMultisetTests.verifyCursor(jmet2, expected2);
 
-
         assertEquals(jmet, jmet2.delete("capaldi").delete("eccleston"));
         assertEquals(jmet, jmet2.deleteOccurrence("capaldi", 12).deleteOccurrence("eccleston", 9));
         assertEquals(jmet, jmet2.deleteAll(Arrays.asList("capaldi", "eccleston")));
@@ -194,8 +187,6 @@ public class JImmutableTreeMultisetTest
         assertEquals(JImmutableTreeMultiset.<String>of(), jmet2.deleteAll());
         StandardJImmutableMultisetTests.verifyCursor(jmet2.deleteAll(extra), expected);
         StandardJImmutableMultisetTests.verifyCursor(jmet.insertAll(extra), expected2);
-
-
 
         JImmutableMultiset<String> jmet3 = asJMet(valueSet).insert("davison").insert("baker");
         Multiset<String> expected3 = TreeMultiset.create(Arrays.asList("tennant", "smith", "capaldi", "eccleston", "davison", "baker"));
@@ -219,13 +210,67 @@ public class JImmutableTreeMultisetTest
         assertEquals(false, jmet3.containsAllOccurrences(jmet2));
         StandardJImmutableMultisetTests.verifyCursor(jmet3, expected3);
 
-
         JImmutableMultiset<String> jmet4 = asJMet(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
         assertEquals(jmet4, jmet3.intersection(valueSet));
         assertEquals(jmet4, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(jmet4, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(jmet4, jmet3.intersection(jmet4));
         StandardJImmutableMultisetTests.verifyCursor(jmet3.intersection(valueSet), TreeMultiset.create(Arrays.asList("tennant", "smith", "capaldi", "eccleston")));
+    }
+
+    public void testSortOrder()
+    {
+        Comparator<Integer> reverser = new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -a.compareTo(b);
+            }
+        };
+
+        Multiset<Integer> expected = TreeMultiset.create(reverser);
+        JImmutableMultiset<Integer> jmet = JImmutableTreeMultiset.of(reverser);
+        Random random = new Random(2500L);
+        for (int i = 0; i < 10000; ++i) {
+            int value = random.nextInt(100000) - 50000;
+            expected.add(value);
+            jmet = jmet.insert(value);
+        }
+        assertEquals(expected.elementSet(), jmet.getSet());
+        assertEquals(new ArrayList<Integer>(expected), asList(jmet));
+        StandardJImmutableMultisetTests.verifyCursor(jmet, expected);
+
+    }
+
+    public void testdeleteAll()
+    {
+        JImmutableTreeMultiset<Integer> jmet = JImmutableTreeMultiset.of();
+        jmet = (JImmutableTreeMultiset)jmet.insert(1).insert(1).insert(3);
+        JImmutableTreeMultiset<Integer> cleared = jmet.deleteAll();
+        assertNotSame(JImmutableTreeMultiset.<Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertEquals(0, cleared.valueCount());
+        assertSame(jmet.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
+
+        jmet = JImmutableTreeMultiset.of(new Comparator<Integer>()
+        {
+            @Override
+            public int compare(Integer a,
+                               Integer b)
+            {
+                return -b.compareTo(a);
+            }
+        });
+        jmet = (JImmutableTreeMultiset)jmet.insert(1).insert(1).insert(3);
+        cleared = jmet.deleteAll();
+        assertNotSame(JImmutableTreeMultiset.<Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertEquals(0, cleared.valueCount());
+        assertSame(jmet.getComparator(), cleared.getComparator());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
     }
 
     private Set<String> asSet(String... args)
@@ -259,6 +304,16 @@ public class JImmutableTreeMultisetTest
     {
         JImmutableMultiset<String> jmet = JImmutableTreeMultiset.of();
         return jmet.insertAll(collect);
+    }
+
+    private ArrayList<Integer> asList(JImmutableMultiset<Integer> jmet)
+    {
+        Cursor<Integer> cursor = jmet.occurrenceCursor();
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for(cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
+            list.add(cursor.getValue());
+        }
+        return list;
     }
 
 }
