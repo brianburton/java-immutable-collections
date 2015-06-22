@@ -613,8 +613,13 @@ public class StandardJImmutableMultisetTests
                 }
                 assertEquals(expected.size(), jmet.valueCount());
             }
+            //verify multisets have the same contents
             verifyContents(jmet, expected);
+
+            //verify ordering is the same in both sets
+            assertEquals(new ArrayList<Integer>(expected.elementSet()), new ArrayList<Integer>(jmet.getSet()));
             verifyCursor(jmet, expected);
+
             for (Integer value : expected) {
                 jmet = jmet.deleteOccurrence(value);
             }
@@ -663,37 +668,37 @@ public class StandardJImmutableMultisetTests
 
     }
 
-    private static void verifyCursor(final JImmutableMultiset<Integer> jmet,
-                                    final Multiset<Integer> expected)
+    public static <T> void verifyCursor(final JImmutableMultiset<T> jmet,
+                                    final Multiset<T> expected)
     {
-        final List<Integer> expectedSet = new LinkedList<Integer>();
+        final List<T> expectedSet = new LinkedList<T>();
         expectedSet.addAll(expected.elementSet());
 
-        final List<Integer> expectedList = new ArrayList<Integer>();
-        for (Integer value : expected) {
+        final List<T> expectedList = new ArrayList<T>();
+        for (T value : expected) {
             expectedList.add(value);
         }
 
-        final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        for (Multiset.Entry<Integer> mentry : expected.entrySet()) {
-            entries.add(new MapEntry<Integer, Integer>(mentry.getElement(), mentry.getCount()));
+        final List<JImmutableMap.Entry<T, Integer>> entries = new ArrayList<JImmutableMap.Entry<T, Integer>>();
+        for (Multiset.Entry<T> mentry : expected.entrySet()) {
+            entries.add(new MapEntry<T, Integer>(mentry.getElement(), mentry.getCount()));
         }
         assertEquals(entries.size(), jmet.size());
 
         StandardCursorTest.listCursorTest(expectedSet, jmet.cursor());
         StandardCursorTest.listIteratorTest(expectedSet, jmet.iterator());
-        StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+        StandardCursorTest.cursorTest(new Func1<Integer, T>()
         {
             @Override
-            public Integer apply(Integer value)
+            public T apply(Integer value)
             {
                 return entries.get(value).getKey();
             }
         }, entries.size(), jmet.cursor());
-        StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+        StandardCursorTest.iteratorTest(new Func1<Integer, T>()
         {
             @Override
-            public Integer apply(Integer value)
+            public T apply(Integer value)
             {
                 return entries.get(value).getKey();
             }
@@ -702,18 +707,18 @@ public class StandardJImmutableMultisetTests
 
         StandardCursorTest.listCursorTest(expectedList, jmet.occurrenceCursor());
         StandardCursorTest.listIteratorTest(expectedList, jmet.occurrenceCursor().iterator());
-        StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
+        StandardCursorTest.cursorTest(new Func1<Integer, T>()
         {
             @Override
-            public Integer apply(Integer value)
+            public T apply(Integer value)
             {
                 return expectedList.get(value);
             }
         }, expected.size(), jmet.occurrenceCursor());
-        StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
+        StandardCursorTest.iteratorTest(new Func1<Integer, T>()
         {
             @Override
-            public Integer apply(Integer value)
+            public T apply(Integer value)
             {
                 return expectedList.get(value);
             }
@@ -721,18 +726,18 @@ public class StandardJImmutableMultisetTests
 
         StandardCursorTest.listCursorTest(entries, jmet.entryCursor());
         StandardCursorTest.listIteratorTest(entries, jmet.entryCursor().iterator());
-        StandardCursorTest.cursorTest(new Func1<Integer, JImmutableMap.Entry<Integer, Integer>>()
+        StandardCursorTest.cursorTest(new Func1<Integer, JImmutableMap.Entry<T, Integer>>()
         {
             @Override
-            public JImmutableMap.Entry<Integer, Integer> apply(Integer value)
+            public JImmutableMap.Entry<T, Integer> apply(Integer value)
             {
                 return entries.get(value);
             }
         }, entries.size(), jmet.entryCursor());
-        StandardCursorTest.iteratorTest(new Func1<Integer, JImmutableMap.Entry<Integer, Integer>>()
+        StandardCursorTest.iteratorTest(new Func1<Integer, JImmutableMap.Entry<T, Integer>>()
         {
             @Override
-            public JImmutableMap.Entry<Integer, Integer> apply(Integer value)
+            public JImmutableMap.Entry<T, Integer> apply(Integer value)
             {
                 return entries.get(value);
             }
