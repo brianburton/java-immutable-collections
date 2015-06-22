@@ -45,7 +45,7 @@ import javax.annotation.concurrent.Immutable;
 /**
  * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
  * elements are returned in the same order they were inserted into the set.  Performance is
- * slower than hash or tree sets but should be sufficient or most algorithms where insert
+ * slower than hash or tree sets but should be sufficient for most algorithms where insert
  * order matters.
  *
  * @param <T>

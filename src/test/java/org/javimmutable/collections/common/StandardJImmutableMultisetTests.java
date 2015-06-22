@@ -50,6 +50,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.*;
@@ -572,7 +573,7 @@ public class StandardJImmutableMultisetTests
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new LinkedList<Integer>();
             JImmutableMultiset<Integer> jmet = empty;
             for (int loops = 0; loops < size; ++loops) {
                 int command = random.nextInt(5);
@@ -582,8 +583,10 @@ public class StandardJImmutableMultisetTests
                 case 0:
                 case 1:
                     jmet = jmet.insert(value, count);
+                    int index = expected.indexOf(value);
+                    index = (index != -1) ? index : expected.size();
                     for (int n = 0; n < count; ++n) {
-                        expected.add(value);
+                        expected.add(index, value);
                     }
                     assertEquals(true, jmet.contains(value));
                     break;
@@ -687,11 +690,11 @@ public class StandardJImmutableMultisetTests
     private static void verifyCursor(JImmutableMultiset<Integer> jmet,
                                      final List<Integer> expected)
     {
-        List<Integer> setValues = new ArrayList<Integer>();
+        List<Integer> setValues = new LinkedList<Integer>();
         setValues.addAll(asSet(expected));
 
         final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        JImmutableMap<Integer, Integer> expectedMap = JImmutableHashMap.<Integer, Integer>of();
+        JImmutableMap<Integer, Integer> expectedMap = JImmutableInsertOrderMap.<Integer, Integer>of();
         for (int value : expected) {
             Holder<Integer> holder = expectedMap.find(value);
             int count = holder.getValueOr(0);
@@ -765,7 +768,7 @@ public class StandardJImmutableMultisetTests
 
     private static Set<Integer> asSet(List<Integer> list)
     {
-        Set<Integer> set = new TreeSet<Integer>();
+        Set<Integer> set = new LinkedHashSet<Integer>();
         set.addAll(list);
         return set;
     }

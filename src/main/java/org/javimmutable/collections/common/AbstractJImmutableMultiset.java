@@ -467,7 +467,7 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> union(@Nonnull Iterator<? extends T> other)
     {
         JImmutableMap<T, Integer> newMap = map;
-        JImmutableMap<T, Integer> otherMap = map.deleteAll();
+        JImmutableMap<T, Integer> otherMap = emptyMap();
         int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
@@ -560,9 +560,9 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull Iterator<? extends T> other)
     {
-        JImmutableMap<T, Integer> newMap = map.deleteAll();
+        JImmutableMap<T, Integer> newMap = emptyMap();
         int newOccurrences = 0;
-        JImmutableMap<T, Integer> otherMap = map.deleteAll();
+        JImmutableMap<T, Integer> otherMap = emptyMap();
         while (other.hasNext()) {
             final T value = other.next();
             otherMap = incrementCount(otherMap, value);
@@ -589,7 +589,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     private <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
-        JImmutableMap<T, Integer> newMap = map.deleteAll();
+        JImmutableMap<T, Integer> newMap = emptyMap();
         int newOccurrences = 0;
         Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor();
         for (e = e.start(); e.hasValue(); e = e.next()) {
@@ -623,8 +623,8 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     private JImmutableMultiset<T> intersectionSetHelper(@Nonnull Iterator<? extends T> i)
     {
-        JImmutableMap<T, Integer> newMap = map.deleteAll();
-        JImmutableMap<T, Integer> otherMap = map.deleteAll();
+        JImmutableMap<T, Integer> newMap = emptyMap();
+        JImmutableMap<T, Integer> otherMap = emptyMap();
         int newOccurrences = 0;
         while (i.hasNext()) {
             final T value = i.next();
@@ -779,6 +779,8 @@ public abstract class AbstractJImmutableMultiset<T>
         return newMap.assign(value, newCount);
 
     }
+
+    protected abstract JImmutableMap<T, Integer> emptyMap();
 
     //removes subtractBy from map. Checks whether it needs to decrement or delete value.
     //preconditions: none. If value isn't in map, then this will be returned (see map.delete())

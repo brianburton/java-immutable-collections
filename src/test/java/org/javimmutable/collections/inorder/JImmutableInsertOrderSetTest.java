@@ -38,6 +38,8 @@ package org.javimmutable.collections.inorder;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.ArrayList;
@@ -50,6 +52,12 @@ import java.util.Set;
 public class JImmutableInsertOrderSetTest
         extends TestCase
 {
+    public void testStandard()
+    {
+        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.<Integer>of());
+        StandardCursorTest.emptyCursorTest(JImmutableInsertOrderSet.<Integer>of().cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
+    }
     public void test()
     {
         JImmutableStack<String> expected = JImmutableLinkedStack.of();
