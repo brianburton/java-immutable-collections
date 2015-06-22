@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.inorder;
 
+import com.google.common.collect.LinkedHashMultiset;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -44,11 +45,9 @@ import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 public class JImmutableInsertOrderMultisetTest
@@ -57,6 +56,8 @@ public class JImmutableInsertOrderMultisetTest
     public void testStandard()
     {
         StandardJImmutableMultisetTests.verifyMultiset(JImmutableInsertOrderMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.testRandom(JImmutableInsertOrderMultiset.<Integer>of(),
+                                                   LinkedHashMultiset.<Integer>create());
     }
 
     public void test()
@@ -186,66 +187,6 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(expected, jmet3.intersection(expected));
 
     }
-
-    public static void testRandom()
-    {
-        Random random = new Random(2500L);
-        for (int i = 0; i < 50; ++i) {
-            int size = 1 + random.nextInt(20000);
-            List<Integer> expected = new LinkedList<Integer>();
-            JImmutableMultiset<Integer> jmet = JImmutableInsertOrderMultiset.<Integer>of();
-            for (int loops = 0; loops < 10; ++loops) {
-                int command = random.nextInt(5);
-                Integer value = random.nextInt(size);
-                int count = random.nextInt(3) + 1;
-                switch (command) {
-                case 0:
-                case 1:
-                    jmet = jmet.insert(value, count);
-                    int index = expected.indexOf(value);
-                    index = (index != -1) ? index : expected.size();
-                    for (int n = 0; n < count; ++n) {
-                        expected.add(index, value);
-                    }
-                    assertEquals(true, jmet.contains(value));
-                    break;
-                case 2:
-                    assertEquals(expected.contains(value), jmet.contains(value));
-                    break;
-                case 3:
-                    jmet = jmet.deleteOccurrence(value, count);
-                    for (int n = 0; n < count; ++n) {
-                        expected.remove(value);
-                    }
-                    break;
-
-                case 4:
-                    jmet = jmet.setCount(value, count);
-                    while (expected.contains(value)) {
-                        expected.remove(value);
-                    }
-                    for (int n = 0; n < count; ++n) {
-                        expected.add(value);
-                    }
-                    break;
-                }
-                assertEquals(expected.size(), jmet.valueCount());
-            }
-            List<Integer> jmetList = new ArrayList<Integer>(jmet.getSet());
-            List<Integer> expectedList = new ArrayList<Integer>(new LinkedHashSet<Integer>(expected));
-           // assertEquals(expectedList, jmetList);
-
-           // StandardJImmutableMultisetTests.verifyCursor(jmet, expected);
-            for (Integer value : expected) {
-                jmet = jmet.deleteOccurrence(value);
-            }
-            assertEquals(0, jmet.size());
-            assertEquals(0, jmet.valueCount());
-            assertEquals(true, jmet.isEmpty());
-
-        }
-    }
-
 
 
     private Set<String> asSet(String... args)

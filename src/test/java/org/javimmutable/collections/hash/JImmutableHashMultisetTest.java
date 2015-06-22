@@ -36,12 +36,13 @@
 package org.javimmutable.collections.hash;
 
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.TreeMultiset;
+import com.sun.xml.internal.bind.api.impl.NameConverter;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,8 @@ public class JImmutableHashMultisetTest
     public void testStandard()
     {
         StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.testRandom(JImmutableHashMultiset.<Integer>of(),
+                                                   TreeMultiset.<Integer>create());
     }
 
     public void test()
@@ -63,7 +66,7 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> valuesM = JImmutableHashMultiset.<String>of().union(valuesL);
         valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
 
-        JImmutableMultiset<String> jmet = JImmutableHashMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableHashMultiset.of();
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
         assertEquals(0, jmet.valueCount());
@@ -202,7 +205,7 @@ public class JImmutableHashMultisetTest
 
     private JImmutableSet<String> asJSet(String... args)
     {
-        JImmutableSet<String> jet = JImmutableHashSet.<String>of();
+        JImmutableSet<String> jet = JImmutableHashSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
         }
@@ -211,7 +214,7 @@ public class JImmutableHashMultisetTest
 
     private JImmutableMultiset<String> asJMet(String... args)
     {
-        JImmutableMultiset<String> jmet = JImmutableHashMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableHashMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
         }
@@ -220,7 +223,7 @@ public class JImmutableHashMultisetTest
 
     private JImmutableMultiset<String> asJMet(List<String> list)
     {
-        JImmutableMultiset<String> jmet = JImmutableHashMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableHashMultiset.of();
         return jmet.insertAll(list);
     }
 
