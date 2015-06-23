@@ -36,22 +36,27 @@
 package org.javimmutable.collections.inorder;
 
 import com.google.common.collect.LinkedHashMultiset;
+import com.google.common.collect.Multiset;
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class JImmutableInsertOrderMultisetTest
-    extends TestCase
+        extends TestCase
 {
     public void testStandard()
     {
@@ -188,6 +193,53 @@ public class JImmutableInsertOrderMultisetTest
 
     }
 
+    public void testInsertOrder()
+    {
+        JImmutableMultiset<Integer> jmet = JImmutableInsertOrderMultiset.<Integer>of();
+        Multiset<Integer> multi = LinkedHashMultiset.create();
+        Random random = new Random(2500L);
+        for (int i = 0; i < 5; ++i) {
+            int value = random.nextInt(100000) - 50000;
+            multi.add(value);
+            jmet = jmet.insert(value);
+        }
+        assertEquals(multi.elementSet(), jmet.getSet());
+        assertEquals(new ArrayList<Integer>(multi), asList(jmet));
+        StandardJImmutableMultisetTests.verifyCursor(jmet, multi);
+
+        int a = random.nextInt(100000) - 50000;
+        int b = random.nextInt(100000) - 50000;
+
+        multi.add(a);
+        jmet = jmet.insert(b);
+        multi.add(b);
+        jmet = jmet.insert(a);
+        assertEquals(multi.elementSet(), jmet.getSet());
+        assertEquals(multi.size(), jmet.valueCount());
+        StandardJImmutableMultisetTests.verifyContents(jmet, multi);
+        try {
+            assertEquals(new ArrayList<Integer>(multi), asList(jmet));
+        } catch (AssertionFailedError ignored) {
+            //expected
+        }
+        try {
+            StandardJImmutableMultisetTests.verifyCursor(jmet, multi);
+        } catch (AssertionFailedError ignored) {
+            //expected
+        }
+    }
+
+    public void testDeleteAll()
+    {
+        JImmutableInsertOrderMultiset<Integer> jmet = JImmutableInsertOrderMultiset.of();
+        jmet = (JImmutableInsertOrderMultiset<Integer>)jmet.insert(1).insert(3).insert(1);
+        JImmutableInsertOrderMultiset<Integer> cleared = jmet.deleteAll();
+        assertSame(JImmutableInsertOrderMultiset.<Integer>of(), cleared);
+        assertEquals(0, cleared.size());
+        assertEquals(0, cleared.valueCount());
+        StandardCursorTest.emptyCursorTest(cleared.cursor());
+    }
+
 
     private Set<String> asSet(String... args)
     {
@@ -223,7 +275,7 @@ public class JImmutableInsertOrderMultisetTest
     }
 
     private static List<JImmutableMap.Entry<Integer, Integer>> makeEntryList(List<Integer> expected,
-                                             JImmutableMultiset<Integer> jmet)
+                                                                             JImmutableMultiset<Integer> jmet)
     {
         final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
         JImmutableMap<Integer, Integer> expectedMap = JImmutableInsertOrderMap.<Integer, Integer>of();
@@ -238,6 +290,16 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(expectedMap.size(), entries.size());
         assertEquals(entries.size(), jmet.size());
         return entries;
+    }
+
+    private ArrayList<Integer> asList(JImmutableMultiset<Integer> jmet)
+    {
+        Cursor<Integer> cursor = jmet.occurrenceCursor();
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
+            list.add(cursor.getValue());
+        }
+        return list;
     }
 
 }

@@ -67,13 +67,13 @@ public class JImmutableInsertOrderMultiset<T>
 
     @Nonnull
     @Override
-    public JImmutableMultiset<T> deleteAll()
+    public JImmutableInsertOrderMultiset<T> deleteAll()
     {
         return of();
     }
 
     @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map, int occurrences)
+    protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map, int occurrences)
     {
         return new JImmutableInsertOrderMultiset<T>(map, occurrences);
     }

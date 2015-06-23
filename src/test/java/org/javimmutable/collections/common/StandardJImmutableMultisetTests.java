@@ -630,7 +630,7 @@ public class StandardJImmutableMultisetTests
         }
     }
 
-    private static void verifyContents(JImmutableMultiset<Integer> jmet,
+    public static void verifyContents(JImmutableMultiset<Integer> jmet,
                                        Multiset<Integer> expected)
     {
         assertEquals(expected.isEmpty(), jmet.isEmpty());

@@ -44,7 +44,6 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
 import java.util.Collection;
 
@@ -244,10 +243,10 @@ public class JImmutableTreeMultisetTest
 
     }
 
-    public void testdeleteAll()
+    public void testDeleteAll()
     {
         JImmutableTreeMultiset<Integer> jmet = JImmutableTreeMultiset.of();
-        jmet = (JImmutableTreeMultiset)jmet.insert(1).insert(1).insert(3);
+        jmet = (JImmutableTreeMultiset<Integer>)jmet.insert(1).insert(1).insert(3);
         JImmutableTreeMultiset<Integer> cleared = jmet.deleteAll();
         assertNotSame(JImmutableTreeMultiset.<Integer>of(), cleared);
         assertEquals(0, cleared.size());
@@ -264,7 +263,7 @@ public class JImmutableTreeMultisetTest
                 return -b.compareTo(a);
             }
         });
-        jmet = (JImmutableTreeMultiset)jmet.insert(1).insert(1).insert(3);
+        jmet = (JImmutableTreeMultiset<Integer>)jmet.insert(1).insert(1).insert(3);
         cleared = jmet.deleteAll();
         assertNotSame(JImmutableTreeMultiset.<Integer>of(), cleared);
         assertEquals(0, cleared.size());

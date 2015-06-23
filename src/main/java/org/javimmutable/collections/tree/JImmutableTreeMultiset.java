@@ -57,7 +57,7 @@ public class JImmutableTreeMultiset<T>
 
     private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,
                                    int occurrences,
-                                   Comparator<T>comparator)
+                                   Comparator<T> comparator)
     {
         super(map, occurrences);
         this.comparator = comparator;
@@ -87,8 +87,8 @@ public class JImmutableTreeMultiset<T>
     }
 
     @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                           int occurrences)
+    protected JImmutableTreeMultiset<T> create(JImmutableMap<T, Integer> map,
+                                               int occurrences)
     {
         return new JImmutableTreeMultiset<T>(map, occurrences, comparator);
     }

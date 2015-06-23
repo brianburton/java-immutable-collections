@@ -37,7 +37,6 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
@@ -48,7 +47,9 @@ public class JImmutableHashMultiset<T>
     @SuppressWarnings("unchecked")
     private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
 
-    private JImmutableHashMultiset(JImmutableMap<T, Integer> map, int occurrences) {
+    private JImmutableHashMultiset(JImmutableMap<T, Integer> map,
+                                   int occurrences)
+    {
         super(map, occurrences);
     }
 
