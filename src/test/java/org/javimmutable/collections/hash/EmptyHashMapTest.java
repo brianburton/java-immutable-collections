@@ -73,7 +73,7 @@ public class EmptyHashMapTest
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());
-        assertTrue(!(map instanceof JImmutableHashMap));
+        assertFalse(map instanceof JImmutableHashMap);
 
         expected = expected.assign("a", 10);
         map = map.assignAll(expected);
@@ -103,7 +103,7 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertEquals(0, map.size());
-        assertTrue(!(map instanceof JImmutableHashMap));
+        assertFalse(map instanceof JImmutableHashMap);
 
         expected2.put("a", 10);
         map = map.assignAll(expected2);

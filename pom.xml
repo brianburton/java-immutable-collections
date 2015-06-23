@@ -44,6 +44,17 @@
             </roles>
             <timezone>America/New_York</timezone>
         </developer>
+        <developer>
+            <id>anjbur</id>
+            <name>Angela Burton</name>
+            <email>angela.j.burton@vanderbilt.edu</email>
+            <url>https://github.com/anjbur</url>
+            <organization>Vanderbilt University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Chicago</timezone>
+        </developer>
     </developers>
 
     <issueManagement>

@@ -145,7 +145,7 @@ public class JImmutableHashMapTest
                         col = col.assign(key, value);
                     }
                     expected.putAll(col.getMap());
-                    map = (random.nextInt(2) == 0) ? map.assignAll(col) : map.assignAll(col.getMap());
+                    map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
                     break;
                 case 3:
                     key = random.nextInt(maxKey);

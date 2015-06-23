@@ -85,7 +85,11 @@ public abstract class AbstractJImmutableSet<T>
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(values.iterator());
+        JImmutableSet<T> answer = this;
+        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
+            answer = answer.insert(c.getValue());
+        }
+        return answer;
     }
 
     @Override

@@ -144,21 +144,32 @@ public final class StandardJImmutableSetTests
         verifyContents(jet.deleteAll(IterableCursor.of(withExtra)), empty);
         verifyContents(jet.deleteAll(withExtra.iterator()), empty);
 
-        //insertAll to empty set
-        jet = template;
-        verifyContents(jet.insertAll(IterableCursorable.of(values)), values);
-        verifyContents(jet.insertAll(values), values);
-        verifyContents(jet.insertAll(IterableCursor.of(values)), values);
-        verifyContents(jet.insertAll(values.iterator()), values);
+        //insertAll
+        //empty into empty
+        assertSame(template, template.insertAll(IterableCursorable.of(template)));
+        assertSame(template, template.insertAll(template));
+        assertSame(template, template.insertAll(IterableCursor.of(template)));
+        assertSame(template, template.insertAll(template.iterator()));
 
-        //insertAll to non-empty set
+        //values into empty
+        verifyContents(template.insertAll(IterableCursorable.of(values)), values);
+        verifyContents(template.insertAll(values), values);
+        verifyContents(template.insertAll(IterableCursor.of(values)), values);
+        verifyContents(template.insertAll(values.iterator()), values);
+
+        //empty into values
         jet = template.union(values);
+        assertSame(jet, jet.insertAll(IterableCursorable.of(template)));
+        assertSame(jet, jet.insertAll(template));
+        assertSame(jet, jet.insertAll(IterableCursor.of(values)));
+        assertSame(jet, jet.insertAll(values.iterator()));
+
+        //values into values
         verifyContents(jet.insertAll(IterableCursorable.of(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra), withExtra);
         verifyContents(jet.insertAll(IterableCursor.of(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra.iterator()), withExtra);
 
-        //insertAll to different set
         final List<Integer> higher = Arrays.asList(4, 5, 6, 7);
         jet = template.union(higher);
         final List<Integer> combinedSet = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
@@ -300,6 +311,7 @@ public final class StandardJImmutableSetTests
                     assertEquals(false, set.contains(value));
                     break;
                 case 4:
+                    col = template;
                     int times = random.nextInt(4);
                     for (int rep = 0; rep < times; ++rep) {
                         int num = random.nextInt(size);
@@ -308,7 +320,6 @@ public final class StandardJImmutableSetTests
                     }
                     set = set.insertAll(col);
                     assertEquals(true, set.containsAll(col));
-                    col = template;
                     break;
 
                 }

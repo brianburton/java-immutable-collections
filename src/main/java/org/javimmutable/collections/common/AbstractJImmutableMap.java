@@ -72,18 +72,8 @@ public abstract class AbstractJImmutableMap<K, V>
         return assign(e.getKey(), e.getValue());
     }
 
-    //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28
-    private <K1 extends K, V1 extends V> JImmutableMap<K, V> assignAllHelper(@Nonnull JImmutableMap<K1, V1> map)
-    {
-        JImmutableMap<K, V> answer = this;
-        Cursor<Entry<K1, V1>> c = map.cursor();
-        for (c = c.start(); c.hasValue(); c = c.next()) {
-            Entry<K1, V1> e = c.getValue();
-            answer = answer.assign(e.getKey(), e.getValue());
-        }
-        return answer;
-    }
 
+    @Nonnull
     @Override
     public JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map)
     {
@@ -91,6 +81,7 @@ public abstract class AbstractJImmutableMap<K, V>
     }
 
 
+    @Nonnull
     @Override
     public JImmutableMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map)
     {
@@ -165,5 +156,18 @@ public abstract class AbstractJImmutableMap<K, V>
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28
+    @Nonnull
+    private <K1 extends K, V1 extends V> JImmutableMap<K, V> assignAllHelper(@Nonnull JImmutableMap<K1, V1> map)
+    {
+        JImmutableMap<K, V> answer = this;
+        Cursor<Entry<K1, V1>> c = map.cursor();
+        for (c = c.start(); c.hasValue(); c = c.next()) {
+            Entry<K1, V1> e = c.getValue();
+            answer = answer.assign(e.getKey(), e.getValue());
+        }
+        return answer;
     }
 }
