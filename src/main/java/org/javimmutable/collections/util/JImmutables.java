@@ -38,8 +38,10 @@ package org.javimmutable.collections.util;
 import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
@@ -48,6 +50,7 @@ import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
 
@@ -972,6 +975,310 @@ public final class JImmutables
     public static <T> JImmutableSet<T> insertOrderSet(Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableInsertOrderSet.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an unsorted multiset.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value assigned to the multiset.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset()
+    {
+        return JImmutableHashMultiset.of();
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(T... source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an empty set that sorts values in their natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset()
+    {
+        return JImmutableTreeMultiset.of();
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(T... source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an empty multiset that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator)
+    {
+        return JImmutableTreeMultiset.of(comparator);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                 Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                 T... source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                 Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                 Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                 Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.iterator());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset()
+    {
+        return JImmutableInsertOrderMultiset.of();
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(T... source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source.iterator());
     }
 
     /**
