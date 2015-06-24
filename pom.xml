@@ -44,6 +44,17 @@
             </roles>
             <timezone>America/New_York</timezone>
         </developer>
+        <developer>
+            <id>anjbur</id>
+            <name>Angela Burton</name>
+            <email>angela.j.burton@vanderbilt.edu</email>
+            <url>https://github.com/anjbur</url>
+            <organization>Vanderbilt University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Chicago</timezone>
+        </developer>
     </developers>
 
     <issueManagement>
@@ -102,6 +113,10 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
