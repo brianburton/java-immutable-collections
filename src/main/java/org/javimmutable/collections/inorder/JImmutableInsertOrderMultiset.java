@@ -54,7 +54,8 @@ public class JImmutableInsertOrderMultiset<T>
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderMultiset EMPTY = new JImmutableInsertOrderMultiset(JImmutableInsertOrderMap.of(), 0);
 
-    private JImmutableInsertOrderMultiset(JImmutableMap<T, Integer> map, int occurrences)
+    private JImmutableInsertOrderMultiset(JImmutableMap<T, Integer> map,
+                                          int occurrences)
     {
         super(map, occurrences);
     }
@@ -73,7 +74,8 @@ public class JImmutableInsertOrderMultiset<T>
     }
 
     @Override
-    protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map, int occurrences)
+    protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map,
+                                                      int occurrences)
     {
         return new JImmutableInsertOrderMultiset<T>(map, occurrences);
     }

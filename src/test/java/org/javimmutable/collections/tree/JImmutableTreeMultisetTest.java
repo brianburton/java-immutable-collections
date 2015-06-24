@@ -309,7 +309,7 @@ public class JImmutableTreeMultisetTest
     {
         Cursor<Integer> cursor = jmet.occurrenceCursor();
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for(cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
+        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             list.add(cursor.getValue());
         }
         return list;

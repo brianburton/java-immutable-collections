@@ -69,7 +69,6 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> insert(@Nonnull T value)
     {
         JImmutableMap<T, Integer> newMap = increaseCount(value, 1);
-        //map.assign(value, 1 + map.getValueOr(value, 0);
         return (newMap != map) ? create(newMap, 1 + occurrences) : this;
     }
 
@@ -174,18 +173,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return containsAllOccurrencesMultisetHelper(values);
     }
 
-    private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
-    {
-        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
-        for (e = e.start(); e.hasValue(); e = e.next()) {
-            final T1 entryValue = e.getValue().getKey();
-            final int entryCount = e.getValue().getValue();
-            if (!this.contains(entryValue) || this.count(entryValue) < entryCount) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
     public boolean containsAllOccurrences(@Nonnull JImmutableSet<? extends T> values)
@@ -197,17 +184,6 @@ public abstract class AbstractJImmutableMultiset<T>
     public boolean containsAllOccurrences(@Nonnull Set<? extends T> values)
     {
         return containsAllOccurrencesSetHelper(values.iterator());
-    }
-
-    private boolean containsAllOccurrencesSetHelper(@Nonnull Iterator<? extends T> i)
-    {
-        while (i.hasNext()) {
-            final T value = i.next();
-            if (!this.contains(value)) {
-                return false;
-            }
-        }
-        return true;
     }
 
 
@@ -363,20 +339,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return deleteAllOccurrencesHelper(other);
     }
 
-    private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesHelper(@Nonnull JImmutableMultiset<T1> values)
-    {
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
-        for (e = e.start(); e.hasValue(); e = e.next()) {
-            final T1 value = e.getValue().getKey();
-            final int entryCount = e.getValue().getValue();
-            final int mapCount = this.count(value);
-            newMap = (mapCount > entryCount) ? newMap.assign(value, mapCount - entryCount) : newMap.delete(value);
-            newOccurrences = (mapCount > entryCount) ? newOccurrences - entryCount : newOccurrences - mapCount;
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
 
     @Override
     @Nonnull
@@ -415,27 +377,11 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
-    //neccessary, because otherwise goes to insertAll(Cursorable), which only adds one of each
-    //value instead of the correct number, because default cursor is like set's cursor
     @Override
     @Nonnull
     public JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values)
     {
         return insertAllHelper(values);
-    }
-
-    private <T1 extends T> JImmutableMultiset<T> insertAllHelper(@Nonnull JImmutableMultiset<T1> values)
-    {
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
-        for (e = e.start(); e.hasValue(); e = e.next()) {
-            final T1 value = e.getValue().getKey();
-            final int entryCount = e.getValue().getValue();
-            newMap = newMap.assign(value, entryCount + count(value));
-            newOccurrences += entryCount;
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
 
@@ -485,23 +431,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return unionMultisetHelper(other);
     }
 
-    @Nonnull
-    private <T1 extends T> JImmutableMultiset<T> unionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
-    {
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor();
-        for (e = e.start(); e.hasValue(); e = e.next()) {
-            final T1 value = e.getValue().getKey();
-            final int entryCount = e.getValue().getValue();
-            final int mapCount = getCount(newMap, value);
-            if (entryCount > mapCount) {
-                newOccurrences = newOccurrences - mapCount + entryCount;
-                newMap = newMap.assign(value, entryCount);
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
 
     @Override
     @Nonnull
@@ -515,21 +444,6 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> union(@Nonnull Set<? extends T> other)
     {
         return unionSetHelper(other.iterator());
-    }
-
-    @Nonnull
-    private JImmutableMultiset<T> unionSetHelper(@Nonnull Iterator<? extends T> i)
-    {
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        while (i.hasNext()) {
-            final T value = i.next();
-            if ((value != null) && (this.count(value) == 0)) {
-                newMap = newMap.assign(value, 1);
-                newOccurrences = newOccurrences + 1;
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
 
@@ -584,25 +498,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return intersectionMultisetHelper(other);
     }
 
-    @Nonnull
-    private <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
-    {
-        JImmutableMap<T, Integer> newMap = emptyMap();
-        int newOccurrences = 0;
-        Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor();
-        for (e = e.start(); e.hasValue(); e = e.next()) {
-            final T1 value = e.getValue().getKey();
-            final int mapCount = this.count(value);
-            if ((mapCount > 0) && mapCount != getCount(newMap, value)) {
-                final int entryCount = e.getValue().getValue();
-                newOccurrences -= getCount(newMap, value);
-                newOccurrences += (mapCount > entryCount) ? entryCount : mapCount;
-                newMap = (mapCount > entryCount) ? newMap.assign(value, entryCount) : newMap.assign(value, mapCount);
-
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
 
     @Override
     @Nonnull
@@ -618,24 +513,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return intersectionSetHelper(other.iterator());
     }
 
-    @Nonnull
-    private JImmutableMultiset<T> intersectionSetHelper(@Nonnull Iterator<? extends T> i)
-    {
-        JImmutableMap<T, Integer> newMap = emptyMap();
-        JImmutableMap<T, Integer> otherMap = emptyMap();
-        int newOccurrences = 0;
-        while (i.hasNext()) {
-            final T value = i.next();
-            otherMap = incrementCount(otherMap, value);
-            int currentCount = this.count(value);
-            if (currentCount > 0 && currentCount != getCount(newMap, value)) {
-                final int otherCount = getCount(otherMap, value);
-                newOccurrences += 1;
-                newMap = (otherCount < currentCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
 
     @Override
     public int count(@Nonnull T value)
@@ -664,7 +541,7 @@ public abstract class AbstractJImmutableMultiset<T>
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *
-     * @param map base map for new multiset
+     * @param map         base map for new multiset
      * @param occurrences total occurrences in map
      * @return new multiset built from map
      */
@@ -779,8 +656,6 @@ public abstract class AbstractJImmutableMultiset<T>
 
     protected abstract JImmutableMap<T, Integer> emptyMap();
 
-    //Removes subtractBy occurrences of value from map. Decrements or deletes value as appropriate.
-    //Calling method must decrease occurrences.
     private JImmutableMap<T, Integer> decreaseCount(T value,
                                                     int subtractBy)
     {
@@ -792,8 +667,6 @@ public abstract class AbstractJImmutableMultiset<T>
         }
     }
 
-    //Decrements the count of value by 1 in newMap. For use in deleteAll type methods.
-    //Calling method must decrease occurrences.
     private JImmutableMap<T, Integer> decrementCount(JImmutableMap<T, Integer> newMap,
                                                      T value)
     {
@@ -806,6 +679,127 @@ public abstract class AbstractJImmutableMultiset<T>
                              T value)
     {
         return checkMap.getValueOr(value, 0);
+    }
+
+    private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
+    {
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 entryValue = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            if (!this.contains(entryValue) || this.count(entryValue) < entryCount) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean containsAllOccurrencesSetHelper(@Nonnull Iterator<? extends T> i)
+    {
+        while (i.hasNext()) {
+            final T value = i.next();
+            if (!this.contains(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesHelper(@Nonnull JImmutableMultiset<T1> values)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            final int mapCount = this.count(value);
+            newMap = (mapCount > entryCount) ? newMap.assign(value, mapCount - entryCount) : newMap.delete(value);
+            newOccurrences = (mapCount > entryCount) ? newOccurrences - entryCount : newOccurrences - mapCount;
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    private <T1 extends T> JImmutableMultiset<T> insertAllHelper(@Nonnull JImmutableMultiset<T1> values)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            newMap = newMap.assign(value, entryCount + count(value));
+            newOccurrences += entryCount;
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    private <T1 extends T> JImmutableMultiset<T> unionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int entryCount = e.getValue().getValue();
+            final int mapCount = getCount(newMap, value);
+            if (entryCount > mapCount) {
+                newOccurrences = newOccurrences - mapCount + entryCount;
+                newMap = newMap.assign(value, entryCount);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    private JImmutableMultiset<T> unionSetHelper(@Nonnull Iterator<? extends T> i)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        while (i.hasNext()) {
+            final T value = i.next();
+            if ((value != null) && (this.count(value) == 0)) {
+                newMap = newMap.assign(value, 1);
+                newOccurrences = newOccurrences + 1;
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    private <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
+    {
+        JImmutableMap<T, Integer> newMap = emptyMap();
+        int newOccurrences = 0;
+        Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T1 value = e.getValue().getKey();
+            final int mapCount = this.count(value);
+            if ((mapCount > 0) && mapCount != getCount(newMap, value)) {
+                final int entryCount = e.getValue().getValue();
+                newOccurrences -= getCount(newMap, value);
+                newOccurrences += (mapCount > entryCount) ? entryCount : mapCount;
+                newMap = (mapCount > entryCount) ? newMap.assign(value, entryCount) : newMap.assign(value, mapCount);
+
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    private JImmutableMultiset<T> intersectionSetHelper(@Nonnull Iterator<? extends T> i)
+    {
+        JImmutableMap<T, Integer> newMap = emptyMap();
+        int newOccurrences = 0;
+        while (i.hasNext()) {
+            final T value = i.next();
+            if (this.count(value) > 0) {
+                newOccurrences += 1;
+                newMap = newMap.assign(value, 1);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
     private class OccurrenceCursorSource

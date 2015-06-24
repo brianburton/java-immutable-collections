@@ -588,27 +588,43 @@ public class StandardJImmutableMultisetTests
             expected.clear();
             JImmutableMultiset<Integer> jmet = emptyJMet;
             for (int loops = 0; loops < (4 * size); ++loops) {
-                int command = random.nextInt(5);
+                int command = random.nextInt(8);
                 Integer value = random.nextInt(size);
                 int count = random.nextInt(3) + 1;
                 switch (command) {
                 case 0:
+                    jmet = jmet.insert(value);
+                    expected.add(value);
+                    assertEquals(true, jmet.contains(value));
                 case 1:
-                    jmet = jmet.insert(value, count);
-                    expected.add(value, count);
-                    assertEquals(true, jmet.contains(value, count));
+                    assertEquals(expected.contains(value), jmet.contains(value));
+                    assertEquals(expected.count(value) >= count, jmet.contains(value, count));
                     break;
                 case 2:
-                    assertEquals(expected.contains(value), jmet.contains(value));
-                    break;
-                case 3:
                     jmet = jmet.deleteOccurrence(value, count);
                     expected.remove(value, count);
                     break;
-
+                case 3:
+                    jmet = jmet.delete(value);
+                    int expectedCount = expected.count(value);
+                    for (int n = 0; n < expectedCount; ++n) {
+                        expected.remove(value);
+                    }
+                    assertEquals(expected.contains(value), jmet.contains(value));
+                    break;
                 case 4:
+                    jmet = jmet.deleteOccurrence(value);
+                    expected.remove(value);
+                    assertEquals(expected.count(value), jmet.count(value));
+                    break;
+                case 5:
                     jmet = jmet.setCount(value, count);
                     expected.setCount(value, count);
+                    break;
+                default:
+                    jmet = jmet.insert(value, count);
+                    expected.add(value, count);
+                    assertEquals(true, jmet.contains(value, count));
                     break;
                 }
                 assertEquals(expected.size(), jmet.valueCount());
@@ -631,7 +647,7 @@ public class StandardJImmutableMultisetTests
     }
 
     public static void verifyContents(JImmutableMultiset<Integer> jmet,
-                                       Multiset<Integer> expected)
+                                      Multiset<Integer> expected)
     {
         assertEquals(expected.isEmpty(), jmet.isEmpty());
         assertEquals(expected.size(), jmet.valueCount());
@@ -669,7 +685,7 @@ public class StandardJImmutableMultisetTests
     }
 
     public static <T> void verifyCursor(final JImmutableMultiset<T> jmet,
-                                    final Multiset<T> expected)
+                                        final Multiset<T> expected)
     {
         final List<T> expectedSet = new LinkedList<T>();
         expectedSet.addAll(expected.elementSet());
