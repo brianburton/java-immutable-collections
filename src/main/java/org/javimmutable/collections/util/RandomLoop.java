@@ -309,6 +309,7 @@ public class RandomLoop
     {
         JImmutableSet<String> hset = JImmutables.set();
         JImmutableSet<String> tset = JImmutables.sortedSet();
+        JImmutableSet<String> mset = JImmutables.multiset();
         Set<String> expected = new HashSet<String>();
 
         int size = random.nextInt(100000);
@@ -325,6 +326,7 @@ public class RandomLoop
                     values = values.insert(value);
                     hset = hset.insert(value);
                     tset = tset.insert(value);
+                    mset = mset.insert(value);
                     expected.add(value);
                 } else {
                     col.clear();
@@ -337,10 +339,12 @@ public class RandomLoop
                     expected.addAll(col);
                     hset = hset.insertAll(col.iterator());
                     tset = tset.insertAll(col.iterator());
+                    mset = mset.insertAll(col.iterator());
                 }
             }
             verifyContents(expected, hset);
             verifyContents(expected, tset);
+            verifyContents(expected, mset);
             System.out.printf("shrinking %d%n", hset.size());
             for (int i = 0; i < size / 6; ++i) {
                 int keyIndex = random.nextInt(values.size());
@@ -348,6 +352,7 @@ public class RandomLoop
                 expected.remove(key);
                 hset = hset.delete(key);
                 tset = tset.delete(key);
+                mset = mset.delete(key);
                 values = values.delete(keyIndex);
             }
             verifyContents(expected, hset);
@@ -358,11 +363,13 @@ public class RandomLoop
             String value = values.get(0);
             hset = hset.delete(value);
             tset = tset.delete(value);
+            mset = mset.delete(value);
             expected.remove(value);
             values = values.delete(0);
         }
         verifyContents(expected, hset);
         verifyContents(expected, tset);
+        verifyContents(expected, mset);
         System.out.println("PersistentSet test completed without errors");
     }
 
