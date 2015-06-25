@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -136,14 +137,16 @@ public class RandomLoop
     {
         JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         ArrayList<Integer> expected = new ArrayList<Integer>();
+
         int size = random.nextInt(100000);
         System.out.printf("Testing PersistentList of size %d%n", size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", list.size());
+            ArrayList<Integer> col = new ArrayList<Integer>();
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
-                switch (random.nextInt(3)) {
+                switch (random.nextInt(5)) {
                 case 0:
                     list = list.insert(value);
                     expected.add(value);
@@ -155,6 +158,24 @@ public class RandomLoop
                 case 2:
                     list = list.insertFirst(value);
                     expected.add(0, value);
+                    break;
+                case 3:
+                    col.clear();
+                    int times = random.nextInt(3);
+                    for (int n = 0; n < times; n++) {
+                        col.add(random.nextInt(value));
+                    }
+                    expected.addAll(col);
+                    list = list.insertAllLast(col.iterator());
+                    break;
+                case 4:
+                    col.clear();
+                    times = random.nextInt(3);
+                    for (int n = 0; n < times; n++) {
+                        col.add(random.nextInt(value));
+                    }
+                    expected.addAll(0, col);
+                    list = list.insertAllFirst(col.iterator());
                     break;
                 default:
                     throw new RuntimeException();
@@ -193,13 +214,14 @@ public class RandomLoop
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", list.size());
+            ArrayList<Integer> col = new ArrayList<Integer>();
             for (int i = 0; i < size / 3; ++i) {
                 int value = random.nextInt(999999999);
                 if (list.isEmpty()) {
                     list = list.insert(value);
                     expected.add(value);
                 } else {
-                    switch (random.nextInt(8)) {
+                    switch (random.nextInt(10)) {
                     case 0:
                         list = list.insert(value);
                         expected.add(value);
@@ -212,8 +234,36 @@ public class RandomLoop
                         list = list.insertFirst(value);
                         expected.add(0, value);
                         break;
-                    default:
+                    case 3:
+                        col.clear();
+                        int times = random.nextInt(3);
+                        for (int n = 0; n < times; n++) {
+                            col.add(random.nextInt(value));
+                        }
+                        expected.addAll(col);
+                        list = list.insertAllLast(col.iterator());
+                        break;
+                    case 4:
+                        col.clear();
+                        times = random.nextInt(3);
+                        for (int n = 0; n < times; n++) {
+                            col.add(random.nextInt(value));
+                        }
+                        expected.addAll(0, col);
+                        list = list.insertAllFirst(col.iterator());
+                        break;
+                    case 5:
+                        col.clear();
                         int index = random.nextInt(list.size());
+                        times = random.nextInt(3);
+                        for (int n = 0; n < times; n++) {
+                            col.add(random.nextInt(value));
+                        }
+                        expected.addAll(index, col);
+                        list = list.insertAll(index, col.iterator());
+                        break;
+                    default:
+                        index = random.nextInt(list.size());
                         list = list.insert(index, value);
                         expected.add(index, value);
                         break;
@@ -260,6 +310,7 @@ public class RandomLoop
         JImmutableSet<String> hset = JImmutables.set();
         JImmutableSet<String> tset = JImmutables.sortedSet();
         Set<String> expected = new HashSet<String>();
+
         int size = random.nextInt(100000);
         JImmutableRandomAccessList<String> values = JImmutables.ralist();
 
@@ -267,12 +318,26 @@ public class RandomLoop
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", hset.size());
+            Set<String> col = new HashSet<String>();
             for (int i = 0; i < size / 3; ++i) {
-                String value = makeKey(tokens, random);
-                values = values.insert(value);
-                hset = hset.insert(value);
-                tset = tset.insert(value);
-                expected.add(value);
+                if (random.nextBoolean()) {
+                    String value = makeKey(tokens, random);
+                    values = values.insert(value);
+                    hset = hset.insert(value);
+                    tset = tset.insert(value);
+                    expected.add(value);
+                } else {
+                    col.clear();
+                    int times = random.nextInt(3);
+                    for (int n = 0; n < times; n++) {
+                        String value = makeKey(tokens, random);
+                        values = values.insert(value);
+                        col.add(value);
+                    }
+                    expected.addAll(col);
+                    hset = hset.insertAll(col.iterator());
+                    tset = tset.insertAll(col.iterator());
+                }
             }
             verifyContents(expected, hset);
             verifyContents(expected, tset);
@@ -314,11 +379,24 @@ public class RandomLoop
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < tokenCount / 3; ++i) {
-                String key = makeKey(tokens, random);
-                keys.add(key);
-                pkeys = pkeys.insert(key);
-                expected.put(key, key);
-                map = map.assign(key, key);
+                if (random.nextBoolean()) {
+                    String key = makeKey(tokens, random);
+                    keys.add(key);
+                    pkeys = pkeys.insert(key);
+                    expected.put(key, key);
+                    map = map.assign(key, key);
+                } else {
+                    int times = random.nextInt(3);
+                    JImmutableMap<String, String> col = JImmutableTreeMap.of();
+                    for (int n = 0; n < times; n++) {
+                        String key = makeKey(tokens, random);
+                        keys.add(key);
+                        pkeys = pkeys.insert(key);
+                        col.assign(key, key);
+                    }
+                    expected.putAll(col.getMap());
+                    map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
+                }
             }
             verifyContents(expected, map);
             System.out.printf("updating %d%n", map.size());

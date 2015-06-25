@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,43 @@ public abstract class AbstractJImmutableSet<T>
     {
         JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(values.cursor());
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values)
+    {
+        return insertAll(values.iterator());
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values)
+    {
+        JImmutableSet<T> answer = this;
+        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
+            answer = answer.insert(c.getValue());
+        }
+        return answer;
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values)
+    {
+
+        JImmutableSet<T> answer = this;
+        while (values.hasNext()) {
+            answer = answer.insert(values.next());
+        }
+        return answer;
     }
 
     @Override

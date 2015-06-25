@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,9 @@ package org.javimmutable.collections.hash;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EmptyHashMapTest
         extends TestCase
 {
@@ -61,5 +64,59 @@ public class EmptyHashMapTest
         } catch (NullPointerException ignored) {
             // pass
         }
+    }
+
+    public void testAssignAll()
+    {
+        JImmutableMap<String, Number> map = JImmutableHashMap.of();
+        JImmutableMap<String, Integer> expected = JImmutableHashMap.of();
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(0, map.size());
+        assertFalse(map instanceof JImmutableHashMap);
+
+        expected = expected.assign("a", 10);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertTrue(map instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+
+        map = JImmutableHashMap.of();
+        expected = expected.assign("b", 12).assign("c", 14);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertTrue(map instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+
+
+        try {
+            map = JImmutableHashMap.of();
+            //noinspection ConstantConditions
+            map.assignAll((JImmutableMap<String, Integer>)null);
+            fail();
+        } catch (NullPointerException ignored) {
+            // pass
+        }
+
+        map = JImmutableHashMap.of();
+        Map<String, Integer> expected2 = new HashMap<String, Integer>();
+        map = map.assignAll(expected2);
+        assertEquals(expected2, map.getMap());
+        assertEquals(0, map.size());
+        assertFalse(map instanceof JImmutableHashMap);
+
+        expected2.put("a", 10);
+        map = map.assignAll(expected2);
+        assertEquals(expected2, map.getMap());
+        assertTrue(map instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+
+        map = JImmutableHashMap.of();
+        expected2.put("b", 12);
+        expected2.put("c", 14);
+        map = map.assignAll(expected2);
+        assertEquals(expected2, map.getMap());
+        assertTrue(map instanceof JImmutableHashMap);
+        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
     }
 }

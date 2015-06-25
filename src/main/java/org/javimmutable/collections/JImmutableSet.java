@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,42 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     JImmutableSet<T> insert(@Nonnull T value);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Determines if the Set contains the specified value.

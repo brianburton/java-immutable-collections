@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -125,6 +127,118 @@ public interface JImmutableList<T>
      */
     @Nonnull
     JImmutableList<T> insertLast(@Nullable T value);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
+
+    /**
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Synonym for insertAll()
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Synonym for insertAll()
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllLast(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Synonym for insertAll()
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Synonym for insertAll()
+     *
+     * @param values
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
