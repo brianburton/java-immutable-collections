@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2015, Burton Computer Corporation
+// Copyright (c) 2014, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,57 +33,49 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.inorder;
+package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.JImmutableMultiset;
+import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
-/**
- * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
- * elements are returned in the same order they were inserted into the set.  Performance is
- * slower than hash or tree sets but should be sufficient for most algorithms where insert
- * order matters.
- *
- * @param <T>
- */
-@Immutable
-public class JImmutableInsertOrderSet<T>
-        extends AbstractJImmutableSet<T>
+public class JImmutableHashMultiset<T>
+        extends AbstractJImmutableMultiset<T>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderSet EMPTY = new JImmutableInsertOrderSet(JImmutableInsertOrderMap.of());
+    private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
 
-    private JImmutableInsertOrderSet(JImmutableMap<T, Boolean> map)
+    private JImmutableHashMultiset(JImmutableMap<T, Integer> map,
+                                   int occurrences)
     {
-        super(map);
+        super(map, occurrences);
+    }
+
+    @Override
+    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
+                                           int occurrences)
+    {
+        return new JImmutableHashMultiset<T>(map, occurrences);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> JImmutableInsertOrderSet<T> of()
+    public static <T> JImmutableHashMultiset<T> of()
     {
-        return (JImmutableInsertOrderSet<T>)EMPTY;
+        return (JImmutableHashMultiset<T>)EMPTY;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll()
+    public JImmutableMultiset<T> deleteAll()
     {
         return of();
     }
 
     @Override
-    protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
+    protected JImmutableMap<T, Integer> emptyMap()
     {
-        return new JImmutableInsertOrderSet<T>(map);
-    }
-
-    @Override
-    protected JImmutableMap<T, Boolean> emptyMap()
-    {
-        return JImmutableInsertOrderMap.of();
+        return JImmutableHashMap.of();
     }
 }

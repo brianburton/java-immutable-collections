@@ -295,7 +295,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull JImmutableSet<T> other);
+    JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.

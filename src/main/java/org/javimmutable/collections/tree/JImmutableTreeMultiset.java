@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2015, Burton Computer Corporation
+// Copyright (c) 2014, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,57 +33,69 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.inorder;
+package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.JImmutableMultiset;
+import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import java.util.Comparator;
 
-/**
- * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
- * elements are returned in the same order they were inserted into the set.  Performance is
- * slower than hash or tree sets but should be sufficient for most algorithms where insert
- * order matters.
- *
- * @param <T>
- */
-@Immutable
-public class JImmutableInsertOrderSet<T>
-        extends AbstractJImmutableSet<T>
+public class JImmutableTreeMultiset<T>
+        extends AbstractJImmutableMultiset<T>
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderSet EMPTY = new JImmutableInsertOrderSet(JImmutableInsertOrderMap.of());
+    private static final JImmutableTreeMultiset EMPTY = new JImmutableTreeMultiset(new ComparableComparator());
 
-    private JImmutableInsertOrderSet(JImmutableMap<T, Boolean> map)
+    private final Comparator<T> comparator;
+
+    private JImmutableTreeMultiset(Comparator<T> comparator)
     {
-        super(map);
+        this(JImmutableTreeMap.<T, Integer>of(comparator), 0, comparator);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> JImmutableInsertOrderSet<T> of()
+    private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,
+                                   int occurrences,
+                                   Comparator<T> comparator)
     {
-        return (JImmutableInsertOrderSet<T>)EMPTY;
+        super(map, occurrences);
+        this.comparator = comparator;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll()
+    public JImmutableTreeMultiset<T> deleteAll()
     {
-        return of();
+        return of(comparator);
+    }
+
+    public Comparator<T> getComparator()
+    {
+        return comparator;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Comparable<T>> JImmutableTreeMultiset<T> of()
+    {
+        return (JImmutableTreeMultiset<T>)EMPTY;
+    }
+
+    public static <T> JImmutableTreeMultiset<T> of(Comparator<T> comparator)
+    {
+        return new JImmutableTreeMultiset<T>(comparator);
     }
 
     @Override
-    protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
+    protected JImmutableTreeMultiset<T> create(JImmutableMap<T, Integer> map,
+                                               int occurrences)
     {
-        return new JImmutableInsertOrderSet<T>(map);
+        return new JImmutableTreeMultiset<T>(map, occurrences, comparator);
     }
 
     @Override
-    protected JImmutableMap<T, Boolean> emptyMap()
+    protected JImmutableMap<T, Integer> emptyMap()
     {
-        return JImmutableInsertOrderMap.of();
+        return JImmutableTreeMap.of(comparator);
     }
 }
