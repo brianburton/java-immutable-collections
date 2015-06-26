@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.util;
+package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -64,13 +65,13 @@ import java.util.StringTokenizer;
  * Test program to run an infinite loop feeding data to a PersistentMap, querying the
  * data, and deleting the data to verify the map always contains what it should.
  */
-public class RandomLoop
+public class StressTestLoop
 {
     private static class MapFactory
     {
         private int count;
 
-        private JImmutableMap<String, String> createMap()
+        public JImmutableMap<String, String> createMap()
         {
             count += 1;
             if (count % 2 == 0) {
@@ -106,7 +107,7 @@ public class RandomLoop
     public static void main(String[] argv)
             throws Exception
     {
-        new RandomLoop().execute(argv);
+        new StressTestLoop().execute(argv);
     }
 
     private void testStack(Random random)
