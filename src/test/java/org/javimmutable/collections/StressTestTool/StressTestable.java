@@ -35,7 +35,11 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import org.javimmutable.collections.JImmutableList;
+
+import java.util.Random;
+
 public interface StressTestable
 {
-    //void execute(Factory factory);
+    void execute(Random random, JImmutableList<String> tokens);
 }

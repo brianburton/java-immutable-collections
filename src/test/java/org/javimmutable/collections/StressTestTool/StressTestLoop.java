@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
@@ -85,7 +86,14 @@ public class StressTestLoop
     public void execute(String[] filenames)
             throws Exception
     {
-        MapFactory factory = new MapFactory();
+        JImmutableList<StressTestable> testers = JImmutables.<StressTestable>list()
+                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
+                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
+                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()));
+
+
         long seed = System.currentTimeMillis();
         System.out.printf("Starting with initial seed %d%n", seed);
         Random random = new Random(seed);
@@ -93,14 +101,9 @@ public class StressTestLoop
         System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
-            testStack(random);
-            testList(random);
-            testRandomAccessList(random);
-            testSets(tokens, random);
-            testMaps(factory, tokens, random);
-            testBadHashMap(tokens, random);
-            testComparableBadHashMap(tokens, random);
-            testArray(tokens, random);
+            for (StressTestable tester : testers) {
+                tester.execute(random, tokens);
+            }
         }
     }
 
@@ -132,177 +135,6 @@ public class StressTestLoop
             throw new RuntimeException("expected to be at end of stack but found more values");
         }
         System.out.println("PersistentStack test completed without errors");
-    }
-
-    private void testList(Random random)
-    {
-        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
-        ArrayList<Integer> expected = new ArrayList<Integer>();
-
-        int size = random.nextInt(100000);
-        System.out.printf("Testing PersistentList of size %d%n", size);
-
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", list.size());
-            ArrayList<Integer> col = new ArrayList<Integer>();
-            for (int i = 0; i < size / 3; ++i) {
-                int value = random.nextInt(999999999);
-                switch (random.nextInt(5)) {
-                case 0:
-                    list = list.insert(value);
-                    expected.add(value);
-                    break;
-                case 1:
-                    list = list.insertLast(value);
-                    expected.add(value);
-                    break;
-                case 2:
-                    list = list.insertFirst(value);
-                    expected.add(0, value);
-                    break;
-                case 3:
-                    col.clear();
-                    int times = random.nextInt(3);
-                    for (int n = 0; n < times; n++) {
-                        col.add(random.nextInt(value));
-                    }
-                    expected.addAll(col);
-                    list = list.insertAllLast(col.iterator());
-                    break;
-                case 4:
-                    col.clear();
-                    times = random.nextInt(3);
-                    for (int n = 0; n < times; n++) {
-                        col.add(random.nextInt(value));
-                    }
-                    expected.addAll(0, col);
-                    list = list.insertAllFirst(col.iterator());
-                    break;
-                default:
-                    throw new RuntimeException();
-                }
-            }
-            list.checkInvariants();
-            verifyContents(expected, list);
-            System.out.printf("shrinking %d%n", list.size());
-            for (int i = 0; i < size / 6; ++i) {
-                if (random.nextInt(2) == 0) {
-                    list = list.deleteLast();
-                    expected.remove(expected.size() - 1);
-                } else {
-                    list = list.deleteFirst();
-                    expected.remove(0);
-                }
-            }
-            verifyContents(expected, list);
-            list.checkInvariants();
-        }
-        System.out.printf("cleanup %d%n", expected.size());
-        while (list.size() > 0) {
-            list = list.deleteLast();
-            expected.remove(expected.size() - 1);
-        }
-        verifyContents(expected, list);
-        System.out.println("PersistentList test completed without errors");
-    }
-
-    private void testRandomAccessList(Random random)
-    {
-        JImmutableRandomAccessList<Integer> list = JImmutables.ralist();
-        ArrayList<Integer> expected = new ArrayList<Integer>();
-        int size = random.nextInt(10000);
-        System.out.printf("Testing PersistentRandomAccessList of size %d%n", size);
-
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", list.size());
-            ArrayList<Integer> col = new ArrayList<Integer>();
-            for (int i = 0; i < size / 3; ++i) {
-                int value = random.nextInt(999999999);
-                if (list.isEmpty()) {
-                    list = list.insert(value);
-                    expected.add(value);
-                } else {
-                    switch (random.nextInt(10)) {
-                    case 0:
-                        list = list.insert(value);
-                        expected.add(value);
-                        break;
-                    case 1:
-                        list = list.insertLast(value);
-                        expected.add(value);
-                        break;
-                    case 2:
-                        list = list.insertFirst(value);
-                        expected.add(0, value);
-                        break;
-                    case 3:
-                        col.clear();
-                        int times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(col);
-                        list = list.insertAllLast(col.iterator());
-                        break;
-                    case 4:
-                        col.clear();
-                        times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(0, col);
-                        list = list.insertAllFirst(col.iterator());
-                        break;
-                    case 5:
-                        col.clear();
-                        int index = random.nextInt(list.size());
-                        times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(index, col);
-                        list = list.insertAll(index, col.iterator());
-                        break;
-                    default:
-                        index = random.nextInt(list.size());
-                        list = list.insert(index, value);
-                        expected.add(index, value);
-                        break;
-                    }
-                }
-            }
-            verifyContents(expected, list);
-            System.out.printf("shrinking %d%n", list.size());
-            for (int i = 0; i < size / 6; ++i) {
-                if (list.size() == 1) {
-                    list = list.deleteLast();
-                    expected.remove(expected.size() - 1);
-                } else {
-                    switch (random.nextInt(8)) {
-                    case 0:
-                        list = list.deleteLast();
-                        expected.remove(expected.size() - 1);
-                        break;
-                    case 1:
-                        list = list.deleteFirst();
-                        expected.remove(0);
-                        break;
-                    default:
-                        int index = random.nextInt(list.size());
-                        list = list.delete(index);
-                        expected.remove(index);
-                    }
-                }
-            }
-            verifyContents(expected, list);
-        }
-        System.out.printf("cleanup %d%n", expected.size());
-        while (list.size() > 0) {
-            list = list.delete(0);
-            expected.remove(0);
-        }
-        verifyContents(expected, list);
-        System.out.println("PersistentRandomAccessList test completed without errors");
     }
 
     private void testSets(JImmutableList<String> tokens,
@@ -643,31 +475,6 @@ public class StressTestLoop
         }
         verifyContents(expected, map);
         System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
-    }
-
-    private void verifyContents(List<Integer> expected,
-                                JImmutableList<Integer> list)
-    {
-        System.out.printf("checking contents with size %d%n", list.size());
-        if (list.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), list.size()));
-        }
-        int index = 0;
-        for (Integer expectedValue : expected) {
-            Integer listValue = list.get(index);
-            if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
-            }
-            index += 1;
-        }
-        index = 0;
-        for (Integer listValue : list) {
-            Integer expectedValue = expected.get(index);
-            if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
-            }
-            index += 1;
-        }
     }
 
     private void verifyContents(Set<String> expected,
