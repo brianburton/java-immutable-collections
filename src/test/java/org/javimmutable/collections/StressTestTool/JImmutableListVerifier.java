@@ -1,0 +1,46 @@
+package org.javimmutable.collections.StressTestTool;
+
+
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.cursors.StandardCursorTest;
+
+import java.util.List;
+
+public abstract class JImmutableListVerifier
+{
+    protected void verifyContents(List<Integer> expected,
+                                  JImmutableList<Integer> list)
+    {
+        System.out.printf("checking contents with size %d%n", list.size());
+        if (list.isEmpty() != expected.isEmpty()) {
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b", expected.isEmpty(), list.isEmpty()));
+        }
+        if (list.size() != expected.size()) {
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), list.size()));
+        }
+
+        int index = 0;
+        for (Integer expectedValue : expected) {
+            Integer listValue = list.get(index);
+            if (!expectedValue.equals(listValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+            }
+            index += 1;
+        }
+        index = 0;
+        for (Integer listValue : list) {
+            Integer expectedValue = expected.get(index);
+            if (!expectedValue.equals(listValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+            }
+            index += 1;
+        }
+        if(!expected.equals(list.getList())) {
+            throw new RuntimeException("getList() call failed");
+        }
+        StandardCursorTest.listCursorTest(expected, list.cursor());
+        StandardCursorTest.listIteratorTest(expected, list.iterator());
+        list.checkInvariants();
+
+    }
+}

@@ -50,8 +50,7 @@ import java.util.Set;
  */
 @Immutable
 public interface JImmutableMultiset<T>
-        extends JImmutableSet<T>,
-                InvariantCheckable
+        extends JImmutableSet<T>
 {
 
     /**

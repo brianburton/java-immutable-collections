@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Random;
 
 public class JImmutableRandomAccessListStressTester
+    extends JImmutableListVerifier
     implements StressTestable
 {
     private final JImmutableRandomAccessList<String> ralist;
@@ -150,31 +151,5 @@ public class JImmutableRandomAccessListStressTester
         }
         verifyContents(expected, list);
         System.out.println("PersistentRandomAccessList test completed without errors");
-    }
-    
-
-    private void verifyContents(List<Integer> expected,
-                                JImmutableList<Integer> list)
-    {
-        System.out.printf("checking contents with size %d%n", list.size());
-        if (list.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), list.size()));
-        }
-        int index = 0;
-        for (Integer expectedValue : expected) {
-            Integer listValue = list.get(index);
-            if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
-            }
-            index += 1;
-        }
-        index = 0;
-        for (Integer listValue : list) {
-            Integer expectedValue = expected.get(index);
-            if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
-            }
-            index += 1;
-        }
     }
 }
