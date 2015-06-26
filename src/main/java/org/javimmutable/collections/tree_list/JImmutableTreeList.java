@@ -413,6 +413,13 @@ public class JImmutableTreeList<T>
         }
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        verifyDepthsMatch();
+        //TODO: add more than verifyDepthsMatch to checkInvariants?
+    }
+
     private JImmutableTreeList<T> create(TreeNode<T> root)
     {
         return new JImmutableTreeList<T>(root, root.getSize());

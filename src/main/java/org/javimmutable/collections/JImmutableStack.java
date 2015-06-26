@@ -50,7 +50,8 @@ public interface JImmutableStack<T>
         extends Insertable<T>,
                 Sequence<T>,
                 Cursorable<T>,
-                Iterable<T>
+                Iterable<T>,
+                InvariantCheckable
 {
     boolean isEmpty();
 

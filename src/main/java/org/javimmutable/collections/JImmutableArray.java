@@ -55,7 +55,8 @@ public interface JImmutableArray<T>
         extends Indexed<T>,
                 Insertable<JImmutableMap.Entry<Integer, T>>,
                 Iterable<JImmutableMap.Entry<Integer, T>>,
-                Cursorable<JImmutableMap.Entry<Integer, T>>
+                Cursorable<JImmutableMap.Entry<Integer, T>>,
+                InvariantCheckable
 {
     /**
      * Return the value associated with index or null if no value is associated.

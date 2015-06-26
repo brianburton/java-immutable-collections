@@ -401,6 +401,15 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return contents.toString();
     }
 
+    protected void checkSetMapInvariants()
+    {
+        contents.checkInvariants();
+        for(JImmutableMap.Entry<K, JImmutableSet<V>> entry : contents) {
+            entry.getValue().checkInvariants();
+        }
+        //TODO: review checkSetMapInvariants()
+    }
+
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *

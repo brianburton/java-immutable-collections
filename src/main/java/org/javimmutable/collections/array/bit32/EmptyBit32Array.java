@@ -101,4 +101,10 @@ public class EmptyBit32Array<T>
     {
         return StandardCursor.of();
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
 }

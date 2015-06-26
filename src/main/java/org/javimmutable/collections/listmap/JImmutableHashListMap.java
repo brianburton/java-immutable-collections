@@ -67,6 +67,13 @@ public class JImmutableHashListMap<K, V>
     }
 
     @Override
+    public void checkInvariants()
+    {
+        checkListMapInvariants();
+        //TODO: fix generalized checkInvariants()
+    }
+
+    @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
         return new JImmutableHashListMap<K, V>(map);

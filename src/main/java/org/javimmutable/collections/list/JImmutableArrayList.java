@@ -305,6 +305,7 @@ public class JImmutableArrayList<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Override
     public void checkInvariants()
     {
         root.checkInvariants();

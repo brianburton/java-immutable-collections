@@ -127,6 +127,12 @@ public class FullBit32Array<T>
         return StandardCursor.of(new CursorSource(0));
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
+
     private class CursorSource
             implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
     {

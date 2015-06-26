@@ -206,6 +206,13 @@ public class JImmutableTreeMap<K, V>
         root.verifyDepthsMatch();
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        verifyDepthsMatch();
+        //TODO: add more than verifyDepthsMatch?
+    }
+
     public Comparator<K> getComparator()
     {
         return comparator;

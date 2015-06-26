@@ -430,6 +430,12 @@ public abstract class AbstractJImmutableSet<T>
         return Cursors.makeString(cursor());
     }
 
+    protected void checkSetInvariants()
+    {
+        map.checkInvariants();
+        //TODO: review checkSetInvariants()
+    }
+
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *

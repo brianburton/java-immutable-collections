@@ -173,6 +173,12 @@ public abstract class JImmutableLinkedStack<T>
         {
             return StandardCursor.of();
         }
+
+        @Override
+        public void checkInvariants()
+        {
+            //TODO: fix empty checkInvariants()
+        }
     }
 
     private static class Single<V>
@@ -213,6 +219,12 @@ public abstract class JImmutableLinkedStack<T>
         public Cursor<V> cursor()
         {
             return SingleValueCursor.of(value);
+        }
+
+        @Override
+        public void checkInvariants()
+        {
+            //TODO: fix empty checkInvariants()
         }
     }
 
@@ -258,6 +270,12 @@ public abstract class JImmutableLinkedStack<T>
         public Cursor<V> cursor()
         {
             return SequenceCursor.of(this);
+        }
+
+        @Override
+        public void checkInvariants()
+        {
+            //TODO: fix empty checkInvariants()
         }
     }
 }

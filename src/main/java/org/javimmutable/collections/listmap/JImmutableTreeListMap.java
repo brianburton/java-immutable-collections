@@ -89,6 +89,13 @@ public class JImmutableTreeListMap<K, V>
     }
 
     @Override
+    public void checkInvariants()
+    {
+        checkListMapInvariants();
+        //TODO: fix generalized checkInvariants()
+    }
+
+    @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
         return new JImmutableTreeListMap<K, V>(map);

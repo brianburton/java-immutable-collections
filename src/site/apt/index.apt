@@ -118,7 +118,7 @@ Comparative Performance
 
 Collections
 
-	javimmutable-collections contains a variety of fully immutable collections designed to suit different needs in an application. This page describes the various collections (as of version 1.5) and their general performance characteristics. For each collection the summary lists the JImmutables factory method used to create an instance, the general algorithmic complexity of the collection, and a description of the collection's uses and characteristics.
+	Javimmutable-collections contains a variety of fully immutable collections designed to suit different needs in an application. This page describes the various collections (as of version 1.5) and their general performance characteristics. For each collection the summary lists the JImmutables factory method used to create an instance, the general algorithmic complexity of the collection, and a description of the collection's uses and characteristics.
 
 	The complexity is expressed in big-oh notation which means "on the order of" or "within some constant multiple of" the value in parentheses. logX(n) means log to the base X of the number of elements in the collection. To give an idea of scale log32(100000) is 3.3 while log2(100000) is 16.6. "Within some constant factor" means that there will be fixed costs associated with the implementation so one algorithm with a given big-oh complexity might be 2-3 times faster than another with the same complexity.
 

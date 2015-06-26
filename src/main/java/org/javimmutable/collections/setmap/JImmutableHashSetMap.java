@@ -68,6 +68,13 @@ public class JImmutableHashSetMap<K, V>
     }
 
     @Override
+    public void checkInvariants()
+    {
+        checkSetMapInvariants();
+        //TODO: fix generalized checkInvariants()
+    }
+
+    @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
         return new JImmutableHashSetMap<K, V>(map);

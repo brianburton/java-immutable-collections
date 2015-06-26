@@ -53,7 +53,8 @@ public interface JImmutableSetMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, JImmutableSet<V>>,
                 Iterable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
-                Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>
+                Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
+                InvariantCheckable
 {
     /**
      * Return the set associated with key, or an empty set if no list is associated.

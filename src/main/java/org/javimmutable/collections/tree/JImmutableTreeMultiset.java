@@ -98,4 +98,11 @@ public class JImmutableTreeMultiset<T>
     {
         return JImmutableTreeMap.of(comparator);
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        checkMultisetInvariants();
+        //TODO: fix generalized checkInvariants()
+    }
 }

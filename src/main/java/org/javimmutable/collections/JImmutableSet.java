@@ -52,7 +52,8 @@ import java.util.Set;
 public interface JImmutableSet<T>
         extends Insertable<T>,
                 Cursorable<T>,
-                Iterable<T>
+                Iterable<T>,
+                InvariantCheckable
 {
     /**
      * Adds the single value to the Set.

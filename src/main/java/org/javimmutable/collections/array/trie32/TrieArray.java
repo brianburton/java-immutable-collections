@@ -203,6 +203,12 @@ public class TrieArray<T>
         return root.signedOrderEntryCursor();
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
+
     public static class Builder<T>
             implements MutableBuilder<T, TrieArray<T>>
     {

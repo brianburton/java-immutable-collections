@@ -175,6 +175,12 @@ public class JImmutableInsertOrderMap<K, V>
         });
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
+
     /**
      * An Entry implementation that also stores the sortedKeys index corresponding to this node's key.
      *

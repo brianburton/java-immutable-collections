@@ -33,50 +33,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.setmap;
-
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-
-import javax.annotation.concurrent.Immutable;
+package org.javimmutable.collections;
 
 /**
- * JImmutableSetMap implementation that allows keys to be traversed in the same order as they
- * were inserted into the collection
- *
- * @param <K>
- * @param <V>
+ * Implemented by all classes for testing purposes. Base class checks its
+ * invariants and throws an exception if any of the checks fail.
  */
-@Immutable
-public class JImmutableInsertOrderSetMap<K, V>
-        extends AbstractJImmutableSetMap<K, V>
+public interface InvariantCheckable
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderSetMap EMPTY = new JImmutableInsertOrderSetMap(JImmutableInsertOrderMap.of());
-
-    private JImmutableInsertOrderSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
-    {
-        super(contents);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableInsertOrderSetMap<K, V> of()
-    {
-        return (JImmutableInsertOrderSetMap<K, V>)EMPTY;
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        checkSetMapInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
-    {
-        return new JImmutableInsertOrderSetMap<K, V>(map);
-    }
+    /**
+     * Checks invariants of implementing class.
+     */
+    void checkInvariants();
 }

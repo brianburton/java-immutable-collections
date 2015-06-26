@@ -232,6 +232,12 @@ public class JImmutableHashMap<T, K, V>
         return root.anyOrderEntryCursor(transforms);
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
+
     // for unit test to verify proper transforms selected
     Transforms getTransforms()
     {

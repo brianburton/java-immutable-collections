@@ -74,6 +74,13 @@ public class JImmutableHashMultiset<T>
     }
 
     @Override
+    public void checkInvariants()
+    {
+        checkMultisetInvariants();
+        //TODO: fix generalized checkInvariants()
+    }
+
+    @Override
     protected JImmutableMap<T, Integer> emptyMap()
     {
         return JImmutableHashMap.of();

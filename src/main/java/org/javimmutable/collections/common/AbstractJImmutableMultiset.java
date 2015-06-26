@@ -656,6 +656,15 @@ public abstract class AbstractJImmutableMultiset<T>
 
     protected abstract JImmutableMap<T, Integer> emptyMap();
 
+    protected void checkMultisetInvariants()
+    {
+        map.checkInvariants();
+        if(occurrences < map.size()) {
+            throw new IllegalStateException();
+        }
+        //TODO: review checkMultisetInvariants()
+    }
+
     private JImmutableMap<T, Integer> decreaseCount(T value,
                                                     int subtractBy)
     {

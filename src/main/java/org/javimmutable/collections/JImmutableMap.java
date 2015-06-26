@@ -52,7 +52,8 @@ public interface JImmutableMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, V>,
                 Iterable<JImmutableMap.Entry<K, V>>,
-                Cursorable<JImmutableMap.Entry<K, V>>
+                Cursorable<JImmutableMap.Entry<K, V>>,
+                InvariantCheckable
 {
     /**
      * An immutable entry in the map.  Contains the key and value for that entry.

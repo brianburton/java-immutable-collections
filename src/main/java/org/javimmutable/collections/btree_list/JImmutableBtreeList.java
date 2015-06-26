@@ -404,6 +404,7 @@ public class JImmutableBtreeList<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Override
     public void checkInvariants()
     {
         root.checkInvariants();
