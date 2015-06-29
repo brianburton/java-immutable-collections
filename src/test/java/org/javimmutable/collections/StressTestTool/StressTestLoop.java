@@ -51,15 +51,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Test program to run an infinite loop feeding data to a PersistentMap, querying the
@@ -90,7 +82,16 @@ public class StressTestLoop
                 .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
                 .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()));
+                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
+
+                .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
+                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
+                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedSet(), TreeSet.class))
+                .insert(new JImmutableSetStressTester(JImmutables.<String>multiset(), HashSet.class))
+                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
+                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
+
+                ;
 
 
         long seed = System.currentTimeMillis();
@@ -134,75 +135,6 @@ public class StressTestLoop
             throw new RuntimeException("expected to be at end of stack but found more values");
         }
         System.out.println("PersistentStack test completed without errors");
-    }
-
-    private void testSets(JImmutableList<String> tokens,
-                          Random random)
-    {
-        JImmutableSet<String> hset = JImmutables.set();
-        JImmutableSet<String> tset = JImmutables.sortedSet();
-        JImmutableSet<String> mset = JImmutables.multiset();
-        Set<String> expected = new HashSet<String>();
-
-        int size = random.nextInt(100000);
-        JImmutableRandomAccessList<String> values = JImmutables.ralist();
-
-        System.out.printf("Testing PersistentSet of size %d%n", size);
-
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", hset.size());
-            Set<String> col = new HashSet<String>();
-            for (int i = 0; i < size / 3; ++i) {
-                if (random.nextBoolean()) {
-                    String value = makeKey(tokens, random);
-                    values = values.insert(value);
-                    hset = hset.insert(value);
-                    tset = tset.insert(value);
-                    mset = mset.insert(value);
-                    expected.add(value);
-                } else {
-                    col.clear();
-                    int times = random.nextInt(3);
-                    for (int n = 0; n < times; n++) {
-                        String value = makeKey(tokens, random);
-                        values = values.insert(value);
-                        col.add(value);
-                    }
-                    expected.addAll(col);
-                    hset = hset.insertAll(col.iterator());
-                    tset = tset.insertAll(col.iterator());
-                    mset = mset.insertAll(col.iterator());
-                }
-            }
-            verifyContents(expected, hset);
-            verifyContents(expected, tset);
-            verifyContents(expected, mset);
-            System.out.printf("shrinking %d%n", hset.size());
-            for (int i = 0; i < size / 6; ++i) {
-                int keyIndex = random.nextInt(values.size());
-                String key = values.get(keyIndex);
-                expected.remove(key);
-                hset = hset.delete(key);
-                tset = tset.delete(key);
-                mset = mset.delete(key);
-                values = values.delete(keyIndex);
-            }
-            verifyContents(expected, hset);
-            verifyContents(expected, tset);
-        }
-        System.out.printf("cleanup %d%n", expected.size());
-        while (values.size() > 0) {
-            String value = values.get(0);
-            hset = hset.delete(value);
-            tset = tset.delete(value);
-            mset = mset.delete(value);
-            expected.remove(value);
-            values = values.delete(0);
-        }
-        verifyContents(expected, hset);
-        verifyContents(expected, tset);
-        verifyContents(expected, mset);
-        System.out.println("PersistentSet test completed without errors");
     }
 
     private void testMaps(MapFactory factory,
@@ -474,25 +406,6 @@ public class StressTestLoop
         }
         verifyContents(expected, map);
         System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
-    }
-
-    private void verifyContents(Set<String> expected,
-                                JImmutableSet<String> set)
-    {
-        System.out.printf("checking contents with size %d%n", set.size());
-        if (set.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), set.size()));
-        }
-        for (String expectedValue : expected) {
-            if (!set.contains(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s but not in %s%n", expectedValue, set.getClass().getSimpleName()));
-            }
-        }
-        for (String expectedValue : set) {
-            if (!expected.contains(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s but not in Set%n", expectedValue));
-            }
-        }
     }
 
     private <K, V> void verifyContents(Map<K, V> expected,

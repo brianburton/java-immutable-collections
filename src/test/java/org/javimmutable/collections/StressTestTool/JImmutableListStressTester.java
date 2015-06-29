@@ -94,11 +94,8 @@ public class JImmutableListStressTester
                     }
                 }
             }
-            list.checkInvariants();
             verifyContents(expected, list);
             System.out.printf("shrinking %d%n", list.size());
-            System.out.println("expected size " + size / 3);
-            System.out.println("take away " + size / 6);
             for (int i = 0; i < size / 6; ++i) {
                 if (random.nextBoolean()) {
                     list = list.deleteLast();
@@ -109,7 +106,6 @@ public class JImmutableListStressTester
                 }
             }
             verifyContents(expected, list);
-            list.checkInvariants();
         }
         System.out.printf("cleanup %d%n", expected.size());
         while (list.size() > random.nextInt(3)) {
