@@ -1,7 +1,6 @@
 package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.IterableCursorable;
 
 import java.util.ArrayList;
@@ -13,21 +12,17 @@ public class JImmutableListStressTester
         implements StressTestable
 {
     private JImmutableList<String> list;
-    private final Class<? extends List> expectedClass;
 
-    public JImmutableListStressTester(JImmutableList<String> list,
-                                      Class<? extends List> klass)
+    public JImmutableListStressTester(JImmutableList<String> list)
     {
         this.list = list;
-        this.expectedClass = klass;
     }
 
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException
     {
-        @SuppressWarnings("unchecked") List<String> expected = expectedClass.newInstance();
+        List<String> expected = new ArrayList<String>();
         int size = random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", list.getClass().getSimpleName(), size);
 
@@ -63,7 +58,7 @@ public class JImmutableListStressTester
                     }
                 } else {
                     List<String> values = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(4); ++n) {
+                    for (int n = 0; n < random.nextInt(3); ++n) {
                         values.add(makeValue(tokens, random));
                     }
                     switch (random.nextInt(7)) {
