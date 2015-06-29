@@ -53,103 +53,106 @@ public class JImmutableRandomAccessListStressTester
     {
         this.ralist = ralist;
     }
+
     @Override
-    public void execute(Random random, JImmutableList<String> tokens)
+    public void execute(Random random,
+                        JImmutableList<String> tokens)
     {
         JImmutableRandomAccessList<Integer> list = JImmutables.ralist();
         ArrayList<Integer> expected = new ArrayList<Integer>();
         int size = random.nextInt(10000);
         System.out.printf("Testing PersistentRandomAccessList of size %d%n", size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", list.size());
-            ArrayList<Integer> col = new ArrayList<Integer>();
-            for (int i = 0; i < size / 3; ++i) {
-                int value = random.nextInt(999999999);
-                if (list.isEmpty()) {
-                    list = list.insert(value);
-                    expected.add(value);
-                } else {
-                    switch (random.nextInt(10)) {
-                    case 0:
-                        list = list.insert(value);
-                        expected.add(value);
-                        break;
-                    case 1:
-                        list = list.insertLast(value);
-                        expected.add(value);
-                        break;
-                    case 2:
-                        list = list.insertFirst(value);
-                        expected.add(0, value);
-                        break;
-                    case 3:
-                        col.clear();
-                        int times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(col);
-                        list = list.insertAllLast(col.iterator());
-                        break;
-                    case 4:
-                        col.clear();
-                        times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(0, col);
-                        list = list.insertAllFirst(col.iterator());
-                        break;
-                    case 5:
-                        col.clear();
-                        int index = random.nextInt(list.size());
-                        times = random.nextInt(3);
-                        for (int n = 0; n < times; n++) {
-                            col.add(random.nextInt(value));
-                        }
-                        expected.addAll(index, col);
-                        list = list.insertAll(index, col.iterator());
-                        break;
-                    default:
-                        index = random.nextInt(list.size());
-                        list = list.insert(index, value);
-                        expected.add(index, value);
-                        break;
-                    }
-                }
-            }
-            verifyContents(expected, list);
-            System.out.printf("shrinking %d%n", list.size());
-            for (int i = 0; i < size / 6; ++i) {
-                if (list.size() == 1) {
-                    list = list.deleteLast();
-                    expected.remove(expected.size() - 1);
-                } else {
-                    switch (random.nextInt(8)) {
-                    case 0:
-                        list = list.deleteLast();
-                        expected.remove(expected.size() - 1);
-                        break;
-                    case 1:
-                        list = list.deleteFirst();
-                        expected.remove(0);
-                        break;
-                    default:
-                        int index = random.nextInt(list.size());
-                        list = list.delete(index);
-                        expected.remove(index);
-                    }
-                }
-            }
-            verifyContents(expected, list);
-        }
-        System.out.printf("cleanup %d%n", expected.size());
-        while (list.size() > 0) {
-            list = list.delete(0);
-            expected.remove(0);
-        }
-        verifyContents(expected, list);
-        System.out.println("PersistentRandomAccessList test completed without errors");
+//        for (int loops = 1; loops <= 6; ++loops) {
+//            System.out.printf("growing %d%n", list.size());
+//            ArrayList<Integer> col = new ArrayList<Integer>();
+//            for (int i = 0; i < size / 3; ++i) {
+//                int value = random.nextInt(999999999);
+//                if (list.isEmpty()) {
+//                    list = list.insert(value);
+//                    expected.add(value);
+//                } else {
+//                    switch (random.nextInt(10)) {
+//                    case 0:
+//                        list = list.insert(value);
+//                        expected.add(value);
+//                        break;
+//                    case 1:
+//                        list = list.insertLast(value);
+//                        expected.add(value);
+//                        break;
+//                    case 2:
+//                        list = list.insertFirst(value);
+//                        expected.add(0, value);
+//                        break;
+//                    case 3:
+//                        col.clear();
+//                        int times = random.nextInt(3);
+//                        for (int n = 0; n < times; n++) {
+//                            col.add(random.nextInt(value));
+//                        }
+//                        expected.addAll(col);
+//                        list = list.insertAllLast(col.iterator());
+//                        break;
+//                    case 4:
+//                        col.clear();
+//                        times = random.nextInt(3);
+//                        for (int n = 0; n < times; n++) {
+//                            col.add(random.nextInt(value));
+//                        }
+//                        expected.addAll(0, col);
+//                        list = list.insertAllFirst(col.iterator());
+//                        break;
+//                    case 5:
+//                        col.clear();
+//                        int index = random.nextInt(list.size());
+//                        times = random.nextInt(3);
+//                        for (int n = 0; n < times; n++) {
+//                            col.add(random.nextInt(value));
+//                        }
+//                        expected.addAll(index, col);
+//                        list = list.insertAll(index, col.iterator());
+//                        break;
+//                    default:
+//                        index = random.nextInt(list.size());
+//                        list = list.insert(index, value);
+//                        expected.add(index, value);
+//                        break;
+//                    }
+//                }
+//            }
+//            verifyContents(expected, list);
+//            System.out.printf("shrinking %d%n", list.size());
+//            for (int i = 0; i < size / 6; ++i) {
+//                if (list.size() == 1) {
+//                    list = list.deleteLast();
+//                    expected.remove(expected.size() - 1);
+//                } else {
+//                    switch (random.nextInt(8)) {
+//                    case 0:
+//                        list = list.deleteLast();
+//                        expected.remove(expected.size() - 1);
+//                        break;
+//                    case 1:
+//                        list = list.deleteFirst();
+//                        expected.remove(0);
+//                        break;
+//                    default:
+//                        int index = random.nextInt(list.size());
+//                        list = list.delete(index);
+//                        expected.remove(index);
+//                    }
+//                }
+//            }
+//            verifyContents(expected, list);
+//        }
+//        System.out.printf("cleanup %d%n", expected.size());
+//        while (list.size() > 0) {
+//            list = list.delete(0);
+//            expected.remove(0);
+//        }
+//        verifyContents(expected, list);
+//        System.out.println("PersistentRandomAccessList test completed without errors");
+//    }
     }
 }

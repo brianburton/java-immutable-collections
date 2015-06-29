@@ -87,11 +87,11 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<StressTestable> testers = JImmutables.<StressTestable>list()
-                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
-                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()));
+                .insert(new JImmutableListStressTester(JImmutables.<String>list(), ArrayList.class));
+//                .insert(new JImmutableListStressTester(JImmutables.<String>ralist(), LinkedList.class))
+//                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of(), LinkedList.class))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()));
 
 
         long seed = System.currentTimeMillis();

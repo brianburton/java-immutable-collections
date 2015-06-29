@@ -41,5 +41,6 @@ import java.util.Random;
 
 public interface StressTestable
 {
-    void execute(Random random, JImmutableList<String> tokens);
+    void execute(Random random, JImmutableList<String> tokens)
+            throws IllegalAccessException, InstantiationException;
 }

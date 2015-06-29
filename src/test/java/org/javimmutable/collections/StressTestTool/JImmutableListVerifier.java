@@ -8,8 +8,8 @@ import java.util.List;
 
 public abstract class JImmutableListVerifier
 {
-    protected void verifyContents(List<Integer> expected,
-                                  JImmutableList<Integer> list)
+    protected void verifyContents(List<String> expected,
+                                  JImmutableList<String> list)
     {
         System.out.printf("checking contents with size %d%n", list.size());
         if (list.isEmpty() != expected.isEmpty()) {
@@ -20,18 +20,18 @@ public abstract class JImmutableListVerifier
         }
 
         int index = 0;
-        for (Integer expectedValue : expected) {
-            Integer listValue = list.get(index);
+        for (String expectedValue : expected) {
+            String listValue = list.get(index);
             if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, listValue));
             }
             index += 1;
         }
         index = 0;
-        for (Integer listValue : list) {
-            Integer expectedValue = expected.get(index);
+        for (String listValue : list) {
+            String expectedValue = expected.get(index);
             if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %d found %d%n", expectedValue, listValue));
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, listValue));
             }
             index += 1;
         }

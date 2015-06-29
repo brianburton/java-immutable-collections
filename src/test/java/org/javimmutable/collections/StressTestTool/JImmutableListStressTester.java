@@ -1,77 +1,112 @@
 package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.cursors.IterableCursor;
+import org.javimmutable.collections.cursors.IterableCursorable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class JImmutableListStressTester
-    extends JImmutableListVerifier
-    implements StressTestable
+        extends JImmutableListVerifier
+        implements StressTestable
 {
-    private final JImmutableList<String> list;
+    private JImmutableList<String> list;
+    private final Class<? extends List> expectedClass;
 
-    public JImmutableListStressTester(JImmutableList<String> list)
+    public JImmutableListStressTester(JImmutableList<String> list,
+                                      Class<? extends List> klass)
     {
         this.list = list;
+        this.expectedClass = klass;
     }
 
     @Override
-    public void execute(Random random, JImmutableList<String> tokens)
+    public void execute(Random random,
+                        JImmutableList<String> tokens)
+            throws IllegalAccessException, InstantiationException
     {
-        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
-        ArrayList<Integer> expected = new ArrayList<Integer>();
-
+        @SuppressWarnings("unchecked") List<String> expected = expectedClass.newInstance();
         int size = random.nextInt(100000);
-        System.out.printf("Testing PersistentList of size %d%n", size);
+        System.out.printf("JImmutableListStressTest on %s of size %d%n", list.getClass().getSimpleName(), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", list.size());
-            ArrayList<Integer> col = new ArrayList<Integer>();
             for (int i = 0; i < size / 3; ++i) {
-                int value = random.nextInt(999999999);
-                switch (random.nextInt(5)) {
-                case 0:
-                    list = list.insert(value);
-                    expected.add(value);
-                    break;
-                case 1:
-                    list = list.insertLast(value);
-                    expected.add(value);
-                    break;
-                case 2:
-                    list = list.insertFirst(value);
-                    expected.add(0, value);
-                    break;
-                case 3:
-                    col.clear();
-                    int times = random.nextInt(3);
-                    for (int n = 0; n < times; n++) {
-                        col.add(random.nextInt(value));
+                if (random.nextBoolean()) {
+                    String value = makeValue(tokens, random);
+                    switch (random.nextInt(3) + 1) {
+                    case 0:
+                        if (list.isEmpty()) {
+                            break;
+                        } else {
+                            int index = random.nextInt(list.size());
+                            list = list.assign(index, value);
+                            expected.set(index, value);
+                            break;
+                        }
+                    case 1:
+                        list = list.insert(value);
+                        expected.add(value);
+                        break;
+                    case 2:
+                        list = list.insertFirst(value);
+                        expected.add(0, value);
+                        break;
+                    case 3:
+                        list = list.insertLast(value);
+                        expected.add(value);
+                        break;
+                    default:
+                        throw new RuntimeException();
                     }
-                    expected.addAll(col);
-                    list = list.insertAllLast(col.iterator());
-                    break;
-                case 4:
-                    col.clear();
-                    times = random.nextInt(3);
-                    for (int n = 0; n < times; n++) {
-                        col.add(random.nextInt(value));
+                } else {
+                    List<String> values = new ArrayList<String>();
+                    for (int n = 0; n < random.nextInt(4); ++n) {
+                        values.add(makeValue(tokens, random));
                     }
-                    expected.addAll(0, col);
-                    list = list.insertAllFirst(col.iterator());
-                    break;
-                default:
-                    throw new RuntimeException();
+                    switch (random.nextInt(7)) {
+                    case 0:
+                        list = list.insert(values);
+                        expected.addAll(values);
+                        break;
+                    case 1:
+                        list = list.insertAll(IterableCursorable.of(values));
+                        expected.addAll(values);
+                        break;
+                    case 2:
+                        list = list.insertAll(values);
+                        expected.addAll(values);
+                        break;
+                    case 3:
+                        list = list.insertAllLast(IterableCursorable.of(values));
+                        expected.addAll(values);
+                        break;
+                    case 4:
+                        list = list.insertAllLast(values);
+                        expected.addAll(values);
+                        break;
+                    case 5:
+                        list = list.insertAllFirst(IterableCursorable.of(values));
+                        expected.addAll(0, values);
+                        break;
+                    case 6:
+                        list = list.insertAllFirst(values);
+                        expected.addAll(0, values);
+                        break;
+                    default:
+                        throw new RuntimeException();
+                    }
                 }
             }
             list.checkInvariants();
             verifyContents(expected, list);
             System.out.printf("shrinking %d%n", list.size());
+            System.out.println("expected size " + size / 3);
+            System.out.println("take away " + size / 6);
             for (int i = 0; i < size / 6; ++i) {
-                if (random.nextInt(2) == 0) {
+                if (random.nextBoolean()) {
                     list = list.deleteLast();
                     expected.remove(expected.size() - 1);
                 } else {
@@ -83,13 +118,31 @@ public class JImmutableListStressTester
             list.checkInvariants();
         }
         System.out.printf("cleanup %d%n", expected.size());
-        while (list.size() > 0) {
-            list = list.deleteLast();
-            expected.remove(expected.size() - 1);
+        while (list.size() > random.nextInt(3)) {
+            if (random.nextBoolean()) {
+                list = list.deleteLast();
+                expected.remove(expected.size() - 1);
+            } else {
+                list = list.deleteFirst();
+                expected.remove(0);
+            }
         }
         verifyContents(expected, list);
-        System.out.println("PersistentList test completed without errors");
+        list = list.deleteAll();
+        expected.clear();
+        verifyContents(expected, list);
+        System.out.printf("JImmutableListStressTest on %s completed without errors%n", list.getClass().getSimpleName());
     }
 
 
+    private String makeValue(JImmutableList<String> tokens,
+                             Random random)
+    {
+        int length = 1 + random.nextInt(250);
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length) {
+            sb.append(tokens.get(random.nextInt(tokens.size())));
+        }
+        return sb.toString();
+    }
 }
