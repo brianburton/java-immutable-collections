@@ -44,8 +44,7 @@ import java.util.List;
 import java.util.Random;
 
 public class JImmutableRandomAccessListStressTester
-        extends JImmutableListVerifier
-        implements StressTestable
+        extends AbstractListStressTestable
 {
     private JImmutableRandomAccessList<String> ralist;
 
@@ -103,17 +102,5 @@ public class JImmutableRandomAccessListStressTester
         verifyContents(expected, ralist);
         System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", ralist.getClass().getSimpleName());
     }
-
-    private String makeValue(JImmutableList<String> tokens,
-                             Random random)
-    {
-        int length = 1 + random.nextInt(250);
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length) {
-            sb.append(tokens.get(random.nextInt(tokens.size())));
-        }
-        return sb.toString();
-    }
-
 }
 

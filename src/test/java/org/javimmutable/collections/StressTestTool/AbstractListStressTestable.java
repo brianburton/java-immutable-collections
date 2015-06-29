@@ -6,7 +6,8 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.List;
 
-public abstract class JImmutableListVerifier
+public abstract class AbstractListStressTestable
+    extends AbstractStressTestable
 {
     protected void verifyContents(List<String> expected,
                                   JImmutableList<String> list)
@@ -41,6 +42,5 @@ public abstract class JImmutableListVerifier
         StandardCursorTest.listCursorTest(expected, list.cursor());
         StandardCursorTest.listIteratorTest(expected, list.iterator());
         list.checkInvariants();
-
     }
 }

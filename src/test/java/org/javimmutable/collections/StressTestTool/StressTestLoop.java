@@ -42,7 +42,6 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
-import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
@@ -86,7 +85,7 @@ public class StressTestLoop
     public void execute(String[] filenames)
             throws Exception
     {
-        JImmutableList<StressTestable> testers = JImmutables.<StressTestable>list()
+        JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
                 .insert(new JImmutableListStressTester(JImmutables.<String>list()))
                 .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
@@ -101,7 +100,7 @@ public class StressTestLoop
         System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
-            for (StressTestable tester : testers) {
+            for (AbstractStressTestable tester : testers) {
                 tester.execute(random, tokens);
             }
         }

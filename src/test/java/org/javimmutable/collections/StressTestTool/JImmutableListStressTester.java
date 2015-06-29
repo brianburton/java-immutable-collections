@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 public class JImmutableListStressTester
-        extends JImmutableListVerifier
-        implements StressTestable
+        extends AbstractListStressTestable
 {
     private JImmutableList<String> list;
 
@@ -127,17 +126,5 @@ public class JImmutableListStressTester
         expected.clear();
         verifyContents(expected, list);
         System.out.printf("JImmutableListStressTest on %s completed without errors%n", list.getClass().getSimpleName());
-    }
-
-
-    private String makeValue(JImmutableList<String> tokens,
-                             Random random)
-    {
-        int length = 1 + random.nextInt(250);
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length) {
-            sb.append(tokens.get(random.nextInt(tokens.size())));
-        }
-        return sb.toString();
     }
 }

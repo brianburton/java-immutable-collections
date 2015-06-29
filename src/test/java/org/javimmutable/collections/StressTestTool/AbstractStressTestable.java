@@ -39,8 +39,21 @@ import org.javimmutable.collections.JImmutableList;
 
 import java.util.Random;
 
-public interface StressTestable
+public abstract class AbstractStressTestable
 {
-    void execute(Random random, JImmutableList<String> tokens)
+    abstract void execute(Random random,
+                          JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException;
+
+
+    protected String makeValue(JImmutableList<String> tokens,
+                               Random random)
+    {
+        int length = 1 + random.nextInt(250);
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length) {
+            sb.append(tokens.get(random.nextInt(tokens.size())));
+        }
+        return sb.toString();
+    }
 }
