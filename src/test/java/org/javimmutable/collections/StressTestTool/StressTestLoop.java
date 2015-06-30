@@ -78,23 +78,23 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
-                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
 
                 .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedSet(), TreeSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>multiset(), HashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
+                //.insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedSet(), TreeSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>multiset(), HashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
                 ;
 
 
-        long seed = System.currentTimeMillis();
+        Long seed = new Long("1435679717367"); //System.currentTimeMillis();
         System.out.printf("Starting with initial seed %d%n", seed);
         Random random = new Random(seed);
         JImmutableList<String> tokens = loadTokens(filenames);
