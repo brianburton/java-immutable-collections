@@ -79,8 +79,10 @@ public class StressTestLoop
 
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
-                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class));
+
+                ;
 
 
         Random random = new Random();

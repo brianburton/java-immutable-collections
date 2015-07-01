@@ -43,6 +43,7 @@ import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -131,46 +132,53 @@ public class JImmutableSetStressTester
                     values.add(setList.get(index));
                 }
                 verifyValues(values);
-                switch (random.nextInt(3)) {
-                //TODO: add intersection() tests back in
-                case 0:
-                    int index = random.nextInt(setList.size());
-                    set = set.delete(setList.get(index));
-                    expected.remove(setList.get(index));
-                    setList = setList.delete(index);
-                    break;
-                case 1:
-                    set = set.deleteAll(IterableCursorable.of(values));
-                    expected.removeAll(values);
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                case 2:
-                    set = set.deleteAll(values);
-                    expected.removeAll(values);
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                case 3:
-                    expected.removeAll(values);
-                    set = set.intersection(IterableCursorable.of(expected));
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                case 4:
-                    expected.removeAll(values);
-                    set = set.intersection(expected.iterator());
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                case 5:
-                    expected.removeAll(values);
-                    set = set.intersection(expected);
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                case 6:
-                    expected.removeAll(values);
-                    set = set.intersection(asJSet(expected));
-                    setList = deleteAllAt(valueIndex, setList);
-                    break;
-                default:
-                    throw new RuntimeException();
+                if (random.nextInt(500) < 499) {
+                    //TODO: speed up intersection?
+                    switch (random.nextInt(3)) {
+                    case 0:
+                        int index = random.nextInt(setList.size());
+                        set = set.delete(setList.get(index));
+                        expected.remove(setList.get(index));
+                        setList = setList.delete(index);
+                        break;
+                    case 1:
+                        set = set.deleteAll(IterableCursorable.of(values));
+                        expected.removeAll(values);
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    case 2:
+                        set = set.deleteAll(values);
+                        expected.removeAll(values);
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    default:
+                        throw new RuntimeException();
+                    }
+                } else {
+                    switch (random.nextInt(4)) {
+                    case 0:
+                        expected.removeAll(values);
+                        set = set.intersection(IterableCursorable.of(expected));
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    case 1:
+                        expected.removeAll(values);
+                        set = set.intersection(expected.iterator());
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    case 2:
+                        expected.removeAll(values);
+                        set = set.intersection(expected);
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    case 3:
+                        expected.removeAll(values);
+                        set = set.intersection(asJSet(expected));
+                        setList = deleteAllAt(valueIndex, setList);
+                        break;
+                    default:
+                        throw new RuntimeException();
+                    }
                 }
             }
             verifyContents(set, expected);
@@ -267,7 +275,7 @@ public class JImmutableSetStressTester
 
     private JImmutableSet<String> asJSet(Set<String> set)
     {
-        JImmutableSet<String> jet = JImmutableHashSet.of();
+        JImmutableSet<String> jet = JImmutableInsertOrderSet.of();
         jet = jet.insertAll(set);
         if (!set.equals(jet.getSet())) {
             throw new RuntimeException();
@@ -276,8 +284,8 @@ public class JImmutableSetStressTester
     }
 
     private JImmutableRandomAccessList<String> insertUnique(String value,
-                                                     JImmutableRandomAccessList<String> setList,
-                                                     Set<String> expected)
+                                                            JImmutableRandomAccessList<String> setList,
+                                                            Set<String> expected)
     {
         if (!expected.contains(value)) {
             setList = setList.insert(value);
@@ -286,8 +294,8 @@ public class JImmutableSetStressTester
     }
 
     private JImmutableRandomAccessList<String> insertAllUnique(List<String> values,
-                                                        JImmutableRandomAccessList<String> setList,
-                                                        Set<String> expected)
+                                                               JImmutableRandomAccessList<String> setList,
+                                                               Set<String> expected)
     {
         for (String value : values) {
             if (!expected.contains(value)) {
@@ -298,7 +306,7 @@ public class JImmutableSetStressTester
     }
 
     private JImmutableRandomAccessList<String> deleteAllAt(Set<Integer> index,
-                                                    JImmutableRandomAccessList<String> setList)
+                                                           JImmutableRandomAccessList<String> setList)
     {
         List<Integer> listIndex = new LinkedList<Integer>(index);
         for (int i = listIndex.size() - 1; i >= 0; --i) {
