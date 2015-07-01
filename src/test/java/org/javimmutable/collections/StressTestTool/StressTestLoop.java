@@ -83,14 +83,15 @@ public class StressTestLoop
                 .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class));
 
 
-        Long seed = System.currentTimeMillis();
-        System.out.printf("Starting with initial seed %d%n", seed);
-        Random random = new Random(seed);
+        Random random = new Random();
         JImmutableList<String> tokens = loadTokens(filenames);
         System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
+                Long seed = System.currentTimeMillis();
+                random.setSeed(seed);
+                System.out.printf("Starting with seed %d%n", seed);
                 tester.execute(random, tokens);
             }
         }

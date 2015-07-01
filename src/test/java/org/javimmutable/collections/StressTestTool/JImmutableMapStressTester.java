@@ -43,17 +43,13 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
-import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class JImmutableMapStressTester
         extends AbstractStressTestable
@@ -74,9 +70,8 @@ public class JImmutableMapStressTester
     {
         @SuppressWarnings("unchecked") Map<String, String> expected = expectedClass.newInstance();
 
-
         final int size = random.nextInt(100000);
-        JImmutableRandomAccessList<String> keys = JImmutableBtreeList.<String>of();
+        JImmutableRandomAccessList<String> keys = JImmutableBtreeList.of();
 
         System.out.printf("JImmutableMapStressTest on %s of size %d%n", map.getClass().getSimpleName(), size);
 
@@ -86,21 +81,23 @@ public class JImmutableMapStressTester
                 switch (random.nextInt(4)) {
                 case 0:
                     String key = makeValue(tokens, random);
-                    keys = keys.insert(key);
-                    map = map.assign(key, key);
+                    if (!expected.containsKey(key)) {
+                        keys = keys.insert(key);
+                    }                    map = map.assign(key, key);
                     expected.put(key, key);
                     verifyKeysList(keys);
                     break;
                 case 1:
                     key = makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, key);
-                    keys = keys.insert(key);
-                    map = (JImmutableMap<String, String>)map.insert(entry);
+                    if (!expected.containsKey(key)) {
+                        keys = keys.insert(key);
+                    }                    map = (JImmutableMap<String, String>)map.insert(entry);
                     expected.put(key, key);
                     verifyKeysList(keys);
                     break;
                 case 2:
-                    JImmutableMap<String, String> jmapValues = JImmutableHashMap.<String, String>of();
+                    JImmutableMap<String, String> jmapValues = JImmutableHashMap.of();
                     for (int n = 0; n < random.nextInt(3); ++n) {
                         key = makeValue(tokens, random);
                         jmapValues = jmapValues.assign(key, key);
@@ -146,7 +143,7 @@ public class JImmutableMapStressTester
                     expected.put(key, value);
                     break;
                 case 2:
-                    JImmutableMap<String, String> jmapValues = JImmutableHashMap.<String, String>of();
+                    JImmutableMap<String, String> jmapValues = JImmutableHashMap.of();
                     for (int n = 0; n < random.nextInt(3); ++n) {
                         key = keys.get(random.nextInt(keys.size()));
                         value = keys.get(random.nextInt(keys.size()));
@@ -222,7 +219,7 @@ public class JImmutableMapStressTester
                 throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
             }
             JImmutableMap.Entry<String, String> foundEntry = map.findEntry(key).getValueOrNull();
-            if (foundEntry != entry) {
+            if (!foundEntry.equals(entry)) {
                 throw new RuntimeException(String.format("entry mismatch for key %s - cursor: %s, map.findEntry(key): %s", key, entry, foundEntry));
             }
         }
@@ -244,20 +241,52 @@ public class JImmutableMapStressTester
         if (!expected.equals(map.getMap())) {
             throw new RuntimeException("method call failed - getMap()");
         }
-        StandardCursorTest.listCursorTest(asList(expected.keySet()), map.keysCursor());
-        StandardCursorTest.listCursorTest(asList(expected.values()), map.valuesCursor());
+        if(map instanceof JImmutableHashMap) {
+            //JImmutableHashMap entries are in a different order than HashMap entries. This verifies the cursors and iterator,
+            //not the contents. Therefore, new lists are built for the HashMap that will be in the order used by JImmutableHashMap.
+            final List<String> keys = new ArrayList<String>();
+            final List<String> values = new ArrayList<String>();
+            final List<JImmutableMap.Entry<String, String>> entries = new ArrayList<JImmutableMap.Entry<String, String>>();
+            //list for cursor tests built from iterator
+            for(JImmutableMap.Entry<String, String> entry : map) {
+                keys.add(entry.getKey());
+                values.add(entry.getValue());
+            }
+            //list for iterator tests built from cursor
+            for(Cursor<String> c = map.keysCursor().start(); c.hasValue(); c = c.next()) {
+                String key = c.getValue();
+                String value = map.get(key);
+                entries.add(new MapEntry<String, String>(key, value));
+            }
+            if (keys.size() != map.size()) {
+                throw new RuntimeException("keys list generated incorrectly");
+            }
+            if (values.size() != map.size()) {
+                throw new RuntimeException("values list generated incorrectly");
+            }
+            if (entries.size() != map.size()) {
+                throw new RuntimeException("entries list generated incorrectly");
+            }
+            StandardCursorTest.listCursorTest(keys, map.keysCursor());
+            StandardCursorTest.listCursorTest(values, map.valuesCursor());
+            StandardCursorTest.listCursorTest(entries, map.cursor());
+            StandardCursorTest.listIteratorTest(entries, map.iterator());
 
-        final List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
-        for (Map.Entry<String, String> expectedEntry : expected.entrySet()) {
-            expectedEntries.add(new MapEntry<String, String>(expectedEntry.getKey(), expectedEntry.getValue()));
+        }else {
+            //JImmutableInsertOrderMap and JImmutableTreeMap are sorted in the same way as LinkedHashMap and TreeMap. Therefore,
+            // expected can be used to generate the lists to test their cursors and iterator.
+            final List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
+            for (Map.Entry<String, String> expectedEntry : expected.entrySet()) {
+                expectedEntries.add(new MapEntry<String, String>(expectedEntry.getKey(), expectedEntry.getValue()));
+            }
+            if (expectedEntries.size() != map.size()) {
+                throw new RuntimeException("expectedEntries list generated incorrectly");
+            }
+            StandardCursorTest.listCursorTest(asList(expected.keySet()), map.keysCursor());
+            StandardCursorTest.listCursorTest(asList(expected.values()), map.valuesCursor());
+            StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
+            StandardCursorTest.listIteratorTest(expectedEntries, map.iterator());
         }
-        if (expectedEntries.size() != map.size()) {
-            throw new RuntimeException("expectedEntries list generated incorrectly");
-        }
-
-        StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
-        StandardCursorTest.listIteratorTest(expectedEntries, map.iterator());
-
         map.checkInvariants();
     }
 
@@ -272,6 +301,6 @@ public class JImmutableMapStressTester
     {
         int keysListSize = keysList.size();
         if (!((keysListSize <= (map.size() + 5)) && (keysListSize >= (map.size())))) {
-            throw new RuntimeException(String.format("set size mismatch - set: %d, setList: %d", map.size(), keysListSize));
+            throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", map.size(), keysListSize));
         }    }
 }
