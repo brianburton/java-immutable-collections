@@ -120,6 +120,9 @@ public class JImmutableListStressTester
         verifyContents(expected, list);
         list = list.deleteAll();
         expected.clear();
+        if (list.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", list.size()));
+        }
         verifyContents(expected, list);
         System.out.printf("JImmutableListStressTest on %s completed without errors%n", list.getClass().getSimpleName());
     }

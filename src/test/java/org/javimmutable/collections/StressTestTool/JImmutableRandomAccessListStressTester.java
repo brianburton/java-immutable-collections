@@ -99,6 +99,9 @@ public class JImmutableRandomAccessListStressTester
             ralist = ralist.delete(index);
             expected.remove(index);
         }
+        if (ralist.size() != 0) {
+            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", ralist.size()));
+        }
         verifyContents(expected, ralist);
         System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", ralist.getClass().getSimpleName());
     }

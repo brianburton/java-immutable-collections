@@ -42,7 +42,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -59,21 +59,6 @@ import java.util.*;
  */
 public class StressTestLoop
 {
-    private static class MapFactory
-    {
-        private int count;
-
-        public JImmutableMap<String, String> createMap()
-        {
-            count += 1;
-            if (count % 2 == 0) {
-                return JImmutables.map();
-            } else {
-                return JImmutables.sortedMap();
-            }
-        }
-    }
-
     public void execute(String[] filenames)
             throws Exception
     {
@@ -81,6 +66,7 @@ public class StressTestLoop
                 .insert(new JImmutableListStressTester(JImmutables.<String>list()))
                 .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+
                 .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
 
@@ -91,7 +77,10 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
-                ;
+                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
+                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class));
 
 
         Long seed = System.currentTimeMillis();
@@ -135,83 +124,6 @@ public class StressTestLoop
             throw new RuntimeException("expected to be at end of stack but found more values");
         }
         System.out.println("PersistentStack test completed without errors");
-    }
-
-    private void testMaps(MapFactory factory,
-                          JImmutableList<String> tokens,
-                          Random random)
-    {
-        final int tokenCount = 1 + random.nextInt(100000);
-        final List<String> keys = new ArrayList<String>();
-        final Map<String, String> expected = new HashMap<String, String>();
-        JImmutableMap<String, String> map = factory.createMap();
-        JImmutableRandomAccessList<String> pkeys = JImmutables.ralist();
-        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", map.size());
-            for (int i = 0; i < tokenCount / 3; ++i) {
-                if (random.nextBoolean()) {
-                    String key = makeKey(tokens, random);
-                    keys.add(key);
-                    pkeys = pkeys.insert(key);
-                    expected.put(key, key);
-                    map = map.assign(key, key);
-                } else {
-                    int times = random.nextInt(3);
-                    JImmutableMap<String, String> col = JImmutableTreeMap.of();
-                    for (int n = 0; n < times; n++) {
-                        String key = makeKey(tokens, random);
-                        keys.add(key);
-                        pkeys = pkeys.insert(key);
-                        col.assign(key, key);
-                    }
-                    expected.putAll(col.getMap());
-                    map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
-                }
-            }
-            verifyContents(expected, map);
-            System.out.printf("updating %d%n", map.size());
-            for (int i = 0; i < map.size(); ++i) {
-                int keyIndex = random.nextInt(keys.size());
-                String key = pkeys.get(keyIndex);
-                int valueIndex = random.nextInt(keys.size());
-                String value = pkeys.get(valueIndex);
-                expected.put(key, value);
-                map = map.assign(key, value);
-            }
-            verifyContents(expected, map);
-            System.out.printf("shrinking %d%n", map.size());
-            for (int i = 0; i < tokenCount / 6; ++i) {
-                int keyIndex = random.nextInt(keys.size());
-                String key = pkeys.get(keyIndex);
-                expected.remove(key);
-                map = map.delete(key);
-                keys.remove(keyIndex);
-                pkeys = pkeys.delete(keyIndex);
-            }
-            verifyContents(expected, map);
-        }
-        if (keys.size() != pkeys.size()) {
-            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
-        }
-        System.out.printf("comparing %d keys%n", pkeys.size());
-        for (int i = 0; i < pkeys.size(); ++i) {
-            String key = keys.get(i);
-            String pkey = pkeys.get(i);
-            if (!key.equals(pkey)) {
-                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
-            }
-        }
-        System.out.printf("cleanup %d%n", map.size());
-        for (String key : keys) {
-            expected.remove(key);
-            map = map.delete(key);
-        }
-        if (map.size() != 0) {
-            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
-        }
-        verifyContents(expected, map);
-        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
     }
 
     private void testArray(JImmutableList<String> tokens,
