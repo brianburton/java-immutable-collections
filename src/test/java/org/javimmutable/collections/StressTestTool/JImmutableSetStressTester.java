@@ -132,80 +132,71 @@ public class JImmutableSetStressTester
                     values.add(setList.get(index));
                 }
                 verifyValues(values);
-                if (random.nextInt(500) < 499) {
-                    //TODO: speed up intersection?
-                    switch (random.nextInt(3)) {
-                    case 0:
-                        int index = random.nextInt(setList.size());
-                        set = set.delete(setList.get(index));
-                        expected.remove(setList.get(index));
-                        setList = setList.delete(index);
-                        break;
-                    case 1:
-                        set = set.deleteAll(IterableCursorable.of(values));
-                        expected.removeAll(values);
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    case 2:
-                        set = set.deleteAll(values);
-                        expected.removeAll(values);
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    default:
-                        throw new RuntimeException();
-                    }
-                } else {
-                    switch (random.nextInt(4)) {
-                    case 0:
-                        expected.removeAll(values);
-                        set = set.intersection(IterableCursorable.of(expected));
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    case 1:
-                        expected.removeAll(values);
-                        set = set.intersection(expected.iterator());
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    case 2:
-                        expected.removeAll(values);
-                        set = set.intersection(expected);
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    case 3:
-                        expected.removeAll(values);
-                        set = set.intersection(asJSet(expected));
-                        setList = deleteAllAt(valueIndex, setList);
-                        break;
-                    default:
-                        throw new RuntimeException();
-                    }
+                switch (random.nextInt(3)) {
+                case 0:
+                    int index = random.nextInt(setList.size());
+                    set = set.delete(setList.get(index));
+                    expected.remove(setList.get(index));
+                    setList = setList.delete(index);
+                    break;
+                case 1:
+                    set = set.deleteAll(IterableCursorable.of(values));
+                    expected.removeAll(values);
+                    setList = deleteAllAt(valueIndex, setList);
+                    break;
+                case 2:
+                    set = set.deleteAll(values);
+                    expected.removeAll(values);
+                    setList = deleteAllAt(valueIndex, setList);
+                    break;
+                default:
+                    throw new RuntimeException();
                 }
+
+
             }
             verifyContents(set, expected);
         }
         verifySetList(setList);
         System.out.printf("cleanup %d%n", expected.size());
+        int i = 0;
         while (setList.size() > 2) {
-            if (random.nextBoolean()) {
+            ++i;
+            List<String> values = new ArrayList<String>();
+            Set<Integer> valueIndex = new TreeSet<Integer>();
+            for (int n = 0; n < random.nextInt(size / 3); ++n) {
                 int index = random.nextInt(setList.size());
-                set = set.delete(setList.get(index));
-                expected.remove(setList.get(index));
-                setList = setList.delete(index);
-            } else {
-                List<String> values = new ArrayList<String>();
-                Set<Integer> valueIndex = new TreeSet<Integer>();
-                for (int n = 0; n < random.nextInt(3); ++n) {
-                    int index = random.nextInt(setList.size());
-                    valueIndex.add(index);
-                    values.add(setList.get(index));
-                }
-                verifyValues(values);
-                set = (random.nextBoolean()) ? set.deleteAll(IterableCursorable.of(values)) : set.deleteAll(values);
+                valueIndex.add(index);
+                values.add(setList.get(index));
+            }
+            switch (random.nextInt(4)) {
+            case 0:
+                expected.removeAll(values);
+                set = set.intersection(IterableCursorable.of(expected));
+                setList = deleteAllAt(valueIndex, setList);
+                break;
+            case 1:
+                expected.removeAll(values);
+                set = set.intersection(expected.iterator());
+                setList = deleteAllAt(valueIndex, setList);
+                break;
+            case 2:
+                expected.removeAll(values);
+                set = set.intersection(expected);
+                setList = deleteAllAt(valueIndex, setList);
+                break;
+            case 3:
+                JImmutableSet<String> set2 = set.deleteAll(values);
+                set = set.intersection(set2);
                 expected.removeAll(values);
                 setList = deleteAllAt(valueIndex, setList);
+                break;
+            default:
+                throw new RuntimeException();
             }
             verifySetList(setList);
         }
+        System.out.println(i);
         verifyContents(set, expected);
         set = set.deleteAll();
         expected.clear();

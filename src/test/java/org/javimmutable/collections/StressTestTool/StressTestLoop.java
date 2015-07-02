@@ -63,12 +63,12 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
-                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
-
-                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+//
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
 
                 .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
@@ -77,10 +77,10 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
-                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
-                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
-                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
-                .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
+//                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
+//                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
+//                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
+//                .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
 
                 ;
 
