@@ -38,6 +38,7 @@ package org.javimmutable.collections.StressTestTool;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.cursors.IterableCursorable;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +55,19 @@ public class JImmutableRandomAccessListStressTester
     }
 
     @Override
+    public JImmutableList<String> getOptions()
+    {
+        JImmutableList<String> options = JImmutables.list();
+        options = options.insert("r").insert("ralist").insert(makeClassOption(ralist));
+        return options;
+    }
+
+    @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
     {
         List<String> expected = new ArrayList<String>();
-        int size = random.nextInt(10000);
+        int size = random.nextInt(100000);
 
         String initialValue = makeValue(tokens, random);
         ralist = ralist.insert(initialValue);

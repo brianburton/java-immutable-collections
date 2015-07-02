@@ -45,6 +45,7 @@ public abstract class AbstractStressTestable
                           JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException;
 
+    abstract JImmutableList<String> getOptions();
 
     protected String makeValue(JImmutableList<String> tokens,
                                Random random)
@@ -55,5 +56,10 @@ public abstract class AbstractStressTestable
             sb.append(tokens.get(random.nextInt(tokens.size())));
         }
         return sb.toString();
+    }
+
+    protected String makeClassOption(Object obj)
+    {
+        return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").toLowerCase();
     }
 }

@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
@@ -48,6 +51,7 @@ import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,16 +63,23 @@ import java.util.*;
  */
 public class StressTestLoop
 {
-    public void execute(String[] filenames)
+
+   public static void main(String[] argv)
+            throws Exception
+    {
+        new StressTestLoop().execute(argv);
+    }
+
+    public void execute(String[] args)
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-//                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
-//                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
-//                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
-//
-//                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-//                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
+                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
+                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
+                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+
+                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
 
                 .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
@@ -77,32 +88,75 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
-//                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
-//                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
-//                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
-//                .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
+                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
+                .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
 
-                ;
+        ;
+
+        OptionParser parser = makeOptionParser(testers);
+        OptionSpec<String> file = parser.accepts("file").withRequiredArg();
+        OptionSpec<Long> seedSpec = parser.accepts("seed").withRequiredArg().ofType(Long.class);
+
+        OptionSet options = parser.parse(args);
+
+        Long seed = (options.has("seed")) ? options.valueOf(seedSpec) : System.currentTimeMillis();
+        Random random = new Random(seed);
 
 
-        Random random = new Random();
-        JImmutableList<String> tokens = loadTokens(filenames);
-        System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.length);
+        JImmutableList<String> tokens;
+
+        if(options.has("file")) {
+            List<String> filenames = options.valuesOf(file);
+            tokens = loadTokens(filenames);
+            System.out.printf("Loaded %d tokens from %d files%n",  tokens.size(), filenames.size());
+        } else {
+            tokens = loadTokens("src/site/apt/index.apt");
+            System.out.printf("Loaded %d tokens from index.apt%n", tokens.size());
+        }
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
-                Long seed = System.currentTimeMillis();
-                random.setSeed(seed);
-                System.out.printf("Starting with seed %d%n", seed);
-                tester.execute(random, tokens);
+                if(!options.hasOptions() || filter(options, tester)) {
+                    System.out.printf("Starting with seed %d%n", seed);
+                    tester.execute(random, tokens);
+                    seed = System.currentTimeMillis();
+                    random.setSeed(seed);
+                }
             }
         }
     }
 
-    public static void main(String[] argv)
-            throws Exception
+    private boolean filter(OptionSet options, AbstractStressTestable tester)
     {
-        new StressTestLoop().execute(argv);
+        for(String option : tester.getOptions()) {
+            if(options.has(option)) {
+                if(options.hasArgument(option)) {
+                    String argument = (String)options.valueOf(option);
+                    for(String argOption : tester.getOptions()) {
+                        if(argument.equals(argOption)) {
+                            return true;
+                        }
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private OptionParser makeOptionParser(JImmutableList<AbstractStressTestable> testers)
+    {
+        OptionParser parser = new OptionParser();
+        for(AbstractStressTestable tester : testers) {
+            for(String option : tester.getOptions()) {
+                parser.accepts(option).withOptionalArg();
+            }
+        }
+        parser.accepts("seed").withRequiredArg().ofType(Long.class);
+        return parser;
     }
 
     private void testStack(Random random)
@@ -378,6 +432,24 @@ public class StressTestLoop
             sb.append(tokens.get(random.nextInt(tokens.size())));
         }
         return sb.toString();
+    }
+
+    private JImmutableList<String> loadTokens(List<String> filenames)
+            throws IOException
+    {
+        JImmutableSet<String> tokens = JImmutables.set();
+        for (String filename : filenames) {
+            tokens = addTokensFromFile(tokens, filename);
+        }
+        return JImmutables.list(tokens);
+    }
+
+    private JImmutableList<String> loadTokens(String filename)
+            throws IOException
+    {
+        JImmutableSet<String> tokens = JImmutables.set();
+        tokens = addTokensFromFile(tokens, filename);
+        return JImmutables.list(tokens);
     }
 
     private JImmutableList<String> loadTokens(String[] filenames)

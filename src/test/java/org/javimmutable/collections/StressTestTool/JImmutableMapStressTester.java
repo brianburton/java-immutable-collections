@@ -43,6 +43,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +63,14 @@ public class JImmutableMapStressTester
     {
         this.map = map;
         this.expectedClass = expectedClass;
+    }
+
+    @Override
+    public JImmutableList<String> getOptions()
+    {
+        JImmutableList<String> options = JImmutables.list();
+        options = options.insert("m").insert("map").insert(makeClassOption(map));
+        return options;
     }
 
     public void execute(Random random,

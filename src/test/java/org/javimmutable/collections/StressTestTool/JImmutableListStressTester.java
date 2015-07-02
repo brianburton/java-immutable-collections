@@ -2,6 +2,7 @@ package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.cursors.IterableCursorable;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,14 @@ public class JImmutableListStressTester
     public JImmutableListStressTester(JImmutableList<String> list)
     {
         this.list = list;
+    }
+
+    @Override
+    public JImmutableList<String> getOptions()
+    {
+        JImmutableList<String> options = JImmutables.list();
+        options = options.insert("l").insert("list").insert(makeClassOption(list));
+        return options;
     }
 
     @Override

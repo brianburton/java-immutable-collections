@@ -44,6 +44,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -63,6 +64,14 @@ public class JImmutableSetStressTester
     {
         this.set = set;
         this.expectedClass = expectedClass;
+    }
+
+    @Override
+    public JImmutableList<String> getOptions()
+    {
+        JImmutableList<String> options = JImmutables.list();
+        options = options.insert("s").insert("set").insert(makeClassOption(set));
+        return options;
     }
 
     @Override
