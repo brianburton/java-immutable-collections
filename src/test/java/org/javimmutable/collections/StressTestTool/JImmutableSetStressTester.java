@@ -161,6 +161,68 @@ public class JImmutableSetStressTester
                     throw new RuntimeException();
                 }
             }
+            verifyContents(set, expected);
+            verifySetList(setList);
+
+            System.out.println("checking contains methods");
+//            int truth = 0;
+//            int lies = 0;
+            for (int i = 0; i < size / 12; ++i) {
+                List<String> values = new ArrayList<String>();
+                for (int n = 0; n < random.nextInt(10); ++n) {
+                    if (random.nextBoolean()) {
+                        values.add(valueInSet(setList, random));
+                    } else {
+                        values.add(makeValue(tokens, random));
+                    }
+                }
+                switch (random.nextInt(5)) {
+                case 0:
+                    String value = (random.nextBoolean()) ? valueInSet(setList, random) : makeValue(tokens, random);
+                    if (set.contains(value) != expected.contains(value)) {
+                        throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n", value, expected.contains(value), set.contains(value)));
+                    }
+                    break;
+                case 1:
+                    if (set.containsAll(IterableCursorable.of(values)) != expected.containsAll(values)) {
+                        throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
+                    }
+//                    if(set.containsAll(IterableCursorable.of(values))) {
+//                        ++truth;
+//                    }
+                    break;
+                case 2:
+                    if (set.containsAll(values) != expected.containsAll(values)) {
+                        throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAll(values), expected.containsAll(values)));
+                    }
+//                    if(set.containsAll(values)) {
+//                        ++truth;
+//                    }
+                    break;
+                case 3:
+                    if (set.containsAny(IterableCursorable.of(values)) != containsAny(expected, values)) {
+                        throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAny(IterableCursorable.of(values)), containsAny(expected, values)));
+                    }
+//                    if(!set.containsAny(IterableCursorable.of(values))) {
+//                        ++lies;
+//                    }
+                    break;
+                case 4:
+                    if (set.containsAny(values) != containsAny(expected, values)) {
+                        throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAny(values), containsAny(expected, values)));
+                    }
+//                    if(!set.containsAny(values)) {
+//                        ++lies;
+//                    }
+                    break;
+                default:
+                    throw new RuntimeException();
+                }
+            }
+//            System.out.println("true: " + truth);
+//            System.out.println("false: " + lies);
+
+            verifyCursor(set, expected);
         }
         verifyContents(set, expected);
         verifySetList(setList);
@@ -234,19 +296,13 @@ public class JImmutableSetStressTester
         if (!expected.equals(set.getSet())) {
             throw new RuntimeException("method call failed - getSet()\n");
         }
-        if (!set.containsAll(IterableCursorable.of(expected))) {
-            throw new RuntimeException("method call failed - containsAll(Cursorable)\n");
-        }
-        if (!set.containsAll(expected)) {
-            throw new RuntimeException("method call failed - containsAll(Collection)\n");
-        }
-        if ((!set.containsAny(IterableCursorable.of(expected))) && (expected.size() != 0)) {
-            throw new RuntimeException("method call failed - containsAny(Cursorable)\n");
-        }
-        if ((!set.containsAny(expected)) && (expected.size() != 0)) {
-            throw new RuntimeException("method call failed - containsAny(Collection)\n");
-        }
 
+        set.checkInvariants();
+    }
+
+    private void verifyCursor(final JImmutableSet<String> set,
+                              final Set<String> expected)
+    {
         if (set instanceof JImmutableHashSet || set instanceof JImmutableHashMultiset) {
             List<String> setAsList = asList(set.getSet());
             StandardCursorTest.listCursorTest(setAsList, set.cursor());
@@ -256,7 +312,6 @@ public class JImmutableSetStressTester
             StandardCursorTest.listCursorTest(expectedAsList, set.cursor());
             StandardCursorTest.listIteratorTest(expectedAsList, set.iterator());
         }
-        set.checkInvariants();
     }
 
     private List<String> asList(Set<String> expectedSet)
@@ -324,6 +379,23 @@ public class JImmutableSetStressTester
         if (track > 1) {
             throw new RuntimeException(String.format("values error - %d not contained in set", track));
         }
+    }
+
+    private String valueInSet(JImmutableRandomAccessList<String> setList,
+                              Random random)
+    {
+        return setList.get(random.nextInt(setList.size()));
+    }
+
+    private boolean containsAny(Set<String> expected,
+                                List<String> values)
+    {
+        for(String value : values) {
+            if(expected.contains(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

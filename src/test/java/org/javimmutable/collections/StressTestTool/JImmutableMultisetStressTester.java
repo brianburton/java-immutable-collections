@@ -100,22 +100,16 @@ public class JImmutableMultisetStressTester
             verifyMultiList(multiList);
             System.out.println("checking contains methods");
             for (int i = 0; i < size / 12; ++i) {
-                switch (random.nextInt(11)) {
+                switch (random.nextInt(6)) {
                 case 0:
                     String value = (random.nextBoolean()) ? valueInMulti(multiList, random) : makeValue(tokens, random);
-                    if (multi.contains(value) != expected.contains(value)) {
-                        throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n", value, expected.contains(value), multi.contains(value)));
-                    }
-                    break;
-                case 1:
-                    value = (random.nextBoolean()) ? valueInMulti(multiList, random) : makeValue(tokens, random);
                     int count = random.nextInt(multi.valueCount());
                     if (multi.contains(value, count) != (expected.count(value) >= count)) {
                         throw new RuntimeException(String.format("contains(value, count) method call failed for %s, %d - expected %b found %b%n", value, count, expected.contains(value), multi.contains(value)));
                     }
                     break;
-                case 2:
-                    Multiset<String> values = HashMultiset.create();
+                case 1:
+                    List<String> values = new ArrayList<String>();
                     for (int n = 0; n < random.nextInt(10); ++n) {
                         if (random.nextBoolean()) {
                             values.add(valueInMulti(multiList, random));
@@ -123,106 +117,54 @@ public class JImmutableMultisetStressTester
                             values.add(makeValue(tokens, random));
                         }
                     }
-                    if (multi.containsAll(IterableCursorable.of(values)) != expected.containsAll(values)) {
-                        throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n", values, multi.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
+                    if (multi.containsAllOccurrences(IterableCursorable.of(values)) != containsAllByOccurrence(expected, values)) {
+                        throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(IterableCursorable.of(values)), containsAllByOccurrence(expected, values)));
+                    }
+                    break;
+                case 2:
+                    values = new ArrayList<String>();
+                    for (int n = 0; n < random.nextInt(10); ++n) {
+                        if (random.nextBoolean()) {
+                            values.add(valueInMulti(multiList, random));
+                        } else {
+                            values.add(makeValue(tokens, random));
+                        }
+                    }
+                    if (multi.containsAllOccurrences(values) != containsAllByOccurrence(expected, values)) {
+                        throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), containsAllByOccurrence(expected, values)));
                     }
                     break;
                 case 3:
-                    values = HashMultiset.create();
+                    JImmutableMultiset<String> values2 = JImmutables.multiset();
                     for (int n = 0; n < random.nextInt(10); ++n) {
-                        if (random.nextBoolean()) {
-                            values.add(valueInMulti(multiList, random));
-                        } else {
-                            values.add(makeValue(tokens, random));
-                        }
+                        values2 = (random.nextBoolean()) ? values2.insert(valueInMulti(multiList, random)) : values2.insert(makeValue(tokens, random));
                     }
-                    if (multi.containsAll(values) != expected.containsAll(values)) {
-                        throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n", values, multi.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
+                    if (multi.containsAllOccurrences(values2) != containsAllByOccurrence(expected, values2)) {
+                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableMultiset) method call failed for %s - expected %b found %b%n", values2, multi.containsAllOccurrences(values2), containsAllByOccurrence(expected, values2)));
+
                     }
                     break;
                 case 4:
-                    values = HashMultiset.create();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
-                        if (random.nextBoolean()) {
-                            values.add(valueInMulti(multiList, random));
-                        } else {
-                            values.add(makeValue(tokens, random));
-                        }
-                    }
-                    if (multi.containsAny(IterableCursorable.of(values)) != containsAny(expected, values)) {
-                        throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n", values, multi.containsAny(IterableCursorable.of(values)), containsAny(expected, values)));
-                    }
-                    break;
-                case 5:
-                    values = HashMultiset.create();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
-                        if (random.nextBoolean()) {
-                            values.add(valueInMulti(multiList, random));
-                        } else {
-                            values.add(makeValue(tokens, random));
-                        }
-                    }
-                    if (multi.containsAny(values) != containsAny(expected, values)) {
-                        throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n", values, multi.containsAny(values), containsAny(expected, values)));
-                    }
-                    break;
-                case 6:
-                    List<String> values2 = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
-                        if (random.nextBoolean()) {
-                            values2.add(valueInMulti(multiList, random));
-                        } else {
-                            values2.add(makeValue(tokens, random));
-                        }
-                    }
-                    if (multi.containsAllOccurrences(IterableCursorable.of(values2)) != containsAllByOccurrence(expected, values2)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed for %s - expected %b found %b%n", values2, multi.containsAllOccurrences(IterableCursorable.of(values2)), containsAllByOccurrence(expected, values2)));
-                    }
-                    break;
-                case 7:
-                    values2 = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
-                        if (random.nextBoolean()) {
-                            values2.add(valueInMulti(multiList, random));
-                        } else {
-                            values2.add(makeValue(tokens, random));
-                        }
-                    }
-                    if (multi.containsAllOccurrences(values2) != containsAllByOccurrence(expected, values2)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed for %s - expected %b found %b%n", values2, multi.containsAllOccurrences(values2), containsAllByOccurrence(expected, values2)));
-                    }
-                    break;
-                case 8:
-                    JImmutableMultiset<String> values3 = JImmutables.multiset();
+                    JImmutableSet<String> values3 = JImmutables.set();
                     for (int n = 0; n < random.nextInt(10); ++n) {
                         values3 = (random.nextBoolean()) ? values3.insert(valueInMulti(multiList, random)) : values3.insert(makeValue(tokens, random));
                     }
-                    if (multi.containsAllOccurrences(values3) != containsAllByOccurrence(expected, values3)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableMultiset) method call failed for %s - expected %b found %b%n", values3, multi.containsAllOccurrences(values3), containsAllByOccurrence(expected, values3)));
+                    if (multi.containsAllOccurrences(values3) != expected.containsAll(values3.getSet())) {
+                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableSet) method call failed for %s - expected %b found %b%n", values3, multi.containsAllOccurrences(values3), expected.containsAll(values3.getSet())));
 
                     }
                     break;
-                case 9:
-                    JImmutableSet<String> values4 = JImmutables.set();
-                    for(int n = 0; n < random.nextInt(10); ++n) {
-                        values4 = (random.nextBoolean()) ? values4.insert(valueInMulti(multiList, random)) : values4.insert(makeValue(tokens, random));
-                    }
-                    if (multi.containsAllOccurrences(values4) != expected.containsAll(values4.getSet())) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableSet) method call failed for %s - expected %b found %b%n", values4, multi.containsAllOccurrences(values4), expected.containsAll(values4.getSet())));
-
-                    }
-                    break;
-                case 10:
-                    Set<String> values5 = new HashSet<String>();
+                case 5:
+                    Set<String> values4 = new HashSet<String>();
                     for (int n = 0; n < random.nextInt(10); ++n) {
                         if (random.nextBoolean()) {
-                            values5.add(valueInMulti(multiList, random));
+                            values4.add(valueInMulti(multiList, random));
                         } else {
-                            values5.add(makeValue(tokens, random));
+                            values4.add(makeValue(tokens, random));
                         }
                     }
-                    if (multi.containsAllOccurrences(values5) != expected.containsAll(values5)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Set) method call failed for %s - expected %b found %b%n", values5, multi.containsAllOccurrences(values5), expected.containsAll(values5)));
+                    if (multi.containsAllOccurrences(values4) != expected.containsAll(values4)) {
+                        throw new RuntimeException(String.format("containsAllOccurrences(Set) method call failed for %s - expected %b found %b%n", values4, multi.containsAllOccurrences(values4), expected.containsAll(values4)));
 
                     }
                     break;
@@ -385,8 +327,8 @@ public class JImmutableMultisetStressTester
     private boolean containsAny(Multiset<String> expected,
                                 Multiset<String> values)
     {
-        for(String value : values.elementSet()) {
-            if(expected.contains(value)) {
+        for (String value : values.elementSet()) {
+            if (expected.contains(value)) {
                 return true;
             }
         }
