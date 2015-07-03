@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.LinkedHashMultiset;
+import com.google.common.collect.TreeMultiset;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -58,8 +61,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * Test program to run an infinite loop feeding data to a PersistentMap, querying the
- * data, and deleting the data to verify the map always contains what it should.
+ * Test program to run an infinite loop feeding data to every implementation of every
+ * JImmutable collection type, querying the data, and deleting the data to verify
+ * the collection always contains what it should.
  */
 public class StressTestLoop
 {
@@ -88,6 +92,10 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset(), TreeMultiset.class))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset(), TreeMultiset.class))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashMultiset.class))
+
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
@@ -103,7 +111,6 @@ public class StressTestLoop
 
         Long seed = (options.has("seed")) ? options.valueOf(seedSpec) : System.currentTimeMillis();
         Random random = new Random(seed);
-
 
         JImmutableList<String> tokens;
 

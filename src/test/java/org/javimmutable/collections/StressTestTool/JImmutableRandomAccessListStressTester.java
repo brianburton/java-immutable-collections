@@ -58,7 +58,7 @@ public class JImmutableRandomAccessListStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("r").insert("ralist").insert(makeClassOption(ralist));
+        options = options.insert("ralist").insert(makeClassOption(ralist));
         return options;
     }
 

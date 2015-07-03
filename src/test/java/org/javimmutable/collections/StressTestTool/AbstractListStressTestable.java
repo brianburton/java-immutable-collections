@@ -14,10 +14,10 @@ public abstract class AbstractListStressTestable
     {
         System.out.printf("checking contents with size %d%n", list.size());
         if (list.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b", expected.isEmpty(), list.isEmpty()));
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), list.isEmpty()));
         }
         if (list.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), list.size()));
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), list.size()));
         }
 
         int index = 0;
@@ -37,7 +37,7 @@ public abstract class AbstractListStressTestable
             index += 1;
         }
         if(!expected.equals(list.getList())) {
-            throw new RuntimeException("getList() call failed");
+            throw new RuntimeException("getList() call failed\n");
         }
         StandardCursorTest.listCursorTest(expected, list.cursor());
         StandardCursorTest.listIteratorTest(expected, list.iterator());

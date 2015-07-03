@@ -38,7 +38,6 @@ package org.javimmutable.collections.StressTestTool;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -70,7 +69,7 @@ public class JImmutableSetStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("s").insert("set").insert(makeClassOption(set));
+        options = options.insert("set").insert(makeClassOption(set));
         return options;
     }
 
@@ -80,7 +79,7 @@ public class JImmutableSetStressTester
             throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Set<String> expected = expectedClass.newInstance();
-        JImmutableRandomAccessList<String> setList = JImmutableBtreeList.of();
+        JImmutableRandomAccessList<String> setList = JImmutables.ralist();
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableSetStressTest on %s of size %d%n", set.getClass().getSimpleName(), size);
 
@@ -130,8 +129,8 @@ public class JImmutableSetStressTester
             }
             verifyContents(set, expected);
             verifySetList(setList);
-            System.out.printf("shrinking %d%n", set.size());
 
+            System.out.printf("shrinking %d%n", set.size());
             for (int i = 0; i < size / 6; ++i) {
                 List<String> values = new ArrayList<String>();
                 Set<Integer> valueIndex = new TreeSet<Integer>();
@@ -161,16 +160,13 @@ public class JImmutableSetStressTester
                 default:
                     throw new RuntimeException();
                 }
-
-
             }
-            verifyContents(set, expected);
         }
+        verifyContents(set, expected);
         verifySetList(setList);
+
         System.out.printf("cleanup %d%n", expected.size());
-        int i = 0;
         while (setList.size() > 2) {
-            ++i;
             List<String> values = new ArrayList<String>();
             Set<Integer> valueIndex = new TreeSet<Integer>();
             for (int n = 0; n < random.nextInt(size / 3); ++n) {
@@ -205,7 +201,6 @@ public class JImmutableSetStressTester
             }
             verifySetList(setList);
         }
-        System.out.println(i);
         verifyContents(set, expected);
         set = set.deleteAll();
         expected.clear();
@@ -221,10 +216,10 @@ public class JImmutableSetStressTester
     {
         System.out.printf("checking contents with size %d%n", set.size());
         if (set.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b", expected.isEmpty(), set.isEmpty()));
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), set.isEmpty()));
         }
         if (set.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), set.size()));
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), set.size()));
         }
         for (String expectedValue : expected) {
             if (!set.contains(expectedValue)) {
@@ -237,19 +232,19 @@ public class JImmutableSetStressTester
             }
         }
         if (!expected.equals(set.getSet())) {
-            throw new RuntimeException("method call failed - getSet()");
+            throw new RuntimeException("method call failed - getSet()\n");
         }
         if (!set.containsAll(IterableCursorable.of(expected))) {
-            throw new RuntimeException("method call failed - containsAll(Cursorable)");
+            throw new RuntimeException("method call failed - containsAll(Cursorable)\n");
         }
         if (!set.containsAll(expected)) {
-            throw new RuntimeException("method call failed - containsAll(Collection)");
+            throw new RuntimeException("method call failed - containsAll(Collection)\n");
         }
         if ((!set.containsAny(IterableCursorable.of(expected))) && (expected.size() != 0)) {
-            throw new RuntimeException("method call failed - containsAny(Cursorable)");
+            throw new RuntimeException("method call failed - containsAny(Cursorable)\n");
         }
         if ((!set.containsAny(expected)) && (expected.size() != 0)) {
-            throw new RuntimeException("method call failed - containsAny(Collection)");
+            throw new RuntimeException("method call failed - containsAny(Collection)\n");
         }
 
         if (set instanceof JImmutableHashSet || set instanceof JImmutableHashMultiset) {
@@ -267,20 +262,8 @@ public class JImmutableSetStressTester
     private List<String> asList(Set<String> expectedSet)
     {
         List<String> expectedList = new ArrayList<String>();
-        for (String value : expectedSet) {
-            expectedList.add(value);
-        }
+        expectedList.addAll(expectedSet);
         return expectedList;
-    }
-
-    private JImmutableSet<String> asJSet(Set<String> set)
-    {
-        JImmutableSet<String> jet = JImmutableInsertOrderSet.of();
-        jet = jet.insertAll(set);
-        if (!set.equals(jet.getSet())) {
-            throw new RuntimeException();
-        }
-        return jet;
     }
 
     private JImmutableRandomAccessList<String> insertUnique(String value,

@@ -687,7 +687,7 @@ public class StandardJImmutableMultisetTests
     public static <T> void verifyCursor(final JImmutableMultiset<T> jmet,
                                         final Multiset<T> expected)
     {
-        final List<T> expectedSet = new LinkedList<T>();
+        final List<T> expectedSet = new ArrayList<T>();
         expectedSet.addAll(expected.elementSet());
 
         final List<T> expectedList = new ArrayList<T>();
