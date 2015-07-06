@@ -94,10 +94,10 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean contains(@Nullable T value,
-                            int count)
+    public boolean containsAtLeast(@Nullable T value,
+                                   int count)
     {
-        if (count <= 0) {
+        if (count < 0) {
             throw new IllegalArgumentException();
         } else {
             return (value != null) && (count(value) >= count);

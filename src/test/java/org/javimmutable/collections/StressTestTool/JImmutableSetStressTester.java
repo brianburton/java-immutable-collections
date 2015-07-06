@@ -52,7 +52,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class JImmutableSetStressTester
-        extends AbstractStressTestable
+        extends AbstractSetStressTestable
 {
     private JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
@@ -342,16 +342,6 @@ public class JImmutableSetStressTester
         return setList;
     }
 
-    private JImmutableRandomAccessList<String> deleteAllAt(Set<Integer> index,
-                                                           JImmutableRandomAccessList<String> setList)
-    {
-        List<Integer> listIndex = new LinkedList<Integer>(index);
-        for (int i = listIndex.size() - 1; i >= 0; --i) {
-            setList = setList.delete(listIndex.get(i));
-        }
-        return setList;
-    }
-
     //Because of how values are inserted into setList, there will sometimes be duplicates (from insertAllUnique).
     //This ensures there are never more than two duplicates, and that setList is never smaller than set. This is
     // a safeguard that setList and set are very similar even though they will not be identical.
@@ -380,11 +370,7 @@ public class JImmutableSetStressTester
         }
     }
 
-    private String valueInSet(JImmutableRandomAccessList<String> setList,
-                              Random random)
-    {
-        return setList.get(random.nextInt(setList.size()));
-    }
+
 
     private boolean containsAny(Set<String> expected,
                                 List<String> values)

@@ -89,7 +89,7 @@ public class JImmutableInsertOrderMultisetTest
         assertFalse(jmet.isEmpty());
         assertEquals(1, jmet.size());
         assertEquals(10, jmet.valueCount());
-        assertEquals(true, jmet.contains("tennant", 10));
+        assertEquals(true, jmet.containsAtLeast("tennant", 10));
         assertEquals(false, jmet.contains("smith"));
         assertEquals(false, jmet.contains("capaldi"));
         assertEquals(false, jmet.contains("eccleston"));
@@ -102,8 +102,8 @@ public class JImmutableInsertOrderMultisetTest
         assertFalse(jmet.isEmpty());
         assertEquals(2, jmet.size());
         assertEquals(21, jmet.valueCount());
-        assertEquals(true, jmet.contains("tennant", 10));
-        assertEquals(true, jmet.contains("smith", 11));
+        assertEquals(true, jmet.containsAtLeast("tennant", 10));
+        assertEquals(true, jmet.containsAtLeast("smith", 11));
         assertEquals(false, jmet.contains("capaldi"));
         assertEquals(false, jmet.contains("eccleston"));
         assertEquals(true, jmet.containsAny(valuesL));
@@ -121,8 +121,8 @@ public class JImmutableInsertOrderMultisetTest
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(23, jmet2.valueCount());
-        assertEquals(true, jmet2.contains("tennant", 10));
-        assertEquals(true, jmet2.contains("smith", 11));
+        assertEquals(true, jmet2.containsAtLeast("tennant", 10));
+        assertEquals(true, jmet2.containsAtLeast("smith", 11));
         assertEquals(true, jmet2.contains("capaldi"));
         assertEquals(true, jmet2.contains("eccleston"));
         assertEquals(true, jmet2.containsAny(valuesL));
@@ -139,10 +139,10 @@ public class JImmutableInsertOrderMultisetTest
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(42, jmet2.valueCount());
-        assertEquals(true, jmet2.contains("tennant", 10));
-        assertEquals(true, jmet2.contains("smith", 11));
-        assertEquals(true, jmet2.contains("capaldi", 12));
-        assertEquals(true, jmet2.contains("eccleston", 9));
+        assertEquals(true, jmet2.containsAtLeast("tennant", 10));
+        assertEquals(true, jmet2.containsAtLeast("smith", 11));
+        assertEquals(true, jmet2.containsAtLeast("capaldi", 12));
+        assertEquals(true, jmet2.containsAtLeast("eccleston", 9));
         assertEquals(true, jmet2.containsAny(valuesL));
         assertEquals(true, jmet2.containsAll(valuesL));
         assertEquals(true, jmet2.containsAllOccurrences(valuesL));

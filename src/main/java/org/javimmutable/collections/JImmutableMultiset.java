@@ -86,14 +86,13 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains at least count occurrences of value.
-     * Count must be greater than zero.
      *
      * @param value value to check for
      * @param count number of occurrences checked for
-     * @return true if thsi multiset contains count occurrences of value
+     * @return true if thsi multiset contains at least count occurrences of value
      */
-    boolean contains(@Nullable T value,
-                     int count);
+    boolean containsAtLeast(@Nullable T value,
+                            int count);
 
     /**
      * Determines if the multiset contains every value (but not necessarily the same number of
