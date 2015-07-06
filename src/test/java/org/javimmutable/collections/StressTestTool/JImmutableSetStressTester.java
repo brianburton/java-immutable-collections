@@ -42,7 +42,6 @@ import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
