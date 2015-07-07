@@ -92,9 +92,9 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset(), TreeMultiset.class))
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset(), TreeMultiset.class))
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashMultiset.class))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset()))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset()))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset()))
 
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
@@ -140,10 +140,12 @@ public class StressTestLoop
         for(String option : tester.getOptions()) {
             if(options.has(option)) {
                 if(options.hasArgument(option)) {
-                    String argument = (String)options.valueOf(option);
-                    for(String argOption : tester.getOptions()) {
-                        if(argument.equals(argOption)) {
-                            return true;
+                    List<String> arguments = (List<String>)options.valuesOf(option);
+                    for(String argument : arguments) {
+                        for (String argOption : tester.getOptions()) {
+                            if (argument.equals(argOption)) {
+                                return true;
+                            }
                         }
                     }
                 } else {

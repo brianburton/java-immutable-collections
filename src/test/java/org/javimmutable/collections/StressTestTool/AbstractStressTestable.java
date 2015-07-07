@@ -37,13 +37,14 @@ package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 public abstract class AbstractStressTestable
 {
     abstract void execute(Random random,
                           JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException;
+            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
 
     abstract JImmutableList<String> getOptions();
 

@@ -52,7 +52,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class JImmutableSetStressTester
-        extends AbstractSetStressTestable
+        extends AbstractStressTestable
 {
     private JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
@@ -164,8 +164,6 @@ public class JImmutableSetStressTester
             verifySetList(setList);
 
             System.out.println("checking contains methods");
-//            int truth = 0;
-//            int lies = 0;
             for (int i = 0; i < size / 12; ++i) {
                 List<String> values = new ArrayList<String>();
                 for (int n = 0; n < random.nextInt(10); ++n) {
@@ -186,41 +184,26 @@ public class JImmutableSetStressTester
                     if (set.containsAll(IterableCursorable.of(values)) != expected.containsAll(values)) {
                         throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
                     }
-//                    if(set.containsAll(IterableCursorable.of(values))) {
-//                        ++truth;
-//                    }
                     break;
                 case 2:
                     if (set.containsAll(values) != expected.containsAll(values)) {
                         throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAll(values), expected.containsAll(values)));
                     }
-//                    if(set.containsAll(values)) {
-//                        ++truth;
-//                    }
                     break;
                 case 3:
                     if (set.containsAny(IterableCursorable.of(values)) != containsAny(expected, values)) {
                         throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAny(IterableCursorable.of(values)), containsAny(expected, values)));
                     }
-//                    if(!set.containsAny(IterableCursorable.of(values))) {
-//                        ++lies;
-//                    }
                     break;
                 case 4:
                     if (set.containsAny(values) != containsAny(expected, values)) {
                         throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAny(values), containsAny(expected, values)));
                     }
-//                    if(!set.containsAny(values)) {
-//                        ++lies;
-//                    }
                     break;
                 default:
                     throw new RuntimeException();
                 }
             }
-//            System.out.println("true: " + truth);
-//            System.out.println("false: " + lies);
-
             verifyCursor(set, expected);
         }
         verifyContents(set, expected);
@@ -313,12 +296,7 @@ public class JImmutableSetStressTester
         }
     }
 
-    private List<String> asList(Set<String> expectedSet)
-    {
-        List<String> expectedList = new ArrayList<String>();
-        expectedList.addAll(expectedSet);
-        return expectedList;
-    }
+
 
     private JImmutableRandomAccessList<String> insertUnique(String value,
                                                             JImmutableRandomAccessList<String> setList,
@@ -383,4 +361,28 @@ public class JImmutableSetStressTester
         return false;
     }
 
+    private String valueInSet(JImmutableRandomAccessList<String> list,
+                                Random random)
+    {
+        return list.get(random.nextInt(list.size()));
+    }
+
+    private JImmutableRandomAccessList<String> deleteAllAt(Set<Integer> index,
+                                                             JImmutableRandomAccessList<String> setList)
+    {
+        List<Integer> listIndex = new LinkedList<Integer>(index);
+        for (int i = listIndex.size() - 1; i >= 0; --i) {
+            setList = setList.delete(listIndex.get(i));
+        }
+        return setList;
+    }
+
+    private List<String> asList(Iterable<String> values)
+    {
+        List<String> list = new ArrayList<String>();
+        for(String value : values) {
+            list.add(value);
+        }
+        return list;
+    }
 }
