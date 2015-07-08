@@ -284,8 +284,6 @@ public class JImmutableMultisetStressTester
             verifyCursor(multi, expected);
         }
 
-        verifyMultiList(multiList, expected);
-
         System.out.printf("cleanup %d%n", multi.valueCount());
         while (multiList.size() > 20) {
             switch (random.nextInt(5)) {
@@ -416,7 +414,7 @@ public class JImmutableMultisetStressTester
             throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), multi.isEmpty()));
         }
         if (multi.size() != expected.elementSet().size()) {
-            throw new RuntimeException(String.format("unique value size mismatch - expected %d found %d%n", expected.size(), multi.size()));
+            throw new RuntimeException(String.format("unique value size mismatch - expected %d found %d%n", expected.elementSet().size(), multi.size()));
         }
         if (multi.valueCount() != expected.size()) {
             throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", expected.size(), multi.valueCount()));

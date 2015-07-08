@@ -195,6 +195,16 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return create(contents.delete(key));
     }
 
+    //TODO: add this method to unit tests
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> delete(@Nonnull K key,
+                                         @Nonnull V value)
+    {
+        JImmutableSet<V> set = getSet(key);
+        return (set.contains(value)) ? create(contents.assign(key, set.delete(value))) : this;
+    }
+
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
@@ -225,7 +235,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
                                             @Nonnull Iterator<? extends V> other)
     {
         JImmutableSet<V> set = getSet(key);
-        return set.isEmpty() ? this : create(contents.assign(key, deleteAllInSet(set, other)));
+        return (set.isEmpty()) ? this : create(contents.assign(key, deleteAllInSet(set, other)));
     }
 
     @Nonnull
@@ -404,7 +414,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     protected void checkSetMapInvariants()
     {
         contents.checkInvariants();
-        for(JImmutableMap.Entry<K, JImmutableSet<V>> entry : contents) {
+        for (JImmutableMap.Entry<K, JImmutableSet<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
         //TODO: review checkSetMapInvariants()

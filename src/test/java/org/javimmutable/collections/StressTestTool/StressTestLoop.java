@@ -93,13 +93,17 @@ public class StressTestLoop
                 .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
 
                 .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset()))
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset()))
                 .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset()))
+                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset()))
 
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingTree(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutableHashMap.<String, String>usingList(), HashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutables.<String, String>insertOrderMap(), LinkedHashMap.class))
                 .insert(new JImmutableMapStressTester(JImmutables.<String, String>sortedMap(), TreeMap.class))
+
+                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>setMap(), HashMap.class))
+                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>insertOrderSetMap(), LinkedHashMap.class))
+                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>sortedSetMap(), TreeMap.class))
 
         ;
 

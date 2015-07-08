@@ -80,7 +80,8 @@ public interface JImmutableSetMap<K, V>
                                   @Nonnull JImmutableSet<V> value);
 
     /**
-     * Add key/value entry to the map, replacing any existing entry with same key.
+     Add value to the Set for the specified key. Note that if the value has already been
+     * added, it will not be added again.
      *
      * @param value
      * @return
@@ -246,6 +247,16 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> delete(@Nonnull K key);
+
+    /**
+     * Deletes the specified value from the specified key's set. Returns a new map if the value
+     * was deleted or the current map if the key was not contained in the map.
+     *
+     * @param key
+     * @return
+     */
+    @Nonnull
+    JImmutableSetMap<K, V> delete(@Nonnull K key, @Nonnull V value);
 
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
