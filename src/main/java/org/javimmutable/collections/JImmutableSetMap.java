@@ -361,7 +361,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
@@ -373,7 +374,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
@@ -385,7 +387,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
@@ -397,7 +400,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
@@ -409,7 +413,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
@@ -421,7 +426,8 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Removes all values from the Set at key that are not contained in the other
-     * collection
+     * collection. If the given key is not present in the map, an empty set is added
+     * to the map.
      *
      * @param key
      * @param other
