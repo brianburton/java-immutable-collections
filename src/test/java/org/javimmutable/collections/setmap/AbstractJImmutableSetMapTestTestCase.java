@@ -36,6 +36,7 @@
 package org.javimmutable.collections.setmap;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
@@ -44,6 +45,7 @@ import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +61,8 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 {
     public JImmutableSetMap<Integer, Integer> verifyOperations(JImmutableSetMap<Integer, Integer> map)
     {
-        verifySetOperations();
+        verifySetOperations(map);
+        verifyContains(map);
 
         assertTrue(map.isEmpty());
         assertEquals(0, map.size());
@@ -120,9 +123,60 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         return map;
     }
 
-    private void verifySetOperations()
+    private void verifyContains(JImmutableSetMap<Integer, Integer> emptyMap)
     {
-        JImmutableSetMap<Integer, Integer> emptyMap = JImmutableHashSetMap.of();
+        JImmutableList<Integer> values = JImmutables.list();
+        JImmutableSetMap<Integer, Integer> jetMap = emptyMap.insertAll(1, JImmutables.set(1, 2, 4));
+
+        //empty with empty
+        assertEquals(false, emptyMap.contains(1));
+        assertEquals(false, emptyMap.contains(1, null));
+        assertEquals(false, emptyMap.containsAll(1, values));
+        assertEquals(false, emptyMap.containsAll(1, values.getList()));
+        assertEquals(false, emptyMap.containsAny(1, values));
+        assertEquals(false, emptyMap.containsAny(1, values.getList()));
+
+        //values with empty
+        assertEquals(true, jetMap.contains(1));
+        assertEquals(false, jetMap.contains(1, null));
+        assertEquals(true, jetMap.containsAll(1, values));
+        assertEquals(true, jetMap.containsAll(1, values.getList()));
+        assertEquals(false, jetMap.containsAny(1, values));
+        assertEquals(false, jetMap.containsAny(1, values.getList()));
+
+        //empty with values
+        values = values.insert(1).insert(1).insert(2);
+        assertEquals(false, emptyMap.contains(1, 1));
+        assertEquals(false, emptyMap.containsAll(1, values));
+        assertEquals(false, emptyMap.containsAll(1, values.getList()));
+        assertEquals(false, emptyMap.containsAny(1, values));
+        assertEquals(false, emptyMap.containsAny(1, values.getList()));
+
+        //values with values
+        //smaller values
+        assertEquals(true, jetMap.contains(1, 1));
+        assertEquals(true, jetMap.containsAll(1, values));
+        assertEquals(true, jetMap.containsAll(1, values.getList()));
+        assertEquals(true, jetMap.containsAny(1, values));
+        assertEquals(true, jetMap.containsAny(1, values.getList()));
+
+        //extra values
+        values = values.insert(5);
+        assertEquals(false, jetMap.containsAll(1, values));
+        assertEquals(false, jetMap.containsAll(1, values.getList()));
+        assertEquals(true, jetMap.containsAny(1, values));
+        assertEquals(true, jetMap.containsAny(1, values.getList()));
+
+        //different values
+        values = values.deleteAll().insert(3).insert(5);
+        assertEquals(false, jetMap.containsAll(1, values));
+        assertEquals(false, jetMap.containsAll(1, values.getList()));
+        assertEquals(false, jetMap.containsAny(1, values));
+        assertEquals(false, jetMap.containsAny(1, values.getList()));
+    }
+
+    private void verifySetOperations(JImmutableSetMap<Integer, Integer> emptyMap)
+    {
         JImmutableSet<Integer> emptyJet = JImmutableHashSet.of();
         final Set<Integer> emptySet = Collections.emptySet();
 
@@ -280,7 +334,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         }
 
     }
-
 
 
     public void verifyRandom(JImmutableSetMap<Integer, Integer> emptyJetMap,

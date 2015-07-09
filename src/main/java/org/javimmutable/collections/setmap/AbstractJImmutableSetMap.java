@@ -124,6 +124,13 @@ public abstract class AbstractJImmutableSetMap<K, V>
     }
 
     @Override
+    public boolean contains(@Nonnull K key)
+    {
+        return !contents.find(key).isEmpty();
+    }
+    //TODO: add method to unit tests
+
+    @Override
     public boolean contains(@Nonnull K key,
                             @Nullable V value)
     {
@@ -157,7 +164,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public boolean containsAll(@Nonnull K key,
                                @Nonnull Iterator<? extends V> values)
     {
-        return getSet(key).containsAll(values);
+        return contains(key) && getSet(key).containsAll(values);
     }
 
     @Override

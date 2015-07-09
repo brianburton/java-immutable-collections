@@ -80,7 +80,7 @@ public interface JImmutableSetMap<K, V>
                                   @Nonnull JImmutableSet<V> value);
 
     /**
-     Add value to the Set for the specified key. Note that if the value has already been
+     * Add value to the Set for the specified key. Note that if the value has already been
      * added, it will not be added again.
      *
      * @param value
@@ -147,6 +147,14 @@ public interface JImmutableSetMap<K, V>
                                      @Nonnull Iterator<? extends V> values);
 
     /**
+     * Determines if the setmap contains the specified key.
+     *
+     * @param key
+     * @return
+     */
+    boolean contains(@Nonnull K key);
+
+    /**
      * Determines if the Set at key contains the specified value.
      *
      * @param key
@@ -208,7 +216,7 @@ public interface JImmutableSetMap<K, V>
                         @Nonnull Cursorable<? extends V> values);
 
     /**
-     * Determines if the Set at key conains any values in the specified collection.
+     * Determines if the Set at key contains any values in the specified collection.
      *
      * @param key
      * @param values
@@ -218,7 +226,7 @@ public interface JImmutableSetMap<K, V>
                         @Nonnull Collection<? extends V> values);
 
     /**
-     * Determines if the Set at key conains any values in the specified collection.
+     * Determines if the Set at key contains any values in the specified collection.
      *
      * @param key
      * @param values
@@ -228,7 +236,7 @@ public interface JImmutableSetMap<K, V>
                         @Nonnull Cursor<? extends V> values);
 
     /**
-     * Determines if the Set at key conains any values in the specified collection.
+     * Determines if the Set at key contains any values in the specified collection.
      *
      * @param key
      * @param values
@@ -256,7 +264,8 @@ public interface JImmutableSetMap<K, V>
      * @return
      */
     @Nonnull
-    JImmutableSetMap<K, V> delete(@Nonnull K key, @Nonnull V value);
+    JImmutableSetMap<K, V> delete(@Nonnull K key,
+                                  @Nonnull V value);
 
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the

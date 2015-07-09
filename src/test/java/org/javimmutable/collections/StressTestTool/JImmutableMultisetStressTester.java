@@ -210,14 +210,14 @@ public class JImmutableMultisetStressTester
             System.out.printf("contains %d%n", multi.valueCount());
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(6)) {
-                case 0:
+                case 0: //containsAtLeast(T, int)
                     String value = (random.nextBoolean()) ? valueInMulti(multiList, random) : makeValue(tokens, random);
                     int count = random.nextInt(multi.valueCount());
                     if (multi.containsAtLeast(value, count) != (expected.count(value) >= count)) {
                         throw new RuntimeException(String.format("containsAtLeast(value, count) method call failed for %s, %d - expected %b found %b%n", value, count, expected.contains(value), multi.contains(value)));
                     }
                     break;
-                case 1:
+                case 1: //containsAllOccurrences(Cursorable)
                     List<String> values = new ArrayList<String>();
                     for (int n = 0; n < random.nextInt(10); ++n) {
                         if (random.nextBoolean()) {
@@ -230,7 +230,7 @@ public class JImmutableMultisetStressTester
                         throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(IterableCursorable.of(values)), containsAllByOccurrence(expected, values)));
                     }
                     break;
-                case 2:
+                case 2: //containsAllOccurrences(Collection)
                     values = new ArrayList<String>();
                     for (int n = 0; n < random.nextInt(10); ++n) {
                         if (random.nextBoolean()) {
