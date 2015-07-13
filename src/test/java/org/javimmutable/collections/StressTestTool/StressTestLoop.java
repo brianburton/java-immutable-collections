@@ -35,9 +35,6 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.TreeMultiset;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -54,7 +51,6 @@ import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -105,6 +101,9 @@ public class StressTestLoop
                 .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>insertOrderSetMap(), LinkedHashMap.class))
                 .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>sortedSetMap(), TreeMap.class))
 
+                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>listMap(), HashMap.class))
+                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>insertOrderListMap(), LinkedHashMap.class))
+                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
         ;
 
         OptionParser parser = makeOptionParser(testers);
@@ -144,7 +143,7 @@ public class StressTestLoop
         for(String option : tester.getOptions()) {
             if(options.has(option)) {
                 if(options.hasArgument(option)) {
-                    List<String> arguments = (List<String>)options.valuesOf(option);
+                    @SuppressWarnings("unchecked") List<String> arguments = (List<String>)options.valuesOf(option);
                     for(String argument : arguments) {
                         for (String argOption : tester.getOptions()) {
                             if (argument.equals(argOption)) {

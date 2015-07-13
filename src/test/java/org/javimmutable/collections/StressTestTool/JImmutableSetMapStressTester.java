@@ -45,8 +45,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Test program for all implementations of JImmutableSetMap. Divided into five sections:
+ * growing (adds new key-set pairs), updating (modifies the sets in the setmap without
+ * changing the keys), shrinking (removes key-set pairs), contains (tests methods that check
+ * for keys or values in a set), and cleanup (empties the setmap of all key-set pairs).
+ */
 public class JImmutableSetMapStressTester
-        extends AbstractStressTestable
+        extends AbstractMapVariantStressTestable
 {
     private final JImmutableSetMap<String, String> setmap;
     private final Class<? extends Map> expectedClass;
@@ -91,13 +97,13 @@ public class JImmutableSetMapStressTester
                 case 1: //insert(K, V)
                     String value = makeValue(tokens, random);
                     setmap = setmap.insert(key, value);
-                    addToSetAt(expected, key, value);
+                    addAt(expected, key, value);
                     break;
                 case 2: //insert(Entry<K, V>)
                     value = makeValue(tokens, random);
                     MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
-                    addToSetAt(expected, key, value);
+                    addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cusorable)
                     JImmutableList<String> values = makeInsertList(tokens, random);
@@ -158,13 +164,13 @@ public class JImmutableSetMapStressTester
                 case 1: //insert(K, V)
                     String value = makeValue(tokens, random);
                     setmap = setmap.insert(key, value);
-                    addToSetAt(expected, key, value);
+                    addAt(expected, key, value);
                     break;
                 case 2: //insert(Entry<K, V>)
                     value = makeValue(tokens, random);
                     MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
-                    addToSetAt(expected, key, value);
+                    addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cursorable)
                     JImmutableList<String> values = makeInsertList(tokens, random);
@@ -282,7 +288,7 @@ public class JImmutableSetMapStressTester
                         throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedSet, set));
                     }
                     break;
-                case 6: //getValueOr(K)
+                case 6: //getValueOr(K, V)
                     set = setmap.getValueOr(key, JImmutables.set(""));
                     expectedSet = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set("");
                     if (!set.equals(expectedSet)) {
@@ -304,7 +310,7 @@ public class JImmutableSetMapStressTester
         }
 
         System.out.printf("cleanup %d%n", setmap.size());
-        while (setmap.size() > 20) {
+        while (setmap.size() > random.nextInt(20)) {
             //delete(K)
             int index = random.nextInt(keysList.size());
             String key = keysList.get(index);
@@ -413,16 +419,6 @@ public class JImmutableSetMapStressTester
         return set;
     }
 
-    private JImmutableList<String> makeInsertList(JImmutableList<String> tokens,
-                                                  Random random)
-    {
-        JImmutableList<String> list = JImmutables.list();
-        for (int i = 0; i < random.nextInt(3); ++i) {
-            list = list.insert(makeValue(tokens, random));
-        }
-        return list;
-    }
-
     private JImmutableList<String> makeDeleteList(String key,
                                                   Map<String, JImmutableSet<String>> expected,
                                                   Random random)
@@ -435,13 +431,6 @@ public class JImmutableSetMapStressTester
         return list;
     }
 
-    private void addToSetAt(Map<String, JImmutableSet<String>> expected,
-                            String key,
-                            String value)
-    {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
-        expected.put(key, set.insert(value));
-    }
 
     private void addAllToSetAt(Map<String, JImmutableSet<String>> expected,
                                String key,
@@ -510,13 +499,12 @@ public class JImmutableSetMapStressTester
         return values;
     }
 
-    private boolean equivalentHolder(Holder<JImmutableSet<String>> holder,
-                                     Holder<JImmutableSet<String>> expectedHolder)
+    private void addAt(Map<String, JImmutableSet<String>> expected,
+                       String key,
+                       String value)
     {
-        return (holder.isEmpty() == expectedHolder.isEmpty()) &&
-               (holder.isFilled() == expectedHolder.isFilled()) &&
-               !(holder.isFilled() && !(holder.getValue().equals(expectedHolder.getValue()))) &&
-               (((holder.getValueOrNull() == null) && (expectedHolder.getValueOrNull() == null)) || (holder.getValueOrNull() != null && holder.getValueOrNull().equals(expectedHolder.getValueOrNull()))) &&
-               (holder.getValueOr(JImmutables.<String>set()).equals(expectedHolder.getValueOr(JImmutables.<String>set())));
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        set = set.insert(value);
+        expected.put(key, set);
     }
 }

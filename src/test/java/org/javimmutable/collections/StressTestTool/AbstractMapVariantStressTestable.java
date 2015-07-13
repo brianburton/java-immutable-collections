@@ -35,43 +35,20 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
-
-public abstract class AbstractStressTestable
+public abstract class AbstractMapVariantStressTestable
+        extends AbstractStressTestable
 {
-    abstract void execute(Random random,
-                          JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
-
-    abstract JImmutableList<String> getOptions();
-
-    protected String makeValue(JImmutableList<String> tokens,
-                               Random random)
+    protected <T extends Iterable<String>> boolean equivalentHolder(Holder<T> holder,
+                                                                    Holder<T> expectedHolder)
     {
-        int length = 1 + random.nextInt(250);
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length) {
-            sb.append(tokens.get(random.nextInt(tokens.size())));
-        }
-        return sb.toString();
-    }
-
-    protected String makeClassOption(Object obj)
-    {
-        return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").toLowerCase();
-    }
-
-    protected JImmutableList<String> makeInsertList(JImmutableList<String> tokens,
-                                                    Random random)
-    {
-        JImmutableList<String> list = JImmutables.list();
-        for (int i = 0; i < random.nextInt(3); ++i) {
-            list = list.insert(makeValue(tokens, random));
-        }
-        return list;
+        return (holder.isEmpty() == expectedHolder.isEmpty()) &&
+               (holder.isFilled() == expectedHolder.isFilled()) &&
+               !(holder.isFilled() && !(holder.getValue().equals(expectedHolder.getValue()))) &&
+               (((holder.getValueOrNull() == null) && (expectedHolder.getValueOrNull() == null)) || (holder.getValueOrNull() != null && holder.getValueOrNull().equals(expectedHolder.getValueOrNull())));
+              // && (holder.getValueOr(JImmutables.<String>set()).equals(expectedHolder.getValueOr(JImmutables.<String>set())));
     }
 }

@@ -85,40 +85,40 @@ public class JImmutableSetStressTester
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", set.size());
             for (int i = 0; i < size / 3; ++i) {
-                List<String> values = new ArrayList<String>();
-                for (int n = 0; n < random.nextInt(3); ++n) {
-                    values.add(makeValue(tokens, random));
-                }
                 switch (random.nextInt(5)) {
-                case 0:
+                case 0: //insert(T)
                     String value = makeValue(tokens, random);
                     setList = insertUnique(value, setList, expected);
                     set = set.insert(value);
                     expected.add(value);
                     verifySetList(setList);
                     break;
-                case 1:
-                    setList = insertAllUnique(values, setList, expected);
-                    set = set.insertAll(IterableCursorable.of(values));
-                    expected.addAll(values);
-                    verifySetList(setList);
-                    break;
-                case 2:
+                case 1: //insertAll(Cursorable)
+                    JImmutableList<String> values = makeInsertList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.insertAll(values);
-                    expected.addAll(values);
+                    expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
-                case 3:
+                case 2: //insertAll(Collection)
+                    values = makeInsertList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
-                    set = set.union(IterableCursorable.of(values));
-                    expected.addAll(values);
+                    set = set.insertAll(values.getList());
+                    expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
-                case 4:
+                case 3: //union(Cursorable)
+                    values = makeInsertList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.union(values);
-                    expected.addAll(values);
+                    expected.addAll(values.getList());
+                    verifySetList(setList);
+                    break;
+                case 4: //union(Collection)
+                    values = makeInsertList(tokens, random);
+                    setList = insertAllUnique(values, setList, expected);
+                    set = set.union(values.getList());
+                    expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
                 default:
@@ -308,7 +308,7 @@ public class JImmutableSetStressTester
         return setList;
     }
 
-    private JImmutableRandomAccessList<String> insertAllUnique(List<String> values,
+    private JImmutableRandomAccessList<String> insertAllUnique(Iterable<String> values,
                                                                JImmutableRandomAccessList<String> setList,
                                                                Set<String> expected)
     {
