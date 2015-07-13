@@ -60,7 +60,7 @@ import java.util.Random;
  * pairs).
  */
 public class JImmutableListMapStressTester
-        extends AbstractMapVariantStressTestable
+        extends AbstractStressTestable
 {
     private final JImmutableListMap<String, String> listmap;
     private final Class<? extends Map> expectedClass;
@@ -264,15 +264,6 @@ public class JImmutableListMapStressTester
             List<String> values = asList(entry.getValue());
             StandardCursorTest.listCursorTest(values, listmap.valuesCursor(key));
         }
-    }
-
-    private List<String> asList(Iterable<String> values)
-    {
-        List<String> list = new ArrayList<String>();
-        for (String value : values) {
-            list.add(value);
-        }
-        return list;
     }
 
     private void verifyKeysList(JImmutableRandomAccessList<String> keysList,

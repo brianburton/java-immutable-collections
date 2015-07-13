@@ -38,13 +38,13 @@ package org.javimmutable.collections.StressTestTool;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
@@ -64,7 +64,7 @@ import java.util.*;
 public class StressTestLoop
 {
 
-   public static void main(String[] argv)
+    public static void main(String[] argv)
             throws Exception
     {
         new StressTestLoop().execute(argv);
@@ -104,7 +104,9 @@ public class StressTestLoop
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>listMap(), HashMap.class))
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>insertOrderListMap(), LinkedHashMap.class))
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
-        ;
+
+                .insert(new JImmutableArrayStressTester(JImmutables.<String>array()))
+                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()));
 
         OptionParser parser = makeOptionParser(testers);
         OptionSpec<String> file = parser.accepts("file").withRequiredArg();
@@ -117,10 +119,10 @@ public class StressTestLoop
 
         JImmutableList<String> tokens;
 
-        if(options.has("file")) {
+        if (options.has("file")) {
             List<String> filenames = options.valuesOf(file);
             tokens = loadTokens(filenames);
-            System.out.printf("Loaded %d tokens from %d files%n",  tokens.size(), filenames.size());
+            System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
             tokens = loadTokens("src/site/apt/index.apt");
             System.out.printf("Loaded %d tokens from index.apt%n", tokens.size());
@@ -128,7 +130,7 @@ public class StressTestLoop
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
-                if(!options.hasOptions() || filter(options, tester)) {
+                if (!options.hasOptions() || filter(options, tester)) {
                     System.out.printf("Starting with seed %d%n", seed);
                     tester.execute(random, tokens);
                     seed = System.currentTimeMillis();
@@ -138,13 +140,14 @@ public class StressTestLoop
         }
     }
 
-    private boolean filter(OptionSet options, AbstractStressTestable tester)
+    private boolean filter(OptionSet options,
+                           AbstractStressTestable tester)
     {
-        for(String option : tester.getOptions()) {
-            if(options.has(option)) {
-                if(options.hasArgument(option)) {
+        for (String option : tester.getOptions()) {
+            if (options.has(option)) {
+                if (options.hasArgument(option)) {
                     @SuppressWarnings("unchecked") List<String> arguments = (List<String>)options.valuesOf(option);
-                    for(String argument : arguments) {
+                    for (String argument : arguments) {
                         for (String argOption : tester.getOptions()) {
                             if (argument.equals(argOption)) {
                                 return true;
@@ -162,8 +165,8 @@ public class StressTestLoop
     private OptionParser makeOptionParser(JImmutableList<AbstractStressTestable> testers)
     {
         OptionParser parser = new OptionParser();
-        for(AbstractStressTestable tester : testers) {
-            for(String option : tester.getOptions()) {
+        for (AbstractStressTestable tester : testers) {
+            for (String option : tester.getOptions()) {
                 parser.accepts(option).withOptionalArg();
             }
         }
@@ -193,74 +196,6 @@ public class StressTestLoop
             throw new RuntimeException("expected to be at end of stack but found more values");
         }
         System.out.println("PersistentStack test completed without errors");
-    }
-
-    private void testArray(JImmutableList<String> tokens,
-                           Random random)
-    {
-        final int tokenCount = 1 + random.nextInt(100000);
-        final List<Integer> keys = new ArrayList<Integer>();
-        final Map<Integer, String> expected = new HashMap<Integer, String>();
-        JImmutableArray<String> map = JImmutables.array();
-        JImmutableRandomAccessList<Integer> pkeys = JImmutables.ralist();
-        JImmutableRandomAccessList<String> pvalues = JImmutables.ralist();
-        System.out.printf("starting %s test with %d tokens and factory %s%n", map.getClass().getSimpleName(), tokenCount, map.getClass().getSimpleName());
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", map.size());
-            for (int i = 0; i < tokenCount / 3; ++i) {
-                int key = random.nextInt();
-                String value = makeKey(tokens, random);
-                keys.add(key);
-                pkeys = pkeys.insert(key);
-                pvalues = pvalues.insert(value);
-                expected.put(key, value);
-                map = map.assign(key, value);
-            }
-            verifyContents(expected, map);
-            System.out.printf("updating %d%n", map.size());
-            for (int i = 0; i < map.size(); ++i) {
-                int keyIndex = random.nextInt(keys.size());
-                int key = pkeys.get(keyIndex);
-                int valueIndex = random.nextInt(keys.size());
-                String value = pvalues.get(valueIndex);
-                expected.put(key, value);
-                pvalues = pvalues.assign(keyIndex, value);
-                map = map.assign(key, value);
-            }
-            verifyContents(expected, map);
-            System.out.printf("shrinking %d%n", map.size());
-            for (int i = 0; i < tokenCount / 6; ++i) {
-                int keyIndex = random.nextInt(keys.size());
-                int key = pkeys.get(keyIndex);
-                expected.remove(key);
-                map = map.delete(key);
-                keys.remove(keyIndex);
-                pkeys = pkeys.delete(keyIndex);
-                pvalues = pvalues.delete(keyIndex);
-            }
-            verifyContents(expected, map);
-        }
-        if (keys.size() != pkeys.size()) {
-            throw new RuntimeException(String.format("key size mismatch - expected %d found %d%n", keys.size(), pkeys.size()));
-        }
-        System.out.printf("comparing %d keys%n", pkeys.size());
-        for (int i = 0; i < pkeys.size(); ++i) {
-            int key = keys.get(i);
-            int pkey = pkeys.get(i);
-            if (key != pkey) {
-                throw new RuntimeException(String.format("key mismatch - expected %s found %s%n", key, pkey));
-            }
-        }
-        System.out.printf("cleanup %d%n", map.size());
-        for (Integer key : keys) {
-            expected.remove(key);
-            map = map.delete(key);
-        }
-        if (map.size() != 0) {
-            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
-        }
-        verifyContents(expected, map);
-        System.out.printf("completed %s test without errors%n", map.getClass().getSimpleName());
     }
 
     private void testBadHashMap(JImmutableList<String> tokens,
@@ -412,29 +347,6 @@ public class StressTestLoop
         }
     }
 
-    private <V> void verifyContents(Map<Integer, V> expected,
-                                    JImmutableArray<V> map)
-    {
-        System.out.printf("checking contents with size %d%n", map.size());
-        if (map.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), map.size()));
-        }
-        for (JImmutableMap.Entry<Integer, V> entry : map) {
-            V mapValue = map.find(entry.getKey()).getValueOrNull();
-            V expectedValue = expected.get(entry.getKey());
-            if (!mapValue.equals(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
-            }
-        }
-        for (Map.Entry<Integer, V> entry : expected.entrySet()) {
-            V mapValue = map.find(entry.getKey()).getValueOrNull();
-            V expectedValue = expected.get(entry.getKey());
-            if (!mapValue.equals(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, mapValue));
-            }
-        }
-    }
-
     private String makeKey(JImmutableList<String> tokens,
                            Random random)
     {
@@ -461,16 +373,6 @@ public class StressTestLoop
     {
         JImmutableSet<String> tokens = JImmutables.set();
         tokens = addTokensFromFile(tokens, filename);
-        return JImmutables.list(tokens);
-    }
-
-    private JImmutableList<String> loadTokens(String[] filenames)
-            throws IOException
-    {
-        JImmutableSet<String> tokens = JImmutables.set();
-        for (String filename : filenames) {
-            tokens = addTokensFromFile(tokens, filename);
-        }
         return JImmutables.list(tokens);
     }
 

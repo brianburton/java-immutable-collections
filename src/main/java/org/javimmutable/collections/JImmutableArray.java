@@ -146,9 +146,9 @@ public interface JImmutableArray<T>
     JImmutableArray<T> deleteAll();
 
     /**
-     * Creates an unmodifiable java.util.Map reflecting the values of this PersistentMap.
+     * Creates an unmodifiable java.util.Map reflecting the values of the JImmutableMap backing the array.
      *
-     * @return Map view of this PersistentMap
+     * @return Map view of this JImmutableMap
      */
     @Nonnull
     Map<Integer, T> getMap();

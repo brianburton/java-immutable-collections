@@ -702,14 +702,4 @@ public class JImmutableMultisetStressTester
             throw new RuntimeException();
         }
     }
-
-    private List<String> asList(Iterable<String> values)
-    {
-        List<String> list = new ArrayList<String>();
-        for(String value : values) {
-            list.add(value);
-        }
-        return list;
-    }
-
 }

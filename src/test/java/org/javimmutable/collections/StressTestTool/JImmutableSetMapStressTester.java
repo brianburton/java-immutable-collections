@@ -52,7 +52,7 @@ import java.util.Random;
  * for keys or values in a set), and cleanup (empties the setmap of all key-set pairs).
  */
 public class JImmutableSetMapStressTester
-        extends AbstractMapVariantStressTestable
+        extends AbstractStressTestable
 {
     private final JImmutableSetMap<String, String> setmap;
     private final Class<? extends Map> expectedClass;
@@ -398,15 +398,6 @@ public class JImmutableSetMapStressTester
             List<String> values = asList(entry.getValue());
             StandardCursorTest.listCursorTest(values, setmap.valuesCursor(key));
         }
-    }
-
-    private List<String> asList(Iterable<String> values)
-    {
-        List<String> list = new ArrayList<String>();
-        for (String value : values) {
-            list.add(value);
-        }
-        return list;
     }
 
     private JImmutableSet<String> makeInsertSet(JImmutableList<String> tokens,

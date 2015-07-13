@@ -35,10 +35,13 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public abstract class AbstractStressTestable
@@ -73,5 +76,24 @@ public abstract class AbstractStressTestable
             list = list.insert(makeValue(tokens, random));
         }
         return list;
+    }
+
+    protected <T> List<T> asList(Iterable<T> values)
+    {
+        List<T> list = new ArrayList<T>();
+        for (T value : values) {
+            list.add(value);
+        }
+        return list;
+    }
+
+    protected <T> boolean equivalentHolder(Holder<T> holder,
+                                           Holder<T> expectedHolder)
+    {
+        return (holder.isEmpty() == expectedHolder.isEmpty()) &&
+               (holder.isFilled() == expectedHolder.isFilled()) &&
+               !(holder.isFilled() && !(holder.getValue().equals(expectedHolder.getValue()))) &&
+               (((holder.getValueOrNull() == null) && (expectedHolder.getValueOrNull() == null)) || (holder.getValueOrNull() != null && holder.getValueOrNull().equals(expectedHolder.getValueOrNull())));
+        // && (holder.getValueOr(JImmutables.<String>set()).equals(expectedHolder.getValueOr(JImmutables.<String>set())));
     }
 }

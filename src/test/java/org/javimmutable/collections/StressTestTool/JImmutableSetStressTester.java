@@ -68,8 +68,7 @@ public class JImmutableSetStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("set").insert(makeClassOption(set));
-        return options;
+        return options.insert("set").insert(makeClassOption(set));
     }
 
     @Override
@@ -296,8 +295,6 @@ public class JImmutableSetStressTester
         }
     }
 
-
-
     private JImmutableRandomAccessList<String> insertUnique(String value,
                                                             JImmutableRandomAccessList<String> setList,
                                                             Set<String> expected)
@@ -377,12 +374,4 @@ public class JImmutableSetStressTester
         return setList;
     }
 
-    private List<String> asList(Iterable<String> values)
-    {
-        List<String> list = new ArrayList<String>();
-        for(String value : values) {
-            list.add(value);
-        }
-        return list;
-    }
 }

@@ -22,8 +22,7 @@ public class JImmutableListStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("list").insert(makeClassOption(list));
-        return options;
+        return options.insert("list").insert(makeClassOption(list));
     }
 
     @Override
