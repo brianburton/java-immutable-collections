@@ -7,10 +7,10 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.List;
 
 public abstract class AbstractListStressTestable
-    extends AbstractStressTestable
+        extends AbstractStressTestable
 {
-    protected void verifyContents(List<String> expected,
-                                  JImmutableList<String> list)
+    protected void verifyContents(JImmutableList<String> list,
+                                  List<String> expected)
     {
         System.out.printf("checking contents with size %d%n", list.size());
         if (list.isEmpty() != expected.isEmpty()) {
@@ -28,19 +28,16 @@ public abstract class AbstractListStressTestable
             }
             index += 1;
         }
-        index = 0;
-        for (String listValue : list) {
-            String expectedValue = expected.get(index);
-            if (!expectedValue.equals(listValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, listValue));
-            }
-            index += 1;
+        if (!expected.equals(list.getList())) {
+            throw new RuntimeException("method call failed - getList()\n");
         }
-        if(!expected.equals(list.getList())) {
-            throw new RuntimeException("getList() call failed\n");
-        }
+        list.checkInvariants();
+    }
+
+    protected void verifyCursor(JImmutableList<String> list,
+                                List<String> expected)
+    {
         StandardCursorTest.listCursorTest(expected, list.cursor());
         StandardCursorTest.listIteratorTest(expected, list.iterator());
-        list.checkInvariants();
     }
 }

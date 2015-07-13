@@ -42,8 +42,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;

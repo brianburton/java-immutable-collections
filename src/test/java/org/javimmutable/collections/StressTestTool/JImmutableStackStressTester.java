@@ -45,6 +45,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Test program for implementations of JImmutableStack. Divided into three
+ * sections: growing (adds values to the stack), shrinking (removes values),
+ * and cleanup (empties the stack of all values).
+ */
 public class JImmutableStackStressTester
         extends AbstractStressTestable
 {

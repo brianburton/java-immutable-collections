@@ -93,28 +93,28 @@ public class JImmutableSetStressTester
                     verifySetList(setList);
                     break;
                 case 1: //insertAll(Cursorable)
-                    JImmutableList<String> values = makeInsertList(tokens, random);
+                    JImmutableList<String> values = makeInsertJList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.insertAll(values);
                     expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
                 case 2: //insertAll(Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.insertAll(values.getList());
                     expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
                 case 3: //union(Cursorable)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.union(values);
                     expected.addAll(values.getList());
                     verifySetList(setList);
                     break;
                 case 4: //union(Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setList = insertAllUnique(values, setList, expected);
                     set = set.union(values.getList());
                     expected.addAll(values.getList());

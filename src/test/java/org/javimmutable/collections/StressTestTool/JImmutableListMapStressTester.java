@@ -98,7 +98,7 @@ public class JImmutableListMapStressTester
                 keysList = (expected.containsKey(key)) ? keysList : keysList.insert(key);
                 switch (random.nextInt(3)) {
                 case 0: //assign(K, JList)
-                    JImmutableList<String> values = makeInsertList(tokens, random);
+                    JImmutableList<String> values = makeInsertJList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;
@@ -124,7 +124,7 @@ public class JImmutableListMapStressTester
                 String key = keysList.get(random.nextInt(keysList.size()));
                 switch (random.nextInt(3)) {
                 case 0: //assign(K, JList)
-                    JImmutableList<String> values = makeInsertList(tokens, random);
+                    JImmutableList<String> values = makeInsertJList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;

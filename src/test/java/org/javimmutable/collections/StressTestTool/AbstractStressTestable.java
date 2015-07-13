@@ -68,12 +68,22 @@ public abstract class AbstractStressTestable
         return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").toLowerCase();
     }
 
-    protected JImmutableList<String> makeInsertList(JImmutableList<String> tokens,
-                                                    Random random)
+    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
+                                                     Random random)
     {
         JImmutableList<String> list = JImmutables.list();
         for (int i = 0; i < random.nextInt(3); ++i) {
             list = list.insert(makeValue(tokens, random));
+        }
+        return list;
+    }
+
+    protected List<String> makeInsertList(JImmutableList<String> tokens,
+                                          Random random)
+    {
+        List<String> list = new ArrayList<String>();
+        for (int i = 0; i < random.nextInt(3); ++i) {
+            list.add(makeValue(tokens, random));
         }
         return list;
     }

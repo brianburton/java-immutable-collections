@@ -44,6 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Test program for all implementations of JImmutableRandomAccessList. Tests only the functionality
+ * that is not contained in a regular JImmutableList. Divided into three sections: growing (adds
+ * values to the middle of the ralist), shrinking (removes values from the middle), and cleanup
+ * (empties the ralist of all values).
+ */
 public class JImmutableRandomAccessListStressTester
         extends AbstractListStressTestable
 {
@@ -58,8 +64,7 @@ public class JImmutableRandomAccessListStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("ralist").insert(makeClassOption(ralist));
-        return options;
+        return options.insert("ralist").insert(makeClassOption(ralist));
     }
 
     @Override
@@ -67,6 +72,7 @@ public class JImmutableRandomAccessListStressTester
                         JImmutableList<String> tokens)
     {
         List<String> expected = new ArrayList<String>();
+        JImmutableRandomAccessList<String> ralist = this.ralist;
         int size = random.nextInt(100000);
 
         String initialValue = makeValue(tokens, random);
@@ -80,27 +86,32 @@ public class JImmutableRandomAccessListStressTester
 
             for (int i = 0; i < size / 3; ++i) {
                 int index = random.nextInt(ralist.size());
-                if (random.nextBoolean()) {
+                switch (random.nextInt(2)) {
+                case 0: //insert(int, T)
                     String value = makeValue(tokens, random);
                     ralist = ralist.insert(index, value);
                     expected.add(index, value);
-                } else {
-                    List<String> values = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(4); ++n) {
-                        values.add(makeValue(tokens, random));
-                    }
-                    ralist = (random.nextBoolean()) ? ralist.insertAll(index, IterableCursorable.of(values)) : ralist.insertAll(index, values);
+                    break;
+                case 1: //insertAll(int, Cursorable);
+                    List<String> values = makeInsertList(tokens, random);
+                    ralist = ralist.insertAll(index, IterableCursorable.of(values));
+                    expected.addAll(index, values);
+                    break;
+                case 2: //insertAll(int, Collection)
+                    values = makeInsertList(tokens, random);
+                    ralist = ralist.insertAll(index, values);
                     expected.addAll(index, values);
                 }
             }
-            verifyContents(expected, ralist);
+            verifyContents(ralist, expected);
             System.out.printf("shrinking %d%n", ralist.size());
             for (int i = 0; i < size / 6; ++i) {
                 int index = random.nextInt(ralist.size());
                 ralist = ralist.delete(index);
                 expected.remove(index);
             }
-            verifyContents(expected, ralist);
+            verifyContents(ralist, expected);
+            verifyCursor(ralist, expected);
         }
         System.out.printf("cleanup %d%n", expected.size());
         while (ralist.size() > 0) {
@@ -111,7 +122,7 @@ public class JImmutableRandomAccessListStressTester
         if (ralist.size() != 0) {
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", ralist.size()));
         }
-        verifyContents(expected, ralist);
+        verifyContents(ralist, expected);
         System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", ralist.getClass().getSimpleName());
     }
 }

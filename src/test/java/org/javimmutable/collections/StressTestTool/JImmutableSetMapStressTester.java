@@ -106,32 +106,32 @@ public class JImmutableSetMapStressTester
                     addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cusorable)
-                    JImmutableList<String> values = makeInsertList(tokens, random);
+                    JImmutableList<String> values = makeInsertJList(tokens, random);
                     setmap = setmap.insertAll(key, values);
                     addAllToSetAt(expected, key, values);
                     break;
                 case 4: //insertAll(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.insertAll(key, values.getList());
                     addAllToSetAt(expected, key, values);
                     break;
                 case 5: //union(K, Cursorable)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.union(key, values);
                     unionOnSetAt(expected, key, values);
                     break;
                 case 6: //union(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.union(key, values.getList());
                     unionOnSetAt(expected, key, values);
                     break;
                 case 7: //intersection(K, Cursorable)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.intersection(key, values);
                     intersectionOnSetAt(expected, key, values);
                     break;
                 case 8: //intersection(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.intersection(key, values.getList());
                     intersectionOnSetAt(expected, key, values);
                     break;
@@ -173,32 +173,32 @@ public class JImmutableSetMapStressTester
                     addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cursorable)
-                    JImmutableList<String> values = makeInsertList(tokens, random);
+                    JImmutableList<String> values = makeInsertJList(tokens, random);
                     setmap = setmap.insertAll(key, values);
                     addAllToSetAt(expected, key, values);
                     break;
                 case 4: //insertAll(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.insertAll(key, values.getList());
                     addAllToSetAt(expected, key, values);
                     break;
                 case 5: //union(K, Cursorable)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.union(key, values);
                     unionOnSetAt(expected, key, values);
                     break;
                 case 6: //union(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.union(key, values.getList());
                     unionOnSetAt(expected, key, values);
                     break;
                 case 7: //intersection(K, Cursorable)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.intersection(key, values);
                     intersectionOnSetAt(expected, key, values);
                     break;
                 case 8: //intersection(K, Collection)
-                    values = makeInsertList(tokens, random);
+                    values = makeInsertJList(tokens, random);
                     setmap = setmap.intersection(key, values.getList());
                     intersectionOnSetAt(expected, key, values);
                     break;
