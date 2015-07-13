@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
@@ -86,4 +87,9 @@ public interface JImmutableStack<T>
      */
     @Nonnull
     JImmutableStack<T> remove();
+
+    /**
+     * @return List containing the elements of this stack in order
+     */
+    List<T> makeList();
 }

@@ -106,7 +106,12 @@ public class StressTestLoop
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
 
                 .insert(new JImmutableArrayStressTester(JImmutables.<String>array()))
-                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()));
+                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()))
+
+                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()))
+                ;
+
+
 
         OptionParser parser = makeOptionParser(testers);
         OptionSpec<String> file = parser.accepts("file").withRequiredArg();
@@ -172,30 +177,6 @@ public class StressTestLoop
         }
         parser.accepts("seed").withRequiredArg().ofType(Long.class);
         return parser;
-    }
-
-    private void testStack(Random random)
-    {
-        JImmutableStack<Integer> stack = JImmutables.stack();
-        LinkedList<Integer> expected = new LinkedList<Integer>();
-        int size = random.nextInt(1000);
-        System.out.printf("Testing PersistentStack of size %d%n", size);
-        for (int i = 0; i < size; ++i) {
-            int value = random.nextInt(999999999);
-            stack = stack.insert(value);
-            expected.add(0, value);
-        }
-        Sequence<Integer> seq = stack;
-        for (Integer value : expected) {
-            if (!value.equals(seq.getHead())) {
-                throw new RuntimeException(String.format("found mismatch expected %d found %d", value, seq.getHead()));
-            }
-            seq = seq.getTail();
-        }
-        if (!seq.isEmpty()) {
-            throw new RuntimeException("expected to be at end of stack but found more values");
-        }
-        System.out.println("PersistentStack test completed without errors");
     }
 
     private void testBadHashMap(JImmutableList<String> tokens,

@@ -51,10 +51,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Singly linked list implementation of PersistentList that stores and retrieves values
+ * Singly linked list implementation of JImmutableStack that stores and retrieves values
  * in the reverse order of the corresponding add() method calls.  If forward or random
- * access to stored values is required use PersistentArrayList or PersistentTreeList
- * instead but this class  is significantly faster when its limitations are acceptable.
+ * access to stored values is required use JImmutableArrayList or JImmutableTreeList
+ * instead, but this class is significantly faster when its limitations are acceptable.
  *
  * @param <T>
  */
