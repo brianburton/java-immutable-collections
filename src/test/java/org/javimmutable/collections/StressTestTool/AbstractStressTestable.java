@@ -37,6 +37,7 @@ package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.lang.reflect.InvocationTargetException;
@@ -98,12 +99,34 @@ public abstract class AbstractStressTestable
     }
 
     protected <T> boolean equivalentHolder(Holder<T> holder,
-                                           Holder<T> expectedHolder)
+                                       Holder<T> expectedHolder)
     {
-        return (holder.isEmpty() == expectedHolder.isEmpty()) &&
-               (holder.isFilled() == expectedHolder.isFilled()) &&
-               !(holder.isFilled() && !(holder.getValue().equals(expectedHolder.getValue()))) &&
-               (((holder.getValueOrNull() == null) && (expectedHolder.getValueOrNull() == null)) || (holder.getValueOrNull() != null && holder.getValueOrNull().equals(expectedHolder.getValueOrNull())));
-        // && (holder.getValueOr(JImmutables.<String>set()).equals(expectedHolder.getValueOr(JImmutables.<String>set())));
+        if (holder.isFilled() != expectedHolder.isFilled()) {
+            return false;
+        }
+        if (holder.isFilled()) {
+            return holder.getValue().equals(expectedHolder.getValue());
+        }
+        return true;
+    }
+
+    protected <K, V> boolean equivalentEntryHolder(Holder<JImmutableMap.Entry<K, V>> holder,
+                                                   Holder<JImmutableMap.Entry<K, V>> expectedHolder)
+    {
+        if (holder.isFilled() != expectedHolder.isFilled()) {
+            return false;
+        }
+        if (holder.isEmpty()) {
+            return true;
+        }
+        JImmutableMap.Entry<K, V> entry = holder.getValue();
+        JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
+        if (!(entry.getKey().equals(expectedEntry.getKey()))) {
+            return false;
+        }
+        if (!(entry.getValue().equals(expectedEntry.getValue()))) {
+            return false;
+        }
+        return true;
     }
 }
