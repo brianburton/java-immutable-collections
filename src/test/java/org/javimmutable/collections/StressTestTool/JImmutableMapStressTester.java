@@ -317,7 +317,7 @@ public class JImmutableMapStressTester
                                                            JImmutableList<String> keys)
     {
         JImmutableMap<String, String> values = JImmutables.map();
-        for (int n = 0; n < random.nextInt(3); ++n) {
+        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             String key = keys.get(random.nextInt(keys.size()));
             String value = makeValue(tokens, random);
             values = values.assign(key, value);
@@ -329,7 +329,7 @@ public class JImmutableMapStressTester
                                                            Random random)
     {
         JImmutableMap<String, String> values = JImmutables.map();
-        for (int n = 0; n < random.nextInt(3); ++n) {
+        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             String key = makeValue(tokens, random);
             values = values.assign(key, key);
         }

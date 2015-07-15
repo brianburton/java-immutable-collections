@@ -219,7 +219,7 @@ public class JImmutableMultisetStressTester
                     break;
                 case 1: //containsAllOccurrences(Cursorable)
                     List<String> values = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
+                    for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         if (random.nextBoolean()) {
                             values.add(valueInMulti(multiList, random));
                         } else {
@@ -232,7 +232,7 @@ public class JImmutableMultisetStressTester
                     break;
                 case 2: //containsAllOccurrences(Collection)
                     values = new ArrayList<String>();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
+                    for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         if (random.nextBoolean()) {
                             values.add(valueInMulti(multiList, random));
                         } else {
@@ -245,7 +245,7 @@ public class JImmutableMultisetStressTester
                     break;
                 case 3:
                     JImmutableMultiset<String> values2 = JImmutables.multiset();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
+                    for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         values2 = (random.nextBoolean()) ? values2.insert(valueInMulti(multiList, random)) : values2.insert(makeValue(tokens, random));
                     }
                     if (multi.containsAllOccurrences(values2) != containsAllByOccurrence(expected, values2)) {
@@ -255,7 +255,7 @@ public class JImmutableMultisetStressTester
                     break;
                 case 4:
                     JImmutableSet<String> values3 = JImmutables.set();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
+                    for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         values3 = (random.nextBoolean()) ? values3.insert(valueInMulti(multiList, random)) : values3.insert(makeValue(tokens, random));
                     }
                     if (multi.containsAllOccurrences(values3) != expected.containsAll(values3.getSet())) {
@@ -265,7 +265,7 @@ public class JImmutableMultisetStressTester
                     break;
                 case 5:
                     Set<String> values4 = new HashSet<String>();
-                    for (int n = 0; n < random.nextInt(10); ++n) {
+                    for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         if (random.nextBoolean()) {
                             values4.add(valueInMulti(multiList, random));
                         } else {
@@ -290,7 +290,7 @@ public class JImmutableMultisetStressTester
             case 0: //deleteAll(Cursorable), deleteAll(Collection)
                 Multiset<String> values = HashMultiset.create();
                 Set<Integer> valueIndex = new TreeSet<Integer>();
-                for (int n = 0; n < random.nextInt(size / 3); ++n) {
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
                     int index = random.nextInt(multiList.size());
                     valueIndex.add(index);
                     values.add(multiList.get(index));
@@ -303,7 +303,7 @@ public class JImmutableMultisetStressTester
             case 1: //intersection(Cursorable), intersection(Collection)
                 values = HashMultiset.create();
                 valueIndex = new TreeSet<Integer>();
-                for (int n = 0; n < random.nextInt(size / 3); ++n) {
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
                     int index = random.nextInt(multiList.size());
                     valueIndex.add(index);
                     values.add(multiList.get(index));
@@ -316,7 +316,7 @@ public class JImmutableMultisetStressTester
             case 2: //intersection(Jet), intersection(Set)
                 JImmutableSet<String> values2 = JImmutables.set();
                 valueIndex = new TreeSet<Integer>();
-                for (int n = 0; n < random.nextInt(size / 3); ++n) {
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
                     int index = random.nextInt(multiList.size());
                     valueIndex.add(index);
                     values2 = values2.insert(multiList.get(index));
@@ -566,7 +566,7 @@ public class JImmutableMultisetStressTester
                                                     Random random)
     {
         JImmutableSet<String> values = JImmutables.set();
-        for (int n = 0; n < random.nextInt(3); ++n) {
+        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             values = values.insert(makeValue(tokens, random));
         }
         return values;

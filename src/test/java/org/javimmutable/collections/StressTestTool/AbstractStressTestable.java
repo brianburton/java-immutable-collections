@@ -73,7 +73,7 @@ public abstract class AbstractStressTestable
                                                      Random random)
     {
         JImmutableList<String> list = JImmutables.list();
-        for (int i = 0; i < random.nextInt(3); ++i) {
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             list = list.insert(makeValue(tokens, random));
         }
         return list;
@@ -83,7 +83,7 @@ public abstract class AbstractStressTestable
                                           Random random)
     {
         List<String> list = new ArrayList<String>();
-        for (int i = 0; i < random.nextInt(3); ++i) {
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             list.add(makeValue(tokens, random));
         }
         return list;
@@ -104,10 +104,7 @@ public abstract class AbstractStressTestable
         if (holder.isFilled() != expectedHolder.isFilled()) {
             return false;
         }
-        if (holder.isFilled()) {
-            return holder.getValue().equals(expectedHolder.getValue());
-        }
-        return true;
+        return !holder.isFilled() || holder.getValue().equals(expectedHolder.getValue());
     }
 
     protected <K, V> boolean equivalentEntryHolder(Holder<JImmutableMap.Entry<K, V>> holder,

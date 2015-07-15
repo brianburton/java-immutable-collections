@@ -107,6 +107,7 @@ public class StressTestLoop
                 .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()))
 
                 .insert(new JImmutableStackStressTester(JImmutables.<String>stack()))
+
                 ;
 
 
@@ -134,7 +135,7 @@ public class StressTestLoop
         while (true) {
             for (AbstractStressTestable tester : testers) {
                 if (!options.hasOptions() || filter(options, tester)) {
-                    System.out.printf("Starting with seed %d%n", seed);
+                    System.out.printf("\nStarting with seed %d%n", seed);
                     tester.execute(random, tokens);
                     seed = System.currentTimeMillis();
                     random.setSeed(seed);

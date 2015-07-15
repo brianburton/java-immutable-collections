@@ -404,7 +404,7 @@ public class JImmutableSetMapStressTester
                                                 Random random)
     {
         JImmutableSet<String> set = JImmutables.set();
-        for (int i = 0; i < random.nextInt(3); ++i) {
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             set = set.insert(makeValue(tokens, random));
         }
         return set;
@@ -416,7 +416,7 @@ public class JImmutableSetMapStressTester
     {
         JImmutableList<String> list = JImmutables.list();
         JImmutableList<String> setInMap = JImmutables.ralist(expected.get(key)).insert("");
-        for (int i = 0; i < random.nextInt(3); ++i) {
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             list = list.insert(setInMap.get(random.nextInt(setInMap.size())));
         }
         return list;
@@ -477,12 +477,12 @@ public class JImmutableSetMapStressTester
     {
         JImmutableList<String> values = JImmutables.list();
         if (!expected.containsKey(key) || expected.get(key).isEmpty()) {
-            for (int n = 0; n < random.nextInt(10); ++n) {
+            for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                 values = values.insert(makeValue(tokens, random));
             }
         } else {
             JImmutableList<String> setValues = JImmutables.list(expected.get(key));
-            for (int n = 0; n < random.nextInt(10); ++n) {
+            for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                 values = (random.nextBoolean()) ? values.insert(makeValue(setValues, random)) : values.insert(makeValue(tokens, random));
 
             }

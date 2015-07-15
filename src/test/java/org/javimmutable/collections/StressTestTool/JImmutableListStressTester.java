@@ -72,7 +72,7 @@ public class JImmutableListStressTester
                     list = list.insert(values);
                     expected.addAll(values);
                     break;
-                case 5: //insert(Cursorable)
+                case 5: //insertAll(Cursorable)
                     values = makeInsertList(tokens, random);
                     list = list.insertAll(IterableCursorable.of(values));
                     expected.addAll(values);
