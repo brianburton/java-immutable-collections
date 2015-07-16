@@ -53,7 +53,7 @@ import java.util.Set;
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
  * into four sections: growing (adds new values), shrinking (removes values), contains (tests
  * methods that check for specified values), and cleanup (empties the set of all values).
- * <p/>
+ *
  * Final sets in cleanup stage will be smaller than the goal size computed at the beginning of
  * the test (by approx. 1500 elements on average). This is due to how the insert(T) and
  * delete(T) methods are tested.

@@ -61,8 +61,11 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Test program for all implementations of JImmutableMultiset.
+ */
 public class JImmutableMultisetStressTester
-        extends AbstractStressTestable
+        extends AbstractSetStressTestable
 {
     private final JImmutableMultiset<String> multi;
 
@@ -76,8 +79,7 @@ public class JImmutableMultisetStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("mset").insert("multiset").insert(makeClassOption(multi));
-        return options;
+        return options.insert("mset").insert("multiset").insert(makeClassOption(multi));
     }
 
     @Override
@@ -96,7 +98,7 @@ public class JImmutableMultisetStressTester
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(10)) {
                 case 0: //insert(T)
-                    String value = makeValue(tokens, random);
+                    String value = makeInsertValue(tokens, random, multiList, expected);
                     multi = multi.insert(value);
                     expected.add(value);
                     multiList.add(value);
@@ -111,43 +113,43 @@ public class JImmutableMultisetStressTester
                     }
                     break;
                 case 2: //insertAll(Cursorable)
-                    Multiset<String> values = randomValuesAsMultiset(tokens, random);
+                    Multiset<String> values = HashMultiset.create(makeInsertValues(tokens, random, multiList, expected));
                     multi = multi.insertAll(IterableCursorable.of(values));
                     expected.addAll(values);
                     multiList.addAll(values);
                     break;
                 case 3: //insertAll(Collection)
-                    values = randomValuesAsMultiset(tokens, random);
+                    values = HashMultiset.create(makeInsertValues(tokens, random, multiList, expected));
                     multi = multi.insertAll(values);
                     expected.addAll(values);
                     multiList.addAll(values);
                     break;
                 case 4: //union(Cursorable)
-                    values = randomValuesAsMultiset(tokens, random);
+                    values = HashMultiset.create(makeInsertValues(tokens, random, multiList, expected));
                     multiListUnion(multiList, multi, values);
                     expectedUnion(expected, values);
                     multi = multi.union(IterableCursorable.of(values));
                     break;
                 case 5: //union(Collection)
-                    values = randomValuesAsMultiset(tokens, random);
+                    values = HashMultiset.create(makeInsertValues(tokens, random, multiList, expected));
                     multiListUnion(multiList, multi, values);
                     expectedUnion(expected, values);
                     multi = multi.union(values);
                     break;
                 case 6: //union(Jet)
-                    JImmutableSet<String> values2 = randomValuesAsJet(tokens, random);
+                    JImmutableSet<String> values2 = makeInsertJSet(tokens, random, multiList, expected);
                     multiListUnion(multiList, multi, values2);
                     expectedUnion(expected, values2);
                     multi = multi.union(values2);
                     break;
                 case 7: //union(Set)
-                    values2 = randomValuesAsJet(tokens, random);
+                    values2 = makeInsertJSet(tokens, random, multiList, expected);
                     multiListUnion(multiList, multi, values2);
                     expectedUnion(expected, values2);
                     multi = multi.union(values2.getSet());
                     break;
                 case 8: //insertAll(JMet)
-                    JImmutableMultiset<String> values3 = randomValuesAsJMet(tokens, random);
+                    JImmutableMultiset<String> values3 = JImmutables.multiset(makeInsertValues(tokens, random, multiList, expected));
                     multi = multi.insertAll(values3);
                     for (Cursor<String> c = values3.occurrenceCursor().start(); c.hasValue(); c = c.next()) {
                         value = c.getValue();
@@ -156,7 +158,7 @@ public class JImmutableMultisetStressTester
                     }
                     break;
                 case 9: //union(JMet)
-                    values3 = randomValuesAsJMet(tokens, random);
+                    values3 = JImmutables.multiset(makeInsertValues(tokens, random, multiList, expected));
                     multiListUnion(multiList, multi, values3.occurrenceCursor());
                     expectedUnion(expected, values3.occurrenceCursor());
                     multi = multi.union(values3);
@@ -169,7 +171,7 @@ public class JImmutableMultisetStressTester
             for (int i = 0; i < size / 6; ++i) {
                 switch (random.nextInt(5)) {
                 case 0: //deleteOccurrence(T)
-                    String value = containedValue(multiList, random);
+                    String value = makeDeleteValue(tokens, random, multiList, expected);
                     multi = multi.deleteOccurrence(value);
                     expected.remove(value);
                     break;
@@ -211,7 +213,7 @@ public class JImmutableMultisetStressTester
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(6)) {
                 case 0: //containsAtLeast(T, int)
-                    String value = (random.nextBoolean()) ? valueInMulti(multiList, random) : makeValue(tokens, random);
+                    String value = (random.nextBoolean()) ? valueInMulti(multiList, random) : valueNotInMulti(tokens, random, expected);
                     int count = random.nextInt(multi.valueCount());
                     if (multi.containsAtLeast(value, count) != (expected.count(value) >= count)) {
                         throw new RuntimeException(String.format("containsAtLeast(value, count) method call failed for %s, %d - expected %b found %b%n", value, count, expected.contains(value), multi.contains(value)));
@@ -243,7 +245,7 @@ public class JImmutableMultisetStressTester
                         throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), containsAllByOccurrence(expected, values)));
                     }
                     break;
-                case 3:
+                case 3: //containsAllOccurrences(JMet)
                     JImmutableMultiset<String> values2 = JImmutables.multiset();
                     for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         values2 = (random.nextBoolean()) ? values2.insert(valueInMulti(multiList, random)) : values2.insert(makeValue(tokens, random));
@@ -253,7 +255,7 @@ public class JImmutableMultisetStressTester
 
                     }
                     break;
-                case 4:
+                case 4: //containsAllOccurrences(JSet)
                     JImmutableSet<String> values3 = JImmutables.set();
                     for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         values3 = (random.nextBoolean()) ? values3.insert(valueInMulti(multiList, random)) : values3.insert(makeValue(tokens, random));
@@ -263,7 +265,7 @@ public class JImmutableMultisetStressTester
 
                     }
                     break;
-                case 5:
+                case 5: //containsAllOccurrences(Set)
                     Set<String> values4 = new HashSet<String>();
                     for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
                         if (random.nextBoolean()) {
@@ -287,7 +289,7 @@ public class JImmutableMultisetStressTester
         System.out.printf("cleanup %d%n", multi.valueCount());
         while (multiList.size() > 20) {
             switch (random.nextInt(5)) {
-            case 0: //deleteAll(Cursorable), deleteAll(Collection)
+            case 0: //deleteAll(Cursorable)
                 Multiset<String> values = HashMultiset.create();
                 Set<Integer> valueIndex = new TreeSet<Integer>();
                 for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
@@ -296,11 +298,10 @@ public class JImmutableMultisetStressTester
                     values.add(multiList.get(index));
                 }
                 expected.removeAll(values);
-                multi = (random.nextBoolean()) ? multi.deleteAll(IterableCursorable.of(values)) : multi.deleteAll(values);
+                multi = multi.deleteAll(IterableCursorable.of(values));
                 deleteAllAt(valueIndex, multiList);
                 break;
-
-            case 1: //intersection(Cursorable), intersection(Collection)
+            case 1: //deleteAll(Collection)
                 values = HashMultiset.create();
                 valueIndex = new TreeSet<Integer>();
                 for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
@@ -309,11 +310,34 @@ public class JImmutableMultisetStressTester
                     values.add(multiList.get(index));
                 }
                 expected.removeAll(values);
-                multi = (random.nextBoolean()) ? multi.intersection(IterableCursorable.of(expected)) : multi.intersection(expected);
+                multi = multi.deleteAll(values);
                 deleteAllAt(valueIndex, multiList);
                 break;
-
-            case 2: //intersection(Jet), intersection(Set)
+            case 2: //intersection(Cursorable)
+                values = HashMultiset.create();
+                valueIndex = new TreeSet<Integer>();
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
+                    int index = random.nextInt(multiList.size());
+                    valueIndex.add(index);
+                    values.add(multiList.get(index));
+                }
+                expected.removeAll(values);
+                multi = multi.intersection(IterableCursorable.of(expected));
+                deleteAllAt(valueIndex, multiList);
+                break;
+            case 3: //intersection(Collection)
+                values = HashMultiset.create();
+                valueIndex = new TreeSet<Integer>();
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
+                    int index = random.nextInt(multiList.size());
+                    valueIndex.add(index);
+                    values.add(multiList.get(index));
+                }
+                expected.removeAll(values);
+                multi = multi.intersection(expected);
+                deleteAllAt(valueIndex, multiList);
+                break;
+            case 4: //intersection(Jet)
                 JImmutableSet<String> values2 = JImmutables.set();
                 valueIndex = new TreeSet<Integer>();
                 for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
@@ -322,11 +346,22 @@ public class JImmutableMultisetStressTester
                     values2 = values2.insert(multiList.get(index));
                 }
                 expected = expectedIntersection(expected, values2);
-                multi = (random.nextBoolean()) ? multi.intersection(values2) : multi.intersection(values2.getSet());
+                multi = multi.intersection(values2);
                 multiList = intersectionAt(multiList, valueIndex);
                 break;
-
-            case 3: //intersection(JMet)
+            case 5: //intersection(Set)
+                values2 = JImmutables.set();
+                valueIndex = new TreeSet<Integer>();
+                for (int n = 0, limit = random.nextInt(size / 3); n < limit; ++n) {
+                    int index = random.nextInt(multiList.size());
+                    valueIndex.add(index);
+                    values2 = values2.insert(multiList.get(index));
+                }
+                expected = expectedIntersection(expected, values2);
+                multi = multi.intersection(values2.getSet());
+                multiList = intersectionAt(multiList, valueIndex);
+                break;
+            case 6: //intersection(JMet)
                 if (random.nextBoolean()) {
                     JImmutableMultiset<String> values3 = JImmutables.multiset();
                     valueIndex = new TreeSet<Integer>();
@@ -340,20 +375,21 @@ public class JImmutableMultisetStressTester
                     multiList = intersectionAt(multiList, valueIndex);
                 }
                 break;
-
-            case 4: //delete(T), setCount(T, int)
+            case 7: //delete(T), setCount(T, int)
                 int index = random.nextInt(multiList.size());
                 String value = multiList.get(index);
-                if (random.nextBoolean()) {
-                    multi = multi.delete(value);
-                    expected.remove(value, expected.count(value));
-                    multiList.remove(index);
-                } else {
-                    int newCount = random.nextInt(3);
-                    multi = multi.setCount(value, newCount);
-                    expected.setCount(value, newCount);
-                    multiList.remove(index);
-                }
+                multi = multi.delete(value);
+                expected.remove(value, expected.count(value));
+                multiList.remove(index);
+                break;
+            case 8: //setCount(T, int)
+                index = random.nextInt(multiList.size());
+                value = multiList.get(index);
+                int newCount = random.nextInt(3);
+                multi = multi.setCount(value, newCount);
+                expected.setCount(value, newCount);
+                multiList.remove(index);    //?????????
+                break;
             }
         }
 
@@ -376,10 +412,10 @@ public class JImmutableMultisetStressTester
         final List<String> expectedList;
         final List<JImmutableMap.Entry<String, Integer>> entries = new ArrayList<JImmutableMap.Entry<String, Integer>>();
         System.out.printf("checking cursor with size %d%n", multi.valueCount());
-        if(multi instanceof JImmutableHashMultiset) {
+        if (multi instanceof JImmutableHashMultiset) {
             expectedSet.addAll(multi.getSet());
             expectedList = asList(multi.occurrenceCursor());
-            for(String uniqueVal : multi) {
+            for (String uniqueVal : multi) {
                 entries.add(new MapEntry<String, Integer>(uniqueVal, multi.count(uniqueVal)));
             }
         } else {
@@ -434,15 +470,27 @@ public class JImmutableMultisetStressTester
                                  Multiset<String> expected)
     {
         int multiListSize = multiList.size();
-        if (!((multiListSize <= (expected.size() + 10)) && (multiListSize >= (expected.size() - 10)))) {
+        //if (!((multiListSize <= (expected.size() + 10)) && (multiListSize >= (expected.size() - 10)))) {
+        if (multiListSize != expected.size()) {
             throw new RuntimeException(String.format("multiList size mismatch - expected: %d, multiList: %d", expected.size(), multiListSize));
         }
     }
 
-    private String valueInMulti(ArrayList<String> multiList,
+    private String valueInMulti(List<String> multiList,
                                 Random random)
     {
         return multiList.get(random.nextInt(multiList.size()));
+    }
+
+    private String valueNotInMulti(JImmutableList<String> tokens,
+                                   Random random,
+                                   Multiset<String> expected)
+    {
+        String value = makeValue(tokens, random);
+        while (expected.contains(value)) {
+            value = makeValue(tokens, random);
+        }
+        return value;
     }
 
     private boolean containsAllByOccurrence(Multiset<String> expected,
@@ -467,7 +515,7 @@ public class JImmutableMultisetStressTester
     }
 
     //precondition: multi must not have had a union performed with values yet.
-    private void multiListUnion(ArrayList<String> multiList,
+    private void multiListUnion(List<String> multiList,
                                 JImmutableMultiset<String> multi,
                                 Iterable<String> values)
     {
@@ -516,58 +564,82 @@ public class JImmutableMultisetStressTester
         return expected;
     }
 
-    private Multiset<String> randomValuesAsMultiset(JImmutableList<String> tokens,
-                                                    Random random)
+    private String makeInsertValue(JImmutableList<String> tokens,
+                                   Random random,
+                                   List<String> multiList,
+                                   Multiset<String> expected)
     {
-        Multiset<String> values = HashMultiset.create();
-        switch (random.nextInt(3)) {
-        case 0:
-            break;
-        case 1:
-            values.add(makeValue(tokens, random));
-            break;
-        case 2:
-            String value = makeValue(tokens, random);
-            values.add(value);
-            if (random.nextBoolean()) {
-                values.add(value);
-            } else {
-                values.add(makeValue(tokens, random));
-            }
-            break;
-        }
-        return values;
+        return (random.nextBoolean()) ? valueInMulti(multiList, random) : valueNotInMulti(tokens, random, expected);
     }
 
-    private JImmutableMultiset<String> randomValuesAsJMet(JImmutableList<String> tokens,
-                                                          Random random)
+    //on average, adds 1 occurrence to multi
+    private JImmutableList<String> makeInsertValues(JImmutableList<String> tokens,
+                                                    Random random,
+                                                    List<String> multiList,
+                                                    Multiset<String> expected)
     {
-        JImmutableMultiset<String> values = JImmutables.multiset();
-        switch (random.nextInt(3)) {
-        case 0:
-            break;
-        case 1:
-            values = values.insert(makeValue(tokens, random));
-            break;
-        case 2:
-            String value = makeValue(tokens, random);
+        JImmutableList<String> values = JImmutables.list();
+        String value = "";
+        int size = random.nextInt(3);
+        if (size > 0) {
+            value = (random.nextBoolean()) ? valueNotInMulti(tokens, random, expected) : valueInMulti(multiList, random);
             values = values.insert(value);
-            if (random.nextBoolean()) {
-                values = values.insert(value);
-            } else {
-                values = values.insert(makeValue(tokens, random));
+        }
+        if (size > 1) {
+            switch (random.nextInt(3)) {
+            case 0:
+                values.insert(value);
+                break;
+            case 1:
+                values.insert(valueInMulti(multiList, random));
+                break;
+            case 2:
+                values.insert(valueNotInMulti(tokens, random, expected));
             }
-            break;
         }
         return values;
     }
+//
+//
+//        switch (random.nextInt(8)) {
+//        case 0: //add 0 - empty
+//        case 1: //add 0 - empty
+//        case 2: //add 0 - empty
+//            break;
+//        case 3: //add 1 - value not in multi
+//            values = values.insert(makeValue(tokens, random));
+//            break;
+//        case 4: //add 1 - value in multi
+//            values = values.insert(valueInMulti(multiList, random));
+//        case 5: //add 2 - two values in multi
+//            String value = valueInMulti(multiList, random);
+//            values = values.insert(value);
+//            String value2 = (random.nextBoolean()) ? value : valueInMulti(multiList, random);
+//            values = values.insert(value2);
+//            break;
+//        case 6: //add 2 - value in multi, value not in multi
+//            values = values.insert(valueInMulti(multiList, random));
+//            values = values.insert(valueNotInMulti(tokens, random, expected));
+//            break;
+//        case 7: //add 2 - two values not in multi
+//            value = valueNotInMulti(tokens, random, expected);
+//            values = values.insert(value);
+//            value2 = (random.nextBoolean()) ? value : valueNotInMulti(tokens, random, expected);
+//            values = values.insert(value2);
+//        }
+//        return values;
 
-    private JImmutableSet<String> randomValuesAsJet(JImmutableList<String> tokens,
-                                                    Random random)
+
+    private JImmutableSet<String> makeInsertJSet(JImmutableList<String> tokens,
+                                                 Random random,
+                                                 List<String> multiList,
+                                                 Multiset<String> expected)
     {
         JImmutableSet<String> values = JImmutables.set();
-        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
-            values = values.insert(makeValue(tokens, random));
+        int size = random.nextInt(3);
+        while (values.size() < size) {
+            String value = (random.nextBoolean()) ? valueNotInMulti(tokens, random, expected) : valueInMulti(multiList, random);
+            values = values.insert(value);
         }
         return values;
     }
@@ -636,12 +708,19 @@ public class JImmutableMultisetStressTester
         return values;
     }
 
-    private String containedValue(ArrayList<String> multiList,
-                                  Random random)
+    private String makeDeleteValue(JImmutableList<String> tokens,
+                                   Random random,
+                                   List<String> multiList,
+                                   Multiset<String> expected)
     {
-        int index = random.nextInt(multiList.size());
-        String value = multiList.get(index);
-        multiList.remove(index);
+        String value;
+        if (random.nextBoolean()) { //make unique token
+            value = valueNotInMulti(tokens, random, expected);
+        } else { //make duplicate
+            int index = random.nextInt(multiList.size());
+            value = multiList.get(index);
+            multiList.remove(index);
+        }
         return value;
     }
 
