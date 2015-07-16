@@ -45,6 +45,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
+ * Each version of the method will first generate a goal size. Then it will grow the JImmutable by a third of
+ * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the JImmutable is the
+ * generated size. All the values are then deleted.
+ */
 public abstract class AbstractStressTestable
 {
     abstract void execute(Random random,

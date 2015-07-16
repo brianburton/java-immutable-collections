@@ -53,6 +53,10 @@ import java.util.Set;
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
  * into four sections: growing (adds new values), shrinking (removes values), contains (tests
  * methods that check for specified values), and cleanup (empties the set of all values).
+ * <p/>
+ * Final sets in cleanup stage will be smaller than the goal size computed at the beginning of
+ * the test (by approx. 1500 elements on average). This is due to how the insert(T) and
+ * delete(T) methods are tested.
  */
 public class JImmutableSetStressTester
         extends AbstractStressTestable
@@ -60,21 +64,11 @@ public class JImmutableSetStressTester
     private JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
 
-    public static int deleteAll;
-    private static int runs;
-    private static int diff;
-    private static long time;
-
     public JImmutableSetStressTester(JImmutableSet<String> set,
                                      Class<? extends Set> expectedClass)
     {
         this.set = set;
         this.expectedClass = expectedClass;
-        deleteAll = 0;
-        runs = 0;
-        diff = 0;
-        time = 0;
-
     }
 
     @Override
@@ -89,7 +83,6 @@ public class JImmutableSetStressTester
                         JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException
     {
-        ++runs;
         @SuppressWarnings("unchecked") Set<String> expected = expectedClass.newInstance();
         JImmutableSet<String> set = this.set;
         List<String> setList = new ArrayList<String>();
@@ -101,7 +94,7 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(5)) {
                 case 0: //insert(T)
-                    String value = makeInsertValue(tokens, random, expected);
+                    String value = makeInsertValue(tokens, random, setList, expected);
                     insertUniqueToSetList(value, setList, expected);
                     set = set.insert(value);
                     expected.add(value);
@@ -147,10 +140,9 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 6; ++i) {
                 switch (random.nextInt(3)) {
                 case 0: //delete(T)
-                    int index = random.nextInt(setList.size());
-                    set = set.delete(setList.get(index));
-                    expected.remove(setList.get(index));
-                    setList.remove(index);
+                    String value = makeDeleteValue(tokens, random, setList, expected);
+                    set = set.delete(value);
+                    expected.remove(value);
                     verifySetList(setList, expected);
                     break;
                 case 1: //deleteAll(Cursorable)
@@ -215,13 +207,8 @@ public class JImmutableSetStressTester
         verifyContents(set, expected);
         verifySetList(setList, expected);
 
-        diff += set.size() - size;
-
-        System.out.println("expect: " + size);
         System.out.printf("cleanup %d%n", expected.size());
-        int threshold = size / 100;
-        long start = System.nanoTime();
-        while (setList.size() > threshold) {
+        while (setList.size() > size / 80) {
             List<String> deleteValues = new ArrayList<String>();
             for (int n = 0, limit = random.nextInt(size / 25); setList.size() >= 1 && n < limit; ++n) {
                 int index = random.nextInt(setList.size());
@@ -254,27 +241,16 @@ public class JImmutableSetStressTester
             }
             verifySetList(setList, expected);
         }
-        long elapsed = System.nanoTime() - start;
-        time += elapsed;
         if (set.size() != 0) {
             verifyContents(set, expected);
             set = set.deleteAll();
             expected.clear();
-            ++deleteAll;
         }
 
         if (set.size() != 0) {
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", set.size()));
         }
         verifyContents(set, expected);
-        System.out.printf("JImmutableSetStressTest on %s completed without errors%n", set.getClass().getSimpleName());
-        System.out.println("-------STATS-------");
-        System.out.println("deleteAlls: " + ((double)deleteAll / (double)runs));
-        System.out.println("-------");
-        System.out.println("average diff: " + ((double)diff / (double)runs));
-        System.out.println("-------");
-        System.out.println("time: " + (double)elapsed);
-        System.out.println("average time: " + (time / (double)runs));
     }
 
     private void verifyContents(final JImmutableSet<String> set,
@@ -343,9 +319,8 @@ public class JImmutableSetStressTester
     private void verifySetList(List<String> setList,
                                Set<String> expected)
     {
-        int setListSize = setList.size();
-        if (!((setListSize <= (expected.size())) && (setListSize >= (expected.size())))) {
-            throw new RuntimeException(String.format("set size mismatch - set: %d, setList: %d", expected.size(), setListSize));
+        if (setList.size() != expected.size()) {
+            throw new RuntimeException(String.format("set size mismatch - set: %d, setList: %d", expected.size(), setList.size()));
         }
     }
 
@@ -384,11 +359,36 @@ public class JImmutableSetStressTester
 
     private String makeInsertValue(JImmutableList<String> tokens,
                                    Random random,
+                                   List<String> setList,
                                    Set<String> expected)
     {
-        String value = makeValue(tokens, random);
-        while (expected.contains(value)) {
+        String value;
+        if (random.nextBoolean()) { //make unique token
             value = makeValue(tokens, random);
+            while (expected.contains(value)) {
+                value = makeValue(tokens, random);
+            }
+        } else { //make duplicate
+            value = (setList.size() > 0) ? valueInSet(setList, random) : makeValue(tokens, random);
+        }
+        return value;
+    }
+
+    private String makeDeleteValue(JImmutableList<String> tokens,
+                                   Random random,
+                                   List<String> setList,
+                                   Set<String> expected)
+    {
+        String value;
+        if (random.nextBoolean()) { //make unique token
+            value = makeValue(tokens, random);
+            while (expected.contains(value)) {
+                value = makeValue(tokens, random);
+            }
+        } else { //make duplicate
+            int index = random.nextInt(setList.size());
+            value = setList.get(index);
+            setList.remove(index);
         }
         return value;
     }
