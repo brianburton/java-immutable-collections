@@ -35,16 +35,73 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.util.JImmutables;
+import org.javimmutable.collections.JImmutableList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
+
 
 public abstract class AbstractSetStressTestable
         extends AbstractStressTestable
 {
 
-    //could add valueInSet, valueNotInSet, just need good names
-    //same for makeDeleteValue, makeInsertValue
+    protected String containedValue(List<String> list,
+                                  Random random)
+    {
+        return (list.isEmpty()) ? "" : list.get(random.nextInt(list.size()));
+    }
+
+    protected String notContainedValue(JImmutableList<String> tokens,
+                                       Random random,
+                                       Collection<String> expected)
+    {
+        String value = makeValue(tokens, random);
+        while (expected.contains(value)) {
+            value = makeValue(tokens, random);
+        }
+        return value;
+    }
+
+    protected String makeInsertValue(JImmutableList<String> tokens,
+                                     Random random,
+                                     List<String> list,
+                                     Collection<String> expected)
+    {
+        return (random.nextBoolean()) ? containedValue(list, random) : notContainedValue(tokens, random, expected);
+    }
+
+    protected String makeDeleteValue(JImmutableList<String> tokens,
+                                     Random random,
+                                     List<String> list,
+                                     Collection<String> expected)
+    {
+        String value;
+        if (random.nextBoolean()) { //make unique token
+            value = notContainedValue(tokens, random, expected);
+        } else {   //make duplicate
+            int index = random.nextInt(list.size());
+            value = list.get(index);
+            list.remove(index);
+        }
+        return value;
+    }
+
+    protected List<String> makeContainsList(JImmutableList<String> tokens,
+                                            Random random,
+                                            List<String> list,
+                                            Collection<String> expected)
+    {
+        List<String> values = new ArrayList<String>();
+        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
+            if (random.nextBoolean()) {
+                values.add(containedValue(list, random));
+            } else {
+                values.add(notContainedValue(tokens, random, expected));
+            }
+        }
+        return values;
+    }
+
 }

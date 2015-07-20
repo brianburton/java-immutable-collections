@@ -53,13 +53,13 @@ import java.util.Set;
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
  * into four sections: growing (adds new values), shrinking (removes values), contains (tests
  * methods that check for specified values), and cleanup (empties the set of all values).
- *
+ * <p/>
  * Final sets in cleanup stage will be smaller than the goal size computed at the beginning of
  * the test (by approx. 1500 elements on average). This is due to how the insert(T) and
  * delete(T) methods are tested.
  */
 public class JImmutableSetStressTester
-        extends AbstractStressTestable
+        extends AbstractSetStressTestable
 {
     private JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
@@ -169,31 +169,31 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(5)) {
                 case 0: //contains(T)
-                    String value = (random.nextBoolean()) ? valueInSet(setList, random) : makeValue(tokens, random);
+                    String value = (random.nextBoolean()) ? containedValue(setList, random) : notContainedValue(tokens, random, expected);
                     if (set.contains(value) != expected.contains(value)) {
                         throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n", value, expected.contains(value), set.contains(value)));
                     }
                     break;
                 case 1: //containsAll(Cursorable)
-                    List<String> values = makeContainsList(tokens, random, setList);
+                    List<String> values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAll(IterableCursorable.of(values)) != expected.containsAll(values)) {
                         throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
                     }
                     break;
                 case 2: //containsAll(Collection)
-                    values = makeContainsList(tokens, random, setList);
+                    values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAll(values) != expected.containsAll(values)) {
                         throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAll(values), expected.containsAll(values)));
                     }
                     break;
                 case 3: //containsAny(Cursorable)
-                    values = makeContainsList(tokens, random, setList);
+                    values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAny(IterableCursorable.of(values)) != containsAny(expected, values)) {
                         throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAny(IterableCursorable.of(values)), containsAny(expected, values)));
                     }
                     break;
                 case 4: //containsAny(Collection)
-                    values = makeContainsList(tokens, random, setList);
+                    values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAny(values) != containsAny(expected, values)) {
                         throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAny(values), containsAny(expected, values)));
                     }
@@ -217,22 +217,22 @@ public class JImmutableSetStressTester
             }
             switch (random.nextInt(4)) {
             case 0: //intersection(Cursorable)
-                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, set, JImmutables.list(setList));
+                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.list(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(listIntersectValues);
                 break;
             case 1: //intersection(Collection)
-                listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, set, JImmutables.list(setList));
+                listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.list(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(listIntersectValues.getList());
                 break;
             case 2: //intersection(JSet)
-                JImmutableSet<String> setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, set, JImmutables.set(setList));
+                JImmutableSet<String> setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(setIntersectValues);
                 break;
             case 3: //intersection(Set)
-                setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, set, JImmutables.set(setList));
+                setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(setIntersectValues.getSet());
                 break;
@@ -283,15 +283,23 @@ public class JImmutableSetStressTester
     private void verifyCursor(final JImmutableSet<String> set,
                               final Set<String> expected)
     {
+        System.out.printf("checking cursor with size %d%n", set.size());
+        List<String> cursorListTest;
+        List<String> iteratorListTest;
+
+        //HashSet iterates in a different order than JImmutableHashSet. Therefore, to test
+        // the cursor and iterator for that class, the list of values cannot be built from
+        //expected. Other implementations are in the same order as the java.util classes,
+        //and can have the test list built from expected.
         if (set instanceof JImmutableHashSet || set instanceof JImmutableHashMultiset) {
-            List<String> setAsList = asList(set.getSet());
-            StandardCursorTest.listCursorTest(setAsList, set.cursor());
-            StandardCursorTest.listIteratorTest(setAsList, set.iterator());
+            cursorListTest = asList(set.getSet());
+            iteratorListTest = asList(set.cursor());
         } else {
-            List<String> expectedAsList = asList(expected);
-            StandardCursorTest.listCursorTest(expectedAsList, set.cursor());
-            StandardCursorTest.listIteratorTest(expectedAsList, set.iterator());
+            cursorListTest = asList(expected);
+            iteratorListTest = cursorListTest;
         }
+        StandardCursorTest.listCursorTest(cursorListTest, set.cursor());
+        StandardCursorTest.listIteratorTest(iteratorListTest, set.iterator());
     }
 
     private void insertUniqueToSetList(String value,
@@ -324,20 +332,21 @@ public class JImmutableSetStressTester
         }
     }
 
-    private List<String> makeContainsList(JImmutableList<String> tokens,
-                                          Random random,
-                                          List<String> setList)
-    {
-        List<String> values = new ArrayList<String>();
-        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
-            if (random.nextBoolean()) {
-                values.add(valueInSet(setList, random));
-            } else {
-                values.add(makeValue(tokens, random));
-            }
-        }
-        return values;
-    }
+//    private List<String> makeContainsList(JImmutableList<String> tokens,
+//                                          Random random,
+//                                          List<String> setList,
+//                                          Set<String> expected)
+//    {
+//        List<String> values = new ArrayList<String>();
+//        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
+//            if (random.nextBoolean()) {
+//                values.add(containedValue(setList, random));
+//            } else {
+//                values.add(notContainedValue(tokens, random, expected));
+//            }
+//        }
+//        return values;
+//    }
 
     private boolean containsAny(Set<String> expected,
                                 List<String> values)
@@ -350,48 +359,38 @@ public class JImmutableSetStressTester
         return false;
     }
 
+//    private String makeInsertValue(JImmutableList<String> tokens,
+//                                   Random random,
+//                                   List<String> setList,
+//                                   Set<String> expected)
+//    {
+//        String value;
+//        if (random.nextBoolean()) { //make unique token
+//            value = notContainedValue(tokens, random, expected);
+//        } else { //make duplicate
+//            value = (setList.size() > 0) ? containedValue(setList, random) : makeValue(tokens, random);
+//        }
+//        return value;
+//    }
 
-    private String valueInSet(List<String> list,
-                              Random random)
-    {
-        return list.get(random.nextInt(list.size()));
-    }
-
-    private String makeInsertValue(JImmutableList<String> tokens,
-                                   Random random,
-                                   List<String> setList,
-                                   Set<String> expected)
-    {
-        String value;
-        if (random.nextBoolean()) { //make unique token
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
-        } else { //make duplicate
-            value = (setList.size() > 0) ? valueInSet(setList, random) : makeValue(tokens, random);
-        }
-        return value;
-    }
-
-    private String makeDeleteValue(JImmutableList<String> tokens,
-                                   Random random,
-                                   List<String> setList,
-                                   Set<String> expected)
-    {
-        String value;
-        if (random.nextBoolean()) { //make unique token
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
-        } else { //make duplicate
-            int index = random.nextInt(setList.size());
-            value = setList.get(index);
-            setList.remove(index);
-        }
-        return value;
-    }
+//    private String makeDeleteValue(JImmutableList<String> tokens,
+//                                   Random random,
+//                                   List<String> setList,
+//                                   Set<String> expected)
+//    {
+//        String value;
+//        if (random.nextBoolean()) { //make unique token
+//            value = makeValue(tokens, random);
+//            while (expected.contains(value)) {
+//                value = makeValue(tokens, random);
+//            }
+//        } else { //make duplicate
+//            int index = random.nextInt(setList.size());
+//            value = setList.get(index);
+//            setList.remove(index);
+//        }
+//        return value;
+//    }
 
     //on average, adds 1 value to set
     private JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
@@ -404,47 +403,32 @@ public class JImmutableSetStressTester
         case 0: //adds 0 - empty
             break;
         case 1: //adds 0 - value already in set
-            list = (setList.size() > 0) ? list.insert(valueInSet(setList, random)) : list;
+            list = (setList.size() > 0) ? list.insert(containedValue(setList, random)) : list;
             break;
         case 2: //adds 1 - unique value
-            String value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            String value = notContainedValue(tokens, random, expected);
             list = list.insert(value);
             break;
         case 3: //adds 1 - unique value, value already in set
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            value = notContainedValue(tokens, random, expected);
             list = list.insert(value);
 
-            list = (setList.size() > 0) ? list.insert(valueInSet(setList, random)) : list;
+            list = (setList.size() > 0) ? list.insert(containedValue(setList, random)) : list;
             break;
         case 4: //adds 1 - two copies of unique value
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            value = notContainedValue(tokens, random, expected);
             list = list.insert(value).insert(value);
             break;
         case 5: //adds 1 - two copies of unique value, value already in set
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            value = notContainedValue(tokens, random, expected);
             list = list.insert(value).insert(value);
 
-            list = (setList.size() > 0) ? list.insert(valueInSet(setList, random)) : list;
+            list = (setList.size() > 0) ? list.insert(containedValue(setList, random)) : list;
             break;
         case 6: //adds 2 - two unique values
         case 7: //adds 2 - two unique values
             for (int n = 0; n < 2; ++n) {
-                value = makeValue(tokens, random);
-                while (expected.contains(value)) {
-                    value = makeValue(tokens, random);
-                }
+                value = notContainedValue(tokens, random, expected);
                 list = list.insert(value);
             }
             break;
@@ -465,10 +449,7 @@ public class JImmutableSetStressTester
         case 0: //deletes 0 - empty
             break;
         case 1: //deletes 0 - value not in set
-            String value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            String value = notContainedValue(tokens, random, expected);
             list = list.insert(value);
             break;
         case 2: //deletes 1 - value in set
@@ -486,10 +467,7 @@ public class JImmutableSetStressTester
             list = list.insert(setList.get(index));
             setList.remove(index);
 
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            value = notContainedValue(tokens, random, expected);
             list = list.insert(value);
             break;
         case 5: //deletes 1 - two copies of value in set, value not in set
@@ -497,14 +475,11 @@ public class JImmutableSetStressTester
             list = list.insert(setList.get(index)).insert(setList.get(index));
             setList.remove(index);
 
-            value = makeValue(tokens, random);
-            while (expected.contains(value)) {
-                value = makeValue(tokens, random);
-            }
+            value = notContainedValue(tokens, random, expected);
             list = list.insert(value);
             break;
-        case 6: //deletes 2 - two unique values in set
-        case 7: //deletes 2 - two unique values in set
+        case 6: //deletes 2 - two different values in set
+        case 7: //deletes 2 - two different values in set
             for (int n = 0; n < 2; ++n) {
                 index = random.nextInt(setList.size());
                 list = list.insert(setList.get(index));
@@ -520,20 +495,17 @@ public class JImmutableSetStressTester
     private Insertable<String> makeIntersectValues(JImmutableList<String> tokens,
                                                    Random random,
                                                    List<String> setList,
-                                                   JImmutableSet<String> set,
+                                                   Set<String> expected,
                                                    Insertable<String> values)
     {
         int maxSize = setList.size() / 20;
         for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {
             switch (random.nextInt(2)) {
             case 0: //add duplicate
-                values = (setList.size() > 0) ? values.insert(valueInSet(setList, random)) : values;
+                values = (setList.size() > 0) ? values.insert(containedValue(setList, random)) : values;
                 break;
             case 1: //add values not in set
-                String value = makeValue(tokens, random);
-                while (set.contains(value)) {
-                    value = makeValue(tokens, random);
-                }
+                String value = notContainedValue(tokens, random, expected);
                 values = values.insert(value);
             }
         }
