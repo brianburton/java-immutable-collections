@@ -101,6 +101,9 @@ public class JImmutableRandomAccessListStressTester
                     values = makeInsertList(tokens, random);
                     ralist = ralist.insertAll(index, values);
                     expected.addAll(index, values);
+                    break;
+                default:
+                    throw new RuntimeException();
                 }
             }
             verifyContents(ralist, expected);
