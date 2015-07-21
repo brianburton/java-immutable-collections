@@ -37,6 +37,7 @@ public abstract class AbstractListStressTestable
     protected void verifyCursor(JImmutableList<String> list,
                                 List<String> expected)
     {
+        System.out.printf("checking cursor with size %d%n", list.size());
         StandardCursorTest.listCursorTest(expected, list.cursor());
         StandardCursorTest.listIteratorTest(expected, list.iterator());
     }
