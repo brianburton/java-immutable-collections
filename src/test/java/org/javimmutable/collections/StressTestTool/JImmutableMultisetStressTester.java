@@ -195,49 +195,25 @@ public class JImmutableMultisetStressTester
             for (int i = 0; i < size / 6; ++i) {
                 switch (random.nextInt(6)) {
                 case 0: //deleteOccurrence(T, int)
+                    int expectedChange = random.nextInt(3);
                     int initialSize = multi.valueCount();
-                    int index = random.nextInt(multiList.size());
-                    String value = multiList.get(index);
-                    int count = random.nextInt(3);
-
-                    multiListDeleteCount(count, index, value, multiList, expected);
-                    multi = multi.deleteOccurrence(value, count);
-                    expected.remove(value, count);
-                    if (initialSize - multi.valueCount() == count) {
+                    multi = shrinkingCaseZero(expectedChange, random, multi, expected, multiList);
+                    if (multi.valueCount() == initialSize + expectedChange) {   //ensures 1 value is deleted on average
                         break;
-                        //this ensures 1 value is deleted on average. Otherwise, the average comes out to 0.9 deleted
-                        //each time, because sometimes count is 2 when only 1 occurrence of value is present.
                     }
                 case 1: //deleteOccurrence(T)
                     for (int n = 0; n < 2; ++n) {
-                        value = makeDeleteValue(tokens, random, multiList, expected);
+                        String value = makeDeleteValue(tokens, random, multiList, expected);
                         multi = multi.deleteOccurrence(value);
                         expected.remove(value);
                     }
                     break;
                 case 2: //setCount(T, int) - also tested in growth loop
+                    expectedChange = random.nextInt(3);
                     initialSize = multi.valueCount();
-                    index = random.nextInt(multiList.size());
-                    value = multiList.get(index);
-                    int oldCount = multi.count(value);
-                    int toRemove = random.nextInt(3);
-                    int newCount = oldCount - toRemove;
-                    try {
-                        multi = multi.setCount(value, newCount);
-                    } catch (IllegalArgumentException exception) {
-                        if (newCount >= 0) { //exception expected for negative counts, should be ignored in those cases
-                            throw exception;
-                        }
-                        newCount = 0;
-                        multi = multi.setCount(value, newCount);
-                    }
-                    multiListDeleteCount(oldCount - newCount, index, value, multiList, expected);
-                    expected.setCount(value, newCount);
-
-                    if (initialSize - multi.valueCount() == toRemove) {
+                    multi = shrinkingCaseTwo(expectedChange, random, multi, expected, multiList);
+                    if (multi.valueCount() == initialSize + expectedChange) {   //ensures 1 value is deleted on average
                         break;
-                        //this ensures 1 value is deleted on average. Otherwise, the average comes out to 0.82 deleted
-                        //each time, because sometimes toRemove is 2 when only 1 occurrence of value is present.
                     }
                 case 3: //deleteAllOccurrences(Cursorable)
                     Multiset<String> values = HashMultiset.create(makeDeleteJList(tokens, random, multiList, expected));
@@ -356,6 +332,45 @@ public class JImmutableMultisetStressTester
         }
         verifyContents(multi, expected);
         System.out.printf("JImmutableMultisetStressTest on %s completed without errors%n", multi.getClass().getSimpleName());
+    }
+
+    private JImmutableMultiset<String> shrinkingCaseTwo(int toRemove,
+                                                        Random random,
+                                                        JImmutableMultiset<String> multi,
+                                                        Multiset<String> expected,
+                                                        List<String> multiList)
+    {
+        int index = random.nextInt(multiList.size());
+        String value = multiList.get(index);
+        int oldCount = multi.count(value);
+        int newCount = oldCount - toRemove;
+        try {
+            multi = multi.setCount(value, newCount);
+        } catch (IllegalArgumentException exception) {
+            if (newCount >= 0) { //exception expected for negative counts, should be ignored in those cases
+                throw exception;
+            }
+            newCount = 0;
+            multi = multi.setCount(value, newCount);
+        }
+        multiListDeleteCount(oldCount - newCount, index, value, multiList, expected);
+        expected.setCount(value, newCount);
+        return multi;
+    }
+
+    private JImmutableMultiset<String> shrinkingCaseZero(int count,
+                                                         Random random,
+                                                         JImmutableMultiset<String> multi,
+                                                         Multiset<String> expected,
+                                                         List<String> multiList)
+    {
+        int index = random.nextInt(multiList.size());
+        String value = multiList.get(index);
+
+        multiListDeleteCount(count, index, value, multiList, expected);
+        multi = multi.deleteOccurrence(value, count);
+        expected.remove(value, count);
+        return multi;
     }
 
     private void verifyCursor(final JImmutableMultiset<String> multi,
