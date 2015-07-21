@@ -88,7 +88,7 @@ public class JImmutableMapStressTester
         JImmutableMap<String, String> map = this.map;
 
         final int size = random.nextInt(100000);
-        System.out.printf("JImmutableMapStressTest on %s of size %d%n", map.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map), size);
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < size / 3; ++i) {
@@ -222,7 +222,7 @@ public class JImmutableMapStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
         }
         verifyContents(map, expected);
-        System.out.printf("JImmutableMapStressTest on %s completed without errors%n", map.getClass().getSimpleName());
+        System.out.printf("JImmutableMapStressTest on %s completed without errors%n", getName(map));
 
     }
 

@@ -87,7 +87,7 @@ public class JImmutableSetStressTester
         JImmutableSet<String> set = this.set;
         List<String> setList = new ArrayList<String>();
         final int size = random.nextInt(100000);
-        System.out.printf("JImmutableSetStressTest on %s of size %d%n", set.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableSetStressTest on %s of size %d%n", getName(set), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", set.size());
@@ -251,7 +251,7 @@ public class JImmutableSetStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", set.size()));
         }
         verifyContents(set, expected);
-        System.out.printf("JImmutableSetStressTest on %s completed without errors%n", set.getClass().getSimpleName());
+        System.out.printf("JImmutableSetStressTest on %s completed without errors%n", getName(set));
     }
 
     private void verifyContents(final JImmutableSet<String> set,

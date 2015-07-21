@@ -106,7 +106,7 @@ public interface JImmutableArray<T>
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value
      * can be null.  If the index already has a value in the map the old value is discarded
-     * and the new value is stored in its place.  Returns a new PersistentMap reflecting
+     * and the new value is stored in its place.  Returns a new JImmutableMap reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param index index

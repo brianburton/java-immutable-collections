@@ -39,7 +39,7 @@ public class JImmutableListStressTester
         JImmutableList<String> list = this.list;
         List<String> expected = new ArrayList<String>();
         int size = random.nextInt(100000);
-        System.out.printf("JImmutableListStressTest on %s of size %d%n", list.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", list.size());
@@ -194,7 +194,7 @@ public class JImmutableListStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", list.size()));
         }
         verifyContents(list, expected);
-        System.out.printf("JImmutableListStressTest on %s completed without errors%n", list.getClass().getSimpleName());
+        System.out.printf("JImmutableListStressTest on %s completed without errors%n", getName(list));
     }
 }
 

@@ -64,7 +64,7 @@ public class JImmutableStackStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        return options.insert("stack").insert(makeClassOption(stack));
+        return options.insert("stack");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class JImmutableStackStressTester
         LinkedList<String> expected = new LinkedList<String>();
         int size = random.nextInt(100000);
 
-        System.out.printf("JImmutableStackStressTest on %s of size %d%n", stack.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableStackStressTest on %s of size %d%n", "JImmutableStack", size);
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", expected.size());
             for (int i = 0; i < size / 3; ++i) {
@@ -102,7 +102,7 @@ public class JImmutableStackStressTester
         if (!stack.isEmpty()) {
             throw new RuntimeException("expected stack to be empty but found more values%n");
         }
-        System.out.printf("JImmutableStackStressTest on %s completed without errors%n", stack.getClass().getSimpleName());
+        System.out.printf("JImmutableStackStressTest on %s completed without errors%n", "JImmutableStack");
     }
 
     private void verifyCursor(JImmutableStack<String> stack,

@@ -58,36 +58,53 @@ public class JImmutableArrayStressTester
 
     private JImmutableArray<String> array;
     private final int MAX_INDEX;
+    private final int MAX_SIZE;
+
+    public static double runs;
+    public static int diff;
+    public static double growth;
+    public static double shrink;
 
     public JImmutableArrayStressTester(JImmutableArray<String> array)
     {
         this.array = array;
-        MAX_INDEX = (array instanceof Bit32Array) ? 32 : 100000;
+        MAX_INDEX = (array instanceof Bit32Array) ? 32 : Integer.MAX_VALUE;
+        MAX_SIZE = (array instanceof Bit32Array) ? 32 : 100000;
+
+        runs = 0;
+        diff = 0;
+        growth = 0;
+        shrink = 0;
     }
 
     @Override
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        return options.insert("array").insert(makeClassOption(array));
+        return options.insert("array").insert(makeClassOption(array).replace("empty", ""));
     }
 
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
     {
-        final int size = random.nextInt(MAX_INDEX);
+        ++runs;
+        final int size = random.nextInt(MAX_SIZE);
 
         final Map<Integer, String> expected = new TreeMap<Integer, String>();
         JImmutableArray<String> array = this.array;
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
 
-        System.out.printf("JImmutableArrayStressTest on %s of size %d%n", array.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
         for (int loops = 1; loops <= 6; ++loops) {
+            int initial = array.size();
             System.out.printf("growing %d%n", array.size());
             for (int i = 0; i < size / 3; ++i) {
-                int index = random.nextInt(MAX_INDEX);
-                indexList = insertUnique(index, indexList, expected);
+                if (array instanceof Bit32Array && array.size() == MAX_SIZE) {
+                    break;
+                }
+                int index = unusedIndex(expected, random);
+                indexList = indexList.insert(index);
                 String value = makeValue(tokens, random);
                 switch (random.nextInt(2)) {
                 case 0: //assign(int, T)
@@ -101,8 +118,11 @@ public class JImmutableArrayStressTester
                     expected.put(index, value);
                     indexList = insertUnique(index, indexList, expected);
                     break;
+                default:
+                    throw new RuntimeException();
                 }
             }
+            growth += (double)(array.size() - initial) / (double)(size / 3);
             verifyContents(array, expected);
             verifyIndexList(indexList, expected);
             System.out.printf("updating %d%n", array.size());
@@ -124,6 +144,7 @@ public class JImmutableArrayStressTester
             verifyContents(array, expected);
             verifyIndexList(indexList, expected);
             System.out.printf("shrinking %d%n", array.size());
+            initial = array.size();
             for (int i = 0; array.size() > 1 && i < size / 6; ++i) {
                 //delete(int)
                 int loc = random.nextInt(indexList.size());
@@ -132,6 +153,7 @@ public class JImmutableArrayStressTester
                 expected.remove(index);
                 indexList = indexList.delete(loc);
             }
+            shrink += (double)(initial - array.size()) / (double)(size / 6);
             verifyContents(array, expected);
             verifyIndexList(indexList, expected);
             System.out.printf("contains %d%n", array.size());
@@ -172,6 +194,9 @@ public class JImmutableArrayStressTester
             verifyCursor(array, expected);
         }
 
+        int difference = array.size() - size;
+        diff += difference;
+
         System.out.printf("cleanup %d%n", array.size());
         while (indexList.size() > random.nextInt(20)) {
             //delete(int)
@@ -190,7 +215,14 @@ public class JImmutableArrayStressTester
             throw new RuntimeException(String.format("expected array to be empty but it contained %d keys%n", array.size()));
         }
         verifyContents(array, expected);
-        System.out.printf("JImmutableArrayStressTest on %s completed without errors%n", array.getClass().getSimpleName());
+        System.out.printf("JImmutableArrayStressTest on %s completed without errors%n", getName(array));
+
+        System.out.println("--------------");
+        System.out.println("difference: " + difference);
+        System.out.println("avg diff: " + (double)diff / runs);
+        System.out.println("--------------");
+        System.out.println("growth: " + (growth / (double)(runs * 6)));
+        System.out.println("shrink: " + (shrink / (double)(runs * 6)));
 
     }
 
@@ -239,7 +271,6 @@ public class JImmutableArrayStressTester
                                  Map<Integer, String> expected)
     {
         int indexListSize = indexList.size();
-        //if (!((indexListSize <= (expected.size() + 5)) && (indexListSize >= (expected.size())))) {
         if (indexListSize != expected.size()) {
             throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), indexListSize));
         }
@@ -253,6 +284,22 @@ public class JImmutableArrayStressTester
             indexList = indexList.insert(index);
         }
         return indexList;
+    }
+
+    private int containedIndex(List<Integer> list,
+                               Random random)
+    {
+        return (list.isEmpty()) ? 0 : list.get(random.nextInt(list.size()));
+    }
+
+    private int unusedIndex(Map<Integer, String> expected,
+                            Random random)
+    {
+        int index = random.nextInt(MAX_INDEX);
+        while (expected.containsKey(index)) {
+            index = random.nextInt(MAX_INDEX);
+        }
+        return index;
     }
 }
 

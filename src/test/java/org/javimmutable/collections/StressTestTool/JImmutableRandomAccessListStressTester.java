@@ -79,7 +79,7 @@ public class JImmutableRandomAccessListStressTester
         ralist = ralist.insert(initialValue);
         expected.add(initialValue);
 
-        System.out.printf("JImmutableRandomAccessListStressTest on %s of size %d%n", ralist.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableRandomAccessListStressTest on %s of size %d%n", getName(ralist), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", ralist.size());
@@ -126,7 +126,7 @@ public class JImmutableRandomAccessListStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", ralist.size()));
         }
         verifyContents(ralist, expected);
-        System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", ralist.getClass().getSimpleName());
+        System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", getName(ralist));
     }
 }
 

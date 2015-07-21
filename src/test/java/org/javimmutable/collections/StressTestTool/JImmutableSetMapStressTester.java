@@ -81,7 +81,7 @@ public class JImmutableSetMapStressTester
         @SuppressWarnings("unchecked") Map<String, JImmutableSet<String>> expected = expectedClass.newInstance();
         JImmutableRandomAccessList<String> keysList = JImmutables.ralist();
         final int size = random.nextInt(100000);
-        System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", setmap.getClass().getSimpleName(), size);
+        System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", setmap.size());
@@ -327,7 +327,7 @@ public class JImmutableSetMapStressTester
             throw new RuntimeException(String.format("expected setmap to be empty but it contained %d keys%n", setmap.size()));
         }
         verifyContents(setmap, expected);
-        System.out.printf("JImmutableSetMapStressTest on %s completed without errors%n", setmap.getClass().getSimpleName());
+        System.out.printf("JImmutableSetMapStressTest on %s completed without errors%n", getName(setmap));
     }
 
     private void verifyKeysList(JImmutableRandomAccessList<String> keysList,
