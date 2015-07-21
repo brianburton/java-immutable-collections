@@ -84,6 +84,7 @@ public class JImmutableStackStressTester
                 expected.addFirst(value);
             }
             verifyContents(stack, expected);
+
             System.out.printf("shrinking %d%n", expected.size());
             for (int i = 0; i < size / 6; ++i) {
                 stack = stack.remove();
@@ -108,7 +109,8 @@ public class JImmutableStackStressTester
     private void verifyCursor(JImmutableStack<String> stack,
                               List<String> expected)
     {
-        ArrayList<String> list = new ArrayList<String>(expected);
+        System.out.printf("checking cursor of size %d%n", expected.size());
+        ArrayList<String> list = new ArrayList<String>(expected);   //ArrayList instead of LinkedList for speed
         StandardCursorTest.listCursorTest(list, stack.cursor());
         StandardCursorTest.listIteratorTest(list, stack.iterator());
     }
