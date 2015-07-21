@@ -54,9 +54,9 @@ import java.util.Set;
  * into four sections: growing (adds new values), shrinking (removes values), contains (tests
  * methods that check for specified values), and cleanup (empties the set of all values).
  * <p/>
- * Final sets in cleanup stage will be smaller than the goal size computed at the beginning of
- * the test (by approx. 1500 elements on average). This is due to how the insert(T) and
- * delete(T) methods are tested.
+ * The cleanup is slow due to the nature of the intersection method and the large size of
+ * the set. The loop will take several seconds to run an average of 50 intersections
+ * before the set is empty.
  */
 public class JImmutableSetStressTester
         extends AbstractSetStressTestable
@@ -94,36 +94,37 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(5)) {
                 case 0: //insert(T)
-                    String value = makeInsertValue(tokens, random, setList, expected);
-                    insertUniqueToSetList(value, setList, expected);
-                    set = set.insert(value);
-                    expected.add(value);
-                    verifySetList(setList, expected);
+                    for (int n = 0; n < 2; ++n) {
+                        String value = makeInsertValue(tokens, random, setList, expected);
+                        setListInsertUnique(value, setList, expected);
+                        set = set.insert(value);
+                        expected.add(value);
+                    }
                     break;
                 case 1: //insertAll(Cursorable)
                     JImmutableList<String> values = makeInsertJList(tokens, random, setList, expected);
-                    insertAllUniqueToSetList(values, setList, expected);
+                    setListInsertAllUnique(values, setList, expected);
                     set = set.insertAll(values);
                     expected.addAll(values.getList());
                     verifySetList(setList, expected);
                     break;
                 case 2: //insertAll(Collection)
                     values = makeInsertJList(tokens, random, setList, expected);
-                    insertAllUniqueToSetList(values, setList, expected);
+                    setListInsertAllUnique(values, setList, expected);
                     set = set.insertAll(values.getList());
                     expected.addAll(values.getList());
                     verifySetList(setList, expected);
                     break;
                 case 3: //union(Cursorable)
                     values = makeInsertJList(tokens, random, setList, expected);
-                    insertAllUniqueToSetList(values, setList, expected);
+                    setListInsertAllUnique(values, setList, expected);
                     set = set.union(values);
                     expected.addAll(values.getList());
                     verifySetList(setList, expected);
                     break;
                 case 4: //union(Collection)
                     values = makeInsertJList(tokens, random, setList, expected);
-                    insertAllUniqueToSetList(values, setList, expected);
+                    setListInsertAllUnique(values, setList, expected);
                     set = set.union(values.getList());
                     expected.addAll(values.getList());
                     verifySetList(setList, expected);
@@ -131,7 +132,6 @@ public class JImmutableSetStressTester
                 default:
                     throw new RuntimeException();
                 }
-
             }
             verifyContents(set, expected);
             verifySetList(setList, expected);
@@ -140,10 +140,12 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 6; ++i) {
                 switch (random.nextInt(3)) {
                 case 0: //delete(T)
-                    String value = makeDeleteValue(tokens, random, setList, expected);
-                    set = set.delete(value);
-                    expected.remove(value);
-                    verifySetList(setList, expected);
+                    for (int n = 0; n < 2; ++n) {
+                        String value = makeDeleteValue(tokens, random, setList, expected);
+                        set = set.delete(value);
+                        expected.remove(value);
+                        verifySetList(setList, expected);
+                    }
                     break;
                 case 1: //deleteAll(Cursorable)
                     JImmutableList<String> values = makeDeleteJList(tokens, random, setList, expected);
@@ -163,7 +165,6 @@ public class JImmutableSetStressTester
             }
             verifyContents(set, expected);
             verifySetList(setList, expected);
-
 
             System.out.printf("contains %d%n", set.size());
             for (int i = 0; i < size / 12; ++i) {
@@ -246,11 +247,11 @@ public class JImmutableSetStressTester
             set = set.deleteAll();
             expected.clear();
         }
-
         if (set.size() != 0) {
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", set.size()));
         }
         verifyContents(set, expected);
+        System.out.printf("JImmutableSetStressTest on %s completed without errors%n", set.getClass().getSimpleName());
     }
 
     private void verifyContents(final JImmutableSet<String> set,
@@ -276,7 +277,6 @@ public class JImmutableSetStressTester
         if (!expected.equals(set.getSet())) {
             throw new RuntimeException("method call failed - getSet()\n");
         }
-
         set.checkInvariants();
     }
 
@@ -302,18 +302,26 @@ public class JImmutableSetStressTester
         StandardCursorTest.listIteratorTest(iteratorListTest, set.iterator());
     }
 
-    private void insertUniqueToSetList(String value,
-                                       List<String> setList,
-                                       Set<String> expected)
+    private void verifySetList(List<String> setList,
+                               Set<String> expected)
+    {
+        if (setList.size() != expected.size()) {
+            throw new RuntimeException(String.format("set size mismatch - set: %d, setList: %d", expected.size(), setList.size()));
+        }
+    }
+
+    private void setListInsertUnique(String value,
+                                     List<String> setList,
+                                     Set<String> expected)
     {
         if (!expected.contains(value)) {
             setList.add(value);
         }
     }
 
-    private void insertAllUniqueToSetList(Iterable<String> values,
-                                          List<String> setList,
-                                          Set<String> expected)
+    private void setListInsertAllUnique(Iterable<String> values,
+                                        List<String> setList,
+                                        Set<String> expected)
     {
         JImmutableSet<String> duplicates = JImmutables.set();
         for (String value : values) {
@@ -323,30 +331,6 @@ public class JImmutableSetStressTester
             duplicates = duplicates.insert(value);
         }
     }
-
-    private void verifySetList(List<String> setList,
-                               Set<String> expected)
-    {
-        if (setList.size() != expected.size()) {
-            throw new RuntimeException(String.format("set size mismatch - set: %d, setList: %d", expected.size(), setList.size()));
-        }
-    }
-
-//    private List<String> makeContainsList(JImmutableList<String> tokens,
-//                                          Random random,
-//                                          List<String> setList,
-//                                          Set<String> expected)
-//    {
-//        List<String> values = new ArrayList<String>();
-//        for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
-//            if (random.nextBoolean()) {
-//                values.add(containedValue(setList, random));
-//            } else {
-//                values.add(notContainedValue(tokens, random, expected));
-//            }
-//        }
-//        return values;
-//    }
 
     private boolean containsAny(Set<String> expected,
                                 List<String> values)
@@ -358,39 +342,6 @@ public class JImmutableSetStressTester
         }
         return false;
     }
-
-//    private String makeInsertValue(JImmutableList<String> tokens,
-//                                   Random random,
-//                                   List<String> setList,
-//                                   Set<String> expected)
-//    {
-//        String value;
-//        if (random.nextBoolean()) { //make unique token
-//            value = notContainedValue(tokens, random, expected);
-//        } else { //make duplicate
-//            value = (setList.size() > 0) ? containedValue(setList, random) : makeValue(tokens, random);
-//        }
-//        return value;
-//    }
-
-//    private String makeDeleteValue(JImmutableList<String> tokens,
-//                                   Random random,
-//                                   List<String> setList,
-//                                   Set<String> expected)
-//    {
-//        String value;
-//        if (random.nextBoolean()) { //make unique token
-//            value = makeValue(tokens, random);
-//            while (expected.contains(value)) {
-//                value = makeValue(tokens, random);
-//            }
-//        } else { //make duplicate
-//            int index = random.nextInt(setList.size());
-//            value = setList.get(index);
-//            setList.remove(index);
-//        }
-//        return value;
-//    }
 
     //on average, adds 1 value to set
     private JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
@@ -511,5 +462,4 @@ public class JImmutableSetStressTester
         }
         return values;
     }
-
 }

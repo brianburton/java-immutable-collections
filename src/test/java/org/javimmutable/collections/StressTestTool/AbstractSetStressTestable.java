@@ -77,10 +77,10 @@ public abstract class AbstractSetStressTestable
                                      List<String> list,
                                      Collection<String> expected)
     {
-        String value;
-        if (random.nextBoolean()) { //make unique token
+        String value = "";
+        if (random.nextBoolean() || list.size() < 0) {
             value = notContainedValue(tokens, random, expected);
-        } else {   //make duplicate
+        } else {
             int index = random.nextInt(list.size());
             value = list.get(index);
             list.remove(index);
