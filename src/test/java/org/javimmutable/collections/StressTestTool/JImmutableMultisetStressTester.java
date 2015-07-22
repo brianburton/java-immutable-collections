@@ -189,7 +189,7 @@ public class JImmutableMultisetStressTester
                 }
             }
             verifyContents(multi, expected);
-            verifyMultiList(multiList, expected);
+            verifyList(multiList, expected);
 
             System.out.printf("shrinking %d%n", multi.valueCount());
             for (int i = 0; i < size / 6; ++i) {
@@ -235,7 +235,7 @@ public class JImmutableMultisetStressTester
                 }
             }
             verifyContents(multi, expected);
-            verifyMultiList(multiList, expected);
+            verifyList(multiList, expected);
 
             System.out.printf("contains %d%n", multi.valueCount());
             for (int i = 0; i < size / 12; ++i) {
@@ -429,14 +429,6 @@ public class JImmutableMultisetStressTester
             throw new RuntimeException("method call failed - getSet()\n");
         }
         multi.checkInvariants();
-    }
-
-    private void verifyMultiList(List<String> multiList,
-                                 Multiset<String> expected)
-    {
-        if (multiList.size() != expected.size()) {
-            throw new RuntimeException(String.format("multiList size mismatch - expected: %d, multiList: %d", expected.size(), multiList.size()));
-        }
     }
 
     //precondition: multi must not have had a union performed with values yet.

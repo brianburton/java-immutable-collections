@@ -78,7 +78,7 @@ public abstract class AbstractSetStressTestable
                                      Collection<String> expected)
     {
         String value = "";
-        if (random.nextBoolean() || list.size() < 0) {
+        if (random.nextBoolean() || list.size() == 0) {
             value = notContainedValue(tokens, random, expected);
         } else {
             int index = random.nextInt(list.size());
@@ -102,6 +102,15 @@ public abstract class AbstractSetStressTestable
             }
         }
         return values;
+    }
+
+
+    protected void verifyList(List<String> list,
+                              Collection<String> expected)
+    {
+        if (list.size() != expected.size()) {
+            throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d", expected.size(), list.size()));
+        }
     }
 
 }
