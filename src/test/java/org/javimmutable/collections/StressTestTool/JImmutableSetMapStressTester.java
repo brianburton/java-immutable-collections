@@ -51,11 +51,11 @@ import java.util.Random;
  * setmap without changing the keys), shrinking (removes key-set pairs), contains (tests
  * methods that check for keys or values in a set), and cleanup (empties the setmap of
  * all key-set pairs).
- *
+ * <p/>
  * This tester was designed so that the setmap produced would contain sets of a large
- * variety of size. On average, 25% of the sets in the setmap will be empty. 18% will
- * contain only one value. 52% will contain between two and ten values, and the remaining
- * 5% will contain between eleven and over a hundred values.
+ * variety of sizes. On average, 25% of the sets in the setmap will be empty by the end
+ * of the test. 18% will contain only one value. 52% will contain between two and ten
+ * values, and the remaining 5% will contain between eleven and over a hundred values.
  */
 public class JImmutableSetMapStressTester
         extends AbstractMapStressTestable
@@ -328,6 +328,7 @@ public class JImmutableSetMapStressTester
             }
         }
         verifyCursor(setmap, expected);
+        //printStats(setmap);
         System.out.printf("cleanup %d%n", setmap.size());
         int threshold = random.nextInt(3);
         while (setmap.size() > threshold) {
@@ -633,5 +634,54 @@ public class JImmutableSetMapStressTester
             }
         }
         return values;
+    }
+
+    //used in debugging
+    private void printStats(JImmutableSetMap<String, String> setmap)
+    {
+        double size = setmap.size();
+        double zero = 0;
+        double one = 0;
+        double OneToTen = 0;
+        double TenToTwenty = 0;
+        double TwentyToFifty = 0;
+        double FiftyToHundred = 0;
+        double OverHundred = 0;
+
+        for (String key : setmap.keysCursor()) {
+            JImmutableSet<String> set = setmap.get(key);
+            assert (set != null);
+            if (set.size() == 0) {
+                ++zero;
+            } else if (set.size() == 1) {
+                ++one;
+            } else if (set.size() <= 10) {
+                ++OneToTen;
+            } else if (set.size() <= 20) {
+                ++TenToTwenty;
+            } else if (set.size() <= 50) {
+                ++TwentyToFifty;
+            } else if (set.size() <= 100) {
+                ++FiftyToHundred;
+            } else {
+                ++OverHundred;
+            }
+        }
+        zero = zero / size;
+        one = one / size;
+        OneToTen = OneToTen / size;
+        TenToTwenty = TenToTwenty / size;
+        TwentyToFifty = TwentyToFifty / size;
+        FiftyToHundred = FiftyToHundred / size;
+        OverHundred = OverHundred / size;
+
+        System.out.printf("       0: %.2f\n", zero * 100);
+        System.out.printf("       1: %.2f\n", one * 100);
+        System.out.printf("  2 - 10: %.2f\n", OneToTen * 100);
+        System.out.printf(" 11 - 20: %.2f\n", TenToTwenty * 100);
+        System.out.printf(" 21 - 50: %.2f\n", TwentyToFifty * 100);
+        System.out.printf("51 - 100: %.2f\n", FiftyToHundred * 100);
+        System.out.printf("    +101: %.2f\n", OverHundred * 100);
+
     }
 }

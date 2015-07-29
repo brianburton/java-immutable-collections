@@ -35,8 +35,11 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.Mapped;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.List;

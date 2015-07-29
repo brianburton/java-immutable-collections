@@ -41,7 +41,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
@@ -54,13 +53,18 @@ import java.util.Random;
 
 /**
  * Test program for all implementations of JImmutableListMap. Divided into five sections:
- * growing (adds new key-list pairs), updating (modifies the lists in the listmap without
- * changing the keys), shrinking (removes key-list pairts), contains (tests methods that
+ * growing (adds new key-list pairs), updating (adds values to the lists of the listmap
+ * without changing the keys), shrinking (removes key-list pairts), contains (tests methods that
  * find lists contained in the listmap), and cleanup (empties the listmap of all key-list
  * pairs).
+ *
+ * This tester was designed so that the listmap produced would contains lists of a large
+ * variety of sizes. On average, 11% of the lists in the listmap will be empty by the end
+ * of the test. 26% will contain only one value. 58% will contain between two and ten
+ * values, and the remaining 5% will contain between eleven and over a hundred values.
  */
 public class JImmutableListMapStressTester
-        extends AbstractStressTestable
+        extends AbstractMapStressTestable
 {
     private final JImmutableListMap<String, String> listmap;
     private final Class<? extends Map> expectedClass;
@@ -76,8 +80,7 @@ public class JImmutableListMapStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("lmap").insert("listmap").insert(makeClassOption(listmap));
-        return options;
+        return options.insert("lmap").insert("listmap").insert(makeClassOption(listmap));
     }
 
     @Override
@@ -87,18 +90,18 @@ public class JImmutableListMapStressTester
     {
         JImmutableListMap<String, String> listmap = this.listmap;
         @SuppressWarnings("unchecked") Map<String, JImmutableList<String>> expected = expectedClass.newInstance();
-        JImmutableRandomAccessList<String> keysList = JImmutables.ralist();
+        List<String> keysList = new ArrayList<String>();
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", listmap.size());
+            System.out.printf("growing keys %d%n", listmap.size());
             for (int i = 0; i < size / 3; ++i) {
-                String key = makeValue(tokens, random);
-                keysList = (expected.containsKey(key)) ? keysList : keysList.insert(key);
+                String key = unusedKey(tokens, random, expected);
+                keysList.add(key);
                 switch (random.nextInt(3)) {
                 case 0: //assign(K, JList)
-                    JImmutableList<String> values = makeInsertJList(tokens, random);
+                    JImmutableList<String> values = makeGrowingList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;
@@ -121,10 +124,10 @@ public class JImmutableListMapStressTester
             verifyKeysList(keysList, expected);
             System.out.printf("updating %d%n", listmap.size());
             for (int i = 0; i < listmap.size(); ++i) {
-                String key = keysList.get(random.nextInt(keysList.size()));
+                String key = containedKey(keysList, random);
                 switch (random.nextInt(3)) {
                 case 0: //assign(K, JList)
-                    JImmutableList<String> values = makeInsertJList(tokens, random);
+                    JImmutableList<String> values = makeUpdateList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;
@@ -145,16 +148,15 @@ public class JImmutableListMapStressTester
             }
             verifyContents(listmap, expected);
             verifyKeysList(keysList, expected);
-            System.out.printf("shrinking %d%n", listmap.size());
+            System.out.printf("shrinking keys %d%n", listmap.size());
             for (int i = 0; i < size / 6; ++i) {
                 //delete(K)
-                int index = random.nextInt(keysList.size());
-                String key = keysList.get(index);
-                listmap = listmap.delete(key);
-                expected.remove(key);
-                keysList = keysList.delete(index);
+                for (int n = 0; n < 2; ++n) {
+                    String key = makeDeleteKey(tokens, random, keysList, expected);
+                    listmap = listmap.delete(key);
+                    expected.remove(key);
+                }
             }
-
             verifyContents(listmap, expected);
             verifyKeysList(keysList, expected);
             System.out.printf("contains %d%n", listmap.size());
@@ -186,17 +188,18 @@ public class JImmutableListMapStressTester
                     throw new RuntimeException();
                 }
             }
-            verifyCursor(listmap, expected);
         }
-
+        verifyCursor(listmap, expected);
+        //printStats(listmap);
         System.out.printf("cleanup %d%n", listmap.size());
-        while (listmap.size() > random.nextInt(20)) {
+        int threshold = random.nextInt(3);
+        while (listmap.size() > threshold) {
             //delete(K)
             int index = random.nextInt(keysList.size());
             String key = keysList.get(index);
             listmap = listmap.delete(key);
             expected.remove(key);
-            keysList = keysList.delete(index);
+            keysList.remove(index);
         }
         if (listmap.size() != 0) {
             verifyContents(listmap, expected);
@@ -235,6 +238,7 @@ public class JImmutableListMapStressTester
                               Map<String, JImmutableList<String>> expected)
 
     {
+        System.out.printf("checking cursor with size %d%n", listmap.size());
         List<String> keys = new ArrayList<String>();
         List<JImmutableMap.Entry<String, JImmutableList<String>>> entriesForCursor = new ArrayList<JImmutableMap.Entry<String, JImmutableList<String>>>();
         List<JImmutableMap.Entry<String, JImmutableList<String>>> entriesForIterator = new ArrayList<JImmutableMap.Entry<String, JImmutableList<String>>>();
@@ -266,15 +270,6 @@ public class JImmutableListMapStressTester
         }
     }
 
-    private void verifyKeysList(JImmutableRandomAccessList<String> keysList,
-                                Map<String, JImmutableList<String>> expected)
-    {
-        int keysListSize = keysList.size();
-        if (keysListSize != expected.size()) {
-            throw new RuntimeException(String.format("keysList size mismatch - expected: %d, keysList: %d", expected.size(), keysListSize));
-        }
-    }
-
     private void addAt(Map<String, JImmutableList<String>> expected,
                        String key,
                        String value)
@@ -282,5 +277,91 @@ public class JImmutableListMapStressTester
         JImmutableList<String> list = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>list();
         list = list.insert(value);
         expected.put(key, list);
+    }
+
+
+    //Precondition: only to be used in update. Key must always be in expected.
+    protected JImmutableList<String> makeUpdateList(JImmutableList<String> tokens,
+                                                    Random random)
+    {
+        JImmutableList<String> values = JImmutables.list();
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            values = values.insert(makeValue(tokens, random));
+        }
+        return values;
+    }
+
+    //Precondition: only to be used in update. Key must always be in expected.
+    protected JImmutableList<String> makeGrowingList(JImmutableList<String> tokens,
+                                                     Random random)
+    {
+        JImmutableList<String> list = JImmutables.list();
+        int limit;
+        int command = random.nextInt(100);
+        if (command < 20) {
+            limit = 0;
+        } else if (command < 50) {
+            limit = random.nextInt(3);
+        } else if (command < 70) {
+            limit = random.nextInt(10);
+        } else if (command < 80) {
+            limit = random.nextInt(20);
+        } else if (command < 95) {
+            limit = random.nextInt(command) + 10;
+        } else {
+            limit = random.nextInt(command + 50) + 250;
+        }
+        for (int i = 0; i < limit; ++i) {
+            list = list.insert(makeValue(tokens, random));
+        }
+        return list;
+    }
+
+    //used in debugging
+    private void printStats(JImmutableListMap<String, String> listmap)
+    {
+        double size = listmap.size();
+        double zero = 0;
+        double one = 0;
+        double OneToTen = 0;
+        double TenToTwenty = 0;
+        double TwentyToFifty = 0;
+        double FiftyToHundred = 0;
+        double OverHundred = 0;
+
+        for (String key : listmap.keysCursor()) {
+            JImmutableList<String> list = listmap.get(key);
+            assert (list != null);
+            if (list.size() == 0) {
+                ++zero;
+            } else if (list.size() == 1) {
+                ++one;
+            } else if (list.size() <= 10) {
+                ++OneToTen;
+            } else if (list.size() <= 20) {
+                ++TenToTwenty;
+            } else if (list.size() <= 50) {
+                ++TwentyToFifty;
+            } else if (list.size() <= 100) {
+                ++FiftyToHundred;
+            } else {
+                ++OverHundred;
+            }
+        }
+        zero = zero / size;
+        one = one / size;
+        OneToTen = OneToTen / size;
+        TenToTwenty = TenToTwenty / size;
+        TwentyToFifty = TwentyToFifty / size;
+        FiftyToHundred = FiftyToHundred / size;
+        OverHundred = OverHundred / size;
+
+        System.out.printf("       0: %.2f\n", zero * 100);
+        System.out.printf("       1: %.2f\n", one * 100);
+        System.out.printf("  2 - 10: %.2f\n", OneToTen * 100);
+        System.out.printf(" 11 - 20: %.2f\n", TenToTwenty * 100);
+        System.out.printf(" 21 - 50: %.2f\n", TwentyToFifty * 100);
+        System.out.printf("51 - 100: %.2f\n", FiftyToHundred * 100);
+        System.out.printf("    +101: %.2f\n", OverHundred * 100);
     }
 }
