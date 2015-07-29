@@ -70,8 +70,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSet<V> getSet(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        Holder<JImmutableSet<V>> current = contents.find(key);
-        return current.isFilled() ? current.getValue() : emptySet();
+        return contents.getValueOr(key, emptySet());
     }
 
     @Nonnull

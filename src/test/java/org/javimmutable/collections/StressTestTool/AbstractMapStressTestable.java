@@ -35,7 +35,9 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public abstract class AbstractMapStressTestable
                                        List<String> keysList,
                                        Map<String, V> expected)
     {
-        String key = "";
+        String key;
         if (random.nextBoolean() || keysList.size() == 0) {
             key = unusedKey(tokens, random, expected);
         } else {
@@ -84,5 +86,23 @@ public abstract class AbstractMapStressTestable
         if (keysList.size() != expected.size()) {
             throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
         }
+    }
+
+    //used by the listmap and setmap testers only
+    protected <V extends Cursorable<String>> JImmutableList<String> makeDeleteList(JImmutableList<String> tokens,
+                                                                                   Random random,
+                                                                                   String key,
+                                                                                   Map<String, V> expected)
+    {
+        JImmutableList<String> list = JImmutables.list();
+        JImmutableList<String> jImmutableInMap = (expected.containsKey(key)) ? JImmutables.ralist(expected.get(key)) : JImmutables.<String>ralist();
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            if (random.nextBoolean() || jImmutableInMap.size() == 0) {
+                list = list.insert(makeValue(tokens, random));
+            } else {
+                list = list.insert(jImmutableInMap.get(random.nextInt(jImmutableInMap.size())));
+            }
+        }
+        return list;
     }
 }

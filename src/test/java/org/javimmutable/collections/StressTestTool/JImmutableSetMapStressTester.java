@@ -47,12 +47,18 @@ import java.util.Random;
 
 /**
  * Test program for all implementations of JImmutableSetMap. Divided into five sections:
- * growing (adds new key-set pairs), updating (modifies the sets in the setmap without
- * changing the keys), shrinking (removes key-set pairs), contains (tests methods that check
- * for keys or values in a set), and cleanup (empties the setmap of all key-set pairs).
+ * growing (adds new key-set pairs), updating (adds and removes values in the sets of the
+ * setmap without changing the keys), shrinking (removes key-set pairs), contains (tests
+ * methods that check for keys or values in a set), and cleanup (empties the setmap of
+ * all key-set pairs).
+ *
+ * This tester was designed so that the setmap produced would contain sets of a large
+ * variety of size. On average, 25% of the sets in the setmap will be empty. 18% will
+ * contain only one value. 52% will contain between two and ten values, and the remaining
+ * 5% will contain between eleven and over a hundred values.
  */
 public class JImmutableSetMapStressTester
-        extends AbstractStressTestable
+        extends AbstractMapStressTestable
 {
     private final JImmutableSetMap<String, String> setmap;
     private final Class<? extends Map> expectedClass;
@@ -68,8 +74,7 @@ public class JImmutableSetMapStressTester
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        options = options.insert("smap").insert("setmap").insert(makeClassOption(setmap));
-        return options;
+        return options.insert("smap").insert("setmap").insert(makeClassOption(setmap));
     }
 
     @Override
@@ -79,18 +84,18 @@ public class JImmutableSetMapStressTester
     {
         JImmutableSetMap<String, String> setmap = this.setmap;
         @SuppressWarnings("unchecked") Map<String, JImmutableSet<String>> expected = expectedClass.newInstance();
-        JImmutableRandomAccessList<String> keysList = JImmutables.ralist();
+        List<String> keysList = new ArrayList<String>();
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", setmap.size());
+            System.out.printf("growing keys %d%n", setmap.size());
             for (int i = 0; i < size / 3; ++i) {
-                String key = makeValue(tokens, random);
-                keysList = (expected.containsKey(key)) ? keysList : keysList.insert(key);
-                switch (random.nextInt(11)) {
+                String key = unusedKey(tokens, random, expected);
+                keysList.add(key);
+                switch (random.nextInt(4) + 7) {
                 case 0: //assign(K, JSet)
-                    JImmutableSet<String> valuesSet = makeInsertSet(tokens, random);
+                    JImmutableSet<String> valuesSet = makeGrowingSet(tokens, random);
                     setmap = setmap.assign(key, valuesSet);
                     expected.put(key, valuesSet);
                     break;
@@ -106,44 +111,44 @@ public class JImmutableSetMapStressTester
                     addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cusorable)
-                    JImmutableList<String> values = makeInsertJList(tokens, random);
+                    JImmutableList<String> values = makeGrowingList(tokens, random);
                     setmap = setmap.insertAll(key, values);
-                    addAllToSetAt(expected, key, values);
+                    addAllAt(expected, key, values);
                     break;
                 case 4: //insertAll(K, Collection)
-                    values = makeInsertJList(tokens, random);
+                    values = makeGrowingList(tokens, random);
                     setmap = setmap.insertAll(key, values.getList());
-                    addAllToSetAt(expected, key, values);
+                    addAllAt(expected, key, values);
                     break;
                 case 5: //union(K, Cursorable)
-                    values = makeInsertJList(tokens, random);
+                    values = makeGrowingList(tokens, random);
                     setmap = setmap.union(key, values);
-                    unionOnSetAt(expected, key, values);
+                    unionAt(expected, key, values);
                     break;
                 case 6: //union(K, Collection)
-                    values = makeInsertJList(tokens, random);
+                    values = makeGrowingList(tokens, random);
                     setmap = setmap.union(key, values.getList());
-                    unionOnSetAt(expected, key, values);
+                    unionAt(expected, key, values);
                     break;
-                case 7: //intersection(K, Cursorable)
-                    values = makeInsertJList(tokens, random);
+                case 7://intersection(K, Cursorable)
+                    values = makeIntersectList(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values);
-                    intersectionOnSetAt(expected, key, values);
+                    expected.put(key, JImmutables.<String>set());
                     break;
                 case 8: //intersection(K, Collection)
-                    values = makeInsertJList(tokens, random);
+                    values = makeIntersectList(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values.getList());
-                    intersectionOnSetAt(expected, key, values);
+                    expected.put(key, JImmutables.<String>set());
                     break;
                 case 9: //intersection(K, JSet)
-                    valuesSet = makeInsertSet(tokens, random);
+                    valuesSet = makeIntersectSet(tokens, random, key, expected);
                     setmap = setmap.intersection(key, valuesSet);
-                    intersectionOnSetAt(expected, key, valuesSet);
+                    expected.put(key, JImmutables.<String>set());
                     break;
                 case 10: //intersection(K, Set)
-                    valuesSet = makeInsertSet(tokens, random);
+                    valuesSet = makeIntersectSet(tokens, random, key, expected);
                     setmap = setmap.intersection(key, valuesSet.getSet());
-                    intersectionOnSetAt(expected, key, valuesSet);
+                    expected.put(key, JImmutables.<String>set());
                     break;
                 default:
                     throw new RuntimeException();
@@ -152,83 +157,97 @@ public class JImmutableSetMapStressTester
             verifyContents(setmap, expected);
             verifyKeysList(keysList, expected);
             System.out.printf("updating %d%n", setmap.size());
+            System.out.printf("  growing sets%n");
             for (int i = 0; i < setmap.size(); ++i) {
-                int index = random.nextInt(keysList.size());
-                String key = keysList.get(index);
-                switch (random.nextInt(17)) {
+                String key = containedKey(keysList, random);
+                switch (random.nextInt(7)) {
                 case 0: //assign(K, JSet)
-                    JImmutableSet<String> valuesSet = makeInsertSet(tokens, random);
+                    JImmutableSet<String> valuesSet = makeUpdateSet(tokens, random, key, expected);
                     setmap = setmap.assign(key, valuesSet);
                     expected.put(key, valuesSet);
                     break;
                 case 1: //insert(K, V)
-                    String value = makeValue(tokens, random);
+                    String value = makeUpdateValue(tokens, random, key, expected);
                     setmap = setmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
                 case 2: //insert(Entry<K, V>)
-                    value = makeValue(tokens, random);
+                    value = makeUpdateValue(tokens, random, key, expected);
                     MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
                     addAt(expected, key, value);
                     break;
                 case 3: //insertAll(K, Cursorable)
-                    JImmutableList<String> values = makeInsertJList(tokens, random);
+                    JImmutableList<String> values = makeUpdateList(tokens, random, key, expected);
                     setmap = setmap.insertAll(key, values);
-                    addAllToSetAt(expected, key, values);
+                    addAllAt(expected, key, values);
                     break;
                 case 4: //insertAll(K, Collection)
-                    values = makeInsertJList(tokens, random);
+                    values = makeUpdateList(tokens, random, key, expected);
                     setmap = setmap.insertAll(key, values.getList());
-                    addAllToSetAt(expected, key, values);
+                    addAllAt(expected, key, values);
                     break;
                 case 5: //union(K, Cursorable)
-                    values = makeInsertJList(tokens, random);
+                    values = makeUpdateList(tokens, random, key, expected);
                     setmap = setmap.union(key, values);
-                    unionOnSetAt(expected, key, values);
+                    unionAt(expected, key, values);
                     break;
                 case 6: //union(K, Collection)
-                    values = makeInsertJList(tokens, random);
+                    values = makeUpdateList(tokens, random, key, expected);
                     setmap = setmap.union(key, values.getList());
-                    unionOnSetAt(expected, key, values);
+                    unionAt(expected, key, values);
                     break;
-                case 7: //intersection(K, Cursorable)
-                    values = makeInsertJList(tokens, random);
-                    setmap = setmap.intersection(key, values);
-                    intersectionOnSetAt(expected, key, values);
-                    break;
-                case 8: //intersection(K, Collection)
-                    values = makeInsertJList(tokens, random);
-                    setmap = setmap.intersection(key, values.getList());
-                    intersectionOnSetAt(expected, key, values);
-                    break;
-                case 9: //intersection(K, JSet)
-                    valuesSet = makeInsertSet(tokens, random);
-                    setmap = setmap.intersection(key, valuesSet);
-                    intersectionOnSetAt(expected, key, valuesSet);
-                    break;
-                case 10: //intersection(K, Set)
-                    valuesSet = makeInsertSet(tokens, random);
-                    setmap = setmap.intersection(key, valuesSet.getSet());
-                    intersectionOnSetAt(expected, key, valuesSet);
-                    break;
-                case 11:
-                case 12: //deleteAll(K, Cursorable)
-                    values = makeDeleteList(key, expected, random);
+                default:
+                    throw new RuntimeException();
+                }
+            }
+            System.out.print("  ");
+            verifyContents(setmap, expected);
+            verifyKeysList(keysList, expected);
+            System.out.printf("  shrinking sets%n");
+            for (int i = 0; i < setmap.size(); ++i) {
+                switch (random.nextInt(7)) {
+                case 0: //deleteAll(K, Cursorable)
+                    String key = (random.nextBoolean()) ? containedKey(keysList, random) : unusedKey(tokens, random, expected);
+                    JImmutableList<String> values = makeDeleteList(tokens, random, key, expected);
                     setmap = setmap.deleteAll(key, values);
                     removeAllAt(expected, key, values);
                     break;
-                case 13:
-                case 14: //deleteAll(K, Collection)
-                    values = makeDeleteList(key, expected, random);
+                case 1: //deleteAll(K, Collection)
+                    key = (random.nextBoolean()) ? containedKey(keysList, random) : unusedKey(tokens, random, expected);
+                    values = makeDeleteList(tokens, random, key, expected);
                     setmap = setmap.deleteAll(key, values.getList());
                     removeAllAt(expected, key, values);
                     break;
-                case 15:
-                case 16: //delete(K, V)
-                    value = keysList.get(random.nextInt(keysList.size()));
+                case 2: //delete(K, V)
+                    key = (random.nextBoolean()) ? containedKey(keysList, random) : unusedKey(tokens, random, expected);
+                    String value = (random.nextBoolean()) ? keysList.get(random.nextInt(keysList.size())) : makeValue(tokens, random);
                     setmap = setmap.delete(key, value);
                     removeAt(expected, key, value);
+                    break;
+                case 3: //intersection(K, Cursorable)
+                    key = containedKey(keysList, random);
+                    values = makeIntersectList(tokens, random, key, expected);
+                    setmap = setmap.intersection(key, values);
+                    intersectionAt(expected, key, values);
+                    break;
+                case 4: //intersection(K, Collection)
+                    key = containedKey(keysList, random);
+                    values = makeIntersectList(tokens, random, key, expected);
+                    setmap = setmap.intersection(key, values.getList());
+                    intersectionAt(expected, key, values);
+                    break;
+                case 5: //intersection(K, JSet)
+                    key = containedKey(keysList, random);
+                    JImmutableSet<String> valuesSet = makeIntersectSet(tokens, random, key, expected);
+                    setmap = setmap.intersection(key, valuesSet);
+                    intersectionAt(expected, key, valuesSet);
+                    break;
+                case 6: //intersection(K, Set)
+                    key = containedKey(keysList, random);
+                    valuesSet = makeIntersectSet(tokens, random, key, expected);
+                    setmap = setmap.intersection(key, valuesSet.getSet());
+                    intersectionAt(expected, key, valuesSet);
                     break;
                 default:
                     throw new RuntimeException();
@@ -236,20 +255,21 @@ public class JImmutableSetMapStressTester
             }
             verifyContents(setmap, expected);
             verifyKeysList(keysList, expected);
-            System.out.printf("shrinking %d%n", setmap.size());
+
+            System.out.printf("shrinking keys %d%n", setmap.size());
             for (int i = 0; i < size / 6; ++i) {
                 //delete(K)
-                int index = random.nextInt(keysList.size());
-                String key = keysList.get(index);
-                setmap = setmap.delete(key);
-                expected.remove(key);
-                keysList = keysList.delete(index);
+                for (int n = 0; n < 2; ++n) {
+                    String key = makeDeleteKey(tokens, random, keysList, expected);
+                    setmap = setmap.delete(key);
+                    expected.remove(key);
+                }
             }
             verifyContents(setmap, expected);
             verifyKeysList(keysList, expected);
             System.out.printf("contains %d%n", setmap.size());
             for (int i = 0; i < size / 12; ++i) {
-                String key = (random.nextBoolean()) ? makeValue(tokens, random) : keysList.get(random.nextInt(keysList.size()));
+                String key = (random.nextBoolean()) ? unusedKey(tokens, random, expected) : keysList.get(random.nextInt(keysList.size()));
                 switch (random.nextInt(8)) {
                 case 0: //contains(K, V)
                     String value = (random.nextBoolean()) ? makeValue(tokens, random) : valueInSet(key, expected, random);
@@ -306,17 +326,17 @@ public class JImmutableSetMapStressTester
                     throw new RuntimeException();
                 }
             }
-            verifyCursor(setmap, expected);
         }
-
+        verifyCursor(setmap, expected);
         System.out.printf("cleanup %d%n", setmap.size());
-        while (setmap.size() > random.nextInt(20)) {
+        int threshold = random.nextInt(3);
+        while (setmap.size() > threshold) {
             //delete(K)
             int index = random.nextInt(keysList.size());
             String key = keysList.get(index);
             setmap = setmap.delete(key);
             expected.remove(key);
-            keysList = keysList.delete(index);
+            keysList.remove(index);
         }
         if (setmap.size() != 0) {
             verifyContents(setmap, expected);
@@ -328,15 +348,6 @@ public class JImmutableSetMapStressTester
         }
         verifyContents(setmap, expected);
         System.out.printf("JImmutableSetMapStressTest on %s completed without errors%n", getName(setmap));
-    }
-
-    private void verifyKeysList(JImmutableRandomAccessList<String> keysList,
-                                Map<String, JImmutableSet<String>> expected)
-    {
-        int keysListSize = keysList.size();
-        if (keysListSize != expected.size()) {
-            throw new RuntimeException(String.format("keysList size mismatch - expected: %d, keysList: %d", expected.size(), keysListSize));
-        }
     }
 
     private void verifyContents(final JImmutableSetMap<String, String> setmap,
@@ -356,10 +367,10 @@ public class JImmutableSetMapStressTester
         }
         for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
-            JImmutableSet<String> expectedValue = entry.getValue();
-            JImmutableSet<String> value = setmap.getSet(key);
-            if (!expectedValue.equals(value)) {
-                throw new RuntimeException(String.format("values mismatch for key %s - expected set %s found jet %s%n", key, expectedValue, value));
+            JImmutableSet<String> expectedSet = entry.getValue();
+            JImmutableSet<String> set = setmap.getSet(key);
+            if (!expectedSet.equals(set)) {
+                throw new RuntimeException(String.format("values mismatch for key %s - expected jset %s found jset %s%n", key, expectedSet, set));
             }
         }
         setmap.checkInvariants();
@@ -368,6 +379,7 @@ public class JImmutableSetMapStressTester
     private void verifyCursor(final JImmutableSetMap<String, String> setmap,
                               final Map<String, JImmutableSet<String>> expected)
     {
+        System.out.printf("checking cursor with size %d%n", setmap.size());
         List<String> keys = new ArrayList<String>();
         List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForCursor = new ArrayList<JImmutableMap.Entry<String, JImmutableSet<String>>>();
         List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForIterator = new ArrayList<JImmutableMap.Entry<String, JImmutableSet<String>>>();
@@ -400,48 +412,18 @@ public class JImmutableSetMapStressTester
         }
     }
 
-    private JImmutableSet<String> makeInsertSet(JImmutableList<String> tokens,
-                                                Random random)
-    {
-        JImmutableSet<String> set = JImmutables.set();
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            set = set.insert(makeValue(tokens, random));
-        }
-        return set;
-    }
 
-    private JImmutableList<String> makeDeleteList(String key,
-                                                  Map<String, JImmutableSet<String>> expected,
-                                                  Random random)
-    {
-        JImmutableList<String> list = JImmutables.list();
-        JImmutableList<String> setInMap = JImmutables.ralist(expected.get(key)).insert("");
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            list = list.insert(setInMap.get(random.nextInt(setInMap.size())));
-        }
-        return list;
-    }
-
-
-    private void addAllToSetAt(Map<String, JImmutableSet<String>> expected,
-                               String key,
-                               Cursorable<String> values)
-    {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
-        expected.put(key, set.insertAll(values));
-    }
-
-    private void unionOnSetAt(Map<String, JImmutableSet<String>> expected,
-                              String key,
-                              Cursorable<String> values)
+    private void unionAt(Map<String, JImmutableSet<String>> expected,
+                         String key,
+                         Cursorable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
         expected.put(key, set.union(values));
     }
 
-    private void intersectionOnSetAt(Map<String, JImmutableSet<String>> expected,
-                                     String key,
-                                     Cursorable<String> values)
+    private void intersectionAt(Map<String, JImmutableSet<String>> expected,
+                                String key,
+                                Cursorable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
         expected.put(key, set.intersection(values));
@@ -451,16 +433,179 @@ public class JImmutableSetMapStressTester
                              String key,
                              Cursorable<String> values)
     {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
-        expected.put(key, set.deleteAll(values));
+        if (expected.containsKey(key)) {
+            JImmutableSet<String> set = expected.get(key);
+            expected.put(key, set.deleteAll(values));
+        }
     }
 
     private void removeAt(Map<String, JImmutableSet<String>> expected,
                           String key,
                           String value)
     {
+        if (expected.containsKey(key)) {
+            JImmutableSet<String> set = expected.get(key);
+            expected.put(key, set.delete(value));
+        }
+    }
+
+    private void addAt(Map<String, JImmutableSet<String>> expected,
+                       String key,
+                       String value)
+    {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
-        expected.put(key, set.delete(value));
+        set = set.insert(value);
+        expected.put(key, set);
+    }
+
+    private void addAllAt(Map<String, JImmutableSet<String>> expected,
+                          String key,
+                          Cursorable<String> values)
+    {
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        expected.put(key, set.insertAll(values));
+    }
+
+    private JImmutableList<String> makeGrowingList(JImmutableList<String> tokens,
+                                                   Random random)
+    {
+        JImmutableList<String> list = JImmutables.list();
+        int limit;
+        int command = random.nextInt(100);
+        if (command < 5) {
+            limit = 0;
+        } else if (command < 50) {
+            limit = random.nextInt(2) + 1;
+        } else if (command < 90) {
+            limit = random.nextInt(10) + 1;
+        } else {
+            limit = random.nextInt(command) + 10;
+        }
+        for (int i = 0; i < limit; ++i) {
+            list = list.insert(makeValue(tokens, random));
+        }
+        return list;
+    }
+
+    private JImmutableSet<String> makeGrowingSet(JImmutableList<String> tokens,
+                                                 Random random)
+    {
+        JImmutableSet<String> set = JImmutables.set();
+        int limit;
+        int command = random.nextInt(100);
+        if (command < 5) {
+            limit = 0;
+        } else if (command < 50) {
+            limit = random.nextInt(2) + 1;
+        } else if (command < 90) {
+            limit = random.nextInt(10) + 1;
+        } else {
+            limit = random.nextInt(command) + 10;
+        }
+        while (set.size() < limit) {
+            set = set.insert(makeValue(tokens, random));
+        }
+        return set;
+    }
+
+    //Precondition: only to be used in update. Key must always be in expected.
+    private JImmutableList<String> makeUpdateList(JImmutableList<String> tokens,
+                                                  Random random,
+                                                  String key,
+                                                  Map<String, JImmutableSet<String>> expected)
+    {
+        JImmutableList<String> values = JImmutables.list();
+        JImmutableList<String> expectedSet = JImmutables.list(expected.get(key));
+        for (int i = 0, limit = random.nextInt(5); i < limit; ++i) {
+            if (random.nextBoolean() || expectedSet.size() == 0) {
+                values = values.insert(makeValue(tokens, random));
+            } else {
+                values = values.insert(expectedSet.get(random.nextInt(expectedSet.size())));
+            }
+        }
+        return values;
+    }
+
+    //Precondition: only to be used in update. Key must always be in expected.
+    private JImmutableSet<String> makeUpdateSet(JImmutableList<String> tokens,
+                                                Random random,
+                                                String key,
+                                                Map<String, JImmutableSet<String>> expected)
+    {
+        JImmutableSet<String> values = JImmutables.set();
+        JImmutableList<String> expectedSet = JImmutables.list(expected.get(key));
+        int limit = random.nextInt(5);
+        while (values.size() < limit) {
+            if (random.nextBoolean() || expectedSet.size() == 0) {
+                values = values.insert(makeValue(tokens, random));
+            } else {
+                values = values.insert(expectedSet.get(random.nextInt(expectedSet.size())));
+            }
+        }
+        return values;
+    }
+
+    //Precondition: only to be used in update. Key must always be in expected.
+    protected String makeUpdateValue(JImmutableList<String> tokens,
+                                     Random random,
+                                     String key,
+                                     Map<String, JImmutableSet<String>> expected)
+    {
+        String value;
+        JImmutableSet<String> expectedSet = expected.get(key);
+        if (random.nextBoolean() || expectedSet.size() == 0) {
+            value = makeValue(tokens, random);
+            while (expectedSet.contains(value)) {
+                value = makeValue(tokens, random);
+            }
+        } else {
+            JImmutableRandomAccessList<String> list = JImmutables.ralist(expectedSet);
+            value = list.get(random.nextInt(list.size()));
+        }
+        return value;
+    }
+
+    private JImmutableList<String> makeIntersectList(JImmutableList<String> tokens,
+                                                     Random random,
+                                                     String key,
+                                                     Map<String, JImmutableSet<String>> expected)
+    {
+        JImmutableRandomAccessList<String> values;
+        if (expected.containsKey(key)) {
+            values = JImmutables.ralist(expected.get(key));
+            for (int i = 0, limit = random.nextInt(3); i < limit && values.size() >= 1; ++i) {
+                values = values.delete(random.nextInt(values.size()));
+            }
+        } else {
+            values = JImmutables.ralist();
+        }
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            values = values.insert(makeValue(tokens, random));
+        }
+        return values;
+    }
+
+    private JImmutableSet<String> makeIntersectSet(JImmutableList<String> tokens,
+                                                   Random random,
+                                                   String key,
+                                                   Map<String, JImmutableSet<String>> expected)
+    {
+        JImmutableSet<String> values;
+        if (expected.containsKey(key)) {
+            values = expected.get(key);
+            JImmutableRandomAccessList<String> list = JImmutables.ralist(values);
+            for (int i = 0, limit = random.nextInt(3); i < limit && list.size() >= 1; ++i) {
+                int index = random.nextInt(list.size());
+                values = values.delete(list.get(index));
+                list = list.delete(index);
+            }
+        } else {
+            values = JImmutables.set();
+        }
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            values = values.insert(makeValue(tokens, random));
+        }
+        return values;
     }
 
     private String valueInSet(String key,
@@ -477,25 +622,16 @@ public class JImmutableSetMapStressTester
     {
         JImmutableList<String> values = JImmutables.list();
         if (!expected.containsKey(key) || expected.get(key).isEmpty()) {
-            for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
+            for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
                 values = values.insert(makeValue(tokens, random));
             }
         } else {
             JImmutableList<String> setValues = JImmutables.list(expected.get(key));
-            for (int n = 0, limit = random.nextInt(10); n < limit; ++n) {
+            for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
                 values = (random.nextBoolean()) ? values.insert(makeValue(setValues, random)) : values.insert(makeValue(tokens, random));
 
             }
         }
         return values;
-    }
-
-    private void addAt(Map<String, JImmutableSet<String>> expected,
-                       String key,
-                       String value)
-    {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
-        set = set.insert(value);
-        expected.put(key, set);
     }
 }
