@@ -113,7 +113,7 @@ public class StressTestLoop
 
 
         OptionParser parser = makeOptionParser(testers);
-        OptionSpec<String> file = parser.accepts("file").withRequiredArg();
+        OptionSpec<String> fileSpec = parser.accepts("file").withRequiredArg();
         OptionSpec<Long> seedSpec = parser.accepts("seed").withRequiredArg().ofType(Long.class);
 
         OptionSet options = parser.parse(args);
@@ -124,17 +124,18 @@ public class StressTestLoop
         JImmutableList<String> tokens;
 
         if (options.has("file")) {
-            List<String> filenames = options.valuesOf(file);
+            List<String> filenames = options.valuesOf(fileSpec);
             tokens = loadTokens(filenames);
             System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
             tokens = loadTokens("src/site/apt/index.apt");
             System.out.printf("Loaded %d tokens from index.apt%n", tokens.size());
         }
+        boolean needsFilter = needsFilter(options, fileSpec, seedSpec);
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
-                if (!options.hasOptions() || filter(options, tester)) {
+                if (needsFilter || filter(options, tester)) {
                     System.out.printf("\nStarting with seed %d%n", seed);
                     tester.execute(random, tokens);
                     seed = System.currentTimeMillis();
@@ -142,6 +143,19 @@ public class StressTestLoop
                 }
             }
         }
+    }
+
+    private boolean needsFilter(OptionSet options,
+                                OptionSpec<String> file,
+                                OptionSpec<Long> seed)
+    {
+        List<OptionSpec<?>> usedOptions = options.specs();
+        for (OptionSpec<?> spec : usedOptions) {
+            if (!(spec.equals(seed) || spec.equals(file))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean filter(OptionSet options,
@@ -175,6 +189,7 @@ public class StressTestLoop
             }
         }
         parser.accepts("seed").withRequiredArg().ofType(Long.class);
+        parser.accepts("file").withRequiredArg();
         return parser;
     }
 
