@@ -55,55 +55,97 @@ import java.util.Random;
  * growing (adds new key-value pairs), updating (changes the value in existing pairs),
  * shrinking (removes pairs), contains (tests methods that search for values in the map),
  * and cleanup (empties the map of all key-value pairs).
+ *
+ * This tester is used to verify six different versions of JImmutableMap in the StressTestLoop:
+ * JImmutableTreeMap, JImmutableInsertOrderMap, a hashmap made from keys that are not Comparable
+ * and have a good hash function (JImmutableHashMap), keys that are Comparable with a good hash
+ * function (JImmutableComparableHashMap), keys that  not Comparable and have a bad hash function
+ * (JImmutableBadHashMap), and keys that are Comparable and have a bad hash function
+ * (JImmutableComparableBadHashMap).
  */
-public class JImmutableMapStressTester
-        extends AbstractMapStressTestable
+public class JImmutableMapStressTester<K extends KeyWrapper<String>>
+        extends AbstractStressTestable
 {
-    private JImmutableMap<String, String> map;
+    private JImmutableMap<K, String> map;
     private final Class<? extends Map> expectedClass;
+    KeyFactory<K> factory;
 
-    public JImmutableMapStressTester(JImmutableMap<String, String> map,
-                                     Class<? extends Map> expectedClass)
+    public JImmutableMapStressTester(JImmutableMap<K, String> map,
+                                     Class<? extends Map> expectedClass,
+                                     KeyFactory<K> factory)
     {
         this.map = map;
         this.expectedClass = expectedClass;
+        this.factory = factory;
     }
 
     @Override
     public JImmutableList<String> getOptions()
     {
         JImmutableList<String> options = JImmutables.list();
-        return options.insert("map").insert(makeClassOption(map));
+        return options.insert("map").insert(makeMapOption(map, factory));
+    }
+
+    private String makeMapOption(JImmutableMap<K, String> map,
+                                 KeyFactory factory)
+    {
+        String option = makeClassOption(map);
+        if (map instanceof JImmutableHashMap) {
+            if (factory instanceof BadHashKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
+                option = "bad" + option;
+            }
+            if (factory instanceof ComparableRegularKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
+                option = "comparable" + option;
+            }
+        }
+        return option;
+    }
+
+    private String getName(JImmutableMap<K, String> map,
+                           KeyFactory factory)
+    {
+        if (map instanceof JImmutableHashMap) {
+            String name = map.getClass().getSimpleName().replace("Empty", "").replaceFirst("JImmutable", "");
+            if (factory instanceof BadHashKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
+                name = "Bad" + name;
+            }
+            if (factory instanceof ComparableRegularKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
+                name = "Comparable" + name;
+            }
+            return "JImmutable" + name;
+        } else {
+            return getName(map);
+        }
     }
 
     public void execute(Random random,
                         JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException
     {
-        @SuppressWarnings("unchecked") Map<String, String> expected = expectedClass.newInstance();
-        List<String> keysList = new ArrayList<String>();
-        JImmutableMap<String, String> map = this.map;
+        @SuppressWarnings("unchecked") Map<K, String> expected = expectedClass.newInstance();
+        List<K> keysList = new ArrayList<K>();
+        JImmutableMap<K, String> map = this.map;
         final int size = random.nextInt(100000);
-        System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map), size);
+        System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
         for (int loops = 1; loops <= 6; ++loops) {
             System.out.printf("growing %d%n", map.size());
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(4)) {
                 case 0: //assign(K, V)
-                    String key = unusedKey(tokens, random, expected);
+                    K key = unusedKey(tokens, random, expected);
                     keysList.add(key);
-                    map = map.assign(key, key);
-                    expected.put(key, key);
+                    map = map.assign(key, key.getValue());
+                    expected.put(key, key.getValue());
                     break;
                 case 1: //insert(Entry<K, V>)
                     key = unusedKey(tokens, random, expected);
-                    JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, key);
+                    JImmutableMap.Entry<K, String> entry = new MapEntry<K, String>(key, key.getValue());
                     keysList.add(key);
-                    map = (JImmutableMap<String, String>)map.insert(entry);
-                    expected.put(key, key);
+                    map = (JImmutableMap<K, String>)map.insert(entry);
+                    expected.put(key, key.getValue());
                     break;
                 case 2: //assignAll(JImmutableMap)
-                    JImmutableMap<String, String> values = makeInsertValues(tokens, random, expected);
+                    JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
                     keysList.addAll(values.getMap().keySet());
                     map = map.assignAll(values);
                     expected.putAll(values.getMap());
@@ -125,7 +167,7 @@ public class JImmutableMapStressTester
             for (int i = 0; i < map.size(); ++i) {
                 switch (random.nextInt(4)) {
                 case 0: //assign(K, V)
-                    String key = keysList.get(random.nextInt(keysList.size()));
+                    K key = keysList.get(random.nextInt(keysList.size()));
                     String value = makeValue(tokens, random);
                     map = map.assign(key, value);
                     expected.put(key, value);
@@ -133,12 +175,12 @@ public class JImmutableMapStressTester
                 case 1: //insert(Entry<K, V>)
                     key = keysList.get(random.nextInt(keysList.size()));
                     value = makeValue(tokens, random);
-                    JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, value);
-                    map = (JImmutableMap<String, String>)map.insert(entry);
+                    JImmutableMap.Entry<K, String> entry = new MapEntry<K, String>(key, value);
+                    map = (JImmutableMap<K, String>)map.insert(entry);
                     expected.put(key, value);
                     break;
                 case 2: //assignAll(JImmutableMap)
-                    JImmutableMap<String, String> values = makeUpdateValues(tokens, random, keysList);
+                    JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                     map = map.assignAll(values);
                     expected.putAll(values.getMap());
                     break;
@@ -157,7 +199,7 @@ public class JImmutableMapStressTester
             System.out.printf("shrinking %d%n", map.size());
             for (int i = 0; i < size / 6 && keysList.size() >= 1; ++i) {
                 for (int n = 0; n < 2; ++n) {
-                    String key = makeDeleteKey(tokens, random, keysList, expected);
+                    K key = makeDeleteKey(tokens, random, keysList, expected);
                     expected.remove(key);
                     map = map.delete(key);
                     verifyKeysList(keysList, expected);
@@ -168,7 +210,7 @@ public class JImmutableMapStressTester
 
             System.out.printf("contains %d%n", map.size());
             for (int i = 0; i < size / 12; ++i) {
-                String key = (random.nextBoolean()) ? keysList.get(random.nextInt(keysList.size())) : makeValue(tokens, random);
+                K key = (random.nextBoolean()) ? keysList.get(random.nextInt(keysList.size())) : unusedKey(tokens, random, expected);
                 switch (random.nextInt(4)) {
                 case 0: //get(K)
                     String value = map.get(key);
@@ -192,8 +234,8 @@ public class JImmutableMapStressTester
                     }
                     break;
                 case 3: //findEntry(K)
-                    Holder<JImmutableMap.Entry<String, String>> entryHolder = map.findEntry(key);
-                    Holder<JImmutableMap.Entry<String, String>> expectedEntryHolder = (expected.containsKey(key)) ? Holders.<JImmutableMap.Entry<String, String>>of(new MapEntry<String, String>(key, expected.get(key))) : Holders.<JImmutableMap.Entry<String, String>>of();
+                    Holder<JImmutableMap.Entry<K, String>> entryHolder = map.findEntry(key);
+                    Holder<JImmutableMap.Entry<K, String>> expectedEntryHolder = (expected.containsKey(key)) ? Holders.<JImmutableMap.Entry<K, String>>of(new MapEntry<K, String>(key, expected.get(key))) : Holders.<JImmutableMap.Entry<K, String>>of();
                     if (!equivalentEntryHolder(entryHolder, expectedEntryHolder)) {
                         throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, entryHolder, entryHolder));
                     }
@@ -208,7 +250,7 @@ public class JImmutableMapStressTester
         int threshold = random.nextInt(3);
         while (keysList.size() > threshold) {
             for (int n = 0; n < 2; ++n) {
-                String key = makeDeleteKey(tokens, random, keysList, expected);
+                K key = makeDeleteKey(tokens, random, keysList, expected);
                 expected.remove(key);
                 map = map.delete(key);
                 verifyKeysList(keysList, expected);
@@ -223,11 +265,11 @@ public class JImmutableMapStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
         }
         verifyContents(map, expected);
-        System.out.printf("JImmutableMapStressTest on %s completed without errors%n", getName(map));
+        System.out.printf("JImmutableMapStressTest on %s completed without errors%n", getName(map, factory));
     }
 
-    private void verifyContents(final JImmutableMap<String, String> map,
-                                final Map<String, String> expected)
+    private void verifyContents(final JImmutableMap<K, String> map,
+                                final Map<K, String> expected)
     {
         System.out.printf("checking contents with size %d%n", map.size());
         if (map.isEmpty() != expected.isEmpty()) {
@@ -236,8 +278,8 @@ public class JImmutableMapStressTester
         if (map.size() != expected.size()) {
             throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), map.size()));
         }
-        for (Map.Entry<String, String> entry : expected.entrySet()) {
-            String key = entry.getKey();
+        for (Map.Entry<K, String> entry : expected.entrySet()) {
+            K key = entry.getKey();
             String expectedValue = entry.getValue();
             Holder<String> holder = map.find(key);
             if (holder.isEmpty()) {
@@ -255,35 +297,35 @@ public class JImmutableMapStressTester
         map.checkInvariants();
     }
 
-    private void verifyCursor(JImmutableMap<String, String> map,
-                              Map<String, String> expected)
+    private void verifyCursor(JImmutableMap<K, String> map,
+                              Map<K, String> expected)
     {
         System.out.printf("checking cursor with size %d%n", map.size());
-        List<String> keys = new ArrayList<String>();
+        List<K> keys = new ArrayList<K>();
         List<String> values = new ArrayList<String>();
-        List<JImmutableMap.Entry<String, String>> cursorTestEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
-        List<JImmutableMap.Entry<String, String>> iteratorTestEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
+        List<JImmutableMap.Entry<K, String>> cursorTestEntries = new ArrayList<JImmutableMap.Entry<K, String>>();
+        List<JImmutableMap.Entry<K, String>> iteratorTestEntries = new ArrayList<JImmutableMap.Entry<K, String>>();
 
         if (map instanceof JImmutableHashMap) {
             //list for cursor tests built from iterator
-            for (JImmutableMap.Entry<String, String> entry : map) {
-                String key = entry.getKey();
+            for (JImmutableMap.Entry<K, String> entry : map) {
+                K key = entry.getKey();
                 String value = entry.getValue();
                 keys.add(key);
                 values.add(value);
-                iteratorTestEntries.add(new MapEntry<String, String>(key, value));
+                iteratorTestEntries.add(new MapEntry<K, String>(key, value));
             }
             //list for iterator tests built from cursor
-            for (Cursor<JImmutableMap.Entry<String, String>> c = map.cursor().start(); c.hasValue(); c = c.next()) {
-                String key = c.getValue().getKey();
+            for (Cursor<JImmutableMap.Entry<K, String>> c = map.cursor().start(); c.hasValue(); c = c.next()) {
+                K key = c.getValue().getKey();
                 String value = c.getValue().getValue();
-                cursorTestEntries.add(new MapEntry<String, String>(key, value));
+                cursorTestEntries.add(new MapEntry<K, String>(key, value));
             }
         } else {
             keys = asList(expected.keySet());
             values = asList(expected.values());
-            for (Map.Entry<String, String> expectedEntry : expected.entrySet()) {
-                cursorTestEntries.add(new MapEntry<String, String>(expectedEntry.getKey(), expectedEntry.getValue()));
+            for (Map.Entry<K, String> expectedEntry : expected.entrySet()) {
+                cursorTestEntries.add(new MapEntry<K, String>(expectedEntry.getKey(), expectedEntry.getValue()));
             }
             iteratorTestEntries = cursorTestEntries;
         }
@@ -305,29 +347,70 @@ public class JImmutableMapStressTester
         StandardCursorTest.listIteratorTest(iteratorTestEntries, map.iterator());
     }
 
-    private JImmutableMap<String, String> makeUpdateValues(JImmutableList<String> tokens,
-                                                           Random random,
-                                                           List<String> keys)
+    private JImmutableMap<K, String> makeUpdateValues(JImmutableList<String> tokens,
+                                                      Random random,
+                                                      List<K> keys)
     {
-        JImmutableMap<String, String> values = JImmutables.map();
+        JImmutableMap<K, String> values = JImmutables.map();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
-            String key = containedKey(keys, random);
+            K key = containedKey(keys, random);
             String value = makeValue(tokens, random);
             values = values.assign(key, value);
         }
         return values;
     }
 
-    private JImmutableMap<String, String> makeInsertValues(JImmutableList<String> tokens,
-                                                           Random random,
-                                                           Map<String, String> expected)
+    private JImmutableMap<K, String> makeInsertValues(JImmutableList<String> tokens,
+                                                      Random random,
+                                                      Map<K, String> expected)
     {
-        JImmutableMap<String, String> values = JImmutables.map();
+        JImmutableMap<K, String> values = JImmutables.map();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
-            String key = unusedKey(tokens, random, expected);
-            values = values.assign(key, key);
+            K key = unusedKey(tokens, random, expected);
+            values = values.assign(key, key.getValue());
         }
         return values;
+    }
+
+    protected K unusedKey(JImmutableList<String> tokens,
+                          Random random,
+                          Map<K, String> expected)
+    {
+        K key = factory.newKey(tokens, random);
+        while (expected.containsKey(key)) {
+            key = factory.newKey(tokens, random);
+        }
+        return key;
+    }
+
+    protected K containedKey(List<K> keysList,
+                             Random random)
+    {
+        return (keysList.isEmpty()) ? factory.makeKey("") : keysList.get(random.nextInt(keysList.size()));
+    }
+
+    protected K makeDeleteKey(JImmutableList<String> tokens,
+                              Random random,
+                              List<K> keysList,
+                              Map<K, String> expected)
+    {
+        K key;
+        if (random.nextBoolean() || keysList.size() == 0) {
+            key = unusedKey(tokens, random, expected);
+        } else {
+            int index = random.nextInt(keysList.size());
+            key = keysList.get(index);
+            keysList.remove(index);
+        }
+        return key;
+    }
+
+    protected void verifyKeysList(List<K> keysList,
+                                  Map<K, String> expected)
+    {
+        if (keysList.size() != expected.size()) {
+            throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
+        }
     }
 }
 

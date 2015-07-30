@@ -35,11 +35,8 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.Mapped;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.List;
@@ -91,7 +88,6 @@ public abstract class AbstractMapStressTestable
         }
     }
 
-    //used by the listmap and setmap testers only
     protected <V extends Cursorable<String>> JImmutableList<String> makeDeleteList(JImmutableList<String> tokens,
                                                                                    Random random,
                                                                                    String key,
