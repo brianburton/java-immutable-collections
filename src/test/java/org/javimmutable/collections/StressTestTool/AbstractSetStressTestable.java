@@ -77,7 +77,7 @@ public abstract class AbstractSetStressTestable
                                      List<String> list,
                                      Collection<String> expected)
     {
-        String value = "";
+        String value;
         if (random.nextBoolean() || list.size() == 0) {
             value = notContainedValue(tokens, random, expected);
         } else {

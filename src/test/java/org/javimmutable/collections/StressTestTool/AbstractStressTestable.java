@@ -42,7 +42,6 @@ import org.javimmutable.collections.util.JImmutables;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -111,12 +110,9 @@ public abstract class AbstractStressTestable
     }
 
     protected <T> boolean equivalentHolder(Holder<T> holder,
-                                       Holder<T> expectedHolder)
+                                           Holder<T> expectedHolder)
     {
-        if (holder.isFilled() != expectedHolder.isFilled()) {
-            return false;
-        }
-        return !holder.isFilled() || holder.getValue().equals(expectedHolder.getValue());
+        return (holder.isFilled() == expectedHolder.isFilled()) && (!holder.isFilled() || holder.getValue().equals(expectedHolder.getValue()));
     }
 
     protected <K, V> boolean equivalentEntryHolder(Holder<JImmutableMap.Entry<K, V>> holder,
@@ -130,13 +126,7 @@ public abstract class AbstractStressTestable
         }
         JImmutableMap.Entry<K, V> entry = holder.getValue();
         JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
-        if (!(entry.getKey().equals(expectedEntry.getKey()))) {
-            return false;
-        }
-        if (!(entry.getValue().equals(expectedEntry.getValue()))) {
-            return false;
-        }
-        return true;
+        return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
     }
 
 }

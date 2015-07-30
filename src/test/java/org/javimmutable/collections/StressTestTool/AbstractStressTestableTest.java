@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-public class StressTesterTest
+public class AbstractStressTestableTest
         extends TestCase
 {
     public void test()
