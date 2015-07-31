@@ -289,7 +289,7 @@ public class JImmutableMultisetStressTester
         System.out.printf("cleanup %d%n", multi.valueCount());
         while (multiList.size() > 0) {
             Multiset<String> deleteValues = HashMultiset.create();
-            for (int n = 0, limit = random.nextInt(size / 18); multiList.size() >= 1 && n < limit; ++n) {
+            for (int n = 0, limit = random.nextInt((size / 18) + 3); multiList.size() >= 1 && n < limit; ++n) {
                 int index = random.nextInt(multiList.size());
                 deleteValues.add(multiList.get(index));
                 multiList.remove(index);

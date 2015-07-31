@@ -126,7 +126,7 @@ public class JImmutableListStressTester
             verifyContents(list, expected);
 
             System.out.printf("shrinking %d%n", list.size());
-            for (int i = 0; i < size / 6; ++i) {
+            for (int i = 0; i < size / 6 && list.size() > 1; ++i) {
                 switch (random.nextInt(2)) {
                 case 0: //deleteLast()
                     list = list.deleteLast();
