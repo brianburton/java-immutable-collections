@@ -109,30 +109,29 @@ public class StressTestLoop
                 .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
 
 
-        OptionParser parser = makeOptionParser(testers);
+        OptionParser parser = makeTesterOptions(testers);
         OptionSpec<String> fileSpec = parser.accepts("file").withRequiredArg();
         OptionSpec<Long> seedSpec = parser.accepts("seed").withRequiredArg().ofType(Long.class);
 
         OptionSet options = parser.parse(args);
 
-        Long seed = (options.has("seed")) ? options.valueOf(seedSpec) : System.currentTimeMillis();
+        Long seed = (options.has(seedSpec)) ? options.valueOf(seedSpec) : System.currentTimeMillis();
         Random random = new Random(seed);
 
         JImmutableList<String> tokens;
-
-        if (options.has("file")) {
+        if (options.has(fileSpec)) {
             List<String> filenames = options.valuesOf(fileSpec);
             tokens = loadTokens(filenames);
-            System.out.printf("Loaded %d tokens from %d files%n", tokens.size(), filenames.size());
+            System.out.printf("\nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
             tokens = loadTokens("src/site/apt/index.apt");
-            System.out.printf("Loaded %d tokens from index.apt%n", tokens.size());
+            System.out.printf("\nLoaded %d tokens from index.apt%n", tokens.size());
         }
         boolean needsFilter = needsFilter(options, fileSpec, seedSpec);
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
-                if (needsFilter || filter(options, tester)) {
+                if (!needsFilter || filter(options, tester)) {
                     System.out.printf("\nStarting with seed %d%n", seed);
                     tester.execute(random, tokens);
                     seed = System.currentTimeMillis();
@@ -149,10 +148,10 @@ public class StressTestLoop
         List<OptionSpec<?>> usedOptions = options.specs();
         for (OptionSpec<?> spec : usedOptions) {
             if (!(spec.equals(seed) || spec.equals(file))) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private boolean filter(OptionSet options,
@@ -177,7 +176,7 @@ public class StressTestLoop
         return false;
     }
 
-    private OptionParser makeOptionParser(JImmutableList<AbstractStressTestable> testers)
+    private OptionParser makeTesterOptions(JImmutableList<AbstractStressTestable> testers)
     {
         OptionParser parser = new OptionParser();
         for (AbstractStressTestable tester : testers) {
@@ -185,8 +184,6 @@ public class StressTestLoop
                 parser.accepts(option).withOptionalArg();
             }
         }
-        parser.accepts("seed").withRequiredArg().ofType(Long.class);
-        parser.accepts("file").withRequiredArg();
         return parser;
     }
 
