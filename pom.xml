@@ -6,7 +6,7 @@
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>javimmutable Persistent Collections</name>
+    <name>JImmutable Collections</name>
     <description>
         Library providing immutable/persistent collection classes for
         Java. While collections are immutable they provide methods for
