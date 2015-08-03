@@ -661,5 +661,4 @@ public interface JImmutableMultiset<T>
      * @return the total number of occurrences in the multiset
      */
     int valueCount();
-
 }

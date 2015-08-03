@@ -293,9 +293,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
-
     }
-
 
     public void verifyContents(JImmutableSetMap<Integer, Integer> jetMap,
                                Map<Integer, Set<Integer>> expected)
@@ -330,11 +328,8 @@ public abstract class AbstractJImmutableSetMapTestTestCase
                 assertEquals(true, jetMap.containsAny(key, IterableCursor.of(subset)));
                 assertEquals(true, jetMap.containsAny(key, subset.iterator()));
             }
-
         }
-
     }
-
 
     public void verifyRandom(JImmutableSetMap<Integer, Integer> emptyJetMap,
                              Map<Integer, Set<Integer>> emptySetMap)
@@ -429,7 +424,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
             assertEquals(0, jetMap.size());
             assertEquals(true, jetMap.isEmpty());
             assertEquals(expected.size(), jetMap.size());
-
         }
     }
 

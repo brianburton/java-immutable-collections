@@ -48,7 +48,7 @@ public abstract class AbstractSetStressTestable
 {
 
     protected String containedValue(List<String> list,
-                                  Random random)
+                                    Random random)
     {
         return (list.isEmpty()) ? "" : list.get(random.nextInt(list.size()));
     }
@@ -104,7 +104,6 @@ public abstract class AbstractSetStressTestable
         return values;
     }
 
-
     protected void verifyList(List<String> list,
                               Collection<String> expected)
     {
@@ -112,5 +111,4 @@ public abstract class AbstractSetStressTestable
             throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d", expected.size(), list.size()));
         }
     }
-
 }

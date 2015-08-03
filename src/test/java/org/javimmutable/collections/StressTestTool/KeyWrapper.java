@@ -141,5 +141,3 @@ class ComparableBadHashKey<T extends Comparable<T>>
         return getValue().compareTo(other.getValue());
     }
 }
-
-

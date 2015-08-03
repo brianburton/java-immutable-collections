@@ -1094,7 +1094,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
-                                                 Cursor<? extends T> source)
+                                                           Cursor<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
     }
@@ -1107,7 +1107,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
-                                                 T... source)
+                                                           T... source)
     {
         return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
     }
@@ -1120,7 +1120,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
-                                                 Cursorable<? extends T> source)
+                                                           Cursorable<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.cursor());
     }
@@ -1133,7 +1133,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
-                                                 Iterator<? extends T> source)
+                                                           Iterator<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
     }
@@ -1146,7 +1146,7 @@ public final class JImmutables
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
     public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
-                                                 Collection<? extends T> source)
+                                                           Collection<? extends T> source)
     {
         return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.iterator());
     }
@@ -1271,6 +1271,7 @@ public final class JImmutables
     {
         return JImmutableTreeListMap.of(comparator);
     }
+
     /**
      * Creates a set map with higher performance but no specific ordering of keys.
      *

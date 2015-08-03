@@ -682,6 +682,5 @@ public class JImmutableSetMapStressTester
         System.out.printf(" 21 - 50: %.2f\n", TwentyToFifty * 100);
         System.out.printf("51 - 100: %.2f\n", FiftyToHundred * 100);
         System.out.printf("    +101: %.2f\n", OverHundred * 100);
-
     }
 }

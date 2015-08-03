@@ -115,7 +115,7 @@ public class JImmutableListStressTester
                     try {
                         list.assign(index, makeValue(tokens, random));
                         throw new RuntimeException(String.format("error in assign(index, value) method call - index %d was out of bounds, but method did not fail%n", index));
-                    } catch(IndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         //ignored -- expected
                     }
                     break;
@@ -158,7 +158,7 @@ public class JImmutableListStressTester
                     try {
                         list.get(index);
                         throw new RuntimeException(String.format("error in get(index) method call - index %d was out of bounds, but method did not fail%n", index));
-                    } catch(IndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         //ignored -- expected
                     }
                     break;
@@ -197,4 +197,3 @@ public class JImmutableListStressTester
         System.out.printf("JImmutableListStressTest on %s completed without errors%n", getName(list));
     }
 }
-

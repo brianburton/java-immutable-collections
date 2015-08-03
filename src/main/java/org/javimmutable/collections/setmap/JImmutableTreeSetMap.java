@@ -100,6 +100,4 @@ public class JImmutableTreeSetMap<K, V>
     {
         return new JImmutableTreeSetMap<K, V>(map);
     }
-
-
 }

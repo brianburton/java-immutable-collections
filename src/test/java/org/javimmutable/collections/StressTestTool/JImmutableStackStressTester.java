@@ -94,7 +94,7 @@ public class JImmutableStackStressTester
             verifyCursor(stack, expected);
         }
         System.out.printf("cleanup %d%n", expected.size());
-        for(String value : expected) {
+        for (String value : expected) {
             if (!value.equals(stack.getHead())) {
                 throw new RuntimeException(String.format("value mismatch - expected %s found %s", value, stack.getHead()));
             }

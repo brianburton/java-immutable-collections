@@ -338,16 +338,15 @@ public abstract class AbstractJImmutableSet<T>
     private <T1 extends T> JImmutableSet<T> intersectionHelper(@Nonnull JImmutableSet<T1> other)
     {
         JImmutableMap<T, Boolean> newMap = emptyMap();
-        for(Cursor<T1> c = other.cursor().start(); c.hasValue(); c = c.next()) {
+        for (Cursor<T1> c = other.cursor().start(); c.hasValue(); c = c.next()) {
             final T value = c.getValue();
             Holder<Boolean> holder = map.find(value);
-            if(holder.isFilled()) {
+            if (holder.isFilled()) {
                 newMap = newMap.assign(value, Boolean.TRUE);
             }
         }
         return (newMap != map) ? create(newMap) : this;
     }
-
 
     @Nonnull
     @Override
@@ -416,8 +415,7 @@ public abstract class AbstractJImmutableSet<T>
             return false;
         } else if (o instanceof JImmutableMultiset) {
             return ((JImmutableMultiset)o).equals(this);
-        }
-        else if (o instanceof JImmutableSet) {
+        } else if (o instanceof JImmutableSet) {
             return getSet().equals(((JImmutableSet)o).getSet());
         } else {
             return (o instanceof Set) && getSet().equals(o);

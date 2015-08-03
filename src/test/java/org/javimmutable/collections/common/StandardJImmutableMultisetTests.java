@@ -574,10 +574,7 @@ public class StandardJImmutableMultisetTests
         assertEquals(empty, jmet.intersection(jmet2));
         assertEquals(empty, jmet2.intersection(jmet));
         assertEquals(empty, jmet3.deleteAll(jmet3));
-
-
     }
-
 
     public static void testRandom(final JImmutableMultiset<Integer> emptyJMet,
                                   final Multiset<Integer> expected)

@@ -82,5 +82,4 @@ public class JImmutableInsertOrderSetMapTest
         assertEquals(a, b);
         assertEquals(b, a);
     }
-
 }

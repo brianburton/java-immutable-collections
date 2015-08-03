@@ -129,4 +129,3 @@ public class JImmutableRandomAccessListStressTester
         System.out.printf("JImmutableRandomAccessListStressTest on %s completed without errors%n", getName(ralist));
     }
 }
-

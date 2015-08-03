@@ -109,5 +109,4 @@ public class JImmutableTreeSetMapTest
         assertEquals(a, b);
         assertEquals(b, a);
     }
-
 }

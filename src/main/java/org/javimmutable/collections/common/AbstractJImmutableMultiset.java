@@ -624,11 +624,11 @@ public abstract class AbstractJImmutableMultiset<T>
         } else if (o == null) {
             return false;
         } else if (o instanceof JImmutableMultiset) {
-            return (valueCount() == ((JImmutableMultiset)o).valueCount()) && this.containsAllOccurrences(((JImmutableMultiset)o));
+            return (valueCount() == ((JImmutableMultiset)o).valueCount()) && ((JImmutableMultiset)o).containsAllOccurrences(this);
         } else if (o instanceof JImmutableSet) {
             return (size() == occurrences) && getSet().equals(((JImmutableSet)o).getSet());
         } else {
-            return (o instanceof Set) && (size() == occurrences) && getSet().equals((Set)o);
+            return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
         }
     }
 
@@ -659,7 +659,7 @@ public abstract class AbstractJImmutableMultiset<T>
     protected void checkMultisetInvariants()
     {
         map.checkInvariants();
-        if(occurrences < map.size()) {
+        if (occurrences < map.size()) {
             throw new IllegalStateException();
         }
         //TODO: review checkMultisetInvariants()

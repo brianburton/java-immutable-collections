@@ -36,7 +36,6 @@
 package org.javimmutable.collections.inorder;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
@@ -92,5 +91,4 @@ public class JImmutableInsertOrderMultiset<T>
     {
         return JImmutableInsertOrderMap.of();
     }
-
 }

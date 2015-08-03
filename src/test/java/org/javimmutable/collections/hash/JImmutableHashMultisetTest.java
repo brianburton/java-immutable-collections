@@ -182,8 +182,6 @@ public class JImmutableHashMultisetTest
         assertEquals(expected, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(expected));
-
-
     }
 
     public void testDeleteAll()
@@ -224,5 +222,4 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> jmet = JImmutableHashMultiset.of();
         return jmet.insertAll(list);
     }
-
 }

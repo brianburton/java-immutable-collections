@@ -70,7 +70,7 @@ import java.util.Set;
  * JImmutableSetStressTester. Those tests are not repeated here. Similarly, the goal size
  * in this test refers to the total number of occurrences (multi.valueCount()), rather than
  * the number of unique values.
- *
+ * <p/>
  * The cleanup is slow due to the nature of the intersection method and the large size of
  * the multiset. The loop will take several seconds to run an average of 35 intersections
  * before the multiset is empty.
@@ -641,7 +641,7 @@ public class JImmutableMultisetStressTester
         }
         return values;
     }
-    
+
     private List<String> makeContainsRepeatsList(JImmutableList<String> tokens,
                                                  Random random,
                                                  List<String> multiList,
@@ -701,5 +701,4 @@ public class JImmutableMultisetStressTester
             throw new RuntimeException();
         }
     }
-
 }

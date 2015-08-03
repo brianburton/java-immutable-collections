@@ -128,5 +128,4 @@ public abstract class AbstractStressTestable
         JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
         return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
     }
-
 }

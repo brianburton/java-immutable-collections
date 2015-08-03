@@ -67,7 +67,6 @@ public class JImmutableTreeMultisetTest
 
     public void test()
     {
-
         Multiset<String> values = TreeMultiset.create();
         values.add("tennant", 10);
         values.add("smith", 11);
@@ -240,7 +239,6 @@ public class JImmutableTreeMultisetTest
         assertEquals(expected.elementSet(), jmet.getSet());
         assertEquals(new ArrayList<Integer>(expected), asList(jmet));
         StandardJImmutableMultisetTests.verifyCursor(jmet, expected);
-
     }
 
     public void testDeleteAll()
@@ -314,5 +312,4 @@ public class JImmutableTreeMultisetTest
         }
         return list;
     }
-
 }

@@ -55,7 +55,7 @@ import java.util.Random;
  * growing (adds new key-value pairs), updating (changes the value in existing pairs),
  * shrinking (removes pairs), contains (tests methods that search for values in the map),
  * and cleanup (empties the map of all key-value pairs).
- *
+ * <p/>
  * This tester is used to verify six different versions of JImmutableMap in the StressTestLoop:
  * JImmutableTreeMap, JImmutableInsertOrderMap, a hashmap made from keys that are not Comparable
  * and have a good hash function (JImmutableHashMap), keys that are Comparable with a good hash
@@ -413,4 +413,3 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         }
     }
 }
-

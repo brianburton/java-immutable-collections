@@ -47,7 +47,7 @@ public abstract class KeyFactory<T>
     abstract T makeKey(String value);
 
     protected String makeKey(JImmutableList<String> tokens,
-                      Random random)
+                             Random random)
     {
         int length = 1 + random.nextInt(250);
         StringBuilder sb = new StringBuilder();
@@ -63,7 +63,7 @@ class RegularKeyFactory
 {
     @Override
     public RegularKey<String> newKey(JImmutableList<String> tokens,
-                                Random random)
+                                     Random random)
     {
         return new RegularKey<String>(makeKey(tokens, random));
     }
