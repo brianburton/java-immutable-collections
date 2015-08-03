@@ -137,6 +137,7 @@ class BtreeEmptyNode<T>
     @Override
     public void checkInvariants()
     {
+        //TODO: fix empty checkInvariants()
     }
 
     @Nonnull
