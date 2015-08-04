@@ -261,12 +261,17 @@ public class JImmutableBtreeList<T>
             throw new IndexOutOfBoundsException();
         }
         int i = index;
-        JImmutableBtreeList<T> answer = this;
+        BtreeNode<T> newRoot = root;
         while (values.hasNext()) {
-            answer = answer.insert(i, values.next());
+            BtreeInsertResult<T> insertResult = newRoot.insertAt(i, values.next());
+            if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
+                newRoot = insertResult.newNode;
+            } else {
+                newRoot = new BtreeBranchNode<T>(insertResult.newNode, insertResult.extraNode);
+            }
             i++;
         }
-        return answer;
+        return new JImmutableBtreeList<T>(newRoot);
     }
 
     @Nonnull

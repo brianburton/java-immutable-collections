@@ -423,69 +423,61 @@ public class JImmutableArrayListTest
             int size = 1 + random.nextInt(20000);
             List<Integer> expected = new ArrayList<Integer>();
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
-            List<Integer> col = new ArrayList<Integer>();
 
             for (int loops = 0; loops < (4 * size); ++loops) {
-                int command = random.nextInt(5);
-                switch (command) {
-                    case 0:
-                    case 1:
-                    case 2:
-                        int pos = random.nextInt(2);
-                        int times = random.nextInt(3);
-                        for(int rep = 0; rep < times; rep++) {
-                            col.add(random.nextInt(size));
-                        }
-                        if(pos==0) {
-                            expected.addAll(0, col);
-                        } else {
-                            expected.addAll(col);
-                        }
-                        int parameter = random.nextInt(4);
-                        switch (parameter) {
-                            case 0:  //cursorable insertAll
-                                list = (pos == 0) ? list.insertAllFirst(getCursorable(col)) : list.insertAllLast(getCursorable(col));
-                                break;
-                            case 1: //collection insertAll
-                                list = (pos == 0) ? list.insertAllFirst(col) : list.insertAllLast(col);
-                                break;
-                            case 2: //cursor insertAll
-                                list = (pos == 0) ? list.insertAllFirst(getCursor(col)) : list.insertAllLast(getCursor(col));
-                                break;
-                            case 3: //iterator insertAll
-                                list = (pos == 0) ? list.insertAllFirst(col.iterator()) : list.insertAllLast(col.iterator());
-                                break;
-                        }
-                        col = new ArrayList<Integer>();
-                        break;
-
-                    case 3: //deleteFirst
-                        if(list.size() > 0) {
+                switch (random.nextInt(5)) {
+                case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllFirst(getCursorable(values)) : list.insertAllFirst(getCursor(values));
+                    expected.addAll(0, values);
+                    break;
+                }
+                case 1: { //insertAllFirst(Collection)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                    expected.addAll(0, values);
+                    break;
+                }
+                case 2: { //insertAllLast(Cursorable)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllLast(getCursorable(values)) : list.insertAllLast(getCursor(values));
+                    expected.addAll(values);
+                    break;
+                }
+                case 3: {//insertAllLast(Collection)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                    expected.addAll(values);
+                    break;
+                }
+                case 4: { //deleteFirst
+                    if (list.size() > 0) {
+                        list = list.deleteFirst();
+                        expected.remove(0);
+                    } else {
+                        try {
                             list = list.deleteFirst();
-                            expected.remove(0);
-                        } else {
-                            try {
-                                list = list.deleteFirst();
-                                fail();
-                            } catch (IndexOutOfBoundsException ignore) {
-                                //expected
-                            }
+                            fail();
+                        } catch (IndexOutOfBoundsException ignore) {
+                            //expected
                         }
-                        break;
-                    case 4: //deleteLast
-                        if(list.size() > 0) {
+                    }
+                    break;
+                }
+                case 5: { //deleteLast
+                    if (list.size() > 0) {
+                        list = list.deleteLast();
+                        expected.remove(expected.size() - 1);
+                    } else {
+                        try {
                             list = list.deleteLast();
-                            expected.remove(expected.size() - 1);
-                        } else {
-                            try {
-                                list = list.deleteLast();
-                                fail();
-                            } catch (IndexOutOfBoundsException ignore) {
-                                //expected
-                            }
+                            fail();
+                        } catch (IndexOutOfBoundsException ignore) {
+                            //expected
                         }
-                        break;
-
+                    }
+                    break;
+                }
                 }
                 assertEquals(expected.size(), list.size());
             }
@@ -620,5 +612,15 @@ public class JImmutableArrayListTest
         }
 
         assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.of(JImmutableArrayList.<Integer>of()));
+    }
+
+    private List<Integer> makeValues(Random random,
+                                     int size)
+    {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            list.add(random.nextInt(size));
+        }
+        return list;
     }
 }

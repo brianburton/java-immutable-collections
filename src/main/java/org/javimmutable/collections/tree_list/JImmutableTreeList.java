@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -50,9 +51,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implementation of PersistentRandomAccessList that uses a 2-3 tree for its implementation.
+ * Implementation of JImmutableRandomAccessList that uses a 2-3 tree for its implementation.
  * Values are stored and traversed in the same order as they are added using add().
- * Performance is slower than PersistentLinkedList so if forward order and/or random
+ * Performance is slower than JImmutableList so if forward order and/or random
  * access are not required using that class may be a better option.   All operations
  * should be O(logN).
  *
@@ -212,12 +213,40 @@ public class JImmutableTreeList<T>
             throw new IndexOutOfBoundsException();
         }
         int i = index;
-        JImmutableTreeList<T> answer = this;
+        TreeNode<T> newRoot = root;
         while (values.hasNext()) {
-            answer = answer.insert(i, values.next());
+            if (newRoot == null) {
+                newRoot = new LeafNode<T>(values.next());
+            } else if (i == newRoot.getSize()) {
+                if (newRoot.getSize() == 0) {
+                    newRoot = new LeafNode<T>(values.next());
+                } else {
+                    UpdateResult<T> result = newRoot.insertAfter(newRoot.getSize() - 1, values.next());
+                    newRoot = updateNode(result);
+                }
+            } else {
+                UpdateResult<T> result = newRoot.insertBefore(i, values.next());
+                newRoot = updateNode(result);
+            }
             i++;
         }
-        return answer;
+        return (newRoot != root) ? create(newRoot) : this;
+    }
+
+    private TreeNode<T> updateNode(UpdateResult<T> result)
+    {
+        switch (result.type) {
+        case UNCHANGED:
+            return result.newNode;
+        case INPLACE:
+            return result.newNode;
+        case SPLIT:
+            return new TwoNode<T>(result.newNode,
+                                  result.extraNode,
+                                  result.newNode.getSize(),
+                                  result.extraNode.getSize());
+        }
+        throw new RuntimeException();
     }
 
     @Nonnull

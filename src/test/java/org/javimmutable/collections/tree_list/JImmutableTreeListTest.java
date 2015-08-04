@@ -48,6 +48,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class JImmutableTreeListTest
         extends TestCase
 {
@@ -448,7 +449,7 @@ public class JImmutableTreeListTest
 
         //values into empty
         try {
-             list.insertAll(list.size() + 1, getCursorable(Arrays.asList(0, 1, 2, 3)));
+            list.insertAll(list.size() + 1, getCursorable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -666,16 +667,6 @@ public class JImmutableTreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
-    }
-
-    private IterableCursorable<Integer> getCursorable(List<Integer> values)
-    {
-        return IterableCursorable.of(values);
-    }
-
-    private Cursor<Integer> getCursor(List<Integer> values)
-    {
-        return IterableCursorable.of(values).cursor();
     }
 
     public void testInsertDeleteFirst()
@@ -922,43 +913,34 @@ public class JImmutableTreeListTest
             int size = 1 + random.nextInt(20000);
             List<Integer> expected = new ArrayList<Integer>();
             JImmutableTreeList<Integer> list = JImmutableTreeList.of();
-            List<Integer> col = new ArrayList<Integer>();
 
-            for (int loops = 0; loops < (4 * size); ++loops) {
-                int command = random.nextInt(5);
-                switch (command) {
-                case 0:
-                case 1:
-                case 2:
-                    int pos = random.nextInt(2);
-                    int times = random.nextInt(3);
-                    for (int rep = 0; rep < times; rep++) {
-                        col.add(random.nextInt(size));
-                    }
-                    if (pos == 0) {
-                        expected.addAll(0, col);
-                    } else {
-                        expected.addAll(col);
-                    }
-                    int parameter = random.nextInt(4);
-                    switch (parameter) {
-                    case 0:  //cursorable insertAll
-                        list = (pos == 0) ? list.insertAllFirst(getCursorable(col)) : list.insertAllLast(getCursorable(col));
-                        break;
-                    case 1: //collection insertAll
-                        list = (pos == 0) ? list.insertAllFirst(col) : list.insertAllLast(col);
-                        break;
-                    case 2: //cursor insertAll
-                        list = (pos == 0) ? list.insertAllFirst(getCursor(col)) : list.insertAllLast(getCursor(col));
-                        break;
-                    case 3: //iterator insertAll
-                        list = (pos == 0) ? list.insertAllFirst(col.iterator()) : list.insertAllLast(col.iterator());
-                        break;
-                    }
-                    col = new ArrayList<Integer>();
+            for (int loops = 1; loops <= 200; ++loops) {
+                switch (random.nextInt(5)) {
+                case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllFirst(getCursorable(values)) : list.insertAllFirst(getCursor(values));
+                    expected.addAll(0, values);
                     break;
-
-                case 3: //deleteFirst
+                }
+                case 1: { //insertAllFirst(Collection)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                    expected.addAll(0, values);
+                    break;
+                }
+                case 2: { //insertAllLast(Cursorable)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllLast(getCursorable(values)) : list.insertAllLast(getCursor(values));
+                    expected.addAll(values);
+                    break;
+                }
+                case 3: {//insertAllLast(Collection)
+                    List<Integer> values = makeValues(random, size);
+                    list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                    expected.addAll(values);
+                    break;
+                }
+                case 4: { //deleteFirst
                     if (list.size() > 0) {
                         list = list.deleteFirst();
                         expected.remove(0);
@@ -971,7 +953,8 @@ public class JImmutableTreeListTest
                         }
                     }
                     break;
-                case 4: //deleteLast
+                }
+                case 5: { //deleteLast
                     if (list.size() > 0) {
                         list = list.deleteLast();
                         expected.remove(expected.size() - 1);
@@ -984,7 +967,7 @@ public class JImmutableTreeListTest
                         }
                     }
                     break;
-
+                }
                 }
                 assertEquals(expected.size(), list.size());
             }
@@ -1017,7 +1000,6 @@ public class JImmutableTreeListTest
         }
     }
 
-
     public void testRandom4()
     {
         Random random = new Random(2500L);
@@ -1025,31 +1007,24 @@ public class JImmutableTreeListTest
             int size = 1 + random.nextInt(3000);
             JImmutableTreeList<Integer> list = JImmutableTreeList.of();
             List<Integer> expected = new ArrayList<Integer>();
-            List<Integer> col = new ArrayList<Integer>();
             for (int i = 0; i < size; ++i) {
-
-                int times = random.nextInt(3);
-                for (int n = 0; n < times; n++) {
-                    col.add(random.nextInt(size));
-                }
+                List<Integer> values = makeValues(random, size);
                 int index = (list.size() == 0) ? 0 : random.nextInt(list.size());
-                expected.addAll(index, col);
-                int parameter = random.nextInt(4);
-                switch (parameter) {
-                case 0:  //cursorable insertAll
-                    list = list.insertAll(index, getCursorable(col));
+                expected.addAll(index, values);
+                switch (random.nextInt(4)) {
+                case 0:  //insertAll(Cursorable)
+                    list = list.insertAll(index, getCursorable(values));
                     break;
-                case 1: //collection insertAll
-                    list = list.insertAll(index, col);
+                case 1: //insertAll(Collection)
+                    list = list.insertAll(index, values);
                     break;
-                case 2: //cursor insertAll
-                    list = list.insertAll(index, getCursor(col));
+                case 2: //insertAll(Cursor)
+                    list = list.insertAll(index, getCursor(values));
                     break;
-                case 3: //iterator insertAll
-                    list = list.insertAll(index, col.iterator());
+                case 3: //insertAll(Iterator)
+                    list = list.insertAll(index, values.iterator());
                     break;
                 }
-                col = new ArrayList<Integer>();
                 assertEquals(expected.size(), list.size());
             }
             assertEquals(expected, list.getList());
@@ -1078,7 +1053,6 @@ public class JImmutableTreeListTest
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
-
         }
     }
 
@@ -1220,4 +1194,25 @@ public class JImmutableTreeListTest
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, (comparator));
     }
+
+    private List<Integer> makeValues(Random random,
+                                     int size)
+    {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            list.add(random.nextInt(size));
+        }
+        return list;
+    }
+
+    private IterableCursorable<Integer> getCursorable(List<Integer> values)
+    {
+        return IterableCursorable.of(values);
+    }
+
+    private Cursor<Integer> getCursor(List<Integer> values)
+    {
+        return IterableCursorable.of(values).cursor();
+    }
+
 }
