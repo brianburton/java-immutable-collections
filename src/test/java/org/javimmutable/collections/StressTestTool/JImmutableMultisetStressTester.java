@@ -198,7 +198,7 @@ public class JImmutableMultisetStressTester
                     int expectedChange = random.nextInt(3);
                     int initialSize = multi.valueCount();
                     multi = shrinkingCaseZero(expectedChange, random, multi, expected, multiList);
-                    if (multi.valueCount() == initialSize + expectedChange) {   //ensures 1 value is deleted on average
+                    if (multi.valueCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
                         break;
                     }
                 case 1: //deleteOccurrence(T)
@@ -212,7 +212,7 @@ public class JImmutableMultisetStressTester
                     expectedChange = random.nextInt(3);
                     initialSize = multi.valueCount();
                     multi = shrinkingCaseTwo(expectedChange, random, multi, expected, multiList);
-                    if (multi.valueCount() == initialSize + expectedChange) {   //ensures 1 value is deleted on average
+                    if (multi.valueCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
                         break;
                     }
                 case 3: //deleteAllOccurrences(Cursorable)
