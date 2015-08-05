@@ -47,10 +47,12 @@ import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+@Immutable
 public abstract class AbstractJImmutableMultiset<T>
         implements JImmutableMultiset<T>
 {
@@ -68,7 +70,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> insert(@Nonnull T value)
     {
-        JImmutableMap<T, Integer> newMap = increaseCount(value, 1);
+        JImmutableMap<T, Integer> newMap = increaseCount(map, value, 1);
         return (newMap != map) ? create(newMap, 1 + occurrences) : this;
     }
 
@@ -82,7 +84,7 @@ public abstract class AbstractJImmutableMultiset<T>
         } else if (count == 0) {
             return this;
         } else {
-            JImmutableMap<T, Integer> newMap = increaseCount(value, count);
+            JImmutableMap<T, Integer> newMap = increaseCount(map, value, count);
             return (newMap != map) ? create(newMap, count + occurrences) : this;
         }
     }
@@ -221,38 +223,34 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> delete(@Nonnull T value)
     {
         JImmutableMap<T, Integer> newMap = map.delete(value);
-        int newOccurrences = occurrences - this.count(value);
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
+        return (newMap != map) ? create(newMap, occurrences - this.count(value)) : this;
     }
 
     @Override
     @Nonnull
     public JImmutableMultiset<T> deleteOccurrence(@Nonnull T value)
     {
-        if (this.count(value) == 0) {
-            return this;
-        } else {
-            JImmutableMap<T, Integer> newMap = decreaseCount(value, 1);
-            return (newMap != map) ? create(newMap, occurrences - 1) : this;
-        }
+        JImmutableMap<T, Integer> newMap = decreaseCount(map, value, 1);
+        return (newMap != map) ? create(newMap, occurrences - 1) : this;
     }
 
     @Override
     @Nonnull
     public JImmutableMultiset<T> deleteOccurrence(@Nonnull T value,
-                                                  int count)
+                                                  int subtractBy)
     {
-        if (count < 0) {
+        if (subtractBy < 0) {
             throw new IllegalArgumentException();
         } else {
             JImmutableMap<T, Integer> newMap;
             int newOccurrences;
-            if (count >= this.count(value)) {
+            int oldCount = this.count(value);
+            if (subtractBy >= oldCount) {
                 newMap = map.delete(value);
-                newOccurrences = occurrences - this.count(value);
+                newOccurrences = occurrences - oldCount;
             } else {
-                newMap = decreaseCount(value, count);
-                newOccurrences = occurrences - count;
+                newMap = decreaseCount(map, value, subtractBy);
+                newOccurrences = occurrences - subtractBy;
             }
             return (newMap != map) ? create(newMap, newOccurrences) : this;
         }
@@ -325,7 +323,7 @@ public abstract class AbstractJImmutableMultiset<T>
         while (other.hasNext()) {
             final T value = other.next();
             if ((value != null) && (getCount(newMap, value) > 0)) {
-                newMap = decrementCount(newMap, value);
+                newMap = decreaseCount(newMap, value, 1);
                 newOccurrences = newOccurrences - 1;
             }
         }
@@ -370,7 +368,7 @@ public abstract class AbstractJImmutableMultiset<T>
         while (values.hasNext()) {
             final T value = values.next();
             if (value != null) {
-                newMap = incrementCount(newMap, value);
+                newMap = increaseCount(newMap, value, 1);
                 newOccurrences = newOccurrences + 1;
             }
         }
@@ -415,10 +413,12 @@ public abstract class AbstractJImmutableMultiset<T>
         int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
-            otherMap = incrementCount(otherMap, value);
-            if (getCount(otherMap, value) > getCount(newMap, value)) {
-                newOccurrences = newOccurrences - getCount(newMap, value) + getCount(otherMap, value);
-                newMap = newMap.assign(value, getCount(otherMap, value));
+            otherMap = increaseCount(otherMap, value, 1);
+            Integer otherCount = getCount(otherMap, value);
+            Integer newCount = getCount(newMap, value);
+            if (otherCount > newCount) {
+                newOccurrences = newOccurrences - newCount + otherCount;
+                newMap = newMap.assign(value, otherCount);
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
@@ -477,14 +477,16 @@ public abstract class AbstractJImmutableMultiset<T>
         JImmutableMap<T, Integer> otherMap = emptyMap();
         while (other.hasNext()) {
             final T value = other.next();
-            otherMap = incrementCount(otherMap, value);
             int currentCount = this.count(value);
-            if ((currentCount > 0) && (currentCount != getCount(newMap, value))) {
-                int otherCount = getCount(otherMap, value);
-                newOccurrences -= getCount(newMap, value);
-                newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
-                newMap = (currentCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
-
+            if (currentCount > 0) {
+                otherMap = increaseCount(otherMap, value, 1);
+                Integer newCount = getCount(newMap, value);
+                if (currentCount != newCount) {
+                    int otherCount = getCount(otherMap, value);
+                    newOccurrences -= newCount;
+                    newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
+                    newMap = (currentCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
+                }
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
@@ -639,49 +641,63 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
 
-    private JImmutableMap<T, Integer> increaseCount(T value,
+    private JImmutableMap<T, Integer> increaseCount(JImmutableMap<T, Integer> map,
+                                                    T value,
                                                     int addBy)
     {
-        return map.assign(value, addBy + this.count(value));
+        int newCount = getCount(map, value) + addBy;
+        return map.assign(value, newCount);
     }
 
-    private JImmutableMap<T, Integer> incrementCount(JImmutableMap<T, Integer> newMap,
-                                                     T value)
-    {
-
-        int newCount = getCount(newMap, value) + 1;
-        return newMap.assign(value, newCount);
-
-    }
+//    private JImmutableMap<T, Integer> incrementCount(JImmutableMap<T, Integer> newMap,
+//                                                     T value)
+//    {
+//
+//        int newCount = getCount(newMap, value) + 1;
+//        return newMap.assign(value, newCount);
+//
+//    }
 
     protected abstract JImmutableMap<T, Integer> emptyMap();
 
-    protected void checkMultisetInvariants()
+    public void checkInvariants()
     {
         map.checkInvariants();
         if (occurrences < map.size()) {
             throw new IllegalStateException();
         }
-        //TODO: review checkMultisetInvariants()
+        int checkOccurrences = 0;
+        for (JImmutableMap.Entry<T, Integer> entry : entryCursor()) {
+            int entryCount = entry.getValue();
+            if (entryCount <= 0) {
+                throw new IllegalStateException(String.format("illegal count of %d for value %s%n", entryCount, entry.getKey()));
+            }
+            checkOccurrences += entryCount;
+        }
+        if (occurrences != checkOccurrences) {
+            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", checkOccurrences, occurrences));
+        }
     }
 
-    private JImmutableMap<T, Integer> decreaseCount(T value,
+    private JImmutableMap<T, Integer> decreaseCount(JImmutableMap<T, Integer> map,
+                                                    T value,
                                                     int subtractBy)
     {
-        if (subtractBy == 0) {
+        Integer oldCount = getCount(map, value);
+        if (subtractBy == 0 || oldCount == 0) {
             return map;
         } else {
-            int newCount = this.count(value) - subtractBy;
+            int newCount = oldCount - subtractBy;
             return (newCount > 0) ? map.assign(value, newCount) : map.delete(value);
         }
     }
 
-    private JImmutableMap<T, Integer> decrementCount(JImmutableMap<T, Integer> newMap,
-                                                     T value)
-    {
-        int newCount = newMap.getValueOr(value, 0) - 1;
-        return (newCount > 0) ? newMap.assign(value, newCount) : newMap.delete(value);
-    }
+//    private JImmutableMap<T, Integer> decrementCount(JImmutableMap<T, Integer> newMap,
+//                                                     T value)
+//    {
+//        int newCount = newMap.getValueOr(value, 0) - 1;
+//        return (newCount > 0) ? newMap.assign(value, newCount) : newMap.delete(value);
+//    }
 
 
     private Integer getCount(JImmutableMap<T, Integer> checkMap,

@@ -39,8 +39,10 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
+@Immutable
 public class JImmutableTreeMultiset<T>
         extends AbstractJImmutableMultiset<T>
 {
@@ -96,12 +98,5 @@ public class JImmutableTreeMultiset<T>
     protected JImmutableMap<T, Integer> emptyMap()
     {
         return JImmutableTreeMap.of(comparator);
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        checkMultisetInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 }

@@ -43,8 +43,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Keeps a set of distinct values, as well as the count corresponding to each value. Can return
- * a list with the correct number of occurrences per value.
+ * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
+ * through the multiset with the correct number of occurrences per value.
  *
  * @param <T>
  */
@@ -96,7 +96,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other.
+     * occurrences of each value) in other. If other is empty, returns true.
      * Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
@@ -107,7 +107,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other.
+     * occurrences of each value) in other. If other is empty, returns true.
      * Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
@@ -118,7 +118,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other.
+     * occurrences of each value) in other. If other is empty, returns true.
      * Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
@@ -129,7 +129,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other.
+     * occurrences of each value) in other. If other is empty, returns true.
      * Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
@@ -140,7 +140,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
+     * in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -150,7 +150,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
+     * in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -160,7 +160,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
+     * in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -170,7 +170,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
+     * in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -180,8 +180,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
-     * Slow operation.
+     * in other. If other is empty, returns true.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all occurrences
@@ -190,8 +189,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
-     * Slow operation.
+     * in other. If other is empty, returns true.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all occurrences
@@ -200,8 +198,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset contains every occurrence of all the values
-     * in other.
-     * Slow operation.
+     * in other. If other is empty, returns true.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all occurrences
@@ -210,6 +207,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset and other have at least one value in common.
+     * Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -219,6 +217,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset and other have at least one value in common.
+     * Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -228,6 +227,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset and other have at least one value in common.
+     * Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -237,6 +237,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Determines if the multiset and other have at least one value in common.
+     * Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -479,7 +480,6 @@ public interface JImmutableMultiset<T>
      * Combines all occurrences from other and the multiset. If only the multiset or
      * other contains a value, that value's count is preserved in the new multiset.
      * If both contain a value, the greater count is used.
-     * Slow operation.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -491,7 +491,6 @@ public interface JImmutableMultiset<T>
      * Combines all occurrences from other and the multiset. If only the multiset or
      * other contains a value, that value's count is preserved in the new multiset.
      * If both contain a value, the greater count is used.
-     * Slow operation.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -503,7 +502,6 @@ public interface JImmutableMultiset<T>
      * Combines all occurrences from other and the multiset. If only the multiset or
      * other contains a value, that value's count is preserved in the new multiset.
      * If both contain a value, the greater count is used.
-     * Slow operation.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -567,7 +565,6 @@ public interface JImmutableMultiset<T>
      * Creates a new multiset with the occurrences that are in both other and this.
      * If neither the multiset nor other contains a value, it is removed. If both
      * contain a value, the lesser count is used.
-     * Slow operation.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -579,7 +576,6 @@ public interface JImmutableMultiset<T>
      * Creates a new multiset with the occurrences that are in both other and this.
      * If neither the multiset nor other contains a value, it is removed. If both
      * contain a value, the lesser count is used.
-     * Slow operation.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -592,7 +588,6 @@ public interface JImmutableMultiset<T>
      * Creates a new multiset with the occurrences that are in both other and this.
      * If neither the multiset nor other contains a value, it is removed. If both
      * contain a value, the lesser count is used.
-     * Slow operation.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -653,12 +648,12 @@ public interface JImmutableMultiset<T>
     boolean isEmpty();
 
     /**
-     * @return total number of unique values in the multiset
+     * @return total number of unique values in the multiset. Same as the number of items in cursor() and entryCursor().
      */
     int size();
 
     /**
-     * @return the total number of occurrences in the multiset
+     * @return the total number of occurrences in the multiset. Same as the number of items in occurrenceCursor().
      */
     int valueCount();
 }

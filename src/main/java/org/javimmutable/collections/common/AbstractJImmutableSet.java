@@ -431,7 +431,11 @@ public abstract class AbstractJImmutableSet<T>
     protected void checkSetInvariants()
     {
         map.checkInvariants();
-        //TODO: review checkSetInvariants()
+        for (JImmutableMap.Entry<T, Boolean> entry : map.cursor()) {
+            if (!entry.getValue()) {
+                throw new RuntimeException();
+            }
+        }
     }
 
     /**

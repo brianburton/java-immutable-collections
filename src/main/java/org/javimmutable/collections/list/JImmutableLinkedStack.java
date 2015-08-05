@@ -177,7 +177,7 @@ public abstract class JImmutableLinkedStack<T>
         @Override
         public void checkInvariants()
         {
-            //TODO: fix empty checkInvariants()
+            //no invariants
         }
     }
 
@@ -224,7 +224,7 @@ public abstract class JImmutableLinkedStack<T>
         @Override
         public void checkInvariants()
         {
-            //TODO: fix empty checkInvariants()
+            //no invariants
         }
     }
 
@@ -275,7 +275,7 @@ public abstract class JImmutableLinkedStack<T>
         @Override
         public void checkInvariants()
         {
-            //TODO: fix empty checkInvariants()
+            //no invariants
         }
     }
 }

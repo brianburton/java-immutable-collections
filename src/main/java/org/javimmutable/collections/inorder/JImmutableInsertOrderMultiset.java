@@ -73,13 +73,6 @@ public class JImmutableInsertOrderMultiset<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
-        checkMultisetInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
     protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map,
                                                       int occurrences)
     {

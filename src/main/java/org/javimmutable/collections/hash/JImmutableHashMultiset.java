@@ -40,7 +40,9 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class JImmutableHashMultiset<T>
         extends AbstractJImmutableMultiset<T>
 {
@@ -71,13 +73,6 @@ public class JImmutableHashMultiset<T>
     public JImmutableMultiset<T> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        checkMultisetInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override
