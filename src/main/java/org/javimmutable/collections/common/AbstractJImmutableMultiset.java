@@ -413,12 +413,14 @@ public abstract class AbstractJImmutableMultiset<T>
         int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
-            otherMap = increaseCount(otherMap, value, 1);
-            Integer otherCount = getCount(otherMap, value);
-            Integer newCount = getCount(newMap, value);
-            if (otherCount > newCount) {
-                newOccurrences = newOccurrences - newCount + otherCount;
-                newMap = newMap.assign(value, otherCount);
+            if (value != null) {
+                otherMap = increaseCount(otherMap, value, 1);
+                Integer otherCount = getCount(otherMap, value);
+                Integer newCount = getCount(newMap, value);
+                if (otherCount > newCount) {
+                    newOccurrences = newOccurrences - newCount + otherCount;
+                    newMap = newMap.assign(value, otherCount);
+                }
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
@@ -477,15 +479,17 @@ public abstract class AbstractJImmutableMultiset<T>
         JImmutableMap<T, Integer> otherMap = emptyMap();
         while (other.hasNext()) {
             final T value = other.next();
-            int currentCount = this.count(value);
-            if (currentCount > 0) {
-                otherMap = increaseCount(otherMap, value, 1);
-                Integer newCount = getCount(newMap, value);
-                if (currentCount != newCount) {
-                    int otherCount = getCount(otherMap, value);
-                    newOccurrences -= newCount;
-                    newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
-                    newMap = (currentCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
+            if (value != null) {
+                int currentCount = this.count(value);
+                if (currentCount > 0) {
+                    otherMap = increaseCount(otherMap, value, 1);
+                    Integer newCount = getCount(newMap, value);
+                    if (currentCount != newCount) {
+                        int otherCount = getCount(otherMap, value);
+                        newOccurrences -= newCount;
+                        newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
+                        newMap = (currentCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
+                    }
                 }
             }
         }
