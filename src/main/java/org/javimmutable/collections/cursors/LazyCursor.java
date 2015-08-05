@@ -82,7 +82,7 @@ public class LazyCursor<V>
     }
 
     /**
-     * Creates a new LazyPersistentIterator using the specified factory.
+     * Creates a new LazyCursor using the specified factory.
      *
      * @param factory a Func0 capable of creating a real Cursor
      */
@@ -92,9 +92,9 @@ public class LazyCursor<V>
     }
 
     /**
-     * Creates a new LazyPersistentIterator for the specified cursorable.
+     * Creates a new LazyCursor for the specified cursorable.
      *
-     * @param cursorable a PersistentIterable capable of producing a non-empty PersistentIterator
+     * @param cursorable a Cursorable capable of producing a non-empty LazyCursor
      */
     public static <V> LazyCursor<V> of(Cursorable<V> cursorable)
     {

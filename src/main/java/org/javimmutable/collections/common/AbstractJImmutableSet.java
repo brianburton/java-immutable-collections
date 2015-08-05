@@ -443,7 +443,7 @@ public abstract class AbstractJImmutableSet<T>
     protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
 
     /**
-     * Implemented by derived classes to create a new empty PersistentMap for use by retainAll()
+     * Implemented by derived classes to create a new empty JImmutableMap for use by retainAll()
      *
      * @return
      */

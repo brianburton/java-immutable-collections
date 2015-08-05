@@ -40,7 +40,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
- * Immutable implementation of both Map.Entry and PersistentMap.Entry that uses the same equals() and hashCode() implementations as
+ * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
  * documented in javadoc for Map.Entry.
  *
  * @param <K>

@@ -42,7 +42,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Extension of PersistentList that allows insertion and deletion at arbitrary
+ * Extension of JImmutableList that allows insertion and deletion at arbitrary
  * indexes within the list.
  *
  * @param <T>
@@ -286,7 +286,7 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
      *
-     * @return new PersistentList without last value
+     * @return new JImmutableList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
@@ -295,7 +295,7 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
      *
-     * @return new PersistentList without last value
+     * @return new JImmutableList without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
