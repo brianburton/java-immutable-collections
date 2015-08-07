@@ -87,21 +87,24 @@ public class JImmutableRandomAccessListStressTester
             for (int i = 0; i < size / 3; ++i) {
                 int index = random.nextInt(ralist.size());
                 switch (random.nextInt(2)) {
-                case 0: //insert(int, T)
+                case 0: { //insert(int, T)
                     String value = makeValue(tokens, random);
                     ralist = ralist.insert(index, value);
                     expected.add(index, value);
                     break;
-                case 1: //insertAll(int, Cursorable);
+                }
+                case 1: { //insertAll(int, Cursorable);
                     List<String> values = makeInsertList(tokens, random);
                     ralist = ralist.insertAll(index, IterableCursorable.of(values));
                     expected.addAll(index, values);
                     break;
-                case 2: //insertAll(int, Collection)
-                    values = makeInsertList(tokens, random);
+                }
+                case 2: { //insertAll(int, Collection)
+                    List<String> values = makeInsertList(tokens, random);
                     ralist = ralist.insertAll(index, values);
                     expected.addAll(index, values);
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }

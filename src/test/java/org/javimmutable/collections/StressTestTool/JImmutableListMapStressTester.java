@@ -100,22 +100,25 @@ public class JImmutableListMapStressTester
                 String key = unusedKey(tokens, random, expected);
                 keysList.add(key);
                 switch (random.nextInt(3)) {
-                case 0: //assign(K, JList)
+                case 0: { //assign(K, JList)
                     JImmutableList<String> values = makeGrowingList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;
-                case 1: //insert(K, V)
+                }
+                case 1: { //insert(K, V)
                     String value = makeValue(tokens, random);
                     listmap = listmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
-                case 2: //insert(Entry<K, V>)
-                    value = makeValue(tokens, random);
+                }
+                case 2: { //insert(Entry<K, V>)
+                    String value = makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, value);
                     listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
                     addAt(expected, key, value);
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }
@@ -126,22 +129,25 @@ public class JImmutableListMapStressTester
             for (int i = 0; i < listmap.size(); ++i) {
                 String key = containedKey(keysList, random);
                 switch (random.nextInt(3)) {
-                case 0: //assign(K, JList)
+                case 0: { //assign(K, JList)
                     JImmutableList<String> values = makeUpdateList(tokens, random);
                     listmap = listmap.assign(key, values);
                     expected.put(key, values);
                     break;
-                case 1: //insert(K, V)
+                }
+                case 1: { //insert(K, V)
                     String value = makeValue(tokens, random);
                     listmap = listmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
-                case 2: //insert(Entry<K, V>)
-                    value = makeValue(tokens, random);
+                }
+                case 2: { //insert(Entry<K, V>)
+                    String value = makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, value);
                     listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
                     addAt(expected, key, value);
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }
@@ -163,27 +169,30 @@ public class JImmutableListMapStressTester
             for (int i = 0; i < size / 12; ++i) {
                 String key = (random.nextBoolean()) ? makeValue(tokens, random) : keysList.get(random.nextInt(keysList.size()));
                 switch (random.nextInt(3)) {
-                case 0: //get(K)
+                case 0: { //get(K)
                     JImmutableList<String> list = listmap.get(key);
                     JImmutableList<String> expectedList = expected.get(key);
                     if (!((list == null && expectedList == null) || (expectedList != null && expectedList.equals(list)))) {
                         throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedList, list));
                     }
                     break;
-                case 1: //getValueOr(K, V)
-                    list = listmap.getValueOr(key, JImmutables.list(""));
-                    expectedList = (expected.containsKey(key)) ? expected.get(key) : JImmutables.list("");
+                }
+                case 1: { //getValueOr(K, V)
+                    JImmutableList<String> list = listmap.getValueOr(key, JImmutables.list(""));
+                    JImmutableList<String> expectedList = (expected.containsKey(key)) ? expected.get(key) : JImmutables.list("");
                     if (!list.equals(expectedList)) {
                         throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - expected %s found %s%n", key, expectedList, list));
                     }
                     break;
-                case 2: //find(K)
+                }
+                case 2: { //find(K)
                     Holder<JImmutableList<String>> holder = listmap.find(key);
                     Holder<JImmutableList<String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.<JImmutableList<String>>of();
                     if (!equivalentHolder(holder, expectedHolder)) {
                         throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
                     }
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }

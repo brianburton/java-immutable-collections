@@ -45,56 +45,66 @@ public class JImmutableListStressTester
             System.out.printf("growing %d%n", list.size());
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(10)) {
-                case 0: //insert(T)
+                case 0: { //insert(T)
                     String value = makeValue(tokens, random);
                     list = list.insert(value);
                     expected.add(value);
                     break;
-                case 1: //insertFirst(T)
-                    value = makeValue(tokens, random);
+                }
+                case 1: { //insertFirst(T)
+                    String value = makeValue(tokens, random);
                     list = list.insertFirst(value);
                     expected.add(0, value);
                     break;
-                case 2: //insertLast(T)
-                    value = makeValue(tokens, random);
+                }
+                case 2: { //insertLast(T)
+                    String value = makeValue(tokens, random);
                     list = list.insertLast(value);
                     expected.add(value);
                     break;
-                case 3: //insert(Iterable)
+                }
+                case 3: { //insert(Iterable)
                     List<String> values = makeInsertList(tokens, random);
                     list = list.insert(values);
                     expected.addAll(values);
                     break;
-                case 4: //insertAll(Cursorable)
-                    values = makeInsertList(tokens, random);
+                }
+                case 4: { //insertAll(Cursorable)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAll(IterableCursorable.of(values));
                     expected.addAll(values);
                     break;
-                case 5: //insertAll(Collection)
-                    values = makeInsertList(tokens, random);
+                }
+                case 5: { //insertAll(Collection)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAll(values);
                     expected.addAll(values);
                     break;
-                case 6: //insertAllLast(Cursorable)
-                    values = makeInsertList(tokens, random);
+                }
+                case 6: { //insertAllLast(Cursorable)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAllLast(IterableCursorable.of(values));
                     expected.addAll(values);
                     break;
-                case 7: //insertAllLast(Collection)
-                    values = makeInsertList(tokens, random);
+                }
+                case 7: { //insertAllLast(Collection)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAllLast(values);
                     expected.addAll(values);
                     break;
-                case 8: //insertAllFirst(Cursorable)
-                    values = makeInsertList(tokens, random);
+                }
+                case 8: { //insertAllFirst(Cursorable)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAllFirst(IterableCursorable.of(values));
                     expected.addAll(0, values);
                     break;
-                case 9: //insertAllFirst(Collection)
-                    values = makeInsertList(tokens, random);
+                }
+                case 9: { //insertAllFirst(Collection)
+                    List<String> values = makeInsertList(tokens, random);
                     list = list.insertAllFirst(values);
                     expected.addAll(0, values);
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }
@@ -104,14 +114,15 @@ public class JImmutableListStressTester
             System.out.printf("updating %d%n", list.size());
             for (int i = 0; i < list.size() / 6; ++i) {
                 switch (random.nextInt(2)) {
-                case 0: //assign(int, T)
+                case 0: { //assign(int, T)
                     int index = random.nextInt(list.size());
                     String value = (random.nextBoolean()) ? list.get(index) : makeValue(tokens, random);
                     list = list.assign(index, value);
                     expected.set(index, value);
                     break;
-                case 1: //assign(int, T) - throw exception
-                    index = random.nextInt(list.size()) + list.size();
+                }
+                case 1: { //assign(int, T) - throw exception
+                    int index = random.nextInt(list.size()) + list.size();
                     try {
                         list.assign(index, makeValue(tokens, random));
                         throw new RuntimeException(String.format("error in assign(index, value) method call - index %d was out of bounds, but method did not fail%n", index));
@@ -119,6 +130,7 @@ public class JImmutableListStressTester
                         //ignored -- expected
                     }
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }
@@ -145,7 +157,7 @@ public class JImmutableListStressTester
             System.out.printf("contains %d%n", list.size());
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(2)) {
-                case 0: //get(int)
+                case 0: { //get(int)
                     int index = random.nextInt(list.size());
                     String value = list.get(index);
                     String expectedValue = expected.get(index);
@@ -153,8 +165,9 @@ public class JImmutableListStressTester
                         throw new RuntimeException(String.format("get(index) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
                     }
                     break;
-                case 1: //get(int) - throw exception
-                    index = random.nextInt(list.size()) + list.size();
+                }
+                case 1: { //get(int) - throw exception
+                    int index = random.nextInt(list.size()) + list.size();
                     try {
                         list.get(index);
                         throw new RuntimeException(String.format("error in get(index) method call - index %d was out of bounds, but method did not fail%n", index));
@@ -162,6 +175,7 @@ public class JImmutableListStressTester
                         //ignored -- expected
                     }
                     break;
+                }
                 default:
                     throw new RuntimeException();
                 }

@@ -482,9 +482,9 @@ public abstract class AbstractJImmutableMultiset<T>
             if (value != null) {
                 int currentCount = this.count(value);
                 if (currentCount > 0) {
-                    otherMap = increaseCount(otherMap, value, 1);
                     Integer newCount = getCount(newMap, value);
-                    if (currentCount != newCount) {
+                    if (currentCount > newCount) {
+                        otherMap = increaseCount(otherMap, value, 1);
                         int otherCount = getCount(otherMap, value);
                         newOccurrences -= newCount;
                         newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
@@ -653,15 +653,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return map.assign(value, newCount);
     }
 
-//    private JImmutableMap<T, Integer> incrementCount(JImmutableMap<T, Integer> newMap,
-//                                                     T value)
-//    {
-//
-//        int newCount = getCount(newMap, value) + 1;
-//        return newMap.assign(value, newCount);
-//
-//    }
-
     protected abstract JImmutableMap<T, Integer> emptyMap();
 
     public void checkInvariants()
@@ -695,14 +686,6 @@ public abstract class AbstractJImmutableMultiset<T>
             return (newCount > 0) ? map.assign(value, newCount) : map.delete(value);
         }
     }
-
-//    private JImmutableMap<T, Integer> decrementCount(JImmutableMap<T, Integer> newMap,
-//                                                     T value)
-//    {
-//        int newCount = newMap.getValueOr(value, 0) - 1;
-//        return (newCount > 0) ? newMap.assign(value, newCount) : newMap.delete(value);
-//    }
-
 
     private Integer getCount(JImmutableMap<T, Integer> checkMap,
                              T value)
