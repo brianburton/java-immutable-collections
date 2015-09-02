@@ -79,7 +79,7 @@ public class StandardJImmutableMultisetTests
         jmet = jmet.insert(10);
         assertEquals(true, jmet != empty);
         assertEquals(1, jmet.size());
-        assertEquals(1, jmet.valueCount());
+        assertEquals(1, jmet.occurrenceCount());
         assertEquals(false, jmet.isEmpty());
         assertEquals(true, jmet.contains(10));
         assertEquals(true, jmet.containsAtLeast(10, 1));
@@ -92,7 +92,7 @@ public class StandardJImmutableMultisetTests
 
         jmet = jmet.insert(10, 3);
         assertEquals(1, jmet.size());
-        assertEquals(3, jmet.valueCount());
+        assertEquals(3, jmet.occurrenceCount());
         assertEquals(true, jmet.contains(10));
         assertEquals(true, jmet.containsAtLeast(10, 3));
         assertEquals(false, jmet.containsAtLeast(10, 4));
@@ -100,7 +100,7 @@ public class StandardJImmutableMultisetTests
 
         jmet = jmet.setCount(10, 5);
         assertEquals(1, jmet.size());
-        assertEquals(5, jmet.valueCount());
+        assertEquals(5, jmet.occurrenceCount());
         assertEquals(true, jmet.contains(10));
         assertEquals(true, jmet.containsAtLeast(10, 5));
         jmet = jmet.setCount(10, 3);
@@ -485,7 +485,7 @@ public class StandardJImmutableMultisetTests
         JImmutableMultiset<Integer> jmet = empty;
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
-        assertEquals(0, jmet.valueCount());
+        assertEquals(0, jmet.occurrenceCount());
         assertEquals(false, jmet.contains(100));
         assertEquals(false, jmet.contains(200));
         assertEquals(false, jmet.contains(300));
@@ -496,7 +496,7 @@ public class StandardJImmutableMultisetTests
         jmet = jmet.insert(100);
         assertFalse(jmet.isEmpty());
         assertEquals(1, jmet.size());
-        assertEquals(1, jmet.valueCount());
+        assertEquals(1, jmet.occurrenceCount());
         assertEquals(true, jmet.contains(100));
         assertEquals(false, jmet.contains(200));
         assertEquals(false, jmet.contains(300));
@@ -507,7 +507,7 @@ public class StandardJImmutableMultisetTests
         jmet = jmet.insert(200);
         assertFalse(jmet.isEmpty());
         assertEquals(2, jmet.size());
-        assertEquals(2, jmet.valueCount());
+        assertEquals(2, jmet.occurrenceCount());
         assertEquals(true, jmet.contains(100));
         assertEquals(true, jmet.contains(200));
         assertEquals(false, jmet.contains(300));
@@ -521,7 +521,7 @@ public class StandardJImmutableMultisetTests
         JImmutableMultiset<Integer> jmet2 = jmet.union(values);
         assertFalse(jmet2.isEmpty());
         assertEquals(3, jmet2.size());
-        assertEquals(4, jmet2.valueCount());
+        assertEquals(4, jmet2.occurrenceCount());
         assertEquals(true, jmet2.contains(100));
         assertEquals(true, jmet2.contains(200));
         assertEquals(true, jmet2.containsAtLeast(300, 2));
@@ -538,7 +538,7 @@ public class StandardJImmutableMultisetTests
         jmet2 = jmet2.deleteAll(jmet);
         assertFalse(jmet2.isEmpty());
         assertEquals(1, jmet2.size());
-        assertEquals(2, jmet2.valueCount());
+        assertEquals(2, jmet2.occurrenceCount());
         assertEquals(false, jmet2.contains(100));
         assertEquals(false, jmet2.contains(200));
         assertEquals(true, jmet2.containsAtLeast(300, 2));
@@ -550,7 +550,7 @@ public class StandardJImmutableMultisetTests
         JImmutableMultiset<Integer> jmet3 = jmet.union(values).insert(400).insert(500, 3);
         assertFalse(jmet3.isEmpty());
         assertEquals(5, jmet3.size());
-        assertEquals(8, jmet3.valueCount());
+        assertEquals(8, jmet3.occurrenceCount());
         assertEquals(true, jmet3.contains(100));
         assertEquals(true, jmet3.contains(200));
         assertEquals(true, jmet3.containsAtLeast(300, 2));
@@ -624,7 +624,7 @@ public class StandardJImmutableMultisetTests
                     assertEquals(true, jmet.containsAtLeast(value, count));
                     break;
                 }
-                assertEquals(expected.size(), jmet.valueCount());
+                assertEquals(expected.size(), jmet.occurrenceCount());
             }
             //verify multisets have the same contents
             verifyContents(jmet, expected);
@@ -637,7 +637,7 @@ public class StandardJImmutableMultisetTests
                 jmet = jmet.deleteOccurrence(value);
             }
             assertEquals(0, jmet.size());
-            assertEquals(0, jmet.valueCount());
+            assertEquals(0, jmet.occurrenceCount());
             assertEquals(true, jmet.isEmpty());
 
         }
@@ -647,7 +647,7 @@ public class StandardJImmutableMultisetTests
                                       Multiset<Integer> expected)
     {
         assertEquals(expected.isEmpty(), jmet.isEmpty());
-        assertEquals(expected.size(), jmet.valueCount());
+        assertEquals(expected.size(), jmet.occurrenceCount());
         assertEquals(expected.elementSet().size(), jmet.size());
         assertEquals(expected.elementSet(), jmet.getSet());
 

@@ -53,6 +53,9 @@ import java.util.Random;
  */
 public abstract class AbstractStressTestable
 {
+    private double runs;
+    private double difference;
+
     abstract void execute(Random random,
                           JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
@@ -127,5 +130,17 @@ public abstract class AbstractStressTestable
         JImmutableMap.Entry<K, V> entry = holder.getValue();
         JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
         return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
+    }
+
+    protected void verifyFinalSize(int size,
+                                   int jimmutableSize)
+    {
+        ++runs;
+        double diff = (double)(jimmutableSize) / (double)size;
+        difference += diff;
+        double margin = 0.01;
+        if (((difference / runs) > 1 + margin) || (difference / runs) < 1 - margin) {
+            throw new RuntimeException(String.format("average size is %s of what it should be%n", difference/runs));
+        }
     }
 }

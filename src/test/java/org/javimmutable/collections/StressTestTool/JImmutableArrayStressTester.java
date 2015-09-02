@@ -201,7 +201,7 @@ public class JImmutableArrayStressTester
             }
             verifyCursor(array, expected);
         }
-
+        verifyFinalSize(size, array.size());
         System.out.printf("cleanup %d%n", array.size());
         while (indexList.size() > random.nextInt(20)) {
             //delete(int)

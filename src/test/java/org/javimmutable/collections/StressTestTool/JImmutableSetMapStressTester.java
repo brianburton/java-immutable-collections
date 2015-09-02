@@ -361,6 +361,7 @@ public class JImmutableSetMapStressTester
             }
         }
         verifyCursor(setmap, expected);
+        verifyFinalSize(size, setmap.size());
         //printStats(setmap);
         System.out.printf("cleanup %d%n", setmap.size());
         int threshold = random.nextInt(3);

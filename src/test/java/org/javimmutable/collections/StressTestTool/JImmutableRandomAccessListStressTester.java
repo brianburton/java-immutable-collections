@@ -119,6 +119,7 @@ public class JImmutableRandomAccessListStressTester
             verifyContents(ralist, expected);
             verifyCursor(ralist, expected);
         }
+        verifyFinalSize(size, ralist.size());
         System.out.printf("cleanup %d%n", expected.size());
         while (ralist.size() > 0) {
             int index = random.nextInt(ralist.size());

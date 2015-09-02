@@ -655,5 +655,5 @@ public interface JImmutableMultiset<T>
     /**
      * @return the total number of occurrences in the multiset. Same as the number of items in occurrenceCursor().
      */
-    int valueCount();
+    int occurrenceCount();
 }

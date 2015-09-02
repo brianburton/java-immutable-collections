@@ -258,6 +258,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             }
             verifyCursor(map, expected);
         }
+        verifyFinalSize(size, map.size());
         System.out.printf("cleanup %d%n", map.size());
         int threshold = random.nextInt(3);
         while (keysList.size() > threshold) {

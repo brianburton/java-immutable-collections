@@ -182,7 +182,7 @@ public class JImmutableListStressTester
             }
             verifyCursor(list, expected);
         }
-
+        verifyFinalSize(size, list.size());
         System.out.printf("cleanup %d%n", expected.size());
         int threshold = random.nextInt(3);
         while (list.size() > threshold) {

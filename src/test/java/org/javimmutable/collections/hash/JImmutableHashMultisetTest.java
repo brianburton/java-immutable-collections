@@ -67,7 +67,7 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> jmet = JImmutableHashMultiset.of();
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
-        assertEquals(0, jmet.valueCount());
+        assertEquals(0, jmet.occurrenceCount());
         assertEquals(false, jmet.contains("tennant"));
         assertEquals(false, jmet.contains("smith"));
         assertEquals(false, jmet.contains("capaldi"));
@@ -80,7 +80,7 @@ public class JImmutableHashMultisetTest
         jmet = jmet.insert("TENNANT".toLowerCase(), 10);
         assertFalse(jmet.isEmpty());
         assertEquals(1, jmet.size());
-        assertEquals(10, jmet.valueCount());
+        assertEquals(10, jmet.occurrenceCount());
         assertEquals(true, jmet.containsAtLeast("tennant", 10));
         assertEquals(false, jmet.contains("smith"));
         assertEquals(false, jmet.contains("capaldi"));
@@ -93,7 +93,7 @@ public class JImmutableHashMultisetTest
         jmet = jmet.insert("SMITH".toLowerCase(), 11);
         assertFalse(jmet.isEmpty());
         assertEquals(2, jmet.size());
-        assertEquals(21, jmet.valueCount());
+        assertEquals(21, jmet.occurrenceCount());
         assertEquals(true, jmet.containsAtLeast("tennant", 10));
         assertEquals(true, jmet.containsAtLeast("smith", 11));
         assertEquals(false, jmet.contains("capaldi"));
@@ -112,7 +112,7 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> jmet2 = jmet.union(valuesL);
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
-        assertEquals(23, jmet2.valueCount());
+        assertEquals(23, jmet2.occurrenceCount());
         assertEquals(true, jmet2.containsAtLeast("tennant", 10));
         assertEquals(true, jmet2.containsAtLeast("smith", 11));
         assertEquals(true, jmet2.contains("capaldi"));
@@ -130,7 +130,7 @@ public class JImmutableHashMultisetTest
         jmet2 = jmet2.union(valuesM);
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
-        assertEquals(42, jmet2.valueCount());
+        assertEquals(42, jmet2.occurrenceCount());
         assertEquals(true, jmet2.containsAtLeast("tennant", 10));
         assertEquals(true, jmet2.containsAtLeast("smith", 11));
         assertEquals(true, jmet2.containsAtLeast("capaldi", 12));
@@ -160,7 +160,7 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> jmet3 = asJMet(valuesL).insert("davison").insert("baker");
         assertFalse(jmet3.isEmpty());
         assertEquals(6, jmet3.size());
-        assertEquals(6, jmet3.valueCount());
+        assertEquals(6, jmet3.occurrenceCount());
         assertEquals(true, jmet3.contains("tennant"));
         assertEquals(true, jmet3.contains("smith"));
         assertEquals(true, jmet3.contains("capaldi"));

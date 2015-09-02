@@ -199,6 +199,7 @@ public class JImmutableListMapStressTester
             }
         }
         verifyCursor(listmap, expected);
+        verifyFinalSize(size, listmap.size());
         //printStats(listmap);
         System.out.printf("cleanup %d%n", listmap.size());
         int threshold = random.nextInt(3);

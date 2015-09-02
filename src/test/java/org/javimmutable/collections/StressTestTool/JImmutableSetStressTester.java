@@ -220,7 +220,7 @@ public class JImmutableSetStressTester
         }
         verifyContents(set, expected);
         verifyList(setList, expected);
-
+        verifyFinalSize(size, set.size());
         System.out.printf("cleanup %d%n", expected.size());
         while (setList.size() > size / 80) {
             List<String> deleteValues = new ArrayList<String>();

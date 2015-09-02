@@ -49,7 +49,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 @Immutable
@@ -409,13 +411,14 @@ public abstract class AbstractJImmutableMultiset<T>
     public JImmutableMultiset<T> union(@Nonnull Iterator<? extends T> other)
     {
         JImmutableMap<T, Integer> newMap = map;
-        JImmutableMap<T, Integer> otherMap = emptyMap();
+        Map<T, Integer> otherMap = new HashMap<T, Integer>();
         int newOccurrences = occurrences;
         while (other.hasNext()) {
             final T value = other.next();
             if (value != null) {
-                otherMap = increaseCount(otherMap, value, 1);
-                Integer otherCount = getCount(otherMap, value);
+                int otherCount = (otherMap.containsKey(value)) ? otherMap.get(value) : 0;
+                ++otherCount;
+                otherMap.put(value, otherCount);
                 Integer newCount = getCount(newMap, value);
                 if (otherCount > newCount) {
                     newOccurrences = newOccurrences - newCount + otherCount;
@@ -476,7 +479,7 @@ public abstract class AbstractJImmutableMultiset<T>
     {
         JImmutableMap<T, Integer> newMap = emptyMap();
         int newOccurrences = 0;
-        JImmutableMap<T, Integer> otherMap = emptyMap();
+        Map<T, Integer> otherMap = new HashMap<T, Integer>();
         while (other.hasNext()) {
             final T value = other.next();
             if (value != null) {
@@ -484,8 +487,9 @@ public abstract class AbstractJImmutableMultiset<T>
                 if (currentCount > 0) {
                     Integer newCount = getCount(newMap, value);
                     if (currentCount > newCount) {
-                        otherMap = increaseCount(otherMap, value, 1);
-                        int otherCount = getCount(otherMap, value);
+                        int otherCount = otherMap.containsKey(value) ? otherMap.get(value) : 0;
+                        ++otherCount;
+                        otherMap.put(value, otherCount);
                         newOccurrences -= newCount;
                         newOccurrences += (currentCount > otherCount) ? otherCount : currentCount;
                         newMap = (currentCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, currentCount);
@@ -535,11 +539,14 @@ public abstract class AbstractJImmutableMultiset<T>
         Conditions.stopNull(value, count);
         if (count < 0) {
             throw new IllegalArgumentException();
-        } else if (count == this.count(value)) {
-            return this;
         } else {
-            int newOccurrences = occurrences - this.count(value) + count;
-            return (count > 0) ? create(map.assign(value, count), newOccurrences) : delete(value);
+            int currentCount = this.count(value);
+            if (count == currentCount) {
+                return this;
+            } else {
+                int newOccurrences = occurrences - currentCount + count;
+                return (count > 0) ? create(map.assign(value, count), newOccurrences) : delete(value);
+            }
         }
     }
 
@@ -568,7 +575,7 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public int valueCount()
+    public int occurrenceCount()
     {
         return occurrences;
     }
@@ -596,7 +603,7 @@ public abstract class AbstractJImmutableMultiset<T>
             @Override
             public Cursor<T> apply(JImmutableMap.Entry<T, Integer> entry)
             {
-                return StandardCursor.of(new OccurrenceCursorSource(entry));
+                return StandardCursor.of(new StandardCursor.RepeatingValueCursorSource<T>(entry));
             }
         });
 
@@ -630,10 +637,12 @@ public abstract class AbstractJImmutableMultiset<T>
         } else if (o == null) {
             return false;
         } else if (o instanceof JImmutableMultiset) {
-            return (valueCount() == ((JImmutableMultiset)o).valueCount()) && ((JImmutableMultiset)o).containsAllOccurrences(this);
+            //noinspection unchecked
+            return (occurrenceCount() == ((JImmutableMultiset)o).occurrenceCount()) && ((JImmutableMultiset)o).containsAllOccurrences(this);
         } else if (o instanceof JImmutableSet) {
             return (size() == occurrences) && getSet().equals(((JImmutableSet)o).getSet());
         } else {
+            //noinspection EqualsBetweenInconvertibleTypes
             return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
         }
     }
@@ -764,6 +773,8 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
+    //Precondition: Iterator i must come from a Set or JImmutableSet, so that there will only be one occurrence
+    //of each value in it.
     @Nonnull
     private JImmutableMultiset<T> unionSetHelper(@Nonnull Iterator<? extends T> i)
     {
@@ -773,7 +784,7 @@ public abstract class AbstractJImmutableMultiset<T>
             final T value = i.next();
             if ((value != null) && (this.count(value) == 0)) {
                 newMap = newMap.assign(value, 1);
-                newOccurrences = newOccurrences + 1;
+                ++newOccurrences;
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
@@ -799,6 +810,8 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
+    //Precondition: Iterator i must come from a Set or JImmutableSet, so that there will only be one occurrence
+    //of each value in it.
     @Nonnull
     private JImmutableMultiset<T> intersectionSetHelper(@Nonnull Iterator<? extends T> i)
     {
@@ -812,44 +825,5 @@ public abstract class AbstractJImmutableMultiset<T>
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
-
-    private class OccurrenceCursorSource
-            implements StandardCursor.Source<T>
-    {
-        private int count;
-        private final T value;
-
-        private OccurrenceCursorSource(JImmutableMap.Entry<T, Integer> entry)
-        {
-            this.count = entry.getValue();
-            this.value = entry.getKey();
-        }
-
-        private OccurrenceCursorSource(int count,
-                                       T value)
-        {
-            this.count = count;
-            this.value = value;
-        }
-
-        @Override
-        public boolean atEnd()
-        {
-            return count <= 0;
-        }
-
-        @Override
-        public T currentValue()
-        {
-            return value;
-        }
-
-        @Override
-        public StandardCursor.Source<T> advance()
-        {
-            return new OccurrenceCursorSource(count - 1, value);
-        }
-
     }
 }

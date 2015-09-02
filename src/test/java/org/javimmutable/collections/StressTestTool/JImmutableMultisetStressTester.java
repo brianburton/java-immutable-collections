@@ -68,7 +68,7 @@ import java.util.Set;
  * This class alone does not test every method in JImmutableMultiset. Methods that manipulate
  * the values in the multiset with no effect on the number of occurrences are tested in the
  * JImmutableSetStressTester. Those tests are not repeated here. Similarly, the goal size
- * in this test refers to the total number of occurrences (multi.valueCount()), rather than
+ * in this test refers to the total number of occurrences (multi.occurrenceCount()), rather than
  * the number of unique values.
  * <p/>
  * The cleanup is slow due to the nature of the intersection method and the large size of
@@ -105,7 +105,7 @@ public class JImmutableMultisetStressTester
         System.out.printf("JImmutableMultisetStressTest on %s of size %d%n", getName(multi), size);
 
         for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", multi.valueCount());
+            System.out.printf("growing %d%n", multi.occurrenceCount());
             for (int i = 0; i < size / 3; ++i) {
                 switch (random.nextInt(11)) {
                 case 0: { //insert(T)
@@ -202,14 +202,14 @@ public class JImmutableMultisetStressTester
             verifyContents(multi, expected);
             verifyList(multiList, expected);
 
-            System.out.printf("shrinking %d%n", multi.valueCount());
+            System.out.printf("shrinking %d%n", multi.occurrenceCount());
             for (int i = 0; i < size / 6; ++i) {
                 switch (random.nextInt(6)) {
                 case 0: { //deleteOccurrence(T, int)
                     int expectedChange = random.nextInt(3);
-                    int initialSize = multi.valueCount();
+                    int initialSize = multi.occurrenceCount();
                     multi = shrinkingCaseZero(expectedChange, random, multi, expected, multiList);
-                    if (multi.valueCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
+                    if (multi.occurrenceCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
                         break;
                     }
                 }
@@ -223,9 +223,9 @@ public class JImmutableMultisetStressTester
                 }
                 case 2: { //setCount(T, int) - also tested in growth loop
                     int expectedChange = random.nextInt(3);
-                    int initialSize = multi.valueCount();
+                    int initialSize = multi.occurrenceCount();
                     multi = shrinkingCaseTwo(expectedChange, random, multi, expected, multiList);
-                    if (multi.valueCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
+                    if (multi.occurrenceCount() == initialSize - expectedChange) {   //ensures 1 value is deleted on average
                         break;
                     }
                 }
@@ -254,7 +254,7 @@ public class JImmutableMultisetStressTester
             verifyContents(multi, expected);
             verifyList(multiList, expected);
 
-            System.out.printf("contains %d%n", multi.valueCount());
+            System.out.printf("contains %d%n", multi.occurrenceCount());
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(6)) {
                 case 0: { //containsAtLeast(T, int)
@@ -308,8 +308,8 @@ public class JImmutableMultisetStressTester
             }
             verifyCursor(multi, expected);
         }
-
-        System.out.printf("cleanup %d%n", multi.valueCount());
+        verifyFinalSize(size, multi.occurrenceCount());
+        System.out.printf("cleanup %d%n", multi.occurrenceCount());
         while (multiList.size() > 0) {
             Multiset<String> deleteValues = HashMultiset.create();
             for (int n = 0, limit = random.nextInt((size / 18) + 3); multiList.size() >= 1 && n < limit; ++n) {
@@ -406,7 +406,7 @@ public class JImmutableMultisetStressTester
     {
         final List<String> expectedList;
         final List<JImmutableMap.Entry<String, Integer>> entries = new ArrayList<JImmutableMap.Entry<String, Integer>>();
-        System.out.printf("checking cursor with size %d%n", multi.valueCount());
+        System.out.printf("checking cursor with size %d%n", multi.occurrenceCount());
 
         //HashMultiset iterates in a different order than JImmutableHashMultiset. Therefore, to test
         //the cursor and iterator for that class, the list of values cannot be built from
@@ -424,8 +424,8 @@ public class JImmutableMultisetStressTester
             }
         }
 
-        if (expectedList.size() != multi.valueCount()) {
-            throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n", multi.valueCount(), expectedList.size()));
+        if (expectedList.size() != multi.occurrenceCount()) {
+            throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n", multi.occurrenceCount(), expectedList.size()));
         }
         if (entries.size() != multi.size()) {
             throw new RuntimeException(String.format("entries list built incorrectly - size expected %d size found %d%n", multi.size(), entries.size()));
@@ -438,15 +438,15 @@ public class JImmutableMultisetStressTester
     private void verifyContents(final JImmutableMultiset<String> multi,
                                 final Multiset<String> expected)
     {
-        System.out.printf("checking contents with size %d%n", multi.valueCount());
+        System.out.printf("checking contents with size %d%n", multi.occurrenceCount());
         if (multi.isEmpty() != expected.isEmpty()) {
             throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), multi.isEmpty()));
         }
         if (multi.size() != expected.elementSet().size()) {
             throw new RuntimeException(String.format("unique value size mismatch - expected %d found %d%n", expected.elementSet().size(), multi.size()));
         }
-        if (multi.valueCount() != expected.size()) {
-            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", expected.size(), multi.valueCount()));
+        if (multi.occurrenceCount() != expected.size()) {
+            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", expected.size(), multi.occurrenceCount()));
         }
         for (String expectedValue : expected.elementSet()) {
             if (expected.count(expectedValue) != multi.count(expectedValue)) {
