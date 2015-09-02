@@ -258,6 +258,7 @@ public class JImmutableSetStressTester
                 throw new RuntimeException();
             }
             verifyList(setList, expected);
+            verifyOrder(set, expected);
         }
         if (set.size() != 0) {
             verifyContents(set, expected);

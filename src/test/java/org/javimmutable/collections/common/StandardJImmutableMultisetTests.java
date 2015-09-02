@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
@@ -49,6 +50,8 @@ import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
+import org.javimmutable.collections.util.JImmutables;
 
 import java.util.*;
 
@@ -121,6 +124,7 @@ public class StandardJImmutableMultisetTests
         verifyInsertAll(empty);
         verifyDeleteAll(empty);
         verifyDeleteAllOccurrences(empty);
+        verifyIntersectionOrder(empty);
     }
 
     private static void verifyUnion(JImmutableMultiset<Integer> empty)
@@ -476,6 +480,33 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asJMSet(values)), expected);
         verifyContents(jmet.deleteAllOccurrences(asJSet(values)), setExpected);
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
+    }
+
+    public static void verifyIntersectionOrder(JImmutableMultiset<Integer> empty)
+    {
+        JImmutableMultiset<Integer> jmet = empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+        List<Integer> expected = new ArrayList<Integer>();
+        expected.addAll(jmet.getSet());
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+
+        JImmutableMultiset<Integer> diffOrder = JImmutableInsertOrderMultiset.<Integer>of().insert(400).insert(0)
+                .insert(600).insert(100).insert(50).insert(100);
+
+        //Cusorable
+        jmet = jmet.intersection(IterableCursorable.of(diffOrder));
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+        //Collection
+        jmet = jmet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100));
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+        //JMultiset
+        jmet = jmet.intersection(diffOrder);
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+        //JSet
+        jmet = jmet.intersection((JImmutableSet<Integer>)diffOrder);
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+        //Set
+        jmet = jmet.intersection(diffOrder.getSet());
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
     }
 
     private static void testVarious(JImmutableMultiset<Integer> empty)

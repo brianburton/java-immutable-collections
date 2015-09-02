@@ -36,6 +36,8 @@
 package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -110,5 +112,11 @@ public abstract class AbstractSetStressTestable
         if (list.size() != expected.size()) {
             throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d", expected.size(), list.size()));
         }
+    }
+
+    protected void verifyOrder(JImmutableSet<String> set,
+                               Collection<String> expected)
+    {
+        StandardCursorTest.listCursorTest(asList(expected), set.cursor());
     }
 }

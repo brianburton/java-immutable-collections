@@ -38,13 +38,16 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.IterableCursorable;
+import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -65,6 +68,7 @@ public final class StandardJImmutableSetTests
         testVarious(template);
         testWithMultiset(template);
         testRandom(template);
+        verifyIntersectionOrder(template);
 
         assertEquals(0, template.size());
         assertEquals(true, template.isEmpty());
@@ -284,6 +288,29 @@ public final class StandardJImmutableSetTests
         assertEquals(template, set.intersection(set2));
         assertEquals(template, set2.intersection(set));
         assertEquals(template, set3.deleteAll(set3));
+    }
+
+    public static void verifyIntersectionOrder(JImmutableSet<Integer> template)
+    {
+        JImmutableSet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+        final List<Integer> expected = new ArrayList<Integer>();
+        expected.addAll(jet.getSet());
+        StandardCursorTest.listCursorTest(expected, jet.cursor());
+
+        JImmutableSet<Integer> diffOrder = JImmutableInsertOrderSet.<Integer>of().insert(400).insert(0).insert(600)
+                .insert(100).insert(50).insert(100);
+        //Cursorable
+        jet = jet.intersection(IterableCursorable.of(diffOrder));
+        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        //Collection
+        jet = jet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100));
+        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        //Set
+        jet = jet.intersection(diffOrder.getSet());
+        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        //JSet
+        jet = jet.intersection(diffOrder);
+        StandardCursorTest.listCursorTest(expected, jet.cursor());
     }
 
     private static void testWithMultiset(JImmutableSet<Integer> template)
