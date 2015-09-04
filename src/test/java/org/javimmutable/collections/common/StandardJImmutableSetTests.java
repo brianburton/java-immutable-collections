@@ -290,7 +290,7 @@ public final class StandardJImmutableSetTests
         assertEquals(template, set3.deleteAll(set3));
     }
 
-    public static void verifyIntersectionOrder(JImmutableSet<Integer> template)
+    private static void verifyIntersectionOrder(JImmutableSet<Integer> template)
     {
         JImmutableSet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
         final List<Integer> expected = new ArrayList<Integer>();

@@ -54,11 +54,9 @@ public class JImmutableInsertOrderSetTest
 {
     public void testStandard()
     {
-//        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.<Integer>of());
-//        StandardCursorTest.emptyCursorTest(JImmutableInsertOrderSet.<Integer>of().cursor());
-//        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
-        StandardJImmutableSetTests.verifyIntersectionOrder(JImmutableInsertOrderSet.<Integer>of());;
-        //TODO: PUT THIS METHOD BACK TOGETHER
+        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.<Integer>of());
+        StandardCursorTest.emptyCursorTest(JImmutableInsertOrderSet.<Integer>of().cursor());
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
     }
     public void test()
     {
