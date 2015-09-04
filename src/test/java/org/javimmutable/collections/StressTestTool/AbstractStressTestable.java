@@ -138,7 +138,7 @@ public abstract class AbstractStressTestable
         ++runs;
         double diff = (double)(jimmutableSize) / (double)size;
         difference += diff;
-        double margin = 0.01;
+        double margin = (runs < 5) ? 0.03 : 0.01;
         if (((difference / runs) > 1 + margin) || (difference / runs) < 1 - margin) {
             throw new RuntimeException(String.format("average size is %s of what it should be%n", difference/runs));
         }

@@ -249,13 +249,23 @@ public class JImmutableSetStressTester
                 break;
             }
             case 2: { //intersection(JSet)
-                JImmutableSet<String> setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                JImmutableSet<String> setIntersectValues;
+                if (random.nextBoolean()) {     //setIntersectValues will be smaller than set
+                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                } else {                        //setIntersectValues will be bigger than set
+                    setIntersectValues = makeBigIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                }
                 expected.removeAll(deleteValues);
                 set = set.intersection(setIntersectValues);
                 break;
             }
             case 3: { //intersection(Set)
-                JImmutableSet<String> setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                JImmutableSet<String> setIntersectValues;
+                if (random.nextBoolean()) {     //setIntersectValues will be smaller than set
+                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                } else {                        //setIntersectVales will be bigger than set
+                    setIntersectValues = makeBigIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
+                }
                 expected.removeAll(deleteValues);
                 set = set.intersection(setIntersectValues.getSet());
                 break;
@@ -269,7 +279,6 @@ public class JImmutableSetStressTester
             }
             ++intersects;
         }
-        System.out.println(intersects);
         if (set.size() != 0) {
             verifyContents(set, expected);
             set = set.deleteAll();
@@ -486,16 +495,33 @@ public class JImmutableSetStressTester
                                                    Set<String> expected,
                                                    Insertable<String> values)
     {
-        int maxSize = setList.size() / 20;
-        for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {
+        int maxAdditions = setList.size() / 20;
+        for (int n = 0, limit = (maxAdditions > 0) ? random.nextInt(maxAdditions) : random.nextInt(3); n < limit; ++n) {
             switch (random.nextInt(2)) {
-            case 0: //add duplicate
+            case 0: //add duplicate. All values in setList will be kept by set after intersection, so this is safe
                 values = (setList.size() > 0) ? values.insert(containedValue(setList, random)) : values;
                 break;
-            case 1: //add values not in set
+            case 1: //add values not in set. Expected currently contains all values to be deleted and kept in set, so no elements to be deleted will be added.
                 String value = notContainedValue(tokens, random, expected);
                 values = values.insert(value);
             }
+        }
+        return values;
+    }
+
+    //this method used to test intersect(JImmutableSet other) and intersect(Set other), because these methods have
+    // different logic depending on whether this or other is bigger
+    private JImmutableSet<String> makeBigIntersectValues(JImmutableList<String> tokens,
+                                                         Random random,
+                                                         List<String> setList,
+                                                         Set<String> expected,
+                                                         JImmutableSet<String> values)
+    {
+        int extraSize = (setList.size() < 60) ? random.nextInt(3) : random.nextInt(setList.size() / 20);
+        while (values.size() < expected.size() + extraSize) {
+            //expected currently contains all values to be kept and deleted in set. No elements to be deleted can be added to values.
+            String value = notContainedValue(tokens, random, expected);
+            values = values.insert(value);
         }
         return values;
     }
