@@ -64,6 +64,7 @@ public class JImmutableInsertOrderMultisetTest
 //        StandardJImmutableMultisetTests.testRandom(JImmutableInsertOrderMultiset.<Integer>of(),
 //                                                   LinkedHashMultiset.<Integer>create());
         StandardJImmutableMultisetTests.verifyIntersectionOrder(JImmutableInsertOrderMultiset.<Integer>of());
+        //TODO: PUT THIS METHOD BACK TOGETHER
     }
 
     public void test()

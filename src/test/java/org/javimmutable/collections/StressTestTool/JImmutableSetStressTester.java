@@ -221,10 +221,16 @@ public class JImmutableSetStressTester
         verifyContents(set, expected);
         verifyList(setList, expected);
         verifyFinalSize(size, set.size());
+
+        setList = asList(set);
+        StandardCursorTest.listCursorTest(setList, set.cursor());
+
         System.out.printf("cleanup %d%n", expected.size());
+        int intersects = 0;
         while (setList.size() > size / 80) {
+            int limit = setLimit(size, set, random);
             List<String> deleteValues = new ArrayList<String>();
-            for (int n = 0, limit = (size >= 25) ? random.nextInt(size / 25) : random.nextInt(size / 3); setList.size() >= 1 && n < limit; ++n) {
+            for (int n = 0; setList.size() >= 1 && n < limit; ++n) {
                 int index = random.nextInt(setList.size());
                 deleteValues.add(setList.get(index));
                 setList.remove(index);
@@ -258,8 +264,12 @@ public class JImmutableSetStressTester
                 throw new RuntimeException();
             }
             verifyList(setList, expected);
-            verifyOrder(set, expected);
+            if (intersects % 10 == 0) {
+                verifyOrder(set, setList);
+            }
+            ++intersects;
         }
+        System.out.println(intersects);
         if (set.size() != 0) {
             verifyContents(set, expected);
             set = set.deleteAll();
@@ -270,6 +280,23 @@ public class JImmutableSetStressTester
         }
         verifyContents(set, expected);
         System.out.printf("JImmutableSetStressTest on %s completed without errors%n", getName(set));
+    }
+
+    private int setLimit(int size,
+                         JImmutableSet<String> set,
+                         Random random)
+    {
+        int limit;
+        if (size < 10) {
+            limit = 1;
+        } else if (size < 25) {
+            limit = random.nextInt(size / 3);
+        } else if (set.size() >= size * 0.7) {
+            limit = random.nextInt(size / 25) + (size / 3);
+        } else {
+            limit = random.nextInt(size / 40);
+        }
+        return limit;
     }
 
     private void verifyContents(final JImmutableSet<String> set,

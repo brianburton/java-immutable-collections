@@ -46,6 +46,7 @@ import org.javimmutable.collections.cursors.Cursors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -293,7 +294,6 @@ public abstract class AbstractJImmutableSet<T>
         if (isEmpty()) {
             return this;
         }
-
         JImmutableMap<T, Boolean> newMap = emptyMap();
         for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
             final T value = c.getValue();
@@ -311,7 +311,6 @@ public abstract class AbstractJImmutableSet<T>
         if (isEmpty()) {
             return this;
         }
-
         JImmutableMap<T, Boolean> newMap = emptyMap();
         while (values.hasNext()) {
             final T value = values.next();
@@ -330,23 +329,13 @@ public abstract class AbstractJImmutableSet<T>
             return this;
         } else if (other.isEmpty()) {
             return deleteAll();
+        } else if (other.size() > size()) {
+            return intersectionWithFilledMap(other.getSet());
+        } else {
+            return intersectionWithEmptyMap(other.getSet());
         }
-
-        return intersectionHelper(other);
     }
 
-    private <T1 extends T> JImmutableSet<T> intersectionHelper(@Nonnull JImmutableSet<T1> other)
-    {
-        JImmutableMap<T, Boolean> newMap = emptyMap();
-        for (Cursor<T1> c = other.cursor().start(); c.hasValue(); c = c.next()) {
-            final T value = c.getValue();
-            Holder<Boolean> holder = map.find(value);
-            if (holder.isFilled()) {
-                newMap = newMap.assign(value, Boolean.TRUE);
-            }
-        }
-        return (newMap != map) ? create(newMap) : this;
-    }
 
     @Nonnull
     @Override
@@ -356,13 +345,31 @@ public abstract class AbstractJImmutableSet<T>
             return this;
         } else if (other.isEmpty()) {
             return deleteAll();
+        } else if (other.size() > size()) {
+            return intersectionWithFilledMap(other);
+        } else {
+            return intersectionWithEmptyMap(other);
         }
+    }
 
+    protected JImmutableSet<T> intersectionWithFilledMap(@Nonnull Set<? extends T> other)
+    {
         JImmutableMap<T, Boolean> newMap = map;
-        for (Cursor<JImmutableMap.Entry<T, Boolean>> c = map.cursor().start(); c.hasValue(); c = c.next()) {
-            final T value = c.getValue().getKey();
+        for (JImmutableMap.Entry<T, Boolean> entry : map) {
+            final T value = entry.getKey();
             if (!other.contains(value)) {
                 newMap = newMap.delete(value);
+            }
+        }
+        return (newMap != map) ? create(newMap) : this;
+    }
+
+    protected JImmutableSet<T> intersectionWithEmptyMap(@Nonnull Set<? extends T> other)
+    {
+        JImmutableMap<T, Boolean> newMap = emptyMap();
+        for (T value : other) {
+            if (map.getValueOr(value, Boolean.FALSE)) {
+                newMap = newMap.assign(value, Boolean.TRUE);
             }
         }
         return (newMap != map) ? create(newMap) : this;
