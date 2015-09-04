@@ -60,11 +60,9 @@ public class JImmutableInsertOrderMultisetTest
 {
     public void testStandard()
     {
-//        StandardJImmutableMultisetTests.verifyMultiset(JImmutableInsertOrderMultiset.<Integer>of());
-//        StandardJImmutableMultisetTests.testRandom(JImmutableInsertOrderMultiset.<Integer>of(),
-//                                                   LinkedHashMultiset.<Integer>create());
-        StandardJImmutableMultisetTests.verifyIntersectionOrder(JImmutableInsertOrderMultiset.<Integer>of());
-        //TODO: PUT THIS METHOD BACK TOGETHER
+        StandardJImmutableMultisetTests.verifyMultiset(JImmutableInsertOrderMultiset.<Integer>of());
+        StandardJImmutableMultisetTests.testRandom(JImmutableInsertOrderMultiset.<Integer>of(),
+                                                   LinkedHashMultiset.<Integer>create());
     }
 
     public void test()

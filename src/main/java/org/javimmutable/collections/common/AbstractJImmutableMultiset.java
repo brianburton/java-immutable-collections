@@ -505,7 +505,15 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other)
     {
-        return intersectionMultisetHelper(other);
+        if (isEmpty()) {
+            return this;
+        } else if (other.isEmpty()) {
+            return deleteAll();
+        } else if (other.size() < size()) {
+            return multisetIntersectionWithEmptyMap(other);
+        } else {
+            return multisetIntersectionWithFilledMap(other);
+        }
     }
 
 
@@ -513,14 +521,30 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other)
     {
-        return intersectionSetHelper(other.cursor().iterator());
+        if (isEmpty()) {
+            return this;
+        } else if (other.isEmpty()) {
+            return deleteAll();
+        } else if (other.size() < size()) {
+            return setIntersectionWithEmptyMap(other.cursor().iterator());
+        } else {
+            return setIntersectionWithFilledMap(other.getSet());
+        }
     }
 
     @Override
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other)
     {
-        return intersectionSetHelper(other.iterator());
+        if (isEmpty()) {
+            return this;
+        } else if (other.isEmpty()) {
+            return deleteAll();
+        } else if (other.size() < size()) {
+            return setIntersectionWithEmptyMap(other.iterator());
+        } else {
+            return setIntersectionWithFilledMap(other);
+        }
     }
 
 
@@ -791,7 +815,26 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Nonnull
-    private <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
+    protected <T1 extends T> JImmutableMultiset<T> multisetIntersectionWithFilledMap(@Nonnull JImmutableMultiset<T1> other)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T, Integer>> e = entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T value = e.getValue().getKey();
+            boolean inOther = other.getSet().contains(value);
+            if (inOther) {
+                final int otherCount = other.count((T1)value);
+                final int mapCount = this.count(value);
+                newOccurrences += (mapCount > otherCount) ? otherCount : mapCount;
+                newMap = (mapCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, mapCount);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    protected <T1 extends T> JImmutableMultiset<T> multisetIntersectionWithEmptyMap(@Nonnull JImmutableMultiset<T1> other)
     {
         JImmutableMap<T, Integer> newMap = emptyMap();
         int newOccurrences = 0;
@@ -799,12 +842,10 @@ public abstract class AbstractJImmutableMultiset<T>
         for (e = e.start(); e.hasValue(); e = e.next()) {
             final T1 value = e.getValue().getKey();
             final int mapCount = this.count(value);
-            if ((mapCount > 0) && mapCount != getCount(newMap, value)) {
+            if ((mapCount > 0)) {
                 final int entryCount = e.getValue().getValue();
-                newOccurrences -= getCount(newMap, value);
                 newOccurrences += (mapCount > entryCount) ? entryCount : mapCount;
                 newMap = (mapCount > entryCount) ? newMap.assign(value, entryCount) : newMap.assign(value, mapCount);
-
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
@@ -813,7 +854,7 @@ public abstract class AbstractJImmutableMultiset<T>
     //Precondition: Iterator i must come from a Set or JImmutableSet, so that there will only be one occurrence
     //of each value in it.
     @Nonnull
-    private JImmutableMultiset<T> intersectionSetHelper(@Nonnull Iterator<? extends T> i)
+    protected JImmutableMultiset<T> setIntersectionWithEmptyMap(@Nonnull Iterator<? extends T> i)
     {
         JImmutableMap<T, Integer> newMap = emptyMap();
         int newOccurrences = 0;
@@ -822,6 +863,24 @@ public abstract class AbstractJImmutableMultiset<T>
             if (this.count(value) > 0) {
                 newOccurrences += 1;
                 newMap = newMap.assign(value, 1);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+    }
+
+    @Nonnull
+    protected JImmutableMultiset<T> setIntersectionWithFilledMap(@Nonnull Set<? extends T> other)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        for (T value: this.cursor()) {
+            int oldOccurrences = count(value);
+            newOccurrences -= oldOccurrences;
+            if (other.contains(value)) {
+                ++newOccurrences;
+                newMap = newMap.assign(value, 1);
+            } else {
+                newMap = newMap.delete(value);
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;

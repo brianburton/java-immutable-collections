@@ -622,7 +622,7 @@ public interface JImmutableMultiset<T>
 
     /**
      * Returns the number of occurrences associated with the specified value. If the value is not
-     * contained in the mulitset, 0 is returned.
+     * contained in the multiset, 0 is returned.
      *
      * @param value value to check for
      * @return number of occurrences

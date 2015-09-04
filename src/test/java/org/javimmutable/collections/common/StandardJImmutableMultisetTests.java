@@ -37,7 +37,6 @@ package org.javimmutable.collections.common;
 
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
@@ -51,7 +50,6 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
-import org.javimmutable.collections.util.JImmutables;
 
 import java.util.*;
 
@@ -482,7 +480,7 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
     }
 
-    public static void verifyIntersectionOrder(JImmutableMultiset<Integer> empty)
+    private static void verifyIntersectionOrder(JImmutableMultiset<Integer> empty)
     {
         JImmutableMultiset<Integer> jmet = empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
         List<Integer> expected = new ArrayList<Integer>();
