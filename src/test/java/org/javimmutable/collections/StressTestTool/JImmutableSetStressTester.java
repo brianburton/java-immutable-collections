@@ -275,10 +275,12 @@ public class JImmutableSetStressTester
             }
             verifyList(setList, expected);
             if (intersects % 10 == 0) {
+                verifyContents(set, expected);
                 verifyOrder(set, setList);
             }
             ++intersects;
         }
+        System.out.printf("cleaned up with %d intersections%n", intersects);
         if (set.size() != 0) {
             verifyContents(set, expected);
             set = set.deleteAll();
