@@ -110,7 +110,8 @@ public abstract class AbstractSetStressTestable
                               Collection<String> expected)
     {
         if (list.size() != expected.size()) {
-            throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d", expected.size(), list.size()));
+            throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d",
+                                                     expected.size(), list.size()));
         }
     }
 

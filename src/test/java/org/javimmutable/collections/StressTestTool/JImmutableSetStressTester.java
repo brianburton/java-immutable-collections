@@ -178,37 +178,52 @@ public class JImmutableSetStressTester
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(5)) {
                 case 0: { //contains(T)
-                    String value = (random.nextBoolean()) ? containedValue(setList, random) : notContainedValue(tokens, random, expected);
+                    String value = (random.nextBoolean()) ?
+                                   containedValue(setList, random) : notContainedValue(tokens, random, expected);
                     if (set.contains(value) != expected.contains(value)) {
-                        throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n", value, expected.contains(value), set.contains(value)));
+                        throw new RuntimeException(String.format("contains(value) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 value, expected.contains(value), set.contains(value)));
                     }
                     break;
                 }
                 case 1: { //containsAll(Cursorable)
                     List<String> values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAll(IterableCursorable.of(values)) != expected.containsAll(values)) {
-                        throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAll(IterableCursorable.of(values)), expected.containsAll(values)));
+                        throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 values, set.containsAll(IterableCursorable.of(values)),
+                                                                 expected.containsAll(values)));
                     }
                     break;
                 }
                 case 2: { //containsAll(Collection)
                     List<String> values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAll(values) != expected.containsAll(values)) {
-                        throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAll(values), expected.containsAll(values)));
+                        throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 values, set.containsAll(values),
+                                                                 expected.containsAll(values)));
                     }
                     break;
                 }
                 case 3: { //containsAny(Cursorable)
                     List<String> values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAny(IterableCursorable.of(values)) != containsAny(expected, values)) {
-                        throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n", values, set.containsAny(IterableCursorable.of(values)), containsAny(expected, values)));
+                        throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 values, set.containsAny(IterableCursorable.of(values)),
+                                                                 containsAny(expected, values)));
                     }
                     break;
                 }
                 case 4: { //containsAny(Collection)
                     List<String> values = makeContainsList(tokens, random, setList, expected);
                     if (set.containsAny(values) != containsAny(expected, values)) {
-                        throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n", values, set.containsAny(values), containsAny(expected, values)));
+                        throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 values, set.containsAny(values),
+                                                                 containsAny(expected, values)));
                     }
                     break;
                 }
@@ -237,13 +252,17 @@ public class JImmutableSetStressTester
             }
             switch (random.nextInt(4)) {
             case 0: { //intersection(Cursorable)
-                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.list(setList));
+                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random,
+                                                                                                         setList, expected,
+                                                                                                         JImmutables.list(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(listIntersectValues);
                 break;
             }
             case 1: { //intersection(Collection)
-                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.list(setList));
+                JImmutableList<String> listIntersectValues = (JImmutableList<String>)makeIntersectValues(tokens, random,
+                                                                                                         setList, expected,
+                                                                                                         JImmutables.list(setList));
                 expected.removeAll(deleteValues);
                 set = set.intersection(listIntersectValues.getList());
                 break;
@@ -251,8 +270,9 @@ public class JImmutableSetStressTester
             case 2: { //intersection(JSet)
                 JImmutableSet<String> setIntersectValues;
                 if (random.nextBoolean()) {     //setIntersectValues will be smaller than set
-                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
-                } else {                        //setIntersectValues will be bigger than set
+                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected,
+                                                                                    JImmutables.set(setList));
+                } else {   //setIntersectValues will be bigger than set
                     setIntersectValues = makeBigIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
                 }
                 expected.removeAll(deleteValues);
@@ -261,9 +281,10 @@ public class JImmutableSetStressTester
             }
             case 3: { //intersection(Set)
                 JImmutableSet<String> setIntersectValues;
-                if (random.nextBoolean()) {     //setIntersectValues will be smaller than set
-                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
-                } else {                        //setIntersectVales will be bigger than set
+                if (random.nextBoolean()) { //setIntersectValues will be smaller than set
+                    setIntersectValues = (JImmutableSet<String>)makeIntersectValues(tokens, random, setList, expected,
+                                                                                    JImmutables.set(setList));
+                } else {  //setIntersectVales will be bigger than set
                     setIntersectValues = makeBigIntersectValues(tokens, random, setList, expected, JImmutables.set(setList));
                 }
                 expected.removeAll(deleteValues);
@@ -315,14 +336,17 @@ public class JImmutableSetStressTester
     {
         System.out.printf("checking contents with size %d%n", set.size());
         if (set.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), set.isEmpty()));
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n",
+                                                     expected.isEmpty(), set.isEmpty()));
         }
         if (set.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), set.size()));
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n",
+                                                     expected.size(), set.size()));
         }
         for (String expectedValue : expected) {
             if (!set.contains(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch - expected %s but not in %s%n", expectedValue, set.getClass().getSimpleName()));
+                throw new RuntimeException(String.format("value mismatch - expected %s but not in %s%n",
+                                                         expectedValue, set.getClass().getSimpleName()));
             }
         }
         for (String expectedValue : set) {
@@ -503,7 +527,8 @@ public class JImmutableSetStressTester
             case 0: //add duplicate. All values in setList will be kept by set after intersection, so this is safe
                 values = (setList.size() > 0) ? values.insert(containedValue(setList, random)) : values;
                 break;
-            case 1: //add values not in set. Expected currently contains all values to be deleted and kept in set, so no elements to be deleted will be added.
+            case 1: //add values not in set. Expected currently contains all values to be deleted and kept in set
+                    // so no elements to be deleted will be added.
                 String value = notContainedValue(tokens, random, expected);
                 values = values.insert(value);
             }
@@ -521,7 +546,8 @@ public class JImmutableSetStressTester
     {
         int extraSize = (setList.size() < 60) ? random.nextInt(3) : random.nextInt(setList.size() / 20);
         while (values.size() < expected.size() + extraSize) {
-            //expected currently contains all values to be kept and deleted in set. No elements to be deleted can be added to values.
+            //expected currently contains all values to be kept and deleted in set
+            //No elements to be deleted can be added to values.
             String value = notContainedValue(tokens, random, expected);
             values = values.insert(value);
         }
