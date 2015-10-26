@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,19 +37,27 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.trie32.TrieArray;
+import org.javimmutable.collections.btree_list.JImmutableBtreeList;
+import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
+import org.javimmutable.collections.setmap.JImmutableHashSetMap;
+import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
+import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -153,14 +161,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableList built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces an empty JImmutableList built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -171,14 +172,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -189,32 +183,18 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the specified values built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the specified values built atop a 32-way tree.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableList<T> list(T... values)
     {
-        return JImmutableArrayList.<T>builder().add(values).build();
+        return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -225,34 +205,20 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableList<T> list(Indexed<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableArrayList.of(source);
     }
 
     /**
      * Produces a JImmutableList containing all of the values in the specified range from source
-     * built atop a sparse array.  The values copied from source are those whose index are in the
+     * built atop a 32-way tree.  The values copied from source are those whose index are in the
      * range offset to (limit - 1).
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
      *
      * @param <T>
      * @return
@@ -261,18 +227,11 @@ public final class JImmutables
                                              int offset,
                                              int limit)
     {
-        return JImmutableArrayList.<T>builder().add(source, offset, limit).build();
+        return JImmutableArrayList.of(source, offset, limit);
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -283,14 +242,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -301,14 +253,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -319,32 +264,18 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableList<T> list(List<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableArrayList.of(IndexedList.retained(source));
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a sparse array.
-     * <p/>
-     * Implementation note: Using a sparse array internally provides excellent performance
-     * but also imposes a small limitation.  Making any combination of calls to insert(),
-     * insertLast(), insertFirst() etc over 2 billion times could lead to the list exhausting
-     * the range of valid array indexes and trigger an ArrayIndexOutOfBoundsException.
-     * If your program might run into this limitation (wow!) use ralist() instead since
-     * tree based lists do not have this limitation.
+     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
      *
      * @param <T>
      * @return
@@ -355,101 +286,115 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist()
     {
-        return JImmutableTreeList.of();
+        return JImmutableBtreeList.of();
     }
 
     /**
-     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a 2-3 tree.
+     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
     {
-        return JImmutableTreeList.builder();
+        return JImmutableBtreeList.builder();
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.of(IndexedArray.retained(source));
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursor<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Cursorable<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source.cursor()).build();
+        return JImmutableBtreeList.<T>builder().add(source.cursor()).build();
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Iterator<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a 2-3 tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
      * <p/>
-     * Implementation note: Using a 2-3 tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the array based lists.
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableRandomAccessList<T> ralist(List<? extends T> source)
+    {
+        return JImmutableBtreeList.of(IndexedList.retained(source));
+    }
+
+    /**
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * <p/>
+     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
+     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
      *
      * @param <T>
      * @return
      */
     public static <T> JImmutableRandomAccessList<T> ralist(Collection<? extends T> source)
     {
-        return JImmutableTreeList.<T>builder().add(source).build();
+        return JImmutableBtreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -975,6 +920,310 @@ public final class JImmutables
     }
 
     /**
+     * Constructs an unsorted multiset.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value assigned to the multiset.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset()
+    {
+        return JImmutableHashMultiset.of();
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(T... source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs an unsorted multiset containing the values from source.
+     * <p/>
+     * Implementation note: The multiset will adopt a hash code collision strategy based on
+     * the first value in source.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> multiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableHashMultiset.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an empty set that sorts values in their natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset()
+    {
+        return JImmutableTreeMultiset.of();
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(T... source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values in their
+     * natural sort order (using ComparableComparator).
+     */
+    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.<T>of(), source.iterator());
+    }
+
+    /**
+     * Constructs an empty multiset that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator)
+    {
+        return JImmutableTreeMultiset.of(comparator);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                           Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                           T... source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                           Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                           Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values using comparator.
+     * <p/>
+     * Note that the Comparator MUST BE IMMUTABLE.
+     * The Comparator will be retained and used throughout the life of the map and its offspring and will
+     * be aggressively shared so it is imperative that the Comparator be completely immutable.
+     */
+    public static <T> JImmutableMultiset<T> sortedMultiset(Comparator<T> comparator,
+                                                           Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableTreeMultiset.of(comparator), source.iterator());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset()
+    {
+        return JImmutableInsertOrderMultiset.of();
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Cursor<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(T... source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Cursorable<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source.cursor());
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Iterator<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source);
+    }
+
+    /**
+     * Constructs a multiset containing all of the values in source that sorts values based on
+     * the order they were originally added to the multiset.
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> JImmutableMultiset<T> insertOrderMultiset(Collection<? extends T> source)
+    {
+        return Functions.insertAll(JImmutableInsertOrderMultiset.<T>of(), source.iterator());
+    }
+
+    /**
      * Creates a list map with higher performance but no specific ordering of keys.
      *
      * @param <K>
@@ -1021,6 +1270,55 @@ public final class JImmutables
     public static <K, V> JImmutableListMap<K, V> sortedListMap(Comparator<K> comparator)
     {
         return JImmutableTreeListMap.of(comparator);
+    }
+
+    /**
+     * Creates a set map with higher performance but no specific ordering of keys.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> setMap()
+    {
+        return JImmutableHashSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by order they are inserted.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> insertOrderSetMap()
+    {
+        return JImmutableInsertOrderSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by their natural ordering.
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K extends Comparable<K>, V> JImmutableSetMap<K, V> sortedSetMap()
+    {
+        return JImmutableTreeSetMap.of();
+    }
+
+    /**
+     * Creates a set map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
+     *
+     * @param comparator
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> JImmutableSetMap<K, V> sortedSettMap(Comparator<K> comparator)
+    {
+        return JImmutableTreeSetMap.of(comparator);
     }
 
     /**

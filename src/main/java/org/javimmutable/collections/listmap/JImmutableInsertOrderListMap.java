@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,13 @@ public class JImmutableInsertOrderListMap<K, V>
     public static <K, V> JImmutableInsertOrderListMap<K, V> of()
     {
         return (JImmutableInsertOrderListMap<K, V>)EMPTY;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        checkListMapInvariants();
+        //TODO: fix generalized checkInvariants()
     }
 
     @Override

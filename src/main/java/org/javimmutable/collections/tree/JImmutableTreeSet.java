@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -85,6 +85,13 @@ public class JImmutableTreeSet<T>
     public static <T> JImmutableTreeSet<T> of(Comparator<T> comparator)
     {
         return new JImmutableTreeSet<T>(comparator);
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        checkSetInvariants();
+        //TODO: fix generalized checkInvariants()
     }
 
     @Override

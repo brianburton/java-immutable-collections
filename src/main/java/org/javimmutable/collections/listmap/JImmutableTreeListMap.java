@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -86,6 +86,13 @@ public class JImmutableTreeListMap<K, V>
     public static <K, V> JImmutableTreeListMap<K, V> of(Comparator<K> comparator)
     {
         return new JImmutableTreeListMap<K, V>(JImmutableTreeMap.<K, JImmutableList<V>>of(comparator));
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        checkListMapInvariants();
+        //TODO: fix generalized checkInvariants()
     }
 
     @Override

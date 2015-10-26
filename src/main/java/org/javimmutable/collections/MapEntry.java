@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
- * Immutable implementation of both Map.Entry and PersistentMap.Entry that uses the same equals() and hashCode() implementations as
+ * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
  * documented in javadoc for Map.Entry.
  *
  * @param <K>

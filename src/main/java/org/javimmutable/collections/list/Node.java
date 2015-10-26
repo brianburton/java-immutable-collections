@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.InvariantCheckable;
 
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
@@ -44,7 +45,8 @@ import org.javimmutable.collections.Cursorable;
  * @param <T>
  */
 interface Node<T>
-        extends Cursorable<T>
+        extends Cursorable<T>,
+                InvariantCheckable
 {
     boolean isEmpty();
 
@@ -68,6 +70,4 @@ interface Node<T>
 
     Node<T> assign(int index,
                    T value);
-
-    void checkInvariants();
 }

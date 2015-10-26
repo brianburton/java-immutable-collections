@@ -1,8 +1,8 @@
 Overview
 ---
-The Javimmutable-Collections library provides a useful set of immutable/persistent collection classes designed with performance and ease of integration in mind.  These collections are intended to replace the java.util collection classes to provide the thread safety and other benefits of immutability.
+The JImmutable Collections library provides a useful set of immutable/persistent collection classes designed with performance and ease of integration in mind.  These collections are intended to replace the java.util collection classes to provide the thread safety and other benefits of immutability.
 
-Immutability and persistence are terms which people tend to interpret in different ways.  The javimmutabile-collection classes are immutable in the sense that once once a given collection has been created it cannot be modified.  This means that it can be safely shared throughout a program without the need for synchronization or defensive copying.  
+Immutability and persistence are terms which people tend to interpret in different ways.  The JImmutable classes are immutable in the sense that once once a given collection has been created it cannot be modified.  This means that it can be safely shared throughout a program without the need for synchronization or defensive copying.
 
 However the collections are designed to allow themselves to be easily updated as well.  Each collection provides methods for adding and removing elements.  Each of these methods creates a new collection of the same type while leaving the original collection intact (i.e. the original persists).  The data structures used to implement the collections (linked lists, 2-3 trees, and integer tries) allow for almost all of the structure of the original collection to be shared by the new collection.  Since all objects within each collection are immutable this sharing is completely safe.  The collections are persistent in the functional programming sense.  The collections are **not** persistent in the database sense.  All contents are stored in memory at all times.
 
@@ -19,16 +19,16 @@ The library is designed to have no dependencies on other libraries but it should
 [Array Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/Array-Tutorial)  
 [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance)  
 [Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys)  
-[Project Javadoc](http://javimmutablecollections.sourceforge.net/apidocs/index.html)  
+[Project Javadoc](http://brianburton.github.io/java-immutable-collections/apidocs/index.html)  
 
-Note: Keep in mind that while the javimmutable-collections themselves are immutable the values you store in them might not be.  Always use immutable objects as keys and if you use mutable objects as values be aware that they could change between when you add them to a javimmutable-collection and when you retrieve them later.
+Note: Keep in mind that while the JImmutables themselves are immutable the values you store in them might not be.  Always use immutable objects as keys and if you use mutable objects as values be aware that they could change between when you add them to a JImmutable and when you retrieve them later.
 
 
 Project Status
 ---
 The collections have junit tests and I try to perform rigorous testing.  Still, I always recommend that you evaluate the collections for yourself and perform your own tests before using the collections in production systems.
 
-The 1.6 release has been uploaded to the files section on SourceForge and is also available via maven in maven central.  You can add Javimmutable Collections to your maven project by adding this dependency to your pom.xml
+The 1.8 release has been uploaded to the releases section on GitHub and is also available via Maven in [Maven Central](http://search.maven.org/#artifactdetails%7Corg.javimmutable%7Cjavimmutable-collections%7C1.8%7Cjar).  You can add JImmutable Collections to your Maven project by adding this dependency to your pom.xml
 
     <dependency>
         <groupId>org.javimmutable</groupId>
@@ -37,4 +37,5 @@ The 1.6 release has been uploaded to the files section on SourceForge and is als
     </dependency>
 
 **Project Members:**  
-[Brian Burton](https://github.com/brianburton) (admin)  
+[Brian Burton](https://github.com/brianburton) (admin)
+[Angela Burton](https://github.com/anjbur)

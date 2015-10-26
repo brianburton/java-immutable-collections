@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
 /**
- * Interface for persistent data structures that allow storage and retrieval of
+ * Interface for immutable data structures that allow storage and retrieval of
  * key/value pairs.  null is always an allowed value within the map but is not
  * an allowed key.
  *
@@ -52,7 +52,8 @@ public interface JImmutableMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, V>,
                 Iterable<JImmutableMap.Entry<K, V>>,
-                Cursorable<JImmutableMap.Entry<K, V>>
+                Cursorable<JImmutableMap.Entry<K, V>>,
+                InvariantCheckable
 {
     /**
      * An immutable entry in the map.  Contains the key and value for that entry.
@@ -104,7 +105,7 @@ public interface JImmutableMap<K, V>
     /**
      * Sets the value associated with a specific key.  Key must be non-null but value
      * can be null.  If the key already has a value in the map the old value is discarded
-     * and the new value is stored in its place.  Returns a new PersistentMap reflecting
+     * and the new value is stored in its place.  Returns a new JImmutableMap reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param key   non-null key
@@ -114,6 +115,29 @@ public interface JImmutableMap<K, V>
     @Nonnull
     JImmutableMap<K, V> assign(@Nonnull K key,
                                V value);
+
+    /**
+     * Copies all key-value pairs from the given map. The map itself and its keys must be
+     * nonnull, but values can be null.  If a key already has a value in the map, the old
+     * value is replaced with the new value. Returns a new JImmutableMap with the changes.
+     *
+     * @param map JImmutableMap to take values from
+     * @return new map reflecting the change
+     */
+    @Nonnull
+    JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map);
+
+
+    /**
+     * Copies all key-value pairs from the given map. The map itself and its keys must be
+     * nonnull, but values can be null.  If a key already has a value in the map, the old
+     * value is replaced with the new value. Returns a new JImmutableMap with the changes.
+     *
+     * @param map Map to take values from
+     * @return new map reflecting the change
+     */
+    @Nonnull
+    JImmutableMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map);
 
     /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
@@ -144,9 +168,9 @@ public interface JImmutableMap<K, V>
     JImmutableMap<K, V> deleteAll();
 
     /**
-     * Creates an unmodifiable java.util.Map reflecting the values of this PersistentMap.
+     * Creates an unmodifiable java.util.Map reflecting the values of this JImmutableMap.
      *
-     * @return Map view of this PersistentMap
+     * @return Map view of this JImmutableMap
      */
     @Nonnull
     Map<K, V> getMap();

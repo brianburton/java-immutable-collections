@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ public class MapAdaptor<K, V>
     }
 
     /**
-     * Uses O(n) traversal of the PersistentMap to search for a matching value.
+     * Uses O(n) traversal of the JImmutableMap to search for a matching value.
      *
      * @param o
      * @return

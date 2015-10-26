@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,8 @@ public interface JImmutableListMap<K, V>
         extends Insertable<JImmutableMap.Entry<K, V>>,
                 Mapped<K, JImmutableList<V>>,
                 Iterable<JImmutableMap.Entry<K, JImmutableList<V>>>,
-                Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>
+                Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+                InvariantCheckable
 {
     /**
      * Return the list associated with key or an empty list if no list is associated.

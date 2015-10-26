@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
@@ -50,7 +51,8 @@ public interface JImmutableStack<T>
         extends Insertable<T>,
                 Sequence<T>,
                 Cursorable<T>,
-                Iterable<T>
+                Iterable<T>,
+                InvariantCheckable
 {
     boolean isEmpty();
 
@@ -85,4 +87,9 @@ public interface JImmutableStack<T>
      */
     @Nonnull
     JImmutableStack<T> remove();
+
+    /**
+     * @return List containing the elements of this stack in order
+     */
+    List<T> makeList();
 }

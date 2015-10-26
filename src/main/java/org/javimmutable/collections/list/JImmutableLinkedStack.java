@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Singly linked list implementation of PersistentList that stores and retrieves values
+ * Singly linked list implementation of JImmutableStack that stores and retrieves values
  * in the reverse order of the corresponding add() method calls.  If forward or random
- * access to stored values is required use PersistentArrayList or PersistentTreeList
- * instead but this class  is significantly faster when its limitations are acceptable.
+ * access to stored values is required use JImmutableArrayList or JImmutableTreeList
+ * instead, but this class is significantly faster when its limitations are acceptable.
  *
  * @param <T>
  */
@@ -173,6 +173,12 @@ public abstract class JImmutableLinkedStack<T>
         {
             return StandardCursor.of();
         }
+
+        @Override
+        public void checkInvariants()
+        {
+            //no invariants
+        }
     }
 
     private static class Single<V>
@@ -213,6 +219,12 @@ public abstract class JImmutableLinkedStack<T>
         public Cursor<V> cursor()
         {
             return SingleValueCursor.of(value);
+        }
+
+        @Override
+        public void checkInvariants()
+        {
+            //no invariants
         }
     }
 
@@ -258,6 +270,12 @@ public abstract class JImmutableLinkedStack<T>
         public Cursor<V> cursor()
         {
             return SequenceCursor.of(this);
+        }
+
+        @Override
+        public void checkInvariants()
+        {
+            //no invariants
         }
     }
 }

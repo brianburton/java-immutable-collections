@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2014, Burton Computer Corporation
+// Copyright (c) 2015, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
@@ -283,6 +284,45 @@ public abstract class StandardCursor
         public Source<Integer> advance()
         {
             return new RangeSource(low + 1, high);
+        }
+    }
+
+       @Immutable
+    public static class RepeatingValueCursorSource<T>
+            implements StandardCursor.Source<T>
+    {
+        private int count;
+        private final T value;
+
+        public RepeatingValueCursorSource(JImmutableMap.Entry<T, Integer> entry)
+        {
+            this.count = entry.getValue();
+            this.value = entry.getKey();
+        }
+
+        private RepeatingValueCursorSource(int count,
+                                           T value)
+        {
+            this.count = count;
+            this.value = value;
+        }
+
+        @Override
+        public boolean atEnd()
+        {
+            return count <= 0;
+        }
+
+        @Override
+        public T currentValue()
+        {
+            return value;
+        }
+
+        @Override
+        public StandardCursor.Source<T> advance()
+        {
+            return new RepeatingValueCursorSource<T>(count - 1, value);
         }
     }
 
