@@ -49,6 +49,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class JImmutableInsertOrderMultisetTest
         JImmutableMultiset<String> valuesM = JImmutableInsertOrderMultiset.<String>of().union(valuesL);
         valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
 
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
         assertEquals(0, jmet.occurrenceCount());
@@ -195,7 +196,7 @@ public class JImmutableInsertOrderMultisetTest
 
     public void testInsertOrder()
     {
-        JImmutableMultiset<Integer> jmet = JImmutableInsertOrderMultiset.<Integer>of();
+        JImmutableMultiset<Integer> jmet = JImmutableInsertOrderMultiset.of();
         Multiset<Integer> multi = LinkedHashMultiset.create();
         Random random = new Random(2500L);
         for (int i = 0; i < 5; ++i) {
@@ -244,15 +245,13 @@ public class JImmutableInsertOrderMultisetTest
     private Set<String> asSet(String... args)
     {
         Set<String> set = new LinkedHashSet<String>();
-        for (String arg : args) {
-            set.add(arg);
-        }
+        Collections.addAll(set, args);
         return set;
     }
 
     private JImmutableSet<String> asJSet(String... args)
     {
-        JImmutableSet<String> jet = JImmutableInsertOrderSet.<String>of();
+        JImmutableSet<String> jet = JImmutableInsertOrderSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
         }
@@ -261,7 +260,7 @@ public class JImmutableInsertOrderMultisetTest
 
     private JImmutableMultiset<String> asJMet(String... args)
     {
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
         }
@@ -270,7 +269,7 @@ public class JImmutableInsertOrderMultisetTest
 
     private JImmutableMultiset<String> asJMet(List<String> list)
     {
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.<String>of();
+        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         return jmet.insertAll(list);
     }
 
@@ -278,7 +277,7 @@ public class JImmutableInsertOrderMultisetTest
                                                                              JImmutableMultiset<Integer> jmet)
     {
         final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-        JImmutableMap<Integer, Integer> expectedMap = JImmutableInsertOrderMap.<Integer, Integer>of();
+        JImmutableMap<Integer, Integer> expectedMap = JImmutableInsertOrderMap.of();
         for (int value : expected) {
             Holder<Integer> holder = expectedMap.find(value);
             int count = holder.getValueOr(0);

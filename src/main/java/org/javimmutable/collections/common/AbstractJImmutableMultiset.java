@@ -854,6 +854,44 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
+    @Nonnull
+    protected JImmutableMultiset<T> setIntersectionWithFilledMap(@Nonnull Set<? extends T> other)
+    {
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        Cursor<JImmutableMap.Entry<T, Integer>> e = entryCursor();
+        for (e = e.start(); e.hasValue(); e = e.next()) {
+            final T value = e.getValue().getKey();
+            boolean inOther = other.contains(value);
+            final int mapCount = this.count(value);
+            newOccurrences -= mapCount;
+            if (inOther) {
+                final int otherCount = 1;
+                newOccurrences += (mapCount > otherCount) ? otherCount : mapCount;
+                newMap = (mapCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, mapCount);
+            } else {
+                newMap = newMap.delete(value);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+
+        /*
+        JImmutableMap<T, Integer> newMap = map;
+        int newOccurrences = occurrences;
+        for (T value: this.cursor()) {
+            int oldOccurrences = count(value);
+            newOccurrences -= oldOccurrences;
+            if (other.contains(value)) {
+                ++newOccurrences;
+                newMap = newMap.assign(value, 1);
+            } else {
+                newMap = newMap.delete(value);
+            }
+        }
+        return (newMap != map) ? create(newMap, newOccurrences) : this;
+        */
+    }
+
     //Precondition: Iterator i must come from a Set or JImmutableSet, so that there will only be one occurrence
     //of each value in it.
     @Nonnull
@@ -871,21 +909,5 @@ public abstract class AbstractJImmutableMultiset<T>
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
 
-    @Nonnull
-    protected JImmutableMultiset<T> setIntersectionWithFilledMap(@Nonnull Set<? extends T> other)
-    {
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        for (T value: this.cursor()) {
-            int oldOccurrences = count(value);
-            newOccurrences -= oldOccurrences;
-            if (other.contains(value)) {
-                ++newOccurrences;
-                newMap = newMap.assign(value, 1);
-            } else {
-                newMap = newMap.delete(value);
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-    }
+
 }

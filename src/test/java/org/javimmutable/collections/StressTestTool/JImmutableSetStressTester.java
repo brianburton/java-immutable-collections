@@ -237,10 +237,8 @@ public class JImmutableSetStressTester
         verifyList(setList, expected);
         verifyFinalSize(size, set.size());
 
-        setList = asList(set);
-        StandardCursorTest.listCursorTest(setList, set.cursor());
-
         System.out.printf("cleanup %d%n", expected.size());
+        setList = asList(set);
         int intersects = 0;
         while (setList.size() > size / 80) {
             int limit = setLimit(size, set, random);
@@ -368,7 +366,7 @@ public class JImmutableSetStressTester
         List<String> iteratorListTest;
 
         //HashSet iterates in a different order than JImmutableHashSet. Therefore, to test
-        // the cursor and iterator for that class, the list of values cannot be built from
+        //the cursor and iterator for that class, the list of values cannot be built from
         //expected. Other implementations are in the same order as the java.util classes,
         //and can have the test list built from expected.
         if (set instanceof JImmutableHashSet || set instanceof JImmutableHashMultiset) {
@@ -380,6 +378,12 @@ public class JImmutableSetStressTester
         }
         StandardCursorTest.listCursorTest(cursorListTest, set.cursor());
         StandardCursorTest.listIteratorTest(iteratorListTest, set.iterator());
+    }
+
+    private void verifyOrder(JImmutableSet<String> set,
+                               List<String> expected)
+    {
+        StandardCursorTest.listCursorTest(asList(expected), set.cursor());
     }
 
     private void setListInsertUnique(String value,
@@ -528,7 +532,7 @@ public class JImmutableSetStressTester
                 values = (setList.size() > 0) ? values.insert(containedValue(setList, random)) : values;
                 break;
             case 1: //add values not in set. Expected currently contains all values to be deleted and kept in set
-                    // so no elements to be deleted will be added.
+                // so no elements to be deleted will be added.
                 String value = notContainedValue(tokens, random, expected);
                 values = values.insert(value);
             }

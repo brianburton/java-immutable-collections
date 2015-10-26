@@ -262,42 +262,59 @@ public class JImmutableMultisetStressTester
                     int count = expected.count(value);
                     int checkCount = (count == 0) ? random.nextInt(2) : random.nextInt(2 * count);
                     if (multi.containsAtLeast(value, checkCount) != (expected.count(value) >= checkCount)) {
-                        throw new RuntimeException(String.format("containsAtLeast(value, count) method call failed for %s, %d - expected %b found %b%n", value, count, expected.contains(value), multi.contains(value)));
+                        throw new RuntimeException(String.format("containsAtLeast(value, count) method call failed for" +
+                                                                 " %s, %d - expected %b found %b%n",
+                                                                 value, count, expected.contains(value), multi.contains(value)));
                     }
                     break;
                 }
                 case 1: { //containsAllOccurrences(Cursorable)
                     List<String> values = makeContainsRepeatsList(tokens, random, multiList, expected);
                     if (multi.containsAllOccurrences(IterableCursorable.of(values)) != containsAllByOccurrence(expected, values)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(IterableCursorable.of(values)), containsAllByOccurrence(expected, values)));
+                        throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed" +
+                                                                 " for %s - expected %b found %b%n", values,
+                                                                 multi.containsAllOccurrences(IterableCursorable.of(values)),
+                                                                 containsAllByOccurrence(expected, values)));
                     }
                     break;
                 }
                 case 2: { //containsAllOccurrences(Collection)
                     List<String> values = makeContainsRepeatsList(tokens, random, multiList, expected);
                     if (multi.containsAllOccurrences(values) != containsAllByOccurrence(expected, values)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), containsAllByOccurrence(expected, values)));
+                        throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed " +
+                                                                 "for %s - expected %b found %b%n",
+                                                                 values, multi.containsAllOccurrences(values),
+                                                                 containsAllByOccurrence(expected, values)));
                     }
                     break;
                 }
                 case 3: { //containsAllOccurrences(JMet)
                     JImmutableMultiset<String> values = JImmutables.multiset(makeContainsRepeatsList(tokens, random, multiList, expected));
                     if (multi.containsAllOccurrences(values) != containsAllByOccurrence(expected, values)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableMultiset) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), containsAllByOccurrence(expected, values)));
+                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableMultiset) method call" +
+                                                                 " failed for %s - expected %b found %b%n",
+                                                                 values, multi.containsAllOccurrences(values),
+                                                                 containsAllByOccurrence(expected, values)));
                     }
                     break;
                 }
                 case 4: { //containsAllOccurrences(JSet)
                     JImmutableSet<String> values = JImmutables.set(makeContainsList(tokens, random, multiList, expected));
                     if (multi.containsAllOccurrences(values) != expected.containsAll(values.getSet())) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableSet) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), expected.containsAll(values.getSet())));
+                        throw new RuntimeException(String.format("containsAllOccurrences(JImmutableSet) method call " +
+                                                                 "failed for %s - expected %b found %b%n",
+                                                                 values, multi.containsAllOccurrences(values),
+                                                                 expected.containsAll(values.getSet())));
                     }
                     break;
                 }
                 case 5: { //containsAllOccurrences(Set)
                     Set<String> values = new HashSet<String>(makeContainsList(tokens, random, multiList, expected));
                     if (multi.containsAllOccurrences(values) != expected.containsAll(values)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Set) method call failed for %s - expected %b found %b%n", values, multi.containsAllOccurrences(values), expected.containsAll(values)));
+                        throw new RuntimeException(String.format("containsAllOccurrences(Set) method call failed for %s" +
+                                                                 " - expected %b found %b%n",
+                                                                 values, multi.containsAllOccurrences(values),
+                                                                 expected.containsAll(values)));
 
                     }
                     break;
@@ -308,9 +325,15 @@ public class JImmutableMultisetStressTester
             }
             verifyCursor(multi, expected);
         }
+        verifyContents(multi, expected);
+        verifyList(multiList, expected);
         verifyFinalSize(size, multi.occurrenceCount());
+
         System.out.printf("cleanup %d%n", multi.occurrenceCount());
+        multiList = asList(multi.occurrenceCursor());
+        int intersects = 0;
         while (multiList.size() > 0) {
+            ++intersects;
             Multiset<String> deleteValues = HashMultiset.create();
             for (int n = 0, limit = random.nextInt((size / 18) + 3); multiList.size() >= 1 && n < limit; ++n) {
                 int index = random.nextInt(multiList.size());
@@ -320,32 +343,66 @@ public class JImmutableMultisetStressTester
             int command = (multiList.size() < size / 3) ? 5 : 3;
             switch (random.nextInt(command)) {
             case 0: { //intersection(Cursorable)
+                System.out.println("cursorable");
                 Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(IterableCursorable.of(values));
                 break;
             }
             case 1: { //intersection(Collection)
+                System.out.println("collection");
                 Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(values);
                 break;
             }
             case 2: { //intersection(JMet)
-                JImmutableMultiset<String> values = (JImmutableMultiset<String>)makeIntersectInsertable(tokens, random, multiList, expected, JImmutables.multiset(multiList));
+                System.out.print("jmet ");
+                //need bigger and smaller versions
+                JImmutableMultiset<String> values;
+                if (random.nextBoolean()) {
+                    values = (JImmutableMultiset<String>)makeIntersectInsertable(tokens, random,
+                                                                                 multiList, expected,
+                                                                                 JImmutables.multiset(multiList));
+                    System.out.println("smaller");
+                } else {
+                    values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
+                    System.out.println("bigger");
+                }
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(values);
                 break;
             }
             case 3: { //intersection(JSet)
-                JImmutableSet<String> values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList, expected, JImmutables.set(multiList));
+                System.out.print("jset ");
+                //need bigger and smaller versions
+                JImmutableSet<String> values;
+                if (random.nextBoolean()) {
+                    values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList,
+                                                                            expected, JImmutables.set(multiList));
+                    System.out.println("smaller");
+                } else {
+                    values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
+                    System.out.println("bigger");
+                }
                 expectedSetIntersect(expected, deleteValues);
                 multiList = multiListSetIntersect(multiList);
                 multi = multi.intersection(values);
                 break;
             }
             case 4: { //intersection(Set)
-                JImmutableSet<String> values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList, expected, JImmutables.set(multiList));
+                System.out.print("set ");
+                //need bigger and smaller versions
+                JImmutableSet<String> values;
+                if (random.nextBoolean()) {
+                    values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList,
+                                                                            expected, JImmutables.set(multiList));
+                    System.out.println("smaller");
+                } else {
+                    values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
+                    System.out.println("bigger");
+
+                }
                 multiList = multiListSetIntersect(multiList);
                 expectedSetIntersect(expected, deleteValues);
                 multi = multi.intersection(values.getSet());
@@ -353,6 +410,14 @@ public class JImmutableMultisetStressTester
             }
             default:
                 throw new RuntimeException();
+            }
+            verifyList(multiList, expected);
+            if (intersects % 10 == 0) {
+                System.out.println(multi.occurrenceCount());
+                System.out.println(expected.size());
+                System.out.println(multiList.size());
+                verifyContents(multi, expected);
+                verifyOrder(multi, multiList);
             }
         }
         if (multi.size() != 0) {
@@ -425,10 +490,12 @@ public class JImmutableMultisetStressTester
         }
 
         if (expectedList.size() != multi.occurrenceCount()) {
-            throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n", multi.occurrenceCount(), expectedList.size()));
+            throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n",
+                                                     multi.occurrenceCount(), expectedList.size()));
         }
         if (entries.size() != multi.size()) {
-            throw new RuntimeException(String.format("entries list built incorrectly - size expected %d size found %d%n", multi.size(), entries.size()));
+            throw new RuntimeException(String.format("entries list built incorrectly - size expected %d size found %d%n",
+                                                     multi.size(), entries.size()));
         }
 
         StandardCursorTest.listCursorTest(expectedList, multi.occurrenceCursor());
@@ -440,23 +507,33 @@ public class JImmutableMultisetStressTester
     {
         System.out.printf("checking contents with size %d%n", multi.occurrenceCount());
         if (multi.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), multi.isEmpty()));
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n",
+                                                     expected.isEmpty(), multi.isEmpty()));
         }
         if (multi.size() != expected.elementSet().size()) {
-            throw new RuntimeException(String.format("unique value size mismatch - expected %d found %d%n", expected.elementSet().size(), multi.size()));
+            throw new RuntimeException(String.format("unique value size mismatch - expected %d found %d%n",
+                                                     expected.elementSet().size(), multi.size()));
         }
         if (multi.occurrenceCount() != expected.size()) {
-            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", expected.size(), multi.occurrenceCount()));
+            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n",
+                                                     expected.size(), multi.occurrenceCount()));
         }
         for (String expectedValue : expected.elementSet()) {
             if (expected.count(expectedValue) != multi.count(expectedValue)) {
-                throw new RuntimeException(String.format("count mismatch on %s - expected %d found %d%n", expectedValue, expected.count(expectedValue), multi.count(expectedValue)));
+                throw new RuntimeException(String.format("count mismatch on %s - expected %d found %d%n",
+                                                         expectedValue, expected.count(expectedValue), multi.count(expectedValue)));
             }
         }
         if (!expected.elementSet().equals(multi.getSet())) {
             throw new RuntimeException("method call failed - getSet()\n");
         }
         multi.checkInvariants();
+    }
+
+    private void verifyOrder(JImmutableMultiset<String> set,
+                             List<String> expected)
+    {
+        StandardCursorTest.listCursorTest(expected, set.occurrenceCursor());
     }
 
     //precondition: multi must not have had a union performed with values yet.
@@ -498,7 +575,7 @@ public class JImmutableMultisetStressTester
 
     private List<String> multiListSetIntersect(List<String> list)
     {
-        return asList(JImmutables.set(list));
+        return asList(JImmutables.insertOrderSet(list));
     }
 
     private boolean containsAllByOccurrence(Multiset<String> expected,
@@ -700,6 +777,20 @@ public class JImmutableMultisetStressTester
         int maxSize = multiList.size() / 20;
         for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {
             values = values.insert(notContainedValue(tokens, random, expected));
+        }
+        return values;
+    }
+
+    private JImmutableMultiset<String> makeBigIntersectValues(JImmutableList<String> tokens,
+                                                              Random random,
+                                                              List<String> multiList,
+                                                              Multiset<String> expected,
+                                                              JImmutableMultiset<String> values)
+    {
+        int extraSize = (multiList.size() < 60) ? random.nextInt(3) : random.nextInt(multiList.size() / 20);
+        while (values.occurrenceCount() < expected.size() + extraSize) {
+            String value = notContainedValue(tokens, random, expected);
+            values = values.insert(value);
         }
         return values;
     }

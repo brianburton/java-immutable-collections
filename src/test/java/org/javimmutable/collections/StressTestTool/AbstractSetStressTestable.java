@@ -114,10 +114,4 @@ public abstract class AbstractSetStressTestable
                                                      expected.size(), list.size()));
         }
     }
-
-    protected void verifyOrder(JImmutableSet<String> set,
-                               Collection<String> expected)
-    {
-        StandardCursorTest.listCursorTest(asList(expected), set.cursor());
-    }
 }

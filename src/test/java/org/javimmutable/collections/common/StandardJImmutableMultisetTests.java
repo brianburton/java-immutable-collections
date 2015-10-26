@@ -307,6 +307,85 @@ public class StandardJImmutableMultisetTests
 
     }
 
+    private static void verifyOrder(JImmutableMultiset<Integer> jmet,
+                                    List<Integer> expected)
+    {
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+
+    }
+
+    private static void verifyIntersectionOrder(JImmutableMultiset<Integer> empty)
+    {
+        JImmutableMultiset<Integer> jmet = empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+        List<Integer> expected = new ArrayList<Integer>();
+        expected.addAll(jmet.getSet());
+        StandardCursorTest.listCursorTest(expected, jmet.cursor());
+
+        JImmutableMultiset<Integer> diffOrder = JImmutableInsertOrderMultiset.<Integer>of().insert(400).insert(0)
+                .insert(600).insert(100).insert(50).insert(100);
+
+        //with same width, same depth
+        verifyOrder(jmet.intersection(IterableCursorable.of(diffOrder)), expected);
+        verifyOrder(jmet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100)), expected);
+        verifyOrder(jmet.intersection(diffOrder), expected);
+        verifyOrder(jmet.intersection(IterableCursor.of(diffOrder)), expected);
+        verifyOrder(jmet.intersection(diffOrder.iterator()), expected);
+        verifyOrder(jmet.intersection((JImmutableSet<Integer>)diffOrder), expected);
+        verifyOrder(jmet.intersection(diffOrder.getSet()), expected);
+
+        //with wider and deeper
+        final List<Integer> wideDeep = Arrays.asList(0, 0, 50, 100, 100, 100, 200, 200, 400, 600);
+        verifyOrder(jmet.intersection(IterableCursorable.of(wideDeep)), expected);
+        verifyOrder(jmet.intersection(wideDeep), expected);
+        verifyOrder(jmet.intersection(IterableCursor.of(wideDeep)), expected);
+        verifyOrder(jmet.intersection(wideDeep.iterator()), expected);
+        verifyOrder(jmet.intersection(asJMSet(wideDeep)), expected);
+        verifyOrder(jmet.intersection(asJSet(wideDeep)), expected);
+        verifyOrder(jmet.intersection(asSet(wideDeep)), expected);
+
+        //with wider and shallower
+        final List<Integer> wideShallow = Arrays.asList(500, 400, 100, 150);
+        expected.clear();
+        for (Integer value : empty.insertAll(Arrays.asList(100, 400))) {
+            expected.add(value);
+        }
+        verifyOrder(jmet.intersection(IterableCursorable.of(wideShallow)), expected);
+        verifyOrder(jmet.intersection(wideShallow), expected);
+        verifyOrder(jmet.intersection(IterableCursor.of(wideShallow)), expected);
+        verifyOrder(jmet.intersection(wideShallow.iterator()), expected);
+        verifyOrder(jmet.intersection(asJMSet(wideShallow)), expected);
+        verifyOrder(jmet.intersection(asJSet(wideShallow)), expected);
+        verifyOrder(jmet.intersection(asSet(wideShallow)), expected);
+
+        //with narrower and deeper
+        final List<Integer> narrowDeep = Arrays.asList(400, 400, 100, 400, 100, 100);
+        expected.clear();
+        for (Integer value : empty.insertAll(Arrays.asList(100, 100, 400))) {
+            expected.add(value);
+        }
+        verifyOrder(jmet.intersection(IterableCursorable.of(narrowDeep)), expected);
+        verifyOrder(jmet.intersection(narrowDeep), expected);
+        verifyOrder(jmet.intersection(IterableCursor.of(narrowDeep)), expected);
+        verifyOrder(jmet.intersection(narrowDeep.iterator()), expected);
+        verifyOrder(jmet.intersection(asJMSet(narrowDeep)), expected);
+        verifyOrder(jmet.intersection(asJSet(narrowDeep)), expected);
+        verifyOrder(jmet.intersection(asSet(narrowDeep)), expected);
+
+        //with narrower shallower
+        final List<Integer> narrowShallow = Arrays.asList(400, 100);
+        expected.clear();
+        for (Integer value : empty.insertAll(Arrays.asList(100, 400))) {
+            expected.add(value);
+        }
+        verifyOrder(jmet.intersection(IterableCursorable.of(narrowShallow)), expected);
+        verifyOrder(jmet.intersection(narrowShallow), expected);
+        verifyOrder(jmet.intersection(IterableCursor.of(narrowShallow)), expected);
+        verifyOrder(jmet.intersection(narrowShallow.iterator()), expected);
+        verifyOrder(jmet.intersection(asJMSet(narrowShallow)), expected);
+        verifyOrder(jmet.intersection(asJSet(narrowShallow)), expected);
+        verifyOrder(jmet.intersection(asSet(narrowShallow)), expected);
+    }
+
     private static void verifyInsertAll(JImmutableMultiset<Integer> empty)
     {
         List<Integer> values = Arrays.asList(1, 3, 3, 4);
@@ -480,32 +559,7 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
     }
 
-    private static void verifyIntersectionOrder(JImmutableMultiset<Integer> empty)
-    {
-        JImmutableMultiset<Integer> jmet = empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
-        List<Integer> expected = new ArrayList<Integer>();
-        expected.addAll(jmet.getSet());
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
 
-        JImmutableMultiset<Integer> diffOrder = JImmutableInsertOrderMultiset.<Integer>of().insert(400).insert(0)
-                .insert(600).insert(100).insert(50).insert(100);
-
-        //Cusorable
-        jmet = jmet.intersection(IterableCursorable.of(diffOrder));
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
-        //Collection
-        jmet = jmet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100));
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
-        //JMultiset
-        jmet = jmet.intersection(diffOrder);
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
-        //JSet
-        jmet = jmet.intersection((JImmutableSet<Integer>)diffOrder);
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
-        //Set
-        jmet = jmet.intersection(diffOrder.getSet());
-        StandardCursorTest.listCursorTest(expected, jmet.cursor());
-    }
 
     private static void testVarious(JImmutableMultiset<Integer> empty)
     {
@@ -840,5 +894,4 @@ public class StandardJImmutableMultisetTests
         }
         return list;
     }
-
 }
