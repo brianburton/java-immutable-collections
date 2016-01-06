@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -817,16 +818,17 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     protected <T1 extends T> JImmutableMultiset<T> multisetIntersectionWithFilledMap(@Nonnull JImmutableMultiset<T1> other)
     {
+        JImmutableHashMultiset<T> o = (JImmutableHashMultiset<T>)other;
         JImmutableMap<T, Integer> newMap = map;
         int newOccurrences = occurrences;
         Cursor<JImmutableMap.Entry<T, Integer>> e = entryCursor();
         for (e = e.start(); e.hasValue(); e = e.next()) {
             final T value = e.getValue().getKey();
-            boolean inOther = other.getSet().contains(value);
+            boolean inOther = o.contains(value);
             final int mapCount = this.count(value);
             newOccurrences -= mapCount;
             if (inOther) {
-                final int otherCount = other.count((T1)value);
+                final int otherCount = o.count(value);
                 newOccurrences += (mapCount > otherCount) ? otherCount : mapCount;
                 newMap = (mapCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, mapCount);
             } else {
@@ -874,22 +876,6 @@ public abstract class AbstractJImmutableMultiset<T>
             }
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
-
-        /*
-        JImmutableMap<T, Integer> newMap = map;
-        int newOccurrences = occurrences;
-        for (T value: this.cursor()) {
-            int oldOccurrences = count(value);
-            newOccurrences -= oldOccurrences;
-            if (other.contains(value)) {
-                ++newOccurrences;
-                newMap = newMap.assign(value, 1);
-            } else {
-                newMap = newMap.delete(value);
-            }
-        }
-        return (newMap != map) ? create(newMap, newOccurrences) : this;
-        */
     }
 
     //Precondition: Iterator i must come from a Set or JImmutableSet, so that there will only be one occurrence
@@ -908,6 +894,4 @@ public abstract class AbstractJImmutableMultiset<T>
         }
         return (newMap != map) ? create(newMap, newOccurrences) : this;
     }
-
-
 }
