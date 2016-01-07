@@ -68,7 +68,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
 {
     private JImmutableMap<K, String> map;
     private final Class<? extends Map> expectedClass;
-    KeyFactory<K> factory;
+    private KeyFactory<K> factory;
 
     public JImmutableMapStressTester(JImmutableMap<K, String> map,
                                      Class<? extends Map> expectedClass,
