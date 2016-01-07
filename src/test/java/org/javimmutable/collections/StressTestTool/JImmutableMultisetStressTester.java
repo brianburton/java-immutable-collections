@@ -343,47 +343,39 @@ public class JImmutableMultisetStressTester
             int command = (multiList.size() < size / 3) ? 5 : 3;
             switch (random.nextInt(command)) {
             case 0: { //intersection(Cursorable)
-                System.out.println("cursorable");
                 Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(IterableCursorable.of(values));
                 break;
             }
             case 1: { //intersection(Collection)
-                System.out.println("collection");
                 Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(values);
                 break;
             }
             case 2: { //intersection(JMet)
-                System.out.print("jmet ");
                 //need bigger and smaller versions
                 JImmutableMultiset<String> values;
                 if (random.nextBoolean()) {
                     values = (JImmutableMultiset<String>)makeIntersectInsertable(tokens, random,
                                                                                  multiList, expected,
                                                                                  JImmutables.multiset(multiList));
-                    System.out.println("smaller");
                 } else {
                     values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
-                    System.out.println("bigger");
                 }
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(values);
                 break;
             }
             case 3: { //intersection(JSet)
-                System.out.print("jset ");
                 //need bigger and smaller versions
                 JImmutableSet<String> values;
                 if (random.nextBoolean()) {
                     values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList,
                                                                             expected, JImmutables.set(multiList));
-                    System.out.println("smaller");
                 } else {
                     values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
-                    System.out.println("bigger");
                 }
                 expectedSetIntersect(expected, deleteValues);
                 multiList = multiListSetIntersect(multiList);
@@ -391,16 +383,13 @@ public class JImmutableMultisetStressTester
                 break;
             }
             case 4: { //intersection(Set)
-                System.out.print("set ");
                 //need bigger and smaller versions
                 JImmutableSet<String> values;
                 if (random.nextBoolean()) {
                     values = (JImmutableSet<String>)makeIntersectInsertable(tokens, random, multiList,
                                                                             expected, JImmutables.set(multiList));
-                    System.out.println("smaller");
                 } else {
                     values = makeBigIntersectValues(tokens, random, multiList, expected, JImmutables.multiset(multiList));
-                    System.out.println("bigger");
 
                 }
                 multiList = multiListSetIntersect(multiList);
@@ -413,9 +402,6 @@ public class JImmutableMultisetStressTester
             }
             verifyList(multiList, expected);
             if (intersects % 10 == 0) {
-                System.out.println(multi.occurrenceCount());
-                System.out.println(expected.size());
-                System.out.println(multiList.size());
                 verifyContents(multi, expected);
                 verifyOrder(multi, multiList);
             }
