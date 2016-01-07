@@ -186,6 +186,15 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.toString();
     }
 
+    protected void checkListMapInvariants()
+    {
+        contents.checkInvariants();
+        for(JImmutableMap.Entry<K, JImmutableList<V>> entry : contents) {
+            entry.getValue().checkInvariants();
+        }
+        //TODO: review checkListMapInvariants()
+    }
+
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *

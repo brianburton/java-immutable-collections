@@ -87,7 +87,7 @@ public class ArrayToMapAdaptor<T>
     }
 
     /**
-     * Uses O(n) traversal of the PersistentMap to search for a matching value.
+     * Uses O(n) traversal of the JImmutableMap to search for a matching value.
      *
      * @param o
      * @return

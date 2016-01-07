@@ -35,9 +35,7 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
@@ -45,6 +43,7 @@ import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -151,6 +150,110 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
+    public JImmutableArrayList<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAll(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAll(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAll(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllFirst(values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
+    {
+        ArrayList<T> temp = new ArrayList<T>(values.size());
+        temp.addAll(values);
+        return insertAllFirstReverse(temp);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllFirst(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
+    {
+        ArrayList<T> temp = new ArrayList<T>();
+        while (values.hasNext()) {
+            temp.add(values.next());
+        }
+        return insertAllFirstReverse(temp);
+    }
+
+    private JImmutableArrayList<T> insertAllFirstReverse(ArrayList<T> temp)
+    {
+        Node<T> newRoot = root;
+        for (int x = temp.size() - 1; x >= 0; x--) {
+            newRoot = newRoot.insertFirst(temp.get(x));
+        }
+        return new JImmutableArrayList<T>(newRoot);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllLast(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllLast(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
+    {
+        Node<T> newRoot = root;
+        while (values.hasNext()) {
+            newRoot = newRoot.insertLast(values.next());
+        }
+        return new JImmutableArrayList<T>(newRoot);
+    }
+
+
+    @Nonnull
+    @Override
     public JImmutableArrayList<T> deleteFirst()
     {
         if (root.isEmpty()) {
@@ -202,6 +305,7 @@ public class JImmutableArrayList<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Override
     public void checkInvariants()
     {
         root.checkInvariants();

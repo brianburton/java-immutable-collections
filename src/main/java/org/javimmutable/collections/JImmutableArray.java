@@ -55,7 +55,8 @@ public interface JImmutableArray<T>
         extends Indexed<T>,
                 Insertable<JImmutableMap.Entry<Integer, T>>,
                 Iterable<JImmutableMap.Entry<Integer, T>>,
-                Cursorable<JImmutableMap.Entry<Integer, T>>
+                Cursorable<JImmutableMap.Entry<Integer, T>>,
+                InvariantCheckable
 {
     /**
      * Return the value associated with index or null if no value is associated.
@@ -105,7 +106,7 @@ public interface JImmutableArray<T>
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value
      * can be null.  If the index already has a value in the map the old value is discarded
-     * and the new value is stored in its place.  Returns a new PersistentMap reflecting
+     * and the new value is stored in its place.  Returns a new JImmutableMap reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param index index
@@ -145,9 +146,9 @@ public interface JImmutableArray<T>
     JImmutableArray<T> deleteAll();
 
     /**
-     * Creates an unmodifiable java.util.Map reflecting the values of this PersistentMap.
+     * Creates an unmodifiable java.util.Map reflecting the values of the JImmutableMap backing the array.
      *
-     * @return Map view of this PersistentMap
+     * @return Map view of this JImmutableMap
      */
     @Nonnull
     Map<Integer, T> getMap();

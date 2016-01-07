@@ -6,7 +6,7 @@
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>javimmutable Persistent Collections</name>
+    <name>JImmutable Collections</name>
     <description>
         Library providing immutable/persistent collection classes for
         Java. While collections are immutable they provide methods for
@@ -14,7 +14,7 @@
         themselves. Each copy shares almost all of its structure with
         other copies to minimize memory consumption.
     </description>
-    <url>https://sourceforge.net/projects/javimmutablecollections/</url>
+    <url>https://github.com/brianburton/java-immutable-collections</url>
 
     <licenses>
         <license>
@@ -32,7 +32,7 @@
 
     <developers>
         <developer>
-            <id>bburton</id>
+            <id>brianburton</id>
             <name>Brian Burton</name>
             <email>bburton@users.sourceforge.net</email>
             <url>http://www.burton-computer.com</url>
@@ -44,11 +44,22 @@
             </roles>
             <timezone>America/New_York</timezone>
         </developer>
+        <developer>
+            <id>anjbur</id>
+            <name>Angela Burton</name>
+            <email>angela.j.burton@vanderbilt.edu</email>
+            <url>https://github.com/anjbur</url>
+            <organization>Vanderbilt University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Chicago</timezone>
+        </developer>
     </developers>
 
     <issueManagement>
-        <system>Sourceforge</system>
-        <url>https://sourceforge.net/p/javimmutablecollections/tickets/</url>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brianburton/java-immutable-collections/issues</url>
     </issueManagement>
 
     <parent>
@@ -58,10 +69,10 @@
     </parent>
 
     <scm>
-        <connection>scm:git:git://git.code.sf.net/p/javimmutablecollections/code</connection>
-        <developerConnection>scm:git:ssh://git.code.sf.net/p/javimmutablecollections/code</developerConnection>
+        <connection>scm:git:git://github.com/brianburton/java-immutable-collections.git</connection>
+        <developerConnection>scm:git:git@github.com:brianburton/java-immutable-collections.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://sourceforge.net/p/javimmutablecollections/code/ci/master/tree/</url>
+        <url>https://github.com/brianburton/java-immutable-collections</url>
     </scm>
 
     <properties>
@@ -73,6 +84,18 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>4.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -102,6 +125,10 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

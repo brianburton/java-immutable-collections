@@ -35,10 +35,7 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -205,6 +202,138 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
+    public JImmutableBtreeList<T> insertAll(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(@Nonnull Collection<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAllLast(values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(int index,
+                                            @Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(index, values.cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(int index,
+                                            @Nonnull Collection<? extends T> values)
+    {
+        return insertAll(index, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(int index,
+                                            @Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(index, values.iterator());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAll(int index,
+                                            @Nonnull Iterator<? extends T> values)
+    {
+        if ((index < 0) || (index > size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        int i = index;
+        BtreeNode<T> newRoot = root;
+        while (values.hasNext()) {
+            BtreeInsertResult<T> insertResult = newRoot.insertAt(i, values.next());
+            if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
+                newRoot = insertResult.newNode;
+            } else {
+                newRoot = new BtreeBranchNode<T>(insertResult.newNode, insertResult.extraNode);
+            }
+            i++;
+        }
+        return new JImmutableBtreeList<T>(newRoot);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(0, values);
+
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAll(0, values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
+    {
+        return insertAll(size(), values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllLast(@Nonnull Collection<? extends T> values)
+    {
+        return insertAll(size(), values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(size(), values);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableBtreeList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
+    {
+        return insertAll(size(), values);
+    }
+
+
+    @Nonnull
+    @Override
     public JImmutableBtreeList<T> deleteFirst()
     {
         return createForDelete(root.delete(0));
@@ -280,6 +409,7 @@ public class JImmutableBtreeList<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Override
     public void checkInvariants()
     {
         root.checkInvariants();

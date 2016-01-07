@@ -135,4 +135,10 @@ public class SingleBit32Array<T>
     {
         return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(this);
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
 }

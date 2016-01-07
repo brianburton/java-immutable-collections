@@ -139,5 +139,6 @@ final class EmptyNode<T>
     @Override
     public void checkInvariants()
     {
+        //TODO: fix empty checkInvariants()
     }
 }

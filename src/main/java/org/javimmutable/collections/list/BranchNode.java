@@ -405,6 +405,7 @@ class BranchNode<T>
             node.checkInvariants();
         }
         suffix.checkInvariants();
+        //TODO: review checkInvariants()
     }
 
     static class Builder<T>

@@ -41,11 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class JImmutableInsertOrderMapTest
         extends TestCase
@@ -113,19 +109,38 @@ public class JImmutableInsertOrderMapTest
     {
         Random r = new Random(0L);
         for (int loop = 1; loop <= 20; ++loop) {
-            JImmutableInsertOrderMap<Integer, Integer> map = JImmutableInsertOrderMap.of();
+            JImmutableMap<Integer, Integer> map = JImmutableInsertOrderMap.of();
             Map<Integer, Integer> expected = new LinkedHashMap<Integer, Integer>();
             for (int i = 0; i < 2500; ++i) {
-                int key = r.nextInt(500);
-                int value = r.nextInt(500);
-                map = map.assign(key, value);
-                expected.put(key, value);
-                //noinspection ConstantConditions
-                assertEquals(value, (int)map.get(key));
-                assertEquals(value, (int)map.getValueOr(key, value - 1000));
-                assertEquals(value, (int)map.find(key).getValueOrNull());
-                assertEquals(Holders.of(value), map.find(key));
-                assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
+                int command = r.nextInt(3);
+                switch (command) {
+                case 0:
+                case 1:
+                    int key = r.nextInt(500);
+                    int value = r.nextInt(500);
+                    map = map.assign(key, value);
+                    expected.put(key, value);
+                    //noinspection ConstantConditions
+                    assertEquals(value, (int)map.get(key));
+                    assertEquals(value, (int)map.getValueOr(key, value - 1000));
+                    assertEquals(value, (int)map.find(key).getValueOrNull());
+                    assertEquals(Holders.of(value), map.find(key));
+                    assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
+                    break;
+                case 2:
+                    JImmutableInsertOrderMap<Integer, Integer> col = JImmutableInsertOrderMap.of();
+                    int times = r.nextInt(3);
+
+                    for (int rep = 0; rep < times; rep++) {
+                        key = r.nextInt(500);
+                        value = r.nextInt(500);
+                        col = col.assign(key, value);
+                    }
+                    expected.putAll(col.getMap());
+                    map = (r.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
+                    break;
+                }
+
             }
             assertEquals(expected, map.getMap());
             List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
@@ -152,5 +167,83 @@ public class JImmutableInsertOrderMapTest
             }
             assertTrue(map.isEmpty());
         }
+    }
+
+    public void testAssignAll()
+    {
+        //assignAll(JImmutableMap)
+        JImmutableMap<String, Number> empty = JImmutableInsertOrderMap.of();
+        JImmutableMap<String, Number> map = empty;
+        JImmutableMap<String, Integer> expected = JImmutableInsertOrderMap.of();
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(0, map.size());
+        assertTrue(map.isEmpty());
+
+        expected = expected.assign("a", 10);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+
+        assertEquals(map, map.assignAll(empty));
+
+        expected = expected.assign("a", 8).assign("b", 12).assign("c", 14);
+        map = map.assignAll(expected);
+        assertEquals(expected, map);
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+
+        //assignAll(Map)
+        map = empty;
+        Map<String, Integer> expectedMutable = new LinkedHashMap<String, Integer>();
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(0, map.size());
+
+        expectedMutable.put("a", 10);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(1, map.size());
+        assertEquals(10, map.get("a"));
+
+        assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
+
+        expectedMutable.put("a", 8);
+        expectedMutable.put("b", 12);
+        expectedMutable.put("c", 14);
+        map = map.assignAll(expectedMutable);
+        assertEquals(expectedMutable, map.getMap());
+        assertEquals(3, map.size());
+        assertEquals(8, map.get("a"));
+
+    }
+
+    private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
+                                                   JImmutableMap<Integer, Integer> extra)
+    {
+        map = map.assignAll(extra);
+        for (JImmutableMap.Entry<Integer, Integer> entry : extra) {
+            assertEquals(entry.getValue(), map.get(entry.getKey()));
+            assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
+            assertEquals(entry.getValue(), map.find(entry.getKey()).getValueOrNull());
+            assertEquals(Holders.of(entry.getValue()), map.find(entry.getKey()));
+            assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), map.findEntry(entry.getKey()).getValue());
+        }
+        return map;
+    }
+
+    private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
+                                                   Map<Integer, Integer> extra)
+    {
+        map = map.assignAll(extra);
+        for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
+            assertEquals(entry.getValue(), map.get(entry.getKey()));
+            assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
+            assertEquals(entry.getValue(), map.find(entry.getKey()).getValueOrNull());
+            assertEquals(Holders.of(entry.getValue()), map.find(entry.getKey()));
+            assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), map.findEntry(entry.getKey()).getValue());
+        }
+        return map;
     }
 }

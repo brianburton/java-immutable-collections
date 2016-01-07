@@ -118,4 +118,10 @@ public class EmptyHashMap<K, V>
     {
         return defaultValue;
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        //TODO: fix empty checkInvariants()
+    }
 }

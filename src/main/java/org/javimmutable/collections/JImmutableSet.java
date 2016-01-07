@@ -52,7 +52,8 @@ import java.util.Set;
 public interface JImmutableSet<T>
         extends Insertable<T>,
                 Cursorable<T>,
-                Iterable<T>
+                Iterable<T>,
+                InvariantCheckable
 {
     /**
      * Adds the single value to the Set.
@@ -62,6 +63,42 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     JImmutableSet<T> insert(@Nonnull T value);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values);
+
+    /**
+     * Adds all of the elements of the specified collection to the set.
+     *
+     * @param values
+     * @return instance of set containing the collection
+     */
+    @Nonnull
+    JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Determines if the Set contains the specified value.
@@ -259,7 +296,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull JImmutableSet<T> other);
+    JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.

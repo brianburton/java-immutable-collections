@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.InvariantCheckable;
 
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
@@ -44,7 +45,8 @@ import org.javimmutable.collections.Cursorable;
  * @param <T>
  */
 interface Node<T>
-        extends Cursorable<T>
+        extends Cursorable<T>,
+                InvariantCheckable
 {
     boolean isEmpty();
 
@@ -68,6 +70,4 @@ interface Node<T>
 
     Node<T> assign(int index,
                    T value);
-
-    void checkInvariants();
 }

@@ -197,5 +197,6 @@ class LeafNode<T>
         if ((values.length == 0) || (values.length > 32)) {
             throw new IllegalStateException();
         }
+        //TODO: review checkInvariants()
     }
 }
