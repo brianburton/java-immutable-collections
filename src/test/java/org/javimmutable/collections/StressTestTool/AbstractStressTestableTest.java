@@ -44,8 +44,8 @@ public class AbstractStressTestableTest
             total = total + list.size();
         }
         double average = (double)total / (double)times;
-        assertTrue(average >= 0.9998);
-        assertTrue(average <= 1.0001);
+        assertTrue(average >= 0.9);
+        assertTrue(average <= 1.1);
     }
 
     public void testMakeInsertJList(AbstractStressTestable testable,
@@ -59,8 +59,8 @@ public class AbstractStressTestableTest
             total = total + list.size();
         }
         double average = (double)total / (double)times;
-        assertTrue(average >= 0.9998);
-        assertTrue(average <= 1.0001);
+        assertTrue(average >= 0.9);
+        assertTrue(average <= 1.1);
     }
 
     private JImmutableList<String> loadTokens(String filename)

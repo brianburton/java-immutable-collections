@@ -818,19 +818,20 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     protected <T1 extends T> JImmutableMultiset<T> multisetIntersectionWithFilledMap(@Nonnull JImmutableMultiset<T1> other)
     {
-        JImmutableHashMultiset<T> o = (JImmutableHashMultiset<T>)other;
+        // cast is safe because keys in other are all T's or extend T and we are only checking membership
+        @SuppressWarnings("unchecked") JImmutableMultiset<T> o = (JImmutableMultiset<T>)other;
         JImmutableMap<T, Integer> newMap = map;
         int newOccurrences = occurrences;
         Cursor<JImmutableMap.Entry<T, Integer>> e = entryCursor();
         for (e = e.start(); e.hasValue(); e = e.next()) {
             final T value = e.getValue().getKey();
-            boolean inOther = o.contains(value);
+            final int otherCount = o.count(value);
             final int mapCount = this.count(value);
             newOccurrences -= mapCount;
-            if (inOther) {
-                final int otherCount = o.count(value);
-                newOccurrences += (mapCount > otherCount) ? otherCount : mapCount;
-                newMap = (mapCount > otherCount) ? newMap.assign(value, otherCount) : newMap.assign(value, mapCount);
+            if (otherCount > 0) {
+                final int newCount = (mapCount > otherCount) ? otherCount : mapCount;
+                newOccurrences += newCount;
+                newMap = newMap.assign(value, newCount);
             } else {
                 newMap = newMap.delete(value);
             }
