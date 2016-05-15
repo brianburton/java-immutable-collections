@@ -104,9 +104,9 @@ public class JImmutableMultisetStressTester
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableMultisetStressTest on %s of size %d%n", getName(multi), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", multi.occurrenceCount());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(11)) {
                 case 0: { //insert(T)
                     String value = makeInsertValue(tokens, random, multiList, expected);
@@ -203,7 +203,7 @@ public class JImmutableMultisetStressTester
             verifyList(multiList, expected);
 
             System.out.printf("shrinking %d%n", multi.occurrenceCount());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 switch (random.nextInt(6)) {
                 case 0: { //deleteOccurrence(T, int)
                     int expectedChange = random.nextInt(3);
@@ -214,11 +214,9 @@ public class JImmutableMultisetStressTester
                     }
                 }
                 case 1: { //deleteOccurrence(T)
-                    for (int n = 0; n < 2; ++n) {
-                        String value = makeDeleteValue(tokens, random, multiList, expected);
-                        multi = multi.deleteOccurrence(value);
-                        expected.remove(value);
-                    }
+                    String value = makeDeleteValue(tokens, random, multiList, expected);
+                    multi = multi.deleteOccurrence(value);
+                    expected.remove(value);
                     break;
                 }
                 case 2: { //setCount(T, int) - also tested in growth loop

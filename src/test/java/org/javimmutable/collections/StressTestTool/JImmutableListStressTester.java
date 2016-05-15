@@ -15,10 +15,11 @@ import java.util.Random;
  * end of the list), contains (tests methods that search for values in the list), and cleanup
  * (empties the list of all values).
  */
+@SuppressWarnings("Duplicates")
 public class JImmutableListStressTester
         extends AbstractListStressTestable
 {
-    private JImmutableList<String> list;
+    private final JImmutableList<String> list;
 
     public JImmutableListStressTester(JImmutableList<String> list)
     {
@@ -41,9 +42,9 @@ public class JImmutableListStressTester
         int size = random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", list.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(10)) {
                 case 0: { //insert(T)
                     String value = makeValue(tokens, random);
@@ -138,7 +139,7 @@ public class JImmutableListStressTester
             verifyContents(list, expected);
 
             System.out.printf("shrinking %d%n", list.size());
-            for (int i = 0; i < size / 6 && list.size() > 1; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 switch (random.nextInt(2)) {
                 case 0: //deleteLast()
                     list = list.deleteLast();

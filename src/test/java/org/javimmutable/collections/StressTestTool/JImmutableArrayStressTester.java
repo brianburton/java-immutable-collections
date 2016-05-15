@@ -91,7 +91,7 @@ public class JImmutableArrayStressTester
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
-        for (LoopSizeCursor.Step step : LoopSizeCursor.steps(6, size, random)) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d to %s%n", array.size(), step.growthSize());
             while (expected.size() < step.growthSize()) {
                 if (array instanceof Bit32Array && array.size() == MAX_SIZE) {

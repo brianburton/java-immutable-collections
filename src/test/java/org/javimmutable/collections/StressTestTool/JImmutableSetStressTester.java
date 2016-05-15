@@ -61,7 +61,7 @@ import java.util.Set;
 public class JImmutableSetStressTester
         extends AbstractSetStressTestable
 {
-    private JImmutableSet<String> set;
+    private final JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
 
     public JImmutableSetStressTester(JImmutableSet<String> set,
@@ -89,9 +89,9 @@ public class JImmutableSetStressTester
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableSetStressTest on %s of size %d%n", getName(set), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", set.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(5)) {
                 case 0: { //insert(T)
                     for (int n = 0; n < 2; ++n) {
@@ -142,26 +142,24 @@ public class JImmutableSetStressTester
             verifyList(setList, expected);
 
             System.out.printf("shrinking %d%n", set.size());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 switch (random.nextInt(3)) {
                 case 0: { //delete(T)
-                    for (int n = 0; n < 2; ++n) {
-                        String value = makeDeleteValue(tokens, random, setList, expected);
-                        set = set.delete(value);
-                        expected.remove(value);
-                        verifyList(setList, expected);
-                    }
+                    String value = makeDeleteValue(tokens, random, setList, expected);
+                    set = set.delete(value);
+                    expected.remove(value);
+                    verifyList(setList, expected);
                     break;
                 }
                 case 1: { //deleteAll(Cursorable)
-                    JImmutableList<String> values = makeDeleteJList(tokens, random, setList, expected);
+                    JImmutableList<String> values = makeDeleteJList(tokens, random, setList, expected, step.shrinkSize());
                     set = set.deleteAll(values);
                     expected.removeAll(values.getList());
                     verifyList(setList, expected);
                     break;
                 }
                 case 2: { //deleteAll(Collection)
-                    JImmutableList<String> values = makeDeleteJList(tokens, random, setList, expected);
+                    JImmutableList<String> values = makeDeleteJList(tokens, random, setList, expected, step.shrinkSize());
                     set = set.deleteAll(values.getList());
                     expected.removeAll(values.getList());
                     verifyList(setList, expected);
@@ -381,7 +379,7 @@ public class JImmutableSetStressTester
     }
 
     private void verifyOrder(JImmutableSet<String> set,
-                               List<String> expected)
+                             List<String> expected)
     {
         StandardCursorTest.listCursorTest(asList(expected), set.cursor());
     }
@@ -469,10 +467,13 @@ public class JImmutableSetStressTester
     private JImmutableList<String> makeDeleteJList(JImmutableList<String> tokens,
                                                    Random random,
                                                    List<String> setList,
-                                                   Set<String> expected)
+                                                   Set<String> expected,
+                                                   int minSize)
     {
+        final boolean oneRemaining = expected.size() == minSize + 1;
+        final int commandMax = oneRemaining ? 5 : 8;
         JImmutableList<String> list = JImmutables.list();
-        switch (random.nextInt(8)) {
+        switch (random.nextInt(commandMax)) {
         case 0: //deletes 0 - empty
             break;
         case 1: //deletes 0 - value not in set

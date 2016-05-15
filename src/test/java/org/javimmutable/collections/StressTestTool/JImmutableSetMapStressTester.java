@@ -35,7 +35,16 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.util.JImmutables;
@@ -88,9 +97,9 @@ public class JImmutableSetMapStressTester
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", setmap.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 String key = unusedKey(tokens, random, expected);
                 keysList.add(key);
                 switch (random.nextInt(4) + 7) {
@@ -282,13 +291,11 @@ public class JImmutableSetMapStressTester
             verifyKeysList(keysList, expected);
 
             System.out.printf("shrinking keys %d%n", setmap.size());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 //delete(K)
-                for (int n = 0; n < 2; ++n) {
-                    String key = makeDeleteKey(tokens, random, keysList, expected);
-                    setmap = setmap.delete(key);
-                    expected.remove(key);
-                }
+                String key = makeDeleteKey(tokens, random, keysList, expected);
+                setmap = setmap.delete(key);
+                expected.remove(key);
             }
             verifyContents(setmap, expected);
             verifyKeysList(keysList, expected);

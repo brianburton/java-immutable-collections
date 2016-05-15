@@ -53,7 +53,7 @@ import java.util.Random;
 public class JImmutableStackStressTester
         extends AbstractStressTestable
 {
-    private JImmutableStack<String> stack;
+    private final JImmutableStack<String> stack;
 
     public JImmutableStackStressTester(JImmutableStack<String> stack)
     {
@@ -76,9 +76,9 @@ public class JImmutableStackStressTester
         int size = random.nextInt(100000);
 
         System.out.printf("JImmutableStackStressTest on %s of size %d%n", "JImmutableStack", size);
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", expected.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 String value = makeValue(tokens, random);
                 stack = stack.insert(value);
                 expected.addFirst(value);
@@ -86,7 +86,7 @@ public class JImmutableStackStressTester
             verifyContents(stack, expected);
 
             System.out.printf("shrinking %d%n", expected.size());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 stack = stack.remove();
                 expected.removeFirst();
             }

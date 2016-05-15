@@ -53,7 +53,7 @@ import java.util.Random;
 public class JImmutableRandomAccessListStressTester
         extends AbstractListStressTestable
 {
-    private JImmutableRandomAccessList<String> ralist;
+    private final JImmutableRandomAccessList<String> ralist;
 
     public JImmutableRandomAccessListStressTester(JImmutableRandomAccessList<String> ralist)
     {
@@ -81,10 +81,10 @@ public class JImmutableRandomAccessListStressTester
 
         System.out.printf("JImmutableRandomAccessListStressTest on %s of size %d%n", getName(ralist), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", ralist.size());
 
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 int index = random.nextInt(ralist.size());
                 switch (random.nextInt(2)) {
                 case 0: { //insert(int, T)
@@ -111,7 +111,7 @@ public class JImmutableRandomAccessListStressTester
             }
             verifyContents(ralist, expected);
             System.out.printf("shrinking %d%n", ralist.size());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 int index = random.nextInt(ralist.size());
                 ralist = ralist.delete(index);
                 expected.remove(index);

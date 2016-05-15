@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
@@ -128,21 +129,6 @@ public abstract class AbstractStressTestable
     protected void verifyFinalSize(int size,
                                    int jimmutableSize)
     {
-        if (Math.abs(size - jimmutableSize) > 3) {
-            System.out.printf("expected size %d found size %d%n", size, jimmutableSize);
-            throw new RuntimeException();
-        }
-    }
-
-    protected int nextGrowthTarget(int size,
-                                   int maxSize)
-    {
-        return size + maxSize / 3;
-    }
-
-    protected int nextShrinkTarget(int size,
-                                   int maxSize)
-    {
-        return Math.max(0, Math.min(maxSize, size - maxSize / 6));
+        TestCase.assertEquals(size, jimmutableSize);
     }
 }

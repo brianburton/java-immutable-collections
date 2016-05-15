@@ -63,12 +63,13 @@ import java.util.Random;
  * (JImmutableBadHashMap), and keys that are Comparable and have a bad hash function
  * (JImmutableComparableBadHashMap).
  */
+@SuppressWarnings("Duplicates")
 public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         extends AbstractStressTestable
 {
-    private JImmutableMap<K, String> map;
+    private final JImmutableMap<K, String> map;
     private final Class<? extends Map> expectedClass;
-    private KeyFactory<K> factory;
+    private final KeyFactory<K> factory;
 
     public JImmutableMapStressTester(JImmutableMap<K, String> map,
                                      Class<? extends Map> expectedClass,
@@ -127,9 +128,9 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         JImmutableMap<K, String> map = this.map;
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", map.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(4)) {
                 case 0: { //assign(K, V)
                     K key = unusedKey(tokens, random, expected);
@@ -205,13 +206,11 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             verifyKeysList(keysList, expected);
 
             System.out.printf("shrinking %d%n", map.size());
-            for (int i = 0; i < size / 6 && keysList.size() >= 1; ++i) {
-                for (int n = 0; n < 2; ++n) {
-                    K key = makeDeleteKey(tokens, random, keysList, expected);
-                    expected.remove(key);
-                    map = map.delete(key);
-                    verifyKeysList(keysList, expected);
-                }
+            while (expected.size() > step.shrinkSize()) {
+                K key = makeDeleteKey(tokens, random, keysList, expected);
+                expected.remove(key);
+                map = map.delete(key);
+                verifyKeysList(keysList, expected);
             }
             verifyContents(map, expected);
             verifyKeysList(keysList, expected);

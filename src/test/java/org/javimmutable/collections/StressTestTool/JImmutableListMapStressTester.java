@@ -94,9 +94,9 @@ public class JImmutableListMapStressTester
         final int size = random.nextInt(100000);
         System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
 
-        for (int loops = 1; loops <= 6; ++loops) {
+        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", listmap.size());
-            for (int i = 0; i < size / 3; ++i) {
+            while (expected.size() < step.growthSize()) {
                 String key = unusedKey(tokens, random, expected);
                 keysList.add(key);
                 switch (random.nextInt(3)) {
@@ -155,13 +155,11 @@ public class JImmutableListMapStressTester
             verifyContents(listmap, expected);
             verifyKeysList(keysList, expected);
             System.out.printf("shrinking keys %d%n", listmap.size());
-            for (int i = 0; i < size / 6; ++i) {
+            while (expected.size() > step.shrinkSize()) {
                 //delete(K)
-                for (int n = 0; n < 2; ++n) {
-                    String key = makeDeleteKey(tokens, random, keysList, expected);
-                    listmap = listmap.delete(key);
-                    expected.remove(key);
-                }
+                String key = makeDeleteKey(tokens, random, keysList, expected);
+                listmap = listmap.delete(key);
+                expected.remove(key);
             }
             verifyContents(listmap, expected);
             verifyKeysList(keysList, expected);
