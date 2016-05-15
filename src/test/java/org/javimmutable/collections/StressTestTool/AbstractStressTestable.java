@@ -53,9 +53,6 @@ import java.util.Random;
  */
 public abstract class AbstractStressTestable
 {
-    private double runs;
-    private double difference;
-
     abstract void execute(Random random,
                           JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
@@ -86,11 +83,7 @@ public abstract class AbstractStressTestable
     protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
                                                      Random random)
     {
-        JImmutableList<String> list = JImmutables.list();
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            list = list.insert(makeValue(tokens, random));
-        }
-        return list;
+        return JImmutables.list(makeInsertList(tokens, random));
     }
 
     protected List<String> makeInsertList(JImmutableList<String> tokens,
@@ -135,12 +128,21 @@ public abstract class AbstractStressTestable
     protected void verifyFinalSize(int size,
                                    int jimmutableSize)
     {
-        ++runs;
-        double diff = (double)(jimmutableSize) / (double)size;
-        difference += diff;
-        double margin = (runs < 5) ? 0.05 : 0.03;
-        if (((difference / runs) > 1 + margin) || (difference / runs) < 1 - margin) {
-            throw new RuntimeException(String.format("average size is %s of what it should be%n", difference/runs));
+        if (Math.abs(size - jimmutableSize) > 3) {
+            System.out.printf("expected size %d found size %d%n", size, jimmutableSize);
+            throw new RuntimeException();
         }
+    }
+
+    protected int nextGrowthTarget(int size,
+                                   int maxSize)
+    {
+        return size + maxSize / 3;
+    }
+
+    protected int nextShrinkTarget(int size,
+                                   int maxSize)
+    {
+        return Math.max(0, Math.min(maxSize, size - maxSize / 6));
     }
 }

@@ -58,11 +58,12 @@ import java.util.TreeMap;
  * (removes values), contains (tests methods that check for values at specific indices), and
  * cleanup (empties the array of all values).
  */
+@SuppressWarnings("Duplicates")
 public class JImmutableArrayStressTester
         extends AbstractStressTestable
 {
 
-    private JImmutableArray<String> array;
+    private final JImmutableArray<String> array;
     private final int MAX_INDEX;
     private final int MAX_SIZE;
 
@@ -90,9 +91,9 @@ public class JImmutableArrayStressTester
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
-        for (int loops = 1; loops <= 6; ++loops) {
-            System.out.printf("growing %d%n", array.size());
-            for (int i = 0; i < size / 3; ++i) {
+        for (LoopSizeCursor.Step step : LoopSizeCursor.steps(6, size, random)) {
+            System.out.printf("growing %d to %s%n", array.size(), step.growthSize());
+            while (expected.size() < step.growthSize()) {
                 if (array instanceof Bit32Array && array.size() == MAX_SIZE) {
                     break;
                 }
@@ -141,16 +142,20 @@ public class JImmutableArrayStressTester
             verifyContents(array, expected);
             verifyIndexList(indexList, expected);
 
-            System.out.printf("shrinking %d%n", array.size());
-            for (int i = 0; array.size() > 1 && i < size / 6; ++i) {
+            System.out.printf("shrinking %d to %d%n", array.size(), step.shrinkSize());
+            while (expected.size() > step.shrinkSize()) {
                 //delete(int)
-                for (int n = 0; n < 2 && array.size() > 1; ++n) {
-                    boolean contains = random.nextBoolean() || (array instanceof Bit32Array && array.size() == MAX_SIZE);
-                    int loc = random.nextInt(indexList.size());
-                    int index = (contains) ? indexList.get(loc) : unusedIndex(expected, random);
+                final boolean deleteExisting = (random.nextInt(3) != 0) || (array instanceof Bit32Array && array.size() == MAX_SIZE);
+                if (deleteExisting) {
+                    final int loc = random.nextInt(indexList.size());
+                    final int index = indexList.get(loc);
                     array = array.delete(index);
                     expected.remove(index);
-                    indexList = (contains) ? indexList.delete(loc) : indexList;
+                    indexList = indexList.delete(loc);
+                } else {
+                    int index = unusedIndex(expected, random);
+                    array = array.delete(index);
+                    expected.remove(index);
                 }
             }
             verifyContents(array, expected);
