@@ -49,7 +49,18 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import static org.javimmutable.collections.StressTestTool.KeyFactory.*;
+import static org.javimmutable.collections.StressTestTool.KeyWrapper.*;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every

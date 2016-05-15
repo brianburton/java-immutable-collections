@@ -41,7 +41,7 @@ public abstract class KeyWrapper<T>
 {
     protected final T value;
 
-    public KeyWrapper(T value)
+    KeyWrapper(T value)
     {
         this.value = value;
     }
@@ -50,94 +50,82 @@ public abstract class KeyWrapper<T>
 
     public abstract boolean equals(Object obj);
 
-    abstract T getValue();
-}
-
-class RegularKey<T>
-        extends KeyWrapper<T>
-{
-
-    public RegularKey(T value)
-    {
-        super(value);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return value.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return (obj instanceof RegularKey) && value.equals(((RegularKey)obj).getValue());
-    }
-
-    @Override
-    public T getValue()
+    T getValue()
     {
         return value;
     }
-}
 
-class ComparableRegularKey<T extends Comparable<T>>
-        extends RegularKey<T>
-        implements Comparable<ComparableRegularKey<T>>
-{
-
-    public ComparableRegularKey(T value)
+    static class RegularKey<T>
+            extends KeyWrapper<T>
     {
-        super(value);
+        public RegularKey(T value)
+        {
+            super(value);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return value.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return (obj instanceof RegularKey) && value.equals(((RegularKey)obj).getValue());
+        }
     }
 
-    @Override
-    public int compareTo(@Nonnull ComparableRegularKey<T> other)
+    static class ComparableRegularKey<T extends Comparable<T>>
+            extends RegularKey<T>
+            implements Comparable<ComparableRegularKey<T>>
     {
-        return getValue().compareTo(other.getValue());
-    }
-}
+        public ComparableRegularKey(T value)
+        {
+            super(value);
+        }
 
-class BadHashKey<T>
-        extends KeyWrapper<T>
-{
-    public BadHashKey(T value)
-    {
-        super(value);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return value.hashCode() & 0xff;
+        @Override
+        public int compareTo(@Nonnull ComparableRegularKey<T> other)
+        {
+            return getValue().compareTo(other.getValue());
+        }
     }
 
-    @Override
-    public boolean equals(Object obj)
+    static class BadHashKey<T>
+            extends KeyWrapper<T>
     {
-        return (obj instanceof BadHashKey) && value.equals(((BadHashKey)obj).getValue());
+        public BadHashKey(T value)
+        {
+            super(value);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return value.hashCode() & 0xff;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return (obj instanceof BadHashKey) && value.equals(((BadHashKey)obj).getValue());
+        }
     }
 
-    @Override
-    public T getValue()
+    static class ComparableBadHashKey<T extends Comparable<T>>
+            extends BadHashKey<T>
+            implements Comparable<ComparableBadHashKey<T>>
     {
-        return value;
-    }
-}
+        public ComparableBadHashKey(T value)
+        {
+            super(value);
+        }
 
-class ComparableBadHashKey<T extends Comparable<T>>
-        extends BadHashKey<T>
-        implements Comparable<ComparableBadHashKey<T>>
-{
-
-    public ComparableBadHashKey(T value)
-    {
-        super(value);
-    }
-
-    @Override
-    public int compareTo(@Nonnull ComparableBadHashKey<T> other)
-    {
-        return getValue().compareTo(other.getValue());
+        @Override
+        public int compareTo(@Nonnull ComparableBadHashKey<T> other)
+        {
+            return getValue().compareTo(other.getValue());
+        }
     }
 }

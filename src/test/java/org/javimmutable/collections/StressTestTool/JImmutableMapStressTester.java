@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static org.javimmutable.collections.StressTestTool.KeyFactory.*;
+
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:
  * growing (adds new key-value pairs), updating (changes the value in existing pairs),
