@@ -22,7 +22,7 @@ public class SizeStepCursor
                                      int maxSize,
                                      Random r)
     {
-        final int extra = maxSize / (numSteps * 3);
+        final int extra = Math.max(2, maxSize / (numSteps * 3));
         final int numSizes = 2 * numSteps;
         final Set<Integer> sizes = new TreeSet<Integer>();
         sizes.add(maxSize);
