@@ -73,7 +73,7 @@ public class JImmutableStackStressTester
     {
         JImmutableStack<String> stack = this.stack;
         LinkedList<String> expected = new LinkedList<String>();
-        int size = random.nextInt(100000);
+        int size = 1 + random.nextInt(100000);
 
         System.out.printf("JImmutableStackStressTest on %s of size %d%n", "JImmutableStack", size);
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {

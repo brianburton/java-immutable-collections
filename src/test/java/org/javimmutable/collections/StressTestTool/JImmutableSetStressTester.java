@@ -86,7 +86,7 @@ public class JImmutableSetStressTester
         @SuppressWarnings("unchecked") Set<String> expected = expectedClass.newInstance();
         JImmutableSet<String> set = this.set;
         List<String> setList = new ArrayList<String>();
-        final int size = random.nextInt(100000);
+        final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableSetStressTest on %s of size %d%n", getName(set), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {

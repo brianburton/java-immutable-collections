@@ -94,7 +94,7 @@ public class JImmutableSetMapStressTester
         JImmutableSetMap<String, String> setmap = this.setmap;
         @SuppressWarnings("unchecked") Map<String, JImmutableSet<String>> expected = expectedClass.newInstance();
         List<String> keysList = new ArrayList<String>();
-        final int size = random.nextInt(100000);
+        final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {

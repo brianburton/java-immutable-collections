@@ -101,7 +101,7 @@ public class JImmutableMultisetStressTester
         JImmutableMultiset<String> multi = this.multi;
         Multiset<String> expected = getEmptyMultiset();
         List<String> multiList = new ArrayList<String>();
-        final int size = random.nextInt(100000);
+        final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableMultisetStressTest on %s of size %d%n", getName(multi), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {

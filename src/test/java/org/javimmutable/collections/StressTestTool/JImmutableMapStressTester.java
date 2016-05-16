@@ -128,7 +128,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         @SuppressWarnings("unchecked") Map<K, String> expected = expectedClass.newInstance();
         List<K> keysList = new ArrayList<K>();
         JImmutableMap<K, String> map = this.map;
-        final int size = random.nextInt(100000);
+        final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", map.size());

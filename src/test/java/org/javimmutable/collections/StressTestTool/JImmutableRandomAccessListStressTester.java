@@ -73,7 +73,7 @@ public class JImmutableRandomAccessListStressTester
     {
         List<String> expected = new ArrayList<String>();
         JImmutableRandomAccessList<String> ralist = this.ralist;
-        int size = random.nextInt(100000);
+        int size = 1 + random.nextInt(100000);
 
         String initialValue = makeValue(tokens, random);
         ralist = ralist.insert(initialValue);

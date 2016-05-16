@@ -91,7 +91,7 @@ public class JImmutableListMapStressTester
         JImmutableListMap<String, String> listmap = this.listmap;
         @SuppressWarnings("unchecked") Map<String, JImmutableList<String>> expected = expectedClass.newInstance();
         List<String> keysList = new ArrayList<String>();
-        final int size = random.nextInt(100000);
+        final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {

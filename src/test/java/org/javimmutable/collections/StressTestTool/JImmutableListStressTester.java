@@ -39,7 +39,7 @@ public class JImmutableListStressTester
     {
         JImmutableList<String> list = this.list;
         List<String> expected = new ArrayList<String>();
-        int size = random.nextInt(100000);
+        int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
