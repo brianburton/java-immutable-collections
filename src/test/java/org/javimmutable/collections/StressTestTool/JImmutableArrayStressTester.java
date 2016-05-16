@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.StressTestTool;
 
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;

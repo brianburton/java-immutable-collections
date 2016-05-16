@@ -46,9 +46,8 @@ public class SizeStepCursor
                                                     Random r)
     {
         final int extra = Math.max(1, maxSize / (numSteps * 3));
-        final int numSizes = 2 * numSteps;
+        final int numSizes = 2 * (numSteps - 1);
         final Set<Integer> sizes = new TreeSet<Integer>();
-        sizes.add(maxSize);
         while (sizes.size() < numSizes) {
             sizes.add(1 + r.nextInt(maxSize - extra));
         }
@@ -58,6 +57,7 @@ public class SizeStepCursor
             final int growthSize = i.next();
             steps = steps.insertLast(new Step(growthSize, shrinkSize));
         }
+        steps = steps.insertLast(new Step(maxSize, maxSize));
         return steps;
     }
 

@@ -38,15 +38,19 @@ public class SizeStepCursorTest
         int stepCount = 0;
         SizeStepCursor.Step lastStep = null;
         for (SizeStepCursor.Step step : SizeStepCursor.steps(requestedNumSteps, maxSize, r)) {
-            System.out.printf("grow %d  shrink %d%n", step.growthSize(), step.shrinkSize());
+            stepCount += 1;
+            System.out.printf("step %d: grow %d  shrink %d%n", stepCount, step.growthSize(), step.shrinkSize());
             assertTrue(step.growthSize() <= maxSize);
             assertTrue(step.shrinkSize() <= maxSize);
-            assertTrue(step.growthSize() > step.shrinkSize());
+            if (stepCount == expectedNumSteps) {
+                assertTrue(step.growthSize() == step.shrinkSize());
+            } else {
+                assertTrue(step.growthSize() > step.shrinkSize());
+            }
             if (lastStep != null) {
                 assertTrue(lastStep.shrinkSize() < step.shrinkSize());
             }
             lastStep = step;
-            stepCount += 1;
         }
         assertNotNull(lastStep);
         assertEquals(maxSize, lastStep.growthSize());
