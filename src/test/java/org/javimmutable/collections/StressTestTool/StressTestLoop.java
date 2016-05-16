@@ -74,44 +74,44 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
-                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>list()))
+//                .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
+//
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
+//                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
+//
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedSet(), TreeSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>multiset(), HashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
+//                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
+//
+//                .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset()))
+//                .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset()))
+//                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset()))
+//
+//                .insert(new JImmutableMapStressTester<RegularKey<String>>(JImmutableHashMap.<RegularKey<String>, String>usingList(), HashMap.class, new RegularKeyFactory()))
+//                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutableHashMap.<ComparableRegularKey<String>, String>usingTree(), HashMap.class, new ComparableRegularKeyFactory()))
+//                .insert(new JImmutableMapStressTester<BadHashKey<String>>(JImmutableHashMap.<BadHashKey<String>, String>usingList(), HashMap.class, new BadHashKeyFactory()))
+//                .insert(new JImmutableMapStressTester<ComparableBadHashKey<String>>(JImmutableHashMap.<ComparableBadHashKey<String>, String>usingTree(), HashMap.class, new ComparableBadHashKeyFactory()))
+//
+//                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutables.<ComparableRegularKey<String>, String>insertOrderMap(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
+//                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutables.<ComparableRegularKey<String>, String>sortedMap(), TreeMap.class, new ComparableRegularKeyFactory()))
+//
+//                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>setMap(), HashMap.class))
+//                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>insertOrderSetMap(), LinkedHashMap.class))
+//                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>sortedSetMap(), TreeMap.class))
+//
+//                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>listMap(), HashMap.class))
+//                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>insertOrderListMap(), LinkedHashMap.class))
+//                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
+//
+//                .insert(new JImmutableArrayStressTester(JImmutables.<String>array()))
+                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()));
 
-                .insert(new JImmutableRandomAccessListStressTester(JImmutables.<String>ralist()))
-                .insert(new JImmutableRandomAccessListStressTester(JImmutableTreeList.<String>of()))
-
-                .insert(new JImmutableSetStressTester(JImmutables.<String>set(), HashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderSet(), LinkedHashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedSet(), TreeSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>multiset(), HashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>insertOrderMultiset(), LinkedHashSet.class))
-                .insert(new JImmutableSetStressTester(JImmutables.<String>sortedMultiset(), TreeSet.class))
-
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>multiset()))
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>insertOrderMultiset()))
-                .insert(new JImmutableMultisetStressTester(JImmutables.<String>sortedMultiset()))
-
-                .insert(new JImmutableMapStressTester<RegularKey<String>>(JImmutableHashMap.<RegularKey<String>, String>usingList(), HashMap.class, new RegularKeyFactory()))
-                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutableHashMap.<ComparableRegularKey<String>, String>usingTree(), HashMap.class, new ComparableRegularKeyFactory()))
-                .insert(new JImmutableMapStressTester<BadHashKey<String>>(JImmutableHashMap.<BadHashKey<String>, String>usingList(), HashMap.class, new BadHashKeyFactory()))
-                .insert(new JImmutableMapStressTester<ComparableBadHashKey<String>>(JImmutableHashMap.<ComparableBadHashKey<String>, String>usingTree(), HashMap.class, new ComparableBadHashKeyFactory()))
-
-                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutables.<ComparableRegularKey<String>, String>insertOrderMap(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
-                .insert(new JImmutableMapStressTester<ComparableRegularKey<String>>(JImmutables.<ComparableRegularKey<String>, String>sortedMap(), TreeMap.class, new ComparableRegularKeyFactory()))
-
-                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>setMap(), HashMap.class))
-                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>insertOrderSetMap(), LinkedHashMap.class))
-                .insert(new JImmutableSetMapStressTester(JImmutables.<String, String>sortedSetMap(), TreeMap.class))
-
-                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>listMap(), HashMap.class))
-                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>insertOrderListMap(), LinkedHashMap.class))
-                .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
-
-                .insert(new JImmutableArrayStressTester(JImmutables.<String>array()))
-                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()))
-
-                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
+//                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
 
 
         OptionParser parser = makeTesterOptions(testers);

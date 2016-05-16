@@ -64,14 +64,14 @@ public class JImmutableArrayStressTester
 {
 
     private final JImmutableArray<String> array;
-    private final int MAX_INDEX;
-    private final int MAX_SIZE;
+    private final int maxIndex;
+    private final int maxSize;
 
     public JImmutableArrayStressTester(JImmutableArray<String> array)
     {
         this.array = array;
-        MAX_INDEX = (array instanceof Bit32Array) ? 32 : Integer.MAX_VALUE;
-        MAX_SIZE = (array instanceof Bit32Array) ? 32 : 100000;
+        maxIndex = (array instanceof Bit32Array) ? 32 : Integer.MAX_VALUE;
+        maxSize = (array instanceof Bit32Array) ? 32 : 100000;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class JImmutableArrayStressTester
     public void execute(Random random,
                         JImmutableList<String> tokens)
     {
-        final int size = random.nextInt(MAX_SIZE);
+        final int size = 1 + random.nextInt(maxSize);
         final Map<Integer, String> expected = new TreeMap<Integer, String>();
         JImmutableArray<String> array = this.array;
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
@@ -94,9 +94,6 @@ public class JImmutableArrayStressTester
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d to %s%n", array.size(), step.growthSize());
             while (expected.size() < step.growthSize()) {
-                if (array instanceof Bit32Array && array.size() == MAX_SIZE) {
-                    break;
-                }
                 int index = unusedIndex(expected, random);
                 indexList = indexList.insert(index);
                 String value = makeValue(tokens, random);
@@ -145,7 +142,7 @@ public class JImmutableArrayStressTester
             System.out.printf("shrinking %d to %d%n", array.size(), step.shrinkSize());
             while (expected.size() > step.shrinkSize()) {
                 //delete(int)
-                final boolean deleteExisting = (random.nextInt(3) != 0) || (array instanceof Bit32Array && array.size() == MAX_SIZE);
+                final boolean deleteExisting = (random.nextInt(3) != 0);
                 if (deleteExisting) {
                     final int loc = random.nextInt(indexList.size());
                     final int index = indexList.get(loc);
@@ -163,7 +160,7 @@ public class JImmutableArrayStressTester
 
             System.out.printf("contains %d%n", array.size());
             for (int i = 0; i < size / 12; ++i) {
-                int index = (random.nextBoolean()) ? random.nextInt(MAX_INDEX) : indexList.get(random.nextInt(indexList.size()));
+                int index = (random.nextBoolean()) ? random.nextInt(maxIndex) : indexList.get(random.nextInt(indexList.size()));
                 switch (random.nextInt(4)) {
                 case 0: { //get(int)
                     String value = array.get(index);
@@ -282,9 +279,9 @@ public class JImmutableArrayStressTester
     private int unusedIndex(Map<Integer, String> expected,
                             Random random)
     {
-        int index = random.nextInt(MAX_INDEX);
+        int index = random.nextInt(maxIndex);
         while (expected.containsKey(index)) {
-            index = random.nextInt(MAX_INDEX);
+            index = random.nextInt(maxIndex);
         }
         return index;
     }

@@ -22,11 +22,33 @@ public class SizeStepCursor
                                      int maxSize,
                                      Random r)
     {
-        final int extra = Math.max(2, maxSize / (numSteps * 3));
+        JImmutableList<Step> steps;
+        if (maxSize == 1) {
+            steps = JImmutables.list(new Step(1, 1));
+        } else if (maxSize == 2) {
+            steps = JImmutables.list(new Step(1, 1),
+                                     new Step(2, 1),
+                                     new Step(2, 2));
+        } else if (maxSize == 3) {
+            steps = JImmutables.list(new Step(1, 1),
+                                     new Step(3, 2),
+                                     new Step(3, 3));
+        } else if (maxSize < (2 * numSteps)) {
+            steps = randomSteps(maxSize / 2, maxSize, r);
+        } else {
+            steps = randomSteps(numSteps, maxSize, r);
+        }
+        return steps.cursor();
+    }
+
+    private static JImmutableList<Step> randomSteps(int numSteps,
+                                                    int maxSize,
+                                                    Random r)
+    {
+        final int extra = Math.max(1, maxSize / (numSteps * 3));
         final int numSizes = 2 * numSteps;
         final Set<Integer> sizes = new TreeSet<Integer>();
         sizes.add(maxSize);
-        sizes.add(maxSize + 1 + r.nextInt(extra));
         while (sizes.size() < numSizes) {
             sizes.add(1 + r.nextInt(maxSize - extra));
         }
@@ -36,7 +58,7 @@ public class SizeStepCursor
             final int growthSize = i.next();
             steps = steps.insertLast(new Step(growthSize, shrinkSize));
         }
-        return steps.cursor();
+        return steps;
     }
 
     public static class Step
