@@ -39,23 +39,17 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -69,13 +63,13 @@ import static org.javimmutable.collections.StressTestTool.KeyWrapper.*;
  */
 public class StressTestLoop
 {
-
     public static void main(String[] argv)
             throws Exception
     {
         new StressTestLoop().execute(argv);
     }
 
+    @SuppressWarnings("deprecation")
     public void execute(String[] args)
             throws Exception
     {
@@ -132,10 +126,10 @@ public class StressTestLoop
         JImmutableList<String> tokens;
         if (options.has(fileSpec)) {
             List<String> filenames = options.valuesOf(fileSpec);
-            tokens = loadTokens(filenames);
+            tokens = StressTestUtil.loadTokens(filenames);
             System.out.printf("\nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
-            tokens = loadTokens("src/site/apt/index.apt");
+            tokens = StressTestUtil.loadTokens("src/site/apt/index.apt");
             System.out.printf("\nLoaded %d tokens from index.apt%n", tokens.size());
         }
         boolean needsFilter = needsFilter(options, fileSpec, seedSpec);
@@ -196,41 +190,5 @@ public class StressTestLoop
             }
         }
         return parser;
-    }
-
-    private JImmutableList<String> loadTokens(List<String> filenames)
-            throws IOException
-    {
-        JImmutableSet<String> tokens = JImmutables.set();
-        for (String filename : filenames) {
-            tokens = addTokensFromFile(tokens, filename);
-        }
-        return JImmutables.list(tokens);
-    }
-
-    private JImmutableList<String> loadTokens(String filename)
-            throws IOException
-    {
-        JImmutableSet<String> tokens = JImmutables.set();
-        tokens = addTokensFromFile(tokens, filename);
-        return JImmutables.list(tokens);
-    }
-
-    private JImmutableSet<String> addTokensFromFile(JImmutableSet<String> tokens,
-                                                    String filename)
-            throws IOException
-    {
-        BufferedReader inp = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
-        try {
-            for (String line = inp.readLine(); line != null; line = inp.readLine()) {
-                StringTokenizer tokenizer = new StringTokenizer(line);
-                while (tokenizer.hasMoreTokens()) {
-                    tokens = tokens.insert(tokenizer.nextToken());
-                }
-            }
-        } finally {
-            inp.close();
-        }
-        return tokens;
     }
 }

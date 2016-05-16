@@ -3,16 +3,11 @@ package org.javimmutable.collections.StressTestTool;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 public class AbstractStressTestableTest
         extends TestCase
@@ -20,7 +15,7 @@ public class AbstractStressTestableTest
     public void test()
             throws IOException
     {
-        JImmutableList<String> tokens = loadTokens("src/site/apt/index.apt");
+        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/apt/index.apt");
         testStandard(tokens);
     }
 
@@ -31,7 +26,6 @@ public class AbstractStressTestableTest
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }
-
 
     public void testMakeInsertList(AbstractStressTestable testable,
                                    JImmutableList<String> tokens,
@@ -61,31 +55,5 @@ public class AbstractStressTestableTest
         double average = (double)total / (double)times;
         assertTrue(average >= 0.9);
         assertTrue(average <= 1.1);
-    }
-
-    private JImmutableList<String> loadTokens(String filename)
-            throws IOException
-    {
-        JImmutableSet<String> tokens = JImmutables.set();
-        tokens = addTokensFromFile(tokens, filename);
-        return JImmutables.list(tokens);
-    }
-
-    private JImmutableSet<String> addTokensFromFile(JImmutableSet<String> tokens,
-                                                    String filename)
-            throws IOException
-    {
-        BufferedReader inp = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
-        try {
-            for (String line = inp.readLine(); line != null; line = inp.readLine()) {
-                StringTokenizer tokenizer = new StringTokenizer(line);
-                while (tokenizer.hasMoreTokens()) {
-                    tokens = tokens.insert(tokenizer.nextToken());
-                }
-            }
-        } finally {
-            inp.close();
-        }
-        return tokens;
     }
 }
