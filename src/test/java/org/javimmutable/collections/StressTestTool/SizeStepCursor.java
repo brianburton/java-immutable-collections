@@ -12,6 +12,9 @@ import java.util.TreeSet;
 /**
  * Uses a random number generator to create a series of size steps
  * containing a growth size target and a shrink size target.
+ * Steps are randomly selected so that the final shrink size is
+ * always the maxSize and the final growthSize is always somewhat larger.
+ * Sizes are monotonically increasing.
  */
 public class SizeStepCursor
 {
@@ -19,7 +22,7 @@ public class SizeStepCursor
                                      int maxSize,
                                      Random r)
     {
-        final int extra = maxSize / numSteps / 4;
+        final int extra = maxSize / (numSteps * 3);
         final int numSizes = 2 * numSteps;
         final Set<Integer> sizes = new TreeSet<Integer>();
         sizes.add(maxSize);
