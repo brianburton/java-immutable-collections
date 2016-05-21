@@ -22,7 +22,7 @@ public class AbstractStressTestableTest
     public void testStandard(JImmutableList<String> tokens)
     {
         Random random = new Random();
-        AbstractStressTestable testable = new JImmutableArrayStressTester(JImmutables.<String>array());
+        AbstractStressTestable testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }

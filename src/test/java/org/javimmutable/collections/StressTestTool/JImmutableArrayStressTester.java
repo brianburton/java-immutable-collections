@@ -42,7 +42,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -62,16 +61,14 @@ import java.util.TreeMap;
 public class JImmutableArrayStressTester
         extends AbstractStressTestable
 {
-
     private final JImmutableArray<String> array;
-    private final int maxIndex;
-    private final int maxSize;
+    private final ArrayIndexRange indexRange;
 
-    public JImmutableArrayStressTester(JImmutableArray<String> array)
+    public JImmutableArrayStressTester(JImmutableArray<String> array,
+                                       ArrayIndexRange indexRange)
     {
         this.array = array;
-        maxIndex = (array instanceof Bit32Array) ? 32 : Integer.MAX_VALUE;
-        maxSize = (array instanceof Bit32Array) ? 32 : 100000;
+        this.indexRange = indexRange;
     }
 
     @Override
@@ -85,7 +82,7 @@ public class JImmutableArrayStressTester
     public void execute(Random random,
                         JImmutableList<String> tokens)
     {
-        final int size = 1 + random.nextInt(maxSize);
+        final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
         final Map<Integer, String> expected = new TreeMap<Integer, String>();
         JImmutableArray<String> array = this.array;
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
@@ -160,7 +157,7 @@ public class JImmutableArrayStressTester
 
             System.out.printf("contains %d%n", array.size());
             for (int i = 0; i < size / 12; ++i) {
-                int index = (random.nextBoolean()) ? random.nextInt(maxIndex) : indexList.get(random.nextInt(indexList.size()));
+                int index = (random.nextBoolean()) ? indexRange.randomIndex(random) : indexList.get(random.nextInt(indexList.size()));
                 switch (random.nextInt(4)) {
                 case 0: { //get(int)
                     String value = array.get(index);
@@ -279,11 +276,10 @@ public class JImmutableArrayStressTester
     private int unusedIndex(Map<Integer, String> expected,
                             Random random)
     {
-        int index = random.nextInt(maxIndex);
+        int index = indexRange.randomIndex(random);
         while (expected.containsKey(index)) {
-            index = random.nextInt(maxIndex);
+            index = indexRange.randomIndex(random);
         }
         return index;
     }
 }
-

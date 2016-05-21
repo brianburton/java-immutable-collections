@@ -108,8 +108,8 @@ public class StressTestLoop
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>insertOrderListMap(), LinkedHashMap.class))
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
 
-                .insert(new JImmutableArrayStressTester(JImmutables.<String>array()))
-                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of()))
+                .insert(new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER))
+                .insert(new JImmutableArrayStressTester(Bit32Array.<String>of(), ArrayIndexRange.BIT32))
 
                 .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
 
