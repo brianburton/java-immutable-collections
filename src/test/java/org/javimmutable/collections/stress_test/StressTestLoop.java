@@ -40,10 +40,26 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.bit32.Bit32Array;
+import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
+import org.javimmutable.collections.stress_test.KeyWrapper.BadHashKey;
+import org.javimmutable.collections.stress_test.KeyWrapper.ComparableBadHashKey;
+import org.javimmutable.collections.stress_test.KeyWrapper.ComparableRegularKey;
+import org.javimmutable.collections.stress_test.KeyWrapper.RegularKey;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every
@@ -63,7 +79,6 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-/*
                 .insert(new JImmutableListStressTester(JImmutables.<String>list()))
                 .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
@@ -99,10 +114,9 @@ public class StressTestLoop
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
 
                 .insert(new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER))
-                 */
                 .insert(new JImmutableArrayStressTester(Bit32Array.<String>of(), ArrayIndexRange.BIT32))
-;
-//                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
+
+                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
 
 
         OptionParser parser = makeTesterOptions(testers);
