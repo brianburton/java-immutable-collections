@@ -88,20 +88,16 @@ public abstract class AbstractMapStressTestable
         }
     }
 
-    protected <V extends Cursorable<String>> JImmutableList<String> makeDeleteList(JImmutableList<String> tokens,
-                                                                                   Random random,
-                                                                                   String key,
-                                                                                   Map<String, V> expected)
+    protected <V> void verifyKeys(RandomKeyManager keys,
+                                  Map<String, V> expected)
     {
-        JImmutableList<String> list = JImmutables.list();
-        JImmutableList<String> jImmutableInMap = (expected.containsKey(key)) ? JImmutables.ralist(expected.get(key)) : JImmutables.<String>ralist();
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            if (random.nextBoolean() || jImmutableInMap.size() == 0) {
-                list = list.insert(makeValue(tokens, random));
-            } else {
-                list = list.insert(jImmutableInMap.get(random.nextInt(jImmutableInMap.size())));
+        if (keys.size() != expected.size()) {
+            throw new RuntimeException(String.format("expected %d allocated found %d", expected.size(), keys.size()));
+        }
+        for (String value : expected.keySet()) {
+            if (!keys.allocated(value)) {
+                throw new RuntimeException(String.format("expected %s to be allocated but was not", value));
             }
         }
-        return list;
     }
 }
