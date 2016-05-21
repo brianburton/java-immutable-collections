@@ -75,7 +75,7 @@ public class JImmutableRandomAccessListStressTester
         JImmutableRandomAccessList<String> ralist = this.ralist;
         int size = 1 + random.nextInt(100000);
 
-        String initialValue = makeValue(tokens, random);
+        String initialValue = RandomKeyManager.makeValue(tokens, random);
         ralist = ralist.insert(initialValue);
         expected.add(initialValue);
 
@@ -88,7 +88,7 @@ public class JImmutableRandomAccessListStressTester
                 int index = random.nextInt(ralist.size());
                 switch (random.nextInt(2)) {
                 case 0: { //insert(int, T)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     ralist = ralist.insert(index, value);
                     expected.add(index, value);
                     break;

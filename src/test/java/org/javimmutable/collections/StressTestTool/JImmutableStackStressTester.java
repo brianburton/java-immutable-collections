@@ -79,7 +79,7 @@ public class JImmutableStackStressTester
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", expected.size());
             while (expected.size() < step.growthSize()) {
-                String value = makeValue(tokens, random);
+                String value = RandomKeyManager.makeValue(tokens, random);
                 stack = stack.insert(value);
                 expected.addFirst(value);
             }

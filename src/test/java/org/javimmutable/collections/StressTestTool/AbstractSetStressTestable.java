@@ -36,8 +36,6 @@
 package org.javimmutable.collections.StressTestTool;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,9 +56,9 @@ public abstract class AbstractSetStressTestable
                                        Random random,
                                        Collection<String> expected)
     {
-        String value = makeValue(tokens, random);
+        String value = RandomKeyManager.makeValue(tokens, random);
         while (expected.contains(value)) {
-            value = makeValue(tokens, random);
+            value = RandomKeyManager.makeValue(tokens, random);
         }
         return value;
     }

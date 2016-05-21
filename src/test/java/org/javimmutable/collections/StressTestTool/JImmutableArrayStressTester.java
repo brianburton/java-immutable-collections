@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
@@ -97,7 +96,7 @@ public class JImmutableArrayStressTester
             while (expected.size() < step.growthSize()) {
                 int index = unusedIndex(expected, random);
                 indexList = indexList.insert(index);
-                String value = makeValue(tokens, random);
+                String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
                 case 0: {//assign(int, T)
                     array = array.assign(index, value);
@@ -120,7 +119,7 @@ public class JImmutableArrayStressTester
             System.out.printf("updating %d%n", array.size());
             for (int i = 0; i < array.size(); ++i) {
                 int index = indexList.get(random.nextInt(indexList.size()));
-                String value = makeValue(tokens, random);
+                String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
                 case 0: { //assign(int, T)
                     array = array.assign(index, value);

@@ -175,14 +175,14 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                 switch (random.nextInt(4)) {
                 case 0: { //assign(K, V)
                     K key = keysList.get(random.nextInt(keysList.size()));
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     map = map.assign(key, value);
                     expected.put(key, value);
                     break;
                 }
                 case 1: { //insert(Entry<K, V>)
                     K key = keysList.get(random.nextInt(keysList.size()));
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     JImmutableMap.Entry<K, String> entry = new MapEntry<K, String>(key, value);
                     map = (JImmutableMap<K, String>)map.insert(entry);
                     expected.put(key, value);
@@ -368,7 +368,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         JImmutableMap<K, String> values = JImmutables.map();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = containedKey(keys, random);
-            String value = makeValue(tokens, random);
+            String value = RandomKeyManager.makeValue(tokens, random);
             values = values.assign(key, value);
         }
         return values;

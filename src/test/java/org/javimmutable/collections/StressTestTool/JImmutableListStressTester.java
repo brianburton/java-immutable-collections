@@ -47,19 +47,19 @@ public class JImmutableListStressTester
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(10)) {
                 case 0: { //insert(T)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     list = list.insert(value);
                     expected.add(value);
                     break;
                 }
                 case 1: { //insertFirst(T)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     list = list.insertFirst(value);
                     expected.add(0, value);
                     break;
                 }
                 case 2: { //insertLast(T)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     list = list.insertLast(value);
                     expected.add(value);
                     break;
@@ -117,7 +117,7 @@ public class JImmutableListStressTester
                 switch (random.nextInt(2)) {
                 case 0: { //assign(int, T)
                     int index = random.nextInt(list.size());
-                    String value = (random.nextBoolean()) ? list.get(index) : makeValue(tokens, random);
+                    String value = (random.nextBoolean()) ? list.get(index) : RandomKeyManager.makeValue(tokens, random);
                     list = list.assign(index, value);
                     expected.set(index, value);
                     break;
@@ -125,7 +125,7 @@ public class JImmutableListStressTester
                 case 1: { //assign(int, T) - throw exception
                     int index = random.nextInt(list.size()) + list.size();
                     try {
-                        list.assign(index, makeValue(tokens, random));
+                        list.assign(index, RandomKeyManager.makeValue(tokens, random));
                         throw new RuntimeException(String.format("error in assign(index, value) method call - index %d was out of bounds, but method did not fail%n", index));
                     } catch (IndexOutOfBoundsException e) {
                         //ignored -- expected

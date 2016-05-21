@@ -108,13 +108,13 @@ public class JImmutableListMapStressTester
                     break;
                 }
                 case 1: { //insert(K, V)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     listmap = listmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
                 }
                 case 2: { //insert(Entry<K, V>)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, value);
                     listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
                     addAt(expected, key, value);
@@ -137,13 +137,13 @@ public class JImmutableListMapStressTester
                     break;
                 }
                 case 1: { //insert(K, V)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     listmap = listmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
                 }
                 case 2: { //insert(Entry<K, V>)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<String, String>(key, value);
                     listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
                     addAt(expected, key, value);
@@ -295,7 +295,7 @@ public class JImmutableListMapStressTester
     {
         JImmutableList<String> values = JImmutables.list();
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            values = values.insert(makeValue(tokens, random));
+            values = values.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return values;
     }
@@ -321,7 +321,7 @@ public class JImmutableListMapStressTester
             limit = random.nextInt(command + 50) + 250;
         }
         for (int i = 0; i < limit; ++i) {
-            list = list.insert(makeValue(tokens, random));
+            list = list.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return list;
     }

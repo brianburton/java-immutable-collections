@@ -110,13 +110,13 @@ public class JImmutableSetMapStressTester
                     break;
                 }
                 case 1: { //insert(K, V)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     setmap = setmap.insert(key, value);
                     addAt(expected, key, value);
                     break;
                 }
                 case 2: { //insert(Entry<K, V>)
-                    String value = makeValue(tokens, random);
+                    String value = RandomKeyManager.makeValue(tokens, random);
                     MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
                     addAt(expected, key, value);
@@ -530,7 +530,7 @@ public class JImmutableSetMapStressTester
         final int limit = randomGrowingSize(random);
         JImmutableList<String> list = JImmutables.list();
         for (int i = 0; i < limit; ++i) {
-            list = list.insert(makeValue(tokens, random));
+            list = list.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return list;
     }
@@ -541,7 +541,7 @@ public class JImmutableSetMapStressTester
         final int limit = randomGrowingSize(random);
         JImmutableSet<String> set = JImmutables.set();
         while (set.size() < limit) {
-            set = set.insert(makeValue(tokens, random));
+            set = set.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return set;
     }
@@ -556,7 +556,7 @@ public class JImmutableSetMapStressTester
         JImmutableList<String> expectedSet = JImmutables.list(expected.get(key));
         for (int i = 0, limit = random.nextInt(5); i < limit; ++i) {
             if (random.nextBoolean() || expectedSet.size() == 0) {
-                values = values.insert(makeValue(tokens, random));
+                values = values.insert(RandomKeyManager.makeValue(tokens, random));
             } else {
                 values = values.insert(expectedSet.get(random.nextInt(expectedSet.size())));
             }
@@ -575,7 +575,7 @@ public class JImmutableSetMapStressTester
         int limit = random.nextInt(5);
         while (values.size() < limit) {
             if (random.nextBoolean() || expectedSet.size() == 0) {
-                values = values.insert(makeValue(tokens, random));
+                values = values.insert(RandomKeyManager.makeValue(tokens, random));
             } else {
                 values = values.insert(expectedSet.get(random.nextInt(expectedSet.size())));
             }
@@ -592,9 +592,9 @@ public class JImmutableSetMapStressTester
         String value;
         JImmutableSet<String> expectedSet = expected.get(key);
         if (random.nextBoolean() || expectedSet.size() == 0) {
-            value = makeValue(tokens, random);
+            value = RandomKeyManager.makeValue(tokens, random);
             while (expectedSet.contains(value)) {
-                value = makeValue(tokens, random);
+                value = RandomKeyManager.makeValue(tokens, random);
             }
         } else {
             JImmutableRandomAccessList<String> list = JImmutables.ralist(expectedSet);
@@ -618,7 +618,7 @@ public class JImmutableSetMapStressTester
             values = JImmutables.ralist();
         }
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            values = values.insert(makeValue(tokens, random));
+            values = values.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return values;
     }
@@ -641,7 +641,7 @@ public class JImmutableSetMapStressTester
             values = JImmutables.set();
         }
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
-            values = values.insert(makeValue(tokens, random));
+            values = values.insert(RandomKeyManager.makeValue(tokens, random));
         }
         return values;
     }
@@ -654,12 +654,12 @@ public class JImmutableSetMapStressTester
         JImmutableList<String> values = JImmutables.list();
         if (!expected.containsKey(key) || expected.get(key).isEmpty()) {
             for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
-                values = values.insert(makeValue(tokens, random));
+                values = values.insert(RandomKeyManager.makeValue(tokens, random));
             }
         } else {
             JImmutableList<String> setValues = JImmutables.list(expected.get(key));
             for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
-                values = (random.nextBoolean()) ? values.insert(makeValue(setValues, random)) : values.insert(makeValue(tokens, random));
+                values = (random.nextBoolean()) ? values.insert(RandomKeyManager.makeValue(setValues, random)) : values.insert(RandomKeyManager.makeValue(tokens, random));
 
             }
         }
@@ -675,7 +675,7 @@ public class JImmutableSetMapStressTester
         JImmutableList<String> jImmutableInMap = listFromExpected(key, expected);
         for (int i = 0, limit = random.nextInt(4); i < limit; ++i) {
             if (random.nextBoolean() || jImmutableInMap.size() == 0) {
-                list = list.insert(makeValue(tokens, random));
+                list = list.insert(RandomKeyManager.makeValue(tokens, random));
             } else {
                 list = list.insert(jImmutableInMap.get(random.nextInt(jImmutableInMap.size())));
             }
@@ -689,10 +689,10 @@ public class JImmutableSetMapStressTester
                                      Map<String, JImmutableSet<String>> expected)
     {
         if (random.nextBoolean() || !expected.containsKey(key)) {
-            return makeValue(tokens, random);
+            return RandomKeyManager.makeValue(tokens, random);
         } else {
             JImmutableList<String> jImmutableInMap = listFromExpected(key, expected);
-            return jImmutableInMap.isEmpty() ? makeValue(tokens, random) : jImmutableInMap.get(random.nextInt(jImmutableInMap.size()));
+            return jImmutableInMap.isEmpty() ? RandomKeyManager.makeValue(tokens, random) : jImmutableInMap.get(random.nextInt(jImmutableInMap.size()));
         }
     }
 

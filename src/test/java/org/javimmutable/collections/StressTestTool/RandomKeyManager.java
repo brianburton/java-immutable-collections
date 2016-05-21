@@ -28,6 +28,17 @@ public class RandomKeyManager
         allocatedIndexes = new HashMap<String, Integer>();
     }
 
+    public static String makeValue(JImmutableList<String> tokens,
+                                   Random random)
+    {
+        int length = 1 + random.nextInt(250);
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length) {
+            sb.append(tokens.get(random.nextInt(tokens.size())));
+        }
+        return sb.toString();
+    }
+
     public String randomKey()
     {
         if (size() == 0) {
@@ -148,7 +159,7 @@ public class RandomKeyManager
     public String randomUnallocatedKey()
     {
         while (true) {
-            final String text = randomToken();
+            final String text = makeValue(allPossibleKeys, random);
             if (unallocated(text)) {
                 return text;
             }
@@ -428,10 +439,5 @@ public class RandomKeyManager
             this.text = text;
             this.present = true;
         }
-    }
-
-    private String randomToken()
-    {
-        return AbstractStressTestable.makeValue(allPossibleKeys, random);
     }
 }
