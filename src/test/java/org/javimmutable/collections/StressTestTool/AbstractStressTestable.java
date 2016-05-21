@@ -59,7 +59,7 @@ public abstract class AbstractStressTestable
 
     abstract JImmutableList<String> getOptions();
 
-    protected String makeValue(JImmutableList<String> tokens,
+    static String makeValue(JImmutableList<String> tokens,
                                Random random)
     {
         int length = 1 + random.nextInt(250);

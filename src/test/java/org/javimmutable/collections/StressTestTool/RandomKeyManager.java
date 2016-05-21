@@ -4,7 +4,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -148,12 +147,8 @@ public class RandomKeyManager
 
     public String randomUnallocatedKey()
     {
-        if (size() == allPossibleKeys.size()) {
-            throw new IllegalArgumentException("no unallocated values available");
-        }
         while (true) {
-            final int index = random.nextInt(allPossibleKeys.size());
-            final String text = allPossibleKeys.get(index);
+            final String text = randomToken();
             if (unallocated(text)) {
                 return text;
             }
@@ -203,31 +198,22 @@ public class RandomKeyManager
 
     public JImmutableList<String> randomUnallocatedKeysJList(int howMany)
     {
-        if (size() == allPossibleKeys.size()) {
-            throw new IllegalArgumentException("no unallocated values available");
-        }
         compact();
         JImmutableList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
-            final String text = allPossibleKeys.get(random.nextInt(allPossibleKeys.size()));
-            if (unallocated(text)) {
-                answer = answer.insertLast(text);
-            }
+            answer = answer.insertLast(randomUnallocatedKey());
         }
         return answer;
     }
 
     public JImmutableList<String> randomUniqueUnallocatedKeysJList(int howMany)
     {
-        if (allPossibleKeys.size() < (size() - howMany)) {
-            throw new IllegalArgumentException("not enough unallocated values available");
-        }
         compact();
         Set<String> values = new HashSet<String>();
         JImmutableList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
-            final String text = allPossibleKeys.get(random.nextInt(allPossibleKeys.size()));
-            if (unallocated(text) && !values.contains(text)) {
+            final String text = randomUnallocatedKey();
+            if (!values.contains(text)) {
                 values.add(text);
                 answer = answer.insertLast(text);
             }
@@ -250,9 +236,6 @@ public class RandomKeyManager
         if (howManyDups > 0 && howManyUnique == 0) {
             throw new IllegalArgumentException("cannot return dups when no unique returned");
         }
-        if (howManyUnallocated > 0 && size() == allPossibleKeys.size()) {
-            throw new IllegalArgumentException("no unallocated values available");
-        }
         compact();
         Set<String> uniques = new HashSet<String>();
         JImmutableList<String> answer = JImmutables.list();
@@ -260,7 +243,7 @@ public class RandomKeyManager
         int dupCount = 0;
         int unallocatedCount = 0;
         while (uniqueCount < howManyUnique || dupCount < howManyDups || unallocatedCount < howManyUnallocated) {
-            final String text = allPossibleKeys.get(random.nextInt(allPossibleKeys.size()));
+            final String text = (unallocatedCount == howManyUnallocated) ? randomAllocatedKey() : randomKey();
             if (allocated(text)) {
                 if (uniques.contains(text)) {
                     if (dupCount < howManyDups) {
@@ -445,5 +428,10 @@ public class RandomKeyManager
             this.text = text;
             this.present = true;
         }
+    }
+
+    private String randomToken()
+    {
+        return AbstractStressTestable.makeValue(allPossibleKeys, random);
     }
 }

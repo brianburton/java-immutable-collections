@@ -82,13 +82,6 @@ public class RandomKeyManagerTest
             for (String value : allPossibleKeys) {
                 assertEquals(keys.allocated(value), !keys.unallocated(value));
             }
-            if (keys.size() == allPossibleKeys.size()) {
-                try {
-                    keys.randomUnallocatedKeysJList(i);
-                    fail();
-                } catch (IllegalArgumentException ignored) {
-                }
-            }
             for (String value : uniques(values)) {
                 assertEquals(true, keys.allocated(value));
                 assertEquals(false, keys.unallocated(value));
@@ -114,7 +107,7 @@ public class RandomKeyManagerTest
             }
             for (int uniqueCount = 1; uniqueCount <= i; ++uniqueCount) {
                 for (int dupCount = 0; dupCount <= 5; ++dupCount) {
-                    for (int unallocatedCount = 0; unallocatedCount <= Math.min(5, allPossibleKeys.size() - keys.size()); ++unallocatedCount) {
+                    for (int unallocatedCount = 0; unallocatedCount <= 5; ++unallocatedCount) {
                         JImmutableList<String> list = keys.randomIntersectionKeysJList(uniqueCount, dupCount, unallocatedCount);
                         Set<String> visited = new HashSet<String>();
                         int qc = 0;
