@@ -35,59 +35,11 @@
 
 package org.javimmutable.collections.StressTestTool;
 
-import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.util.JImmutables;
-
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public abstract class AbstractMapStressTestable
         extends AbstractStressTestable
 {
-
-    protected <V> String unusedKey(JImmutableList<String> tokens,
-                                   Random random,
-                                   Map<String, V> expected)
-    {
-        String key = makeValue(tokens, random);
-        while (expected.containsKey(key)) {
-            key = makeValue(tokens, random);
-        }
-        return key;
-    }
-
-    protected String containedKey(List<String> keysList,
-                                  Random random)
-    {
-        return (keysList.isEmpty()) ? "" : keysList.get(random.nextInt(keysList.size()));
-    }
-
-    protected <V> String makeDeleteKey(JImmutableList<String> tokens,
-                                       Random random,
-                                       List<String> keysList,
-                                       Map<String, V> expected)
-    {
-        String key;
-        if (random.nextBoolean() || keysList.size() == 0) {
-            key = unusedKey(tokens, random, expected);
-        } else {
-            int index = random.nextInt(keysList.size());
-            key = keysList.get(index);
-            keysList.remove(index);
-        }
-        return key;
-    }
-
-    protected <V> void verifyKeysList(List<String> keysList,
-                                      Map<String, V> expected)
-    {
-        if (keysList.size() != expected.size()) {
-            throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
-        }
-    }
-
     protected <V> void verifyKeys(RandomKeyManager keys,
                                   Map<String, V> expected)
     {
