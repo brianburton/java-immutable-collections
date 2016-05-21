@@ -1,4 +1,4 @@
-package org.javimmutable.collections.StressTestTool;
+package org.javimmutable.collections.stress_test;
 
 import java.util.Random;
 

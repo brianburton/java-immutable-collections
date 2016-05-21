@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.StressTestTool;
+package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static org.javimmutable.collections.StressTestTool.KeyFactory.*;
+import static org.javimmutable.collections.stress_test.KeyFactory.*;
 
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:

@@ -33,13 +33,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.StressTestTool;
+package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
 
 import java.util.Random;
 
-import static org.javimmutable.collections.StressTestTool.KeyWrapper.*;
+import static org.javimmutable.collections.stress_test.KeyWrapper.*;
 
 public abstract class KeyFactory<T>
 {

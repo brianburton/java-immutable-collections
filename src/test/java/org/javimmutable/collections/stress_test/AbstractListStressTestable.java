@@ -1,4 +1,4 @@
-package org.javimmutable.collections.StressTestTool;
+package org.javimmutable.collections.stress_test;
 
 
 import org.javimmutable.collections.JImmutableList;

@@ -33,28 +33,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.StressTestTool;
+package org.javimmutable.collections.stress_test;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.array.bit32.Bit32Array;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import static org.javimmutable.collections.StressTestTool.KeyFactory.*;
-import static org.javimmutable.collections.StressTestTool.KeyWrapper.*;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every
