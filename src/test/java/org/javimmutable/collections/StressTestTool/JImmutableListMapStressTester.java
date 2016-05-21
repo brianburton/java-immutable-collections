@@ -63,6 +63,7 @@ import java.util.Random;
  * of the test. 26% will contain only one value. 58% will contain between two and ten
  * values, and the remaining 5% will contain between eleven and over a hundred values.
  */
+@SuppressWarnings("Duplicates")
 public class JImmutableListMapStressTester
         extends AbstractMapStressTestable
 {
@@ -88,17 +89,17 @@ public class JImmutableListMapStressTester
                         JImmutableList<String> tokens)
             throws IllegalAccessException, InstantiationException
     {
-        JImmutableListMap<String, String> listmap = this.listmap;
         @SuppressWarnings("unchecked") Map<String, JImmutableList<String>> expected = expectedClass.newInstance();
-        List<String> keysList = new ArrayList<String>();
+        final RandomKeyManager keys = new RandomKeyManager(random, tokens);
+        JImmutableListMap<String, String> listmap = this.listmap;
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", listmap.size());
             while (expected.size() < step.growthSize()) {
-                String key = unusedKey(tokens, random, expected);
-                keysList.add(key);
+                String key = keys.randomUnallocatedKey();
+                keys.allocate(key);
                 switch (random.nextInt(3)) {
                 case 0: { //assign(K, JList)
                     JImmutableList<String> values = makeGrowingList(tokens, random);
@@ -124,10 +125,10 @@ public class JImmutableListMapStressTester
                 }
             }
             verifyContents(listmap, expected);
-            verifyKeysList(keysList, expected);
+            verifyKeys(keys, expected);
             System.out.printf("updating %d%n", listmap.size());
             for (int i = 0; i < listmap.size(); ++i) {
-                String key = containedKey(keysList, random);
+                String key = keys.randomAllocatedKey();
                 switch (random.nextInt(3)) {
                 case 0: { //assign(K, JList)
                     JImmutableList<String> values = makeUpdateList(tokens, random);
@@ -153,19 +154,20 @@ public class JImmutableListMapStressTester
                 }
             }
             verifyContents(listmap, expected);
-            verifyKeysList(keysList, expected);
+            verifyKeys(keys, expected);
             System.out.printf("shrinking keys %d%n", listmap.size());
             while (expected.size() > step.shrinkSize()) {
                 //delete(K)
-                String key = makeDeleteKey(tokens, random, keysList, expected);
+                String key = keys.randomKey();
                 listmap = listmap.delete(key);
                 expected.remove(key);
+                keys.unallocate(key);
             }
             verifyContents(listmap, expected);
-            verifyKeysList(keysList, expected);
+            verifyKeys(keys, expected);
             System.out.printf("contains %d%n", listmap.size());
             for (int i = 0; i < size / 12; ++i) {
-                String key = (random.nextBoolean()) ? makeValue(tokens, random) : keysList.get(random.nextInt(keysList.size()));
+                String key = keys.randomKey();
                 switch (random.nextInt(3)) {
                 case 0: { //get(K)
                     JImmutableList<String> list = listmap.get(key);
@@ -198,16 +200,15 @@ public class JImmutableListMapStressTester
         }
         verifyCursor(listmap, expected);
         verifyFinalSize(size, listmap.size());
-        //printStats(listmap);
+//        printStats(listmap);
         System.out.printf("cleanup %d%n", listmap.size());
         int threshold = random.nextInt(3);
         while (listmap.size() > threshold) {
             //delete(K)
-            int index = random.nextInt(keysList.size());
-            String key = keysList.get(index);
+            String key = keys.randomKey();
             listmap = listmap.delete(key);
             expected.remove(key);
-            keysList.remove(index);
+            keys.unallocate(key);
         }
         if (listmap.size() != 0) {
             verifyContents(listmap, expected);
