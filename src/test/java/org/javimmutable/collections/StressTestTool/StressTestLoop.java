@@ -74,6 +74,7 @@ public class StressTestLoop
             throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
+/*
                 .insert(new JImmutableListStressTester(JImmutables.<String>list()))
                 .insert(new JImmutableListStressTester(JImmutables.<String>ralist()))
                 .insert(new JImmutableListStressTester(JImmutableTreeList.<String>of()))
@@ -109,9 +110,10 @@ public class StressTestLoop
                 .insert(new JImmutableListMapStressTester(JImmutables.<String, String>sortedListMap(), TreeMap.class))
 
                 .insert(new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER))
+                 */
                 .insert(new JImmutableArrayStressTester(Bit32Array.<String>of(), ArrayIndexRange.BIT32))
-
-                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
+;
+//                .insert(new JImmutableStackStressTester(JImmutables.<String>stack()));
 
 
         OptionParser parser = makeTesterOptions(testers);

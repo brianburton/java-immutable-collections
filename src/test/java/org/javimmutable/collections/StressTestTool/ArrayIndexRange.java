@@ -4,7 +4,7 @@ import java.util.Random;
 
 public abstract class ArrayIndexRange
 {
-    public static final ArrayIndexRange BIT32 = new PositiveIndexRange(32);
+    public static final ArrayIndexRange BIT32 = new PositiveIndexRange(31);
     public static final ArrayIndexRange INTEGER = new AllIntIndexRange();
 
     private ArrayIndexRange()
@@ -34,7 +34,7 @@ public abstract class ArrayIndexRange
         @Override
         public int randomIndex(Random random)
         {
-            return random.nextInt(maxIndex);
+            return random.nextInt(maxIndex + 1);
         }
     }
 
