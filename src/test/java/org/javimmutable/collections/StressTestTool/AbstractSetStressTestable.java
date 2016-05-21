@@ -48,7 +48,6 @@ import java.util.Random;
 public abstract class AbstractSetStressTestable
         extends AbstractStressTestable
 {
-
     protected String containedValue(List<String> list,
                                     Random random)
     {
@@ -71,7 +70,7 @@ public abstract class AbstractSetStressTestable
                                      List<String> list,
                                      Collection<String> expected)
     {
-        return (random.nextBoolean()) ? containedValue(list, random) : notContainedValue(tokens, random, expected);
+        return random.nextBoolean() ? containedValue(list, random) : notContainedValue(tokens, random, expected);
     }
 
     protected String makeDeleteValue(JImmutableList<String> tokens,

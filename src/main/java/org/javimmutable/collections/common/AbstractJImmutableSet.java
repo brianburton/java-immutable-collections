@@ -37,7 +37,6 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
@@ -46,7 +45,6 @@ import org.javimmutable.collections.cursors.Cursors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -447,16 +445,11 @@ public abstract class AbstractJImmutableSet<T>
 
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
-     *
-     * @param map
-     * @return
      */
     protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
 
     /**
      * Implemented by derived classes to create a new empty JImmutableMap for use by retainAll()
-     *
-     * @return
      */
     protected abstract JImmutableMap<T, Boolean> emptyMap();
 }
