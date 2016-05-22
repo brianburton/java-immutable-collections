@@ -234,14 +234,14 @@ public class JImmutableSetStressTester
             System.out.printf("command %d removing %d%n", command, numberToRemove);
             switch (command) {
             case 0: {//intersection(Cursorable)
-                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, random.nextInt(5), random.nextInt(10));
+                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                 set = set.intersection(intersectionValues);
                 expected.retainAll(new HashSet<String>(intersectionValues.getList()));
                 keys.retainAll(intersectionValues);
                 break;
             }
             case 1: { //intersection(Collection)
-                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, random.nextInt(5), random.nextInt(10));
+                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                 set = set.intersection(intersectionValues.getList());
                 expected.retainAll(new HashSet<String>(intersectionValues.getList()));
                 keys.retainAll(intersectionValues);
