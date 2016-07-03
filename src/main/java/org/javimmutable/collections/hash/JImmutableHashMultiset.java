@@ -42,6 +42,7 @@ import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.HashMap;
+import java.util.Map;
 
 @Immutable
 public class JImmutableHashMultiset<T>
@@ -83,8 +84,8 @@ public class JImmutableHashMultiset<T>
     }
 
     @Override
-    protected Counter<T> emptyCounter()
+    protected Map<T, Integer> emptyMutableMap()
     {
-        return new Counter<T>(new HashMap<T, Integer>());
+        return new HashMap<T, Integer>();
     }
 }

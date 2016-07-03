@@ -41,6 +41,7 @@ import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,
@@ -87,8 +88,8 @@ public class JImmutableInsertOrderMultiset<T>
     }
 
     @Override
-    protected Counter<T> emptyCounter()
+    protected Map<T, Integer> emptyMutableMap()
     {
-        return new Counter<T>(new LinkedHashMap<T, Integer>());
+        return new LinkedHashMap<T, Integer>();
     }
 }

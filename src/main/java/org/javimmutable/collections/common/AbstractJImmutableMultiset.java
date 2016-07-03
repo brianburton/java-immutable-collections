@@ -71,8 +71,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> insert(@Nonnull T value)
     {
-        JImmutableMap<T, Integer> newMap = increaseCount(map, value, 1);
-        return (newMap != map) ? create(newMap, 1 + occurrences) : this;
+        return new Editor().delta(value, 1).build();
     }
 
     @Nonnull
@@ -85,8 +84,7 @@ public abstract class AbstractJImmutableMultiset<T>
         } else if (count == 0) {
             return this;
         } else {
-            JImmutableMap<T, Integer> newMap = increaseCount(map, value, count);
-            return (newMap != map) ? create(newMap, count + occurrences) : this;
+            return new Editor().delta(value, count).build();
         }
     }
 
@@ -157,10 +155,10 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     public boolean containsAllOccurrences(@Nonnull Iterator<? extends T> other)
     {
-        final Counter<T> counter = emptyCounter();
+        final Counter counter = new Counter();
         while (other.hasNext()) {
             final T value = other.next();
-            if (counter.delta(value, 1) > count(value)) {
+            if ((value == null) || (counter.delta(value, 1) > count(value))) {
                 return false;
             }
         }
@@ -195,7 +193,7 @@ public abstract class AbstractJImmutableMultiset<T>
     public boolean containsAny(@Nonnull Iterator<? extends T> other)
     {
         while (other.hasNext()) {
-            if (this.contains(other.next())) {
+            if (contains(other.next())) {
                 return true;
             }
         }
@@ -206,14 +204,14 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> delete(@Nonnull T value)
     {
-        return editor().remove(value).build();
+        return new Editor().remove(value).build();
     }
 
     @Override
     @Nonnull
     public JImmutableMultiset<T> deleteOccurrence(@Nonnull T value)
     {
-        return editor().delta(value, -1).build();
+        return new Editor().delta(value, -1).build();
     }
 
     @Override
@@ -224,7 +222,7 @@ public abstract class AbstractJImmutableMultiset<T>
         if (subtractBy < 0) {
             throw new IllegalArgumentException();
         } else {
-            return editor().delta(value, -subtractBy).build();
+            return new Editor().delta(value, -subtractBy).build();
         }
     }
 
@@ -232,7 +230,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> deleteAll(@Nonnull Cursorable<? extends T> other)
     {
-        return deleteAll(other.cursor());
+        return deleteAll(other.cursor().iterator());
     }
 
     @Override
@@ -253,9 +251,12 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other)
     {
-        Editor editor = editor();
+        Editor editor = new Editor();
         while (other.hasNext()) {
-            editor.remove(other.next());
+            final T value = other.next();
+            if (value != null) {
+                editor.remove(value);
+            }
         }
         return editor.build();
     }
@@ -264,7 +265,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Cursorable<? extends T> other)
     {
-        return deleteAllOccurrences(other.cursor());
+        return deleteAllOccurrences(other.cursor().iterator());
     }
 
     @Override
@@ -285,9 +286,12 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other)
     {
-        Editor editor = editor();
+        Editor editor = new Editor();
         while (other.hasNext()) {
-            editor.delta(other.next(), -1);
+            final T value = other.next();
+            if (value != null) {
+                editor.delta(value, -1);
+            }
         }
         return editor.build();
     }
@@ -296,14 +300,14 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other)
     {
-        return deleteAllOccurrencesHelper(other);
+        return deleteAllOccurrencesMultisetHelper(other);
     }
 
     @Override
     @Nonnull
     public JImmutableMultiset<T> insertAll(@Nonnull Cursorable<? extends T> values)
     {
-        return insertAll(values.cursor());
+        return insertAll(values.cursor().iterator());
     }
 
     @Override
@@ -324,7 +328,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> other)
     {
-        Editor editor = editor();
+        Editor editor = new Editor();
         while (other.hasNext()) {
             final T value = other.next();
             if (value != null) {
@@ -366,8 +370,8 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> union(@Nonnull Iterator<? extends T> other)
     {
-        final Counter<T> counter = emptyCounter();
-        final Editor editor = editor();
+        final Counter counter = new Counter();
+        final Editor editor = new Editor();
         while (other.hasNext()) {
             final T value = other.next();
             if (value != null) {
@@ -410,17 +414,20 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull Iterator<? extends T> other)
     {
-        final Counter<T> counter = emptyCounter();
-        final Editor editor = editor();
-        while (other.hasNext()) {
-            final T value = other.next();
-            if (value != null) {
-                final int otherCount = counter.delta(value, 1);
-                final int ourCount = this.count(value);
-                editor.set(value, Math.min(otherCount, ourCount));
+        if (isEmpty()) {
+            return this;
+        } else {
+            final Counter counter = new Counter();
+            final Editor editor = new Editor();
+            while (other.hasNext()) {
+                final T value = other.next();
+                if (value != null) {
+                    final int otherCount = counter.delta(value, 1);
+                    editor.set(value, Math.min(otherCount, count(value)));
+                }
             }
+            return editor.removeValuesNotInCounter(counter).build();
         }
-        return editor.removeValuesNotInCounter(counter).build();
     }
 
     @Override
@@ -452,7 +459,7 @@ public abstract class AbstractJImmutableMultiset<T>
         if (count < 0) {
             throw new IllegalArgumentException();
         } else {
-            return editor().set(value, count).build();
+            return new Editor().set(value, count).build();
         }
     }
 
@@ -474,13 +481,12 @@ public abstract class AbstractJImmutableMultiset<T>
                                                     int occurrences);
 
     /**
-     * Implemented by derived classes to create a new instance of Counter with a mutable Map
+     * Implemented by derived classes to create a new empty mutable Map
      * that operates in the same way as this multiset's underlying immutable Map.
      *
      * @return new empty Counter
      */
-    protected abstract Counter<T> emptyCounter();
-
+    protected abstract Map<T, Integer> emptyMutableMap();
 
     @Override
     public boolean isEmpty()
@@ -548,7 +554,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return Cursors.computeHashCode(occurrenceCursor());
     }
 
-    // TODO verify this
     @Override
     public boolean equals(Object o)
     {
@@ -557,12 +562,13 @@ public abstract class AbstractJImmutableMultiset<T>
         } else if (o == null) {
             return false;
         } else if (o instanceof JImmutableMultiset) {
+            final JImmutableMultiset that = (JImmutableMultiset)o;
             //noinspection unchecked
-            return (occurrenceCount() == ((JImmutableMultiset)o).occurrenceCount()) && ((JImmutableMultiset)o).containsAllOccurrences(this);
+            return (occurrenceCount() == that.occurrenceCount()) && containsAllOccurrences(that);
         } else if (o instanceof JImmutableSet) {
-            return (size() == occurrences) && getSet().equals(((JImmutableSet)o).getSet());
+            final JImmutableSet that = (JImmutableSet)o;
+            return (size() == occurrences) && getSet().equals(that.getSet());
         } else {
-            //noinspection EqualsBetweenInconvertibleTypes
             return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
         }
     }
@@ -571,14 +577,6 @@ public abstract class AbstractJImmutableMultiset<T>
     public String toString()
     {
         return Cursors.makeString(occurrenceCursor());
-    }
-
-    private JImmutableMap<T, Integer> increaseCount(JImmutableMap<T, Integer> map,
-                                                    T value,
-                                                    int addBy)
-    {
-        int newCount = getCount(map, value) + addBy;
-        return map.assign(value, newCount);
     }
 
     public void checkInvariants()
@@ -600,41 +598,40 @@ public abstract class AbstractJImmutableMultiset<T>
         }
     }
 
-    private Integer getCount(JImmutableMap<T, Integer> checkMap,
-                             T value)
-    {
-        return checkMap.getValueOr(value, 0);
-    }
-
     private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
-        final Counter<T> counter = emptyCounter();
+        final Counter counter = new Counter();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final T1 entryValue = e.getValue().getKey();
-            final int entryCount = e.getValue().getValue();
-            if (count(entryValue) < counter.delta(entryValue, entryCount)) {
+            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+            final T value = entry.getKey();
+            final int otherCount = entry.getValue();
+            if (count(value) < counter.delta(value, otherCount)) {
                 return false;
             }
         }
         return true;
     }
 
-    private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesHelper(@Nonnull JImmutableMultiset<T1> values)
+    private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
-        Editor editor = editor();
+        final Editor editor = new Editor();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
-            editor.delta(entry.getKey(), -entry.getValue());
+            final T value = entry.getKey();
+            final int otherCount = entry.getValue();
+            editor.delta(value, -otherCount);
         }
         return editor.build();
     }
 
     private <T1 extends T> JImmutableMultiset<T> insertAllMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
-        Editor editor = editor();
+        final Editor editor = new Editor();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
-            editor.delta(entry.getKey(), entry.getValue());
+            final T value = entry.getKey();
+            final int otherCount = entry.getValue();
+            editor.delta(value, otherCount);
         }
         return editor.build();
     }
@@ -642,8 +639,8 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     private <T1 extends T> JImmutableMultiset<T> unionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
-        final Counter<T> counter = emptyCounter();
-        final Editor editor = editor();
+        final Counter counter = new Counter();
+        final Editor editor = new Editor();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
@@ -656,8 +653,8 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     protected <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
-        final Counter<T> counter = emptyCounter();
-        final Editor editor = editor();
+        final Counter counter = new Counter();
+        final Editor editor = new Editor();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
@@ -667,21 +664,15 @@ public abstract class AbstractJImmutableMultiset<T>
         return editor.removeValuesNotInCounter(counter).build();
     }
 
-    private Editor editor()
-    {
-        return new Editor(map, occurrences);
-    }
-
     private class Editor
     {
         private JImmutableMap<T, Integer> newMap;
         private int newOccurrences;
 
-        private Editor(JImmutableMap<T, Integer> newMap,
-                       int newOccurrences)
+        private Editor()
         {
-            this.newMap = newMap;
-            this.newOccurrences = newOccurrences;
+            this.newMap = map;
+            this.newOccurrences = occurrences;
         }
 
         private Editor remove(T value)
@@ -727,11 +718,12 @@ public abstract class AbstractJImmutableMultiset<T>
             }
         }
 
-        private Editor removeValuesNotInCounter(Counter<T> counter)
+        private Editor removeValuesNotInCounter(Counter counter)
         {
             for (JImmutableMap.Entry<T, Integer> entry : newMap) {
                 if (counter.get(entry.getKey()) == 0) {
-                    adjust(entry.getKey(), entry.getValue(), 0);
+                    newMap = newMap.delete(entry.getKey());
+                    newOccurrences -= entry.getValue();
                 }
             }
             return this;
@@ -743,38 +735,30 @@ public abstract class AbstractJImmutableMultiset<T>
         }
     }
 
-    protected static class Counter<T>
+    private class Counter
     {
         private final Map<T, Integer> counts;
         private int totalCount;
 
-        public Counter(Map<T, Integer> counts)
+        private Counter()
         {
+            counts = emptyMutableMap();
             assert counts.isEmpty();
-            this.counts = counts;
         }
 
-        protected int delta(T value,
-                            int number)
+        private int delta(T value,
+                          int number)
         {
             assert value != null;
             final int current = get(value);
             return adjust(value, current, current + number);
         }
 
-        protected int set(T value,
-                          int modified)
-        {
-            assert value != null;
-            assert modified >= 0;
-            final int current = get(value);
-            return adjust(value, current, modified);
-        }
-
-        protected int get(T value)
+        private int get(T value)
         {
             assert value != null;
             final Integer count = counts.get(value);
+            assert (count == null) || (count > 0);
             return (count == null) ? 0 : count;
         }
 
@@ -782,6 +766,7 @@ public abstract class AbstractJImmutableMultiset<T>
                            int current,
                            int modified)
         {
+            assert modified >= 0;
             if (modified <= 0) {
                 modified = 0;
                 counts.remove(value);
