@@ -44,6 +44,7 @@ import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,6 +79,7 @@ public class JImmutableHashMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
         jmet = jmet.insert("TENNANT".toLowerCase(), 10);
+        jmet.checkInvariants();
         assertFalse(jmet.isEmpty());
         assertEquals(1, jmet.size());
         assertEquals(10, jmet.occurrenceCount());
@@ -91,6 +93,7 @@ public class JImmutableHashMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
         jmet = jmet.insert("SMITH".toLowerCase(), 11);
+        jmet.checkInvariants();
         assertFalse(jmet.isEmpty());
         assertEquals(2, jmet.size());
         assertEquals(21, jmet.occurrenceCount());
@@ -110,6 +113,7 @@ public class JImmutableHashMultisetTest
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
 
         JImmutableMultiset<String> jmet2 = jmet.union(valuesL);
+        jmet2.checkInvariants();
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(23, jmet2.occurrenceCount());
@@ -128,6 +132,7 @@ public class JImmutableHashMultisetTest
         assertEquals(jmet, jmet2.deleteOccurrence("capaldi").deleteOccurrence("eccleston"));
 
         jmet2 = jmet2.union(valuesM);
+        jmet2.checkInvariants();
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(42, jmet2.occurrenceCount());
@@ -158,6 +163,7 @@ public class JImmutableHashMultisetTest
         assertEquals(JImmutableHashMultiset.of(), jmet2.deleteAll());
 
         JImmutableMultiset<String> jmet3 = asJMet(valuesL).insert("davison").insert("baker");
+        jmet3.checkInvariants();
         assertFalse(jmet3.isEmpty());
         assertEquals(6, jmet3.size());
         assertEquals(6, jmet3.occurrenceCount());
@@ -178,6 +184,7 @@ public class JImmutableHashMultisetTest
         assertEquals(false, jmet3.containsAllOccurrences(jmet2));
 
         JImmutableMultiset<String> expected = asJMet("tennant", "smith", "capaldi", "eccleston");
+        expected.checkInvariants();
         assertEquals(expected, jmet3.intersection(valuesL));
         assertEquals(expected, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
@@ -193,9 +200,7 @@ public class JImmutableHashMultisetTest
     private Set<String> asSet(String... args)
     {
         Set<String> set = new HashSet<String>();
-        for (String arg : args) {
-            set.add(arg);
-        }
+        Collections.addAll(set, args);
         return set;
     }
 

@@ -87,6 +87,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
         jmet = jmet.insert("TENNANT".toLowerCase(), 10);
+        jmet.checkInvariants();
         assertFalse(jmet.isEmpty());
         assertEquals(1, jmet.size());
         assertEquals(10, jmet.occurrenceCount());
@@ -100,6 +101,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
         jmet = jmet.insert("SMITH".toLowerCase(), 11);
+        jmet.checkInvariants();
         assertFalse(jmet.isEmpty());
         assertEquals(2, jmet.size());
         assertEquals(21, jmet.occurrenceCount());
@@ -119,6 +121,7 @@ public class JImmutableInsertOrderMultisetTest
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
 
         JImmutableMultiset<String> jmet2 = jmet.union(valuesL);
+        jmet2.checkInvariants();
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(23, jmet2.occurrenceCount());
@@ -137,6 +140,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(jmet, jmet2.deleteOccurrence("capaldi").deleteOccurrence("eccleston"));
 
         jmet2 = jmet2.union(valuesM);
+        jmet2.checkInvariants();
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
         assertEquals(42, jmet2.occurrenceCount());
@@ -167,6 +171,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(JImmutableInsertOrderMultiset.of(), jmet2.deleteAll());
 
         JImmutableMultiset<String> jmet3 = asJMet(valuesL).insert("davison").insert("baker");
+        jmet3.checkInvariants();
         assertFalse(jmet3.isEmpty());
         assertEquals(6, jmet3.size());
         assertEquals(6, jmet3.occurrenceCount());
@@ -187,6 +192,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(false, jmet3.containsAllOccurrences(jmet2));
 
         JImmutableMultiset<String> expected = asJMet("tennant", "smith", "capaldi", "eccleston");
+        expected.checkInvariants();
         assertEquals(expected, jmet3.intersection(valuesL));
         assertEquals(expected, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
@@ -204,6 +210,7 @@ public class JImmutableInsertOrderMultisetTest
             multi.add(value);
             jmet = jmet.insert(value);
         }
+        jmet.checkInvariants();
         assertEquals(multi.elementSet(), jmet.getSet());
         assertEquals(new ArrayList<Integer>(multi), asList(jmet));
         StandardJImmutableMultisetTests.verifyCursor(jmet, multi);
@@ -213,8 +220,10 @@ public class JImmutableInsertOrderMultisetTest
 
         multi.add(a);
         jmet = jmet.insert(b);
+        jmet.checkInvariants();
         multi.add(b);
         jmet = jmet.insert(a);
+        jmet.checkInvariants();
         assertEquals(multi.elementSet(), jmet.getSet());
         assertEquals(multi.size(), jmet.occurrenceCount());
         StandardJImmutableMultisetTests.verifyContents(jmet, multi);
