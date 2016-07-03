@@ -45,8 +45,6 @@ import java.util.Set;
 /**
  * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
  * through the multiset with the correct number of occurrences per value.
- *
- * @param <T>
  */
 @Immutable
 public interface JImmutableMultiset<T>
@@ -188,24 +186,6 @@ public interface JImmutableMultiset<T>
     boolean containsAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other);
 
     /**
-     * Determines if the multiset contains every occurrence of all the values
-     * in other. If other is empty, returns true.
-     *
-     * @param other contains values to be checked for
-     * @return true if this multiset contains all occurrences
-     */
-    boolean containsAllOccurrences(@Nonnull JImmutableSet<? extends T> other);
-
-    /**
-     * Determines if the multiset contains every occurrence of all the values
-     * in other. If other is empty, returns true.
-     *
-     * @param other contains values to be checked for
-     * @return true if this multiset contains all occurrences
-     */
-    boolean containsAllOccurrences(@Nonnull Set<? extends T> other);
-
-    /**
      * Determines if the multiset and other have at least one value in common.
      * Returns false if other is empty.
      *
@@ -263,7 +243,6 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     JImmutableMultiset<T> deleteOccurrence(@Nonnull T value);
-
 
     /**
      * Removes count number of occurrences of value from the multiset. If there are fewer than
@@ -486,28 +465,6 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     JImmutableMultiset<T> union(@Nonnull JImmutableMultiset<? extends T> other);
-
-    /**
-     * Combines all occurrences from other and the multiset. If only the multiset or
-     * other contains a value, that value's count is preserved in the new multiset.
-     * If both contain a value, the greater count is used.
-     *
-     * @param other contains values to union with this multiset
-     * @return new multiset reflecting the changes
-     */
-    @Nonnull
-    JImmutableMultiset<T> union(@Nonnull JImmutableSet<? extends T> other);
-
-    /**
-     * Combines all occurrences from other and the multiset. If only the multiset or
-     * other contains a value, that value's count is preserved in the new multiset.
-     * If both contain a value, the greater count is used.
-     *
-     * @param other contains values to union with this multiset
-     * @return new multiset reflecting the changes
-     */
-    @Nonnull
-    JImmutableMultiset<T> union(@Nonnull Set<? extends T> other);
 
     /**
      * Creates a new multiset with the occurrences that are in both other and this.

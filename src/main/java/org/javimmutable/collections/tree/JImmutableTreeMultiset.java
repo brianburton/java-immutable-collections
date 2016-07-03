@@ -41,6 +41,7 @@ import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
+import java.util.TreeMap;
 
 @Immutable
 public class JImmutableTreeMultiset<T>
@@ -98,5 +99,11 @@ public class JImmutableTreeMultiset<T>
     protected JImmutableMap<T, Integer> emptyMap()
     {
         return JImmutableTreeMap.of(comparator);
+    }
+
+    @Override
+    protected Counter<T> emptyCounter()
+    {
+        return new Counter<T>(new TreeMap<T, Integer>(comparator));
     }
 }

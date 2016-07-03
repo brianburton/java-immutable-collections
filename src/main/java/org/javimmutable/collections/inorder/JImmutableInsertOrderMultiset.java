@@ -35,17 +35,12 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
-import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.LinkedHashMap;
 
 /**
  * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,
@@ -92,71 +87,8 @@ public class JImmutableInsertOrderMultiset<T>
     }
 
     @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Cursor<? extends T> other)
+    protected Counter<T> emptyCounter()
     {
-        if (isEmpty()) {
-            return this;
-        }
-        JImmutableMultiset<T> values = JImmutables.multiset(other);
-        if (values.isEmpty()) {
-            return deleteAll();
-        } else {
-            return multisetIntersectionWithFilledMap(values);
-        }
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Iterator<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        }
-        JImmutableMultiset<T> values = JImmutables.multiset(other);
-        if (values.isEmpty()) {
-            return deleteAll();
-        } else {
-            return multisetIntersectionWithFilledMap(values);
-        }
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            return multisetIntersectionWithFilledMap(other);
-        }
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            return setIntersectionWithFilledMap(other.getSet());
-        }
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            return setIntersectionWithFilledMap(other);
-        }
+        return new Counter<T>(new LinkedHashMap<T, Integer>());
     }
 }
