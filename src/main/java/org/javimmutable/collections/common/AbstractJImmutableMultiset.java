@@ -158,7 +158,7 @@ public abstract class AbstractJImmutableMultiset<T>
         final Counter counter = new Counter();
         while (other.hasNext()) {
             final T value = other.next();
-            if ((value == null) || (counter.delta(value, 1) > count(value))) {
+            if ((value == null) || (counter.add(value, 1) > count(value))) {
                 return false;
             }
         }
@@ -375,7 +375,7 @@ public abstract class AbstractJImmutableMultiset<T>
         while (other.hasNext()) {
             final T value = other.next();
             if (value != null) {
-                final int otherCount = counter.delta(value, 1);
+                final int otherCount = counter.add(value, 1);
                 editor.set(value, Math.max(otherCount, count(value)));
             }
         }
@@ -422,7 +422,7 @@ public abstract class AbstractJImmutableMultiset<T>
             while (other.hasNext()) {
                 final T value = other.next();
                 if (value != null) {
-                    final int otherCount = counter.delta(value, 1);
+                    final int otherCount = counter.add(value, 1);
                     editor.set(value, Math.min(otherCount, count(value)));
                 }
             }
@@ -605,7 +605,7 @@ public abstract class AbstractJImmutableMultiset<T>
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
-            if (count(value) < counter.delta(value, otherCount)) {
+            if (count(value) < counter.add(value, otherCount)) {
                 return false;
             }
         }
@@ -644,7 +644,7 @@ public abstract class AbstractJImmutableMultiset<T>
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
-            final int otherCount = counter.delta(value, entry.getValue());
+            final int otherCount = counter.add(value, entry.getValue());
             editor.set(value, Math.max(otherCount, count(value)));
         }
         return editor.build();
@@ -658,7 +658,7 @@ public abstract class AbstractJImmutableMultiset<T>
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
-            final int otherCount = counter.delta(value, entry.getValue());
+            final int otherCount = counter.add(value, entry.getValue());
             editor.set(value, Math.min(otherCount, count(value)));
         }
         return editor.removeValuesNotInCounter(counter).build();
@@ -746,12 +746,16 @@ public abstract class AbstractJImmutableMultiset<T>
             assert counts.isEmpty();
         }
 
-        private int delta(T value,
-                          int number)
+        private int add(T value,
+                        int number)
         {
             assert value != null;
-            final int current = get(value);
-            return adjust(value, current, current + number);
+            assert number > 0;
+            final int currentCount = get(value);
+            final int newCount = currentCount + number;
+            counts.put(value, newCount);
+            totalCount = totalCount + newCount - currentCount;
+            return newCount;
         }
 
         private int get(T value)
@@ -760,21 +764,6 @@ public abstract class AbstractJImmutableMultiset<T>
             final Integer count = counts.get(value);
             assert (count == null) || (count > 0);
             return (count == null) ? 0 : count;
-        }
-
-        private int adjust(T value,
-                           int current,
-                           int modified)
-        {
-            assert modified >= 0;
-            if (modified <= 0) {
-                modified = 0;
-                counts.remove(value);
-            } else {
-                counts.put(value, modified);
-            }
-            totalCount = totalCount + modified - current;
-            return modified;
         }
     }
 }
