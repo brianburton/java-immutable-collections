@@ -464,13 +464,6 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     /**
-     * Implemented by derived classes to create a new empty Map instance for use by the Multiset.
-     *
-     * @return empty immutable map
-     */
-    protected abstract JImmutableMap<T, Integer> emptyMap();
-
-    /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *
      * @param map         base map for new multiset

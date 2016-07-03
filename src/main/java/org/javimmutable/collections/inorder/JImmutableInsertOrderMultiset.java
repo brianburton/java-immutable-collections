@@ -82,12 +82,6 @@ public class JImmutableInsertOrderMultiset<T>
     }
 
     @Override
-    protected JImmutableMap<T, Integer> emptyMap()
-    {
-        return JImmutableInsertOrderMap.of();
-    }
-
-    @Override
     protected Map<T, Integer> emptyMutableMap()
     {
         return new LinkedHashMap<T, Integer>();

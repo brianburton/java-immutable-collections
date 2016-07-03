@@ -97,12 +97,6 @@ public class JImmutableTreeMultiset<T>
     }
 
     @Override
-    protected JImmutableMap<T, Integer> emptyMap()
-    {
-        return JImmutableTreeMap.of(comparator);
-    }
-
-    @Override
     protected Map<T, Integer> emptyMutableMap()
     {
         return new TreeMap<T, Integer>(comparator);

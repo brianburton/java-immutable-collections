@@ -78,12 +78,6 @@ public class JImmutableHashMultiset<T>
     }
 
     @Override
-    protected JImmutableMap<T, Integer> emptyMap()
-    {
-        return JImmutableHashMap.of();
-    }
-
-    @Override
     protected Map<T, Integer> emptyMutableMap()
     {
         return new HashMap<T, Integer>();
