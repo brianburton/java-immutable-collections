@@ -42,6 +42,8 @@ import org.javimmutable.collections.common.AbstractJImmutableSet;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Immutable
 public class JImmutableTreeSet<T>
@@ -88,13 +90,6 @@ public class JImmutableTreeSet<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
-        checkSetInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
         return new JImmutableTreeSet<T>(map, comparator);
@@ -104,5 +99,11 @@ public class JImmutableTreeSet<T>
     protected JImmutableMap<T, Boolean> emptyMap()
     {
         return JImmutableTreeMap.of(comparator);
+    }
+
+    @Override
+    protected Set<T> emptyMutableSet()
+    {
+        return new TreeSet<T>(comparator);
     }
 }

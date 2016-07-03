@@ -290,24 +290,6 @@ public interface JImmutableSet<T>
     JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Removes all values from the Set that are not contained in the other collection.
-     *
-     * @param other
-     * @return instance of set with unmatched values removed
-     */
-    @Nonnull
-    JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other);
-
-    /**
-     * Removes all values from the Set that are not contained in the other collection.
-     *
-     * @param other
-     * @return instance of set with unmatched values removed
-     */
-    @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Set<? extends T> other);
-
-    /**
      * Determines the number of values in the Set.
      *
      * @return number of values in the Set

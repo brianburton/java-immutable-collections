@@ -41,6 +41,8 @@ import org.javimmutable.collections.common.AbstractJImmutableSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Immutable
 public class JImmutableHashSet<T>
@@ -68,13 +70,6 @@ public class JImmutableHashSet<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
-        checkSetInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
         return new JImmutableHashSet<T>(map);
@@ -84,5 +79,11 @@ public class JImmutableHashSet<T>
     protected JImmutableMap<T, Boolean> emptyMap()
     {
         return JImmutableHashMap.of();
+    }
+
+    @Override
+    protected Set<T> emptyMutableSet()
+    {
+        return new HashSet<T>();
     }
 }

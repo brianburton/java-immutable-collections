@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
@@ -50,7 +49,6 @@ import java.util.Set;
 public interface JImmutableMultiset<T>
         extends JImmutableSet<T>
 {
-
     /**
      * Adds one occurrence of value to the multiset.
      *
@@ -528,30 +526,6 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other);
-
-    /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
-     *
-     * @param other contains values to intersect with this multiset
-     * @return new multiset reflecting the change
-     */
-    @Override
-    @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other);
-
-    /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
-     *
-     * @param other contains values to intersect with this multiset
-     * @return new multiset reflecting the change
-     */
-    @Override
-    @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other);
 
     /**
      * Cursor iterates through each occurrence in the multiset the correct number of times.

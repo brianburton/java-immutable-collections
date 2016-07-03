@@ -35,15 +35,13 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -51,8 +49,6 @@ import java.util.Set;
  * elements are returned in the same order they were inserted into the set.  Performance is
  * slower than hash or tree sets but should be sufficient for most algorithms where insert
  * order matters.
- *
- * @param <T>
  */
 @Immutable
 public class JImmutableInsertOrderSet<T>
@@ -80,13 +76,6 @@ public class JImmutableInsertOrderSet<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
-        checkSetInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
         return new JImmutableInsertOrderSet<T>(map);
@@ -98,65 +87,9 @@ public class JImmutableInsertOrderSet<T>
         return JImmutableInsertOrderMap.of();
     }
 
-    @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Cursor<? extends T> values)
+    protected Set<T> emptyMutableSet()
     {
-        if (isEmpty()) {
-            return this;
-        }
-        Set<T> otherSet = new HashSet<T>();
-        for (values = values.start(); values.hasValue(); values = values.next()) {
-            otherSet.add(values.getValue());
-        }
-        if (otherSet.isEmpty()) {
-            return deleteAll();
-        } else {
-            return intersectionWithFilledMap(otherSet);
-        }
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values)
-    {
-        if (isEmpty()) {
-            return this;
-        }
-        Set<T> otherSet = new HashSet<T>();
-        while (values.hasNext()) {
-            otherSet.add(values.next());
-        }
-        if (otherSet.isEmpty()) {
-            return deleteAll();
-        } else {
-            return intersectionWithFilledMap(otherSet);
-        }
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            return intersectionWithFilledMap(other.getSet());
-        }
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull Set<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            return intersectionWithFilledMap(other);
-        }
+        return new LinkedHashSet<T>();
     }
 }

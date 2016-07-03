@@ -436,21 +436,6 @@ public abstract class AbstractJImmutableMultiset<T>
         }
     }
 
-
-    @Nonnull
-    @Override
-    public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other)
-    {
-        return intersection(other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other)
-    {
-        return intersection(other.iterator());
-    }
-
     @Override
     public int count(@Nonnull T value)
     {
