@@ -44,10 +44,16 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static java.util.Arrays.asList;
 
 public class JImmutableTreeSetTest
         extends TestCase
@@ -259,5 +265,58 @@ public class JImmutableTreeSetTest
         assertEquals(0, cleared.size());
         assertSame(map.getComparator(), cleared.getComparator());
         StandardCursorTest.emptyCursorTest(cleared.cursor());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testIntersectWithStringComparisonDifference()
+    {
+        // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
+        // should yield an empty set.  However that's not how java.util.Set works
+        Set<String> hset = new HashSet<String>(asList("Hello"));
+        Set<String> tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        tset.add("HELLO");
+        // membership tests show no overlap
+        assertEquals(true, hset.contains("Hello"));
+        assertEquals(false, hset.contains("HELLO"));
+        assertEquals(false, hset.containsAll(tset));
+        // yet retainAll() retains the mis-matched string because TreeSet says they are the same
+        hset.retainAll(tset);
+        assertEquals(asList("Hello"), iterToList(hset));
+
+        // reversing who receives the retainAll() call results in different answer!
+        // TreeSet does not retain the HELLO value because HashSet says it's not a member
+        hset = new HashSet<String>(asList("Hello"));
+        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        tset.add("HELLO");
+        // membership tests show complete overlap
+        assertEquals(true, tset.contains("Hello"));
+        assertEquals(true, tset.contains("HELLO"));
+        assertEquals(true, tset.containsAll(hset));
+        // yet retainAll() drops the matching String because HashSet says they are not the same
+        tset.retainAll(hset);
+        assertEquals(asList(), iterToList(tset));
+
+        // JImmutableSet inherits Set's retainAll() behavior in intersection(Set)
+        // since the treeset's idea of equality is broader than the hash set's intersection works as expected
+        hset = new HashSet<String>(asList("Hello"));
+        JImmutableSet<String> jet = JImmutableTreeSet.of(String.CASE_INSENSITIVE_ORDER).insert("Hello");
+        // same as Set
+        assertEquals(true, jet.contains("Hello"));
+        assertEquals(true, jet.contains("HELLO"));
+        assertEquals(true, jet.containsAll(tset));
+        // same as Set.retainAll()
+        assertEquals(asList("Hello"), iterToList(jet.intersection(hset)));
+        // same as Set.retainAll()
+        assertEquals(asList("Hello"), iterToList(jet.intersection(hset.iterator())));
+        assertEquals(asList("Hello"), iterToList(jet.intersection((Collection)hset)));
+    }
+
+    private List<String> iterToList(Iterable<String> source)
+    {
+        List<String> answer = new ArrayList<String>();
+        for (String value : source) {
+            answer.add(value);
+        }
+        return answer;
     }
 }
