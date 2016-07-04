@@ -304,6 +304,32 @@ public abstract class AbstractJImmutableSet<T>
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
+    @Override
+    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other)
+    {
+        return intersection(other.getSet());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSet<T> intersection(@Nonnull Set<? extends T> other)
+    {
+        if (isEmpty()) {
+            return this;
+        } else if (other.isEmpty()) {
+            return deleteAll();
+        } else {
+            JImmutableMap<T, Boolean> newMap = map;
+            for (T value : map.keysCursor()) {
+                if (!other.contains(value)) {
+                    newMap = newMap.delete(value);
+                }
+            }
+            return (newMap != map) ? create(newMap) : this;
+        }
+    }
+
     @Override
     public int size()
     {

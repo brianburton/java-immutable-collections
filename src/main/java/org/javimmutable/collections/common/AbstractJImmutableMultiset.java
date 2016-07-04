@@ -444,6 +444,36 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
+    @Nonnull
+    public JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other)
+    {
+        return intersection(other.getSet());
+    }
+
+    @Override
+    @Nonnull
+    public JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other)
+    {
+        if (isEmpty()) {
+            return this;
+        } else if (other.isEmpty()) {
+            return deleteAll();
+        } else {
+            Editor editor = new Editor();
+            for (JImmutableMap.Entry<T, Integer> entry : map) {
+                final T value = entry.getKey();
+                final int oldCount = entry.getValue();
+                if (other.contains(value)) {
+                    editor.adjust(value, oldCount, 1);
+                } else {
+                    editor.adjust(value, oldCount, 0);
+                }
+            }
+            return editor.build();
+        }
+    }
+
+    @Override
     public int count(@Nonnull T value)
     {
         Conditions.stopNull(value);
