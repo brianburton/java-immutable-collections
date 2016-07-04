@@ -96,12 +96,6 @@ public class JImmutableTreeSet<T>
     }
 
     @Override
-    protected JImmutableMap<T, Boolean> emptyMap()
-    {
-        return JImmutableTreeMap.of(comparator);
-    }
-
-    @Override
     protected Set<T> emptyMutableSet()
     {
         return new TreeSet<T>(comparator);

@@ -412,11 +412,6 @@ public abstract class AbstractJImmutableSet<T>
     protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
 
     /**
-     * Implemented by derived classes to create a new empty JImmutableMap
-     */
-    protected abstract JImmutableMap<T, Boolean> emptyMap();
-
-    /**
      * Implemented by derived classes to create a new empty Set
      */
     protected abstract Set<T> emptyMutableSet();

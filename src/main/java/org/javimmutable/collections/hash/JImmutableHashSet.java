@@ -76,12 +76,6 @@ public class JImmutableHashSet<T>
     }
 
     @Override
-    protected JImmutableMap<T, Boolean> emptyMap()
-    {
-        return JImmutableHashMap.of();
-    }
-
-    @Override
     protected Set<T> emptyMutableSet()
     {
         return new HashSet<T>();

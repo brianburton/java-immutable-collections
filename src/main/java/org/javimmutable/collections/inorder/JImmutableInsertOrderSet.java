@@ -82,12 +82,6 @@ public class JImmutableInsertOrderSet<T>
     }
 
     @Override
-    protected JImmutableMap<T, Boolean> emptyMap()
-    {
-        return JImmutableInsertOrderMap.of();
-    }
-
-    @Override
     protected Set<T> emptyMutableSet()
     {
         return new LinkedHashSet<T>();
