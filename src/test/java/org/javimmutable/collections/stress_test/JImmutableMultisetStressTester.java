@@ -721,7 +721,7 @@ public class JImmutableMultisetStressTester
             break;
         case 4: //deletes 2 - two unique values in multi
         case 5: //deletes 2 - two unique values in multi
-            for (int n = 0; n < 2; ++n) {
+            for (int n = 0; (n < 2) && (multiList.size() > 0); ++n) {
                 index = random.nextInt(multiList.size());
                 values = values.insert(multiList.get(index));
                 multiList.remove(index);
