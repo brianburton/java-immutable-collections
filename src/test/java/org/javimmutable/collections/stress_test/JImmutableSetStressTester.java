@@ -248,7 +248,7 @@ public class JImmutableSetStressTester
                 break;
             }
             case 2: { //intersection(JSet)
-                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(numberToRemove - 1);
+                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
                 final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
                 set = set.intersection(JImmutables.set(intersectionValues));
                 expected.retainAll(intersectionValues);
@@ -256,7 +256,7 @@ public class JImmutableSetStressTester
                 break;
             }
             default: { //intersection(Set)
-                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(numberToRemove - 1);
+                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
                 final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
                 set = set.intersection(intersectionValues);
                 expected.retainAll(intersectionValues);
