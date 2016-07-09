@@ -165,13 +165,7 @@ public class FullBranchTrieNode<T>
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
         final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
-        if (newChild == child) {
-            return this;
-        } else if (newChild.isEmpty()) {
-            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
-        } else {
-            return createUpdatedEntries(shift, childIndex, newChild);
-        }
+        return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 
     @Override
@@ -185,13 +179,7 @@ public class FullBranchTrieNode<T>
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
         final TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
-        if (newChild == child) {
-            return this;
-        } else if (newChild.isEmpty()) {
-            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
-        } else {
-            return createUpdatedEntries(shift, childIndex, newChild);
-        }
+        return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 
     @Override
@@ -253,6 +241,20 @@ public class FullBranchTrieNode<T>
         TrieNode<T>[] newEntries = entries.clone();
         newEntries[childIndex] = newChild;
         return new FullBranchTrieNode<T>(shift, newEntries);
+    }
+
+    private TrieNode<T> createDeleteResultNode(int shift,
+                                               int childIndex,
+                                               TrieNode<T> child,
+                                               TrieNode<T> newChild)
+    {
+        if (newChild == child) {
+            return this;
+        } else if (newChild.isEmpty()) {
+            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
+        } else {
+            return createUpdatedEntries(shift, childIndex, newChild);
+        }
     }
 
     private class CursorSource
