@@ -92,7 +92,6 @@ public class JImmutableTreeSetMap<K, V>
     public void checkInvariants()
     {
         checkSetMapInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override

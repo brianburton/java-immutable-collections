@@ -71,7 +71,6 @@ public class JImmutableInsertOrderSetMap<K, V>
     public void checkInvariants()
     {
         checkSetMapInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override
