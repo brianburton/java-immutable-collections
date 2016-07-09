@@ -46,7 +46,7 @@ public class BtreeBranchNodeTest
 {
     public void testAppend()
     {
-        BtreeNode<Integer> node = BtreeBranchNode.forTesting(BtreeEmptyNode.<Integer>of());
+        BtreeNode<Integer> node = emptyNode();
         assertEquals(1, node.childCount());
         assertEquals(0, node.valueCount());
         List<Integer> expected = new ArrayList<Integer>();
@@ -67,7 +67,7 @@ public class BtreeBranchNodeTest
 
     public void testInsertZero()
     {
-        BtreeNode<Integer> node = BtreeBranchNode.forTesting(BtreeEmptyNode.<Integer>of());
+        BtreeNode<Integer> node = emptyNode();
         assertEquals(1, node.childCount());
         assertEquals(0, node.valueCount());
         List<Integer> expected = new ArrayList<Integer>();
@@ -84,5 +84,77 @@ public class BtreeBranchNodeTest
         assertEquals(BtreeNode.MAX_CHILDREN, node.childCount());
         assertEquals(((BtreeNode.MAX_CHILDREN - 1) * (BtreeNode.MIN_CHILDREN + 1)) + BtreeNode.MAX_CHILDREN, node.valueCount());
         StandardCursorTest.listCursorTest(expected, node.cursor());
+    }
+
+    public void testDeleteAt()
+    {
+        final BtreeNode<Integer> fullNode = filledNode();
+        final List<Integer> fullExpected = createExpected(fullNode.valueCount());
+        verifyNodeContents(fullExpected, fullNode);
+
+        for (int i = 0; i < fullNode.valueCount(); ++i) {
+            // test deleting all values from i forward
+            BtreeNode<Integer> node = fullNode;
+            List<Integer> expected = new ArrayList<Integer>(fullExpected);
+            while (expected.size() > i) {
+                node = node.delete(i);
+                expected.remove(i);
+                verifyNodeContents(expected, node);
+            }
+        }
+    }
+
+    public void testAssign()
+    {
+        BtreeNode<Integer> node = filledNode();
+        List<Integer> expected = createExpected(node.valueCount());
+        while (node.valueCount() > 0) {
+            verifyNodeContents(expected, node);
+            for (int i = 0; i < expected.size(); ++i) {
+                int newValue = expected.get(i) + 1;
+                node = node.assign(i, newValue);
+                expected.set(i, newValue);
+                verifyNodeContents(expected, node);
+            }
+            node = node.delete(node.valueCount() - 1);
+            expected.remove(expected.size() - 1);
+        }
+    }
+
+    private void verifyNodeContents(List<Integer> expected,
+                                    BtreeNode<Integer> node)
+    {
+        for (int i = 0; i < expected.size(); ++i) {
+            assertEquals(expected.get(i), node.get(i));
+        }
+    }
+
+    private List<Integer> createExpected(int length)
+    {
+        List<Integer> answer = new ArrayList<Integer>(length);
+        for (int i = 0; i < length; ++i) {
+            answer.add(i);
+        }
+        return answer;
+    }
+
+    private BtreeNode<Integer> filledNode()
+    {
+        BtreeNode<Integer> node = emptyNode();
+        while (true) {
+            final int nextValue = node.valueCount();
+            BtreeInsertResult<Integer> result = node.append(nextValue);
+            if (result.type == BtreeInsertResult.Type.SPLIT) {
+                break;
+            }
+            node = result.newNode;
+        }
+        return node;
+    }
+
+    @SuppressWarnings("unchecked")
+    private BtreeBranchNode<Integer> emptyNode()
+    {
+        return BtreeBranchNode.forTesting(BtreeEmptyNode.<Integer>of());
     }
 }

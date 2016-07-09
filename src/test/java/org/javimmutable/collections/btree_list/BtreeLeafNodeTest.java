@@ -91,7 +91,7 @@ public class BtreeLeafNodeTest
         }
 
         for (int i = 0; i < BtreeNode.MAX_CHILDREN; ++i) {
-            assertEquals(Integer.valueOf(i), preAssignNode.get(i));
+            assertEquals(Integer.valueOf(i + 1), preAssignNode.get(i));
             assertEquals(Integer.valueOf(BtreeNode.MAX_CHILDREN - i), node.get(i));
         }
         assertEquals(BtreeNode.MAX_CHILDREN, node.childCount());

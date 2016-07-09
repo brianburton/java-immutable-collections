@@ -89,10 +89,6 @@ class BtreeBranchNode<T>
 
     /**
      * For unit test purposes only - creates a new branch node using a copy of the specified array.
-     *
-     * @param children
-     * @param <T>
-     * @return
      */
     @Nonnull
     static <T> BtreeBranchNode<T> forTesting(BtreeNode<T>... children)
@@ -316,15 +312,7 @@ class BtreeBranchNode<T>
             final BtreeNode<T> lastChild = children[lastIndex];
             return new Location<T>(lastChild, lastIndex, lastChild.valueCount());
         } else {
-            int childIndex = 0;
-            for (BtreeNode<T> child : children) {
-                if (child.containsIndex(index)) {
-                    return new Location<T>(child, childIndex, index);
-                }
-                childIndex += 1;
-                index -= child.valueCount();
-            }
-            throw new IndexOutOfBoundsException();
+            return findIndexForGetAssign(index);
         }
     }
 
