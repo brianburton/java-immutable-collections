@@ -201,7 +201,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return create(contents.delete(key));
     }
 
-    //TODO: add this method to unit tests
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> delete(@Nonnull K key,
@@ -423,7 +422,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
         for (JImmutableMap.Entry<K, JImmutableSet<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
-        //TODO: review checkSetMapInvariants()
     }
 
     /**
@@ -554,5 +552,4 @@ public abstract class AbstractJImmutableSetMap<K, V>
     {
         return set.intersection(other);
     }
-
 }
