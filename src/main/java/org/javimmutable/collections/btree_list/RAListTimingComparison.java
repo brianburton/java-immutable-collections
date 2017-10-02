@@ -46,7 +46,7 @@ public final class RAListTimingComparison
 {
     @SuppressWarnings("CallToSystemExit")
     public static void main(String[] argv)
-            throws Exception
+        throws Exception
     {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
@@ -61,10 +61,13 @@ public final class RAListTimingComparison
         runTests(seed, loops, 32, maxCommand);
         System.gc();
         Thread.sleep(500L);
-        runTests(seed, loops, 1024, maxCommand);
+        runTests(seed, loops, 1000, maxCommand);
         System.gc();
         Thread.sleep(500L);
         runTests(seed, loops, 10000, maxCommand);
+        System.gc();
+        Thread.sleep(500L);
+        runTests(seed, loops, 100000, maxCommand);
     }
 
     @SuppressWarnings({"OverlyComplexMethod", "OverlyLongMethod"})

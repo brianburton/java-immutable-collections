@@ -1,6 +1,7 @@
 .idea
 out
 *~
+_*
 target
 collections.iml
 javimmutable-collections.iml
