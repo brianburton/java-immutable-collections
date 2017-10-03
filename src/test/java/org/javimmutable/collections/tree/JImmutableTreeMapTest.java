@@ -79,44 +79,6 @@ public class JImmutableTreeMapTest
         StandardCursorTest.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
     }
 
-    @SuppressWarnings("ConstantConditions")
-    public void testNullKeys()
-    {
-        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
-        map = map.assign(1, 3);
-
-        try {
-            map.assign(null, 18);
-        } catch (NullPointerException ex) {
-            // expected
-        }
-        try {
-            map.assignAll((JImmutableMap<Integer, Integer>)null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.get(null);
-        } catch (NullPointerException ex) {
-            // expected
-        }
-        try {
-            map.find(null);
-        } catch (NullPointerException ex) {
-            // expected
-        }
-        try {
-            map.findEntry(null);
-        } catch (NullPointerException ex) {
-            // expected
-        }
-        try {
-            map.delete(null);
-        } catch (NullPointerException ex) {
-            // expected
-        }
-    }
-
     public void testValueIdentity()
     {
         JImmutableTreeMap<String, String> map = JImmutableTreeMap.of();

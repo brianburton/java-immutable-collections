@@ -56,14 +56,6 @@ public class EmptyHashMapTest
         otherMap = otherMap.assign(new Object(), 100);
         assertTrue(otherMap instanceof JImmutableHashMap);
         assertSame(JImmutableHashMap.LIST_TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
-
-        try {
-            otherMap = JImmutableHashMap.of();
-            otherMap.assign(null, 100);
-            fail();
-        } catch (NullPointerException ignored) {
-            // pass
-        }
     }
 
     public void testAssignAll()
@@ -88,15 +80,6 @@ public class EmptyHashMapTest
         assertTrue(map instanceof JImmutableHashMap);
         assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
 
-
-        try {
-            map = JImmutableHashMap.of();
-            //noinspection ConstantConditions
-            map.assignAll((JImmutableMap<String, Integer>)null);
-            fail();
-        } catch (NullPointerException ignored) {
-            // pass
-        }
 
         map = JImmutableHashMap.of();
         Map<String, Integer> expected2 = new HashMap<String, Integer>();

@@ -81,43 +81,6 @@ public class JImmutableHashMapTest
         assertSame(map, map.assign(14000, "aaa"));
     }
 
-    @SuppressWarnings("ConstantConditions")
-    public void testNullKeys()
-    {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
-        map = map.assign(1, 3);
-        try {
-            map.assign(null, 18);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.assignAll((JImmutableMap<Integer, Integer>)null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.get(null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.find(null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.findEntry(null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-        try {
-            map.delete(null);
-        } catch (NullPointerException ignored) {
-            // expected
-        }
-    }
-
     public void testRandom1()
     {
         final int maxKey = 999999999;

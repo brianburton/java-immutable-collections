@@ -146,6 +146,7 @@ public class StressTestLoop
                     tester.execute(random, tokens);
                     seed = System.currentTimeMillis();
                     random.setSeed(seed);
+                    Thread.sleep(5000);
                 }
             }
         }

@@ -196,8 +196,10 @@ class BtreeBranchNode<T>
             int mergeIndex = loc.childIndex;
             if (mergeIndex > 0) {
                 if (mergeIndex == (children.length - 1)) {
+                    // can't merge at the end of the array
                     mergeIndex = children.length - 2;
                 } else {
+                    // always merge with the larger of the two neighboring nodes
                     if (children[mergeIndex - 1].childCount() > children[mergeIndex + 1].childCount()) {
                         mergeIndex -= 1;
                     }
@@ -209,6 +211,7 @@ class BtreeBranchNode<T>
                 mergeChild = newChild;
                 nextChild = children[mergeIndex + 1];
             } else {
+                assert mergeIndex == loc.childIndex - 1;
                 mergeChild = children[mergeIndex];
                 nextChild = newChild;
             }
