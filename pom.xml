@@ -188,6 +188,21 @@
                     <argLine>-Xmx192m</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <executable>java</executable>
+                    <classpathScope>test</classpathScope>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath />
+                        <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            
         </plugins>
     </build>
     <reporting>
