@@ -70,6 +70,7 @@ public class StandardJImmutableMultisetTests
         StandardCursorTest.emptyCursorTest(empty.entryCursor());
         StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
         testVarious(empty);
+        testEquals(empty);
 
         verifyContents(empty, HashMultiset.<Integer>create());
 
@@ -568,8 +569,7 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asJSet(values)), setExpected);
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
     }
-
-
+    
     private static void testVarious(JImmutableMultiset<Integer> empty)
     {
         List<Integer> values = Arrays.asList(100, 200, 300, 300);
@@ -668,6 +668,34 @@ public class StandardJImmutableMultisetTests
         assertEquals(empty, jmet3.deleteAll(jmet3));
     }
 
+    private static void testEquals(JImmutableMultiset<Integer> empty)
+    {
+        assertEquals(false, empty.equals(null));
+        assertEquals(true, empty.equals(empty));
+        
+        final HashSet<Integer> javaSet = new HashSet<Integer>();
+        JImmutableMultiset<Integer> multiset = empty;
+        assertEquals(true, multiset.equals(javaSet));
+        multiset = multiset.insert(42);
+        assertEquals(false, multiset.equals(javaSet));
+        javaSet.add(42);
+        assertEquals(true, multiset.equals(javaSet));
+        multiset = multiset.insert(42);
+        assertEquals(false, multiset.equals(javaSet));
+        
+        JImmutableSet<Integer> set = JImmutableHashSet.of();
+        multiset = empty;
+        assertEquals(true, multiset.equals(set));
+        set = set.insert(42);
+        assertEquals(false, multiset.equals(set));
+        multiset = multiset.insert(42);
+        assertEquals(true, multiset.equals(set));
+        set = set.insert(1701);
+        assertEquals(false, multiset.equals(set));
+        multiset = multiset.insert(1701);
+        assertEquals(true, multiset.equals(set));
+    }   
+    
     public static void testRandom(final JImmutableMultiset<Integer> emptyJMet,
                                   final Multiset<Integer> expected)
     {
