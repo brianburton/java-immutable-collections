@@ -48,10 +48,10 @@ import java.util.Random;
 import java.util.TreeMap;
 
 public class MutableMapAdaptorTest
-        extends TestCase
+    extends TestCase
 {
     private static class TestAdaptor<K extends Comparable<K>, V>
-            extends MutableMapAdaptor<K, V>
+        extends MutableMapAdaptor<K, V>
     {
         private JImmutableMap<K, V> myMap = JImmutables.sortedMap();
 
@@ -218,6 +218,48 @@ public class MutableMapAdaptorTest
         assertEquals(true, adaptor.isEmpty());
         assertEquals(0, adaptor.size());
         assertEquals(expected, adaptor);
+    }
+
+    public void testEntrySet()
+    {
+        TestAdaptor<Integer, Integer> adaptor = new TestAdaptor<Integer, Integer>();
+        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        for (int i = 1; i <= 30; ++i) {
+            adaptor.put(i, i);
+            expected.put(i, i);
+        }
+        assertEquals(expected, adaptor);
+
+        entrySetChanges(adaptor);
+        entrySetChanges(expected);
+        assertEquals(expected, adaptor);
+
+        for (int i = 1; i <= 30; ++i) {
+            Map.Entry<Integer, Integer> e = new AbstractMap.SimpleEntry<Integer, Integer>(i, i);
+            assertEquals(expected.containsKey(i), adaptor.entrySet().contains(e));
+            if (i % 7 == 0) {
+                expected.remove(i);
+                adaptor.entrySet().remove(e);
+            } else {
+                e = new AbstractMap.SimpleEntry<Integer, Integer>(i, 3 * i);
+                expected.put(e.getKey(), e.getValue()); // java maps don't support this
+                adaptor.entrySet().add(e);
+            }
+        }
+        assertEquals(expected, adaptor);
+    }
+
+    private void entrySetChanges(Map<Integer, Integer> map)
+    {
+        Iterator<Map.Entry<Integer, Integer>> i = map.entrySet().iterator();
+        while (i.hasNext()) {
+            Map.Entry<Integer, Integer> e = i.next();
+            if (e.getKey() % 2 == 0) {
+                e.setValue(2 * e.getKey());
+            } else if (e.getKey() % 3 == 0) {
+                i.remove();
+            }
+        }
     }
 
     public void testRandom()

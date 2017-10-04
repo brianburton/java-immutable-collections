@@ -48,7 +48,7 @@ import java.util.Set;
 
 /**
  * When converting legacy code to use JImmutableMap there are sometimes objects that shared the mutable
- * version of their internal Map field with other classes.  This class serves as a an adaptor to allow
+ * version of their internal Map field with other classes.  This class serves as an adaptor to allow
  * this sharing to continue for a time after converting to JImmutableMap.  However the legacy code should
  * still be changed over time to eliminate the sharing of a mutable Map.
  * <p/>
