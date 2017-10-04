@@ -108,7 +108,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     public boolean containsAll(@Nonnull Cursorable<? extends T> other)
     {
-        return containsAll(other.cursor());
+        return containsAll(other.cursor().iterator());
     }
 
     @Override
@@ -416,6 +416,8 @@ public abstract class AbstractJImmutableMultiset<T>
     {
         if (isEmpty()) {
             return this;
+        } else if (!other.hasNext()) {
+            return deleteAll();
         } else {
             final Counter counter = new Counter();
             final Editor editor = new Editor();
@@ -712,7 +714,7 @@ public abstract class AbstractJImmutableMultiset<T>
                              int delta)
         {
             if (delta != 0) {
-                final int oldCount = newMap.find(value).getValueOr(0);
+                final int oldCount = newMap.getValueOr(value, 0);
                 adjust(value, oldCount, oldCount + delta);
             }
             return this;
@@ -721,7 +723,7 @@ public abstract class AbstractJImmutableMultiset<T>
         private Editor set(T value,
                            int newCount)
         {
-            final int oldCount = newMap.find(value).getValueOr(0);
+            final int oldCount = newMap.getValueOr(value, 0);
             if (newCount != oldCount) {
                 adjust(value, oldCount, newCount);
             }
