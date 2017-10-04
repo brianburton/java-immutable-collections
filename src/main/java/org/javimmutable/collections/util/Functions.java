@@ -43,7 +43,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.Iterator;
@@ -61,11 +60,6 @@ public final class Functions
     /**
      * Calls func for every value in cursor passing in the accumulator and each value as parameters
      * and setting accumulator to the result.  The final accumulator value is returned.
-     *
-     * @param accumulator
-     * @param cursor
-     * @param func
-     * @return
      */
     public static <T, R> R foldLeft(R accumulator,
                                     Cursor<? extends T> cursor,
@@ -81,13 +75,6 @@ public final class Functions
      * Calls func for every value in cursor from right to left (i.e. in reverse order) passing in the accumulator and each value
      * as parameters and setting the accumulator to the result.  The final accumulator value is returned.
      * Requires 2x time compared to foldLeft() since it reverses the order of the cursor before calling the function.
-     *
-     * @param accumulator
-     * @param func
-     * @param cursor
-     * @param <T>
-     * @param <R>
-     * @return
      */
     public static <T, R> R foldRight(R accumulator,
                                      Cursor<? extends T> cursor,
@@ -99,10 +86,6 @@ public final class Functions
     /**
      * Creates a new Cursor whose values are in the reverse order of the provided Cursor.
      * Requires O(n) time and creates an intermediate copy of the Cursor's values.
-     *
-     * @param cursor
-     * @param <T>
-     * @return
      */
     public static <T> Cursor<T> reverse(Cursor<? extends T> cursor)
     {
@@ -116,8 +99,6 @@ public final class Functions
      * @param cursor source of the values
      * @param func   function to transform the values
      * @param list   list to receive the values
-     * @param <T>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, R, A extends Insertable<R>> A collectAll(Cursor<? extends T> cursor,
@@ -137,8 +118,6 @@ public final class Functions
      * @param cursor source of the values
      * @param func   function to reject the values
      * @param list   list to receive the values
-     * @param <T>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, R, A extends Insertable<R>> A collectSome(Cursor<? extends T> cursor,
@@ -158,11 +137,6 @@ public final class Functions
      * Calls func for each value in cursor and passes it to func until func returns true.
      * If func returns true the value is returned.  If func never returns true an empty
      * value is returned.
-     *
-     * @param cursor
-     * @param func
-     * @param <T>
-     * @return
      */
     public static <T> Holder<T> find(Cursor<? extends T> cursor,
                                      Func1<? super T, Boolean> func)
@@ -182,8 +156,6 @@ public final class Functions
      * @param cursor source of the values
      * @param func   function to reject the values
      * @param list   list to receive the values
-     * @param <T>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A reject(Cursor<? extends T> cursor,
@@ -205,7 +177,6 @@ public final class Functions
      * @param cursor source of the values
      * @param func   function to select the values
      * @param list   list to receive the values
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A select(Cursor<? extends T> cursor,
@@ -223,9 +194,6 @@ public final class Functions
 
     /**
      * Add all values form the iterator to the addable.
-     *
-     * @param iterator
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A insertAll(A addable,
@@ -239,9 +207,6 @@ public final class Functions
 
     /**
      * Add all values form the cursor to the addable.
-     *
-     * @param cursor
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A insertAll(A addable,
@@ -255,9 +220,6 @@ public final class Functions
 
     /**
      * Add all values form the array to the addable.
-     *
-     * @param values
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T, A extends Insertable<T>> A insertAll(A addable,
@@ -291,32 +253,23 @@ public final class Functions
      * Returns an Iterable that can be used to navigate each element in the specified Cursor.
      * The Cursor must not have been started yet.  Intended for use in java foreach loops.
      *
-     * @param cursor
-     * @param <T>
-     * @return
+     * @deprecated Cursors are Iterable so this function is not needed
      */
+    @Deprecated
     public static <T> Iterable<T> each(final Cursor<T> cursor)
     {
-        return new Iterable<T>()
-        {
-            @Override
-            public Iterator<T> iterator()
-            {
-                return IteratorAdaptor.of(cursor);
-            }
-        };
+        return cursor;
     }
 
     /**
      * Returns an Iterable that can be used to navigate each element in the specified Cursorable.
      * Intended for use in java foreach loops.
      *
-     * @param cursorable
-     * @param <T>
-     * @return
+     * @deprecated Cursors are Iterable so just use cursorable.cursor()
      */
+    @Deprecated
     public static <T> Iterable<T> each(final Cursorable<T> cursorable)
     {
-        return each(cursorable.cursor());
+        return cursorable.cursor();
     }
 }
