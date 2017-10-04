@@ -72,37 +72,28 @@ public abstract class AbstractJImmutableSet<T>
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values)
     {
-        return insertAll(values.cursor());
+        return union(values.cursor().iterator());
     }
 
     @Override
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values)
     {
-        return insertAll(values.iterator());
+        return union(values.iterator());
     }
 
     @Override
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
-        JImmutableSet<T> answer = this;
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            answer = answer.insert(c.getValue());
-        }
-        return answer;
+        return union(values.iterator());
     }
 
     @Override
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
-
-        JImmutableSet<T> answer = this;
-        while (values.hasNext()) {
-            answer = answer.insert(values.next());
-        }
-        return answer;
+        return union(values);
     }
 
     @Override
@@ -226,7 +217,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public JImmutableSet<T> union(@Nonnull Cursorable<? extends T> other)
     {
-        return union(other.cursor());
+        return union(other.cursor().iterator());
     }
 
     @Nonnull
@@ -284,6 +275,10 @@ public abstract class AbstractJImmutableSet<T>
     {
         if (isEmpty()) {
             return this;
+        }
+
+        if (!values.hasNext()) {
+            return deleteAll();
         }
 
         Set<T> otherSet = emptyMutableSet();
