@@ -215,9 +215,9 @@ public class TwoNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        return LazyMultiCursor.<T>builder()
-            .with(left)
-            .with(right)
+        return LazyMultiCursor.<T>builder(2)
+            .insert(left)
+            .insert(right)
             .cursor();
     }
 

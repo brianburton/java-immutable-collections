@@ -262,9 +262,9 @@ public class TwoNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return LazyMultiCursor.<JImmutableMap.Entry<K, V>>builder()
-            .with(left)
-            .with(right)
+        return LazyMultiCursor.<JImmutableMap.Entry<K, V>>builder(2)
+            .insert(left)
+            .insert(right)
             .cursor();
     }
 

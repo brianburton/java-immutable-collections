@@ -297,10 +297,10 @@ public class ThreeNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        return LazyMultiCursor.<T>builder()
-            .with(left)
-            .with(middle)
-            .with(right)
+        return LazyMultiCursor.<T>builder(3)
+            .insert(left)
+            .insert(middle)
+            .insert(right)
             .cursor();
     }
 

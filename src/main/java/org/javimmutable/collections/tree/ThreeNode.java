@@ -385,10 +385,10 @@ public class ThreeNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return LazyMultiCursor.<JImmutableMap.Entry<K, V>>builder()
-            .with(left)
-            .with(middle)
-            .with(right)
+        return LazyMultiCursor.<JImmutableMap.Entry<K, V>>builder(3)
+            .insert(left)
+            .insert(middle)
+            .insert(right)
             .cursor();
     }
 

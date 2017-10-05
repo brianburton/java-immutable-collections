@@ -361,10 +361,10 @@ class BranchNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return LazyMultiCursor.<T>builder()
-            .with(prefix)
-            .with(IndexedArray.retained(nodes))
-            .with(suffix)
+        return LazyMultiCursor.<T>builder(3)
+            .insert(prefix)
+            .insert(IndexedArray.retained(nodes))
+            .insert(suffix)
             .cursor();
     }
 

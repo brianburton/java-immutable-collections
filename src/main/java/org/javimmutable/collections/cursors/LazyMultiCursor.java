@@ -3,12 +3,9 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.common.IndexedList;
+import org.javimmutable.collections.common.IndexedArray;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LazyMultiCursor<T>
     extends AbstractStartedCursor<T>
@@ -25,9 +22,9 @@ public class LazyMultiCursor<T>
         this.cursor = cursor;
     }
 
-    public static <T> Builder<T> builder()
+    public static <T> Builder<T> builder(int size)
     {
-        return new Builder<T>();
+        return new Builder<T>(size);
     }
 
     public static <T> Cursor<T> cursor(@Nonnull final Cursor<Cursorable<T>> sources)
@@ -115,34 +112,49 @@ public class LazyMultiCursor<T>
 
     public static class Builder<T>
     {
-        private final List<Cursorable<T>> sources = new ArrayList<Cursorable<T>>();
+        private final Cursorable<T>[] sources;
+        private int nextIndex = 0;
+
+        @SuppressWarnings("unchecked")
+        private Builder(int size)
+        {
+            sources = (Cursorable<T>[])new Cursorable[size];
+            this.nextIndex = 0;
+        }
 
         @Nonnull
-        public Builder<T> with(@Nullable Cursorable<T> source)
+        public Builder<T> insert(@Nonnull Cursorable<T> source)
         {
-            if (source != null) {
-                sources.add(source);
-            }
+            sources[nextIndex++] = source;
             return this;
         }
 
         @Nonnull
-        public <C extends Cursorable<T>> Builder<T> with(Indexed<C> c)
+        public <C extends Cursorable<T>> Builder<T> insert(@Nonnull Indexed<C> c)
         {
-            sources.add(LazyMultiCursor.cursorable(c));
+            sources[nextIndex++] = LazyMultiCursor.cursorable(c);
             return this;
         }
 
         @Nonnull
         public Cursor<T> cursor()
         {
-            return LazyMultiCursor.cursor(IndexedList.copied(sources));
+            fillArray();
+            return LazyMultiCursor.cursor(IndexedArray.retained(sources));
         }
 
         @Nonnull
         public Cursorable<T> cursorable()
         {
-            return LazyMultiCursor.cursorable(IndexedList.copied(sources));
+            fillArray();
+            return LazyMultiCursor.cursorable(IndexedArray.retained(sources));
+        }
+
+        private void fillArray()
+        {
+            while (nextIndex < sources.length) {
+                insert(StandardCursor.<T>emptyCursorable());
+            }
         }
     }
 }
