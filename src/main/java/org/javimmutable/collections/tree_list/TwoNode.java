@@ -36,8 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.cursors.LazyCursor;
-import org.javimmutable.collections.cursors.MultiCursor;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -45,7 +44,7 @@ import javax.annotation.concurrent.Immutable;
 @Deprecated
 @Immutable
 public class TwoNode<T>
-        extends TreeNode<T>
+    extends TreeNode<T>
 {
     private final TreeNode<T> left;
     private final TreeNode<T> right;
@@ -216,7 +215,10 @@ public class TwoNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        return MultiCursor.of(LazyCursor.of(left), LazyCursor.of(right));
+        return LazyMultiCursor.<T>builder()
+            .with(left)
+            .with(right)
+            .cursor();
     }
 
     private UpdateResult<T> updateLeft(UpdateResult<T> result)

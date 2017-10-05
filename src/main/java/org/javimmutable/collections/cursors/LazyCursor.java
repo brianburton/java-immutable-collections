@@ -102,12 +102,12 @@ public class LazyCursor<V>
     }
 
     /**
-     * Creates the real cursor using the factory and returns its next() method's result.
+     * Creates the real cursor using the factory and returns its start() method's result.
      * Thus when the lazy cursor creates the real cursor it always immediately calls its
      * start() method to start its iteration and get it into the state expected by the
      * caller of this method.
      *
-     * @return real cursor's next() value
+     * @return real cursor's start() value
      */
     @Nonnull
     @Override

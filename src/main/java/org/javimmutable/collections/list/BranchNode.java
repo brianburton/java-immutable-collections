@@ -38,9 +38,9 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
-import org.javimmutable.collections.cursors.LazyCursor;
-import org.javimmutable.collections.cursors.MultiCursor;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -57,12 +57,10 @@ import java.util.List;
  * nodes.  Once a BranchNode reaches its theoretical limit based on depth any insert triggers
  * the creation of a new higher depth node containing the branch so that the new parent's prefix
  * or suffix can contain the new value.
- *
- * @param <T>
  */
 @Immutable
 class BranchNode<T>
-        implements Node<T>
+    implements Node<T>
 {
     private final int depth;
     private final int size;
@@ -363,13 +361,11 @@ class BranchNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        MultiCursor.Builder<T> builder = MultiCursor.builder();
-        builder = builder.add(LazyCursor.of(prefix));
-        for (Node<T> node : nodes) {
-            builder = builder.add(LazyCursor.of(node));
-        }
-        builder = builder.add(LazyCursor.of(suffix));
-        return builder.build();
+        return LazyMultiCursor.<T>builder()
+            .with(prefix)
+            .with(IndexedArray.retained(nodes))
+            .with(suffix)
+            .cursor();
     }
 
     @Override
@@ -409,7 +405,7 @@ class BranchNode<T>
     }
 
     static class Builder<T>
-            implements MutableBuilder<T, Node<T>>
+        implements MutableBuilder<T, Node<T>>
     {
         private final List<T> leaves = new ArrayList<T>();
 

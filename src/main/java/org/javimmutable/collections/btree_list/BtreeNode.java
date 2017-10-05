@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.Tuple2;
 
 import javax.annotation.Nonnull;
 
 interface BtreeNode<T>
-    extends InvariantCheckable
+    extends InvariantCheckable,
+            Cursorable<T>
 {
     int MIN_CHILDREN = 9;
     int MAX_CHILDREN = 2 * MIN_CHILDREN;
@@ -83,9 +84,6 @@ interface BtreeNode<T>
     BtreeNode<T> firstChild();
 
     boolean containsIndex(int index);
-
-    @Nonnull
-    Cursor<T> cursor();
 
     int depth();
 }

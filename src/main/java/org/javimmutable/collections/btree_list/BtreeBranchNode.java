@@ -36,18 +36,17 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.cursors.LazyCursor;
-import org.javimmutable.collections.cursors.MultiCursor;
+import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
 
 class BtreeBranchNode<T>
-        implements BtreeNode<T>,
-                   ArrayHelper.Allocator<BtreeNode<T>>
+    implements BtreeNode<T>,
+               ArrayHelper.Allocator<BtreeNode<T>>
 {
     private final BtreeNode<T>[] children;
     private final int valueCount;
@@ -93,15 +92,13 @@ class BtreeBranchNode<T>
     @Nonnull
     static <T> BtreeBranchNode<T> forTesting(BtreeNode<T>... children)
     {
-        assert children.length >= 0;
         assert children.length <= MAX_CHILDREN;
-
         return new BtreeBranchNode<T>(children.clone());
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> BtreeNode<T>[] allocateNodes(int size)
+    private static <T> BtreeNode<T>[] allocateNodes(int size)
     {
         return (BtreeNode<T>[])new BtreeNode[size];
     }
@@ -276,7 +273,7 @@ class BtreeBranchNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return LazyCursor.of(new CursorFactory());
+        return LazyMultiCursor.cursor(IndexedArray.retained(children));
     }
 
     @Override
@@ -341,20 +338,6 @@ class BtreeBranchNode<T>
             this.child = child;
             this.childIndex = childIndex;
             this.logicalIndex = logicalIndex;
-        }
-    }
-
-    private class CursorFactory
-            implements Func0<Cursor<T>>
-    {
-        @Override
-        public Cursor<T> apply()
-        {
-            MultiCursor.Builder<T> builder = MultiCursor.builder();
-            for (BtreeNode<T> child : children) {
-                builder = builder.add(child.cursor());
-            }
-            return builder.build();
         }
     }
 }
