@@ -151,7 +151,7 @@ public abstract class TrieNode<T>
             return of();
 
         case 1:
-            return LeafTrieNode.of(index, source.get(offset));
+            return LeafTrieNode.<T>of(index, source.get(offset));
 
         case 32:
             return FullBranchTrieNode.fromSource(index, source, offset);
