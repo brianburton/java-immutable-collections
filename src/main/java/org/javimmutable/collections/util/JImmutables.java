@@ -35,7 +35,18 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableArray;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableListMap;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMultiset;
+import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.common.IndexedArray;
@@ -1316,7 +1327,7 @@ public final class JImmutables
      * @param <V>
      * @return
      */
-    public static <K, V> JImmutableSetMap<K, V> sortedSettMap(Comparator<K> comparator)
+    public static <K, V> JImmutableSetMap<K, V> sortedSetMap(Comparator<K> comparator)
     {
         return JImmutableTreeSetMap.of(comparator);
     }
