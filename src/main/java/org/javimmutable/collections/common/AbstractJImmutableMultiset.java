@@ -625,12 +625,11 @@ public abstract class AbstractJImmutableMultiset<T>
 
     private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
-        final Counter counter = new Counter();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
-            if (count(value) < counter.add(value, otherCount)) {
+            if (count(value) < otherCount) {
                 return false;
             }
         }
@@ -668,7 +667,8 @@ public abstract class AbstractJImmutableMultiset<T>
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
-            editor.set(value, Math.max(entry.getValue(), count(value)));
+            final int otherCount = entry.getValue();
+            editor.set(value, Math.max(otherCount, count(value)));
         }
         return editor.build();
     }
