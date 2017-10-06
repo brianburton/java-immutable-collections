@@ -55,7 +55,7 @@ import java.util.Set;
 
 @Immutable
 public abstract class AbstractJImmutableMultiset<T>
-        implements JImmutableMultiset<T>
+    implements JImmutableMultiset<T>
 {
     private final JImmutableMap<T, Integer> map;
     private final int occurrences;
@@ -676,7 +676,7 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Nonnull
-    protected <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
+    private <T1 extends T> JImmutableMultiset<T> intersectionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
         final Counter counter = new Counter();
         final Editor editor = new Editor();
@@ -763,7 +763,6 @@ public abstract class AbstractJImmutableMultiset<T>
     private class Counter
     {
         private final Map<T, Integer> counts;
-        private int totalCount;
 
         private Counter()
         {
@@ -779,7 +778,6 @@ public abstract class AbstractJImmutableMultiset<T>
             final int currentCount = get(value);
             final int newCount = currentCount + number;
             counts.put(value, newCount);
-            totalCount = totalCount + newCount - currentCount;
             return newCount;
         }
 
