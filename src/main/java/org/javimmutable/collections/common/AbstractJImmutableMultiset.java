@@ -664,13 +664,11 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     private <T1 extends T> JImmutableMultiset<T> unionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
-        final Counter counter = new Counter();
         final Editor editor = new Editor();
         for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
             final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
             final T value = entry.getKey();
-            final int otherCount = counter.add(value, entry.getValue());
-            editor.set(value, Math.max(otherCount, count(value)));
+            editor.set(value, Math.max(entry.getValue(), count(value)));
         }
         return editor.build();
     }
