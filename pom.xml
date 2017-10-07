@@ -194,7 +194,7 @@
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
-                    <executable>java</executable>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
             <plugin>
@@ -216,7 +216,7 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
                     </arguments>
                 </configuration>
