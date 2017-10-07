@@ -46,11 +46,11 @@ import javax.annotation.Nonnull;
  * The factories ensure that a Cursor is restartable and permits lazy evaluation of
  * the beginning of iteration.  The function will only be created if the starting
  * Cursor's start() or next() method is invoked.
- * <p/>
+ * <p>
  * The Cursors are not immutable but are designed to act as though they are.
  * Cursors remember their next value between invocations so that standard look ahead
  * behavior is preserved.
- * <p/>
+ * <p>
  * The Cursors are not thread safe.
  */
 public abstract class ValueFunctionCursor

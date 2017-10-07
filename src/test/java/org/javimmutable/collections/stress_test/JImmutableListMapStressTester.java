@@ -57,7 +57,7 @@ import java.util.Random;
  * without changing the keys), shrinking (removes key-list pairts), contains (tests methods that
  * find lists contained in the listmap), and cleanup (empties the listmap of all key-list
  * pairs).
- * <p/>
+ * <p>
  * This tester was designed so that the listmap produced would contains lists of a large
  * variety of sizes. On average, 11% of the lists in the listmap will be empty by the end
  * of the test. 26% will contain only one value. 58% will contain between two and ten

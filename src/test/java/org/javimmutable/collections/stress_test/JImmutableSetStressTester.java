@@ -52,7 +52,7 @@ import java.util.Set;
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
  * into four sections: growing (adds new values), shrinking (removes values), contains (tests
  * methods that check for specified values), and cleanup (empties the set of all values).
- * <p/>
+ * <p>
  * The cleanup is slow due to the nature of the intersection method and the large size of
  * the set. The loop will take several seconds to run an average of 50 intersections
  * before the set is empty.

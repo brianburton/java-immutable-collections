@@ -45,7 +45,7 @@ import java.util.Map;
  * order by Cursors so negative values are visited before positive values.  Implementations
  * are allowed to restrict the range of allowable indexes for performance or other reasons.
  * Implementations should throw IndexOutOfBounds exceptions if presented with an invalid index.
- * <p/>
+ * <p>
  * Arrays are sparse meaning that they can contain elements at any valid index with no need
  * to keep them consecutive (like a List).  Memory is managed to use no more than necessary
  * for the number of elements currently in the array.

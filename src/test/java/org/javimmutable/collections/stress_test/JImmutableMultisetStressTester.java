@@ -64,13 +64,13 @@ import java.util.Set;
  * Test program for all implementations of JImmutableMultiset. Divided into four sections:
  * growing (adds new occurrences), shrinking (removes occurrences), contains (tests methods
  * that check for specific occurrences), and cleanup (empties the set of all occurrences).
- * <p/>
+ * <p>
  * This class alone does not test every method in JImmutableMultiset. Methods that manipulate
  * the values in the multiset with no effect on the number of occurrences are tested in the
  * JImmutableSetStressTester. Those tests are not repeated here. Similarly, the goal size
  * in this test refers to the total number of occurrences (multi.occurrenceCount()), rather than
  * the number of unique values.
- * <p/>
+ * <p>
  * The cleanup is slow due to the nature of the intersection method and the large size of
  * the multiset. The loop will take several seconds to run an average of 35 intersections
  * before the multiset is empty.

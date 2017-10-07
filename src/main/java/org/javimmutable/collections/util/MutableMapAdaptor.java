@@ -51,11 +51,11 @@ import java.util.Set;
  * version of their internal Map field with other classes.  This class serves as an adaptor to allow
  * this sharing to continue for a time after converting to JImmutableMap.  However the legacy code should
  * still be changed over time to eliminate the sharing of a mutable Map.
- * <p/>
+ * <p>
  * Since a JImmutableMap has to be replaced to reflect any changes to the map it can be difficult to
  * adapt one of them into a mutable Map.  Concrete classes derived from this class only have to implement
  * two methods, accessMap() and replaceMap() in order to implement the adaptor.
- * <p/>
+ * <p>
  * NOTE: this adaptor is NOT thread safe.  Do not use it in a multi-threaded environment.
  */
 public abstract class MutableMapAdaptor<K, V>

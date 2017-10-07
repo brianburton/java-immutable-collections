@@ -60,7 +60,7 @@ import java.util.Random;
  * setmap without changing the keys), shrinking (removes key-set pairs), contains (tests
  * methods that check for keys or values in a set), and cleanup (empties the setmap of
  * all key-set pairs).
- * <p/>
+ * <p>
  * This tester was designed so that the setmap produced would contain sets of a large
  * variety of sizes. On average, 25% of the sets in the setmap will be empty by the end
  * of the test. 18% will contain only one value. 52% will contain between two and ten

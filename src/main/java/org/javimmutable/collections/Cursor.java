@@ -71,7 +71,7 @@ public interface Cursor<T>
      * safer since it can be used safely on already started cursors as well as not-started ones.  This distinction
      * is useful when passing a Cursor as parameter to a method that will traverse from the Cursor's current position
      * forward and using start() prevents it from skipping the current value.
-     * <p/>
+     * <p>
      * Must always return a non-null Cursor.
      *
      * @return Cursor for first position or this if already started
