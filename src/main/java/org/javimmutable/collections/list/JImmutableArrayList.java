@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
@@ -352,7 +355,7 @@ public class JImmutableArrayList<T>
         public JImmutableArrayList<T> build()
         {
             final Node<T> node = builder.build();
-            return node.isEmpty() ? JImmutableArrayList.<T>of() : new JImmutableArrayList<T>(builder.build());
+            return node.isEmpty() ? JImmutableArrayList.<T>of() : new JImmutableArrayList<T>(node);
         }
 
         @Nonnull
