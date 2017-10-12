@@ -20,10 +20,143 @@ Resources
 - [Project Website](https://github.com/brianburton/java-immutable-collections)
 - [Javadocs](./apidocs/index.html)
 
+Tutorials
+---
+
+**List Tutorial**
+
+JImmutable Collections provides two interfaces with signatures similar to java.util.List.  Both of these interfaces provide access to elements in the List using an integer index.  As with List valid indexes are always in the range zero through size() - 1.  JImmutable Collections uses assign() instead of set(), insert() instead of add(), and delete() instead of remove() so that when converting code from java.util.List to JImmutableList the compiler will find all of the places that you need to replace a simple method call with an assignment.
+
+The simpler interface, JImmutableList, provides indexed access to elements within the list but restricts addition and removal of values to the end of the list.  Values added to the list are always stored in the order based on how they were added.  Cursors also traverse the values in the same order.  The current implementation uses a 32-way tree which provides O(log32(n)) performance for all operations. (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))
+
+As with all of the immutable collection classes any method that modifies the list actually creates a new list instance and returns it as the method's result.  This result can be assigned to the original list variable or to a new variable as needed.  The original, unmodified, version of the list remains in memory until garbage collected.  The lists reuse as much structure as possible so adding and removing elements requires very little copying and only a small amount of additional memory.
+
+In the example below notice that changed's third value is now 45 and list's third value is still 30.  The two lists internally contain shared copies of the common values to minimize memory consumption and improve performance but as a user of the list you don't need to worry about that.
+
+````
+    JImmutableList<Integer> list = JImmutables.list();
+    list = list.insert(10).insert(20).insert(30);
+    assertEquals(10, list.get(0));
+    assertEquals(20, list.get(1));
+    assertEquals(30, list.get(2));
+
+    JImmutableList<Integer> changed = list.deleteLast().insert(45);
+    assertEquals(10, list.get(0));
+    assertEquals(20, list.get(1));
+    assertEquals(30, list.get(2));
+    assertEquals(10, changed.get(0));
+    assertEquals(20, changed.get(1));
+    assertEquals(45, changed.get(2));
+````
+
+The JImmutableList interfaces provide a getList() method that returns an object implementing java.util.List that uses the original list as its data source.  The actual data is not copied so this method has very low overhead.  You can use this any time you need to pass a JImmutableList to code that needs a java.util.List. The resulting List is unmodifiable so set, remove, etc methods all throw UnsupportedOperationExceptions.
+
+````
+    assertEquals(Arrays.asList(10, 20, 30), list.getList());
+    assertEquals(Arrays.asList(10, 20, 45), changed.getList());
+````
+
+The JImmutableRandomAccessList interface provides all of the same methods as JImmutableList but also allows insertion and removal of values from anywhere in the list.  The current implementation uses a b-tree which provides O(log(n)) performance for all operations.
+
+The JImmutables.ralist() factory method can be used to create new JImmutableRandomAccessList.  In the example below a new JImmutableRandomAccessList is created and values are inserted to place its elements in the same order as list from the first example.
+
+````
+    JImmutableRandomAccessList<Integer> ralist = JImmutables.ralist();
+    ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
+    assertEquals(10, ralist.get(0));
+    assertEquals(20, ralist.get(1));
+    assertEquals(30, ralist.get(2));
+    
+    JImmutableRandomAccessList<Integer> ralist2 = ralist;
+    ralist2 = ralist2.delete(1).insert(1, 87);
+    assertEquals(10, ralist.get(0));
+    assertEquals(20, ralist.get(1));
+    assertEquals(30, ralist.get(2));
+    assertEquals(10, ralist2.get(0));
+    assertEquals(87, ralist2.get(1));
+    assertEquals(30, ralist2.get(2));
+    assertEquals(Arrays.asList(10, 20, 30), ralist.getList());
+    assertEquals(Arrays.asList(10, 87, 30), ralist2.getList());
+````
+
+**Map Tutorial**
+
+The JImmutable library provides a JImmutableMap interface that is very similar to java.util.Map.  Like other immutable interfaces all of the methods that modify the map return a new map as their result.  The old and new maps share almost all of their structure in common to minimize memory and CPU overhead.  Two implementations are provided.  Nulls are not permitted as keys but can be used as values.  JImmutable Collections uses assign() instead of put() and delete() instead of remove() so that when converting code from java.util.Map to JImmutableMap the compiler will find all of the places that you need to replace a simple method call with an assignment.
+
+JImmutables.map() uses a hash mapped integer trie to store its values.  This provides O(log32(n)) performance for all operations.  (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))  Values within the map are stored in an ordering based on the hash codes of the keys so no guarantee is made about what order a Cursor will return entries. (see [Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys) for advice on selecting keys for maps)
+
+JImmutables.sortedMap() uses a 2-3 tree with a Comparator object to store its values.  This provides O(log2(n)) performance for all operations.  Values within the map are stored in sorted order based on the Comparator used by the tree.  Usually you will use objects which implement the Comparable interface as keys and when you do so the keys will be stored in their natural ordering.  When you need to use keys that do not implement Comparable or if you need to use a different ordering you can create the tree with your own Comparable class.  Care must be taken to write robust and correct implementations of Comparable to ensure the tree operates as expected.
+
+````
+    JImmutableMap<Integer, Integer> hmap = JImmutables.map();
+    hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
+
+    JImmutableMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18,19);
+
+    assertEquals(11, hmap.get(10));
+    assertEquals(19, hmap.get(20));
+    assertEquals(31, hmap.get(30));
+
+    assertEquals(11, hmap2.get(10));
+    assertEquals(19, hmap2.get(18));
+    assertEquals(null, hmap2.get(20));
+    assertEquals(31, hmap2.get(30));
+````
+
+The get() method operates in the same manner as java.util.Map.get().  If the map does not contain a value for the specified key null is returned.  Since JImmutableMaps allow nulls as values the get() method's result can be ambiguous.  JImmutableMap provides a find() method which is similar to get() but always returns a non-null Holder object that can be used to determine unambiguously whether or not a value was found matching the key.
+
+````
+    hmap2 = hmap2.assign(80, null);
+    assertEquals(null, hmap2.get(20));
+    assertEquals(true, hmap2.find(20).isEmpty());
+    // hmap2.find(20).getValue() would throw since the Holder is empty
+
+    assertEquals(null, hmap2.get(80));
+    assertEquals(false, hmap2.find(80).isEmpty());
+    assertEquals(null, hmap2.find(80).getValue());
+````
+
+JImmutableMap includes a getMap() method that returns an object implementing java.util.Map.  The returned Map is immutable (set, remove, etc throw UnsupportedOperationException) and uses the original JImmutableMap to access values.  getMap() has very low overhead since the contents of the JImmutableMap are not copied when creating the Map.  Use this method when you want to share the JImmutableMap's contents with code that only understands java.util.Map.
+
+Sorted maps work exactly the same way as hash maps but their cursors provide access to entries in sorted order based on their keys.  In the example below the keySet() and values() methods provide their contents sorted based on the order of the corresponding keys in the map.
+
+````
+    JImmutableMap<Integer, Integer> smap = JImmutables.sortedMap();
+    smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
+    assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(smap.getMap().keySet()));
+    assertEquals(Arrays.asList(80, 19, 31), new ArrayList<Integer>(smap.getMap().values()));
+````
+
+**Array Tutorial**
+
+JImmutable Collections provides a sparse array implementation.  A sparse array is an immutable collection similar to a map except that:
+
+- it implements JImmutableArray instead of JImmutableMap
+- its keys are ints (not Integers) so no boxing/unboxing is needed for them
+- its cursors iterate in sorted order by key using natural integer ordering (negative indexes then positive indexes)
+
+Any valid 32-bit integer can be used as an index to a sparse array.  Like a map the array efficiently manages memory so an array with widely dispersed keys will use approximately the same amount of memory as one with contiguous keys.
+
+Like all of the other jimmutable containers you should create sparse array instances using the static factory methods in the util.JImmutables class.  Using these methods instead of instantiating objects directly is preferred since it isolates the client from future changes in the underlying implementation.
+
+JImmutableArrays are immutable.  The assign() and delete() methods leave the original array intact and return a new modified array containing the requested change.  The old and new arrays share almost all of their structure in common so very little copying is performed.
+
+````
+    JImmutableArray<Integer> array = JImmutables.array();
+    array = array.assign(-50000, "able");
+    array = array.assign(25000, "charlie");
+    array = array.assign(0, "baker");
+    assertEquals("baker", array.get(0));
+````
+
+The example creates an empty array and then assigns three values.  Notice that the indexes are not contiguous and that negative indexes are perfectly acceptable.  Arrays iterate over their values in order of their keys so for the sample array valuesCursor() would return the values in the order "able" then "baker" then "charlie".  The keysCursor() would return -50000 then 0 then 25000.  Cursors skip "missing" indexes.  The standard cursor() method returns JImmutableMap.Entry objects that contain both the index and the value for each entry in the array.
+
+Since arrays are not contiguous there is no concept of "insertion", only assignment.  If you need a collection that manages indexes for you use a JImmutableList.  However if your algorithm provides a natural way to manage its own indexes a JImmutableArray might be a better option.
+
 Factory Methods
 ---
 
-Internally JImmutable Collections uses integer tries and 2-3 trees for the collection implementations but it strives to hide that fact from its users. There is no reason to directly create objects of the implementation classes. Your code will be cleaner and more future proof if you always create new collections using the factory methods in the JImmutables class.
+Internally JImmutable Collections uses integer tries, B-Trees, 32-way trees, and 2-3 trees for the collection implementations but it strives to hide that fact from its users. There is no reason to directly create objects of the implementation classes. Your code will be cleaner and more future proof if you always create new collections using the factory methods in the JImmutables class.
 
 Static methods in JImmutables can be used to create new instances of each collection interface. For example:
 
@@ -171,135 +304,3 @@ Having an excellent hashCode() will make it highly unlikely that any collisions 
 Restricting your keys to those classes which implement Comparable will allow the map to use a 2-3 tree for maximum performance if collisions do happen.  Imagine the worst case scenario of a hashCode() that always generates the same number.  In that case a map using the 2-3 tree strategy will have O(log(N)) performance while a map using linked list strategy will have O(N) performance.  So the small amount of time needed to add a well written compareTo() method can pay off in better performance if your hashCode() method proves to be less than stellar.
 
 Of course the easiest strategy is to simply use one of Java's built in value types as keys.  String, Integer, Double, etc all implement Comparable and have good hashCode() implementations.
-
-Tutorials
----
-
-**Array Tutorial**
-
-JImmutable Collections provides a sparse array implementation.  A sparse array is an immutable collection similar to a map except that:
-
-- it implements JImmutableArray instead of JImmutableMap
-- its keys are ints (not Integers) so no boxing/unboxing is needed for them
-- its cursors iterate in sorted order by key using natural integer ordering (negative indexes then positive indexes)
-
-Any valid 32-bit integer can be used as an index to a sparse array.  Like a map the array efficiently manages memory so an array with widely dispersed keys will use approximately the same amount of memory as one with contiguous keys.
-
-Like all of the other jimmutable containers you should create sparse array instances using the static factory methods in the util.JImmutables class.  Using these methods instead of instantiating objects directly is preferred since it isolates the client from future changes in the underlying implementation.
-
-JImmutableArrays are immutable.  The assign() and delete() methods leave the original array intact and return a new modified array containing the requested change.  The old and new arrays share almost all of their structure in common so very little copying is performed.
-
-````
-    JImmutableArray<Integer> array = JImmutables.array();
-    array = array.assign(-50000, "able");
-    array = array.assign(25000, "charlie");
-    array = array.assign(0, "baker");
-    assertEquals("baker", array.get(0));
-````
-
-The example creates an empty array and then assigns three values.  Notice that the indexes are not contiguous and that negative indexes are perfectly acceptable.  Arrays iterate over their values in order of their keys so for the sample array valuesCursor() would return the values in the order "able" then "baker" then "charlie".  The keysCursor() would return -50000 then 0 then 25000.  Cursors skip "missing" indexes.  The standard cursor() method returns JImmutableMap.Entry objects that contain both the index and the value for each entry in the array.
-
-Since arrays are not contiguous there is no concept of "insertion", only assignment.  If you need a collection that manages indexes for you use a JImmutableList.  However if your algorithm provides a natural way to manage its own indexes a JImmutableArray might be a better option.
-
-**List Tutorial**
-
-JImmutable Collections provides two interfaces with signatures similar to java.util.List.  Both of these interfaces provide access to elements in the List using an integer index.  As with List valid indexes are always in the range zero through size() - 1.  JImmutable Collections uses assign() instead of set(), insert() instead of add(), and delete() instead of remove() so that when converting code from java.util.List to JImmutableList the compiler will find all of the places that you need to replace a simple method call with an assignment.
-
-The simpler interface, JImmutableList, provides indexed access to elements within the list but restricts addition and removal of values to the end of the list.  Values added to the list are always stored in the same order that they were added.  Cursors also traverse the values in the same order as they were added to the list.  The current implementation uses a 32-way tree which provides O(log32(n)) performance for all operations. (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))
-
-As with all of the immutable collection classes any method that modifies the list actually creates a new list instance and returns it as the method's result.  This result can be assigned to the original list variable or to a new variable as needed.  The original, unmodified, version of the list remains in memory until garbage collected.  The lists reuse as much structure as possible so adding and removing elements requires very little copying and only a small amount of additional memory.
-
-In the example below notice that changed's third value is now 45 and list's third value is still 30.  The two lists internally contain shared copies of the common values to minimize memory consumption and improve performance but as a user of the list you don't need to worry about that.
-
-````
-    JImmutableList<Integer> list = JImmutables.list();
-    list = list.insert(10).insert(20).insert(30);
-    assertEquals(10, list.get(0));
-    assertEquals(20, list.get(1));
-    assertEquals(30, list.get(2));
-
-    JImmutableList<Integer> changed = list.deleteLast().insert(45);
-    assertEquals(10, list.get(0));
-    assertEquals(20, list.get(1));
-    assertEquals(30, list.get(2));
-    assertEquals(10, changed.get(0));
-    assertEquals(20, changed.get(1));
-    assertEquals(45, changed.get(2));
-````
-
-The JImmutableList interfaces provide a getList() method that returns an object implementing java.util.List that uses the original list as its data source.  The actual data is not copied so this method has very low overhead.  You can use this any time you need to pass a JImmutableList to code that needs a java.util.List. The resulting List is unmodifiable so set, remove, etc methods all throw UnsupportedOperationExceptions.
-
-````
-    assertEquals(Arrays.asList(10, 20, 30), list.getList());
-    assertEquals(Arrays.asList(10, 20, 45), changed.getList());
-````
-
-The JImmutableRandomAccessList interface provides all of the same methods as JImmutableList but also allows insertion and removal of values from anywhere in the list.  The current implementation uses a 2-3 tree which provides O(log2(n)) performance for all operations.
-
-The JImmutables.ralist() factory method can be used to create new JImmutableRandomAccessList.  In the example below a new JImmutableRandomAccessList is created and values are inserted to place its elements in the same order as list from the first example.
-
-````
-    JImmutableRandomAccessList<Integer> ralist = JImmutables.ralist();
-    ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
-    assertEquals(10, ralist.get(0));
-    assertEquals(20, ralist.get(1));
-    assertEquals(30, ralist.get(2));
-    JImmutableRandomAccessList<Integer> ralist2 = ralist;
-    ralist2 = ralist2.delete(1).insert(1, 87);
-    assertEquals(10, ralist.get(0));
-    assertEquals(20, ralist.get(1));
-    assertEquals(30, ralist.get(2));
-    assertEquals(10, ralist2.get(0));
-    assertEquals(87, ralist2.get(1));
-    assertEquals(30, ralist2.get(2));
-    assertEquals(Arrays.asList(10, 20, 30), ralist.getList());
-    assertEquals(Arrays.asList(10, 87, 30), ralist2.getList());
-````
-
-**Map Tutorial**
-
-The JImmutable library provides a JImmutableMap interface that is very similar to java.util.Map.  Like other immutable interfaces all of the methods that modify the map return a new map as their result.  The old and new maps share almost all of their structure in common to minimize memory and CPU overhead.  Two implementations are provided.  Nulls are not permitted as keys but can be used as values.  JImmutable Collections uses assign() instead of put() and delete() instead of remove() so that when converting code from java.util.Map to JImmutableMap the compiler will find all of the places that you need to replace a simple method call with an assignment.
-
-JImmutables.map() uses a hash mapped integer trie to store its values.  This provides O(log32(n)) performance for all operations.  (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))  Values within the map are stored in an ordering based on the hash codes of the keys so no guarantee is made about what order a Cursor will return entries. (see [Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys) for advice on selecting keys for maps)
-
-JImmutables.sortedMap() uses a 2-3 tree with a Comparator object to store its values.  This provides O(log2(n)) performance for all operations.  Values within the map are stored in sorted order based on the Comparator used by the tree.  Usually you will use objects which implement the Comparable interface as keys and when you do so the keys will be stored in their natural ordering.  When you need to use keys that do not implement Comparable or if you need to use a different ordering you can create the tree with your own Comparable class.  Care must be taken to write robust and correct implementations of Comparable to ensure the tree operates as expected.
-
-````
-    JImmutableMap<Integer, Integer> hmap = JImmutables.map();
-    hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
-
-    JImmutableMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18,19);
-
-    assertEquals(11, hmap.get(10));
-    assertEquals(19, hmap.get(20));
-    assertEquals(31, hmap.get(30));
-
-    assertEquals(11, hmap2.get(10));
-    assertEquals(19, hmap2.get(18));
-    assertEquals(null, hmap2.get(20));
-    assertEquals(31, hmap2.get(30));
-````
-
-The get() method operates in the same manner as java.util.Map.get().  If the map does not contain a value for the specified key null is returned.  Since JImmutableMaps allow nulls as values the get() method's result can be ambiguous.  JImmutableMap provides a find() method which is similar to get() but always returns a non-null Holder object that can be used to determine unambiguously whether or not a value was found matching the key.
-
-````
-    hmap2 = hmap2.assign(80, null);
-    assertEquals(null, hmap2.get(20));
-    assertEquals(true, hmap2.find(20).isEmpty());
-    // hmap2.find(20).getValue() would throw since the Holder is empty
-
-    assertEquals(null, hmap2.get(80));
-    assertEquals(false, hmap2.find(80).isEmpty());
-    assertEquals(null, hmap2.find(80).getValue());
-````
-
-JImmutableMap includes a getMap() method that returns an object implementing java.util.Map.  The returned Map is immutable (set, remove, etc throw UnsupportedOperationException) and uses the original JImmutableMap to access values.  getMap() has very low overhead since contents of the JImmutableMap are not copied when creating the Map.  Use this method when you want to share the JImmutableMap's contents with code that only understands java.util.Map.
-
-Sorted maps work exactly the same way as hash maps but their cursors provide access to entries in sorted order based on their keys.  In the example below the keySet() and values() methods provide their contents sorted based on the order of the corresponding keys in the map.
-
-````
-    JImmutableMap<Integer, Integer> smap = JImmutables.sortedMap();
-    smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
-    assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(smap.getMap().keySet()));
-    assertEquals(Arrays.asList(80, 19, 31), new ArrayList<Integer>(smap.getMap().values()));
-````
