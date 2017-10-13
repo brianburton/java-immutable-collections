@@ -96,7 +96,7 @@ public class LazyMultiCursorTest
         builder.insert(values(9, 10));
         listCursorTest(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), builder.cursorable().cursor());
 
-        listCursorTest(Arrays.asList(5, 6, 7, 8), LazyMultiCursor.cursorable(StandardCursor.of(IndexedList.copied(list))).cursor());
+        listCursorTest(Arrays.asList(5, 6, 7, 8), LazyMultiCursor.cursorable(IndexedList.copied(list)).cursor());
     }
 
     private Cursor<Integer> cursor(Cursorable<Integer>... array)

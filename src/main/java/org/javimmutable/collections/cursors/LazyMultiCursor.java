@@ -46,11 +46,11 @@ public class LazyMultiCursor<T>
     extends AbstractStartedCursor<T>
 {
     @Nonnull
-    private final Cursor<Cursorable<T>> source;
+    private final Source<T> source;
     @Nonnull
     private final Cursor<T> cursor;
 
-    private LazyMultiCursor(@Nonnull Cursor<Cursorable<T>> source,
+    private LazyMultiCursor(@Nonnull Source<T> source,
                             @Nonnull Cursor<T> cursor)
     {
         this.source = source;
@@ -62,7 +62,7 @@ public class LazyMultiCursor<T>
         return new Builder<T>(size);
     }
 
-    public static <T> Cursor<T> cursor(@Nonnull final Cursor<Cursorable<T>> sources)
+    public static <T> Cursor<T> cursor(@Nonnull final Indexed<? extends Cursorable<T>> sources)
     {
         return new AbstractStartCursor<T>()
         {
@@ -70,25 +70,7 @@ public class LazyMultiCursor<T>
             @Override
             public Cursor<T> next()
             {
-                return advance(sources);
-            }
-        };
-    }
-
-    public static <T, C extends Cursorable<T>> Cursor<T> cursor(@Nonnull final Indexed<C> sources)
-    {
-        return cursor(CursorableCursors.of(sources).cursor());
-    }
-
-    public static <T> Cursorable<T> cursorable(@Nonnull final Cursor<Cursorable<T>> sources)
-    {
-        return new Cursorable<T>()
-        {
-            @Nonnull
-            @Override
-            public Cursor<T> cursor()
-            {
-                return LazyMultiCursor.cursor(sources);
+                return LazyMultiCursor.start(new Source<T>(sources, 0, sources.size()));
             }
         };
     }
@@ -132,17 +114,84 @@ public class LazyMultiCursor<T>
     }
 
     @Nonnull
-    private static <T> Cursor<T> advance(@Nonnull Cursor<Cursorable<T>> source)
+    private static <T> Cursor<T> start(@Nonnull Source<T> source)
     {
-        Cursor<Cursorable<T>> nextSource = source.next();
-        while (nextSource.hasValue()) {
-            Cursor<T> nextCursor = nextSource.getValue().cursor().start();
-            if (nextCursor.hasValue()) {
-                return new LazyMultiCursor<T>(nextSource, nextCursor);
+        while (true) {
+            Cursor<T> cursor = source.cursor();
+            if (cursor.hasValue()) {
+                return new LazyMultiCursor<T>(source, cursor);
             }
-            nextSource = nextSource.next();
+            if (!source.hasNext()) {
+                return EmptyStartedCursor.of();
+            }
+            source = source.next();
+        }
+    }
+
+    @Nonnull
+    private static <T> Cursor<T> advance(@Nonnull Source<T> source)
+    {
+        while (source.hasNext()) {
+            source = source.next();
+            Cursor<T> cursor = source.cursor();
+            if (cursor.hasValue()) {
+                return new LazyMultiCursor<T>(source, cursor);
+            }
         }
         return EmptyStartedCursor.of();
+    }
+
+    private static class Source<T>
+    {
+        private final Indexed<? extends Cursorable<T>> sources;
+        private final int current;
+        private final int limit;
+
+        private Source(Indexed<? extends Cursorable<T>> sources,
+                       int current,
+                       int limit)
+        {
+            this.sources = sources;
+            this.current = current;
+            this.limit = limit;
+        }
+
+        private boolean hasNext()
+        {
+            return (limit - current) > 1;
+        }
+
+        private Source<T> next()
+        {
+            return new Source<T>(sources, current + 1, limit);
+        }
+
+        private Cursor<T> cursor()
+        {
+            return sources.get(current).cursor().start();
+        }
+
+        private boolean canSplit()
+        {
+            return (limit - current) >= 3;
+        }
+
+        private Source<T> splitLeft()
+        {
+            return new Source<T>(sources, current, splitRightIndex());
+        }
+
+        private Source<T> splitRight()
+        {
+            return new Source<T>(sources, splitRightIndex(), limit);
+        }
+
+        private int splitRightIndex()
+        {
+            final int offset = (limit - current) / 2;
+            assert offset >= 2;
+            return current + offset;
+        }
     }
 
     public static class Builder<T>
@@ -174,8 +223,20 @@ public class LazyMultiCursor<T>
         @Nonnull
         public Cursor<T> cursor()
         {
+            if (sources.length == 0) {
+                return StandardCursor.of();
+            }
+
             fillArray();
-            return LazyMultiCursor.cursor(IndexedArray.retained(sources));
+            return new AbstractStartCursor<T>()
+            {
+                @Nonnull
+                @Override
+                public Cursor<T> next()
+                {
+                    return LazyMultiCursor.start(new Source<T>(IndexedArray.retained(sources), 0, sources.length));
+                }
+            };
         }
 
         @Nonnull
