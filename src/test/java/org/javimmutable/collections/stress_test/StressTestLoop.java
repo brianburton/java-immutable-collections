@@ -134,8 +134,8 @@ public class StressTestLoop
             tokens = StressTestUtil.loadTokens(filenames);
             System.out.printf("\nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
-            tokens = StressTestUtil.loadTokens("src/site/apt/index.apt");
-            System.out.printf("\nLoaded %d tokens from index.apt%n", tokens.size());
+            tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
+            System.out.printf("\nLoaded %d tokens from index.md%n", tokens.size());
         }
         boolean needsFilter = needsFilter(options, fileSpec, seedSpec);
         //noinspection InfiniteLoopStatement
