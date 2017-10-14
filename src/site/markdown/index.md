@@ -19,13 +19,21 @@ Resources
 - [Project Wiki](https://github.com/brianburton/java-immutable-collections/wiki)
 - [Project Website](https://github.com/brianburton/java-immutable-collections)
 - [Javadocs](./apidocs/index.html)
+- [Releases](https://github.com/brianburton/java-immutable-collections/releases)
+- [search.maven.org](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22)
 
 Tutorials
 ---
 
+**Downloading**
+
+If your application is built using a tool that understands maven coordinates the easiest way to add the library to your project is to simply add it as a dependency in your pom or build file.  The maven coordinates to use are documented on the web site's [Dependency Information](http://brianburton.github.io/java-immutable-collections/dependency-info.html) page.  You can browse all available artifacts on the [search.maven.org](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22) page.
+
+The library itself is distributed as a single jar so adding the jar itself to small projects is also an option.  The [Releases](https://github.com/brianburton/java-immutable-collections/releases) page on [github.com](https://github.com/brianburton/java-immutable-collections/) contains links to zip files containing the jar for each release.
+
 **List Tutorial**
 
-JImmutable Collections provides two interfaces with signatures similar to java.util.List.  Both of these interfaces provide access to elements in the List using an integer index.  As with List valid indexes are always in the range zero through size() - 1.  JImmutable Collections uses assign() instead of set(), insert() instead of add(), and delete() instead of remove() so that when converting code from java.util.List to JImmutableList the compiler will find all of the places that you need to replace a simple method call with an assignment.
+JImmutable Collections provides two interfaces with signatures similar to java.util.List.  Both of these interfaces provide access to elements in the List using an integer index.  As with List valid indexes are always in the range zero through `size() - 1`.  JImmutable Collections uses assign() instead of set(), insert() instead of add(), and delete() instead of remove() so that when converting code from java.util.List to JImmutableList the compiler will find all of the places that you need to replace a simple method call with an assignment.
 
 The simpler interface, JImmutableList, provides indexed access to elements within the list but restricts addition and removal of values to the end of the list.  Values added to the list are always stored in the order based on how they were added.  Cursors also traverse the values in the same order.  The current implementation uses a 32-way tree which provides O(log32(n)) performance for all operations. (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))
 
@@ -264,6 +272,13 @@ JImmutables.insertOrderSet()|O(2 * log32(n))|A set implemented internally using 
 JImmutables.listMap()|O(log32(n))|A hash map mapping keys to JImmutableLists. Performance similar to JImmutables.map(). Cursors visit elements in an unspecified order.
 JImmutables.sortedListMap()|O(log2(n))|A sorted map mapping keys to JImmutableLists. Performance similar to JImmutables.sortedMap(). Cursors visit elements in sort order of keys as specified by the Comparator.
 JImmutables.insertOrderListMap()|O(2 * log32(n))|A sorted map mapping keys to JImmutableLists. Performance similar to JImmutables.insertOrderMap(). Cursors visit elements in the order they were originally inserted into the map.
+JImmutables.setMap()|O(log32(n))|A hash map mapping keys to JImmutableSets. Performance similar to JImmutables.map(). Cursors visit elements in an unspecified order.  Sets are all equivalent to one created by JImmutables.set().
+JImmutables.sortedSetMap()|O(log2(n))|A sorted map mapping keys to JImmutableSets. Performance similar to JImmutables.sortedMap(). Cursors visit elements in sort order of keys as specified by the Comparator.  Sets are all equivalent to one created by JImmutables.set().
+JImmutables.insertOrderSetMap()|O(2 * log32(n))|A sorted map mapping keys to JImmutableSets. Performance similar to JImmutables.insertOrderMap(). Cursors visit elements in the order they were originally inserted into the map.  Sets are all equivalent to one created by JImmutables.set().
+JImmutables.multiset()|O(log32(n))|A multiset implemented internally using a hash map. Keys are stored in hash mapped array tries using hashCode() and equals() methods to compare keys. Cursors visit elements in an unspecified order.
+JImmutables.sortedMultiset()|O(log2(n))|A multiset implemented internally using a 2-3 tree. Keys are compared using a Comparator. Cursors visit elements in sort order of keys as specified by the Comparator.
+JImmutables.insertOrderMultiset()|O(2 * log32(n))|A multiset implemented internally using an integer trie for sort order and a hash mapped trie for searching. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a multiset() since it maintains two data structures internally. Cursors visit elements in the order they were originally inserted into the map.
+
 
 Hash Keys
 ---
