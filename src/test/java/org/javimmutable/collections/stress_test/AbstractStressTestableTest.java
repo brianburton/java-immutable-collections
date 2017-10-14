@@ -50,7 +50,7 @@ public class AbstractStressTestableTest
     public void test()
             throws IOException
     {
-        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/apt/index.apt");
+        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
         testStandard(tokens);
     }
 
