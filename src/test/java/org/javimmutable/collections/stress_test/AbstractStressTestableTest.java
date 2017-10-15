@@ -45,16 +45,16 @@ import java.util.List;
 import java.util.Random;
 
 public class AbstractStressTestableTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
-            throws IOException
+        throws IOException
     {
-        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/apt/index.apt");
+        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
         testStandard(tokens);
     }
 
-    public void testStandard(JImmutableList<String> tokens)
+    private void testStandard(JImmutableList<String> tokens)
     {
         Random random = new Random();
         AbstractStressTestable testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
@@ -62,9 +62,9 @@ public class AbstractStressTestableTest
         testMakeInsertJList(testable, tokens, random);
     }
 
-    public void testMakeInsertList(AbstractStressTestable testable,
-                                   JImmutableList<String> tokens,
-                                   Random random)
+    private void testMakeInsertList(AbstractStressTestable testable,
+                                    JImmutableList<String> tokens,
+                                    Random random)
     {
         int times = 100000;
         int total = 0;
@@ -77,9 +77,9 @@ public class AbstractStressTestableTest
         assertTrue(average <= 1.1);
     }
 
-    public void testMakeInsertJList(AbstractStressTestable testable,
-                                    JImmutableList<String> tokens,
-                                    Random random)
+    private void testMakeInsertJList(AbstractStressTestable testable,
+                                     JImmutableList<String> tokens,
+                                     Random random)
     {
         int times = 100000;
         int total = 0;

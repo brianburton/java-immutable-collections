@@ -1285,6 +1285,7 @@ public final class JImmutables
 
     /**
      * Creates a set map with higher performance but no specific ordering of keys.
+     * Sets for each key are equivalent to one created by JImmutables.set().
      *
      * @param <K>
      * @param <V>
@@ -1297,6 +1298,7 @@ public final class JImmutables
 
     /**
      * Creates a set map with keys sorted by order they are inserted.
+     * Sets for each value are equivalent to one created by JImmutables.set().
      *
      * @param <K>
      * @param <V>
@@ -1309,6 +1311,7 @@ public final class JImmutables
 
     /**
      * Creates a set map with keys sorted by their natural ordering.
+     * Sets for each key are equivalent to one created by JImmutables.set().
      *
      * @param <K>
      * @param <V>
@@ -1321,6 +1324,7 @@ public final class JImmutables
 
     /**
      * Creates a set map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
+     * Sets for each value are equivalent to one created by JImmutables.set().
      *
      * @param comparator
      * @param <K>

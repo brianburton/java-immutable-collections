@@ -40,5 +40,6 @@ All releases are uploaded to the [releases section](https://github.com/brianburt
     </dependency>
 
 **Project Members:**  
-[Brian Burton](https://github.com/brianburton) (admin)
-[Angela Burton](https://github.com/anjbur)
+
+- [Brian Burton](https://github.com/brianburton) (admin)
+- [Angela Burton](https://github.com/anjbur)

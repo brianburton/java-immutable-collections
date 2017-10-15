@@ -3,7 +3,7 @@
 
     <groupId>org.javimmutable</groupId>
     <artifactId>javimmutable-collections</artifactId>
-    <version>1.9-beta-4-SNAPSHOT</version>
+    <version>1.9.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>JImmutable Collections</name>
@@ -194,7 +194,7 @@
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
-                    <executable>java</executable>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
             <plugin>
@@ -242,7 +242,8 @@
                 <version>2.9.1</version>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>            </plugin>
+                </configuration>
+            </plugin>
         </plugins>
     </reporting>
 </project>

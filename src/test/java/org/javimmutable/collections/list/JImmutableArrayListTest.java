@@ -42,10 +42,15 @@ import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class JImmutableArrayListTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
     {
@@ -588,6 +593,19 @@ public class JImmutableArrayListTest
     {
         JImmutableList<Integer> list = JImmutableArrayList.<Integer>of().insert(1).insert(2);
         assertSame(JImmutableArrayList.of(), list.deleteAll());
+    }
+
+    public void testBuilder()
+    {
+        List<Integer> expected = new ArrayList<Integer>();
+        assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
+
+        for (int size = 1; size <= 1500; ++size) {
+            expected.add(size);
+            JImmutableArrayList<Integer> list = JImmutableArrayList.<Integer>builder().add(expected).build();
+            list.checkInvariants();
+            assertEquals(expected, list.getList());
+        }
     }
 
     public void testIndexedConstructor()
