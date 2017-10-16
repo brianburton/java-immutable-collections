@@ -41,25 +41,25 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 /**
  * Interface for containers that store items in list form with individual items available
  * for get() and assign() using their indexes.  Items inserted into the list are always
  * added at either the front or the end of the list and indexes of items are always in
  * the range 0 through size() - 1.
- *
- * @param <T>
  */
 @Immutable
 public interface JImmutableList<T>
-        extends Insertable<T>,
-                Indexed<T>,
-                Cursorable<T>,
-                Iterable<T>,
-                InvariantCheckable
+    extends Insertable<T>,
+            Indexed<T>,
+            Cursorable<T>,
+            Iterable<T>,
+            InvariantCheckable
 {
     interface Builder<T>
-            extends MutableBuilder<T, JImmutableList<T>>
+        extends MutableBuilder<T, JImmutableList<T>>
     {
     }
 
@@ -72,8 +72,6 @@ public interface JImmutableList<T>
      * Retrieves the value at the specified index (which must be within the bounds
      * of the list).
      *
-     * @param index
-     * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     T get(int index);
@@ -82,9 +80,6 @@ public interface JImmutableList<T>
      * Replaces the value at the specified index (which must be within current
      * bounds of the list) with the new value.
      *
-     * @param index
-     * @param value
-     * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
@@ -93,18 +88,12 @@ public interface JImmutableList<T>
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableList<T> insert(@Nullable T value);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @param values
-     * @return
      */
     @Nonnull
     JImmutableList<T> insert(@Nonnull Iterable<? extends T> values);
@@ -112,9 +101,6 @@ public interface JImmutableList<T>
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableList<T> insertFirst(@Nullable T value);
@@ -122,9 +108,6 @@ public interface JImmutableList<T>
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      * Synonym for insert().
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableList<T> insertLast(@Nullable T value);
@@ -132,7 +115,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -141,7 +123,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -150,7 +131,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -159,7 +139,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -168,7 +147,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -177,7 +155,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -186,7 +163,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -195,7 +171,6 @@ public interface JImmutableList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -205,7 +180,6 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -215,7 +189,6 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -225,7 +198,6 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -235,7 +207,6 @@ public interface JImmutableList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -272,9 +243,42 @@ public interface JImmutableList<T>
 
     /**
      * Returns an unmodifiable List implementation backed by this list.
-     *
-     * @return
      */
     @Nonnull
     List<T> getList();
+
+    /**
+     * Returns a list of the same type as this containing only those elements for which
+     * predicate returns true.  Implementations are optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return list of same type as this containing only those elements for which predicate returns true
+     */
+    @Nonnull
+    default JImmutableList<T> select(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableList<T> answer = deleteAll();
+        for (Cursor<T> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
+            final T value = cursor.getValue();
+            if (predicate.test(value)) {
+                answer = answer.insert(value);
+            }
+        }
+        return answer.size() == size() ? this : answer;
+    }
+
+    /**
+     * Returns a list of the same type as this containing all those elements for which
+     * predicate returns false.  Implementations can be optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return list of same type as this containing only those elements for which predicate returns false
+     */
+    @Nonnull
+    default JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
+    {
+        return select(predicate.negate());
+    }
 }

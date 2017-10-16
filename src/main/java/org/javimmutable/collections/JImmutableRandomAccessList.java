@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 /**
  * Extension of JImmutableList that allows insertion and deletion at arbitrary
@@ -317,4 +318,30 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     JImmutableRandomAccessList<T> deleteAll();
+
+    /**
+     * Returns a list of the same type as this containing all those elements for which
+     * predicate returns false.  Implementation optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return list of same type as this containing only those elements for which predicate returns false
+     */
+    @Nonnull
+    @Override
+    default JImmutableRandomAccessList<T> reject(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableRandomAccessList<T> answer = this;
+        int index = 0;
+        for (Cursor<T> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
+            final T value = cursor.getValue();
+            assert value == answer.get(index);
+            if (predicate.test(value)) {
+                answer = answer.delete(index);
+            } else {
+                index += 1;
+            }
+        }
+        return answer.size() == size() ? this : answer;
+    }
 }

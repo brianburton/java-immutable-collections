@@ -595,6 +595,37 @@ public class JImmutableArrayListTest
         assertSame(JImmutableArrayList.of(), list.deleteAll());
     }
 
+    public void testSelect()
+    {
+        JImmutableList<Integer> list = mklist();
+        assertSame(list, list.select(x -> false));
+        assertSame(list, list.select(x -> true));
+
+        list = mklist(1);
+        assertEquals(true, list.select(x -> false).isEmpty());
+        assertSame(list, list.select(x -> true));
+
+        list = mklist(1, 2, 3);
+        assertEquals(mklist(1, 3), list.select(x -> x % 2 == 1));
+        assertEquals(mklist(2), list.select(x -> x % 2 == 0));
+    }
+
+    public void testReject()
+    {
+        JImmutableList<Integer> list = mklist();
+        assertSame(list, list.reject(x -> false));
+        assertSame(list, list.reject(x -> true));
+
+        list = mklist(1);
+        assertSame(list, list.reject(x -> false));
+        assertEquals(true, list.reject(x -> true).isEmpty());
+
+        list = mklist(1, 2, 3);
+        assertEquals(mklist(2), list.reject(x -> x % 2 == 1));
+        assertEquals(mklist(1, 3), list.reject(x -> x % 2 == 0));
+    }
+
+
     public void testBuilder()
     {
         List<Integer> expected = new ArrayList<Integer>();
@@ -630,6 +661,11 @@ public class JImmutableArrayListTest
         }
 
         assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.of(JImmutableArrayList.<Integer>of()));
+    }
+
+    private JImmutableList<Integer> mklist(Integer... values)
+    {
+        return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
     private List<Integer> makeValues(Random random,

@@ -36,14 +36,23 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.function.BiFunction;
 
 /**
  * Implemented by objects that can create a Cursor for a given type.
- *
- * @param <T>
  */
 public interface Cursorable<T>
 {
     @Nonnull
     Cursor<T> cursor();
+
+    default <R> R reduce(R initialValue,
+                         @Nonnull BiFunction<R, T, R> operator)
+    {
+        R result = initialValue;
+        for (Cursor<T> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
+            result = operator.apply(result, cursor.getValue());
+        }
+        return result;
+    }
 }

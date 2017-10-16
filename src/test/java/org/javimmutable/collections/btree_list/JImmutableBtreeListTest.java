@@ -42,14 +42,20 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class JImmutableBtreeListTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
     {
@@ -1159,6 +1165,36 @@ public class JImmutableBtreeListTest
         assertSame(JImmutableBtreeList.of(), list.deleteAll());
     }
 
+    public void testSelect()
+    {
+        JImmutableRandomAccessList<Integer> list = ralist();
+        assertSame(list, list.select(x -> false));
+        assertSame(list, list.select(x -> true));
+
+        list = ralist(1);
+        assertEquals(true, list.select(x -> false).isEmpty());
+        assertSame(list, list.select(x -> true));
+
+        list = ralist(1, 2, 3);
+        assertEquals(ralist(1, 3), list.select(x -> x % 2 == 1));
+        assertEquals(ralist(2), list.select(x -> x % 2 == 0));
+    }
+
+    public void testReject()
+    {
+        JImmutableRandomAccessList<Integer> list = ralist();
+        assertSame(list, list.reject(x -> false));
+        assertSame(list, list.reject(x -> true));
+
+        list = ralist(1);
+        assertSame(list, list.reject(x -> false));
+        assertEquals(true, list.reject(x -> true).isEmpty());
+
+        list = ralist(1, 2, 3);
+        assertEquals(ralist(2), list.reject(x -> x % 2 == 1));
+        assertEquals(ralist(1, 3), list.reject(x -> x % 2 == 0));
+    }
+
     public void testBuilder()
     {
         List<Integer> source = new ArrayList<Integer>();
@@ -1193,6 +1229,11 @@ public class JImmutableBtreeListTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, (comparator));
+    }
+
+    private JImmutableRandomAccessList<Integer> ralist(Integer... values)
+    {
+        return JImmutableBtreeList.of(IndexedArray.retained(values));
     }
 
     private List<Integer> makeValues(Random random,

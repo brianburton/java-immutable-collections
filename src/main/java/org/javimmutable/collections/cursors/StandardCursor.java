@@ -153,7 +153,7 @@ public abstract class StandardCursor
             @Override
             public Cursor<T> cursor()
             {
-                return of();
+                return StandardCursor.of();
             }
         };
     }
