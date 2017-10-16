@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 
@@ -53,10 +54,12 @@ public class LazyMultiCursorTest
 {
     public void test()
     {
+        emptyCursorTest(LazyMultiCursor.cursor(indexed()));
         emptyCursorTest(cursor(values()));
         emptyCursorTest(cursor(values(), values()));
         emptyCursorTest(cursor(values(), values(), values()));
 
+        listCursorTest(Arrays.asList(1), LazyMultiCursor.cursor(indexed(values(1))));
         listCursorTest(Arrays.asList(1), cursor(values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(), values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(1), values()));
@@ -107,5 +110,10 @@ public class LazyMultiCursorTest
     private Cursorable<Integer> values(Integer... array)
     {
         return IterableCursorable.of(Arrays.asList(array));
+    }
+
+    private Indexed<Cursorable<Integer>> indexed(Cursorable<Integer>... array)
+    {
+        return IndexedArray.retained(array);
     }
 }

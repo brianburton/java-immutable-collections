@@ -64,6 +64,9 @@ public class LazyMultiCursor<T>
 
     public static <T> Cursor<T> cursor(@Nonnull final Indexed<? extends Cursorable<T>> sources)
     {
+        if (sources.size() == 0) {
+            return StandardCursor.of();
+        }
         return new AbstractStartCursor<T>()
         {
             @Nonnull
@@ -77,6 +80,9 @@ public class LazyMultiCursor<T>
 
     public static <T, C extends Cursorable<T>> Cursorable<T> cursorable(@Nonnull final Indexed<C> sources)
     {
+        if (sources.size() == 0) {
+            return StandardCursor.emptyCursorable();
+        }
         return new Cursorable<T>()
         {
             @Nonnull
