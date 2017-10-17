@@ -17,7 +17,7 @@ public class CursorSpliterator<T>
                              @Nonnull Cursor<T> cursor)
     {
         this.characteristics = characteristics;
-        this.cursor = cursor;
+        this.cursor = cursor.start();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CursorSpliterator<T>
     {
         if (cursor.isSplitAllowed()) {
             SplitCursor<T> split = cursor.splitCursor();
-            cursor = split.getRight();
+            cursor = split.getRight().start();
             return new CursorSpliterator<>(characteristics, split.getLeft());
         }
         return null;
