@@ -41,8 +41,10 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Spliterator;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Interface for containers that store items in list form with individual items available
@@ -280,5 +282,23 @@ public interface JImmutableList<T>
     default JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
     {
         return select(predicate.negate());
+    }
+
+    @Nonnull
+    default Spliterator<T> spliterator()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    default Stream<T> stream()
+    {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    @Nonnull
+    default Stream<T> parallelStream()
+    {
+        return StreamSupport.stream(spliterator(), false);
     }
 }

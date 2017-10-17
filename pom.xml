@@ -216,7 +216,7 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
                     </arguments>
                 </configuration>

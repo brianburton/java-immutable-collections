@@ -37,9 +37,8 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
-import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.cursors.ArrayCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -47,12 +46,10 @@ import java.util.List;
 
 /**
  * Node that forms the bottom of the 32-way tree and contains up to 32 values.
- *
- * @param <T>
  */
 @Immutable
 class LeafNode<T>
-        implements Node<T>
+    implements Node<T>
 {
     @Nonnull
     private final T[] values;
@@ -188,7 +185,7 @@ class LeafNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return StandardCursor.of(IndexedArray.retained(values));
+        return ArrayCursor.cursor(values);
     }
 
     @Override

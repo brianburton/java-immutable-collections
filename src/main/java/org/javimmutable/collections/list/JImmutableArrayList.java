@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.AbstractJImmutableList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
@@ -54,11 +55,9 @@ import java.util.List;
 /**
  * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
  * only allow values to be inserted or deleted from the head or tail of the list.
- *
- * @param <T>
  */
 public class JImmutableArrayList<T>
-        implements JImmutableList<T>
+    extends AbstractJImmutableList<T>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableArrayList EMPTY = new JImmutableArrayList(EmptyNode.of());
@@ -333,7 +332,7 @@ public class JImmutableArrayList<T>
     }
 
     public static class Builder<T>
-            implements JImmutableList.Builder<T>
+        implements JImmutableList.Builder<T>
     {
         private final BranchNode.Builder<T> builder;
 

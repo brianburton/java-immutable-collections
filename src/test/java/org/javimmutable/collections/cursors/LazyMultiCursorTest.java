@@ -38,13 +38,8 @@ package org.javimmutable.collections.cursors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.javimmutable.collections.cursors.StandardCursorTest.*;
 
@@ -54,12 +49,12 @@ public class LazyMultiCursorTest
 {
     public void test()
     {
-        emptyCursorTest(LazyMultiCursor.cursor(indexed()));
+        emptyCursorTest(LazyMultiCursor.cursor());
         emptyCursorTest(cursor(values()));
         emptyCursorTest(cursor(values(), values()));
         emptyCursorTest(cursor(values(), values(), values()));
 
-        listCursorTest(Arrays.asList(1), LazyMultiCursor.cursor(indexed(values(1))));
+        listCursorTest(Arrays.asList(1), LazyMultiCursor.cursor(values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(), values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(1), values()));
@@ -73,47 +68,13 @@ public class LazyMultiCursorTest
         listCursorTest(Arrays.asList(1, 2, 3, 4), cursor(values(), values(1), values(2, 3), values(), values(4)));
     }
 
-    public void testBuilder()
-    {
-        LazyMultiCursor.Builder builder = LazyMultiCursor.builder(0);
-        emptyCursorTest(builder.cursor());
-
-        builder = LazyMultiCursor.builder(1);
-        emptyCursorTest(builder.cursor());
-
-        builder = LazyMultiCursor.builder(1);
-        builder.insert(values(10));
-        listCursorTest(Arrays.asList(10), builder.cursor());
-
-        List<Cursorable<Integer>> list = new ArrayList<Cursorable<Integer>>();
-        list.add(values(1, 2, 3));
-        builder = LazyMultiCursor.builder(5);
-        builder.insert(IndexedList.copied(list));
-        builder.insert(values(4));
-        list.clear();
-        builder.insert(IndexedList.copied(list));
-        list.add(values(5));
-        list.add(values(6, 7));
-        list.add(values(8));
-        builder.insert(IndexedList.copied(list));
-        builder.insert(values(9, 10));
-        listCursorTest(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), builder.cursorable().cursor());
-
-        listCursorTest(Arrays.asList(5, 6, 7, 8), LazyMultiCursor.cursorable(IndexedList.copied(list)).cursor());
-    }
-
     private Cursor<Integer> cursor(Cursorable<Integer>... array)
     {
-        return LazyMultiCursor.cursor(IndexedArray.retained(array));
+        return LazyMultiCursor.cursor(array);
     }
 
     private Cursorable<Integer> values(Integer... array)
     {
         return IterableCursorable.of(Arrays.asList(array));
-    }
-
-    private Indexed<Cursorable<Integer>> indexed(Cursorable<Integer>... array)
-    {
-        return IndexedArray.retained(array);
     }
 }

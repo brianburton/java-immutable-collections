@@ -41,17 +41,15 @@ import javax.annotation.Nonnull;
  * Implemented by objects used to traverse persistent data structures.
  * The iterators themselves must be immutable and always create a new
  * iterator when start() or next() is called.
- *
- * @param <T>
  */
 public interface Cursor<T>
-        extends Iterable<T>
+    extends Iterable<T>
 {
     /**
      * Thrown by hasValue() and getValue() if the cursor has not been started by calling next() yet.
      */
     class NotStartedException
-            extends IllegalStateException
+        extends IllegalStateException
     {
     }
 
@@ -59,7 +57,7 @@ public interface Cursor<T>
      * Thrown by getValue() if the Cursor's hasValue() method returns false.
      */
     class NoValueException
-            extends IllegalStateException
+        extends IllegalStateException
     {
     }
 
@@ -107,4 +105,14 @@ public interface Cursor<T>
      * @throws IllegalStateException if getValue() is not allowed for this iterator
      */
     T getValue();
+
+    default boolean isSplitAllowed()
+    {
+        return false;
+    }
+
+    default SplitCursor<T> splitCursor()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

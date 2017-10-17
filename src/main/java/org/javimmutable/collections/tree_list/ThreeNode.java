@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
@@ -297,11 +298,10 @@ public class ThreeNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        return LazyMultiCursor.<T>builder(3)
-            .insert(left)
-            .insert(middle)
-            .insert(right)
-            .cursor();
+        Cursorable<T> left = this.left;
+        Cursorable<T> middle = this.middle;
+        Cursorable<T> right = this.right;
+        return LazyMultiCursor.cursor(left, middle, right);
     }
 
     private UpdateResult<T> leftUpdate(UpdateResult<T> result)

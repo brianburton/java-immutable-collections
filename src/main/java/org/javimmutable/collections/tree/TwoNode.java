@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
@@ -262,10 +263,9 @@ public class TwoNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return LazyMultiCursor.<JImmutableMap.Entry<K, V>>builder(2)
-            .insert(left)
-            .insert(right)
-            .cursor();
+        Cursorable<JImmutableMap.Entry<K, V>> left = this.left;
+        Cursorable<JImmutableMap.Entry<K, V>> right = this.right;
+        return LazyMultiCursor.cursor(left, right);
     }
 
     @SuppressWarnings("RedundantIfStatement")

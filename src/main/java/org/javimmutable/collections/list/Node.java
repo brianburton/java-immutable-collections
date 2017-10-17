@@ -41,12 +41,10 @@ import org.javimmutable.collections.InvariantCheckable;
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
  * to the head and tail of the list but allow updates at any index within the list.
- *
- * @param <T>
  */
 interface Node<T>
-        extends Cursorable<T>,
-                InvariantCheckable
+    extends Cursorable<T>,
+            InvariantCheckable
 {
     boolean isEmpty();
 

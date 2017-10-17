@@ -41,6 +41,7 @@ import java.util.function.BiFunction;
 /**
  * Implemented by objects that can create a Cursor for a given type.
  */
+@FunctionalInterface
 public interface Cursorable<T>
 {
     @Nonnull

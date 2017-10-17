@@ -41,19 +41,31 @@ import org.javimmutable.collections.common.IteratorAdaptor;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 /**
  * Base implementation for unstarted Cursor classes.
  * Derived classes generally override the next() method to start the traversal.
  * Once the end of the traversal is reached returning super.next() will
  * end the traversal.
- *
- * @param <T>
  */
 @Immutable
 public abstract class AbstractStartCursor<T>
-        implements Cursor<T>
+    implements Cursor<T>
 {
+    public static <T> Cursor<T> cursor(Supplier<? extends AbstractStartedCursor<T>> factory)
+    {
+        return new AbstractStartCursor<T>()
+        {
+            @Nonnull
+            @Override
+            public Cursor<T> next()
+            {
+                return factory.get();
+            }
+        };
+    }
+
     @Nonnull
     @Override
     public Cursor<T> start()
