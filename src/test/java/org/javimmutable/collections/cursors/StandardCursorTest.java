@@ -40,6 +40,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.SplitCursor;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 
 import java.util.ArrayList;
@@ -50,16 +53,20 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.cursors.StandardCursor.forRange;
+
 public class StandardCursorTest
     extends TestCase
 {
     public static void testVarious()
     {
         emptyCursorTest(StandardCursor.<Integer>of());
-        listCursorTest(Arrays.asList(1), StandardCursor.forRange(1, 1));
-        listCursorTest(Arrays.asList(1, 2), StandardCursor.forRange(1, 2));
-        listCursorTest(Arrays.asList(-1, 0, 1, 2, 3), StandardCursor.forRange(-1, 3));
-        assertEquals(Arrays.asList(-1, 0, 1, 2, 3), StandardCursor.makeList(StandardCursor.forRange(-1, 3)));
+        listCursorTest(Arrays.asList(1), forRange(1, 1));
+        listCursorTest(Arrays.asList(1, 2), forRange(1, 2));
+        listCursorTest(Arrays.asList(-1, 0, 1, 2, 3), forRange(-1, 3));
+        assertEquals(Arrays.asList(-1, 0, 1, 2, 3), StandardCursor.makeList(forRange(-1, 3)));
 
         emptyIteratorTest(StandardCursor.iterator(new StandardCursor.RangeSource(1, -1)));
         listIteratorTest(Arrays.asList(1), StandardCursor.iterator(new StandardCursor.RangeSource(1, 1)));
@@ -85,10 +92,64 @@ public class StandardCursorTest
         assertEquals(3.0, rangeCursorable(0, 3).reduce(zero, operator));
     }
 
+    public void testSplitAllowed()
+    {
+        assertEquals(false, forRange(1, 0).start().isSplitAllowed());
+        assertEquals(false, forRange(1, 1).start().isSplitAllowed());
+        assertEquals(true, forRange(1, 2).start().isSplitAllowed());
+        assertEquals(true, forRange(1, 3).start().isSplitAllowed());
+
+        assertEquals(false, repeatCursor(-1, 0).start().isSplitAllowed());
+        assertEquals(false, repeatCursor(-1, 1).start().isSplitAllowed());
+        assertEquals(true, repeatCursor(-1, 2).start().isSplitAllowed());
+        assertEquals(true, repeatCursor(-1, 3).start().isSplitAllowed());
+        assertEquals(true, repeatCursor(-1, 4).start().isSplitAllowed());
+
+        assertEquals(false, indexedCursor().start().isSplitAllowed());
+        assertEquals(false, indexedCursor(1).start().isSplitAllowed());
+        assertEquals(true, indexedCursor(1, 2).start().isSplitAllowed());
+        assertEquals(true, indexedCursor(1, 2, 3).start().isSplitAllowed());
+        assertEquals(true, indexedCursor(1, 2, 3, 4).start().isSplitAllowed());
+    }
+
+    public void testSplit()
+    {
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> forRange(1, 0).start().splitCursor());
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> forRange(1, 1).start().splitCursor());
+        verifySplit(forRange(1, 2).start(), asList(1), asList(2));
+        verifySplit(forRange(1, 3).start(), asList(1, 2), asList(3));
+        verifySplit(forRange(1, 4).start(), asList(1, 2), asList(3, 4));
+        verifySplit(forRange(1, 5).start(), asList(1, 2, 3), asList(4, 5));
+
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> repeatCursor(-1, 0).start().splitCursor());
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> repeatCursor(-1, 1).start().splitCursor());
+        verifySplit(repeatCursor(-1, 2).start(), asList(-1), asList(-1));
+        verifySplit(repeatCursor(-1, 3).start(), asList(-1), asList(-1, -1));
+        verifySplit(repeatCursor(-1, 4).start(), asList(-1, -1), asList(-1, -1));
+        verifySplit(repeatCursor(-1, 5).start(), asList(-1, -1), asList(-1, -1, -1));
+
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> indexedCursor().start().splitCursor());
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> indexedCursor(1).start().splitCursor());
+        StandardCursorTest.verifySplit(indexedCursor(1, 2).start(), asList(1), asList(2));
+        StandardCursorTest.verifySplit(indexedCursor(1, 2, 3).start(), asList(1), asList(2, 3));
+        StandardCursorTest.verifySplit(indexedCursor(1, 2, 3, 4).start(), asList(1, 2), asList(3, 4));
+    }
+
+    private Cursor<Integer> repeatCursor(int value,
+                                         int count)
+    {
+        return StandardCursor.of(new StandardCursor.RepeatingValueCursorSource<>(new MapEntry<>(value, count)));
+    }
+
+    private Cursor<Integer> indexedCursor(Integer... values)
+    {
+        return StandardCursor.of(IndexedArray.retained(values));
+    }
+
     private Cursorable<Integer> rangeCursorable(int low,
                                                 int high)
     {
-        return () -> StandardCursor.forRange(low, high);
+        return () -> forRange(low, high);
     }
 
     public static <T> void cursorTest(Func1<Integer, T> lookup,
@@ -217,6 +278,15 @@ public class StandardCursorTest
     public static <T> void emptyIteratorTest(Iterator<T> iterator)
     {
         listIteratorTest(Collections.<T>emptyList(), iterator);
+    }
+
+    public static void verifySplit(Cursor<Integer> cursor,
+                                   List<Integer> left,
+                                   List<Integer> right)
+    {
+        SplitCursor<Integer> split = cursor.splitCursor();
+        listCursorTest(left, split.getLeft());
+        listCursorTest(right, split.getRight());
     }
 
     private static class ListLookup<T>

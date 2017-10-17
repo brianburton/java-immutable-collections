@@ -2,9 +2,6 @@ package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.SplitCursor;
-
-import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.*;
@@ -33,18 +30,9 @@ public class ArrayCursorTest
     {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> cursor().start().splitCursor());
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> cursor(1).start().splitCursor());
-        verifySplit(cursor(1, 2).start(), asList(1), asList(2));
-        verifySplit(cursor(1, 2, 3).start(), asList(1), asList(2, 3));
-        verifySplit(cursor(1, 2, 3, 4).start(), asList(1, 2), asList(3, 4));
-    }
-
-    private void verifySplit(Cursor<Integer> cursor,
-                             List<Integer> left,
-                             List<Integer> right)
-    {
-        SplitCursor<Integer> split = cursor.splitCursor();
-        listCursorTest(left, split.getLeft());
-        listCursorTest(right, split.getRight());
+        StandardCursorTest.verifySplit(cursor(1, 2).start(), asList(1), asList(2));
+        StandardCursorTest.verifySplit(cursor(1, 2, 3).start(), asList(1), asList(2, 3));
+        StandardCursorTest.verifySplit(cursor(1, 2, 3, 4).start(), asList(1, 2), asList(3, 4));
     }
 
     private Cursor<Integer> cursor(Integer... values)

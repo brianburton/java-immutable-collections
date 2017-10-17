@@ -39,6 +39,8 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitCursor;
+import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
@@ -82,6 +84,16 @@ public abstract class StandardCursor
          * @return new Source pointing at the next value or throw if no next value available
          */
         Source<T> advance();
+
+        default boolean isSplitAllowed()
+        {
+            return false;
+        }
+
+        default Tuple2<Source<T>, Source<T>> splitSource()
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -99,7 +111,7 @@ public abstract class StandardCursor
      */
     public static <T> Cursor<T> of(Source<T> source)
     {
-        return new Start<T>(source);
+        return new Start<>(source);
     }
 
     /**
@@ -107,7 +119,7 @@ public abstract class StandardCursor
      */
     public static <T> Cursor<T> of(Indexed<T> source)
     {
-        return new Start<T>(new IndexedSource<T>(source, 0));
+        return new Start<>(new IndexedSource<>(source, 0, source.size()));
     }
 
     /**
@@ -117,7 +129,7 @@ public abstract class StandardCursor
      */
     public static <T> Iterator<T> iterator(Source<T> source)
     {
-        return new SourceIterator<T>(source);
+        return new SourceIterator<>(source);
     }
 
     /**
@@ -135,7 +147,7 @@ public abstract class StandardCursor
      */
     public static <T> List<T> makeList(Cursor<T> cursor)
     {
-        List<T> answer = new ArrayList<T>();
+        List<T> answer = new ArrayList<>();
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             answer.add(cursor.getValue());
         }
@@ -173,7 +185,7 @@ public abstract class StandardCursor
         @Override
         public Cursor<T> next()
         {
-            return new Started<T>(source);
+            return new Started<>(source);
         }
 
         @Override
@@ -198,7 +210,7 @@ public abstract class StandardCursor
         @Override
         public Cursor<T> next()
         {
-            return source.atEnd() ? super.next() : new Started<T>(source.advance());
+            return source.atEnd() ? super.next() : new Started<>(source.advance());
         }
 
         @Override
@@ -220,6 +232,19 @@ public abstract class StandardCursor
         public Iterator<T> iterator()
         {
             return IteratorAdaptor.of(this);
+        }
+
+        @Override
+        public boolean isSplitAllowed()
+        {
+            return source.isSplitAllowed();
+        }
+
+        @Override
+        public SplitCursor<T> splitCursor()
+        {
+            Tuple2<Source<T>, Source<T>> split = source.splitSource();
+            return new SplitCursor<>(of(split.getFirst()), of(split.getSecond()));
         }
     }
 
@@ -277,6 +302,22 @@ public abstract class StandardCursor
         {
             return new RangeSource(low + 1, high);
         }
+
+        @Override
+        public boolean isSplitAllowed()
+        {
+            return high > low;
+        }
+
+        @Override
+        public Tuple2<Source<Integer>, Source<Integer>> splitSource()
+        {
+            if (low >= high) {
+                throw new UnsupportedOperationException();
+            }
+            final int middle = low + 1 + (high - low) / 2;
+            return Tuple2.of(new RangeSource(low, middle - 1), new RangeSource(middle, high));
+        }
     }
 
     @Immutable
@@ -314,7 +355,24 @@ public abstract class StandardCursor
         @Override
         public StandardCursor.Source<T> advance()
         {
-            return new RepeatingValueCursorSource<T>(count - 1, value);
+            return new RepeatingValueCursorSource<>(count - 1, value);
+        }
+
+        @Override
+        public boolean isSplitAllowed()
+        {
+            return count >= 2;
+        }
+
+        @Override
+        public Tuple2<Source<T>, Source<T>> splitSource()
+        {
+            if (count < 2) {
+                throw new UnsupportedOperationException();
+            }
+            final int left = count / 2;
+            final int right = count - left;
+            return Tuple2.of(new RepeatingValueCursorSource<>(left, value), new RepeatingValueCursorSource<>(right, value));
         }
     }
 
@@ -358,18 +416,21 @@ public abstract class StandardCursor
     {
         private final Indexed<T> list;
         private final int index;
+        private final int limit;
 
         private IndexedSource(Indexed<T> list,
-                              int index)
+                              int index,
+                              int limit)
         {
             this.list = list;
             this.index = index;
+            this.limit = limit;
         }
 
         @Override
         public boolean atEnd()
         {
-            return index >= list.size();
+            return index >= limit;
         }
 
         @Override
@@ -381,7 +442,23 @@ public abstract class StandardCursor
         @Override
         public Source<T> advance()
         {
-            return new IndexedSource<T>(list, index + 1);
+            return new IndexedSource<>(list, index + 1, limit);
+        }
+
+        @Override
+        public boolean isSplitAllowed()
+        {
+            return (limit - index) > 1;
+        }
+
+        @Override
+        public Tuple2<Source<T>, Source<T>> splitSource()
+        {
+            final int splitIndex = index + (limit - index) / 2;
+            if (splitIndex == index) {
+                throw new UnsupportedOperationException();
+            }
+            return Tuple2.of(new IndexedSource<>(list, index, splitIndex), new IndexedSource<>(list, splitIndex, limit));
         }
     }
 }
