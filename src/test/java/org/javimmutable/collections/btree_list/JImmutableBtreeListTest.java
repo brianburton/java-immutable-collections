@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -53,6 +54,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class JImmutableBtreeListTest
     extends TestCase
@@ -1193,6 +1197,21 @@ public class JImmutableBtreeListTest
         list = ralist(1, 2, 3);
         assertEquals(ralist(2), list.reject(x -> x % 2 == 1));
         assertEquals(ralist(1, 3), list.reject(x -> x % 2 == 0));
+    }
+
+    public void testStreams()
+    {
+        JImmutableList<Integer> list = JImmutableBtreeList.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
+        assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
+        assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
+
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 1; i <= 2048; ++i) {
+            expected.add(i);
+        }
+        list = JImmutableBtreeList.of(IndexedList.retained(expected));
+        assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
+        assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
     }
 
     public void testBuilder()

@@ -35,7 +35,12 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
@@ -48,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 
 /**
  * Implementation of JImmutableRandomAccessList that uses a B-Tree for its implementation.
@@ -407,6 +413,13 @@ public class JImmutableBtreeList<T>
     public Iterator<T> iterator()
     {
         return IteratorAdaptor.of(cursor());
+    }
+
+    @Override
+    @Nonnull
+    public Spliterator<T> spliterator()
+    {
+        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor().start());
     }
 
     @Override

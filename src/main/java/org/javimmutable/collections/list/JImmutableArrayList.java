@@ -39,7 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.common.AbstractJImmutableList;
+import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
@@ -51,13 +51,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 
 /**
  * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
  * only allow values to be inserted or deleted from the head or tail of the list.
  */
 public class JImmutableArrayList<T>
-    extends AbstractJImmutableList<T>
+    implements JImmutableList<T>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableArrayList EMPTY = new JImmutableArrayList(EmptyNode.of());
@@ -305,6 +306,13 @@ public class JImmutableArrayList<T>
     public Iterator<T> iterator()
     {
         return IteratorAdaptor.of(cursor());
+    }
+
+    @Override
+    @Nonnull
+    public Spliterator<T> spliterator()
+    {
+        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor().start());
     }
 
     @Override
