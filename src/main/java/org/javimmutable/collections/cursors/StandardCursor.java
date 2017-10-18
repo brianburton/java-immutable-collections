@@ -111,7 +111,7 @@ public abstract class StandardCursor
      */
     public static <T> Cursor<T> of(Source<T> source)
     {
-        return new Start<>(source);
+        return source.atEnd() ? of() : new Start<>(source);
     }
 
     /**
