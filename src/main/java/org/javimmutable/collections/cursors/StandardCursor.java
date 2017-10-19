@@ -41,7 +41,6 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitCursor;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -187,13 +186,6 @@ public abstract class StandardCursor
         {
             return new Started<>(source);
         }
-
-        @Nonnull
-        @Override
-        public Iterator<T> iterator()
-        {
-            return IteratorAdaptor.of(this);
-        }
     }
 
     @Immutable
@@ -227,12 +219,6 @@ public abstract class StandardCursor
                 throw new NoValueException();
             }
             return source.currentValue();
-        }
-
-        @Override
-        public Iterator<T> iterator()
-        {
-            return IteratorAdaptor.of(this);
         }
 
         @Override

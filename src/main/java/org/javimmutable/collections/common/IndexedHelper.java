@@ -2,12 +2,21 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
 
+/**
+ * Provides a number of static utility methods for producing Indexed objects
+ * from raw values.  Useful when you need an Indexed but don't have or want
+ * to create an array just to get an Indexed of them.
+ */
 public class IndexedHelper
 {
     private IndexedHelper()
     {
     }
 
+    /**
+     * Returns an Indexed containing a single value.
+     * Note that the type of the Indexed may be a subclass of the type of the value.
+     */
     public static <T, V extends T> Indexed<T> indexed(V a)
     {
         return new Indexed<T>()
@@ -31,6 +40,10 @@ public class IndexedHelper
         };
     }
 
+    /**
+     * Returns an Indexed containing two values.
+     * Note that the type of the Indexed may be a subclass of the type of the value.
+     */
     public static <T, V extends T> Indexed<T> indexed(V a,
                                                       V b)
     {
@@ -57,6 +70,10 @@ public class IndexedHelper
         };
     }
 
+    /**
+     * Returns an Indexed containing three values.
+     * Note that the type of the Indexed may be a subclass of the type of the value.
+     */
     public static <T, V extends T> Indexed<T> indexed(V a,
                                                       V b,
                                                       V c)
