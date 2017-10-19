@@ -62,10 +62,6 @@ public abstract class IterableCursor
      * <p>
      * The Cursor retains information obtained from the Iterator so that multiple passes can be made over
      * the data, intermediate Cursor values can be saved and resumed for look-ahead etc.
-     *
-     * @param iterable
-     * @param <T>
-     * @return
      */
     public static <T> Cursor<T> of(Iterable<T> iterable)
     {
@@ -73,7 +69,7 @@ public abstract class IterableCursor
     }
 
     private static class Factory<T>
-            implements ValueFunctionFactory<T, Function<T>>
+        implements ValueFunctionFactory<T, Function<T>>
     {
         private final Iterable<T> iterable;
 
@@ -90,7 +86,7 @@ public abstract class IterableCursor
     }
 
     private static class Function<T>
-            implements ValueFunction<T>
+        implements ValueFunction<T>
     {
         private final Iterator<T> iterator;
 

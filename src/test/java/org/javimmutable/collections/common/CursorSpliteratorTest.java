@@ -1,7 +1,7 @@
 package org.javimmutable.collections.common;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.cursors.ArrayCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class CursorSpliteratorTest
 
     private Spliterator<Integer> spliterator(Integer... values)
     {
-        return new CursorSpliterator<Integer>(Spliterator.IMMUTABLE, ArrayCursor.cursor(values));
+        return new CursorSpliterator<Integer>(Spliterator.IMMUTABLE, StandardCursor.of(IndexedArray.retained(values)));
     }
 
     private Stream<Integer> stream(Integer... values)

@@ -39,7 +39,8 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.cursors.ArrayCursor;
+import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -146,7 +147,7 @@ class BtreeLeafNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return ArrayCursor.cursor(values);
+        return StandardCursor.of(IndexedArray.retained(values));
     }
 
     @Nonnull

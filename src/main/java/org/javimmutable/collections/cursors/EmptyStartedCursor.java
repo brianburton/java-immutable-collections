@@ -86,6 +86,7 @@ public class EmptyStartedCursor<T>
         throw new NoValueException();
     }
 
+    @Nonnull
     @Override
     public Iterator<T> iterator()
     {

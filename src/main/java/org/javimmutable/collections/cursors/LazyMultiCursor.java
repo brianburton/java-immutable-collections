@@ -37,6 +37,8 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitCursor;
 
 import javax.annotation.Nonnull;
 
@@ -44,63 +46,58 @@ public class LazyMultiCursor<T>
     extends AbstractStartedCursor<T>
 {
     @Nonnull
-    private final Source<T> source;
+    private final Cursor<Cursorable<T>> source;
     @Nonnull
     private final Cursor<T> cursor;
 
-    private LazyMultiCursor(@Nonnull Source<T> source,
+    private LazyMultiCursor(@Nonnull Cursor<Cursorable<T>> source,
                             @Nonnull Cursor<T> cursor)
     {
         this.source = source;
         this.cursor = cursor;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Cursor<T> cursor(@Nonnull Cursorable<? extends T> prefix,
-                                       @Nonnull Cursorable<? extends T>[] sources,
-                                       @Nonnull Cursorable<? extends T> suffix)
+    /**
+     * Constructs a cursor that visits all of the values reachable from all of the
+     * Cursorables contained in source.
+     */
+    public static <T> Cursor<T> cursor(@Nonnull Indexed<Cursorable<T>> source)
     {
-        final Cursorable<? extends T>[] array = (Cursorable<? extends T>[])new Cursorable[sources.length + 2];
-        array[0] = prefix;
-        System.arraycopy(sources, 0, array, 1, sources.length);
-        array[array.length - 1] = suffix;
-        return cursor(array);
+        return cursor(StandardCursor.of(source));
     }
 
-    public static <T> Cursor<T> cursor(@Nonnull final Cursorable<? extends T>... sources)
+    /**
+     * Constructs a cursor that visits all of the values reachable from all of the
+     * Cursorables visited by source.
+     */
+    public static <T> Cursor<T> cursor(@Nonnull Cursor<Cursorable<T>> source)
     {
-        if (sources.length == 0) {
-            return StandardCursor.of();
-        }
         return new AbstractStartCursor<T>()
         {
             @Nonnull
             @Override
             public Cursor<T> next()
             {
-                return LazyMultiCursor.start(new Source<T>(sources, 0, sources.length));
+                return advance(source.start());
             }
         };
     }
 
-    public static <T> Cursorable<T> cursorable(@Nonnull final Cursorable<? extends T>[] sources)
+    /**
+     * Used internally to create a LazyMultiCursor with already started source and cursor fields.
+     */
+    private static <T> Cursor<T> resumeAfterSplitCursor(@Nonnull Cursor<Cursorable<T>> source,
+                                                        @Nonnull Cursor<T> cursor)
     {
-        if (sources.length == 0) {
-            return StandardCursor.emptyCursorable();
-        } else {
-            return () -> LazyMultiCursor.cursor(sources);
-        }
-    }
-
-    public static <T> Cursorable<T> cursorable(@Nonnull Cursorable<? extends T> prefix,
-                                               @Nonnull Cursorable<? extends T>[] sources,
-                                               @Nonnull Cursorable<? extends T> suffix)
-    {
-        if (sources.length == 0) {
-            return StandardCursor.emptyCursorable();
-        } else {
-            return () -> LazyMultiCursor.cursor(prefix, sources, suffix);
-        }
+        return new AbstractStartCursor<T>()
+        {
+            @Nonnull
+            @Override
+            public Cursor<T> next()
+            {
+                return new LazyMultiCursor<>(source, cursor);
+            }
+        };
     }
 
     @Nonnull
@@ -110,10 +107,23 @@ public class LazyMultiCursor<T>
         if (cursor.hasValue()) {
             Cursor<T> nextCursor = cursor.next();
             if (nextCursor.hasValue()) {
-                return new LazyMultiCursor<T>(source, nextCursor);
+                return new LazyMultiCursor<>(source, nextCursor);
             }
         }
-        return advance(source);
+
+        return advance(source.next());
+    }
+
+    private static <T> Cursor<T> advance(Cursor<Cursorable<T>> source)
+    {
+        while (source.hasValue()) {
+            Cursor<T> cursor = source.getValue().cursor().start();
+            if (cursor.hasValue()) {
+                return new LazyMultiCursor<>(source, cursor);
+            }
+            source = source.next();
+        }
+        return EmptyStartedCursor.of();
     }
 
     @Override
@@ -128,85 +138,16 @@ public class LazyMultiCursor<T>
         return cursor.getValue();
     }
 
-    @Nonnull
-    private static <T> Cursor<T> start(@Nonnull Source<T> source)
+    @Override
+    public boolean isSplitAllowed()
     {
-        while (true) {
-            Cursor<T> cursor = source.cursor();
-            if (cursor.hasValue()) {
-                return new LazyMultiCursor<T>(source, cursor);
-            }
-            if (!source.hasNext()) {
-                return EmptyStartedCursor.of();
-            }
-            source = source.next();
-        }
+        return source.isSplitAllowed();
     }
 
-    @Nonnull
-    private static <T> Cursor<T> advance(@Nonnull Source<T> source)
+    @Override
+    public SplitCursor<T> splitCursor()
     {
-        while (source.hasNext()) {
-            source = source.next();
-            Cursor<T> cursor = source.cursor();
-            if (cursor.hasValue()) {
-                return new LazyMultiCursor<T>(source, cursor);
-            }
-        }
-        return EmptyStartedCursor.of();
-    }
-
-    private static class Source<T>
-    {
-        private final Cursorable<? extends T>[] sources;
-        private final int current;
-        private final int limit;
-
-        private Source(Cursorable<? extends T>[] sources,
-                       int current,
-                       int limit)
-        {
-            this.sources = sources;
-            this.current = current;
-            this.limit = limit;
-        }
-
-        private boolean hasNext()
-        {
-            return (limit - current) > 1;
-        }
-
-        private Source<T> next()
-        {
-            return new Source<T>(sources, current + 1, limit);
-        }
-
-        @SuppressWarnings("unchecked")
-        private Cursor<T> cursor()
-        {
-            return (Cursor<T>)sources[current].cursor().start();
-        }
-
-        private boolean canSplit()
-        {
-            return (limit - current) >= 3;
-        }
-
-        private Source<T> splitLeft()
-        {
-            return new Source<T>(sources, current, splitRightIndex());
-        }
-
-        private Source<T> splitRight()
-        {
-            return new Source<T>(sources, splitRightIndex(), limit);
-        }
-
-        private int splitRightIndex()
-        {
-            final int offset = (limit - current) / 2;
-            assert offset >= 2;
-            return current + offset;
-        }
+        final SplitCursor<Cursorable<T>> split = source.splitCursor();
+        return new SplitCursor<>(resumeAfterSplitCursor(split.getLeft().start(), cursor), cursor(split.getRight()));
     }
 }

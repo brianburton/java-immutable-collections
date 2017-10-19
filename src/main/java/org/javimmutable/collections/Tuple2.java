@@ -39,9 +39,6 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable container for 2 values.
- *
- * @param <A>
- * @param <B>
  */
 @Immutable
 public class Tuple2<A, B>

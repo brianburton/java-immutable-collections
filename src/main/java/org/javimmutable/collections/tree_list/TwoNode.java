@@ -36,7 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
@@ -216,9 +216,7 @@ public class TwoNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        Cursorable<T> left = this.left;
-        Cursorable<T> right = this.right;
-        return LazyMultiCursor.cursor(left, right);
+        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, right));
     }
 
     private UpdateResult<T> updateLeft(UpdateResult<T> result)

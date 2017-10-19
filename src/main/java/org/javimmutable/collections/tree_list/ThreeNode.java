@@ -36,7 +36,7 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
@@ -45,7 +45,7 @@ import javax.annotation.concurrent.Immutable;
 @Deprecated
 @Immutable
 public class ThreeNode<T>
-        extends TreeNode<T>
+    extends TreeNode<T>
 {
     private final TreeNode<T> left;
     private final TreeNode<T> middle;
@@ -298,10 +298,7 @@ public class ThreeNode<T>
     @Nonnull
     public Cursor<T> cursor()
     {
-        Cursorable<T> left = this.left;
-        Cursorable<T> middle = this.middle;
-        Cursorable<T> right = this.right;
-        return LazyMultiCursor.cursor(left, middle, right);
+        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, middle, right));
     }
 
     private UpdateResult<T> leftUpdate(UpdateResult<T> result)

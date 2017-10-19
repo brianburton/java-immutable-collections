@@ -36,23 +36,19 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * Base class for started (i.e. actively traversing the collection) Cursors.
  * Derived classes usually only need to override next() and getValue().
  * Once the end of the traversal is reached returning super.next() will
  * end the traversal.
- *
- * @param <T>
  */
 @Immutable
 public abstract class AbstractStartedCursor<T>
-        implements Cursor<T>
+    extends AbstractCursor<T>
 {
     @Nonnull
     @Override
@@ -72,11 +68,5 @@ public abstract class AbstractStartedCursor<T>
     public boolean hasValue()
     {
         return true;
-    }
-
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
     }
 }

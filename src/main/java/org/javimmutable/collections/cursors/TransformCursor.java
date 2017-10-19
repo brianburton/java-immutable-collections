@@ -38,11 +38,9 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * A Cursor that visits all values in another Cursor and transforms each value
@@ -50,7 +48,7 @@ import java.util.Iterator;
  */
 @Immutable
 public class TransformCursor<S, T>
-        implements Cursor<T>
+    extends AbstractCursor<T>
 {
     private final Cursor<S> source;
     private final Func1<S, T> transforminator;
@@ -65,45 +63,31 @@ public class TransformCursor<S, T>
     public static <S, T> Cursor<T> of(Cursor<S> cursor,
                                       Func1<S, T> transforminator)
     {
-        return new TransformCursor<S, T>(cursor, transforminator);
+        return new TransformCursor<>(cursor, transforminator);
     }
 
     public static <K, V> Cursor<K> ofKeys(Cursor<JImmutableMap.Entry<K, V>> cursor)
     {
-        return new TransformCursor<JImmutableMap.Entry<K, V>, K>(cursor, new Func1<JImmutableMap.Entry<K, V>, K>()
-        {
-            @Override
-            public K apply(JImmutableMap.Entry<K, V> entry)
-            {
-                return entry.getKey();
-            }
-        });
+        return new TransformCursor<>(cursor, entry -> entry.getKey());
     }
 
     public static <K, V> Cursor<V> ofValues(Cursor<JImmutableMap.Entry<K, V>> cursor)
     {
-        return new TransformCursor<JImmutableMap.Entry<K, V>, V>(cursor, new Func1<JImmutableMap.Entry<K, V>, V>()
-        {
-            @Override
-            public V apply(JImmutableMap.Entry<K, V> entry)
-            {
-                return entry.getValue();
-            }
-        });
+        return new TransformCursor<>(cursor, entry -> entry.getValue());
     }
 
     @Nonnull
     @Override
     public Cursor<T> start()
     {
-        return new TransformCursor<S, T>(source.start(), transforminator);
+        return new TransformCursor<>(source.start(), transforminator);
     }
 
     @Nonnull
     @Override
     public Cursor<T> next()
     {
-        return new TransformCursor<S, T>(source.next(), transforminator);
+        return new TransformCursor<>(source.next(), transforminator);
     }
 
     @Override
@@ -116,11 +100,5 @@ public class TransformCursor<S, T>
     public T getValue()
     {
         return transforminator.apply(source.getValue());
-    }
-
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
     }
 }

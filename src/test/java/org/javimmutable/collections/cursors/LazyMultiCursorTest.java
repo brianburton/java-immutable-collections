@@ -38,9 +38,12 @@ package org.javimmutable.collections.cursors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.common.IndexedArray;
 
 import java.util.Arrays;
 
+import static com.google.common.primitives.Ints.asList;
+import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.cursors.StandardCursorTest.*;
 
 @SuppressWarnings("unchecked")
@@ -49,12 +52,10 @@ public class LazyMultiCursorTest
 {
     public void test()
     {
-        emptyCursorTest(LazyMultiCursor.cursor());
         emptyCursorTest(cursor(values()));
         emptyCursorTest(cursor(values(), values()));
         emptyCursorTest(cursor(values(), values(), values()));
 
-        listCursorTest(Arrays.asList(1), LazyMultiCursor.cursor(values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(), values(1)));
         listCursorTest(Arrays.asList(1), cursor(values(1), values()));
@@ -68,9 +69,36 @@ public class LazyMultiCursorTest
         listCursorTest(Arrays.asList(1, 2, 3, 4), cursor(values(), values(1), values(2, 3), values(), values(4)));
     }
 
+    public void testSplitAllowed()
+    {
+        assertEquals(false, valueCursor(0).start().isSplitAllowed());
+        assertEquals(false, valueCursor(1).start().isSplitAllowed());
+        assertEquals(true, valueCursor(2).start().isSplitAllowed());
+        assertEquals(true, valueCursor(3).start().isSplitAllowed());
+        assertEquals(true, valueCursor(4).start().isSplitAllowed());
+    }
+
+    public void testSplit()
+    {
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> valueCursor(0).start().splitCursor());
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> valueCursor(1).start().splitCursor());
+        StandardCursorTest.verifySplit(valueCursor(2).start(), asList(1), asList(2));
+        StandardCursorTest.verifySplit(valueCursor(3).start(), asList(1), asList(2, 3));
+        StandardCursorTest.verifySplit(valueCursor(4).start(), asList(1, 2), asList(3, 4));
+    }
+
+    private Cursor<Integer> valueCursor(int length)
+    {
+        final Cursorable<Integer>[] array = new Cursorable[length];
+        for (int i = 1; i <= length; ++i) {
+            array[i - 1] = values(i);
+        }
+        return cursor(array);
+    }
+
     private Cursor<Integer> cursor(Cursorable<Integer>... array)
     {
-        return LazyMultiCursor.cursor(array);
+        return LazyMultiCursor.cursor(IndexedArray.retained(array));
     }
 
     private Cursorable<Integer> values(Integer... array)

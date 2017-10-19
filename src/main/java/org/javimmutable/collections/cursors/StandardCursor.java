@@ -188,6 +188,7 @@ public abstract class StandardCursor
             return new Started<>(source);
         }
 
+        @Nonnull
         @Override
         public Iterator<T> iterator()
         {

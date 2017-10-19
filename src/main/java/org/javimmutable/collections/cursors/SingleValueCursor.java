@@ -36,20 +36,16 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * A Cursor containing exactly one value to be traversed.
- *
- * @param <T>
  */
 @Immutable
 public class SingleValueCursor<T>
-        extends AbstractStartCursor<T>
+    extends AbstractStartCursor<T>
 {
     private final T value;
 
@@ -75,11 +71,5 @@ public class SingleValueCursor<T>
                 return value;
             }
         };
-    }
-
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
     }
 }

@@ -37,8 +37,9 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
-import org.javimmutable.collections.cursors.ArrayCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -185,7 +186,7 @@ class LeafNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        return ArrayCursor.cursor(values);
+        return StandardCursor.of(IndexedArray.retained(values));
     }
 
     @Override

@@ -55,7 +55,7 @@ import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.cursors.StandardCursor.forRange;
+import static org.javimmutable.collections.cursors.StandardCursor.*;
 
 public class StandardCursorTest
     extends TestCase
@@ -229,6 +229,7 @@ public class StandardCursorTest
     public static <T> void listCursorTest(List<T> list,
                                           Cursor<T> cursor)
     {
+        assertEquals(list, makeList(cursor));
         cursorTest(new ListLookup<T>(list), list.size(), cursor);
     }
 

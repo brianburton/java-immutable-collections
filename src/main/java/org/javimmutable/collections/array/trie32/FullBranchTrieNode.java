@@ -39,9 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.ArrayCursor;
 import org.javimmutable.collections.cursors.MultiTransformCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -196,19 +197,19 @@ public class FullBranchTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return MultiTransformCursor.of(ArrayCursor.cursor(entries), node -> node.anyOrderEntryCursor());
+        return MultiTransformCursor.of(StandardCursor.of(IndexedArray.retained(entries)), node -> node.anyOrderEntryCursor());
     }
 
     @Override
     public Cursor<T> anyOrderValueCursor()
     {
-        return MultiTransformCursor.of(ArrayCursor.cursor(entries), node -> node.anyOrderValueCursor());
+        return MultiTransformCursor.of(StandardCursor.of(IndexedArray.retained(entries)), node -> node.anyOrderValueCursor());
     }
 
     @Override
     public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
     {
-        return MultiTransformCursor.of(ArrayCursor.cursor(entries), node -> node.anyOrderEntryCursor(transforms));
+        return MultiTransformCursor.of(StandardCursor.of(IndexedArray.retained(entries)), node -> node.anyOrderEntryCursor(transforms));
     }
 
     private TrieNode<T> createUpdatedEntries(int shift,

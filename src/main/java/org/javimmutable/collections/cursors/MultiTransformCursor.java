@@ -37,23 +37,19 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * Cursor that produces values by visiting all values in a Cursor of objects and
  * using a Func1 on each object to produce a Cursor that is then visited to
  * reach all of its elements.   No values are precomputed so LazyCursors can
  * be used to minimize memory consumption.
- *
- * @param <T>
  */
 @Immutable
 public class MultiTransformCursor<S, T>
-        implements Cursor<T>
+    extends AbstractCursor<T>
 {
     private final Cursor<S> sourceCursor;
     private final Cursor<T> visitCursor;
@@ -120,11 +116,5 @@ public class MultiTransformCursor<S, T>
             throw new NotStartedException();
         }
         return visitCursor.getValue();
-    }
-
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
     }
 }

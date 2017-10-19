@@ -36,21 +36,17 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * A Cursor that combines multiple Cursors into a single virtual Cursor
  * that visits all values from all Cursors in order.
- *
- * @param <T>
  */
 @Immutable
 public class MultiCursor<T>
-        implements Cursor<T>
+    extends AbstractCursor<T>
 {
     private final Node<T> nodes;
     private final Cursor<T> cursor;
@@ -74,9 +70,6 @@ public class MultiCursor<T>
 
     /**
      * Creates an object for building a MultiCursor from an arbitrary sequence of Cursors.
-     *
-     * @param <T>
-     * @return
      */
     public static <T> Builder<T> builder()
     {
@@ -149,17 +142,9 @@ public class MultiCursor<T>
         return cursor.getValue();
     }
 
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
-    }
-
     /**
      * Builder class to build a MultiCursor from an arbitrary sequence of Cursors.
      * Cursors will be visited in the same order that add() is called.
-     *
-     * @param <T>
      */
     public static class Builder<T>
     {

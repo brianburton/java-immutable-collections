@@ -36,11 +36,9 @@
 package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.common.IteratorAdaptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 import java.util.function.Supplier;
 
 /**
@@ -51,15 +49,15 @@ import java.util.function.Supplier;
  */
 @Immutable
 public abstract class AbstractStartCursor<T>
-    implements Cursor<T>
+    extends AbstractCursor<T>
 {
-    public static <T> Cursor<T> cursor(Supplier<? extends AbstractStartedCursor<T>> factory)
+    public static <V> Cursor<V> cursor(Supplier<? extends AbstractStartedCursor<V>> factory)
     {
-        return new AbstractStartCursor<T>()
+        return new AbstractStartCursor<V>()
         {
             @Nonnull
             @Override
-            public Cursor<T> next()
+            public Cursor<V> next()
             {
                 return factory.get();
             }
@@ -90,11 +88,5 @@ public abstract class AbstractStartCursor<T>
     public T getValue()
     {
         throw new NotStartedException();
-    }
-
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
     }
 }

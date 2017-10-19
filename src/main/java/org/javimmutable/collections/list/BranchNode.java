@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IndexedList;
@@ -360,11 +361,32 @@ class BranchNode<T>
     @Override
     public Cursor<T> cursor()
     {
-        if (prefix.isEmpty() && suffix.isEmpty()) {
-            return LazyMultiCursor.cursor(nodes);
-        } else {
-            return LazyMultiCursor.cursor(prefix, nodes, suffix);
-        }
+        return LazyMultiCursor.cursor(indexedForCursor());
+    }
+
+    private Indexed<Cursorable<T>> indexedForCursor()
+    {
+        final int last = nodes.length + 1;
+        return new Indexed<Cursorable<T>>()
+        {
+            @Override
+            public Cursorable<T> get(int index)
+            {
+                if (index == 0) {
+                    return prefix;
+                } else if (index == last) {
+                    return suffix;
+                } else {
+                    return nodes[index - 1];
+                }
+            }
+
+            @Override
+            public int size()
+            {
+                return last + 1;
+            }
+        };
     }
 
     @Override

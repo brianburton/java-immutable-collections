@@ -41,9 +41,12 @@ import org.javimmutable.collections.Sequence;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public abstract class SequenceCursor<T>
-        implements Cursor<T>
+public class SequenceCursor<T>
 {
+    private SequenceCursor()
+    {
+    }
+
     public static <T> Cursor<T> of(Sequence<T> sequence)
     {
         return StandardCursor.of(new SequenceSource<T>(sequence));
@@ -51,7 +54,7 @@ public abstract class SequenceCursor<T>
 
     @Immutable
     private static class SequenceSource<T>
-            implements StandardCursor.Source<T>
+        implements StandardCursor.Source<T>
     {
         private final Sequence<T> sequence;
 

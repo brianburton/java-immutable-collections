@@ -36,9 +36,9 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 
 import javax.annotation.Nonnull;
@@ -386,10 +386,7 @@ public class ThreeNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        Cursorable<JImmutableMap.Entry<K, V>> left = this.left;
-        Cursorable<JImmutableMap.Entry<K, V>> middle = this.middle;
-        Cursorable<JImmutableMap.Entry<K, V>> right = this.right;
-        return LazyMultiCursor.cursor(left, middle, right);
+        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, middle, right));
     }
 
     @SuppressWarnings("RedundantIfStatement")
