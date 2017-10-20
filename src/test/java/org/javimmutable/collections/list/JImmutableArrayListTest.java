@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.IterableCursorable;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -679,6 +680,13 @@ public class JImmutableArrayListTest
         list = JImmutableArrayList.of(IndexedList.retained(expected));
         assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
         assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
+    }
+    
+    public void testParallelStreams()
+    {
+        final JImmutableList<Integer> original = JImmutableArrayList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
+        final List<Integer> collected = original.stream().parallel().collect(toList());
+        assertEquals(original.getList(), collected);
     }
 
     private JImmutableList<Integer> mklist(Integer... values)
