@@ -285,10 +285,7 @@ public interface JImmutableList<T>
     }
 
     @Nonnull
-    default Spliterator<T> spliterator()
-    {
-        throw new UnsupportedOperationException();
-    }
+    Spliterator<T> spliterator();
 
     @Nonnull
     default Stream<T> stream()
