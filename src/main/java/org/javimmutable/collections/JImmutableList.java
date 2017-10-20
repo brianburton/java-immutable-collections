@@ -296,6 +296,6 @@ public interface JImmutableList<T>
     @Nonnull
     default Stream<T> parallelStream()
     {
-        return StreamSupport.stream(spliterator(), false);
+        return StreamSupport.stream(spliterator(), true);
     }
 }

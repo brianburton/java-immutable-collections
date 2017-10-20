@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
@@ -49,18 +50,17 @@ import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 
 /**
  * Singly linked list implementation of JImmutableStack that stores and retrieves values
  * in the reverse order of the corresponding add() method calls.  If forward or random
  * access to stored values is required use JImmutableArrayList or JImmutableTreeList
  * instead, but this class is significantly faster when its limitations are acceptable.
- *
- * @param <T>
  */
 @Immutable
 public abstract class JImmutableLinkedStack<T>
-        implements JImmutableStack<T>
+    implements JImmutableStack<T>
 {
     private static final Empty EMPTY = new Empty();
 
@@ -104,6 +104,13 @@ public abstract class JImmutableLinkedStack<T>
         return IteratorAdaptor.of(cursor());
     }
 
+    @Nonnull
+    @Override
+    public Spliterator<T> spliterator()
+    {
+        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor());
+    }
+
     public List<T> makeList()
     {
         List<T> answer = new ArrayList<T>();
@@ -142,7 +149,7 @@ public abstract class JImmutableLinkedStack<T>
     }
 
     private static class Empty<V>
-            extends JImmutableLinkedStack<V>
+        extends JImmutableLinkedStack<V>
     {
         public boolean isEmpty()
         {
@@ -182,7 +189,7 @@ public abstract class JImmutableLinkedStack<T>
     }
 
     private static class Single<V>
-            extends JImmutableLinkedStack<V>
+        extends JImmutableLinkedStack<V>
     {
         private final V value;
 
@@ -229,7 +236,7 @@ public abstract class JImmutableLinkedStack<T>
     }
 
     private static class Chain<V>
-            extends JImmutableLinkedStack<V>
+        extends JImmutableLinkedStack<V>
     {
         private final V value;
         private final JImmutableLinkedStack<V> next;

@@ -36,13 +36,20 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class JImmutableLinkedStackTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
     {
@@ -78,5 +85,28 @@ public class JImmutableLinkedStackTest
         assertEquals(list, JImmutableLinkedStack.of(Collections.<Integer>emptyList()));
         assertEquals(list2, JImmutableLinkedStack.of(Arrays.asList(10)));
         assertEquals(list3, JImmutableLinkedStack.of(Arrays.asList(10, 30)));
+    }
+
+    public void testStreams()
+    {
+        JImmutableStack<Integer> list = JImmutableLinkedStack.<Integer>of(1, 2, 3, 4, 5, 6, 7);
+        assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
+        assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
+
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 1; i <= 2048; ++i) {
+            expected.add(i);
+        }
+        list = JImmutableLinkedStack.of(expected);
+        Collections.reverse(expected);
+        assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
+        assertEquals(expected.parallelStream().collect(toList()), list.stream().collect(toList()));
+    }
+
+    public void testParallelStreams()
+    {
+        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(StandardCursor.makeList(StandardCursor.forRange(1, 10000)));
+        final List<Integer> collected = original.stream().parallel().collect(toList());
+        assertEquals(StandardCursor.makeList(original.cursor()), collected);
     }
 }

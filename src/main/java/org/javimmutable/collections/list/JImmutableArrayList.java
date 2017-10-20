@@ -312,7 +312,7 @@ public class JImmutableArrayList<T>
     @Nonnull
     public Spliterator<T> spliterator()
     {
-        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor().start());
+        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor());
     }
 
     @Override

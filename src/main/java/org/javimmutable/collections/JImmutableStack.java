@@ -39,51 +39,43 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
  * at the front of the list so elements are traversed in reverse order.
- *
- * @param <T>
  */
 @Immutable
 public interface JImmutableStack<T>
-        extends Insertable<T>,
-                Sequence<T>,
-                Cursorable<T>,
-                Iterable<T>,
-                InvariantCheckable
+    extends Insertable<T>,
+            Sequence<T>,
+            Cursorable<T>,
+            Iterable<T>,
+            InvariantCheckable
 {
     boolean isEmpty();
 
     /**
      * Accesses the first value in the List.
-     *
-     * @return
      */
     T getHead();
 
     /**
      * Accesses the rest of the List (i.e. the entry after the head entry).
-     *
-     * @return
      */
     @Nonnull
     JImmutableStack<T> getTail();
 
     /**
      * Returns a new list containing the value before the element returned by getHead().
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableStack<T> insert(@Nullable T value);
 
     /**
      * Returns a list without the element returned by getHead().
-     *
-     * @return
      */
     @Nonnull
     JImmutableStack<T> remove();
@@ -92,4 +84,13 @@ public interface JImmutableStack<T>
      * @return List containing the elements of this stack in order
      */
     List<T> makeList();
+
+    @Nonnull
+    Spliterator<T> spliterator();
+
+    @Nonnull
+    default Stream<T> stream()
+    {
+        return StreamSupport.stream(spliterator(), false);
+    }
 }
