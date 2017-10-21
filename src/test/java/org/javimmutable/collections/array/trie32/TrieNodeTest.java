@@ -47,7 +47,7 @@ import org.javimmutable.collections.cursors.SingleValueCursor;
 import java.util.List;
 
 public class TrieNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testVarious()
     {
@@ -154,7 +154,7 @@ public class TrieNodeTest
     }
 
     private static class TrivialTransforms
-            implements Transforms<Integer, Integer, Integer>
+        implements Transforms<Integer, Integer, Integer>
     {
         @Override
         public Integer update(Holder<Integer> leaf,
@@ -191,7 +191,7 @@ public class TrieNodeTest
         public Holder<JImmutableMap.Entry<Integer, Integer>> findEntry(Integer leaf,
                                                                        Integer key)
         {
-            return Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(key, leaf));
+            return Holders.of(MapEntry.of(key, leaf));
         }
 
         // this is wrong since its guessing the key but ok for unit tests

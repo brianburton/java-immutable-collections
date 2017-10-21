@@ -50,7 +50,7 @@ import java.util.Map;
 
 @SuppressWarnings("StringConcatenationMissingWhitespace")
 public class MultiBranchTrieNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testForBranchIndex()
     {
@@ -181,7 +181,7 @@ public class MultiBranchTrieNodeTest
         }
         final MultiBranchTrieNode<String> node = MultiBranchTrieNode.forEntries(20, entries);
         for (int i = 0; i < length; ++i) {
-            assertEquals(Holders.<String>of("value" + i), node.find(20, shiftIndex(20, i)));
+            assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
             try {
                 node.find(15, shiftIndex(20, i));
                 fail();
@@ -200,7 +200,7 @@ public class MultiBranchTrieNodeTest
         }
         final MultiBranchTrieNode<String> node = MultiBranchTrieNode.forEntries(20, entries);
         for (int i = 0; i < 16; ++i) {
-            assertEquals(Holders.<String>of("value" + i), node.find(20, shiftIndex(20, i)));
+            assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
             try {
                 node.find(15, shiftIndex(20, i));
                 fail();
@@ -222,7 +222,7 @@ public class MultiBranchTrieNodeTest
             assertEquals(1, delta.getValue());
         }
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.<String>of("value" + i), node.find(20, shiftIndex(20, i)));
+            assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
         }
         node = node.delete(20, shiftIndex(20, 31), new MutableDelta());
         assertEquals(true, node instanceof MultiBranchTrieNode);
@@ -232,7 +232,7 @@ public class MultiBranchTrieNodeTest
             assertEquals(0, delta.getValue());
         }
         for (int i = 0; i < 31; ++i) {
-            assertEquals(Holders.<String>of("new_value" + i), node.find(20, shiftIndex(20, i)));
+            assertEquals(Holders.of("new_value" + i), node.find(20, shiftIndex(20, i)));
         }
     }
 
@@ -245,7 +245,7 @@ public class MultiBranchTrieNodeTest
             assertEquals(1, delta.getValue());
         }
         for (int i = 0; i < 32; ++i) {
-            assertEquals(Holders.<String>of("value" + i), node.find(20, shiftIndex(20, i)));
+            assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
         }
         for (int i = 31; i >= 0; --i) {
             MutableDelta delta = new MutableDelta();
@@ -255,7 +255,7 @@ public class MultiBranchTrieNodeTest
                 assertTrue(node instanceof MultiBranchTrieNode);
             } else if (i == 1) {
                 assertTrue(node instanceof LeafTrieNode);
-            } else if (i == 0) {
+            } else {
                 assertTrue(node instanceof EmptyTrieNode);
             }
         }
@@ -283,7 +283,7 @@ public class MultiBranchTrieNodeTest
 
     public void testTransforms()
     {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<Integer, String>();
+        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
         TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(20);
         for (int i = 0; i < 31; ++i) {
             MutableDelta delta = new MutableDelta();
@@ -329,8 +329,8 @@ public class MultiBranchTrieNodeTest
             entriesArray[i] = LeafTrieNode.of(shiftIndex(20, i), "value" + i);
         }
         final MultiBranchTrieNode<String> node = MultiBranchTrieNode.forEntries(20, entriesArray);
-        List<String> values = new ArrayList<String>();
-        List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        List<String> values = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<>();
         for (int i = 0; i < length; ++i) {
             values.add(node.getValueOr(20, shiftIndex(20, i), null));
             entries.add(MapEntry.of(shiftIndex(20, i), values.get(i)));
@@ -349,10 +349,10 @@ public class MultiBranchTrieNodeTest
             entries[i] = LeafTrieNode.of(shiftIndex(TrieNode.ROOT_SHIFT, i), "value" + i);
         }
         final MultiBranchTrieNode<String> node = MultiBranchTrieNode.forEntries(TrieNode.ROOT_SHIFT, entries);
-        List<String> anyOrderValues = new ArrayList<String>();
-        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
-        List<String> signedOrderValues = new ArrayList<String>();
-        List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        List<String> anyOrderValues = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<>();
+        List<String> signedOrderValues = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<>();
         for (int i = 0; i < length; ++i) {
             anyOrderValues.add(node.getValueOr(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), null));
             anyOrderEntries.add(MapEntry.of(shiftIndex(TrieNode.ROOT_SHIFT, i), anyOrderValues.get(i)));
@@ -370,7 +370,7 @@ public class MultiBranchTrieNodeTest
 
     public void testNonRootTransformCursors()
     {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<Integer, String>();
+        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
         TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(20);
         for (int i = 0; i < 31; ++i) {
             MutableDelta delta = new MutableDelta();
@@ -380,7 +380,7 @@ public class MultiBranchTrieNodeTest
             node = node.assign(20, shiftIndex(20, i), 100 + i, "xvalue" + i, tx, delta);
             assertEquals(1, delta.getValue());
         }
-        List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<>();
         for (int i = 0; i < 31; ++i) {
             entries.add(MapEntry.of(i, "value" + i));
             entries.add(MapEntry.of(100 + i, "xvalue" + i));
@@ -391,7 +391,7 @@ public class MultiBranchTrieNodeTest
 
     public void testRootTransformCursors()
     {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<Integer, String>();
+        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
         TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(TrieNode.ROOT_SHIFT);
         for (int i = 0; i < 4; ++i) {
             MutableDelta delta = new MutableDelta();
@@ -401,12 +401,12 @@ public class MultiBranchTrieNodeTest
             node = node.assign(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), 100 + i, "xvalue" + i, tx, delta);
             assertEquals(1, delta.getValue());
         }
-        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<>();
         for (int i = 0; i < 4; ++i) {
             anyOrderEntries.add(MapEntry.of(i, "value" + i));
             anyOrderEntries.add(MapEntry.of(100 + i, "xvalue" + i));
         }
-        List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<>();
         for (Integer i : Arrays.asList(2, 3, 0, 1)) {
             signedOrderEntries.add(MapEntry.of(i, "value" + i));
             signedOrderEntries.add(MapEntry.of(100 + i, "xvalue" + i));

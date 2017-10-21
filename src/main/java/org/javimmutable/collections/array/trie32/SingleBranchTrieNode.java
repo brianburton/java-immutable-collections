@@ -66,14 +66,14 @@ public class SingleBranchTrieNode<T>
                                                 TrieNode<T> child)
     {
         final int branchIndex = (index >>> shift) & 0x1f;
-        return new SingleBranchTrieNode<T>(shift, branchIndex, child);
+        return new SingleBranchTrieNode<>(shift, branchIndex, child);
     }
 
     static <T> SingleBranchTrieNode<T> forBranchIndex(int shift,
                                                       int branchIndex,
                                                       TrieNode<T> child)
     {
-        return new SingleBranchTrieNode<T>(shift, branchIndex, child);
+        return new SingleBranchTrieNode<>(shift, branchIndex, child);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class SingleBranchTrieNode<T>
     {
         assert this.shift == shift;
         final int branchIndex = (index >>> shift) & 0x1f;
-        return (this.branchIndex == branchIndex) ? child.find(shift - 5, index) : Holders.<T>of();
+        return (this.branchIndex == branchIndex) ? child.find(shift - 5, index) : Holders.of();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class SingleBranchTrieNode<T>
     {
         assert this.shift == shift;
         final int branchIndex = (index >>> shift) & 0x1f;
-        return (this.branchIndex == branchIndex) ? child.find(shift - 5, index, key, transforms) : Holders.<V>of();
+        return (this.branchIndex == branchIndex) ? child.find(shift - 5, index, key, transforms) : Holders.of();
     }
 
     @Override
@@ -243,7 +243,7 @@ public class SingleBranchTrieNode<T>
                                                   TrieNode<T> newChild)
     {
         assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
-        return (newChild == child) ? this : new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+        return (newChild == child) ? this : new SingleBranchTrieNode<>(shift, branchIndex, newChild);
     }
 
     private TrieNode<T> selectNodeForDeleteResult(int shift,
@@ -258,7 +258,7 @@ public class SingleBranchTrieNode<T>
             return newChild;
         } else {
             assert newChild.getShift() == (shift - 5);
-            return new SingleBranchTrieNode<T>(shift, branchIndex, newChild);
+            return new SingleBranchTrieNode<>(shift, branchIndex, newChild);
         }
     }
 }

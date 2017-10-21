@@ -56,7 +56,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 public class TrieArrayTest
-        extends TestCase
+    extends TestCase
 {
     // this method is intended for use in debugger to what the structural changes
     @SuppressWarnings("UnusedAssignment")
@@ -78,7 +78,7 @@ public class TrieArrayTest
     public void testRandom()
     {
         Random r = new Random(20L);
-        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> expected = new TreeMap<>();
         JImmutableArray<Integer> array = TrieArray.of();
         for (int loop = 1; loop <= 20000; ++loop) {
             int index = r.nextInt(2000) - 1000;
@@ -94,7 +94,7 @@ public class TrieArrayTest
 
     public void testSequential()
     {
-        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> expected = new TreeMap<>();
         JImmutableArray<Integer> array = TrieArray.of();
         for (int i = 0; i <= 20000; ++i) {
             array = array.assign(i, i);
@@ -170,7 +170,7 @@ public class TrieArrayTest
         List<Integer> values = Arrays.asList(-5001, -101, -11, 0, 11, 101, 5001);
         StandardCursorTest.listCursorTest(values, array.valuesCursor());
 
-        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
         entries.add(MapEntry.of(-500, -5001));
         entries.add(MapEntry.of(-10, -101));
         entries.add(MapEntry.of(-1, -11));
@@ -185,9 +185,9 @@ public class TrieArrayTest
     {
         List<Integer> indexes = createBranchIndexes();
         for (int length = indexes.size(); length > 0; --length) {
-            Map<Integer, Integer> map = new TreeMap<Integer, Integer>();
-            List<Integer> keys = new ArrayList<Integer>();
-            List<Integer> values = new ArrayList<Integer>();
+            Map<Integer, Integer> map = new TreeMap<>();
+            List<Integer> keys = new ArrayList<>();
+            List<Integer> values = new ArrayList<>();
             JImmutableArray<Integer> array = TrieArray.of();
             for (int i = 0; i < length; ++i) {
                 final Integer index = indexes.get(i);
@@ -230,7 +230,7 @@ public class TrieArrayTest
     @SuppressWarnings("deprecation")
     public void testIndexedConstructor()
     {
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         for (int length = 1; length <= 1026; ++length) {
             source.add(length);
             JImmutableArray<Integer> array = TrieArray.of(IndexedList.retained(source), 0, source.size());
@@ -251,7 +251,7 @@ public class TrieArrayTest
 
     public void testBuilder()
     {
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         for (int length = 1; length <= 1024; ++length) {
             source.add(length);
             TrieArray.Builder<Integer> builder = TrieArray.builder();
@@ -273,41 +273,29 @@ public class TrieArrayTest
             }
         }
 
-        Func0<MutableBuilder<Integer, TrieArray<Integer>>> factory = new Func0<MutableBuilder<Integer, TrieArray<Integer>>>()
-        {
-            @Override
-            public MutableBuilder<Integer, TrieArray<Integer>> apply()
-            {
-                return TrieArray.builder();
-            }
-        };
+        Func0<MutableBuilder<Integer, TrieArray<Integer>>> factory = () -> TrieArray.builder();
 
-        Func2<List<Integer>, TrieArray<Integer>, Boolean> comparator = new Func2<List<Integer>, TrieArray<Integer>, Boolean>()
-        {
-            @Override
-            public Boolean apply(List<Integer> list,
-                                 TrieArray<Integer> tree)
-            {
-                for (int i = 0; i < list.size(); ++i) {
-                    assertEquals(list.get(i), tree.get(i));
-                }
-                return true;
+        Func2<List<Integer>, TrieArray<Integer>, Boolean> comparator = (list, tree) -> {
+            for (int i = 0; i < list.size(); ++i) {
+                assertEquals(list.get(i), tree.get(i));
             }
+            return true;
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
     }
 
+    @SuppressWarnings("NumericOverflow")
     static List<Integer> createBranchIndexes()
     {
-        List<Integer> answer = new ArrayList<Integer>();
+        List<Integer> answer = new ArrayList<>();
         answer.add(0);
         answer.add(1 << 30);
         answer.add(2 << 30);
         answer.add(3 << 30);
         int shift = 25;
         while (shift >= 0) {
-            for (Integer base : new ArrayList<Integer>(answer)) {
+            for (Integer base : new ArrayList<>(answer)) {
                 answer.add(base | (1 << shift));
             }
             shift -= 5;

@@ -53,7 +53,7 @@ import java.util.TreeMap;
  * map to store its values and makes frequent complete copies of the map.
  */
 class TestOnlyTransforms<K, V>
-        implements Transforms<Map<K, V>, K, V>
+    implements Transforms<Map<K, V>, K, V>
 {
     @Override
     public Map<K, V> update(Holder<Map<K, V>> leaf,
@@ -63,11 +63,11 @@ class TestOnlyTransforms<K, V>
     {
         if (leaf.isEmpty()) {
             delta.add(1);
-            Map<K, V> map = new TreeMap<K, V>();
+            Map<K, V> map = new TreeMap<>();
             map.put(key, value);
             return map;
         } else {
-            Map<K, V> map = new TreeMap<K, V>(leaf.getValue());
+            Map<K, V> map = new TreeMap<>(leaf.getValue());
             if (!map.containsKey(key)) {
                 delta.add(1);
                 map.put(key, value);
@@ -87,7 +87,7 @@ class TestOnlyTransforms<K, V>
                                     MutableDelta delta)
     {
         if (leaf.containsKey(key)) {
-            Map<K, V> map = new TreeMap<K, V>(leaf);
+            Map<K, V> map = new TreeMap<>(leaf);
             delta.subtract(1);
             map.remove(key);
             if (map.isEmpty()) {
@@ -115,14 +115,14 @@ class TestOnlyTransforms<K, V>
         if (value == null) {
             return Holders.of();
         } else {
-            return Holders.<JImmutableMap.Entry<K, V>>of(MapEntry.<K, V>of(key, value));
+            return Holders.of(MapEntry.of(key, value));
         }
     }
 
     @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor(Map<K, V> leaf)
     {
-        List<JImmutableMap.Entry<K, V>> entries = new ArrayList<JImmutableMap.Entry<K, V>>();
+        List<JImmutableMap.Entry<K, V>> entries = new ArrayList<>();
         for (Map.Entry<K, V> entry : leaf.entrySet()) {
             entries.add(MapEntry.of(entry));
         }

@@ -47,8 +47,8 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class LeafTrieNode<T>
-        extends TrieNode<T>
-        implements Holder<T>
+    extends TrieNode<T>
+    implements Holder<T>
 {
     private final int index;
     private final T value;
@@ -100,7 +100,7 @@ public class LeafTrieNode<T>
                           int index)
     {
         assert shift >= -5;
-        return (this.index == index) ? this : Holders.<T>of();
+        return (this.index == index) ? this : Holders.of();
     }
 
     @Override
@@ -110,7 +110,7 @@ public class LeafTrieNode<T>
                                  Transforms<T, K, V> transforms)
     {
         assert shift >= -5;
-        return (this.index == index) ? transforms.findValue(value, key) : Holders.<V>of();
+        return (this.index == index) ? transforms.findValue(value, key) : Holders.of();
     }
 
     @Override
@@ -217,7 +217,7 @@ public class LeafTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(MapEntry.of(index, value));
+        return SingleValueCursor.of(MapEntry.of(index, value));
     }
 
     @Override

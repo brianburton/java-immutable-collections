@@ -48,11 +48,11 @@ import java.util.List;
 import java.util.Map;
 
 public class FullBranchTrieNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testFromSource()
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (int length = 0; length < 32; ++length) {
             try {
                 FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
@@ -76,7 +76,7 @@ public class FullBranchTrieNodeTest
 
     public void testOperations()
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < 32; ++i) {
             list.add(String.valueOf(i));
         }
@@ -112,8 +112,8 @@ public class FullBranchTrieNodeTest
                 }
             }
         }
-        List<JImmutableMap.Entry<Integer, String>> entryList = new ArrayList<JImmutableMap.Entry<Integer, String>>();
-        list = new ArrayList<String>();
+        List<JImmutableMap.Entry<Integer, String>> entryList = new ArrayList<>();
+        list = new ArrayList<>();
         for (int i = 0; i < 32; ++i) {
             list.add(String.valueOf(-i));
             entryList.add(MapEntry.of(i, String.valueOf(-i)));
@@ -126,10 +126,10 @@ public class FullBranchTrieNodeTest
 
     public void testTransformOperations()
     {
-        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<String, String>();
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<>();
+        List<Map<String, String>> list = new ArrayList<>();
         for (int i = 0; i < 32; ++i) {
-            list.add(tx.update(Holders.<Map<String, String>>of(), String.valueOf(i), String.valueOf(i), new MutableDelta()));
+            list.add(tx.update(Holders.of(), String.valueOf(i), String.valueOf(i), new MutableDelta()));
         }
         TrieNode<Map<String, String>> node = FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
         for (int i = 0; i < 32; ++i) {
@@ -163,7 +163,7 @@ public class FullBranchTrieNodeTest
                 }
             }
         }
-        List<JImmutableMap.Entry<String, String>> entryList = new ArrayList<JImmutableMap.Entry<String, String>>();
+        List<JImmutableMap.Entry<String, String>> entryList = new ArrayList<>();
         for (int i = 0; i < 32; ++i) {
             entryList.add(MapEntry.of(String.valueOf(i), String.valueOf(-i)));
         }

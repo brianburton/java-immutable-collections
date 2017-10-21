@@ -55,7 +55,7 @@ import java.util.List;
 
 @Immutable
 public class TrieArray<T>
-        extends AbstractJImmutableArray<T>
+    extends AbstractJImmutableArray<T>
 {
     @SuppressWarnings("unchecked")
     private static final TrieArray EMPTY = new TrieArray(TrieNode.of(), 0);
@@ -72,7 +72,7 @@ public class TrieArray<T>
 
     public static <T> Builder<T> builder()
     {
-        return new Builder<T>();
+        return new Builder<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -87,11 +87,6 @@ public class TrieArray<T>
      * from the source are not carried over) so if offset is 10 then source.get(10) will map to
      * array.get(0).
      *
-     * @param source
-     * @param offset
-     * @param limit
-     * @param <T>
-     * @return
      * @deprecated use builder() instead
      */
     @Deprecated
@@ -103,6 +98,7 @@ public class TrieArray<T>
     }
 
     // made obsolete by Builder but retained for use in unit test
+    @SuppressWarnings("SameParameterValue")
     static <T> JImmutableArray<T> oldof(Indexed<? extends T> source,
                                         int offset,
                                         int limit)
@@ -114,7 +110,7 @@ public class TrieArray<T>
 
         // small lists can be directly constructed from a single leaf array
         if (size <= 32) {
-            return new TrieArray<T>(TrieNode.fromSource(0, source, offset, limit), size);
+            return new TrieArray<>(TrieNode.fromSource(0, source, offset, limit), size);
         }
 
         // first construct an array containing a single level of arrays of leaves
@@ -129,7 +125,7 @@ public class TrieArray<T>
         }
 
         // then add any extras left over above that size
-        JImmutableArray<T> array = new TrieArray<T>(MultiBranchTrieNode.forEntries(5, branchArray), index);
+        JImmutableArray<T> array = new TrieArray<>(MultiBranchTrieNode.forEntries(5, branchArray), index);
         while (offset < limit) {
             array = array.assign(index++, source.get(offset++));
         }
@@ -167,7 +163,7 @@ public class TrieArray<T>
         MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
         newRoot = newRoot.assign(newRoot.getShift(), index, value, sizeDelta);
-        return (newRoot == root) ? this : new TrieArray<T>(newRoot, size + sizeDelta.getValue());
+        return (newRoot == root) ? this : new TrieArray<>(newRoot, size + sizeDelta.getValue());
     }
 
     @Nonnull
@@ -179,7 +175,7 @@ public class TrieArray<T>
         } else {
             MutableDelta sizeDelta = new MutableDelta();
             final TrieNode<T> newRoot = root.delete(root.getShift(), index, sizeDelta).trimmedToMinimumDepth();
-            return (newRoot == root) ? this : new TrieArray<T>(newRoot, size + sizeDelta.getValue());
+            return (newRoot == root) ? this : new TrieArray<>(newRoot, size + sizeDelta.getValue());
         }
     }
 
@@ -210,9 +206,9 @@ public class TrieArray<T>
     }
 
     public static class Builder<T>
-            implements MutableBuilder<T, TrieArray<T>>
+        implements MutableBuilder<T, TrieArray<T>>
     {
-        private final List<TrieNode<T>> leaves = new ArrayList<TrieNode<T>>();
+        private final List<TrieNode<T>> leaves = new ArrayList<>();
 
         @Nonnull
         @Override
@@ -233,10 +229,10 @@ public class TrieArray<T>
             }
 
             if (nodeCount == 1) {
-                return new TrieArray<T>(leaves.get(0), 1);
+                return new TrieArray<>(leaves.get(0), 1);
             }
 
-            List<TrieNode<T>> dst = new ArrayList<TrieNode<T>>();
+            List<TrieNode<T>> dst = new ArrayList<>();
             List<TrieNode<T>> src = leaves;
             int shift = 0;
             while (nodeCount > 1) {
@@ -254,7 +250,7 @@ public class TrieArray<T>
                         branch = SingleBranchTrieNode.forBranchIndex(shift, 0, nodes[0]);
                         break;
                     case 32:
-                        branch = new FullBranchTrieNode<T>(shift, nodes);
+                        branch = new FullBranchTrieNode<>(shift, nodes);
                         break;
                     default:
                         branch = MultiBranchTrieNode.forEntries(shift, nodes);
@@ -267,7 +263,7 @@ public class TrieArray<T>
                 nodeCount = dstOffset;
             }
             assert nodeCount == 1;
-            return new TrieArray<T>(dst.get(0), leaves.size());
+            return new TrieArray<>(dst.get(0), leaves.size());
         }
 
         @Nonnull

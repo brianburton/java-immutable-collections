@@ -37,8 +37,8 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Indexed;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -48,73 +48,17 @@ import javax.annotation.concurrent.Immutable;
  * be used to minimize memory consumption.
  */
 @Immutable
-public class MultiTransformCursor<S, T>
-    extends AbstractCursor<T>
+public abstract class MultiTransformCursor<S, T>
 {
-    private final Cursor<S> sourceCursor;
-    private final Cursor<T> visitCursor;
-    private final Func1<S, Cursor<T>> transforminator;   // BEHOLD!
-
-    private MultiTransformCursor(Cursor<S> sourceCursor,
-                                 Cursor<T> visitCursor,
-                                 Func1<S, Cursor<T>> transforminator)
+    public static <S, T> Cursor<T> of(Indexed<S> source,
+                                      Func1<S, Cursor<T>> transforminator) // BEHOLD!
     {
-        this.sourceCursor = sourceCursor;
-        this.visitCursor = visitCursor;
-        this.transforminator = transforminator;
+        return of(StandardCursor.of(source), transforminator);
     }
 
     public static <S, T> Cursor<T> of(Cursor<S> source,
-                                      Func1<S, Cursor<T>> transforminator)
+                                      Func1<S, Cursor<T>> transforminator) // BEHOLD!
     {
-        return new MultiTransformCursor<S, T>(source, null, transforminator);
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> start()
-    {
-        return (visitCursor == null) ? next() : this;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> next()
-    {
-        if ((visitCursor != null) && visitCursor.hasValue()) {
-            Cursor<T> nextCursor = visitCursor.next();
-            if (nextCursor.hasValue()) {
-                return new MultiTransformCursor<S, T>(sourceCursor, nextCursor, transforminator);
-            }
-        }
-
-        Cursor<S> nextSource = sourceCursor.next();
-        while (nextSource.hasValue()) {
-            Cursor<T> nextCursor = transforminator.apply(nextSource.getValue()).start();
-            if (nextCursor.hasValue()) {
-                return new MultiTransformCursor<S, T>(nextSource, nextCursor, transforminator);
-            }
-            nextSource = nextSource.next();
-        }
-
-        return EmptyStartedCursor.of();
-    }
-
-    @Override
-    public boolean hasValue()
-    {
-        if (visitCursor == null) {
-            throw new NotStartedException();
-        }
-        return visitCursor.hasValue();
-    }
-
-    @Override
-    public T getValue()
-    {
-        if (visitCursor == null) {
-            throw new NotStartedException();
-        }
-        return visitCursor.getValue();
+        return LazyMultiCursor.cursor(TransformCursor.of(source, s -> () -> transforminator.apply(s)));
     }
 }

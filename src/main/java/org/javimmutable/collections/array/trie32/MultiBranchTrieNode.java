@@ -36,7 +36,6 @@
 package org.javimmutable.collections.array.trie32;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
@@ -49,7 +48,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class MultiBranchTrieNode<T>
-        extends TrieNode<T>
+    extends TrieNode<T>
 {
     // used by SignedOrderCursorSource to determine which index to use next
     private static final IndexList SIGNED_INDEX_LIST = new IndexList(2, new IndexList(3, new IndexList(0, new IndexList(1, null))));
@@ -71,7 +70,7 @@ public class MultiBranchTrieNode<T>
     static <T> MultiBranchTrieNode<T> forTesting(int shift)
     {
         TrieNode<T>[] entries = allocate(0);
-        return new MultiBranchTrieNode<T>(shift, 0, entries);
+        return new MultiBranchTrieNode<>(shift, 0, entries);
     }
 
     static <T> MultiBranchTrieNode<T> forIndex(int shift,
@@ -89,7 +88,7 @@ public class MultiBranchTrieNode<T>
         assert (branchIndex >= 0) && (branchIndex < 32);
         TrieNode<T>[] entries = allocate(1);
         entries[0] = child;
-        return new MultiBranchTrieNode<T>(shift, 1 << branchIndex, entries);
+        return new MultiBranchTrieNode<>(shift, 1 << branchIndex, entries);
     }
 
     static <T> MultiBranchTrieNode<T> forEntries(int shift,
@@ -97,7 +96,7 @@ public class MultiBranchTrieNode<T>
     {
         final int length = entries.length;
         final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
-        return new MultiBranchTrieNode<T>(shift, bitmask, entries.clone());
+        return new MultiBranchTrieNode<>(shift, bitmask, entries.clone());
     }
 
     static <T> MultiBranchTrieNode<T> forSource(int index,
@@ -107,10 +106,10 @@ public class MultiBranchTrieNode<T>
     {
         final TrieNode<T>[] entries = allocate(size);
         for (int i = 0; i < size; ++i) {
-            entries[i] = LeafTrieNode.<T>of(index++, source.get(offset++));
+            entries[i] = LeafTrieNode.of(index++, source.get(offset++));
         }
         final int bitmask = (size == 32) ? -1 : ((1 << size) - 1);
-        return new MultiBranchTrieNode<T>(0, bitmask, entries);
+        return new MultiBranchTrieNode<>(0, bitmask, entries);
     }
 
     static <T> MultiBranchTrieNode<T> fullWithout(int shift,
@@ -122,7 +121,7 @@ public class MultiBranchTrieNode<T>
         System.arraycopy(entries, 0, newEntries, 0, withoutIndex);
         System.arraycopy(entries, withoutIndex + 1, newEntries, withoutIndex, 31 - withoutIndex);
         final int newMask = ~(1 << withoutIndex);
-        return new MultiBranchTrieNode<T>(shift, newMask, newEntries);
+        return new MultiBranchTrieNode<>(shift, newMask, newEntries);
     }
 
     @Override
@@ -233,7 +232,7 @@ public class MultiBranchTrieNode<T>
         final int childIndex = realIndex(bitmask, bit);
         final TrieNode<T>[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(Holders.<T>of(), key, value, sizeDelta));
+            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(Holders.of(), key, value, sizeDelta));
             return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
         } else {
             final TrieNode<T> child = entries[childIndex];
@@ -373,7 +372,7 @@ public class MultiBranchTrieNode<T>
             assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
             final TrieNode<T>[] newEntries = entries.clone();
             newEntries[childIndex] = newChild;
-            return new MultiBranchTrieNode<T>(shift, bitmask, newEntries);
+            return new MultiBranchTrieNode<>(shift, bitmask, newEntries);
         }
     }
 
@@ -392,9 +391,9 @@ public class MultiBranchTrieNode<T>
         }
         newEntries[childIndex] = newChild;
         if (newEntries.length == 32) {
-            return new FullBranchTrieNode<T>(shift, newEntries);
+            return new FullBranchTrieNode<>(shift, newEntries);
         } else {
-            return new MultiBranchTrieNode<T>(shift, bitmask | bit, newEntries);
+            return new MultiBranchTrieNode<>(shift, bitmask | bit, newEntries);
         }
     }
 
@@ -425,7 +424,7 @@ public class MultiBranchTrieNode<T>
                 final TrieNode<T>[] newArray = allocate(newLength);
                 System.arraycopy(entries, 0, newArray, 0, childIndex);
                 System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
-                return new MultiBranchTrieNode<T>(shift, bitmask & ~bit, newArray);
+                return new MultiBranchTrieNode<>(shift, bitmask & ~bit, newArray);
             }
             }
         } else {
@@ -435,43 +434,22 @@ public class MultiBranchTrieNode<T>
 
     private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<Integer, T>>>()
-        {
-            @Override
-            public Cursor<JImmutableMap.Entry<Integer, T>> apply(TrieNode<T> node)
-            {
-                return node.anyOrderEntryCursor();
-            }
-        });
+        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderEntryCursor());
     }
 
     private <K, V> Cursor<JImmutableMap.Entry<K, V>> entryCursor(StandardCursor.Source<TrieNode<T>> source,
                                                                  final Transforms<T, K, V> transforms)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<JImmutableMap.Entry<K, V>>>()
-        {
-            @Override
-            public Cursor<JImmutableMap.Entry<K, V>> apply(TrieNode<T> node)
-            {
-                return node.anyOrderEntryCursor(transforms);
-            }
-        });
+        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderEntryCursor(transforms));
     }
 
     private Cursor<T> valueCursor(StandardCursor.Source<TrieNode<T>> source)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), new Func1<TrieNode<T>, Cursor<T>>()
-        {
-            @Override
-            public Cursor<T> apply(TrieNode<T> node)
-            {
-                return node.anyOrderValueCursor();
-            }
-        });
+        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderValueCursor());
     }
 
     private class AnyOrderCursorSource
-            implements StandardCursor.Source<TrieNode<T>>
+        implements StandardCursor.Source<TrieNode<T>>
     {
         private final int index;
 
@@ -505,7 +483,7 @@ public class MultiBranchTrieNode<T>
     }
 
     private class SignedOrderCursorSource
-            implements StandardCursor.Source<TrieNode<T>>
+        implements StandardCursor.Source<TrieNode<T>>
     {
         private final IndexList indexList;
 

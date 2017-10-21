@@ -76,8 +76,8 @@ public class SingleBranchTrieNodeTest
         assertEquals(Holders.of("value"), node.find(20, 30 << 20));
         StandardCursorTest.listCursorTest(Arrays.asList("value"), node.anyOrderValueCursor());
         StandardCursorTest.listCursorTest(Arrays.asList("value"), node.signedOrderValueCursor());
-        StandardCursorTest.listCursorTest(Collections.<JImmutableMap.Entry<Integer, String>>singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryCursor());
-        StandardCursorTest.listCursorTest(Collections.<JImmutableMap.Entry<Integer, String>>singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryCursor());
+        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryCursor());
+        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryCursor());
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "value", delta));
@@ -116,8 +116,8 @@ public class SingleBranchTrieNodeTest
 
     public void testTransforms()
     {
-        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<String, String>();
-        Map<String, String> map = new TreeMap<String, String>();
+        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<>();
+        Map<String, String> map = new TreeMap<>();
         map.put("a", "A");
         map.put("b", "B");
         LeafTrieNode<Map<String, String>> child = LeafTrieNode.of(30 << 20, map);
@@ -130,7 +130,7 @@ public class SingleBranchTrieNodeTest
         assertEquals(Holders.of("A"), node.find(20, 30 << 20, "a", tx));
         assertEquals(Holders.of("B"), node.find(20, 30 << 20, "b", tx));
         assertEquals(Holders.<String>of(), node.find(20, 30 << 20, "c", tx));
-        List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<JImmutableMap.Entry<String, String>>();
+        List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<>();
         expectedEntries.add(MapEntry.of("a", "A"));
         expectedEntries.add(MapEntry.of("b", "B"));
         StandardCursorTest.listCursorTest(expectedEntries, node.anyOrderEntryCursor(tx));
@@ -178,7 +178,7 @@ public class SingleBranchTrieNodeTest
         assertEquals(-2, delta.getValue());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PointlessBitwiseExpression"})
     public void testDeleteTurnsChildIntoLeaf()
     {
         LeafTrieNode<String> leaf1 = LeafTrieNode.of(0 << 20, "value1");
