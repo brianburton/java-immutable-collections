@@ -37,31 +37,92 @@ package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.Sequence;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class SequenceCursorTest
-        extends TestCase
+    extends TestCase
 {
     public void testEmptyList()
     {
-        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of();
+        Sequence<Integer> list = new Empty<>();
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.emptyCursorTest(cursor);
     }
 
     public void testSingleList()
     {
-        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(100);
+        Sequence<Integer> list = new SimpleSequence<>(100, new Empty<>());
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.listCursorTest(Arrays.asList(100), cursor);
     }
 
     public void testMultiList()
     {
-        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of(8, 7, 6, 5, 4, 3, 2, 1);
+        Sequence<Integer> list = new Empty<>();
+        for (int i = 8; i >= 1; --i) {
+            list = new SimpleSequence<>(i, list);
+        }
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), cursor);
+    }
+
+    private static class Empty<T>
+        implements Sequence<T>
+    {
+        @Override
+        public boolean isEmpty()
+        {
+            return true;
+        }
+
+        @Override
+        public T getHead()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Nonnull
+        @Override
+        public Sequence<T> getTail()
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class SimpleSequence<T>
+        implements Sequence<T>
+    {
+        private final T head;
+        private final Sequence<T> tail;
+
+        private SimpleSequence(@Nullable T head,
+                               @Nonnull Sequence<T> tail)
+        {
+            this.tail = tail;
+            this.head = head;
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            return false;
+        }
+
+        @Override
+        public T getHead()
+        {
+            return head;
+        }
+
+        @Nonnull
+        @Override
+        public Sequence<T> getTail()
+        {
+            return tail;
+        }
     }
 }

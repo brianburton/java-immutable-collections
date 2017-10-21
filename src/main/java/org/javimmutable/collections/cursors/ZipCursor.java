@@ -85,7 +85,7 @@ public final class ZipCursor
             @Override
             public Tuple2<C1, C2> getValue()
             {
-                return new Tuple2<C1, C2>(cursor1.getValue(), cursor2.getValue());
+                return new Tuple2<>(cursor1.getValue(), cursor2.getValue());
             }
         };
     }

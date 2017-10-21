@@ -99,6 +99,7 @@ public abstract class JImmutableLinkedStack<T>
     @Nonnull
     public abstract JImmutableLinkedStack<T> getTail();
 
+    @Nonnull
     public Iterator<T> iterator()
     {
         return IteratorAdaptor.of(cursor());
