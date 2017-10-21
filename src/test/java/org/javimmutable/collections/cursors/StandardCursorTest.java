@@ -74,7 +74,7 @@ public class StandardCursorTest
         listIteratorTest(Arrays.asList(1, 2, 3), StandardCursor.iterator(new StandardCursor.RangeSource(1, 3)));
 
         emptyCursorTest(StandardCursor.of(IndexedList.retained(Collections.<Integer>emptyList())));
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         for (int i = 1; i < 10; ++i) {
             source.add(i);
             listCursorTest(source, StandardCursor.of(IndexedList.retained(source)));
@@ -223,19 +223,19 @@ public class StandardCursorTest
                                              int size,
                                              Cursor<T> cursor)
     {
-        cursorTest(new IndexedLookup<T>(indexed), size, cursor);
+        cursorTest(new IndexedLookup<>(indexed), size, cursor);
     }
 
     public static <T> void listCursorTest(List<T> list,
                                           Cursor<T> cursor)
     {
         assertEquals(list, makeList(cursor));
-        cursorTest(new ListLookup<T>(list), list.size(), cursor);
+        cursorTest(new ListLookup<>(list), list.size(), cursor);
     }
 
     public static <T> void emptyCursorTest(Cursor<T> cursor)
     {
-        listCursorTest(Collections.<T>emptyList(), cursor);
+        listCursorTest(Collections.emptyList(), cursor);
     }
 
     public static <T> void iteratorTest(Func1<Integer, T> lookup,
@@ -267,18 +267,18 @@ public class StandardCursorTest
                                                int size,
                                                Iterator<T> iterator)
     {
-        iteratorTest(new IndexedLookup<T>(indexed), size, iterator);
+        iteratorTest(new IndexedLookup<>(indexed), size, iterator);
     }
 
     public static <T> void listIteratorTest(List<T> list,
                                             Iterator<T> iterator)
     {
-        iteratorTest(new ListLookup<T>(list), list.size(), iterator);
+        iteratorTest(new ListLookup<>(list), list.size(), iterator);
     }
 
     public static <T> void emptyIteratorTest(Iterator<T> iterator)
     {
-        listIteratorTest(Collections.<T>emptyList(), iterator);
+        listIteratorTest(Collections.emptyList(), iterator);
     }
 
     public static <T> void verifySplit(Cursor<T> cursor,
