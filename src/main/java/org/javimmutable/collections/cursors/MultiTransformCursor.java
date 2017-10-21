@@ -41,19 +41,23 @@ import org.javimmutable.collections.Func1;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Cursor that produces values by visiting all values in a Cursor of objects and
- * using a Func1 on each object to produce a Cursor that is then visited to
- * reach all of its elements.   No values are precomputed so LazyCursors can
- * be used to minimize memory consumption.
+ * This class is deprecated.  Use LazyMultiCursor.transformed() instead.
  */
 @Immutable
+@Deprecated
 public abstract class MultiTransformCursor<S, T>
 {
+    private MultiTransformCursor()
+    {
+    }
+
+    /**
+     * This method is deprecated.  Use LazyMultiCursor.transformed() instead.
+     */
     @Deprecated
     public static <S, T> Cursor<T> of(Cursor<S> source,
                                       Func1<S, Cursor<T>> transforminator)
     {
         return LazyMultiCursor.transformed(source, s -> () -> transforminator.apply(s));
     }
-
 }
