@@ -36,35 +36,46 @@
 package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 
 import java.util.Arrays;
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.cursors.StandardCursorTest.*;
+
 public class TransformCursorTest
-        extends TestCase
+    extends TestCase
 {
+    private final Func1<Integer, String> transforminator = value -> String.valueOf(value);
+
     public void testEmpty()
     {
-        StandardCursorTest.listCursorTest(Collections.<String>emptyList(), TransformCursor.of(StandardCursor.<Integer>of(), new Func1<Integer, String>()
-        {
-            @Override
-            public String apply(Integer value)
-            {
-                return String.valueOf(value);
-            }
-        }));
+        listCursorTest(Collections.emptyList(), TransformCursor.of(StandardCursor.of(), transforminator));
     }
 
     public void testRange()
     {
-        StandardCursorTest.listCursorTest(Arrays.asList("3", "4", "5", "6"), TransformCursor.of(StandardCursor.forRange(3, 6), new Func1<Integer, String>()
-        {
-            @Override
-            public String apply(Integer value)
-            {
-                return String.valueOf(value);
-            }
-        }));
+        listCursorTest(Arrays.asList("3", "4", "5", "6"), forRange(3, 6));
+    }
+
+    public void testSplitAllowed()
+    {
+        assertEquals(false, forRange(1, 1).start().isSplitAllowed());
+        assertEquals(true, forRange(1, 4).start().isSplitAllowed());
+    }
+
+    public void testSplit()
+    {
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> forRange(1, 1).start().splitCursor());
+        verifySplit(forRange(1, 4).start(), asList("1", "2"), asList("3", "4"));
+    }
+
+    private Cursor<String> forRange(int first,
+                                    int last)
+    {
+        return TransformCursor.of(StandardCursor.forRange(first, last), transforminator);
     }
 }

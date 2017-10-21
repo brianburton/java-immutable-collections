@@ -38,6 +38,7 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -51,7 +52,7 @@ public class TransformCursor<S, T>
     extends AbstractCursor<T>
 {
     private final Cursor<S> source;
-    private final Func1<S, T> transforminator;
+    private final Func1<S, T> transforminator;  // BEHOLD!
 
     public TransformCursor(Cursor<S> source,
                            Func1<S, T> transforminator)
@@ -100,5 +101,18 @@ public class TransformCursor<S, T>
     public T getValue()
     {
         return transforminator.apply(source.getValue());
+    }
+
+    @Override
+    public boolean isSplitAllowed()
+    {
+        return source.isSplitAllowed();
+    }
+
+    @Override
+    public SplitCursor<T> splitCursor()
+    {
+        final SplitCursor<S> split = source.splitCursor();
+        return new SplitCursor<>(of(split.getLeft(), transforminator), of(split.getRight(), transforminator));
     }
 }

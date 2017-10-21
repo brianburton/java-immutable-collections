@@ -281,11 +281,11 @@ public class StandardCursorTest
         listIteratorTest(Collections.<T>emptyList(), iterator);
     }
 
-    public static void verifySplit(Cursor<Integer> cursor,
-                                   List<Integer> left,
-                                   List<Integer> right)
+    public static <T> void verifySplit(Cursor<T> cursor,
+                                       List<T> left,
+                                       List<T> right)
     {
-        SplitCursor<Integer> split = cursor.splitCursor();
+        SplitCursor<T> split = cursor.splitCursor();
         listCursorTest(left, split.getLeft());
         listCursorTest(right, split.getRight());
     }
