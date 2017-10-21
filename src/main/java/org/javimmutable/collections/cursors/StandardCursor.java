@@ -38,7 +38,6 @@ package org.javimmutable.collections.cursors;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitCursor;
 import org.javimmutable.collections.Tuple2;
 
@@ -138,6 +137,15 @@ public abstract class StandardCursor
                                            int high)
     {
         return of(new RangeSource(low, high));
+    }
+
+    /**
+     * Creates a Cursor over a range of integers.  Useful for test purposes.
+     */
+    public static <T> Cursor<T> repeating(int count,
+                                          T value)
+    {
+        return of(new RepeatingValueCursorSource<T>(count, value));
     }
 
     /**
@@ -308,17 +316,11 @@ public abstract class StandardCursor
     }
 
     @Immutable
-    public static class RepeatingValueCursorSource<T>
+    private static class RepeatingValueCursorSource<T>
         implements StandardCursor.Source<T>
     {
         private int count;
         private final T value;
-
-        public RepeatingValueCursorSource(JImmutableMap.Entry<T, Integer> entry)
-        {
-            this.count = entry.getValue();
-            this.value = entry.getKey();
-        }
 
         private RepeatingValueCursorSource(int count,
                                            T value)

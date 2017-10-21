@@ -37,7 +37,6 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Indexed;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -50,15 +49,11 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class MultiTransformCursor<S, T>
 {
-    public static <S, T> Cursor<T> of(Indexed<S> source,
-                                      Func1<S, Cursor<T>> transforminator) // BEHOLD!
+    @Deprecated
+    public static <S, T> Cursor<T> of(Cursor<S> source,
+                                      Func1<S, Cursor<T>> transforminator)
     {
-        return of(StandardCursor.of(source), transforminator);
+        return LazyMultiCursor.transformed(source, s -> () -> transforminator.apply(s));
     }
 
-    public static <S, T> Cursor<T> of(Cursor<S> source,
-                                      Func1<S, Cursor<T>> transforminator) // BEHOLD!
-    {
-        return LazyMultiCursor.cursor(TransformCursor.of(source, s -> () -> transforminator.apply(s)));
-    }
 }

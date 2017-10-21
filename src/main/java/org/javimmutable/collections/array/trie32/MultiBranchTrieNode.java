@@ -41,7 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.MultiTransformCursor;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.concurrent.Immutable;
@@ -434,18 +434,18 @@ public class MultiBranchTrieNode<T>
 
     private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderEntryCursor());
+        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderEntryCursor());
     }
 
     private <K, V> Cursor<JImmutableMap.Entry<K, V>> entryCursor(StandardCursor.Source<TrieNode<T>> source,
                                                                  final Transforms<T, K, V> transforms)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderEntryCursor(transforms));
+        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderEntryCursor(transforms));
     }
 
     private Cursor<T> valueCursor(StandardCursor.Source<TrieNode<T>> source)
     {
-        return MultiTransformCursor.of(StandardCursor.of(source), node -> node.anyOrderValueCursor());
+        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderValueCursor());
     }
 
     private class AnyOrderCursorSource

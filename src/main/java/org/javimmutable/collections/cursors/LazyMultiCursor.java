@@ -37,6 +37,7 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitCursor;
 
@@ -81,6 +82,18 @@ public class LazyMultiCursor<T>
                 return advance(source.start());
             }
         };
+    }
+
+    public static <S, T> Cursor<T> transformed(Indexed<S> source,
+                                               Func1<S, Cursorable<T>> transforminator)
+    {
+        return transformed(StandardCursor.of(source), transforminator);
+    }
+
+    public static <S, T> Cursor<T> transformed(Cursor<S> source,
+                                               Func1<S, Cursorable<T>> transforminator)
+    {
+        return cursor(TransformCursor.of(source, transforminator));
     }
 
     /**

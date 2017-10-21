@@ -40,7 +40,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitCursor;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
@@ -138,7 +137,7 @@ public class StandardCursorTest
     private Cursor<Integer> repeatCursor(int value,
                                          int count)
     {
-        return StandardCursor.of(new StandardCursor.RepeatingValueCursorSource<>(new MapEntry<>(value, count)));
+        return StandardCursor.repeating(count, value);
     }
 
     private Cursor<Integer> indexedCursor(Integer... values)

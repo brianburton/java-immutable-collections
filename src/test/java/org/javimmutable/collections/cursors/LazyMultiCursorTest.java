@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.common.IndexedArray;
+import org.javimmutable.collections.common.IndexedHelper;
 
 import java.util.Arrays;
 
@@ -67,6 +68,12 @@ public class LazyMultiCursorTest
         listCursorTest(Arrays.asList(1, 2, 3, 4), cursor(values(1, 2, 3, 4)));
         listCursorTest(Arrays.asList(1, 2, 3, 4), cursor(values(1, 2), values(3, 4)));
         listCursorTest(Arrays.asList(1, 2, 3, 4), cursor(values(), values(1), values(2, 3), values(), values(4)));
+
+        Cursor<Integer> multi = LazyMultiCursor.transformed(StandardCursor.forRange(0, 3), value -> () -> StandardCursor.forRange(1, value));
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 1, 2, 1, 2, 3), multi);
+
+        multi = LazyMultiCursor.transformed(IndexedHelper.indexed(2, 3, 4), value -> () -> StandardCursor.forRange(1, value));
+        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 1, 2, 3, 1, 2, 3, 4), multi);
     }
 
     public void testSplitAllowed()

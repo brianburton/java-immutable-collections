@@ -37,12 +37,11 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.MultiTransformCursor;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
@@ -549,14 +548,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public Cursor<T> occurrenceCursor()
     {
-        return MultiTransformCursor.of(entryCursor(), new Func1<JImmutableMap.Entry<T, Integer>, Cursor<T>>()
-        {
-            @Override
-            public Cursor<T> apply(JImmutableMap.Entry<T, Integer> entry)
-            {
-                return StandardCursor.of(new StandardCursor.RepeatingValueCursorSource<T>(entry));
-            }
-        });
+        return LazyMultiCursor.transformed(entryCursor(), entry -> () -> StandardCursor.repeating(entry.getValue(), entry.getKey()));
     }
 
     @Override
