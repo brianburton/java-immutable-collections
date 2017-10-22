@@ -42,7 +42,6 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -314,17 +313,17 @@ public class JImmutableHashMapTest
     public void testStreams()
     {
         final EmptyHashMap<Integer, Integer> hashMap = JImmutableHashMap.of();
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(), hashMap.stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
+        assertEquals(asList(), hashMap.stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), hashMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(1), hashMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(1, 4), hashMap.assign(1, 10).assign(4, 40).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(1), hashMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(1, 4), hashMap.assign(1, 10).assign(4, 40).keysStreamable().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), hashMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(10), hashMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(10, 40), hashMap.assign(1, 10).assign(4, 40).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(10), hashMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(10, 40), hashMap.assign(1, 10).assign(4, 40).valuesStreamable().stream().collect(Collectors.toList()));
     }
 
     private static class ManualHashKey

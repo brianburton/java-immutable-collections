@@ -265,17 +265,17 @@ public class JImmutableTreeMapTest
     public void testStreams()
     {
         final JImmutableMap<Integer, Integer> treeMap = JImmutableTreeMap.of();
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(), treeMap.stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(), treeMap.stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), treeMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(1), treeMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(1, 4), treeMap.assign(4, 40).assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(1), treeMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(1, 4), treeMap.assign(4, 40).assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), treeMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(10), treeMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(10, 40), treeMap.assign(4, 40).assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(10), treeMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(10, 40), treeMap.assign(4, 40).assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

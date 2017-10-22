@@ -42,7 +42,6 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -231,17 +230,17 @@ public class JImmutableInsertOrderMapTest
     public void testStreams()
     {
         final JImmutableMap<Integer, Integer> inOrderMap = JImmutableInsertOrderMap.of();
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(), inOrderMap.stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(4, 40), MapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(), inOrderMap.stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(MapEntry.of(4, 40), MapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), inOrderMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(1), inOrderMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(4, 1), inOrderMap.assign(4, 40).assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(1), inOrderMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(4, 1), inOrderMap.assign(4, 40).assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), inOrderMap.keysStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(10), inOrderMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
-        assertEquals(Arrays.<Object>asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(10), inOrderMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
     }
 
     private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
