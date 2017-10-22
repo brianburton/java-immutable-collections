@@ -78,6 +78,10 @@ public class StandardCursorTest
             source.add(i);
             listCursorTest(source, StandardCursor.of(IndexedList.retained(source)));
         }
+
+        emptyCursorTest(StandardCursor.of(() -> new StandardCursor.RangeSource(1, -1)));
+        listCursorTest(Arrays.asList(1), StandardCursor.of(() -> new StandardCursor.RangeSource(1, 1)));
+        listCursorTest(Arrays.asList(1, 2), StandardCursor.of(() -> new StandardCursor.RangeSource(1, 2)));
     }
 
     public void testReduce()

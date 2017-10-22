@@ -37,6 +37,7 @@ package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitCursor;
 import org.javimmutable.collections.Tuple2;
@@ -104,8 +105,18 @@ public abstract class StandardCursor
     }
 
     /**
-     * Creates a Cursor for the given Source.  The Source must point to the first value (i.e. cannot be
-     * be used for empty collections) to be iterated over.
+     * Creates a Cursor for a Source created on demand using the supplied factory method.
+     * The Source will only be created when start() is called.   This can be used to defer
+     * creation of a stateful Source object until necessary.
+     */
+    public static <T> Cursor<T> of(Func0<Source<T>> sourceFactory)
+    {
+        return new FactoryStart<>(sourceFactory);
+    }
+
+    /**
+     * Creates a Cursor for the given Source.  The Source must point to the first value to be iterated over
+     * or be empty.
      */
     public static <T> Cursor<T> of(Source<T> source)
     {
@@ -193,6 +204,25 @@ public abstract class StandardCursor
         public Cursor<T> next()
         {
             return new Started<>(source);
+        }
+    }
+
+    @Immutable
+    private static class FactoryStart<T>
+        extends AbstractStartCursor<T>
+    {
+        private final Func0<Source<T>> factory;
+
+        private FactoryStart(Func0<Source<T>> factory)
+        {
+            this.factory = factory;
+        }
+
+        @Nonnull
+        @Override
+        public Cursor<T> next()
+        {
+            return new Started<>(factory.apply());
         }
     }
 
