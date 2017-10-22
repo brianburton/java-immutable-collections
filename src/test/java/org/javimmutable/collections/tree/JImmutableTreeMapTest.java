@@ -41,10 +41,20 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public class JImmutableTreeMapTest
-        extends TestCase
+    extends TestCase
 {
     @SuppressWarnings("unchecked")
     public void testInsert()
@@ -69,12 +79,12 @@ public class JImmutableTreeMapTest
 
         map = JImmutableTreeMap.of();
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
-        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(map.getMap().keySet()));
-        assertEquals(Arrays.asList(11, 19, 18), new ArrayList<Integer>(map.getMap().values()));
-        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.cursor());
+        assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
+        assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
+        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.cursor());
         StandardCursorTest.listCursorTest(Arrays.asList(10, 20, 30), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(11, 19, 18), map.valuesCursor());
-        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, Integer>>asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.iterator());
+        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18)), map.iterator());
         StandardCursorTest.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
         StandardCursorTest.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
     }
@@ -91,14 +101,14 @@ public class JImmutableTreeMapTest
     {
         Random random = new Random();
         for (int loop = 0; loop < 20; ++loop) {
-            Set<Integer> expected = new TreeSet<Integer>();
+            Set<Integer> expected = new TreeSet<>();
             JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
                 Integer value = random.nextInt(100000);
                 expected.add(value);
                 map = add(map, value);
-                assertEquals(new ArrayList<Integer>(expected), map.getKeysList());
+                assertEquals(new ArrayList<>(expected), map.getKeysList());
                 assertEquals(expected.size(), map.size());
             }
             assertEquals(expected, map.getMap().keySet());
@@ -108,7 +118,7 @@ public class JImmutableTreeMapTest
                 assertSame(map, map.assign(entry.getKey(), entry.getValue()));
             }
 
-            ArrayList<Integer> keys = new ArrayList<Integer>(expected);
+            ArrayList<Integer> keys = new ArrayList<>(expected);
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
                 map = remove(map, key);
@@ -123,7 +133,7 @@ public class JImmutableTreeMapTest
         final int maxKey = 500;
         Random random = new Random();
         for (int loop = 0; loop < 10; ++loop) {
-            Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+            Map<Integer, Integer> expected = new TreeMap<>();
             JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(5);
@@ -175,7 +185,7 @@ public class JImmutableTreeMapTest
             }
             assertEquals(expected, map.getMap());
             assertEquals(expected.keySet(), map.getMap().keySet());
-            assertEquals(new ArrayList<Integer>(expected.values()), new ArrayList<Integer>(map.getMap().values()));
+            assertEquals(new ArrayList<>(expected.values()), new ArrayList<>(map.getMap().values()));
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
                 Holder<Integer> value = map.find(entry.getKey());
                 assertEquals(entry.getValue(), value.getValue());
@@ -193,15 +203,7 @@ public class JImmutableTreeMapTest
         assertSame(map.getComparator(), cleared.getComparator());
         StandardCursorTest.emptyCursorTest(cleared.cursor());
 
-        map = JImmutableTreeMap.of(new Comparator<Integer>()
-        {
-            @Override
-            public int compare(Integer a,
-                               Integer b)
-            {
-                return -b.compareTo(a);
-            }
-        });
+        map = JImmutableTreeMap.of((a, b) -> -b.compareTo(a));
         map = map.assign(1, 2).assign(3, 4);
         cleared = map.deleteAll();
         assertNotSame(JImmutableTreeMap.<Integer, Integer>of(), cleared);
@@ -237,7 +239,7 @@ public class JImmutableTreeMapTest
 
         //assignAll(Map)
         map = empty;
-        Map<String, Integer> expectedMutable = new TreeMap<String, Integer>();
+        Map<String, Integer> expectedMutable = new TreeMap<>();
         map = map.assignAll(expectedMutable);
         assertEquals(expectedMutable, map.getMap());
         assertEquals(0, map.size());
@@ -258,6 +260,22 @@ public class JImmutableTreeMapTest
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
 
+    }
+
+    public void testStreams()
+    {
+        final JImmutableMap<Integer, Integer> treeMap = JImmutableTreeMap.of();
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(), treeMap.stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+
+        assertEquals(asList(), treeMap.keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(1), treeMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(1, 4), treeMap.assign(4, 40).assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+
+        assertEquals(asList(), treeMap.keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(10), treeMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(10, 40), treeMap.assign(4, 40).assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

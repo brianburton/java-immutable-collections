@@ -44,18 +44,17 @@ import org.javimmutable.collections.cursors.StandardCursor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Spliterator;
+import java.util.Spliterators;
 
 /**
  * Singleton implementation of JImmutableMap that contains no elements.
  * When a value is assigned to the map a JImmutableHashMap is created that
  * manages hash collisions using a tree if key is Comparable or a list otherwise.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class EmptyHashMap<K, V>
-        extends AbstractJImmutableMap<K, V>
+    extends AbstractJImmutableMap<K, V>
 {
     static final EmptyHashMap INSTANCE = new EmptyHashMap();
 
@@ -110,6 +109,12 @@ public class EmptyHashMap<K, V>
     public Cursor<Entry<K, V>> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Override
+    public Spliterator<Entry<K, V>> spliterator()
+    {
+        return Spliterators.emptySpliterator();
     }
 
     @Override

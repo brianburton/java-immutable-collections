@@ -36,7 +36,6 @@
 package org.javimmutable.collections.inorder;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
@@ -58,13 +57,10 @@ import javax.annotation.concurrent.Immutable;
  * <p>
  * Use a hash or tree map whenever possible but this class performs well enough for most cases
  * where insertion order is important to an algorithm.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class JImmutableInsertOrderMap<K, V>
-        extends AbstractJImmutableMap<K, V>
+    extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
     public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 1);
@@ -165,14 +161,13 @@ public class JImmutableInsertOrderMap<K, V>
     @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
-        return TransformCursor.of(sortedNodes.valuesCursor(), new Func1<Node<K, V>, Entry<K, V>>()
-        {
-            @Override
-            public Entry<K, V> apply(Node<K, V> node)
-            {
-                return node;
-            }
-        });
+        return TransformCursor.of(sortedNodes.valuesCursor(), node -> node);
+    }
+
+    @Override
+    protected int getSpliteratorCharacteristics()
+    {
+        return SPLITERATOR_ORDERED;
     }
 
     @Override
@@ -183,14 +178,11 @@ public class JImmutableInsertOrderMap<K, V>
 
     /**
      * An Entry implementation that also stores the sortedKeys index corresponding to this node's key.
-     *
-     * @param <K>
-     * @param <V>
      */
     @Immutable
     private static class Node<K, V>
-            extends MapEntry<K, V>
-            implements Holder<V>
+        extends MapEntry<K, V>
+        implements Holder<V>
     {
         private final int index;
 

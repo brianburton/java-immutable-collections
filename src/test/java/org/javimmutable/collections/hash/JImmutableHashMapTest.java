@@ -36,20 +36,24 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public class JImmutableHashMapTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
     {
@@ -86,7 +90,7 @@ public class JImmutableHashMapTest
         final int maxKey = 999999999;
         Random random = new Random(100L);
         for (int loop = 0; loop < 1000; ++loop) {
-            Map<Integer, Integer> expected = new HashMap<Integer, Integer>();
+            Map<Integer, Integer> expected = new HashMap<>();
             JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingTree();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
@@ -130,60 +134,32 @@ public class JImmutableHashMapTest
             }
 
             // verify the cursor worked properly
-            final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
-            Map<Integer, Integer> fromCursor = new HashMap<Integer, Integer>();
+            final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
+            Map<Integer, Integer> fromCursor = new HashMap<>();
             for (JImmutableMap.Entry<Integer, Integer> entry : map) {
                 entries.add(entry);
                 fromCursor.put(entry.getKey(), entry.getValue());
             }
             assertEquals(expected, fromCursor);
             StandardCursorTest.listCursorTest(entries, map.cursor());
-            StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
-            {
-                @Override
-                public Integer apply(Integer value)
-                {
-                    return entries.get(value).getKey();
-                }
-            }, entries.size(), map.keysCursor());
-            StandardCursorTest.cursorTest(new Func1<Integer, Integer>()
-            {
-                @Override
-                public Integer apply(Integer value)
-                {
-                    return entries.get(value).getValue();
-                }
-            }, entries.size(), map.valuesCursor());
+            StandardCursorTest.cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
+            StandardCursorTest.cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
             StandardCursorTest.listIteratorTest(entries, map.iterator());
-            StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
-            {
-                @Override
-                public Integer apply(Integer value)
-                {
-                    return entries.get(value).getKey();
-                }
-            }, entries.size(), map.getMap().keySet().iterator());
-            StandardCursorTest.iteratorTest(new Func1<Integer, Integer>()
-            {
-                @Override
-                public Integer apply(Integer value)
-                {
-                    return entries.get(value).getValue();
-                }
-            }, entries.size(), map.getMap().values().iterator());
+            StandardCursorTest.iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
+            StandardCursorTest.iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
 
             // verify the Map adaptor worked properly
             assertEquals(expected, map.getMap());
             assertEquals(expected.keySet(), map.getMap().keySet());
             assertEquals(expected.entrySet(), map.getMap().entrySet());
-            ArrayList<Integer> jvalues = new ArrayList<Integer>(expected.values());
-            ArrayList<Integer> pvalues = new ArrayList<Integer>(map.getMap().values());
+            ArrayList<Integer> jvalues = new ArrayList<>(expected.values());
+            ArrayList<Integer> pvalues = new ArrayList<>(map.getMap().values());
             Collections.sort(jvalues);
             Collections.sort(pvalues);
             assertEquals(jvalues, pvalues);
 
             // verify the map can remove all keys
-            ArrayList<Integer> keys = new ArrayList<Integer>(expected.keySet());
+            ArrayList<Integer> keys = new ArrayList<>(expected.keySet());
             Collections.shuffle(keys, random);
             for (Integer key : keys) {
                 assertEquals(false, map.find(key).isEmpty());
@@ -237,7 +213,7 @@ public class JImmutableHashMapTest
 
         //assignAll(Map)
         map = empty;
-        Map<String, Integer> expectedMutable = new HashMap<String, Integer>();
+        Map<String, Integer> expectedMutable = new HashMap<>();
         map = map.assignAll(expectedMutable);
         assertEquals(expectedMutable, map.getMap());
         assertEquals(0, map.size());
@@ -265,7 +241,7 @@ public class JImmutableHashMapTest
     public void testCursor()
     {
         JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 100000; ++i) {
             map = map.assign(i, i);
             expected.add(i);
@@ -333,6 +309,22 @@ public class JImmutableHashMapTest
         assertSame(JImmutableHashMap.LIST_EMPTY, JImmutableHashMap.forKey(new Object()));
         assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey(100));
         assertSame(JImmutableHashMap.TREE_EMPTY, JImmutableHashMap.forKey("testing"));
+    }
+
+    public void testStreams()
+    {
+        final EmptyHashMap<Integer, Integer> hashMap = JImmutableHashMap.of();
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(), hashMap.stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<JImmutableMap.Entry<Object, Object>>asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
+
+        assertEquals(asList(), hashMap.keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(1), hashMap.assign(1, 10).keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(1, 4), hashMap.assign(1, 10).assign(4, 40).keysStreamable().stream().collect(Collectors.toList()));
+
+        assertEquals(asList(), hashMap.keysStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(10), hashMap.assign(1, 10).valuesStreamable().stream().collect(Collectors.toList()));
+        assertEquals(Arrays.<Object>asList(10, 40), hashMap.assign(1, 10).assign(4, 40).valuesStreamable().stream().collect(Collectors.toList()));
     }
 
     private static class ManualHashKey

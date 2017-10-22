@@ -50,7 +50,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class JImmutableHashMap<T, K, V>
-        extends AbstractJImmutableMap<K, V>
+    extends AbstractJImmutableMap<K, V>
 {
     // we only need one instance of the transformations object
     static final HashValueListTransforms LIST_TRANSFORMS = new HashValueListTransforms();
@@ -85,10 +85,6 @@ public class JImmutableHashMap<T, K, V>
      * given map must either implement or not implement Comparable.  If some keys implement it and some do
      * not the collision handling code will likely fail due to a class cast exception or a method
      * not defined exception.
-     *
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K, V> EmptyHashMap<K, V> of()
@@ -100,11 +96,6 @@ public class JImmutableHashMap<T, K, V>
      * Returns an empty map using the appropriate collision handling strategy for keys of the given
      * class.  All keys used with that map should derive from the specified class to avoid runtime
      * problems with incompatible keys.
-     *
-     * @param klass
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
@@ -116,11 +107,6 @@ public class JImmutableHashMap<T, K, V>
      * Returns an empty map using the appropriate collision handling strategy for the given key's
      * class.  All keys used with that map should derive from the specified key's class to avoid runtime
      * problems with incompatible keys.
-     *
-     * @param key
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> forKey(K key)
@@ -131,10 +117,6 @@ public class JImmutableHashMap<T, K, V>
     /**
      * Returns an empty map using linked lists for handling hash code collisions.  This is safe
      * for any type of key but is slower when many keys have the same hash code.
-     *
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> usingList()
@@ -146,10 +128,6 @@ public class JImmutableHashMap<T, K, V>
      * Returns an empty map using linked lists for handling hash code collisions.  This is faster
      * than the list based collision handling but depends on all keys implementing Comparable and
      * being able to compare themselves to all other keys.
-     *
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> usingTree()
@@ -179,7 +157,7 @@ public class JImmutableHashMap<T, K, V>
         if (value.isEmpty()) {
             return Holders.of();
         } else {
-            return Holders.<Entry<K, V>>of(MapEntry.of(key, value.getValue()));
+            return Holders.of(MapEntry.of(key, value.getValue()));
         }
     }
 
@@ -193,7 +171,7 @@ public class JImmutableHashMap<T, K, V>
         if (newRoot == root) {
             return this;
         } else {
-            return new JImmutableHashMap<T, K, V>(newRoot, size + sizeDelta.getValue(), transforms);
+            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), transforms);
         }
     }
 
@@ -208,7 +186,7 @@ public class JImmutableHashMap<T, K, V>
         } else if (newRoot.isEmpty()) {
             return of();
         } else {
-            return new JImmutableHashMap<T, K, V>(newRoot, size + sizeDelta.getValue(), transforms);
+            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), transforms);
         }
     }
 

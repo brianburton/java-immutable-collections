@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
 
 import javax.annotation.Nonnull;
@@ -46,11 +47,15 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableMap<K, V>
-        implements JImmutableMap<K, V>
+    implements JImmutableMap<K, V>
 {
+    protected static final int SPLITERATOR_ORDERED = Spliterator.IMMUTABLE | Spliterator.ORDERED;
+    protected static final int SPLITERATOR_UNORDERED = Spliterator.IMMUTABLE;
+
     @Nullable
     @Override
     public V get(K key)
@@ -61,9 +66,6 @@ public abstract class AbstractJImmutableMap<K, V>
     /**
      * Adds the key/value pair to this map.  Any value already existing for the specified key
      * is replaced with the new value.
-     *
-     * @param e
-     * @return
      */
     @Override
     @Nonnull
@@ -72,14 +74,12 @@ public abstract class AbstractJImmutableMap<K, V>
         return assign(e.getKey(), e.getValue());
     }
 
-
     @Nonnull
     @Override
     public JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map)
     {
         return assignAllHelper(map);
     }
-
 
     @Nonnull
     @Override
@@ -107,9 +107,23 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
+    public Streamable<K> keysStreamable()
+    {
+        return new CursorStreamable<>(getSpliteratorCharacteristics(), () -> keysCursor());
+    }
+
+    @Nonnull
+    @Override
     public Cursor<V> valuesCursor()
     {
         return TransformCursor.ofValues(cursor());
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<V> valuesStreamable()
+    {
+        return new CursorStreamable<>(getSpliteratorCharacteristics(), () -> valuesCursor());
     }
 
     @Nonnull
@@ -119,10 +133,17 @@ public abstract class AbstractJImmutableMap<K, V>
         return MapAdaptor.of(this);
     }
 
+    @Nonnull
     @Override
     public Iterator<Entry<K, V>> iterator()
     {
         return IteratorAdaptor.of(cursor());
+    }
+
+    @Override
+    public Spliterator<Entry<K, V>> spliterator()
+    {
+        return new CursorSpliterator<>(getSpliteratorCharacteristics(), cursor());
     }
 
     @Override
@@ -156,6 +177,15 @@ public abstract class AbstractJImmutableMap<K, V>
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    /**
+     * Derived classes must implement this method to provide the proper characteristics for created spliterator.
+     * Characteristics must be based on keys, not values.  Values are always IMMUTABLE and unordered.
+     */
+    protected int getSpliteratorCharacteristics()
+    {
+        return SPLITERATOR_UNORDERED;
     }
 
     //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28

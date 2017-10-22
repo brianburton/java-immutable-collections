@@ -37,8 +37,8 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IteratorAdaptor;
-import org.javimmutable.collections.cursors.CursorSpliterator;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;

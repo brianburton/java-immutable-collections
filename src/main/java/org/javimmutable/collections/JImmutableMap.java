@@ -43,24 +43,18 @@ import java.util.Map;
  * Interface for immutable data structures that allow storage and retrieval of
  * key/value pairs.  null is always an allowed value within the map but is not
  * an allowed key.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public interface JImmutableMap<K, V>
-        extends Insertable<JImmutableMap.Entry<K, V>>,
-                Mapped<K, V>,
-                Iterable<JImmutableMap.Entry<K, V>>,
-                Cursorable<JImmutableMap.Entry<K, V>>,
-                InvariantCheckable
+    extends Insertable<JImmutableMap.Entry<K, V>>,
+            Mapped<K, V>,
+            Streamable<JImmutableMap.Entry<K, V>>,
+            Cursorable<JImmutableMap.Entry<K, V>>,
+            InvariantCheckable
 {
     /**
      * An immutable entry in the map.  Contains the key and value for that entry.
      * key must not be null but value can be null.
-     *
-     * @param <K>
-     * @param <V>
      */
     @Immutable
     interface Entry<K, V>
@@ -73,9 +67,6 @@ public interface JImmutableMap<K, V>
 
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     @Override
@@ -151,8 +142,6 @@ public interface JImmutableMap<K, V>
 
     /**
      * Return the number of entries in the map.
-     *
-     * @return
      */
     int size();
 
@@ -177,17 +166,25 @@ public interface JImmutableMap<K, V>
 
     /**
      * Creates a Cursor to access all of the Map's keys.
-     *
-     * @return
      */
     @Nonnull
     Cursor<K> keysCursor();
 
     /**
+     * Creates a Streamable to access all of the Map's keys.
+     */
+    @Nonnull
+    Streamable<K> keysStreamable();
+
+    /**
      * Creates a Cursor to access all of the Map's values.
-     *
-     * @return
      */
     @Nonnull
     Cursor<V> valuesCursor();
+
+    /**
+     * Creates a Streamable to access all of the Map's values.
+     */
+    @Nonnull
+    Streamable<V> valuesStreamable();
 }

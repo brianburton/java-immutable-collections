@@ -51,7 +51,7 @@ import java.util.Map;
 
 @Immutable
 public class JImmutableTreeMap<K, V>
-        extends AbstractJImmutableMap<K, V>
+    extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(new ComparableComparator());
@@ -64,12 +64,10 @@ public class JImmutableTreeMap<K, V>
      * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
      * The Comparator will be retained and used throughout the life of the map and its offspring and will
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     *
-     * @param comparator
      */
     private JImmutableTreeMap(Comparator<K> comparator)
     {
-        this(comparator, EmptyNode.<K, V>of(), 0);
+        this(comparator, EmptyNode.of(), 0);
     }
 
     @SuppressWarnings("unchecked")
@@ -82,22 +80,15 @@ public class JImmutableTreeMap<K, V>
      * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
      * The Comparator will be retained and used throughout the life of the map and its offspring and will
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     *
-     * @param comparator
      */
     public static <K, V> JImmutableTreeMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeMap<K, V>(comparator);
+        return new JImmutableTreeMap<>(comparator);
     }
 
     /**
      * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
      * to compare the keys.
-     *
-     * @param map
-     * @param <K>
-     * @param <V>
-     * @return
      */
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
     {
@@ -192,9 +183,15 @@ public class JImmutableTreeMap<K, V>
         return root.cursor();
     }
 
+    @Override
+    protected int getSpliteratorCharacteristics()
+    {
+        return SPLITERATOR_ORDERED;
+    }
+
     public List<K> getKeysList()
     {
-        List<K> keys = new LinkedList<K>();
+        List<K> keys = new LinkedList<>();
         for (Entry<K, V> entry : this) {
             keys.add(entry.getKey());
         }
@@ -221,6 +218,6 @@ public class JImmutableTreeMap<K, V>
     private JImmutableTreeMap<K, V> create(TreeNode<K, V> root,
                                            int sizeDelta)
     {
-        return new JImmutableTreeMap<K, V>(comparator, root, size + sizeDelta);
+        return new JImmutableTreeMap<>(comparator, root, size + sizeDelta);
     }
 }
