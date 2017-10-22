@@ -40,10 +40,10 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.cursors.CursorSpliterator;
 import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
