@@ -41,17 +41,14 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for maps that map keys to lists of values.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public interface JImmutableListMap<K, V>
-        extends Insertable<JImmutableMap.Entry<K, V>>,
-                Mapped<K, JImmutableList<V>>,
-                Iterable<JImmutableMap.Entry<K, JImmutableList<V>>>,
-                Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
-                InvariantCheckable
+    extends Insertable<JImmutableMap.Entry<K, V>>,
+            Mapped<K, JImmutableList<V>>,
+            Iterable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+            Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+            InvariantCheckable
 {
     /**
      * Return the list associated with key or an empty list if no list is associated.
@@ -78,9 +75,6 @@ public interface JImmutableListMap<K, V>
 
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     @Override
@@ -89,10 +83,6 @@ public interface JImmutableListMap<K, V>
     /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
      * in the list.
-     *
-     * @param value
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableListMap<K, V> insert(@Nonnull K key,
@@ -110,8 +100,6 @@ public interface JImmutableListMap<K, V>
 
     /**
      * Return the number of keys in the map.
-     *
-     * @return
      */
     int size();
 
@@ -128,8 +116,6 @@ public interface JImmutableListMap<K, V>
 
     /**
      * Creates a Cursor to access all of the Map's keys.
-     *
-     * @return
      */
     @Nonnull
     Cursor<K> keysCursor();
