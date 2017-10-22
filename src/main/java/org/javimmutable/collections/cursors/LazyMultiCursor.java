@@ -60,15 +60,6 @@ public class LazyMultiCursor<T>
 
     /**
      * Constructs a cursor that visits all of the values reachable from all of the
-     * Cursorables contained in source.
-     */
-    public static <T> Cursor<T> cursor(@Nonnull Indexed<Cursorable<T>> source)
-    {
-        return cursor(StandardCursor.of(source));
-    }
-
-    /**
-     * Constructs a cursor that visits all of the values reachable from all of the
      * Cursorables visited by source.
      */
     public static <T> Cursor<T> cursor(@Nonnull Cursor<Cursorable<T>> source)
@@ -84,16 +75,53 @@ public class LazyMultiCursor<T>
         };
     }
 
+    /**
+     * Constructs a cursor that visits all of the values reachable from all of the
+     * Cursorables contained in source.
+     */
+    public static <T> Cursor<T> cursor(@Nonnull Indexed<Cursorable<T>> source)
+    {
+        return cursor(StandardCursor.of(source));
+    }
+
+    /**
+     * Constructs a cursor that visits all of the values reachable from all of the
+     * Cursorables contained in source.  All values are transformed using the provided method.
+     */
     public static <S, T> Cursor<T> transformed(Indexed<S> source,
                                                Func1<S, Cursorable<T>> transforminator)
     {
         return transformed(StandardCursor.of(source), transforminator);
     }
 
+    /**
+     * Constructs a cursor that visits all of the values reachable from all of the
+     * Cursorables visited by source.  All values are transformed using the provided method.
+     */
     public static <S, T> Cursor<T> transformed(Cursor<S> source,
                                                Func1<S, Cursorable<T>> transforminator)
     {
         return cursor(TransformCursor.of(source, transforminator));
+    }
+
+    /**
+     * Constructs a Cursorable with a cursor() method that returns a LazyMultiCursor from the
+     * provided sources.  Note: the type signature has changed from v1.9.1 to require a
+     * Cursorable of type T rather than a super class.
+     */
+    public static <T> Cursorable<T> cursorable(@Nonnull final Cursor<Cursorable<T>> sources)
+    {
+        return () -> LazyMultiCursor.cursor(sources);
+    }
+
+    /**
+     * Constructs a Cursorable with a cursor() method that returns a LazyMultiCursor from the
+     * provided sources.  Note: the type signature has changed from v1.9.1 to require a
+     * Cursorable of type T rather than a super class.
+     */
+    public static <T> Cursorable<T> cursorable(@Nonnull final Indexed<Cursorable<T>> sources)
+    {
+        return () -> LazyMultiCursor.cursor(sources);
     }
 
     /**
@@ -113,6 +141,18 @@ public class LazyMultiCursor<T>
         };
     }
 
+    private static <T> Cursor<T> advance(Cursor<Cursorable<T>> source)
+    {
+        while (source.hasValue()) {
+            Cursor<T> cursor = source.getValue().cursor().start();
+            if (cursor.hasValue()) {
+                return new LazyMultiCursor<>(source, cursor);
+            }
+            source = source.next();
+        }
+        return EmptyStartedCursor.of();
+    }
+
     @Nonnull
     @Override
     public Cursor<T> next()
@@ -125,18 +165,6 @@ public class LazyMultiCursor<T>
         }
 
         return advance(source.next());
-    }
-
-    private static <T> Cursor<T> advance(Cursor<Cursorable<T>> source)
-    {
-        while (source.hasValue()) {
-            Cursor<T> cursor = source.getValue().cursor().start();
-            if (cursor.hasValue()) {
-                return new LazyMultiCursor<>(source, cursor);
-            }
-            source = source.next();
-        }
-        return EmptyStartedCursor.of();
     }
 
     @Override
