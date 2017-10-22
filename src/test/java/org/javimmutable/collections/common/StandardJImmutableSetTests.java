@@ -47,15 +47,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 public final class StandardJImmutableSetTests
 {
@@ -184,7 +180,6 @@ public final class StandardJImmutableSetTests
         verifyContents(jet.insertAll(withExtra), combinedSet);
         verifyContents(jet.insertAll(IterableCursor.of(withExtra)), combinedSet);
         verifyContents(jet.insertAll(withExtra.iterator()), combinedSet);
-
     }
 
     private static void testVarious(JImmutableSet<Integer> template)

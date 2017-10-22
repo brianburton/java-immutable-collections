@@ -78,12 +78,12 @@ public class JImmutableInsertOrderSet<T>
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return new JImmutableInsertOrderSet<T>(map);
+        return new JImmutableInsertOrderSet<>(map);
     }
 
     @Override
     protected Set<T> emptyMutableSet()
     {
-        return new LinkedHashSet<T>();
+        return new LinkedHashSet<>();
     }
 }

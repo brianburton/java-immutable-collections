@@ -44,21 +44,18 @@ import java.util.Set;
 
 /**
  * Interface for immutable sets.
- *
- * @param <T>
  */
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
 public interface JImmutableSet<T>
-        extends Insertable<T>,
-                Cursorable<T>,
-                Iterable<T>,
-                InvariantCheckable
+    extends Insertable<T>,
+            Cursorable<T>,
+            Streamable<T>,
+            InvariantCheckable
 {
     /**
      * Adds the single value to the Set.
      *
-     * @param value
      * @return instance of set containing the value
      */
     @Nonnull
@@ -67,7 +64,6 @@ public interface JImmutableSet<T>
     /**
      * Adds all of the elements of the specified collection to the set.
      *
-     * @param values
      * @return instance of set containing the collection
      */
     @Nonnull
@@ -76,7 +72,6 @@ public interface JImmutableSet<T>
     /**
      * Adds all of the elements of the specified collection to the set.
      *
-     * @param values
      * @return instance of set containing the collection
      */
     @Nonnull
@@ -85,7 +80,6 @@ public interface JImmutableSet<T>
     /**
      * Adds all of the elements of the specified collection to the set.
      *
-     * @param values
      * @return instance of set containing the collection
      */
     @Nonnull
@@ -94,7 +88,6 @@ public interface JImmutableSet<T>
     /**
      * Adds all of the elements of the specified collection to the set.
      *
-     * @param values
      * @return instance of set containing the collection
      */
     @Nonnull
@@ -103,7 +96,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains the specified value.
      *
-     * @param value
      * @return true if the Set contains the value
      */
     boolean contains(@Nullable T value);
@@ -111,7 +103,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains all values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull Cursorable<? extends T> values);
@@ -119,7 +110,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains all values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull Collection<? extends T> values);
@@ -127,7 +117,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains all values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull Cursor<? extends T> values);
@@ -135,7 +124,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains all values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull Iterator<? extends T> values);
@@ -143,7 +131,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains any values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull Cursorable<? extends T> values);
@@ -151,7 +138,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains any values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull Collection<? extends T> values);
@@ -159,7 +145,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains any values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull Cursor<? extends T> values);
@@ -167,7 +152,6 @@ public interface JImmutableSet<T>
     /**
      * Determines if the Set contains any values in the specified collection.
      *
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull Iterator<? extends T> values);
@@ -175,7 +159,6 @@ public interface JImmutableSet<T>
     /**
      * Removes the value from the Set.  Has no effect if the value is not in the Set.
      *
-     * @param value
      * @return instance of set without the value
      */
     @Nonnull
@@ -184,7 +167,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
      *
-     * @param other
      * @return instance of set without the values
      */
     @Nonnull
@@ -193,7 +175,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
      *
-     * @param other
      * @return instance of set without the values
      */
     @Nonnull
@@ -202,7 +183,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
      *
-     * @param other
      * @return instance of set without the values
      */
     @Nonnull
@@ -211,7 +191,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
      *
-     * @param other
      * @return instance of set without the values
      */
     @Nonnull
@@ -256,7 +235,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param other
      * @return instance of set with unmatched values removed
      */
     @Nonnull
@@ -265,7 +243,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param other
      * @return instance of set with unmatched values removed
      */
     @Nonnull
@@ -274,7 +251,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param values
      * @return instance of set with unmatched values removed
      */
     @Nonnull
@@ -283,7 +259,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param values
      * @return instance of set with unmatched values removed
      */
     @Nonnull
@@ -292,7 +267,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param other
      * @return instance of set with unmatched values removed
      */
     @Nonnull
@@ -301,7 +275,6 @@ public interface JImmutableSet<T>
     /**
      * Removes all values from the Set that are not contained in the other collection.
      *
-     * @param other
      * @return instance of set with unmatched values removed
      */
     @Nonnull

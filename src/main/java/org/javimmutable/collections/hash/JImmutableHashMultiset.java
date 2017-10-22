@@ -61,7 +61,7 @@ public class JImmutableHashMultiset<T>
     protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
                                            int occurrences)
     {
-        return new JImmutableHashMultiset<T>(map, occurrences);
+        return new JImmutableHashMultiset<>(map, occurrences);
     }
 
     @SuppressWarnings("unchecked")
@@ -80,6 +80,6 @@ public class JImmutableHashMultiset<T>
     @Override
     protected Map<T, Integer> emptyMutableMap()
     {
-        return new HashMap<T, Integer>();
+        return new HashMap<>();
     }
 }

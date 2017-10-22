@@ -50,13 +50,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class JImmutableHashSetTest
-        extends TestCase
+    extends TestCase
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableHashSet.<Integer>of());
+        StandardJImmutableSetTests.verifySet(JImmutableHashSet.of());
         StandardCursorTest.emptyCursorTest(JImmutableHashSet.<Integer>of().cursor());
         StandardCursorTest.listCursorTest(asList(1, 2, 3), JImmutableHashSet.<Integer>of().union(asList(1, 2, 3)).cursor());
     }
@@ -108,7 +109,7 @@ public class JImmutableHashSetTest
         assertEquals(true, set2.contains("barney"));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new HashSet<String>(asList("fred", "wilma", "betty", "barney")), set2.getSet());
+        assertEquals(new HashSet<>(asList("fred", "wilma", "betty", "barney")), set2.getSet());
 
         assertEquals(set, set.intersection(set2));
         assertEquals(set, set2.intersection(set));
@@ -140,7 +141,7 @@ public class JImmutableHashSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new HashSet<String>(asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(new HashSet<>(asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -155,8 +156,8 @@ public class JImmutableHashSetTest
     {
         // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
         // should yield an empty set.  However that's not how java.util.Set works
-        Set<String> hset = new HashSet<String>(asList("Hello"));
-        Set<String> tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> hset = new HashSet<>(asList("Hello"));
+        Set<String> tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show no overlap
         assertEquals(true, hset.contains("Hello"));
@@ -168,8 +169,8 @@ public class JImmutableHashSetTest
 
         // reversing who receives the retainAll() call results in different answer!
         // TreeSet does not retain the HELLO value because HashSet says it's not a member
-        hset = new HashSet<String>(asList("Hello"));
-        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        hset = new HashSet<>(asList("Hello"));
+        tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show complete overlap
         assertEquals(true, tset.contains("Hello"));
@@ -184,7 +185,7 @@ public class JImmutableHashSetTest
         // Iterable intersection makes membership decision itself
         // Set intersection defers membership decision to passed in Set (like java.util.Set)
         // Collection intersection uses Iterator internally
-        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         JImmutableSet<String> jet = JImmutableHashSet.<String>of().insert("Hello");
         // same as Set
@@ -198,9 +199,15 @@ public class JImmutableHashSetTest
         assertEquals(asList(), iterToList(jet.intersection((Collection)tset)));
     }
 
+    public void testStreams()
+    {
+        JImmutableSet<Integer> mset = JImmutableHashSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
+    }
+
     private List<String> iterToList(Iterable<String> source)
     {
-        List<String> answer = new ArrayList<String>();
+        List<String> answer = new ArrayList<>();
         for (String value : source) {
             answer.add(value);
         }

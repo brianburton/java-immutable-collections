@@ -53,16 +53,18 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class JImmutableInsertOrderSetTest
-        extends TestCase
+    extends TestCase
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.<Integer>of());
+        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.of());
         StandardCursorTest.emptyCursorTest(JImmutableInsertOrderSet.<Integer>of().cursor());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
     }
+
     public void test()
     {
         JImmutableStack<String> expected = JImmutableLinkedStack.of();
@@ -110,7 +112,7 @@ public class JImmutableInsertOrderSetTest
         assertEquals(true, set2.contains("barney"));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new LinkedHashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
+        assertEquals(new LinkedHashSet<>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
 
         assertEquals(set, set.intersection(set2));
         assertEquals(set, set2.intersection(set));
@@ -142,7 +144,7 @@ public class JImmutableInsertOrderSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new LinkedHashSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(new LinkedHashSet<>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -157,7 +159,7 @@ public class JImmutableInsertOrderSetTest
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            Set<Integer> expected = new LinkedHashSet<Integer>();
+            Set<Integer> expected = new LinkedHashSet<>();
             JImmutableSet<Integer> set = JImmutableInsertOrderSet.of();
             for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
@@ -180,8 +182,8 @@ public class JImmutableInsertOrderSetTest
                 }
                 assertEquals(expected.size(), set.size());
             }
-            List<Integer> setList = new ArrayList<Integer>(set.getSet());
-            List<Integer> expectedList = new ArrayList<Integer>(expected);
+            List<Integer> setList = new ArrayList<>(set.getSet());
+            List<Integer> expectedList = new ArrayList<>(expected);
             assertEquals(expectedList, setList);
             assertEquals(expected, set.getSet());
             for (Integer value : set) {
@@ -206,8 +208,8 @@ public class JImmutableInsertOrderSetTest
     {
         // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
         // should yield an empty set.  However that's not how java.util.Set works
-        Set<String> hset = new HashSet<String>(asList("Hello"));
-        Set<String> tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> hset = new HashSet<>(asList("Hello"));
+        Set<String> tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show no overlap
         assertEquals(true, hset.contains("Hello"));
@@ -219,8 +221,8 @@ public class JImmutableInsertOrderSetTest
 
         // reversing who receives the retainAll() call results in different answer!
         // TreeSet does not retain the HELLO value because HashSet says it's not a member
-        hset = new HashSet<String>(asList("Hello"));
-        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        hset = new HashSet<>(asList("Hello"));
+        tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show complete overlap
         assertEquals(true, tset.contains("Hello"));
@@ -235,7 +237,7 @@ public class JImmutableInsertOrderSetTest
         // Iterable intersection makes membership decision itself
         // Set intersection defers membership decision to passed in Set (like java.util.Set)
         // Collection intersection uses Iterator internally
-        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         JImmutableSet<String> jet = JImmutableInsertOrderSet.<String>of().insert("Hello");
         // same as Set
@@ -249,9 +251,15 @@ public class JImmutableInsertOrderSetTest
         assertEquals(asList(), iterToList(jet.intersection((Collection)tset)));
     }
 
+    public void testStreams()
+    {
+        JImmutableSet<Integer> mset = JImmutableInsertOrderSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        assertEquals(asList(4, 3, 2, 1), mset.stream().collect(toList()));
+    }
+
     private List<String> iterToList(Iterable<String> source)
     {
-        List<String> answer = new ArrayList<String>();
+        List<String> answer = new ArrayList<>();
         for (String value : source) {
             answer.add(value);
         }

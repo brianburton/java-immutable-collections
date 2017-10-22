@@ -43,14 +43,16 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 public class JImmutableHashMultisetTest
-        extends TestCase
+    extends TestCase
 {
     public void testStandard()
     {
@@ -61,7 +63,7 @@ public class JImmutableHashMultisetTest
 
     public void test()
     {
-        List<String> valuesL = Arrays.asList("tennant", "smith", "capaldi", "eccleston");
+        List<String> valuesL = asList("tennant", "smith", "capaldi", "eccleston");
         JImmutableMultiset<String> valuesM = JImmutableHashMultiset.<String>of().union(valuesL);
         valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
 
@@ -106,7 +108,7 @@ public class JImmutableHashMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesL));
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
-        assertSame(jmet, jmet.union(Arrays.asList("tennant", "smith")));
+        assertSame(jmet, jmet.union(asList("tennant", "smith")));
         assertSame(jmet, jmet.union(asSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJMet("tennant", "smith")));
@@ -147,7 +149,7 @@ public class JImmutableHashMultisetTest
 
         assertEquals(jmet, jmet2.delete("capaldi").delete("eccleston"));
         assertEquals(jmet, jmet2.deleteOccurrence("capaldi", 12).deleteOccurrence("eccleston", 9));
-        assertEquals(jmet, jmet2.deleteAll(Arrays.asList("capaldi", "eccleston")));
+        assertEquals(jmet, jmet2.deleteAll(asList("capaldi", "eccleston")));
 
         List<String> extra = new ArrayList<String>();
         for (int i = 0; i < 9; ++i) {
@@ -195,6 +197,12 @@ public class JImmutableHashMultisetTest
     {
         JImmutableMultiset<String> jmet = JImmutableHashMultiset.<String>of().insert("TENNANT").insert("ECCLESTON");
         assertSame(JImmutableHashMultiset.of(), jmet.deleteAll());
+    }
+
+    public void testStreams()
+    {
+        JImmutableMultiset<Integer> mset = JImmutableHashMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
     }
 
     private Set<String> asSet(String... args)

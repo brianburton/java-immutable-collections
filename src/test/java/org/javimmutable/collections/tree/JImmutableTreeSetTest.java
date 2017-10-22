@@ -45,7 +45,6 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -54,13 +53,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class JImmutableTreeSetTest
-        extends TestCase
+    extends TestCase
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableTreeSet.<Integer>of());
+        StandardJImmutableSetTests.verifySet(JImmutableTreeSet.of());
         StandardCursorTest.emptyCursorTest(JImmutableTreeSet.<Integer>of().cursor());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableTreeSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
     }
@@ -119,7 +119,7 @@ public class JImmutableTreeSetTest
         assertEquals(true, set2.contains("barney"));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
+        assertEquals(new TreeSet<>(Arrays.asList("fred", "wilma", "betty", "barney")), set2.getSet());
         StandardCursorTest.listCursorTest(Arrays.asList("barney", "betty", "fred", "wilma"), set2.cursor());
         StandardCursorTest.listIteratorTest(Arrays.asList("barney", "betty", "fred", "wilma"), set2.iterator());
 
@@ -158,7 +158,7 @@ public class JImmutableTreeSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new TreeSet<String>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(new TreeSet<>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -173,7 +173,7 @@ public class JImmutableTreeSetTest
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            Set<Integer> expected = new TreeSet<Integer>();
+            Set<Integer> expected = new TreeSet<>();
             JImmutableSet<Integer> set = JImmutableTreeSet.of();
             for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
@@ -199,7 +199,7 @@ public class JImmutableTreeSetTest
             assertEquals(expected, set.getSet());
 
             // verify ordering is the same in both sets
-            assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
+            assertEquals(new ArrayList<>(expected), new ArrayList<>(set.getSet()));
 
             // verify value identity
             for (Integer value : set) {
@@ -216,17 +216,9 @@ public class JImmutableTreeSetTest
 
     public void testSortOrder()
     {
-        Comparator<Integer> reverser = new Comparator<Integer>()
-        {
-            @Override
-            public int compare(Integer a,
-                               Integer b)
-            {
-                return -a.compareTo(b);
-            }
-        };
+        final Comparator<Integer> reverser = (a, b) -> -a.compareTo(b);
 
-        Set<Integer> expected = new TreeSet<Integer>(reverser);
+        Set<Integer> expected = new TreeSet<>(reverser);
         JImmutableSet<Integer> set = JImmutableTreeSet.of(reverser);
         Random random = new Random(2500L);
         for (int i = 0; i < 10000; ++i) {
@@ -235,9 +227,9 @@ public class JImmutableTreeSetTest
             set = set.insert(value);
         }
         assertEquals(expected, set.getSet());
-        assertEquals(new ArrayList<Integer>(expected), new ArrayList<Integer>(set.getSet()));
-        StandardCursorTest.listCursorTest(new ArrayList<Integer>(expected), set.cursor());
-        StandardCursorTest.listIteratorTest(new ArrayList<Integer>(expected), set.iterator());
+        assertEquals(new ArrayList<>(expected), new ArrayList<>(set.getSet()));
+        StandardCursorTest.listCursorTest(new ArrayList<>(expected), set.cursor());
+        StandardCursorTest.listIteratorTest(new ArrayList<>(expected), set.iterator());
     }
 
     public void testDeleteAll()
@@ -250,15 +242,7 @@ public class JImmutableTreeSetTest
         assertSame(map.getComparator(), cleared.getComparator());
         StandardCursorTest.emptyCursorTest(cleared.cursor());
 
-        map = JImmutableTreeSet.of(new Comparator<Integer>()
-        {
-            @Override
-            public int compare(Integer a,
-                               Integer b)
-            {
-                return -b.compareTo(a);
-            }
-        });
+        map = JImmutableTreeSet.of((a, b) -> -b.compareTo(a));
         map = (JImmutableTreeSet<Integer>)map.insert(1).insert(3);
         cleared = map.deleteAll();
         assertNotSame(JImmutableTreeSet.<Integer>of(), cleared);
@@ -272,8 +256,8 @@ public class JImmutableTreeSetTest
     {
         // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
         // should yield an empty set.  However that's not how java.util.Set works
-        Set<String> hset = new HashSet<String>(asList("Hello"));
-        Set<String> tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> hset = new HashSet<>(asList("Hello"));
+        Set<String> tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show no overlap
         assertEquals(true, hset.contains("Hello"));
@@ -285,8 +269,8 @@ public class JImmutableTreeSetTest
 
         // reversing who receives the retainAll() call results in different answer!
         // TreeSet does not retain the HELLO value because HashSet says it's not a member
-        hset = new HashSet<String>(asList("Hello"));
-        tset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        hset = new HashSet<>(asList("Hello"));
+        tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
         // membership tests show complete overlap
         assertEquals(true, tset.contains("Hello"));
@@ -298,7 +282,7 @@ public class JImmutableTreeSetTest
 
         // JImmutableSet inherits Set's retainAll() behavior in intersection(Set)
         // since the treeset's idea of equality is broader than the hash set's intersection works as expected
-        hset = new HashSet<String>(asList("Hello"));
+        hset = new HashSet<>(asList("Hello"));
         JImmutableSet<String> jet = JImmutableTreeSet.of(String.CASE_INSENSITIVE_ORDER).insert("Hello");
         // same as Set
         assertEquals(true, jet.contains("Hello"));
@@ -311,9 +295,15 @@ public class JImmutableTreeSetTest
         assertEquals(asList("Hello"), iterToList(jet.intersection((Collection)hset)));
     }
 
+    public void testStreams()
+    {
+        JImmutableSet<Integer> mset = JImmutableTreeSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
+    }
+    
     private List<String> iterToList(Iterable<String> source)
     {
-        List<String> answer = new ArrayList<String>();
+        List<String> answer = new ArrayList<>();
         for (String value : source) {
             answer.add(value);
         }

@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableMultiset<T>
@@ -556,6 +557,12 @@ public abstract class AbstractJImmutableMultiset<T>
     public Cursor<T> cursor()
     {
         return map.keysCursor();
+    }
+
+    @Override
+    public Spliterator<T> spliterator()
+    {
+        return map.keysStreamable().spliterator();
     }
 
     @Override

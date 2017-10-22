@@ -56,7 +56,7 @@ public class JImmutableTreeSet<T>
 
     private JImmutableTreeSet(Comparator<T> comparator)
     {
-        this(JImmutableTreeMap.<T, Boolean>of(comparator), comparator);
+        this(JImmutableTreeMap.of(comparator), comparator);
     }
 
     private JImmutableTreeSet(JImmutableMap<T, Boolean> map,
@@ -86,18 +86,18 @@ public class JImmutableTreeSet<T>
 
     public static <T> JImmutableTreeSet<T> of(Comparator<T> comparator)
     {
-        return new JImmutableTreeSet<T>(comparator);
+        return new JImmutableTreeSet<>(comparator);
     }
 
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return new JImmutableTreeSet<T>(map, comparator);
+        return new JImmutableTreeSet<>(map, comparator);
     }
 
     @Override
     protected Set<T> emptyMutableSet()
     {
-        return new TreeSet<T>(comparator);
+        return new TreeSet<>(comparator);
     }
 }

@@ -55,7 +55,7 @@ public class JImmutableTreeMultiset<T>
 
     private JImmutableTreeMultiset(Comparator<T> comparator)
     {
-        this(JImmutableTreeMap.<T, Integer>of(comparator), 0, comparator);
+        this(JImmutableTreeMap.of(comparator), 0, comparator);
     }
 
     private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,
@@ -86,19 +86,19 @@ public class JImmutableTreeMultiset<T>
 
     public static <T> JImmutableTreeMultiset<T> of(Comparator<T> comparator)
     {
-        return new JImmutableTreeMultiset<T>(comparator);
+        return new JImmutableTreeMultiset<>(comparator);
     }
 
     @Override
     protected JImmutableTreeMultiset<T> create(JImmutableMap<T, Integer> map,
                                                int occurrences)
     {
-        return new JImmutableTreeMultiset<T>(map, occurrences, comparator);
+        return new JImmutableTreeMultiset<>(map, occurrences, comparator);
     }
 
     @Override
     protected Map<T, Integer> emptyMutableMap()
     {
-        return new TreeMap<T, Integer>(comparator);
+        return new TreeMap<>(comparator);
     }
 }

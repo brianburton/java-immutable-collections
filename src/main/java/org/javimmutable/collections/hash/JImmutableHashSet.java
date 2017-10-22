@@ -72,12 +72,12 @@ public class JImmutableHashSet<T>
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return new JImmutableHashSet<T>(map);
+        return new JImmutableHashSet<>(map);
     }
 
     @Override
     protected Set<T> emptyMutableSet()
     {
-        return new HashSet<T>();
+        return new HashSet<>();
     }
 }

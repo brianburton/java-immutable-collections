@@ -78,12 +78,12 @@ public class JImmutableInsertOrderMultiset<T>
     protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map,
                                                       int occurrences)
     {
-        return new JImmutableInsertOrderMultiset<T>(map, occurrences);
+        return new JImmutableInsertOrderMultiset<>(map, occurrences);
     }
 
     @Override
     protected Map<T, Integer> emptyMutableMap()
     {
-        return new LinkedHashMap<T, Integer>();
+        return new LinkedHashMap<>();
     }
 }

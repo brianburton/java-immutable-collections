@@ -48,6 +48,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableSet<T>
@@ -351,10 +352,17 @@ public abstract class AbstractJImmutableSet<T>
         return map.keysCursor();
     }
 
+    @Nonnull
     @Override
     public Iterator<T> iterator()
     {
         return IteratorAdaptor.of(cursor());
+    }
+
+    @Override
+    public Spliterator<T> spliterator()
+    {
+        return map.keysStreamable().spliterator();
     }
 
     @Override
