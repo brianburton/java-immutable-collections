@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 public interface JImmutableListMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>>,
             Mapped<K, JImmutableList<V>>,
-            Iterable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+            Streamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             InvariantCheckable
 {

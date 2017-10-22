@@ -49,10 +49,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableListMap<K, V>
-        implements JImmutableListMap<K, V>
+    implements JImmutableListMap<K, V>
 {
     private final JImmutableMap<K, JImmutableList<V>> contents;
 
@@ -135,9 +136,16 @@ public abstract class AbstractJImmutableListMap<K, V>
     }
 
     @Override
+    @Nonnull
     public Iterator<JImmutableMap.Entry<K, JImmutableList<V>>> iterator()
     {
         return IteratorAdaptor.of(cursor());
+    }
+
+    @Override
+    public Spliterator<JImmutableMap.Entry<K, JImmutableList<V>>> spliterator()
+    {
+        return contents.spliterator();
     }
 
     @Nullable
@@ -189,7 +197,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     protected void checkListMapInvariants()
     {
         contents.checkInvariants();
-        for(JImmutableMap.Entry<K, JImmutableList<V>> entry : contents) {
+        for (JImmutableMap.Entry<K, JImmutableList<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
         //TODO: review checkListMapInvariants()
@@ -197,17 +205,12 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
-     *
-     * @param map
-     * @return
      */
     protected abstract JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map);
 
     /**
      * Overridable by derived classes to create a compatible copy of the specified list.
      * Default implementation simply returns the original.
-     *
-     * @return
      */
     protected JImmutableList<V> copyList(JImmutableList<V> original)
     {
@@ -216,8 +219,6 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     /**
      * Overridable by derived classes to create a new empty list
-     *
-     * @return
      */
     @Nonnull
     protected JImmutableList<V> emptyList()
@@ -228,8 +229,6 @@ public abstract class AbstractJImmutableListMap<K, V>
     /**
      * Overridable by derived classes to insert a value into a list in some way.
      * Default implementation appends to end of the list.
-     *
-     * @return
      */
     protected JImmutableList<V> insertInList(JImmutableList<V> list,
                                              V value)

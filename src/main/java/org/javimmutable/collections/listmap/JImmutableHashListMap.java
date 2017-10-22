@@ -76,6 +76,6 @@ public class JImmutableHashListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableHashListMap<K, V>(map);
+        return new JImmutableHashListMap<>(map);
     }
 }

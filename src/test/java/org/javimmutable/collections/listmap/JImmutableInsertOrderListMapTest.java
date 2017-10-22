@@ -35,29 +35,30 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 public class JImmutableInsertOrderListMapTest
-        extends AbstractJImmutableListMapTestTestCase
+    extends AbstractJImmutableListMapTestTestCase
 {
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.<Integer, Integer>of());
+        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableList<Integer>>>asList(MapEntry.of(1, map.getList(1)),
-                                                                                                               MapEntry.of(3, map.getList(3)),
-                                                                                                               MapEntry.of(2, map.getList(2))),
+        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
+                                                        MapEntry.of(3, map.getList(3)),
+                                                        MapEntry.of(2, map.getList(2))),
                                           map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableList<Integer>>>asList(MapEntry.of(1, map.getList(1)),
-                                                                                                                 MapEntry.of(3, map.getList(3)),
-                                                                                                                 MapEntry.of(2, map.getList(2))),
+        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
+                                                          MapEntry.of(3, map.getList(3)),
+                                                          MapEntry.of(2, map.getList(2))),
                                             map.iterator());
     }
 
@@ -78,5 +79,19 @@ public class JImmutableInsertOrderListMapTest
         b = b.insert(1, 12);
         assertEquals(a, b);
         assertEquals(b, a);
+    }
+
+    public void testStreams()
+    {
+        JImmutableListMap<Integer, Integer> listMap = JImmutableInsertOrderListMap.<Integer, Integer>of()
+            .insert(4, 40)
+            .insert(2, 20)
+            .insert(3, 30)
+            .insert(1, 10)
+            .insert(2, 20)
+            .insert(4, 45)
+            .insert(4, 50);
+        assertEquals(asList(4, 2, 3, 1), listMap.stream().map(e -> e.getKey()).collect(toList()));
+        assertEquals(asList(3, 2, 1, 1), listMap.stream().map(e -> e.getValue().size()).collect(toList()));
     }
 }

@@ -45,13 +45,10 @@ import javax.annotation.concurrent.Immutable;
 /**
  * JImmutableListMap implementation that allows keys to be traversed in the same order as they
  * were inserted into the collection.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class JImmutableInsertOrderListMap<K, V>
-        extends AbstractJImmutableListMap<K, V>
+    extends AbstractJImmutableListMap<K, V>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of());
@@ -77,6 +74,6 @@ public class JImmutableInsertOrderListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableInsertOrderListMap<K, V>(map);
+        return new JImmutableInsertOrderListMap<>(map);
     }
 }
