@@ -38,12 +38,14 @@ package org.javimmutable.collections.btree_list;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.Tuple2;
+import org.javimmutable.collections.iterators.SplitableIterable;
 
 import javax.annotation.Nonnull;
 
 interface BtreeNode<T>
     extends InvariantCheckable,
-            Cursorable<T>
+            Cursorable<T>,
+            SplitableIterable<T>
 {
     int MIN_CHILDREN = 9;
     int MAX_CHILDREN = 2 * MIN_CHILDREN;

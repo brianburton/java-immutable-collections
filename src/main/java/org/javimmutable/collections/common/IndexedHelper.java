@@ -48,6 +48,24 @@ public class IndexedHelper
     {
     }
 
+    public static <T> Indexed<T> empty()
+    {
+        return new Indexed<T>()
+        {
+            @Override
+            public T get(int index)
+            {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+
+            @Override
+            public int size()
+            {
+                return 0;
+            }
+        };
+    }
+
     /**
      * Returns an Indexed containing a single value.
      * Note that the type of the Indexed may be a subclass of the type of the value.

@@ -40,9 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.common.CursorSpliterator;
 import org.javimmutable.collections.common.IndexedList;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 
@@ -57,12 +55,10 @@ import java.util.Spliterator;
 
 /**
  * Implementation of JImmutableRandomAccessList that uses a B-Tree for its implementation.
- *
- * @param <T>
  */
 @Immutable
 public class JImmutableBtreeList<T>
-        implements JImmutableRandomAccessList<T>
+    implements JImmutableRandomAccessList<T>
 {
     private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<Object>(BtreeEmptyNode.of());
 
@@ -410,16 +406,17 @@ public class JImmutableBtreeList<T>
     }
 
     @Override
+    @Nonnull
     public Iterator<T> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return root.iterator();
     }
 
     @Override
     @Nonnull
     public Spliterator<T> spliterator()
     {
-        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor().start());
+        return root.iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
     }
 
     @Override
@@ -447,7 +444,7 @@ public class JImmutableBtreeList<T>
     }
 
     public static class Builder<T>
-            implements JImmutableRandomAccessList.Builder<T>
+        implements JImmutableRandomAccessList.Builder<T>
     {
         private final List<T> values = new ArrayList<T>();
 

@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
+import org.javimmutable.collections.iterators.SplitableIterable;
 
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
@@ -44,6 +45,7 @@ import org.javimmutable.collections.InvariantCheckable;
  */
 interface Node<T>
     extends Cursorable<T>,
+            SplitableIterable<T>,
             InvariantCheckable
 {
     boolean isEmpty();

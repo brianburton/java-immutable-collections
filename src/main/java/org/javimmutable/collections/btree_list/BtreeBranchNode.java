@@ -41,6 +41,8 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 
@@ -274,6 +276,13 @@ class BtreeBranchNode<T>
     public Cursor<T> cursor()
     {
         return LazyMultiCursor.cursor(IndexedArray.retained(children));
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return LazyMultiIterator.iterator(IndexedArray.retained(children));
     }
 
     @Override

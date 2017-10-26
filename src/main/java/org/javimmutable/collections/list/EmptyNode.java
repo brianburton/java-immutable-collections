@@ -37,6 +37,8 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptySplitableIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -134,6 +136,13 @@ final class EmptyNode<T>
     public Cursor<T> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return EmptySplitableIterator.of();
     }
 
     @Override

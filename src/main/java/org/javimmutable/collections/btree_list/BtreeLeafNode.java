@@ -41,6 +41,8 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -148,6 +150,13 @@ class BtreeLeafNode<T>
     public Cursor<T> cursor()
     {
         return StandardCursor.of(IndexedArray.retained(values));
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return IndexedIterator.iterator(IndexedArray.retained(values));
     }
 
     @Nonnull

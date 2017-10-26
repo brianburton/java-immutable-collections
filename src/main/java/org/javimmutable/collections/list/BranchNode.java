@@ -41,6 +41,9 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterable;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -364,6 +367,13 @@ class BranchNode<T>
         return LazyMultiCursor.cursor(indexedForCursor());
     }
 
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return LazyMultiIterator.iterator(indexedForIterator());
+    }
+
     private Indexed<Cursorable<T>> indexedForCursor()
     {
         final int last = nodes.length + 1;
@@ -372,13 +382,7 @@ class BranchNode<T>
             @Override
             public Cursorable<T> get(int index)
             {
-                if (index == 0) {
-                    return prefix;
-                } else if (index == last) {
-                    return suffix;
-                } else {
-                    return nodes[index - 1];
-                }
+                return getNode(index, last);
             }
 
             @Override
@@ -389,6 +393,37 @@ class BranchNode<T>
         };
     }
 
+    private Indexed<SplitableIterable<T>> indexedForIterator()
+    {
+        final int last = nodes.length + 1;
+        return new Indexed<SplitableIterable<T>>()
+        {
+            @Override
+            public SplitableIterable<T> get(int index)
+            {
+                return getNode(index, last);
+            }
+
+            @Override
+            public int size()
+            {
+                return last + 1;
+            }
+        };
+    }
+
+    private Node<T> getNode(int index,
+                            int last)
+    {
+        if (index == 0) {
+            return prefix;
+        } else if (index == last) {
+            return suffix;
+        } else {
+            return nodes[index - 1];
+        }
+    }
+    
     @Override
     public void checkInvariants()
     {

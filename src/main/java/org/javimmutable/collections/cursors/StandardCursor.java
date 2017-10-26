@@ -188,6 +188,11 @@ public abstract class StandardCursor
         };
     }
 
+    public static <T> Source<T> emptySource()
+    {
+        return new EmptySource<>();
+    }
+
     @Immutable
     private static class Start<T>
         extends AbstractStartCursor<T>

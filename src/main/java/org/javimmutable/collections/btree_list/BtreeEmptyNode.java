@@ -38,6 +38,8 @@ package org.javimmutable.collections.btree_list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptySplitableIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -144,6 +146,13 @@ class BtreeEmptyNode<T>
     public Cursor<T> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return EmptySplitableIterator.of();
     }
 
     @Override

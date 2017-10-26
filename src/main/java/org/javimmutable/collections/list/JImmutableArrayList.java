@@ -39,8 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.common.CursorSpliterator;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
@@ -303,16 +301,17 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    @Nonnull
     public Iterator<T> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return root.iterator();
     }
 
     @Override
     @Nonnull
     public Spliterator<T> spliterator()
     {
-        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor());
+        return root.iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
     }
 
     @Override
