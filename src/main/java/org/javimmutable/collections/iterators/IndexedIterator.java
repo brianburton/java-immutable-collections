@@ -1,12 +1,13 @@
 package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.common.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 
 public class IndexedIterator<T>
-    implements SplitableIterator<T>
+    extends AbstractSplitableIterator<T>
 {
     @Nonnull
     private final Indexed<T> values;
@@ -20,6 +21,11 @@ public class IndexedIterator<T>
         this.values = values;
         this.limit = limit;
         this.index = index;
+    }
+
+    public static <T> IndexedIterator<T> iterator(@Nonnull T value)
+    {
+        return iterator(IndexedHelper.indexed(value));
     }
 
     public static <T> IndexedIterator<T> iterator(@Nonnull Indexed<T> values)

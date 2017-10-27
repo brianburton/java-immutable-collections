@@ -40,6 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptySplitableIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -48,7 +50,7 @@ import java.util.Comparator;
 
 @Immutable
 public class EmptyNode<K, V>
-        extends TreeNode<K, V>
+    extends TreeNode<K, V>
 {
     static final EmptyNode INSTANCE = new EmptyNode();
 
@@ -94,6 +96,13 @@ public class EmptyNode<K, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return EmptySplitableIterator.of();
     }
 
     @Override

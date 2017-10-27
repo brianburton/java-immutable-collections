@@ -39,8 +39,11 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,9 +51,9 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class SingleHashValueListNode<K, V>
-        implements HashValueListNode<K, V>,
-                   JImmutableMap.Entry<K, V>,
-                   Holder<V>
+    implements HashValueListNode<K, V>,
+               JImmutableMap.Entry<K, V>,
+               Holder<V>
 {
     private final K key;
     private final V value;
@@ -71,7 +74,7 @@ class SingleHashValueListNode<K, V>
     @Override
     public Holder<V> getValueForKey(K key)
     {
-        return this.key.equals(key) ? this : Holders.<V>of();
+        return this.key.equals(key) ? this : Holders.of();
     }
 
     @Override
@@ -146,7 +149,14 @@ class SingleHashValueListNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
+        return SingleValueCursor.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return IndexedIterator.iterator(IndexedHelper.indexed(this));
     }
 
     @Override

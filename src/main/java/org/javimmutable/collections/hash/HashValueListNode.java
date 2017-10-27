@@ -39,9 +39,11 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterable;
 
 public interface HashValueListNode<K, V>
-        extends Cursorable<JImmutableMap.Entry<K, V>>
+    extends Cursorable<JImmutableMap.Entry<K, V>>,
+            SplitableIterable<JImmutableMap.Entry<K, V>>
 {
     Holder<V> getValueForKey(K key);
 

@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 /**
  * Interface for transformation objects that manage the leaf nodes in the hash table.
@@ -46,9 +47,6 @@ import org.javimmutable.collections.common.MutableDelta;
  * NOTE: The transforms object is shared across all versions of a hash table so it MUST BE IMMUTABLE.
  * If the transforms object is not immutable it can cause the table to become
  * corrupted over time and/or make older versions of the table invalid.
- *
- * @param <K>
- * @param <V>
  */
 public interface Transforms<T, K, V>
 {
@@ -96,4 +94,10 @@ public interface Transforms<T, K, V>
      * in the specified leaf object.
      */
     Cursor<JImmutableMap.Entry<K, V>> cursor(T leaf);
+
+    /**
+     * Return a (possibly empty) SplitableIterator over all of the JImmutableMap.Entries
+     * in the specified leaf object.
+     */
+    SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(T leaf);
 }

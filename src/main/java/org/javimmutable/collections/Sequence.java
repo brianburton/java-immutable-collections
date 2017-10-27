@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 public interface Sequence<T>
 {
     /**
-     * Determines if this is the end of the Sequence.  When try the Sequence is empty and
+     * Determines if this is the end of the Sequence.  When true the Sequence is empty and
      * getHead() cannot be called.  getTail() can still be called but will always return
      * an empty Sequence once isEmpty() returns true.
      */

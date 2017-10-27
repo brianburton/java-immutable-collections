@@ -40,9 +40,13 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.IterableCursor;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,10 +126,22 @@ class TestOnlyTransforms<K, V>
     @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor(Map<K, V> leaf)
     {
+        return IterableCursor.of(entryList(leaf));
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(Map<K, V> leaf)
+    {
+        return IndexedIterator.iterator(IndexedList.retained(entryList(leaf)));
+    }
+
+    @Nonnull
+    private List<JImmutableMap.Entry<K, V>> entryList(Map<K, V> leaf)
+    {
         List<JImmutableMap.Entry<K, V>> entries = new ArrayList<>();
         for (Map.Entry<K, V> entry : leaf.entrySet()) {
             entries.add(MapEntry.of(entry));
         }
-        return IterableCursor.of(entries);
+        return entries;
     }
 }

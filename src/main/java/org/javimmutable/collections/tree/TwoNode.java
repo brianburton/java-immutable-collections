@@ -40,6 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -264,6 +266,13 @@ public class TwoNode<K, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return LazyMultiCursor.cursor(IndexedHelper.indexed(left, right));
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, right));
     }
 
     @SuppressWarnings("RedundantIfStatement")

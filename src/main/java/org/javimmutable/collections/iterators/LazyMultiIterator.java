@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 
 public class LazyMultiIterator<T>
-    implements SplitableIterator<T>
+    extends AbstractSplitableIterator<T>
 {
     @Nonnull
     private final SplitableIterator<SplitableIterable<T>> source;

@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -49,13 +50,11 @@ import java.util.Comparator;
 /**
  * Abstract base class for 2-3 tree nodes.  Provides public methods for searching and modifying
  * the tree and package private methods used to implement the public methods.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public abstract class TreeNode<K, V>
-        implements Cursorable<JImmutableMap.Entry<K, V>>
+    implements Cursorable<JImmutableMap.Entry<K, V>>,
+               SplitableIterable<JImmutableMap.Entry<K, V>>
 {
     public static <K, V> TreeNode<K, V> of()
     {
@@ -65,11 +64,6 @@ public abstract class TreeNode<K, V>
     /**
      * Return the value matching key or defaultValue if no match is found.  Searches this node
      * and its appropriate children.
-     *
-     * @param comparator
-     * @param key
-     * @param defaultValue
-     * @return
      */
     public abstract V getValueOr(Comparator<K> comparator,
                                  K key,
@@ -78,10 +72,6 @@ public abstract class TreeNode<K, V>
     /**
      * Return a (possibly empty) Holder containing the value matching key.  Searches this node
      * and its appropriate children.
-     *
-     * @param comparator
-     * @param key
-     * @return
      */
     public abstract Holder<V> find(Comparator<K> comparator,
                                    K key);
@@ -89,25 +79,17 @@ public abstract class TreeNode<K, V>
     /**
      * Return a (possibly empty) Holder containing the an Entry matching key.  Searches this node
      * and its appropriate children.
-     *
-     * @param comparator
-     * @param key
-     * @return
      */
     public abstract Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> comparator,
                                                                 K key);
 
     /**
      * Adds this node's value and all of its children's value to the collection.
-     *
-     * @param collection
      */
     public abstract void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection);
 
     /**
      * Returns a Cursor visiting all entries in sorted order.
-     *
-     * @return
      */
     @Nonnull
     public abstract Cursor<JImmutableMap.Entry<K, V>> cursor();
@@ -115,12 +97,6 @@ public abstract class TreeNode<K, V>
     /**
      * Assign the specified value to the specified key.  Returns a node (possibly this same node)
      * reflecting the assignment and updates sizeDelta with the change in size (if any).
-     *
-     * @param comparator
-     * @param key
-     * @param value
-     * @param sizeDelta
-     * @return
      */
     public TreeNode<K, V> assign(Comparator<K> comparator,
                                  K key,
@@ -149,11 +125,6 @@ public abstract class TreeNode<K, V>
     /**
      * Deletes the specified key.  Returns a node (possibly this same node)
      * reflecting the deletion and updates sizeDelta with the change in size (if any).
-     *
-     * @param comparator
-     * @param key
-     * @param sizeDelta
-     * @return
      */
     public TreeNode<K, V> delete(Comparator<K> comparator,
                                  K key,
@@ -172,8 +143,6 @@ public abstract class TreeNode<K, V>
 
     /**
      * Return true if this node contains no children or value.
-     *
-     * @return
      */
     public boolean isEmpty()
     {

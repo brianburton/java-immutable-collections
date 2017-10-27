@@ -40,6 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -133,20 +135,20 @@ public class ThreeNode<K, V>
                 return result;
 
             case INPLACE:
-                return UpdateResult.createInPlace(new ThreeNode<K, V>(result.newNode,
-                                                                      middle,
-                                                                      right,
-                                                                      result.newNode.getMaxKey(),
-                                                                      middleMaxKey,
-                                                                      rightMaxKey),
+                return UpdateResult.createInPlace(new ThreeNode<>(result.newNode,
+                                                                  middle,
+                                                                  right,
+                                                                  result.newNode.getMaxKey(),
+                                                                  middleMaxKey,
+                                                                  rightMaxKey),
                                                   result.sizeDelta
                 );
             case SPLIT:
                 return UpdateResult.createSplit(result.createTwoNode(),
-                                                new TwoNode<K, V>(middle,
-                                                                  right,
-                                                                  middleMaxKey,
-                                                                  rightMaxKey),
+                                                new TwoNode<>(middle,
+                                                              right,
+                                                              middleMaxKey,
+                                                              rightMaxKey),
                                                 result.sizeDelta
                 );
             }
@@ -157,23 +159,23 @@ public class ThreeNode<K, V>
                 return result;
 
             case INPLACE:
-                return UpdateResult.createInPlace(new ThreeNode<K, V>(left,
-                                                                      result.newNode,
-                                                                      right,
-                                                                      leftMaxKey,
-                                                                      result.newNode.getMaxKey(),
-                                                                      rightMaxKey),
+                return UpdateResult.createInPlace(new ThreeNode<>(left,
+                                                                  result.newNode,
+                                                                  right,
+                                                                  leftMaxKey,
+                                                                  result.newNode.getMaxKey(),
+                                                                  rightMaxKey),
                                                   result.sizeDelta
                 );
             case SPLIT:
-                return UpdateResult.createSplit(new TwoNode<K, V>(left,
-                                                                  result.newNode,
-                                                                  leftMaxKey,
-                                                                  result.newNode.getMaxKey()),
-                                                new TwoNode<K, V>(result.extraNode,
-                                                                  right,
-                                                                  result.extraNode.getMaxKey(),
-                                                                  rightMaxKey),
+                return UpdateResult.createSplit(new TwoNode<>(left,
+                                                              result.newNode,
+                                                              leftMaxKey,
+                                                              result.newNode.getMaxKey()),
+                                                new TwoNode<>(result.extraNode,
+                                                              right,
+                                                              result.extraNode.getMaxKey(),
+                                                              rightMaxKey),
                                                 result.sizeDelta
                 );
             }
@@ -184,20 +186,20 @@ public class ThreeNode<K, V>
                 return result;
 
             case INPLACE:
-                return UpdateResult.createInPlace(new ThreeNode<K, V>(left,
-                                                                      middle,
-                                                                      result.newNode,
-                                                                      leftMaxKey,
-                                                                      middleMaxKey,
-                                                                      result.newNode.getMaxKey()),
+                return UpdateResult.createInPlace(new ThreeNode<>(left,
+                                                                  middle,
+                                                                  result.newNode,
+                                                                  leftMaxKey,
+                                                                  middleMaxKey,
+                                                                  result.newNode.getMaxKey()),
                                                   result.sizeDelta
                 );
 
             case SPLIT:
-                return UpdateResult.createSplit(new TwoNode<K, V>(left,
-                                                                  middle,
-                                                                  leftMaxKey,
-                                                                  middleMaxKey),
+                return UpdateResult.createSplit(new TwoNode<>(left,
+                                                              middle,
+                                                              leftMaxKey,
+                                                              middleMaxKey),
                                                 result.createTwoNode(),
                                                 result.sizeDelta
                 );
@@ -237,18 +239,18 @@ public class ThreeNode<K, V>
                 return result;
 
             case INPLACE:
-                return DeleteResult.createInPlace(new ThreeNode<K, V>(result.node,
-                                                                      middle,
-                                                                      right,
-                                                                      result.node.getMaxKey(),
-                                                                      middleMaxKey,
-                                                                      rightMaxKey));
+                return DeleteResult.createInPlace(new ThreeNode<>(result.node,
+                                                                  middle,
+                                                                  right,
+                                                                  result.node.getMaxKey(),
+                                                                  middleMaxKey,
+                                                                  rightMaxKey));
 
             case ELIMINATED:
-                return DeleteResult.createInPlace(new TwoNode<K, V>(middle,
-                                                                    right,
-                                                                    middleMaxKey,
-                                                                    rightMaxKey));
+                return DeleteResult.createInPlace(new TwoNode<>(middle,
+                                                                right,
+                                                                middleMaxKey,
+                                                                rightMaxKey));
 
             case REMNANT:
                 DeleteMergeResult<K, V> mergeResult = middle.leftDeleteMerge(result.node);
@@ -265,18 +267,18 @@ public class ThreeNode<K, V>
                 return result;
 
             case INPLACE:
-                return DeleteResult.createInPlace(new ThreeNode<K, V>(left,
-                                                                      result.node,
-                                                                      right,
-                                                                      leftMaxKey,
-                                                                      result.node.getMaxKey(),
-                                                                      rightMaxKey));
+                return DeleteResult.createInPlace(new ThreeNode<>(left,
+                                                                  result.node,
+                                                                  right,
+                                                                  leftMaxKey,
+                                                                  result.node.getMaxKey(),
+                                                                  rightMaxKey));
 
             case ELIMINATED:
-                return DeleteResult.createInPlace(new TwoNode<K, V>(left,
-                                                                    right,
-                                                                    leftMaxKey,
-                                                                    rightMaxKey));
+                return DeleteResult.createInPlace(new TwoNode<>(left,
+                                                                right,
+                                                                leftMaxKey,
+                                                                rightMaxKey));
 
             case REMNANT:
                 DeleteMergeResult<K, V> mergeResult = right.leftDeleteMerge(result.node);
@@ -293,18 +295,18 @@ public class ThreeNode<K, V>
                 return DeleteResult.createUnchanged();
 
             case INPLACE:
-                return DeleteResult.createInPlace(new ThreeNode<K, V>(left,
-                                                                      middle,
-                                                                      result.node,
-                                                                      leftMaxKey,
-                                                                      middleMaxKey,
-                                                                      result.node.getMaxKey()));
+                return DeleteResult.createInPlace(new ThreeNode<>(left,
+                                                                  middle,
+                                                                  result.node,
+                                                                  leftMaxKey,
+                                                                  middleMaxKey,
+                                                                  result.node.getMaxKey()));
 
             case ELIMINATED:
-                return DeleteResult.createInPlace(new TwoNode<K, V>(left,
-                                                                    middle,
-                                                                    leftMaxKey,
-                                                                    middleMaxKey));
+                return DeleteResult.createInPlace(new TwoNode<>(left,
+                                                                middle,
+                                                                leftMaxKey,
+                                                                middleMaxKey));
 
             case REMNANT:
                 DeleteMergeResult<K, V> mergeResult = middle.rightDeleteMerge(result.node);
@@ -321,28 +323,28 @@ public class ThreeNode<K, V>
     @Override
     DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
-                                                             left,
-                                                             node.getMaxKey(),
-                                                             leftMaxKey),
-                                           new TwoNode<K, V>(middle,
-                                                             right,
-                                                             middleMaxKey,
-                                                             rightMaxKey)
+        return new DeleteMergeResult<>(new TwoNode<>(node,
+                                                     left,
+                                                     node.getMaxKey(),
+                                                     leftMaxKey),
+                                       new TwoNode<>(middle,
+                                                     right,
+                                                     middleMaxKey,
+                                                     rightMaxKey)
         );
     }
 
     @Override
     DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(new TwoNode<K, V>(left,
-                                                             middle,
-                                                             leftMaxKey,
-                                                             middleMaxKey),
-                                           new TwoNode<K, V>(right,
-                                                             node,
-                                                             rightMaxKey,
-                                                             node.getMaxKey())
+        return new DeleteMergeResult<>(new TwoNode<>(left,
+                                                     middle,
+                                                     leftMaxKey,
+                                                     middleMaxKey),
+                                       new TwoNode<>(right,
+                                                     node,
+                                                     rightMaxKey,
+                                                     node.getMaxKey())
         );
     }
 
@@ -387,6 +389,13 @@ public class ThreeNode<K, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return LazyMultiCursor.cursor(IndexedHelper.indexed(left, middle, right));
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, middle, right));
     }
 
     @SuppressWarnings("RedundantIfStatement")

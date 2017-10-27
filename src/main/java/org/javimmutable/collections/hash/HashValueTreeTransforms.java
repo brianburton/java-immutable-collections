@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.TreeNode;
 
@@ -101,5 +102,11 @@ class HashValueTreeTransforms<K extends Comparable<K>, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor(TreeNode<K, V> leaf)
     {
         return leaf.cursor();
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(TreeNode<K, V> leaf)
+    {
+        return leaf.iterator();
     }
 }

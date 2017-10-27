@@ -43,14 +43,16 @@ import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.common.EmptySequence;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SequenceCursor;
+import org.javimmutable.collections.iterators.SequenceIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class MultiHashValueListNode<K, V>
-        implements HashValueListNode<K, V>,
-                   Sequence<JImmutableMap.Entry<K, V>>
+    implements HashValueListNode<K, V>,
+               Sequence<JImmutableMap.Entry<K, V>>
 {
     private final MultiHashValueListNode<K, V> next;
     private final SingleHashValueListNode<K, V> entry;
@@ -154,6 +156,13 @@ class MultiHashValueListNode<K, V>
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return SequenceCursor.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return SequenceIterator.iterator(this);
     }
 
     @Override

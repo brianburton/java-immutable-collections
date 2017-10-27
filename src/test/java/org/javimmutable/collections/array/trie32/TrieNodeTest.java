@@ -43,6 +43,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import java.util.List;
 
@@ -199,6 +201,12 @@ public class TrieNodeTest
         public Cursor<JImmutableMap.Entry<Integer, Integer>> cursor(Integer leaf)
         {
             return SingleValueCursor.of(findEntry(leaf, leaf).getValue());
+        }
+
+        @Override
+        public SplitableIterator<JImmutableMap.Entry<Integer, Integer>> Iterator(Integer leaf)
+        {
+            return IndexedIterator.iterator(findEntry(leaf, leaf).getValue());
         }
     }
 }

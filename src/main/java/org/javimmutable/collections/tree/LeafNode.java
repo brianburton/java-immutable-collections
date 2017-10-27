@@ -39,7 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -48,9 +51,9 @@ import java.util.Comparator;
 
 @Immutable
 public class LeafNode<K, V>
-        extends TreeNode<K, V>
-        implements JImmutableMap.Entry<K, V>,
-                   Holder<V>
+    extends TreeNode<K, V>
+    implements JImmutableMap.Entry<K, V>,
+               Holder<V>
 {
     private final K nodeKey;
     private final V value;
@@ -105,14 +108,14 @@ public class LeafNode<K, V>
     public Holder<V> find(Comparator<K> props,
                           K searchKey)
     {
-        return props.compare(searchKey, nodeKey) == 0 ? this : Holders.<V>of();
+        return props.compare(searchKey, nodeKey) == 0 ? this : Holders.of();
     }
 
     @Override
     public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
                                                        K searchKey)
     {
-        return props.compare(searchKey, nodeKey) == 0 ? Holders.<JImmutableMap.Entry<K, V>>of(this) : Holders.<JImmutableMap.Entry<K, V>>of();
+        return props.compare(searchKey, nodeKey) == 0 ? Holders.of(this) : Holders.of();
     }
 
     @Override
@@ -131,12 +134,12 @@ public class LeafNode<K, V>
             if (this.value == value) { // value identity - useful for sets, booleans, etc
                 return UpdateResult.createUnchanged();
             } else {
-                return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 0);
+                return UpdateResult.createInPlace(new LeafNode<>(key, value), 0);
             }
         } else if (diff < 0) {
-            return UpdateResult.createSplit(new LeafNode<K, V>(key, value), this, 1);
+            return UpdateResult.createSplit(new LeafNode<>(key, value), this, 1);
         } else {
-            return UpdateResult.createSplit(this, new LeafNode<K, V>(key, value), 1);
+            return UpdateResult.createSplit(this, new LeafNode<>(key, value), 1);
         }
     }
 
@@ -166,19 +169,19 @@ public class LeafNode<K, V>
     @Override
     DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(new TwoNode<K, V>(node,
-                                                             this,
-                                                             node.getMaxKey(),
-                                                             nodeKey));
+        return new DeleteMergeResult<>(new TwoNode<>(node,
+                                                     this,
+                                                     node.getMaxKey(),
+                                                     nodeKey));
     }
 
     @Override
     DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
     {
-        return new DeleteMergeResult<K, V>(new TwoNode<K, V>(this,
-                                                             node,
-                                                             nodeKey,
-                                                             node.getMaxKey()));
+        return new DeleteMergeResult<>(new TwoNode<>(this,
+                                                     node,
+                                                     nodeKey,
+                                                     node.getMaxKey()));
     }
 
     @Override
@@ -191,7 +194,14 @@ public class LeafNode<K, V>
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
-        return SingleValueCursor.<JImmutableMap.Entry<K, V>>of(this);
+        return SingleValueCursor.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(this));
     }
 
     @SuppressWarnings("RedundantIfStatement")
