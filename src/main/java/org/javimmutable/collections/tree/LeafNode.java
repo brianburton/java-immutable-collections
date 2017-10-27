@@ -39,9 +39,8 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SingleValueIterator;
 import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
@@ -201,7 +200,7 @@ public class LeafNode<K, V>
     @Override
     public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(this));
+        return SingleValueIterator.iterator(this);
     }
 
     @SuppressWarnings("RedundantIfStatement")
