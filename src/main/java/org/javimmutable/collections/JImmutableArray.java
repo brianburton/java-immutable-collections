@@ -167,11 +167,11 @@ public interface JImmutableArray<T>
      * Creates a Streamable to access all of the array's keys.
      */
     @Nonnull
-    Streamable<Integer> keysStreamable();
+    Streamable<Integer> keys();
 
     /**
      * Creates a Streamable to access all of the array's values.
      */
     @Nonnull
-    Streamable<T> valuesStreamable();
+    Streamable<T> values();
 }

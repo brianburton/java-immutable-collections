@@ -56,14 +56,14 @@ public class StandardJImmutableMapTests
         assertEquals(expectedValues, actualValues);
 
         // extract keys and values using special Streamables
-        actualKeys = map.keysStreamable().stream().collect(Collectors.toList());
-        actualValues = map.valuesStreamable().stream().collect(Collectors.toList());
+        actualKeys = map.keys().stream().collect(Collectors.toList());
+        actualValues = map.values().stream().collect(Collectors.toList());
         assertEquals(expectedKeys, actualKeys);
         assertEquals(expectedValues, actualValues);
 
         // extract keys and values using special Streamables (parallel)
-        actualKeys = map.keysStreamable().parallelStream().collect(Collectors.toList());
-        actualValues = map.valuesStreamable().parallelStream().collect(Collectors.toList());
+        actualKeys = map.keys().parallelStream().collect(Collectors.toList());
+        actualValues = map.values().parallelStream().collect(Collectors.toList());
         assertEquals(expectedKeys, actualKeys);
         assertEquals(expectedValues, actualValues);
 
@@ -77,8 +77,8 @@ public class StandardJImmutableMapTests
 
         // extract using an Iterator
         actualEntries = StandardCursor.makeList(map.iterator());
-        actualKeys = StandardCursor.makeList(map.keysStreamable().iterator());
-        actualValues = StandardCursor.makeList(map.valuesStreamable().iterator());
+        actualKeys = StandardCursor.makeList(map.keys().iterator());
+        actualValues = StandardCursor.makeList(map.values().iterator());
         assertEquals(expectedEntries, actualEntries);
         assertEquals(expectedKeys, actualKeys);
         assertEquals(expectedValues, actualValues);
@@ -112,14 +112,14 @@ public class StandardJImmutableMapTests
         sortedAssertEquals(expectedValues, actualValues);
 
         // extract keys and values using special Streamables
-        actualKeys = map.keysStreamable().stream().collect(Collectors.toList());
-        actualValues = map.valuesStreamable().stream().collect(Collectors.toList());
+        actualKeys = map.keys().stream().collect(Collectors.toList());
+        actualValues = map.values().stream().collect(Collectors.toList());
         sortedAssertEquals(expectedKeys, actualKeys);
         sortedAssertEquals(expectedValues, actualValues);
 
         // extract keys and values using special Streamables (parallel)
-        actualKeys = map.keysStreamable().parallelStream().collect(Collectors.toList());
-        actualValues = map.valuesStreamable().parallelStream().collect(Collectors.toList());
+        actualKeys = map.keys().parallelStream().collect(Collectors.toList());
+        actualValues = map.values().parallelStream().collect(Collectors.toList());
         sortedAssertEquals(expectedKeys, actualKeys);
         sortedAssertEquals(expectedValues, actualValues);
 
@@ -133,8 +133,8 @@ public class StandardJImmutableMapTests
 
         // extract using an Iterator
         actualEntries = StandardCursor.makeList(map.iterator());
-        actualKeys = StandardCursor.makeList(map.keysStreamable().iterator());
-        actualValues = StandardCursor.makeList(map.valuesStreamable().iterator());
+        actualKeys = StandardCursor.makeList(map.keys().iterator());
+        actualValues = StandardCursor.makeList(map.values().iterator());
         sortedEntryAssertEquals(expectedEntries, actualEntries);
         sortedAssertEquals(expectedKeys, actualKeys);
         sortedAssertEquals(expectedValues, actualValues);

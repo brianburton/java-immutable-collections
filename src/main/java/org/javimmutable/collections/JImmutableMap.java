@@ -180,11 +180,11 @@ public interface JImmutableMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    Streamable<K> keysStreamable();
+    Streamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the Map's values.
      */
     @Nonnull
-    Streamable<V> valuesStreamable();
+    Streamable<V> values();
 }

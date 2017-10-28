@@ -105,14 +105,14 @@ public abstract class AbstractJImmutableArray<T>
 
     @Nonnull
     @Override
-    public Streamable<Integer> keysStreamable()
+    public Streamable<Integer> keys()
     {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public Streamable<T> valuesStreamable()
+    public Streamable<T> values()
     {
         return TransformStreamable.ofValues(this);
     }

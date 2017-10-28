@@ -119,14 +119,14 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public Streamable<K> keysStreamable()
+    public Streamable<K> keys()
     {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public Streamable<V> valuesStreamable()
+    public Streamable<V> values()
     {
         return TransformStreamable.ofValues(this);
     }

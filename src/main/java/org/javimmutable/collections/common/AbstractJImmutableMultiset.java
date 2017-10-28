@@ -562,7 +562,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     public Spliterator<T> spliterator()
     {
-        return map.keysStreamable().spliterator();
+        return map.keys().spliterator();
     }
 
     @Override
