@@ -41,12 +41,14 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class EmptyTrieNode<T>
-        extends TrieNode<T>
+    extends TrieNode<T>
 {
     private static final EmptyTrieNode EMPTY = new EmptyTrieNode();
 
@@ -169,5 +171,23 @@ public class EmptyTrieNode<T>
     public Cursor<T> anyOrderValueCursor()
     {
         return StandardCursor.of();
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
+    {
+        return EmptyIterator.of();
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return EmptyIterator.of();
+    }
+
+    @Override
+    public SplitableIterator<T> anyOrderValueIterator()
+    {
+        return EmptyIterator.of();
     }
 }

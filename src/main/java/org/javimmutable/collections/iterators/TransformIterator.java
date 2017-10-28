@@ -1,6 +1,7 @@
 package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.JImmutableMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -19,10 +20,20 @@ public class TransformIterator<S, T>
         this.source = source;
     }
 
-    public static <S, T> TransformIterator<S, T> iterator(@Nonnull SplitableIterator<S> source,
-                                                          @Nonnull Func1<S, T> transforminator)
+    public static <S, T> TransformIterator<S, T> of(@Nonnull SplitableIterator<S> source,
+                                                    @Nonnull Func1<S, T> transforminator)
     {
         return new TransformIterator<>(source, transforminator);
+    }
+
+    public static <K, V> SplitableIterator<K> ofKeys(@Nonnull SplitableIterator<JImmutableMap.Entry<K, V>> source)
+    {
+        return of(source, e -> e.getKey());
+    }
+
+    public static <K, V> SplitableIterator<V> ofValues(@Nonnull SplitableIterator<JImmutableMap.Entry<K, V>> source)
+    {
+        return of(source, e -> e.getValue());
     }
 
     @Override

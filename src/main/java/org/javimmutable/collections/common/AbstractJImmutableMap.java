@@ -53,9 +53,6 @@ import java.util.Spliterator;
 public abstract class AbstractJImmutableMap<K, V>
     implements JImmutableMap<K, V>
 {
-    protected static final int SPLITERATOR_ORDERED = Spliterator.IMMUTABLE | Spliterator.ORDERED;
-    protected static final int SPLITERATOR_UNORDERED = Spliterator.IMMUTABLE;
-
     @Nullable
     @Override
     public V get(K key)
@@ -185,7 +182,7 @@ public abstract class AbstractJImmutableMap<K, V>
      */
     protected int getSpliteratorCharacteristics()
     {
-        return SPLITERATOR_UNORDERED;
+        return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
     //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28

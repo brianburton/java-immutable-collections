@@ -42,6 +42,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -55,6 +57,7 @@ public class FullBranchTrieNode<T>
     FullBranchTrieNode(int shift,
                        TrieNode<T>[] entries)
     {
+        assert shift != ROOT_SHIFT;
         this.shift = shift;
         this.entries = entries;
     }
@@ -200,15 +203,33 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    {
+        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor(transforms));
+    }
+
+    @Override
     public Cursor<T> anyOrderValueCursor()
     {
         return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
     }
 
     @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
     {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor(transforms));
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator());
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator(transforms));
+    }
+
+    @Override
+    public SplitableIterator<T> anyOrderValueIterator()
+    {
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueIterator());
     }
 
     private TrieNode<T> createUpdatedEntries(int shift,

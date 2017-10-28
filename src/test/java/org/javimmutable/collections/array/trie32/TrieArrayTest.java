@@ -58,7 +58,7 @@ import java.util.TreeMap;
 public class TrieArrayTest
     extends TestCase
 {
-    // this method is intended for use in debugger to what the structural changes
+    // this method is intended for use in debugger to watch the structural changes
     @SuppressWarnings("UnusedAssignment")
     public void testTrimming()
     {
@@ -179,6 +179,29 @@ public class TrieArrayTest
         entries.add(MapEntry.of(10, 101));
         entries.add(MapEntry.of(500, 5001));
         StandardCursorTest.listCursorTest(entries, array.cursor());
+    }
+
+    //TODO
+    public void testIterator()
+    {
+        JImmutableArray<Integer> array = TrieArray.of();
+        array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
+
+//        List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
+//        StandardCursorTest.listIteratorTest(indexes, array.keysCursor());
+//
+//        List<Integer> values = Arrays.asList(-5001, -101, -11, 0, 11, 101, 5001);
+//        StandardCursorTest.listIteratorTest(values, array.valuesIterator());
+
+        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
+        entries.add(MapEntry.of(-500, -5001));
+        entries.add(MapEntry.of(-10, -101));
+        entries.add(MapEntry.of(-1, -11));
+        entries.add(MapEntry.of(0, 0));
+        entries.add(MapEntry.of(1, 11));
+        entries.add(MapEntry.of(10, 101));
+        entries.add(MapEntry.of(500, 5001));
+        StandardCursorTest.listIteratorTest(entries, array.iterator());
     }
 
     public void testVarious()

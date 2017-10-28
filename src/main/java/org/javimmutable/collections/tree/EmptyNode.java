@@ -40,7 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptySplitableIterator;
+import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
@@ -102,7 +102,7 @@ public class EmptyNode<K, V>
     @Override
     public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return EmptySplitableIterator.of();
+        return EmptyIterator.of();
     }
 
     @Override

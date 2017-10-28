@@ -40,9 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -302,7 +304,19 @@ public class MultiBranchTrieNode<T>
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
     {
-        return entryCursor(new AnyOrderCursorSource());
+        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor());
+    }
+
+    @Override
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
+    {
+        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor(transforms));
+    }
+
+    @Override
+    public Cursor<T> anyOrderValueCursor()
+    {
+        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
     }
 
     @Override
@@ -311,14 +325,8 @@ public class MultiBranchTrieNode<T>
         if (shift != ROOT_SHIFT) {
             return anyOrderEntryCursor();
         } else {
-            return entryCursor(new SignedOrderCursorSource());
+            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryCursor());
         }
-    }
-
-    @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
-    {
-        return entryCursor(new AnyOrderCursorSource(), transforms);
     }
 
     @Override
@@ -327,14 +335,8 @@ public class MultiBranchTrieNode<T>
         if (shift != ROOT_SHIFT) {
             return anyOrderEntryCursor(transforms);
         } else {
-            return entryCursor(new SignedOrderCursorSource(), transforms);
+            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryCursor(transforms));
         }
-    }
-
-    @Override
-    public Cursor<T> anyOrderValueCursor()
-    {
-        return valueCursor(new AnyOrderCursorSource());
     }
 
     @Override
@@ -343,7 +345,55 @@ public class MultiBranchTrieNode<T>
         if (shift != ROOT_SHIFT) {
             return anyOrderValueCursor();
         } else {
-            return valueCursor(new SignedOrderCursorSource());
+            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderValueCursor());
+        }
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
+    {
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator());
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator(transforms));
+    }
+
+    @Override
+    public SplitableIterator<T> anyOrderValueIterator()
+    {
+        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueIterator());
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> signedOrderEntryIterator()
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderEntryIterator();
+        } else {
+            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryIterator());
+        }
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> signedOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderEntryIterator(transforms);
+        } else {
+            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryIterator(transforms));
+        }
+    }
+
+    @Override
+    public SplitableIterator<T> signedOrderValueIterator()
+    {
+        if (shift != ROOT_SHIFT) {
+            return anyOrderValueIterator();
+        } else {
+            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderValueIterator());
         }
     }
 
@@ -432,101 +482,19 @@ public class MultiBranchTrieNode<T>
         }
     }
 
-    private Cursor<JImmutableMap.Entry<Integer, T>> entryCursor(StandardCursor.Source<TrieNode<T>> source)
+    private Indexed<TrieNode<T>> indexedForSignedOrder()
     {
-        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderEntryCursor());
-    }
-
-    private <K, V> Cursor<JImmutableMap.Entry<K, V>> entryCursor(StandardCursor.Source<TrieNode<T>> source,
-                                                                 final Transforms<T, K, V> transforms)
-    {
-        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderEntryCursor(transforms));
-    }
-
-    private Cursor<T> valueCursor(StandardCursor.Source<TrieNode<T>> source)
-    {
-        return LazyMultiCursor.transformed(StandardCursor.of(source), node -> () -> node.anyOrderValueCursor());
-    }
-
-    private class AnyOrderCursorSource
-        implements StandardCursor.Source<TrieNode<T>>
-    {
-        private final int index;
-
-        private AnyOrderCursorSource()
-        {
-            this(0);
-        }
-
-        private AnyOrderCursorSource(int index)
-        {
-            this.index = index;
-        }
-
-        @Override
-        public boolean atEnd()
-        {
-            return index >= entries.length;
-        }
-
-        @Override
-        public TrieNode<T> currentValue()
-        {
-            return entries[index];
-        }
-
-        @Override
-        public StandardCursor.Source<TrieNode<T>> advance()
-        {
-            return new AnyOrderCursorSource(index + 1);
-        }
-    }
-
-    private class SignedOrderCursorSource
-        implements StandardCursor.Source<TrieNode<T>>
-    {
-        private final IndexList indexList;
-
-        private SignedOrderCursorSource()
-        {
-            this(SIGNED_INDEX_LIST);
-        }
-
-        private SignedOrderCursorSource(IndexList indexList)
-        {
-            assert shift == TrieNode.ROOT_SHIFT;
-            this.indexList = findFirstIndex(indexList);
-        }
-
-        @Override
-        public boolean atEnd()
-        {
-            return indexList == null;
-        }
-
-        @Override
-        public TrieNode<T> currentValue()
-        {
-            return entries[realIndex(bitmask, indexList.bit)];
-        }
-
-        @Override
-        public StandardCursor.Source<TrieNode<T>> advance()
-        {
-            if (indexList == null) {
-                return this;
-            } else {
-                return new SignedOrderCursorSource(findFirstIndex(indexList.next));
+        final TrieNode<T>[] nodes = allocate(entries.length);
+        int offset = 0;
+        IndexList next = SIGNED_INDEX_LIST;
+        while (next != null) {
+            if ((bitmask & next.bit) != 0) {
+                nodes[offset++] = entries[realIndex(bitmask, next.bit)];
             }
-        }
-    }
-
-    private IndexList findFirstIndex(IndexList next)
-    {
-        while ((next != null) && ((bitmask & next.bit) == 0)) {
             next = next.next;
         }
-        return next;
+        assert offset == nodes.length;
+        return IndexedArray.retained(nodes);
     }
 
     private static int realIndex(int bitmask,

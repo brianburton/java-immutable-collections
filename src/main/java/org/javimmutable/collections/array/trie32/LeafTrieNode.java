@@ -42,6 +42,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -230,6 +232,24 @@ public class LeafTrieNode<T>
     public Cursor<T> anyOrderValueCursor()
     {
         return SingleValueCursor.of(value);
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
+    {
+        return SingleValueIterator.iterator(MapEntry.of(index, value));
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return transforms.iterator(value);
+    }
+
+    @Override
+    public SplitableIterator<T> anyOrderValueIterator()
+    {
+        return SingleValueIterator.iterator(value);
     }
 
     @Override

@@ -49,6 +49,8 @@ import org.javimmutable.collections.hash.JImmutableHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
+
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
  * were inserted into the map.  Maintains two parallel data structures, one for sorting and

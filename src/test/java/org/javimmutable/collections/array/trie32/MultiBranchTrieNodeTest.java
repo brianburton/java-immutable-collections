@@ -339,6 +339,10 @@ public class MultiBranchTrieNodeTest
         StandardCursorTest.listCursorTest(values, node.signedOrderValueCursor());
         StandardCursorTest.listCursorTest(entries, node.anyOrderEntryCursor());
         StandardCursorTest.listCursorTest(entries, node.signedOrderEntryCursor());
+        StandardCursorTest.listIteratorTest(values, node.anyOrderValueIterator());
+        StandardCursorTest.listIteratorTest(values, node.signedOrderValueIterator());
+        StandardCursorTest.listIteratorTest(entries, node.anyOrderEntryIterator());
+        StandardCursorTest.listIteratorTest(entries, node.signedOrderEntryIterator());
     }
 
     public void testRootCursors()
@@ -366,6 +370,10 @@ public class MultiBranchTrieNodeTest
         StandardCursorTest.listCursorTest(signedOrderValues, node.signedOrderValueCursor());
         StandardCursorTest.listCursorTest(anyOrderEntries, node.anyOrderEntryCursor());
         StandardCursorTest.listCursorTest(signedOrderEntries, node.signedOrderEntryCursor());
+        StandardCursorTest.listIteratorTest(anyOrderValues, node.anyOrderValueIterator());
+        StandardCursorTest.listIteratorTest(signedOrderValues, node.signedOrderValueIterator());
+        StandardCursorTest.listIteratorTest(anyOrderEntries, node.anyOrderEntryIterator());
+        StandardCursorTest.listIteratorTest(signedOrderEntries, node.signedOrderEntryIterator());
     }
 
     public void testNonRootTransformCursors()
@@ -387,6 +395,8 @@ public class MultiBranchTrieNodeTest
         }
         StandardCursorTest.listCursorTest(entries, node.anyOrderEntryCursor(tx));
         StandardCursorTest.listCursorTest(entries, node.signedOrderEntryCursor(tx));
+        StandardCursorTest.listIteratorTest(entries, node.anyOrderEntryIterator(tx));
+        StandardCursorTest.listIteratorTest(entries, node.signedOrderEntryIterator(tx));
     }
 
     public void testRootTransformCursors()
@@ -413,6 +423,8 @@ public class MultiBranchTrieNodeTest
         }
         StandardCursorTest.listCursorTest(anyOrderEntries, node.anyOrderEntryCursor(tx));
         StandardCursorTest.listCursorTest(signedOrderEntries, node.signedOrderEntryCursor(tx));
+        StandardCursorTest.listIteratorTest(anyOrderEntries, node.anyOrderEntryIterator(tx));
+        StandardCursorTest.listIteratorTest(signedOrderEntries, node.signedOrderEntryIterator(tx));
     }
 
     private int shiftIndex(int shift,

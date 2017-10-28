@@ -5,10 +5,10 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 
-public class EmptySplitableIterator<T>
+public class EmptyIterator<T>
     implements SplitableIterator<T>
 {
-    private static final SplitableIterator INSTANCE = new EmptySplitableIterator();
+    private static final SplitableIterator INSTANCE = new EmptyIterator();
 
     public static <T> SplitableIterator<T> of()
     {

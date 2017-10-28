@@ -204,7 +204,7 @@ public class TrieNodeTest
         }
 
         @Override
-        public SplitableIterator<JImmutableMap.Entry<Integer, Integer>> Iterator(Integer leaf)
+        public SplitableIterator<JImmutableMap.Entry<Integer, Integer>> iterator(Integer leaf)
         {
             return SingleValueIterator.iterator(findEntry(leaf, leaf).getValue());
         }

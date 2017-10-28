@@ -199,6 +199,28 @@ public class TrieArray<T>
         return root.signedOrderEntryCursor();
     }
 
+    @Nonnull
+    @Override
+    public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return root.signedOrderEntryIterator();
+    }
+
+    //TODO
+//    @Nonnull
+//    @Override
+//    public Streamable<Integer> keys()
+//    {
+//        return SimpleStreamable.of(StreamConstants.SPLITERATOR_ORDERED, () -> TransformIterator.ofKeys(root.signedOrderEntryIterator()));
+//    }
+//
+//    @Nonnull
+//    @Override
+//    public Streamable<T> values()
+//    {
+//        return SimpleStreamable.of(StreamConstants.SPLITERATOR_ORDERED, () -> TransformIterator.ofValues(root.signedOrderEntryIterator()));
+//    }
+
     @Override
     public void checkInvariants()
     {

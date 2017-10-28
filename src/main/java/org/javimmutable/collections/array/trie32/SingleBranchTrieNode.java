@@ -40,12 +40,13 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class SingleBranchTrieNode<T>
-        extends TrieNode<T>
+    extends TrieNode<T>
 {
     private final int shift;
     private final int branchIndex;
@@ -224,6 +225,24 @@ public class SingleBranchTrieNode<T>
     public Cursor<T> anyOrderValueCursor()
     {
         return child.anyOrderValueCursor();
+    }
+
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
+    {
+        return child.anyOrderEntryIterator();
+    }
+
+    @Override
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return child.anyOrderEntryIterator(transforms);
+    }
+
+    @Override
+    public SplitableIterator<T> anyOrderValueIterator()
+    {
+        return child.anyOrderValueIterator();
     }
 
     // for tests

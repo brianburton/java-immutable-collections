@@ -122,6 +122,10 @@ public class FullBranchTrieNodeTest
         StandardCursorTest.listCursorTest(list, node.signedOrderValueCursor());
         StandardCursorTest.listCursorTest(entryList, node.anyOrderEntryCursor());
         StandardCursorTest.listCursorTest(entryList, node.signedOrderEntryCursor());
+        StandardCursorTest.listIteratorTest(list, node.anyOrderValueIterator());
+        StandardCursorTest.listIteratorTest(list, node.signedOrderValueIterator());
+        StandardCursorTest.listIteratorTest(entryList, node.anyOrderEntryIterator());
+        StandardCursorTest.listIteratorTest(entryList, node.signedOrderEntryIterator());
     }
 
     public void testTransformOperations()
@@ -169,5 +173,7 @@ public class FullBranchTrieNodeTest
         }
         StandardCursorTest.listCursorTest(entryList, node.anyOrderEntryCursor(tx));
         StandardCursorTest.listCursorTest(entryList, node.signedOrderEntryCursor(tx));
+        StandardCursorTest.listIteratorTest(entryList, node.anyOrderEntryIterator(tx));
+        StandardCursorTest.listIteratorTest(entryList, node.signedOrderEntryIterator(tx));
     }
 }

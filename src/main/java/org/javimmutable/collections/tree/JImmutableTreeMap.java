@@ -40,6 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -186,7 +187,7 @@ public class JImmutableTreeMap<K, V>
     @Override
     protected int getSpliteratorCharacteristics()
     {
-        return SPLITERATOR_ORDERED;
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     public List<K> getKeysList()

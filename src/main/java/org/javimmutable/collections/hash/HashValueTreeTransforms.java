@@ -105,7 +105,7 @@ class HashValueTreeTransforms<K extends Comparable<K>, V>
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(TreeNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(TreeNode<K, V> leaf)
     {
         return leaf.iterator();
     }

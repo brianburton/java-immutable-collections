@@ -103,6 +103,7 @@ public abstract class AbstractJImmutableArray<T>
         return TransformCursor.ofValues(cursor());
     }
 
+    @Nonnull
     @Override
     public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
     {

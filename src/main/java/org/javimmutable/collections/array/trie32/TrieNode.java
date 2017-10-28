@@ -40,6 +40,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -120,16 +121,37 @@ public abstract class TrieNode<T>
         return anyOrderEntryCursor(transforms);
     }
 
-    public abstract Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor();
-
-    public abstract <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(Transforms<T, K, V> transforms);
-
     public Cursor<T> signedOrderValueCursor()
     {
         return anyOrderValueCursor();
     }
 
+    public abstract Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor();
+
+    public abstract <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(Transforms<T, K, V> transforms);
+
     public abstract Cursor<T> anyOrderValueCursor();
+
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> signedOrderEntryIterator()
+    {
+        return anyOrderEntryIterator();
+    }
+
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> signedOrderEntryIterator(Transforms<T, K, V> transforms)
+    {
+        return anyOrderEntryIterator(transforms);
+    }
+
+    public SplitableIterator<T> signedOrderValueIterator()
+    {
+        return anyOrderValueIterator();
+    }
+
+    public abstract SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator();
+
+    public abstract <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms);
+
+    public abstract SplitableIterator<T> anyOrderValueIterator();
 
     public static <T> TrieNode<T> of()
     {

@@ -1,5 +1,6 @@
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 
 import javax.annotation.Nonnull;
@@ -40,6 +41,26 @@ public class LazyMultiIterator<T>
     public static <T> LazyMultiIterator<T> iterator(@Nonnull SplitableIterator<SplitableIterable<T>> source)
     {
         return new LazyMultiIterator<>(source, null, false, false, null);
+    }
+
+    /**
+     * Constructs an iterator that visits all of the values reachable from all of the
+     * SplitableIterables visited by source.  All values are transformed using the provided method.
+     */
+    public static <S, T> LazyMultiIterator<T> transformed(SplitableIterator<S> source,
+                                                          Func1<S, SplitableIterable<T>> transforminator)
+    {
+        return iterator(TransformIterator.of(source, transforminator));
+    }
+
+    /**
+     * Constructs an iterator that visits all of the values reachable from all of the
+     * SplitableIterables visited by source.  All values are transformed using the provided method.
+     */
+    public static <S, T> LazyMultiIterator<T> transformed(Indexed<S> source,
+                                                          Func1<S, SplitableIterable<T>> transforminator)
+    {
+        return iterator(TransformIterator.of(IndexedIterator.iterator(source), transforminator));
     }
 
     @Override

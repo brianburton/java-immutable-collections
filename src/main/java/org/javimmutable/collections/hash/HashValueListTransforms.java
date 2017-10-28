@@ -92,7 +92,7 @@ class HashValueListTransforms<K, V>
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(HashValueListNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(HashValueListNode<K, V> leaf)
     {
         return leaf.iterator();
     }

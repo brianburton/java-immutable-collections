@@ -130,7 +130,7 @@ class TestOnlyTransforms<K, V>
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(Map<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Map<K, V> leaf)
     {
         return IndexedIterator.iterator(IndexedList.retained(entryList(leaf)));
     }

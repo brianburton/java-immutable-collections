@@ -52,11 +52,11 @@ import java.util.Map;
  */
 @Immutable
 public interface JImmutableArray<T>
-        extends Indexed<T>,
-                Insertable<JImmutableMap.Entry<Integer, T>>,
-                Iterable<JImmutableMap.Entry<Integer, T>>,
-                Cursorable<JImmutableMap.Entry<Integer, T>>,
-                InvariantCheckable
+    extends Indexed<T>,
+            Insertable<JImmutableMap.Entry<Integer, T>>,
+            Iterable<JImmutableMap.Entry<Integer, T>>,
+            Cursorable<JImmutableMap.Entry<Integer, T>>,
+            InvariantCheckable
 {
     /**
      * Return the value associated with index or null if no value is associated.
@@ -129,8 +129,6 @@ public interface JImmutableArray<T>
 
     /**
      * Return the number of entries in the map.
-     *
-     * @return
      */
     int size();
 
@@ -154,17 +152,13 @@ public interface JImmutableArray<T>
     Map<Integer, T> getMap();
 
     /**
-     * Creates a Cursor to access all of the Map's keys.
-     *
-     * @return
+     * Creates a Cursor to access all of the array's keys.
      */
     @Nonnull
     Cursor<Integer> keysCursor();
 
     /**
-     * Creates a Cursor to access all of the Map's values.
-     *
-     * @return
+     * Creates a Cursor to access all of the array's values.
      */
     @Nonnull
     Cursor<T> valuesCursor();

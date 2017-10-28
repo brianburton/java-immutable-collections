@@ -99,5 +99,5 @@ public interface Transforms<T, K, V>
      * Return a (possibly empty) SplitableIterator over all of the JImmutableMap.Entries
      * in the specified leaf object.
      */
-    SplitableIterator<JImmutableMap.Entry<K, V>> Iterator(T leaf);
+    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(T leaf);
 }
