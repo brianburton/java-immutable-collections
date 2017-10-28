@@ -53,7 +53,7 @@ public class JImmutableLinkedStackTest
 {
     public void test()
     {
-        JImmutableLinkedStack<Integer> list = JImmutableLinkedStack.of();
+        JImmutableStack<Integer> list = JImmutableLinkedStack.of();
         assertEquals(true, list.isEmpty());
         try {
             list.getHead();
@@ -63,15 +63,16 @@ public class JImmutableLinkedStackTest
         }
         assertSame(list, list.getTail());
         StandardCursorTest.emptyCursorTest(list.cursor());
+        StandardCursorTest.emptyIteratorTest(list.iterator());
 
-        JImmutableLinkedStack<Integer> list2 = list.insert(10);
+        JImmutableStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
         StandardCursorTest.listCursorTest(Arrays.asList(10), list2.cursor());
         StandardCursorTest.listIteratorTest(Arrays.asList(10), list2.iterator());
 
-        JImmutableLinkedStack<Integer> list3 = list2.insert(30);
+        JImmutableStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
@@ -87,9 +88,10 @@ public class JImmutableLinkedStackTest
         assertEquals(list3, JImmutableLinkedStack.of(Arrays.asList(10, 30)));
     }
 
+    @SuppressWarnings("SimplifyStreamApiCallChains")
     public void testStreams()
     {
-        JImmutableStack<Integer> list = JImmutableLinkedStack.<Integer>of(1, 2, 3, 4, 5, 6, 7);
+        JImmutableStack<Integer> list = JImmutableLinkedStack.of(1, 2, 3, 4, 5, 6, 7);
         assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
 

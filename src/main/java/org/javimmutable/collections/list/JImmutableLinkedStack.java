@@ -37,18 +37,19 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.common.CursorSpliterator;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SequenceIterator;
+import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 
@@ -59,98 +60,97 @@ import java.util.Spliterator;
  * instead, but this class is significantly faster when its limitations are acceptable.
  */
 @Immutable
-public abstract class JImmutableLinkedStack<T>
-    implements JImmutableStack<T>
+public abstract class JImmutableLinkedStack
 {
-    private static final Empty EMPTY = new Empty();
+    private static final EmptySequence EMPTY = new EmptySequence();
 
     @SuppressWarnings("unchecked")
-    public static <T> JImmutableLinkedStack<T> of()
+    public static <T> JImmutableStack<T> of()
     {
-        return (JImmutableLinkedStack<T>)EMPTY;
+        return (JImmutableStack<T>)EMPTY;
     }
 
-    public static <T> JImmutableLinkedStack<T> of(T value)
+    public static <T> JImmutableStack<T> of(T value)
     {
-        return new Single<T>(value);
+        return new Single<>(value);
     }
 
-    public static <T> JImmutableLinkedStack<T> of(List<T> values)
+    public static <T> JImmutableStack<T> of(List<T> values)
     {
-        JImmutableLinkedStack<T> list = of();
+        JImmutableStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
         return list;
     }
 
-    public static <T> JImmutableLinkedStack<T> of(T... values)
+    public static <T> JImmutableStack<T> of(T... values)
     {
-        JImmutableLinkedStack<T> list = of();
+        JImmutableStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
         return list;
     }
 
-    @Nonnull
-    public abstract JImmutableLinkedStack<T> insert(@Nullable T value);
-
-    @Nonnull
-    public abstract JImmutableLinkedStack<T> getTail();
-
-    @Nonnull
-    public Iterator<T> iterator()
+    private static abstract class Base<V>
+        implements JImmutableStack<V>
     {
-        return IteratorAdaptor.of(cursor());
-    }
+        @Nonnull
+        public abstract JImmutableStack<V> insert(@Nullable V value);
 
-    @Nonnull
-    @Override
-    public Spliterator<T> spliterator()
-    {
-        return new CursorSpliterator<>(Spliterator.IMMUTABLE | Spliterator.ORDERED, cursor());
-    }
+        @Nonnull
+        public abstract JImmutableStack<V> getTail();
 
-    public List<T> makeList()
-    {
-        List<T> answer = new ArrayList<T>();
-        if (!isEmpty()) {
-            answer.add(getHead());
-            for (JImmutableStack<T> next = getTail(); !next.isEmpty(); next = next.getTail()) {
+        @Nonnull
+        public abstract SplitableIterator<V> iterator();
+
+        @Nonnull
+        @Override
+        public JImmutableStack<V> remove()
+        {
+            return getTail();
+        }
+
+        @Nonnull
+        @Override
+        public Spliterator<V> spliterator()
+        {
+            return iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
+        }
+
+        public List<V> makeList()
+        {
+            final List<V> answer = new ArrayList<>();
+            JImmutableStack<V> next = this;
+            while (!next.isEmpty()) {
                 answer.add(next.getHead());
+                next = next.getTail();
             }
+            return answer;
         }
-        return answer;
+
+        @Override
+        public boolean equals(Object o)
+        {
+            return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Cursors.computeHashCode(cursor());
+        }
+
+        @Override
+        public String toString()
+        {
+            return Cursors.makeString(cursor());
+        }
     }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Cursors.computeHashCode(cursor());
-    }
-
-    @Override
-    public String toString()
-    {
-        return Cursors.makeString(cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableStack<T> remove()
-    {
-        return getTail();
-    }
-
-    private static class Empty<V>
-        extends JImmutableLinkedStack<V>
+    private static class EmptySequence<V>
+        extends Base<V>
     {
         public boolean isEmpty()
         {
@@ -164,22 +164,29 @@ public abstract class JImmutableLinkedStack<T>
 
         @Nonnull
         @Override
-        public JImmutableLinkedStack<V> getTail()
+        public JImmutableStack<V> getTail()
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public JImmutableLinkedStack<V> insert(@Nullable V value)
+        public JImmutableStack<V> insert(@Nullable V value)
         {
-            return new Single<V>(value);
+            return new Single<>(value);
         }
 
         @Nonnull
         public Cursor<V> cursor()
         {
             return StandardCursor.of();
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<V> iterator()
+        {
+            return EmptyIterator.of();
         }
 
         @Override
@@ -190,7 +197,7 @@ public abstract class JImmutableLinkedStack<T>
     }
 
     private static class Single<V>
-        extends JImmutableLinkedStack<V>
+        extends Base<V>
     {
         private final V value;
 
@@ -211,22 +218,29 @@ public abstract class JImmutableLinkedStack<T>
 
         @Nonnull
         @Override
-        public JImmutableLinkedStack<V> getTail()
+        public JImmutableStack<V> getTail()
         {
             return of();
         }
 
         @Nonnull
         @Override
-        public JImmutableLinkedStack<V> insert(@Nullable V value)
+        public JImmutableStack<V> insert(@Nullable V value)
         {
-            return new Chain<V>(value, this);
+            return new Chain<>(value, this);
         }
 
         @Nonnull
         public Cursor<V> cursor()
         {
             return SingleValueCursor.of(value);
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<V> iterator()
+        {
+            return SingleValueIterator.of(value);
         }
 
         @Override
@@ -237,13 +251,13 @@ public abstract class JImmutableLinkedStack<T>
     }
 
     private static class Chain<V>
-        extends JImmutableLinkedStack<V>
+        extends Base<V>
     {
         private final V value;
-        private final JImmutableLinkedStack<V> next;
+        private final JImmutableStack<V> next;
 
         private Chain(V value,
-                      JImmutableLinkedStack<V> next)
+                      JImmutableStack<V> next)
         {
             this.value = value;
             this.next = next;
@@ -261,16 +275,16 @@ public abstract class JImmutableLinkedStack<T>
 
         @Nonnull
         @Override
-        public JImmutableLinkedStack<V> getTail()
+        public JImmutableStack<V> getTail()
         {
             return next;
         }
 
         @Override
         @Nonnull
-        public JImmutableLinkedStack<V> insert(@Nullable V value)
+        public JImmutableStack<V> insert(@Nullable V value)
         {
-            return new Chain<V>(value, this);
+            return new Chain<>(value, this);
         }
 
         @Override
@@ -278,6 +292,12 @@ public abstract class JImmutableLinkedStack<T>
         public Cursor<V> cursor()
         {
             return SequenceCursor.of(this);
+        }
+
+        @Nonnull
+        public SplitableIterator<V> iterator()
+        {
+            return SequenceIterator.iterator(this);
         }
 
         @Override
