@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FullBit32ArrayTest
-        extends TestCase
+    extends TestCase
 {
     public void testVarious()
     {
@@ -54,7 +54,7 @@ public class FullBit32ArrayTest
             entries[k] = k;
         }
         for (int i = 0; i < 32; ++i) {
-            Bit32Array<Integer> full = new FullBit32Array<Integer>(entries.clone());
+            Bit32Array<Integer> full = new FullBit32Array<>(entries.clone());
             for (int k = 0; k < 32; ++k) {
                 assertEquals((Integer)k, full.get(k));
                 assertEquals((Integer)k, full.getValueOr(k, -99));
@@ -85,12 +85,12 @@ public class FullBit32ArrayTest
 
     public void testIndexedConstructor()
     {
-        List<Integer> values = new ArrayList<Integer>(64);
+        List<Integer> values = new ArrayList<>(64);
         for (int i = 0; i < 64; ++i) {
             values.add(i);
         }
         for (int offset = 0; offset < 32; ++offset) {
-            FullBit32Array<Integer> full = new FullBit32Array<Integer>(IndexedList.retained(values), offset);
+            FullBit32Array<Integer> full = new FullBit32Array<>(IndexedList.retained(values), offset);
             for (int i = 0; i < 32; ++i) {
                 assertEquals((Integer)(i + offset), full.get(i));
             }
@@ -99,13 +99,14 @@ public class FullBit32ArrayTest
 
     public void testCursor()
     {
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
         Integer[] entries = new Integer[32];
         for (int k = 0; k < 32; ++k) {
             entries[k] = k;
             expected.add(MapEntry.of(k, k));
         }
-        Bit32Array<Integer> full = new FullBit32Array<Integer>(entries.clone());
+        Bit32Array<Integer> full = new FullBit32Array<>(entries.clone());
         StandardCursorTest.listCursorTest(expected, full.cursor());
+        StandardCursorTest.listIteratorTest(expected, full.iterator());
     }
 }

@@ -42,14 +42,17 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.AbstractSplitableIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.NoSuchElementException;
 
 @Immutable
 public class FullBit32Array<T>
-        extends Bit32Array<T>
+    extends Bit32Array<T>
 {
     private final T[] entries;
 
@@ -127,6 +130,13 @@ public class FullBit32Array<T>
         return StandardCursor.of(new CursorSource(0));
     }
 
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return new IteratorImpl();
+    }
+
     @Override
     public void checkInvariants()
     {
@@ -134,7 +144,7 @@ public class FullBit32Array<T>
     }
 
     private class CursorSource
-            implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
+        implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
     {
         private final int index;
 
@@ -159,6 +169,34 @@ public class FullBit32Array<T>
         public StandardCursor.Source<JImmutableMap.Entry<Integer, T>> advance()
         {
             return new CursorSource(index + 1);
+        }
+    }
+
+    private class IteratorImpl
+        extends AbstractSplitableIterator<JImmutableMap.Entry<Integer, T>>
+    {
+        private int index;
+
+        private IteratorImpl()
+        {
+            this.index = 0;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return index < entries.length;
+        }
+
+        @Override
+        public JImmutableMap.Entry<Integer, T> next()
+        {
+            if (index >= entries.length) {
+                throw new NoSuchElementException();
+            }
+            final JImmutableMap.Entry<Integer, T> answer = MapEntry.of(index, entries[index]);
+            index += 1;
+            return answer;
         }
     }
 }

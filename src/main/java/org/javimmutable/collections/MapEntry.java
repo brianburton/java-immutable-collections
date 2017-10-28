@@ -42,14 +42,11 @@ import java.util.Map;
 /**
  * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
  * documented in javadoc for Map.Entry.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class MapEntry<K, V>
-        implements JImmutableMap.Entry<K, V>,
-                   Map.Entry<K, V>
+    implements JImmutableMap.Entry<K, V>,
+               Map.Entry<K, V>
 {
     protected final K key;
     protected final V value;

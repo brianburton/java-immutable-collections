@@ -200,7 +200,7 @@ public class LeafNode<K, V>
     @Override
     public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return SingleValueIterator.iterator(this);
+        return SingleValueIterator.of(this);
     }
 
     @SuppressWarnings("RedundantIfStatement")

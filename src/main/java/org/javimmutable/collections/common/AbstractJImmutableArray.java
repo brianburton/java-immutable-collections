@@ -42,17 +42,20 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
+import org.javimmutable.collections.iterators.SplitableIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableArray<T>
-        implements JImmutableArray<T>
+    implements JImmutableArray<T>
 {
     @Override
     @Nullable
@@ -66,7 +69,7 @@ public abstract class AbstractJImmutableArray<T>
     public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int key)
     {
         Holder<T> value = find(key);
-        return value.isFilled() ? Holders.<JImmutableMap.Entry<Integer, T>>of(MapEntry.of(key, value.getValue())) : Holders.<JImmutableMap.Entry<Integer, T>>of();
+        return value.isFilled() ? Holders.of(MapEntry.of(key, value.getValue())) : Holders.of();
     }
 
     @Override
@@ -78,9 +81,6 @@ public abstract class AbstractJImmutableArray<T>
     /**
      * Adds the key/value pair to this map.  Any value already existing for the specified key
      * is replaced with the new value.
-     *
-     * @param e
-     * @return
      */
     @Override
     @Nonnull
@@ -105,9 +105,26 @@ public abstract class AbstractJImmutableArray<T>
 
     @Nonnull
     @Override
-    public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public Streamable<Integer> keysStreamable()
     {
-        return IteratorAdaptor.of(cursor());
+        return TransformStreamable.ofKeys(this);
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<T> valuesStreamable()
+    {
+        return TransformStreamable.ofValues(this);
+    }
+
+    @Nonnull
+    @Override
+    public abstract SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator();
+
+    @Override
+    public Spliterator<JImmutableMap.Entry<Integer, T>> spliterator()
+    {
+        return iterator().spliterator(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Nonnull

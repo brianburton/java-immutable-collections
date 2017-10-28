@@ -237,7 +237,7 @@ public class LeafTrieNode<T>
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
     {
-        return SingleValueIterator.iterator(MapEntry.of(index, value));
+        return SingleValueIterator.of(MapEntry.of(index, value));
     }
 
     @Override
@@ -249,7 +249,7 @@ public class LeafTrieNode<T>
     @Override
     public SplitableIterator<T> anyOrderValueIterator()
     {
-        return SingleValueIterator.iterator(value);
+        return SingleValueIterator.of(value);
     }
 
     @Override

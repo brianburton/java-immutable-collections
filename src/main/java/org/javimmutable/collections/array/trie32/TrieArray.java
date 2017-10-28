@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -201,25 +202,10 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public Iterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return root.signedOrderEntryIterator();
     }
-
-    //TODO
-//    @Nonnull
-//    @Override
-//    public Streamable<Integer> keys()
-//    {
-//        return SimpleStreamable.of(StreamConstants.SPLITERATOR_ORDERED, () -> TransformIterator.ofKeys(root.signedOrderEntryIterator()));
-//    }
-//
-//    @Nonnull
-//    @Override
-//    public Streamable<T> values()
-//    {
-//        return SimpleStreamable.of(StreamConstants.SPLITERATOR_ORDERED, () -> TransformIterator.ofValues(root.signedOrderEntryIterator()));
-//    }
 
     @Override
     public void checkInvariants()

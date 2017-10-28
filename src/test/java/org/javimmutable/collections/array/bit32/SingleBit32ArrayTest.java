@@ -37,13 +37,17 @@ package org.javimmutable.collections.array.bit32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.cursors.StandardCursorTest;
+
+import static java.util.Arrays.asList;
 
 public class SingleBit32ArrayTest
-        extends TestCase
+    extends TestCase
 {
     public void testSet()
     {
-        Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
+        Bit32Array<Integer> array = new SingleBit32Array<>(10, 100);
         assertEquals(Integer.valueOf(100), array.get(10));
         assertEquals(Integer.valueOf(100), array.getValueOr(10, -99));
         assertEquals(Holders.of(100), array.find(10));
@@ -72,7 +76,7 @@ public class SingleBit32ArrayTest
     {
         final String a = "a";
         final String b = "ab";
-        Bit32Array<String> array = new SingleBit32Array<String>(10, a);
+        Bit32Array<String> array = new SingleBit32Array<>(10, a);
         assertSame(array, array.assign(10, a));
         assertFalse(array == array.assign(10, b));
 
@@ -84,7 +88,7 @@ public class SingleBit32ArrayTest
 
     public void testDelete()
     {
-        Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
+        Bit32Array<Integer> array = new SingleBit32Array<>(10, 100);
         assertEquals(Holders.of(100), array.find(10));
         assertEquals(1, array.size());
 
@@ -103,7 +107,7 @@ public class SingleBit32ArrayTest
 
     public void testBoundsCheck()
     {
-        Bit32Array<Integer> array = new SingleBit32Array<Integer>(10, 100);
+        Bit32Array<Integer> array = new SingleBit32Array<>(10, 100);
         for (int i = 0; i < 32; ++i) {
             array.find(i);
             array.assign(i, i);
@@ -121,5 +125,12 @@ public class SingleBit32ArrayTest
         } catch (IndexOutOfBoundsException ex) {
             // expected
         }
+    }
+
+    public void testCursor()
+    {
+        Bit32Array<Integer> array = new SingleBit32Array<>(10, 100);
+        StandardCursorTest.listCursorTest(asList(MapEntry.of(10, 100)), array.cursor());
+        StandardCursorTest.listIteratorTest(asList(MapEntry.of(10, 100)), array.iterator());
     }
 }

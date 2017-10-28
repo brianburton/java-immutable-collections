@@ -155,7 +155,7 @@ class SingleHashValueListNode<K, V>
     @Override
     public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return SingleValueIterator.iterator(this);
+        return SingleValueIterator.of(this);
     }
 
     @Override

@@ -40,6 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,7 +49,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class EmptyBit32Array<T>
-        extends Bit32Array<T>
+    extends Bit32Array<T>
 {
     @Override
     @Nullable
@@ -100,6 +102,13 @@ public class EmptyBit32Array<T>
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return EmptyIterator.of();
     }
 
     @Override

@@ -40,6 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,7 +76,7 @@ public class SingleBit32Array<T>
     public Holder<T> find(int index)
     {
         checkIndex(index);
-        return (this.index == index) ? Holders.of(value) : Holders.<T>of();
+        return (this.index == index) ? Holders.of(value) : Holders.of();
     }
 
     @Nonnull
@@ -84,9 +86,9 @@ public class SingleBit32Array<T>
     {
         checkIndex(index);
         if (this.index == index) {
-            return (this.value != value) ? new SingleBit32Array<T>(index, value) : this;
+            return (this.value != value) ? new SingleBit32Array<>(index, value) : this;
         } else {
-            return new StandardBit32Array<T>(this.index, this.value, index, value);
+            return new StandardBit32Array<>(this.index, this.value, index, value);
         }
     }
 
@@ -95,7 +97,7 @@ public class SingleBit32Array<T>
     public Bit32Array<T> delete(int index)
     {
         checkIndex(index);
-        return (this.index == index) ? Bit32Array.<T>of() : this;
+        return (this.index == index) ? Bit32Array.of() : this;
     }
 
     @Override
@@ -133,7 +135,14 @@ public class SingleBit32Array<T>
     @Nonnull
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return SingleValueCursor.<JImmutableMap.Entry<Integer, T>>of(this);
+        return SingleValueCursor.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return SingleValueIterator.of(this);
     }
 
     @Override

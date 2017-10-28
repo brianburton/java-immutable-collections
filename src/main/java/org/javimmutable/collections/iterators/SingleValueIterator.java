@@ -13,7 +13,7 @@ public class SingleValueIterator<T>
         this.value = value;
     }
 
-    public static <T> SingleValueIterator<T> iterator(T value)
+    public static <T> SingleValueIterator<T> of(T value)
     {
         return new SingleValueIterator<>(value);
     }

@@ -39,17 +39,20 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.AbstractSplitableIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.NoSuchElementException;
 
 @Immutable
 public class StandardBit32Array<T>
-        extends Bit32Array<T>
+    extends Bit32Array<T>
 {
     private final int bitmask;
     private final T[] entries;
@@ -70,10 +73,6 @@ public class StandardBit32Array<T>
     /**
      * Constructor for efficiently creating a Bit32Array with consecutive indexes of up to 32 - startIndex elements
      * from an Indexed collection.  (limit - offset) must be in the range 0 to (32 - startIndex) inclusive.
-     *
-     * @param source
-     * @param offset
-     * @param limit
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(Indexed<T> source,
@@ -100,11 +99,6 @@ public class StandardBit32Array<T>
     /**
      * Constructor for efficiently creating a new instance with exactly two values.
      * index1 and index2 must not be equal.
-     *
-     * @param index1
-     * @param value1
-     * @param index2
-     * @param value2
      */
     @SuppressWarnings("unchecked")
     StandardBit32Array(int index1,
@@ -126,7 +120,7 @@ public class StandardBit32Array<T>
         System.arraycopy((T[])entries, 0, newEntries, 0, withoutIndex);
         System.arraycopy((T[])entries, withoutIndex + 1, newEntries, withoutIndex, 31 - withoutIndex);
         final int newMask = ~(1 << withoutIndex);
-        return new StandardBit32Array<T>(newMask, newEntries);
+        return new StandardBit32Array<>(newMask, newEntries);
     }
 
     @Override
@@ -176,16 +170,16 @@ public class StandardBit32Array<T>
             }
             newEntries[arrayIndex] = value;
             if (newEntries.length == 32) {
-                return new FullBit32Array<T>(newEntries);
+                return new FullBit32Array<>(newEntries);
             } else {
-                return new StandardBit32Array<T>(bitmask | bit, newEntries);
+                return new StandardBit32Array<>(bitmask | bit, newEntries);
             }
         } else if (entries[arrayIndex] == value) {
             return this;
         } else {
             final T[] newEntries = entries.clone();
             newEntries[arrayIndex] = value;
-            return new StandardBit32Array<T>(bitmask, newEntries);
+            return new StandardBit32Array<>(bitmask, newEntries);
         }
     }
 
@@ -206,7 +200,7 @@ public class StandardBit32Array<T>
             case 2: {
                 final int newBitmask = bitmask & ~bit;
                 final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                return new SingleBit32Array<T>(remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
+                return new SingleBit32Array<>(remainingIndex, entries[realIndex(bitmask, 1 << remainingIndex)]);
             }
             default: {
                 int skipIndex = realIndex(bitmask, bit);
@@ -214,7 +208,7 @@ public class StandardBit32Array<T>
                 final T[] newArray = (T[])new Object[newLength];
                 System.arraycopy(entries, 0, newArray, 0, skipIndex);
                 System.arraycopy(entries, skipIndex + 1, newArray, skipIndex, newLength - skipIndex);
-                return new StandardBit32Array<T>(bitmask & ~bit, newArray);
+                return new StandardBit32Array<>(bitmask & ~bit, newArray);
             }
             }
         }
@@ -233,9 +227,16 @@ public class StandardBit32Array<T>
 
     @Override
     @Nonnull
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
+    public Cursor<Entry<Integer, T>> cursor()
     {
         return StandardCursor.of(new CursorSource(bitmask));
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<Entry<Integer, T>> iterator()
+    {
+        return new IteratorImpl(bitmask);
     }
 
     @Override
@@ -245,7 +246,7 @@ public class StandardBit32Array<T>
     }
 
     private class CursorSource
-            implements StandardCursor.Source<JImmutableMap.Entry<Integer, T>>
+        implements StandardCursor.Source<Entry<Integer, T>>
     {
         private final int remainingMask;
         private final int index;
@@ -263,13 +264,13 @@ public class StandardBit32Array<T>
         }
 
         @Override
-        public JImmutableMap.Entry<Integer, T> currentValue()
+        public Entry<Integer, T> currentValue()
         {
             return MapEntry.of(index, find(index).getValue());
         }
 
         @Override
-        public StandardCursor.Source<JImmutableMap.Entry<Integer, T>> advance()
+        public StandardCursor.Source<Entry<Integer, T>> advance()
         {
             if (remainingMask == 0) {
                 return this;
@@ -277,6 +278,36 @@ public class StandardBit32Array<T>
                 final int bit = 1 << index;
                 return new CursorSource(remainingMask & ~bit);
             }
+        }
+    }
+
+    private class IteratorImpl
+        extends AbstractSplitableIterator<Entry<Integer, T>>
+    {
+        private int remainingMask;
+
+        private IteratorImpl(int remainingMask)
+        {
+            this.remainingMask = remainingMask;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return remainingMask != 0;
+        }
+
+        @Override
+        public Entry<Integer, T> next()
+        {
+            if (remainingMask == 0) {
+                throw new NoSuchElementException();
+            }
+            final int index = Integer.numberOfTrailingZeros(remainingMask);
+            final int bit = 1 << index;
+            final Entry<Integer, T> answer = MapEntry.of(index, entries[realIndex(bitmask, bit)]);
+            remainingMask = remainingMask & ~bit;
+            return answer;
         }
     }
 

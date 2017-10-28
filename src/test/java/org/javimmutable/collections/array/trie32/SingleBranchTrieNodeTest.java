@@ -78,6 +78,10 @@ public class SingleBranchTrieNodeTest
         StandardCursorTest.listCursorTest(Arrays.asList("value"), node.signedOrderValueCursor());
         StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryCursor());
         StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryCursor());
+        StandardCursorTest.listIteratorTest(Arrays.asList("value"), node.anyOrderValueIterator());
+        StandardCursorTest.listIteratorTest(Arrays.asList("value"), node.signedOrderValueIterator());
+        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryIterator());
+        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryIterator());
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "value", delta));
@@ -135,6 +139,8 @@ public class SingleBranchTrieNodeTest
         expectedEntries.add(MapEntry.of("b", "B"));
         StandardCursorTest.listCursorTest(expectedEntries, node.anyOrderEntryCursor(tx));
         StandardCursorTest.listCursorTest(expectedEntries, node.signedOrderEntryCursor(tx));
+        StandardCursorTest.listIteratorTest(expectedEntries, node.anyOrderEntryIterator(tx));
+        StandardCursorTest.listIteratorTest(expectedEntries, node.signedOrderEntryIterator(tx));
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "a", "A", tx, delta));
