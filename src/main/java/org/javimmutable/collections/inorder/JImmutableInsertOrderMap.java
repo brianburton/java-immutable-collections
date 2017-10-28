@@ -38,13 +38,14 @@ package org.javimmutable.collections.inorder;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.iterators.SplitableIterator;
+import org.javimmutable.collections.iterators.TransformIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -65,13 +66,13 @@ public class JImmutableInsertOrderMap<K, V>
     extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 1);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 0);
 
-    private final JImmutableArray<Node<K, V>> sortedNodes;
+    private final TrieArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
     private final int nextIndex;
 
-    private JImmutableInsertOrderMap(JImmutableArray<Node<K, V>> sortedNodes,
+    private JImmutableInsertOrderMap(TrieArray<Node<K, V>> sortedNodes,
                                      JImmutableMap<K, Node<K, V>> hashedNodes,
                                      int nextIndex)
     {
@@ -100,7 +101,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<V> find(@Nonnull K key)
     {
         final Node<K, V> current = hashedNodes.get(key);
-        return (current != null) ? current : Holders.<V>of();
+        return (current != null) ? current : Holders.of();
     }
 
     @Nonnull
@@ -108,7 +109,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<K, V> current = hashedNodes.get(key);
-        return (current != null) ? Holders.<Entry<K, V>>of(current) : Holders.<Entry<K, V>>of();
+        return (current != null) ? Holders.of(current) : Holders.of();
     }
 
     @Nonnull
@@ -118,17 +119,17 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Node<K, V> current = hashedNodes.get(key);
         if (current == null) {
-            final Node<K, V> newNode = new Node<K, V>(key, value, nextIndex);
-            return new JImmutableInsertOrderMap<K, V>(sortedNodes.assign(newNode.index, newNode),
-                                                      hashedNodes.assign(key, newNode),
-                                                      nextIndex + 1);
+            final Node<K, V> newNode = new Node<>(key, value, nextIndex);
+            return new JImmutableInsertOrderMap<>(sortedNodes.assign(newNode.index, newNode),
+                                                  hashedNodes.assign(key, newNode),
+                                                  nextIndex + 1);
         } else if (current.getValue() == value) {
             return this;
         } else {
             final Node<K, V> newNode = current.withValue(value);
-            return new JImmutableInsertOrderMap<K, V>(sortedNodes.assign(newNode.index, newNode),
-                                                      hashedNodes.assign(key, newNode),
-                                                      nextIndex);
+            return new JImmutableInsertOrderMap<>(sortedNodes.assign(newNode.index, newNode),
+                                                  hashedNodes.assign(key, newNode),
+                                                  nextIndex);
         }
     }
 
@@ -138,9 +139,9 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Node<K, V> current = hashedNodes.get(key);
         if (current != null) {
-            return new JImmutableInsertOrderMap<K, V>(sortedNodes.delete(current.index),
-                                                      hashedNodes.delete(key),
-                                                      nextIndex);
+            return new JImmutableInsertOrderMap<>(sortedNodes.delete(current.index),
+                                                  hashedNodes.delete(key),
+                                                  nextIndex);
         } else {
             return this;
         }
@@ -163,7 +164,14 @@ public class JImmutableInsertOrderMap<K, V>
     @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
-        return TransformCursor.of(sortedNodes.valuesCursor(), node -> node);
+        return TransformCursor.of(sortedNodes.cursor(), e -> e.getValue());
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<Entry<K, V>> iterator()
+    {
+        return TransformIterator.of(sortedNodes.iterator(), e -> e.getValue());
     }
 
     @Override
@@ -222,7 +230,7 @@ public class JImmutableInsertOrderMap<K, V>
 
         private Node<K, V> withValue(V value)
         {
-            return new Node<K, V>(key, value, index);
+            return new Node<>(key, value, index);
         }
     }
 }

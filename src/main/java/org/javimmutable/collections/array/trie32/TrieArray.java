@@ -158,8 +158,8 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> assign(int index,
-                                     @Nullable T value)
+    public TrieArray<T> assign(int index,
+                               @Nullable T value)
     {
         MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
@@ -169,7 +169,7 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> delete(int index)
+    public TrieArray<T> delete(int index)
     {
         if (root.getShift() < TrieNode.shiftForIndex(index)) {
             return this;
@@ -188,7 +188,7 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> deleteAll()
+    public TrieArray<T> deleteAll()
     {
         return of();
     }

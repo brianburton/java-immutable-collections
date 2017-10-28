@@ -44,6 +44,7 @@ import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -208,6 +209,13 @@ public class JImmutableHashMap<T, K, V>
     public Cursor<Entry<K, V>> cursor()
     {
         return root.anyOrderEntryCursor(transforms);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<Entry<K, V>> iterator()
+    {
+        return root.anyOrderEntryIterator(transforms);
     }
 
     @Override

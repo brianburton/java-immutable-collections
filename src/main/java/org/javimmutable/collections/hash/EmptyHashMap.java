@@ -41,6 +41,8 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -109,6 +111,13 @@ public class EmptyHashMap<K, V>
     public Cursor<Entry<K, V>> cursor()
     {
         return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<Entry<K, V>> iterator()
+    {
+        return EmptyIterator.of();
     }
 
     @Override

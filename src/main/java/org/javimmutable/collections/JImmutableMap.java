@@ -171,16 +171,16 @@ public interface JImmutableMap<K, V>
     Cursor<K> keysCursor();
 
     /**
-     * Creates a Streamable to access all of the Map's keys.
-     */
-    @Nonnull
-    Streamable<K> keysStreamable();
-
-    /**
      * Creates a Cursor to access all of the Map's values.
      */
     @Nonnull
     Cursor<V> valuesCursor();
+
+    /**
+     * Creates a Streamable to access all of the Map's keys.
+     */
+    @Nonnull
+    Streamable<K> keysStreamable();
 
     /**
      * Creates a Streamable to access all of the Map's values.

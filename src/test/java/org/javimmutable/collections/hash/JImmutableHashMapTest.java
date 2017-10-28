@@ -39,7 +39,6 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +49,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEnumeration;
+import static org.javimmutable.collections.cursors.StandardCursorTest.*;
 
 public class JImmutableHashMapTest
     extends TestCase
@@ -89,7 +90,7 @@ public class JImmutableHashMapTest
         final int maxKey = 999999999;
         Random random = new Random(100L);
         for (int loop = 0; loop < 1000; ++loop) {
-            Map<Integer, Integer> expected = new HashMap<>();
+            HashMap<Integer, Integer> expected = new HashMap<>();
             JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingTree();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
@@ -126,6 +127,8 @@ public class JImmutableHashMapTest
                 }
             }
 
+            verifyEnumeration(expected, map);
+
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
                 Holder<Integer> mapValue = map.find(entry.getKey());
                 assertEquals(true, mapValue.isFilled());
@@ -140,12 +143,12 @@ public class JImmutableHashMapTest
                 fromCursor.put(entry.getKey(), entry.getValue());
             }
             assertEquals(expected, fromCursor);
-            StandardCursorTest.listCursorTest(entries, map.cursor());
-            StandardCursorTest.cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
-            StandardCursorTest.cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
-            StandardCursorTest.listIteratorTest(entries, map.iterator());
-            StandardCursorTest.iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
-            StandardCursorTest.iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
+            listCursorTest(entries, map.cursor());
+            cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
+            cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
+            listIteratorTest(entries, map.iterator());
+            iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
+            iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
 
             // verify the Map adaptor worked properly
             assertEquals(expected, map.getMap());
@@ -237,17 +240,16 @@ public class JImmutableHashMapTest
 
     }
 
-    public void testCursor()
+    public void testEnumeration()
     {
         JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
-        List<Integer> expected = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
         for (int i = 0; i < 100000; ++i) {
-            map = map.assign(i, i);
-            expected.add(i);
+            map = map.assign(i, 2 * i);
+            expected.add(MapEntry.of(i, 2 * i));
             assertEquals(expected.size(), map.size());
         }
-        StandardCursorTest.listCursorTest(expected, map.keysCursor());
-        StandardCursorTest.listCursorTest(expected, map.valuesCursor());
+        verifyEnumeration(expected, map);
     }
 
     public void testHashCollisions()

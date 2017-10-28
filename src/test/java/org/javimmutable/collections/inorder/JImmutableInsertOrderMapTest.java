@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class JImmutableInsertOrderMapTest
         List<String> expectedValues = new ArrayList<>();
         JImmutableInsertOrderMap<String, String> map = JImmutableInsertOrderMap.of();
 
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -69,6 +71,7 @@ public class JImmutableInsertOrderMapTest
         expectedEntries.add(MapEntry.of("x", "X"));
         expectedKeys.add("x");
         expectedValues.add("X");
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -77,6 +80,7 @@ public class JImmutableInsertOrderMapTest
         expectedEntries.add(MapEntry.of("d", "D"));
         expectedKeys.add("d");
         expectedValues.add("D");
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -85,6 +89,7 @@ public class JImmutableInsertOrderMapTest
         expectedEntries.add(MapEntry.of("c", "C"));
         expectedKeys.add("c");
         expectedValues.add("C");
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -93,6 +98,7 @@ public class JImmutableInsertOrderMapTest
         expectedEntries.remove(1);
         expectedKeys.remove(1);
         expectedValues.remove(1);
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -101,6 +107,7 @@ public class JImmutableInsertOrderMapTest
         expectedEntries.add(MapEntry.of("d", "D"));
         expectedKeys.add("d");
         expectedValues.add("D");
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -108,6 +115,7 @@ public class JImmutableInsertOrderMapTest
         map = map.assign("x", "XX");
         expectedEntries.set(0, MapEntry.of("x", "XX"));
         expectedValues.set(0, "XX");
+        StandardJImmutableMapTests.verifyEnumeration(expectedEntries, map);
         StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
         StandardCursorTest.listCursorTest(expectedKeys, map.keysCursor());
         StandardCursorTest.listCursorTest(expectedValues, map.valuesCursor());
@@ -159,6 +167,7 @@ public class JImmutableInsertOrderMapTest
                 keys.add(entry.getKey());
                 values.add(entry.getValue());
             }
+            StandardJImmutableMapTests.verifyEnumeration(entries, map);
             StandardCursorTest.listIteratorTest(entries, map.iterator());
             StandardCursorTest.listCursorTest(entries, map.cursor());
             StandardCursorTest.listCursorTest(keys, map.keysCursor());

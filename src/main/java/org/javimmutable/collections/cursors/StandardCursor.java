@@ -173,6 +173,19 @@ public abstract class StandardCursor
     }
 
     /**
+     * Utility method, useful in unit tests, that collects all of the values in the Iterator into a List
+     * and returns the List.
+     */
+    public static <T> List<T> makeList(Iterator<T> iterator)
+    {
+        List<T> answer = new ArrayList<>();
+        while (iterator.hasNext()) {
+            answer.add(iterator.next());
+        }
+        return answer;
+    }
+
+    /**
      * Creates a Cursorable that always returns an empty Cursor.
      */
     public static <T> Cursorable<T> emptyCursorable()

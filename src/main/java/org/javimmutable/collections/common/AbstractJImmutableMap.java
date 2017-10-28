@@ -41,11 +41,12 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
+import org.javimmutable.collections.iterators.SplitableIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Spliterator;
 
@@ -104,23 +105,9 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public Streamable<K> keysStreamable()
-    {
-        return new CursorStreamable<>(getSpliteratorCharacteristics(), () -> keysCursor());
-    }
-
-    @Nonnull
-    @Override
     public Cursor<V> valuesCursor()
     {
         return TransformCursor.ofValues(cursor());
-    }
-
-    @Nonnull
-    @Override
-    public Streamable<V> valuesStreamable()
-    {
-        return new CursorStreamable<>(getSpliteratorCharacteristics(), () -> valuesCursor());
     }
 
     @Nonnull
@@ -132,15 +119,26 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public Iterator<Entry<K, V>> iterator()
+    public Streamable<K> keysStreamable()
     {
-        return IteratorAdaptor.of(cursor());
+        return TransformStreamable.ofKeys(this);
     }
 
+    @Nonnull
     @Override
-    public Spliterator<Entry<K, V>> spliterator()
+    public Streamable<V> valuesStreamable()
     {
-        return new CursorSpliterator<>(getSpliteratorCharacteristics(), cursor());
+        return TransformStreamable.ofValues(this);
+    }
+
+    @Nonnull
+    @Override
+    public abstract SplitableIterator<Entry<K, V>> iterator();
+
+    @Override
+    public Spliterator<JImmutableMap.Entry<K, V>> spliterator()
+    {
+        return iterator().spliterator(getSpliteratorCharacteristics());
     }
 
     @Override

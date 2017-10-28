@@ -41,6 +41,7 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -182,6 +183,13 @@ public class JImmutableTreeMap<K, V>
     public Cursor<Entry<K, V>> cursor()
     {
         return root.cursor();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<Entry<K, V>> iterator()
+    {
+        return root.iterator();
     }
 
     @Override
