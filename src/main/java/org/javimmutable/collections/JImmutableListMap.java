@@ -128,4 +128,19 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     Cursor<V> valuesCursor(@Nonnull K key);
+
+    /**
+     * Creates a Streamable to access all of the Map's keys.
+     */
+    @Nonnull
+    Streamable<K> keys();
+
+    /**
+     * Creates a Streamable to access all of the specified key's list.
+     * If no list exists for key an empty Streamable is returned.
+     *
+     * @return a (possibly empty) Streamable for traversing the values associated with key
+     */
+    @Nonnull
+    Streamable<V> values(@Nonnull K key);
 }

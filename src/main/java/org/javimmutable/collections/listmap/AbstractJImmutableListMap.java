@@ -41,8 +41,8 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.common.Conditions;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
@@ -121,6 +121,20 @@ public abstract class AbstractJImmutableListMap<K, V>
         return getList(key).cursor();
     }
 
+    @Nonnull
+    @Override
+    public Streamable<K> keys()
+    {
+        return contents.keys();
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<V> values(@Nonnull K key)
+    {
+        return getList(key);
+    }
+
     @Override
     @Nonnull
     public Cursor<JImmutableMap.Entry<K, JImmutableList<V>>> cursor()
@@ -139,7 +153,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     @Nonnull
     public Iterator<JImmutableMap.Entry<K, JImmutableList<V>>> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return contents.iterator();
     }
 
     @Override
@@ -230,6 +244,7 @@ public abstract class AbstractJImmutableListMap<K, V>
      * Overridable by derived classes to insert a value into a list in some way.
      * Default implementation appends to end of the list.
      */
+    @Nonnull
     protected JImmutableList<V> insertInList(JImmutableList<V> list,
                                              V value)
     {

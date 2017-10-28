@@ -93,5 +93,12 @@ public class JImmutableHashListMapTest
             .insert(4, 50);
         assertEquals(asList(1, 2, 3, 4), listMap.stream().map(e -> e.getKey()).collect(toList()));
         assertEquals(asList(1, 2, 1, 3), listMap.stream().map(e -> e.getValue().size()).collect(toList()));
+
+        assertEquals(asList(1, 2, 3, 4), listMap.keys().stream().collect(toList()));
+        assertEquals(asList(), listMap.values(0).stream().collect(toList()));
+        assertEquals(asList(10), listMap.values(1).stream().collect(toList()));
+        assertEquals(asList(20, 20), listMap.values(2).stream().collect(toList()));
+        assertEquals(asList(30), listMap.values(3).stream().collect(toList()));
+        assertEquals(asList(40, 45, 50), listMap.values(4).stream().collect(toList()));
     }
 }
