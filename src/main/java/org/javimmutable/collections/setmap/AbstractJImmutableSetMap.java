@@ -43,8 +43,8 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.common.Conditions;
-import org.javimmutable.collections.common.IteratorAdaptor;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 
 import javax.annotation.Nonnull;
@@ -53,10 +53,11 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableSetMap<K, V>
-        implements JImmutableSetMap<K, V>
+    implements JImmutableSetMap<K, V>
 {
     private final JImmutableMap<K, JImmutableSet<V>> contents;
 
@@ -364,10 +365,31 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return insert(e.getKey(), e.getValue());
     }
 
+    @Nonnull
     @Override
     public Iterator<JImmutableMap.Entry<K, JImmutableSet<V>>> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return contents.iterator();
+    }
+
+    @Override
+    public Spliterator<JImmutableMap.Entry<K, JImmutableSet<V>>> spliterator()
+    {
+        return contents.spliterator();
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<K> keys()
+    {
+        return contents.keys();
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<V> values(@Nonnull K key)
+    {
+        return getSet(key);
     }
 
     @Nullable
@@ -426,18 +448,12 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
-     *
-     * @param map
-     * @return
      */
     protected abstract JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map);
 
     /**
      * Overridable by derived classes to create a compatible copy of the specified set.
-     * Default implementatin simply returns the original.
-     *
-     * @param original
-     * @return
+     * Default implementation simply returns the original.
      */
     protected JImmutableSet<V> copySet(JImmutableSet<V> original)
     {
@@ -447,8 +463,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     /**
      * Overridable by derived classes to create a new empty set.
-     *
-     * @return
      */
     @Nonnull
     protected JImmutableSet<V> emptySet()
@@ -458,10 +472,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     /**
      * Overridable by derived classes to insert a value into a set in some way.
-     *
-     * @param set
-     * @param value
-     * @return
      */
     protected JImmutableSet<V> insertInSet(JImmutableSet<V> set,
                                            V value)
@@ -472,10 +482,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to insert all values from an iterator into
      * a set in some way
-     *
-     * @param set
-     * @param values
-     * @return
      */
     protected JImmutableSet<V> insertAllInSet(JImmutableSet<V> set,
                                               Iterator<? extends V> values)
@@ -486,10 +492,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to delete all values from an iterator into
      * a set in some way
-     *
-     * @param set
-     * @param other
-     * @return
      */
     protected JImmutableSet<V> deleteAllInSet(JImmutableSet<V> set,
                                               Iterator<? extends V> other)
@@ -500,10 +502,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to create a union from an iterator in the
      * Set for key
-     *
-     * @param set
-     * @param other
-     * @return
      */
     protected JImmutableSet<V> unionInSet(JImmutableSet<V> set,
                                           Iterator<? extends V> other)
@@ -514,10 +512,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to create an intersection from an iterator in
      * the Set for key
-     *
-     * @param set
-     * @param other
-     * @return
      */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  Iterator<? extends V> other)
@@ -528,10 +522,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to create an intersection from a JImmutableSet in
      * the Set for key
-     *
-     * @param set
-     * @param other
-     * @return
      */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  JImmutableSet<? extends V> other)
@@ -542,10 +532,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     /**
      * Overridable by derived classes to create an intersection from a Set in
      * the JImmutableSet for key
-     *
-     * @param set
-     * @param other
-     * @return
      */
     protected JImmutableSet<V> intersectionInSet(JImmutableSet<V> set,
                                                  Set<? extends V> other)

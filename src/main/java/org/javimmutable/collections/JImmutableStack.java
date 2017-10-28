@@ -40,8 +40,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.Spliterator;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
@@ -52,7 +50,7 @@ public interface JImmutableStack<T>
     extends Insertable<T>,
             Sequence<T>,
             Cursorable<T>,
-            Iterable<T>,
+            Streamable<T>,
             InvariantCheckable
 {
     boolean isEmpty();
@@ -87,10 +85,4 @@ public interface JImmutableStack<T>
 
     @Nonnull
     Spliterator<T> spliterator();
-
-    @Nonnull
-    default Stream<T> stream()
-    {
-        return StreamSupport.stream(spliterator(), false);
-    }
 }

@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.cursors.TransformCursor;
+import org.javimmutable.collections.Streamable;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
@@ -50,11 +51,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
 
 @SuppressWarnings({"unchecked", "NullableProblems"})
 @Immutable
 public class ArrayToMapAdaptor<T>
-        extends AbstractMap<Integer, T>
+    extends AbstractMap<Integer, T>
 {
     private final JImmutableArray<T> map;
 
@@ -88,9 +90,6 @@ public class ArrayToMapAdaptor<T>
 
     /**
      * Uses O(n) traversal of the JImmutableMap to search for a matching value.
-     *
-     * @param o
-     * @return
      */
     @Override
     public boolean containsValue(Object o)
@@ -161,7 +160,13 @@ public class ArrayToMapAdaptor<T>
             @Override
             public Iterator<Integer> iterator()
             {
-                return IteratorAdaptor.of(TransformCursor.ofKeys(map.cursor()));
+                return map.keys().iterator();
+            }
+
+            @Override
+            public Spliterator<Integer> spliterator()
+            {
+                return map.keys().spliterator();
             }
 
             @Override
@@ -180,7 +185,13 @@ public class ArrayToMapAdaptor<T>
             @Override
             public Iterator<T> iterator()
             {
-                return IteratorAdaptor.of(TransformCursor.ofValues(map.cursor()));
+                return map.values().iterator();
+            }
+
+            @Override
+            public Spliterator<T> spliterator()
+            {
+                return map.values().spliterator();
             }
 
             @Override
@@ -216,20 +227,25 @@ public class ArrayToMapAdaptor<T>
             @Override
             public Iterator<Entry<Integer, T>> iterator()
             {
-                return IteratorAdaptor.of(TransformCursor.of(map.cursor(), new Func1<JImmutableMap.Entry<Integer, T>, Entry<Integer, T>>()
-                {
-                    @Override
-                    public Entry<Integer, T> apply(JImmutableMap.Entry<Integer, T> value)
-                    {
-                        return new MapEntry(value);
-                    }
-                }));
+                return streamable().iterator();
+            }
+
+            @Override
+            public Spliterator<Entry<Integer, T>> spliterator()
+            {
+                return streamable().spliterator();
             }
 
             @Override
             public int size()
             {
                 return map.size();
+            }
+
+            @Nonnull
+            private Streamable<Entry<Integer, T>> streamable()
+            {
+                return TransformStreamable.of(map, e -> MapEntry.of(e));
             }
         };
     }

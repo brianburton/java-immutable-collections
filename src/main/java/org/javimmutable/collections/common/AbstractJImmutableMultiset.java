@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -542,7 +543,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Nonnull
     public Iterator<T> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return map.keys().iterator();
     }
 
     @Override
@@ -550,6 +551,13 @@ public abstract class AbstractJImmutableMultiset<T>
     public Cursor<T> occurrenceCursor()
     {
         return LazyMultiCursor.transformed(entryCursor(), entry -> () -> StandardCursor.repeating(entry.getValue(), entry.getKey()));
+    }
+
+    @Nonnull
+    @Override
+    public Streamable<JImmutableMap.Entry<T, Integer>> entries()
+    {
+        return map;
     }
 
     @Override

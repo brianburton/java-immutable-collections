@@ -44,23 +44,17 @@ import java.util.Set;
 
 /**
  * Interface for maps that map keys to sets of values.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public interface JImmutableSetMap<K, V>
-        extends Insertable<JImmutableMap.Entry<K, V>>,
-                Mapped<K, JImmutableSet<V>>,
-                Iterable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
-                Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
-                InvariantCheckable
+    extends Insertable<JImmutableMap.Entry<K, V>>,
+            Mapped<K, JImmutableSet<V>>,
+            Streamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
+            Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
+            InvariantCheckable
 {
     /**
      * Return the set associated with key, or an empty set if no list is associated.
-     *
-     * @param key
-     * @return
      */
     @Nonnull
     JImmutableSet<V> getSet(@Nonnull K key);
@@ -70,10 +64,6 @@ public interface JImmutableSetMap<K, V>
      * If the key already has a set in the map the old set is discarded and the
      * new set is stored in its place. Returns a new JImmutableSetMap reflecting
      * any changes. The original map is always left unchanged.
-     *
-     * @param key
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> assign(@Nonnull K key,
@@ -82,9 +72,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Add value to the Set for the specified key. Note that if the value has already been
      * added, it will not be added again.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     @Override
@@ -93,10 +80,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Add value to the Set for the specified key. Note that if the value has already been
      * added, it will not be added again.
-     *
-     * @param key
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> insert(@Nonnull K key,
@@ -104,10 +87,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
-     *
-     * @param key
-     * @param values
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
@@ -115,10 +94,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
-     *
-     * @param key
-     * @param values
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
@@ -126,10 +101,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
-     *
-     * @param key
-     * @param values
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
@@ -137,10 +108,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
-     *
-     * @param key
-     * @param values
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
@@ -148,17 +115,12 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Determines if the setmap contains the specified key.
-     *
-     * @param key
-     * @return
      */
     boolean contains(@Nonnull K key);
 
     /**
      * Determines if the Set at key contains the specified value.
      *
-     * @param key
-     * @param value
      * @return true if the Set contains the value
      */
     boolean contains(@Nonnull K key,
@@ -167,8 +129,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains all values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
@@ -177,8 +137,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains all values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
@@ -187,8 +145,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains all values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
@@ -197,8 +153,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains all values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
@@ -208,8 +162,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key conains any values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull K key,
@@ -218,8 +170,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains any values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull K key,
@@ -228,8 +178,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains any values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull K key,
@@ -238,8 +186,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Determines if the Set at key contains any values in the specified collection.
      *
-     * @param key
-     * @param values
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull K key,
@@ -249,9 +195,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the entry for the specified key (if any). Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> delete(@Nonnull K key);
@@ -259,9 +202,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the specified value from the specified key's set. Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> delete(@Nonnull K key,
@@ -270,10 +210,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
@@ -282,10 +218,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
@@ -294,10 +226,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
@@ -306,10 +234,6 @@ public interface JImmutableSetMap<K, V>
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
@@ -317,10 +241,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all values from other to the Set at key
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
@@ -328,10 +248,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all values from other to the Set at key
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
@@ -339,10 +255,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all values from other to the Set at key
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
@@ -350,10 +262,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Adds all values from other to the Set at key
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
@@ -363,10 +271,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -376,10 +280,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -389,10 +289,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -402,10 +298,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -415,10 +307,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -428,10 +316,6 @@ public interface JImmutableSetMap<K, V>
      * Removes all values from the Set at key that are not contained in the other
      * collection. If the given key is not present in the map, an empty set is added
      * to the map.
-     *
-     * @param key
-     * @param other
-     * @return
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
@@ -440,8 +324,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Return the number of keys in the map.
-     *
-     * @return
      */
     int size();
 
@@ -458,8 +340,6 @@ public interface JImmutableSetMap<K, V>
 
     /**
      * Creates a Cursor to access all of the Map's keys
-     *
-     * @return
      */
     @Nonnull
     Cursor<K> keysCursor();
@@ -468,9 +348,23 @@ public interface JImmutableSetMap<K, V>
      * Creates a Cursor to access all of the specified key's set.
      * If no set exists for key, an empty Cursor is returned.
      *
-     * @param key
      * @return a (possibly empty) cursor for traversing the values associated with key
      */
     @Nonnull
     Cursor<V> valuesCursor(@Nonnull K key);
+
+    /**
+     * Creates a Streamable to access all of the Map's keys.
+     */
+    @Nonnull
+    Streamable<K> keys();
+
+    /**
+     * Creates a Streamable to access all of the specified key's set.
+     * If no set exists for key an empty Streamable is returned.
+     *
+     * @return a (possibly empty) Streamable for traversing the values associated with key
+     */
+    @Nonnull
+    Streamable<V> values(@Nonnull K key);
 }

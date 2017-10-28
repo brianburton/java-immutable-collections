@@ -48,7 +48,7 @@ import java.util.Set;
  */
 @Immutable
 public interface JImmutableMultiset<T>
-        extends JImmutableSet<T>
+    extends JImmutableSet<T>
 {
     /**
      * Adds one occurrence of value to the multiset.
@@ -575,6 +575,14 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     Cursor<JImmutableMap.Entry<T, Integer>> entryCursor();
+
+    /**
+     * Stream iterates through each Entry, that contains a unique value and the count of occurrences.
+     *
+     * @return Streamable of JImmutableMap.Entries
+     */
+    @Nonnull
+    Streamable<JImmutableMap.Entry<T, Integer>> entries();
 
     /**
      * Returns the number of occurrences associated with the specified value. If the value is not

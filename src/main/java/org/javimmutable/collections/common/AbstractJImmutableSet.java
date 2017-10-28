@@ -356,7 +356,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public Iterator<T> iterator()
     {
-        return IteratorAdaptor.of(cursor());
+        return map.keys().iterator();
     }
 
     @Override
