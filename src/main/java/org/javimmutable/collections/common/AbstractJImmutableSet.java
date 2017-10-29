@@ -49,11 +49,10 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableSet<T>
-        implements JImmutableSet<T>
+    implements JImmutableSet<T>
 {
     private final JImmutableMap<T, Boolean> map;
 
@@ -360,11 +359,10 @@ public abstract class AbstractJImmutableSet<T>
         return map.keys().iterator();
     }
 
-    @Nonnull
     @Override
-    public Spliterator<T> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return map.keys().spliterator();
+        return map.keys().getSpliteratorCharacteristics();
     }
 
     @Override

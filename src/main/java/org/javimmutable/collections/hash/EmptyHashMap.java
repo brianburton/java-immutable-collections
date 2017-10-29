@@ -41,13 +41,12 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Spliterator;
-import java.util.Spliterators;
 
 /**
  * Singleton implementation of JImmutableMap that contains no elements.
@@ -120,11 +119,10 @@ public class EmptyHashMap<K, V>
         return EmptyIterator.of();
     }
 
-    @Nonnull
     @Override
-    public Spliterator<Entry<K, V>> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return Spliterators.emptySpliterator();
+        return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
     @Override

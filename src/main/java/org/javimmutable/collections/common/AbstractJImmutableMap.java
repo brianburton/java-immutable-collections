@@ -47,7 +47,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableMap<K, V>
@@ -130,13 +129,6 @@ public abstract class AbstractJImmutableMap<K, V>
         return TransformStreamable.ofValues(this);
     }
 
-    @Nonnull
-    @Override
-    public Spliterator<JImmutableMap.Entry<K, V>> spliterator()
-    {
-        return iterator().spliterator(getSpliteratorCharacteristics());
-    }
-
     @Override
     public int hashCode()
     {
@@ -170,11 +162,7 @@ public abstract class AbstractJImmutableMap<K, V>
         return sb.toString();
     }
 
-    /**
-     * Derived classes must implement this method to provide the proper characteristics for created spliterator.
-     * Characteristics must be based on keys, not values.  Values are always IMMUTABLE and unordered.
-     */
-    protected int getSpliteratorCharacteristics()
+    public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_UNORDERED;
     }

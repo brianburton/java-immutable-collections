@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
@@ -52,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
 
 /**
  * Implementation of JImmutableRandomAccessList that uses a B-Tree for its implementation.
@@ -414,10 +414,9 @@ public class JImmutableBtreeList<T>
     }
 
     @Override
-    @Nonnull
-    public Spliterator<T> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return root.iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Override

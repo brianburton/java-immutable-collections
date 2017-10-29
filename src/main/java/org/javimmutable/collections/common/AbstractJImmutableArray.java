@@ -50,7 +50,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableArray<T>
@@ -116,11 +115,10 @@ public abstract class AbstractJImmutableArray<T>
         return TransformStreamable.ofValues(this);
     }
 
-    @Nonnull
     @Override
-    public Spliterator<JImmutableMap.Entry<Integer, T>> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return iterator().spliterator(StreamConstants.SPLITERATOR_ORDERED);
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nonnull

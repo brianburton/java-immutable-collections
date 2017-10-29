@@ -39,7 +39,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
-import java.util.Spliterator;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
@@ -82,7 +81,4 @@ public interface JImmutableStack<T>
      * @return List containing the elements of this stack in order
      */
     List<T> makeList();
-
-    @Nonnull
-    Spliterator<T> spliterator();
 }

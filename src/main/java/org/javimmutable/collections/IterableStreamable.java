@@ -23,12 +23,16 @@ public interface IterableStreamable<T>
     SplitableIterator<T> iterator();
 
     /**
-     * Overridden here to require implementations to create a proper spliterator() rather
-     * than allowing the default, non-optimized implementation to be inherited from Iterable.
+     * @return characteristics value used when creating Spliterators
      */
+    int getSpliteratorCharacteristics();
+
     @Nonnull
     @Override
-    Spliterator<T> spliterator();
+    default Spliterator<T> spliterator()
+    {
+        return iterator().spliterator(getSpliteratorCharacteristics());
+    }
 
     @Nonnull
     default Stream<T> stream()

@@ -38,6 +38,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
@@ -51,7 +52,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Spliterator;
 
 /**
  * Singly linked list implementation of JImmutableStack that stores and retrieves values
@@ -109,11 +109,10 @@ public abstract class JImmutableLinkedStack
             return getTail();
         }
 
-        @Nonnull
         @Override
-        public Spliterator<V> spliterator()
+        public int getSpliteratorCharacteristics()
         {
-            return iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
+            return StreamConstants.SPLITERATOR_ORDERED;
         }
 
         public List<V> makeList()

@@ -54,7 +54,6 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableSetMap<K, V>
@@ -373,11 +372,10 @@ public abstract class AbstractJImmutableSetMap<K, V>
         return contents.iterator();
     }
 
-    @Nonnull
     @Override
-    public Spliterator<JImmutableMap.Entry<K, JImmutableSet<V>>> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return contents.spliterator();
+        return contents.getSpliteratorCharacteristics();
     }
 
     @Nonnull

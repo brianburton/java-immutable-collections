@@ -55,7 +55,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableMultiset<T>
@@ -550,6 +549,12 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
+    public int getSpliteratorCharacteristics()
+    {
+        return map.getSpliteratorCharacteristics();
+    }
+
+    @Override
     @Nonnull
     public Cursor<T> occurrenceCursor()
     {
@@ -576,11 +581,10 @@ public abstract class AbstractJImmutableMultiset<T>
                 return LazyMultiIterator.transformed(map.iterator(), e -> () -> IndexedIterator.iterator(IndexedHelper.repeating(e.getKey(), e.getValue())));
             }
 
-            @Nonnull
             @Override
-            public Spliterator<T> spliterator()
+            public int getSpliteratorCharacteristics()
             {
-                return iterator().spliterator(map.spliterator().characteristics());
+                return map.getSpliteratorCharacteristics();
             }
         };
     }
@@ -590,13 +594,6 @@ public abstract class AbstractJImmutableMultiset<T>
     public Cursor<T> cursor()
     {
         return map.keysCursor();
-    }
-
-    @Nonnull
-    @Override
-    public Spliterator<T> spliterator()
-    {
-        return map.keys().spliterator();
     }
 
     @Override

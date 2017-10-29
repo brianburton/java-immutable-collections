@@ -6,7 +6,6 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
-import java.util.Spliterator;
 
 /**
  * Streamable implementation that creates Streams using Cursors provided by a factory method.
@@ -31,10 +30,9 @@ public class CursorStreamable<T>
         return IteratorAdaptor.of(cursorFactory.apply());
     }
 
-    @Nonnull
     @Override
-    public Spliterator<T> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return new CursorSpliterator<>(characteristics, cursorFactory.apply());
+        return characteristics;
     }
 }

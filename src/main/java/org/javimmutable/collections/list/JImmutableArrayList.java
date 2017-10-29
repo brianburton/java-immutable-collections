@@ -41,6 +41,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
 
@@ -50,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
 
 /**
  * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
@@ -89,13 +89,13 @@ public class JImmutableArrayList<T>
     public static <T> JImmutableArrayList<T> of(Indexed<? extends T> source)
     {
         final Node<T> root = BranchNode.of(source);
-        return root.isEmpty() ? (JImmutableArrayList<T>)EMPTY : new JImmutableArrayList<T>(root);
+        return root.isEmpty() ? (JImmutableArrayList<T>)EMPTY : new JImmutableArrayList<>(root);
     }
 
     @Nonnull
     public static <T> Builder<T> builder()
     {
-        return new Builder<T>();
+        return new Builder<>();
     }
 
     @Override
@@ -115,14 +115,14 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> assign(int index,
                                          @Nullable T value)
     {
-        return new JImmutableArrayList<T>(root.assign(index, value));
+        return new JImmutableArrayList<>(root.assign(index, value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insert(@Nullable T value)
     {
-        return new JImmutableArrayList<T>(root.insertLast(value));
+        return new JImmutableArrayList<>(root.insertLast(value));
     }
 
     @Nonnull
@@ -133,21 +133,21 @@ public class JImmutableArrayList<T>
         for (T value : values) {
             newRoot = newRoot.insertLast(value);
         }
-        return new JImmutableArrayList<T>(newRoot);
+        return new JImmutableArrayList<>(newRoot);
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertFirst(@Nullable T value)
     {
-        return new JImmutableArrayList<T>(root.insertFirst(value));
+        return new JImmutableArrayList<>(root.insertFirst(value));
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertLast(@Nullable T value)
     {
-        return new JImmutableArrayList<T>(root.insertLast(value));
+        return new JImmutableArrayList<>(root.insertLast(value));
     }
 
     @Nonnull
@@ -189,7 +189,7 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
     {
-        ArrayList<T> temp = new ArrayList<T>(values.size());
+        ArrayList<T> temp = new ArrayList<>(values.size());
         temp.addAll(values);
         return insertAllFirstReverse(temp);
     }
@@ -205,7 +205,7 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
-        ArrayList<T> temp = new ArrayList<T>();
+        ArrayList<T> temp = new ArrayList<>();
         while (values.hasNext()) {
             temp.add(values.next());
         }
@@ -218,7 +218,7 @@ public class JImmutableArrayList<T>
         for (int x = temp.size() - 1; x >= 0; x--) {
             newRoot = newRoot.insertFirst(temp.get(x));
         }
-        return new JImmutableArrayList<T>(newRoot);
+        return new JImmutableArrayList<>(newRoot);
     }
 
     @Nonnull
@@ -250,7 +250,7 @@ public class JImmutableArrayList<T>
         while (values.hasNext()) {
             newRoot = newRoot.insertLast(values.next());
         }
-        return new JImmutableArrayList<T>(newRoot);
+        return new JImmutableArrayList<>(newRoot);
     }
 
 
@@ -261,7 +261,7 @@ public class JImmutableArrayList<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new JImmutableArrayList<T>(root.deleteFirst());
+        return new JImmutableArrayList<>(root.deleteFirst());
     }
 
     @Nonnull
@@ -271,7 +271,7 @@ public class JImmutableArrayList<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new JImmutableArrayList<T>(root.deleteLast());
+        return new JImmutableArrayList<>(root.deleteLast());
     }
 
     @Override
@@ -309,10 +309,9 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    @Nonnull
-    public Spliterator<T> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return root.iterator().spliterator(Spliterator.IMMUTABLE | Spliterator.ORDERED);
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Override
@@ -362,7 +361,7 @@ public class JImmutableArrayList<T>
         public JImmutableArrayList<T> build()
         {
             final Node<T> node = builder.build();
-            return node.isEmpty() ? JImmutableArrayList.<T>of() : new JImmutableArrayList<T>(node);
+            return node.isEmpty() ? JImmutableArrayList.of() : new JImmutableArrayList<>(node);
         }
 
         @Nonnull

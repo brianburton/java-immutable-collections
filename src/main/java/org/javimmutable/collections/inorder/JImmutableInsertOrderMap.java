@@ -175,7 +175,7 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Override
-    protected int getSpliteratorCharacteristics()
+    public int getSpliteratorCharacteristics()
     {
         return SPLITERATOR_ORDERED;
     }

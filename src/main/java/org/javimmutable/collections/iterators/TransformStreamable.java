@@ -5,10 +5,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class TransformStreamable<S, T>
     implements IterableStreamable<T>
@@ -46,60 +43,9 @@ public class TransformStreamable<S, T>
         return TransformIterator.of(source.iterator(), transforminator);
     }
 
-    @Nonnull
     @Override
-    public Spliterator<T> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return new SpliteratorImpl(source.spliterator());
-    }
-
-    @Nonnull
-    @Override
-    public Stream<T> stream()
-    {
-        return source.stream().map(transforminator);
-    }
-
-    @Nonnull
-    @Override
-    public Stream<T> parallelStream()
-    {
-        return source.parallelStream().map(transforminator);
-    }
-
-    private class SpliteratorImpl
-        implements Spliterator<T>
-    {
-        private final Spliterator<S> source;
-
-        private SpliteratorImpl(Spliterator<S> source)
-        {
-            this.source = source;
-        }
-
-        @Override
-        public boolean tryAdvance(Consumer<? super T> action)
-        {
-            return source.tryAdvance(value -> action.accept(transforminator.apply(value)));
-        }
-
-        @Override
-        public Spliterator<T> trySplit()
-        {
-            final Spliterator<S> split = source.trySplit();
-            return split == null ? null : new SpliteratorImpl(split);
-        }
-
-        @Override
-        public long estimateSize()
-        {
-            return source.estimateSize();
-        }
-
-        @Override
-        public int characteristics()
-        {
-            return source.characteristics();
-        }
+        return source.getSpliteratorCharacteristics();
     }
 }

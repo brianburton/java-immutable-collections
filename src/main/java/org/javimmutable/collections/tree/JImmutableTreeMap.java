@@ -193,7 +193,7 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
-    protected int getSpliteratorCharacteristics()
+    public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_ORDERED;
     }

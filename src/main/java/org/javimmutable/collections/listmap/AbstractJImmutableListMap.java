@@ -49,7 +49,6 @@ import org.javimmutable.collections.list.JImmutableArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Spliterator;
 
 @Immutable
 public abstract class AbstractJImmutableListMap<K, V>
@@ -156,11 +155,10 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.iterator();
     }
 
-    @Nonnull
     @Override
-    public Spliterator<JImmutableMap.Entry<K, JImmutableList<V>>> spliterator()
+    public int getSpliteratorCharacteristics()
     {
-        return contents.spliterator();
+        return contents.getSpliteratorCharacteristics();
     }
 
     @Nullable
