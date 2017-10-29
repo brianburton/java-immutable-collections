@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections;
 
+import java.util.function.Function;
+
 /**
  * Interface for functions that take a single parameter.
- *
- * @param <P>
- * @param <R>
  */
 public interface Func1<P, R>
+    extends Function<P, R>
 {
     R apply(P value);
 }

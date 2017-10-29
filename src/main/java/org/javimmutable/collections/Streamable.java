@@ -12,6 +12,10 @@ public interface Streamable<T>
     extends Iterable<T>
 {
     @Nonnull
+    @Override
+    SplitableIterator<T> iterator();
+
+    @Nonnull
     default Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);

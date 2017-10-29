@@ -1,29 +1,29 @@
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.function.Function;
 
 @Immutable
 public class TransformIterator<S, T>
     extends AbstractSplitableIterator<T>
 {
-    private final Func1<S, T> transforminator;
+    private final Function<S, T> transforminator;
     private final SplitableIterator<S> source;
 
     private TransformIterator(@Nonnull SplitableIterator<S> source,
-                              @Nonnull Func1<S, T> transforminator)
+                              @Nonnull Function<S, T> transforminator)
     {
         this.transforminator = transforminator;
         this.source = source;
     }
 
     public static <S, T> TransformIterator<S, T> of(@Nonnull SplitableIterator<S> source,
-                                                    @Nonnull Func1<S, T> transforminator)
+                                                    @Nonnull Function<S, T> transforminator)
     {
         return new TransformIterator<>(source, transforminator);
     }

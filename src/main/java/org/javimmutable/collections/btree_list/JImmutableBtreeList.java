@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.cursors.Cursors;
@@ -60,7 +61,7 @@ import java.util.Spliterator;
 public class JImmutableBtreeList<T>
     implements JImmutableRandomAccessList<T>
 {
-    private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<Object>(BtreeEmptyNode.of());
+    private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<>(BtreeEmptyNode.of());
 
     private final BtreeNode<T> root;
 
@@ -72,7 +73,7 @@ public class JImmutableBtreeList<T>
 
     public static <T> Builder<T> builder()
     {
-        return new Builder<T>();
+        return new Builder<>();
     }
 
     @Nonnull
@@ -84,10 +85,10 @@ public class JImmutableBtreeList<T>
         }
 
         if (nodeCount <= BtreeNode.MAX_CHILDREN) {
-            return new JImmutableBtreeList<T>(BtreeLeafNode.of(values, 0, nodeCount));
+            return new JImmutableBtreeList<>(BtreeLeafNode.of(values, 0, nodeCount));
         }
 
-        final List<BtreeNode<T>> nodes = new ArrayList<BtreeNode<T>>();
+        final List<BtreeNode<T>> nodes = new ArrayList<>();
         int remaining = nodeCount;
         int offset = 0;
         while (remaining > 0) {
@@ -127,7 +128,7 @@ public class JImmutableBtreeList<T>
             nodeCount = branchCount;
         }
 
-        return new JImmutableBtreeList<T>(nodes.get(0));
+        return new JImmutableBtreeList<>(nodes.get(0));
     }
 
     private JImmutableBtreeList(BtreeNode<T> root)
@@ -138,9 +139,9 @@ public class JImmutableBtreeList<T>
     private JImmutableBtreeList<T> create(BtreeInsertResult<T> insertResult)
     {
         if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
-            return new JImmutableBtreeList<T>(insertResult.newNode);
+            return new JImmutableBtreeList<>(insertResult.newNode);
         } else {
-            return new JImmutableBtreeList<T>(new BtreeBranchNode<T>(insertResult.newNode, insertResult.extraNode));
+            return new JImmutableBtreeList<>(new BtreeBranchNode<>(insertResult.newNode, insertResult.extraNode));
         }
     }
 
@@ -156,7 +157,7 @@ public class JImmutableBtreeList<T>
             }
             newRoot = child;
         }
-        return new JImmutableBtreeList<T>(newRoot);
+        return new JImmutableBtreeList<>(newRoot);
     }
 
     @Nonnull
@@ -167,7 +168,7 @@ public class JImmutableBtreeList<T>
         if (index < 0) {
             throw new IndexOutOfBoundsException();
         }
-        return new JImmutableBtreeList<T>(root.assign(index, value));
+        return new JImmutableBtreeList<>(root.assign(index, value));
     }
 
     @Nonnull
@@ -269,11 +270,11 @@ public class JImmutableBtreeList<T>
             if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
                 newRoot = insertResult.newNode;
             } else {
-                newRoot = new BtreeBranchNode<T>(insertResult.newNode, insertResult.extraNode);
+                newRoot = new BtreeBranchNode<>(insertResult.newNode, insertResult.extraNode);
             }
             i++;
         }
-        return new JImmutableBtreeList<T>(newRoot);
+        return new JImmutableBtreeList<>(newRoot);
     }
 
     @Nonnull
@@ -395,7 +396,7 @@ public class JImmutableBtreeList<T>
     @Override
     public List<T> getList()
     {
-        return new ListAdaptor<T>(this);
+        return new ListAdaptor<>(this);
     }
 
     @Nonnull
@@ -407,7 +408,7 @@ public class JImmutableBtreeList<T>
 
     @Override
     @Nonnull
-    public Iterator<T> iterator()
+    public SplitableIterator<T> iterator()
     {
         return root.iterator();
     }
@@ -446,7 +447,7 @@ public class JImmutableBtreeList<T>
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
-        private final List<T> values = new ArrayList<T>();
+        private final List<T> values = new ArrayList<>();
 
         @Nonnull
         @Override

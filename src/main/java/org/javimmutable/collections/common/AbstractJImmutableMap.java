@@ -39,7 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
@@ -130,10 +129,6 @@ public abstract class AbstractJImmutableMap<K, V>
     {
         return TransformStreamable.ofValues(this);
     }
-
-    @Nonnull
-    @Override
-    public abstract SplitableIterator<Entry<K, V>> iterator();
 
     @Override
     public Spliterator<JImmutableMap.Entry<K, V>> spliterator()

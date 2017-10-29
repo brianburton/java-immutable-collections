@@ -1,10 +1,10 @@
 package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 
 import javax.annotation.Nonnull;
-import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,9 +41,9 @@ public class TransformStreamable<S, T>
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
+    public SplitableIterator<T> iterator()
     {
-        return SimpleTransformIterator.of(source.iterator(), transforminator);
+        return TransformIterator.of(source.iterator(), transforminator);
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
@@ -302,7 +303,7 @@ public class JImmutableArrayList<T>
 
     @Override
     @Nonnull
-    public Iterator<T> iterator()
+    public SplitableIterator<T> iterator()
     {
         return root.iterator();
     }

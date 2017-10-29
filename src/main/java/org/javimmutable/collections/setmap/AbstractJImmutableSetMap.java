@@ -43,6 +43,7 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -367,7 +368,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Nonnull
     @Override
-    public Iterator<JImmutableMap.Entry<K, JImmutableSet<V>>> iterator()
+    public SplitableIterator<JImmutableMap.Entry<K, JImmutableSet<V>>> iterator()
     {
         return contents.iterator();
     }

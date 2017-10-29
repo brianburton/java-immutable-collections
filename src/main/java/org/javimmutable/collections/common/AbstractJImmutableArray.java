@@ -42,7 +42,6 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
@@ -116,10 +115,6 @@ public abstract class AbstractJImmutableArray<T>
     {
         return TransformStreamable.ofValues(this);
     }
-
-    @Nonnull
-    @Override
-    public abstract SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator();
 
     @Override
     public Spliterator<JImmutableMap.Entry<Integer, T>> spliterator()

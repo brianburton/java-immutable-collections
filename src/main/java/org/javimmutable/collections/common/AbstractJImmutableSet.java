@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.Cursors;
 
 import javax.annotation.Nonnull;
@@ -354,7 +355,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
+    public SplitableIterator<T> iterator()
     {
         return map.keys().iterator();
     }

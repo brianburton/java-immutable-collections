@@ -41,6 +41,7 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.list.JImmutableArrayList;
@@ -48,7 +49,6 @@ import org.javimmutable.collections.list.JImmutableArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 import java.util.Spliterator;
 
 @Immutable
@@ -151,7 +151,7 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Override
     @Nonnull
-    public Iterator<JImmutableMap.Entry<K, JImmutableList<V>>> iterator()
+    public SplitableIterator<JImmutableMap.Entry<K, JImmutableList<V>>> iterator()
     {
         return contents.iterator();
     }

@@ -103,9 +103,6 @@ public abstract class JImmutableLinkedStack
         public abstract JImmutableStack<V> getTail();
 
         @Nonnull
-        public abstract SplitableIterator<V> iterator();
-
-        @Nonnull
         @Override
         public JImmutableStack<V> remove()
         {

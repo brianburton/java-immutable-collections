@@ -2,10 +2,10 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Streamable;
 
 import javax.annotation.Nonnull;
-import java.util.Iterator;
 import java.util.Spliterator;
 
 /**
@@ -26,9 +26,9 @@ public class CursorStreamable<T>
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
+    public SplitableIterator<T> iterator()
     {
-        return new IteratorAdaptor<>(cursorFactory.apply());
+        return IteratorAdaptor.of(cursorFactory.apply());
     }
 
     @Override

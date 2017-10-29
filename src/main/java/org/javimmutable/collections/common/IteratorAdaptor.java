@@ -36,9 +36,13 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.SplitCursor;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
 
-import java.util.Iterator;
+import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 
 /**
  * Adaptor to traverse a Cursor using the Iterator API.   Evaluation of the Cursor
@@ -46,11 +50,9 @@ import java.util.NoSuchElementException;
  * the hasNext() method is called.  The next() method automatically calls the
  * Cursor's next() method after obtaining the current value to return as its
  * result.  In this way the protocol matches how Iterators behave.
- *
- * @param <T>
  */
 public class IteratorAdaptor<T>
-        implements Iterator<T>
+    implements SplitableIterator<T>
 {
     private boolean starting;
     private Cursor<T> cursor;
@@ -87,6 +89,30 @@ public class IteratorAdaptor<T>
     public void remove()
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSplitAllowed()
+    {
+        return cursor.isSplitAllowed();
+    }
+
+    @Nonnull
+    @Override
+    public SplitIterator<T> splitIterator()
+    {
+        if (!cursor.isSplitAllowed()) {
+            throw new UnsupportedOperationException();
+        }
+        final SplitCursor<T> split = cursor.splitCursor();
+        return new SplitIterator<>(IteratorAdaptor.of(split.getLeft()), IteratorAdaptor.of(split.getRight()));
+    }
+
+    @Nonnull
+    @Override
+    public Spliterator<T> spliterator(int characteristics)
+    {
+        return new CursorSpliterator<>(characteristics, cursor);
     }
 
     private void start()
