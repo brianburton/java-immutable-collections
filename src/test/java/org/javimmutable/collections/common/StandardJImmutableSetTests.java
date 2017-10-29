@@ -93,7 +93,7 @@ public final class StandardJImmutableSetTests
         // intersect with larger set
         jet = template.union(values);
         final List<Integer> withExtra = Arrays.asList(0, 1, 2, 3, 4, 5);
-        Set<Integer> intersectionSet = new HashSet<Integer>(withExtra);
+        Set<Integer> intersectionSet = new HashSet<>(withExtra);
         JImmutableSet<Integer> intersectionJet = template.union(withExtra);
         verifyContents(jet.intersection(IterableCursorable.of(withExtra)), values);
         verifyContents(jet.intersection(withExtra), values);
@@ -104,7 +104,7 @@ public final class StandardJImmutableSetTests
 
         // intersect with smaller set
         jet = template.union(withExtra);
-        intersectionSet = new HashSet<Integer>(values);
+        intersectionSet = new HashSet<>(values);
         intersectionJet = template.union(values);
         verifyContents(jet.intersection(IterableCursorable.of(values)), values);
         verifyContents(jet.intersection(values), values);
@@ -123,7 +123,7 @@ public final class StandardJImmutableSetTests
         verifyContents(template.intersection(intersectionSet), empty);
 
         // non-empty set intersection with empty set
-        intersectionSet = new HashSet<Integer>();
+        intersectionSet = new HashSet<>();
         intersectionJet = template;
         verifyContents(jet.intersection(IterableCursorable.of(empty)), empty);
         verifyContents(jet.intersection(empty), empty);
@@ -228,7 +228,7 @@ public final class StandardJImmutableSetTests
         assertEquals(true, set2.contains(400));
         assertEquals(true, set2.containsAny(expected));
         assertEquals(true, set2.containsAll(expected));
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300, 400)), set2.getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 200, 300, 400)), set2.getSet());
 
         assertEquals(set, set.intersection(set2));
         assertEquals(set, set2.intersection(set));
@@ -256,7 +256,7 @@ public final class StandardJImmutableSetTests
         assertEquals(true, set2.containsAny(set));
         assertEquals(true, set2.containsAll(expected));
         assertEquals(true, set2.containsAll(set));
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300, 400)), set2.getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 200, 300, 400)), set2.getSet());
 
         set2 = set2.deleteAll(set);
 
@@ -275,7 +275,7 @@ public final class StandardJImmutableSetTests
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 200, 300, 400, 500, 600)), set3.getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 200, 300, 400, 500, 600)), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -288,12 +288,12 @@ public final class StandardJImmutableSetTests
     private static void verifyIntersectionOrder(JImmutableSet<Integer> template)
     {
         JImmutableSet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
-        final List<Integer> expected = new ArrayList<Integer>();
+        final List<Integer> expected = new ArrayList<>();
         expected.addAll(jet.getSet());
         StandardCursorTest.listCursorTest(expected, jet.cursor());
 
         JImmutableSet<Integer> diffOrder = JImmutableInsertOrderSet.<Integer>of().insert(400).insert(0).insert(600)
-                .insert(100).insert(50).insert(100);
+            .insert(100).insert(50).insert(100);
         //Cursorable
         jet = jet.intersection(IterableCursorable.of(diffOrder));
         StandardCursorTest.listCursorTest(expected, jet.cursor());
@@ -315,7 +315,7 @@ public final class StandardJImmutableSetTests
 
         //intersection(Jet)
         //empty into empty
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         verifyContents(template.intersection(multi), expected);
 
         //values into empty
@@ -347,7 +347,7 @@ public final class StandardJImmutableSetTests
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            Set<Integer> expected = new HashSet<Integer>();
+            Set<Integer> expected = new HashSet<>();
             JImmutableSet<Integer> set = template;
 
             for (int loops = 0; loops < (4 * size); ++loops) {
@@ -425,5 +425,7 @@ public final class StandardJImmutableSetTests
             assertEquals(true, jet.containsAny(IterableCursor.of(subset)));
             assertEquals(true, jet.containsAny(subset.iterator()));
         }
+
+        StandardIterableStreamableTests.verifyUnorderedUsingCollection(expected, jet);
     }
 }

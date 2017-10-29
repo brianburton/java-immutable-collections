@@ -38,6 +38,7 @@ package org.javimmutable.collections.inorder;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
@@ -53,7 +54,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 
 public class JImmutableInsertOrderSetTest
     extends TestCase
@@ -254,7 +254,7 @@ public class JImmutableInsertOrderSetTest
     public void testStreams()
     {
         JImmutableSet<Integer> mset = JImmutableInsertOrderSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
-        assertEquals(asList(4, 3, 2, 1), mset.stream().collect(toList()));
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(4, 3, 2, 1), mset);
     }
 
     private List<String> iterToList(Iterable<String> source)

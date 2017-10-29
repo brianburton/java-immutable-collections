@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -53,7 +54,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 
 public class JImmutableTreeSetTest
     extends TestCase
@@ -298,7 +298,7 @@ public class JImmutableTreeSetTest
     public void testStreams()
     {
         JImmutableSet<Integer> mset = JImmutableTreeSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
-        assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
     }
     
     private List<String> iterToList(Iterable<String> source)
