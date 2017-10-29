@@ -46,6 +46,7 @@ public class TransformStreamable<S, T>
         return TransformIterator.of(source.iterator(), transforminator);
     }
 
+    @Nonnull
     @Override
     public Spliterator<T> spliterator()
     {

@@ -568,6 +568,7 @@ public abstract class AbstractJImmutableMultiset<T>
         return map.keysCursor();
     }
 
+    @Nonnull
     @Override
     public Spliterator<T> spliterator()
     {

@@ -156,6 +156,7 @@ public abstract class AbstractJImmutableListMap<K, V>
         return contents.iterator();
     }
 
+    @Nonnull
     @Override
     public Spliterator<JImmutableMap.Entry<K, JImmutableList<V>>> spliterator()
     {

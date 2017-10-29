@@ -360,6 +360,7 @@ public abstract class AbstractJImmutableSet<T>
         return map.keys().iterator();
     }
 
+    @Nonnull
     @Override
     public Spliterator<T> spliterator()
     {

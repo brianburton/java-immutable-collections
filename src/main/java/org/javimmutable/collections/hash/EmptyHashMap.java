@@ -120,6 +120,7 @@ public class EmptyHashMap<K, V>
         return EmptyIterator.of();
     }
 
+    @Nonnull
     @Override
     public Spliterator<Entry<K, V>> spliterator()
     {

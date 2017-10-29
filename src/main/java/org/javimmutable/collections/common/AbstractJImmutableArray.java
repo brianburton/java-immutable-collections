@@ -116,6 +116,7 @@ public abstract class AbstractJImmutableArray<T>
         return TransformStreamable.ofValues(this);
     }
 
+    @Nonnull
     @Override
     public Spliterator<JImmutableMap.Entry<Integer, T>> spliterator()
     {

@@ -130,6 +130,7 @@ public abstract class AbstractJImmutableMap<K, V>
         return TransformStreamable.ofValues(this);
     }
 
+    @Nonnull
     @Override
     public Spliterator<JImmutableMap.Entry<K, V>> spliterator()
     {

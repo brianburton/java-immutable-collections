@@ -31,6 +31,7 @@ public class CursorStreamable<T>
         return IteratorAdaptor.of(cursorFactory.apply());
     }
 
+    @Nonnull
     @Override
     public Spliterator<T> spliterator()
     {
