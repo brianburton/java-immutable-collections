@@ -37,7 +37,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
-import org.javimmutable.collections.iterators.SplitableIterable;
+import org.javimmutable.collections.SplitableIterable;
 
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions

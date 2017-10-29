@@ -37,12 +37,12 @@ package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 

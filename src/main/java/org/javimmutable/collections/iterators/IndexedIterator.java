@@ -1,6 +1,7 @@
 package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitIterator;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;

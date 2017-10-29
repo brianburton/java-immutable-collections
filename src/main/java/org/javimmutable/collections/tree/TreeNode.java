@@ -39,8 +39,8 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.iterators.SplitableIterable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

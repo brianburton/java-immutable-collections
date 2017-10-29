@@ -41,9 +41,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.AbstractSplitableIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

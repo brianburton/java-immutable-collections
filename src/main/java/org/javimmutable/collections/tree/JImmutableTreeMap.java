@@ -37,11 +37,11 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

@@ -1,6 +1,9 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.common.IndexedList;
 

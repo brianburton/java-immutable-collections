@@ -2,6 +2,8 @@ package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

@@ -36,10 +36,10 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

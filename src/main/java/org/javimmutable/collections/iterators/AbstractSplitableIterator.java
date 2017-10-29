@@ -1,5 +1,8 @@
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
+
 import javax.annotation.Nonnull;
 import java.util.Spliterator;
 import java.util.function.Consumer;

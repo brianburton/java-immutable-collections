@@ -40,11 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

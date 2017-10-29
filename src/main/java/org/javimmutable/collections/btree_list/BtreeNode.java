@@ -37,8 +37,8 @@ package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.iterators.SplitableIterable;
 
 import javax.annotation.Nonnull;
 

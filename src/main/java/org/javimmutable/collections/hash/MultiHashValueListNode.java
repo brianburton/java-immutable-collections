@@ -40,11 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.EmptySequence;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.iterators.SequenceIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

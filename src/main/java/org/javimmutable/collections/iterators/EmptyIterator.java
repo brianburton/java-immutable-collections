@@ -1,5 +1,7 @@
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.SplitableIterator;
+
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;

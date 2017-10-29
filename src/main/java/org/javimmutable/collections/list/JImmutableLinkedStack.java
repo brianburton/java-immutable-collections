@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
@@ -44,7 +45,6 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

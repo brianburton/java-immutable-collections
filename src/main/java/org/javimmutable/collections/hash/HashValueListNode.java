@@ -38,8 +38,8 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.iterators.SplitableIterable;
 
 public interface HashValueListNode<K, V>
     extends Cursorable<JImmutableMap.Entry<K, V>>,

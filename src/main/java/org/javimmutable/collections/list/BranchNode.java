@@ -39,11 +39,11 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
-import org.javimmutable.collections.iterators.SplitableIterable;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

@@ -1,4 +1,4 @@
-package org.javimmutable.collections.iterators;
+package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;

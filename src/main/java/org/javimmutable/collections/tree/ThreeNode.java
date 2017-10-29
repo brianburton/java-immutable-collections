@@ -38,10 +38,10 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
-import org.javimmutable.collections.iterators.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
