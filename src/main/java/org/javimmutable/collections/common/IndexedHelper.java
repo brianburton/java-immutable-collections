@@ -37,6 +37,10 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Provides a number of static utility methods for producing Indexed objects
  * from raw values.  Useful when you need an Indexed but don't have or want
@@ -48,6 +52,7 @@ public class IndexedHelper
     {
     }
 
+    @Nonnull
     public static <T> Indexed<T> empty()
     {
         return new Indexed<T>()
@@ -70,6 +75,7 @@ public class IndexedHelper
      * Returns an Indexed containing a single value.
      * Note that the type of the Indexed may be a subclass of the type of the value.
      */
+    @Nonnull
     public static <T, V extends T> Indexed<T> indexed(V a)
     {
         return new Indexed<T>()
@@ -97,6 +103,7 @@ public class IndexedHelper
      * Returns an Indexed containing two values.
      * Note that the type of the Indexed may be a subclass of the type of the value.
      */
+    @Nonnull
     public static <T, V extends T> Indexed<T> indexed(V a,
                                                       V b)
     {
@@ -127,6 +134,7 @@ public class IndexedHelper
      * Returns an Indexed containing three values.
      * Note that the type of the Indexed may be a subclass of the type of the value.
      */
+    @Nonnull
     public static <T, V extends T> Indexed<T> indexed(V a,
                                                       V b,
                                                       V c)
@@ -156,6 +164,7 @@ public class IndexedHelper
         };
     }
 
+    @Nonnull
     public static <T> Indexed<T> repeating(T value,
                                            int count)
     {
@@ -177,5 +186,18 @@ public class IndexedHelper
                 return count;
             }
         };
+    }
+
+    /**
+     * Creates a mutable List containing all values from the Indexed.
+     */
+    @Nonnull
+    public static <T> List<T> asList(@Nonnull Indexed<T> indexed)
+    {
+        final List<T> answer = new ArrayList<>(indexed.size());
+        for (int i = 0; i < indexed.size(); ++i) {
+            answer.add(indexed.get(i));
+        }
+        return answer;
     }
 }
