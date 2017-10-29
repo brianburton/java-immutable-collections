@@ -585,6 +585,14 @@ public interface JImmutableMultiset<T>
     IterableStreamable<JImmutableMap.Entry<T, Integer>> entries();
 
     /**
+     * Streamable that iterates through each occurrence in the multiset the correct number of times.
+     *
+     * @return Streamable that behaves as if multiset was a list
+     */
+    @Nonnull
+    IterableStreamable<T> occurrences();
+
+    /**
      * Returns the number of occurrences associated with the specified value. If the value is not
      * contained in the multiset, 0 is returned.
      *

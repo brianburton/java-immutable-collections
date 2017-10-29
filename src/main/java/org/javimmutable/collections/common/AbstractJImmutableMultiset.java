@@ -45,6 +45,8 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -559,6 +561,28 @@ public abstract class AbstractJImmutableMultiset<T>
     public IterableStreamable<JImmutableMap.Entry<T, Integer>> entries()
     {
         return map;
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<T> occurrences()
+    {
+        return new IterableStreamable<T>()
+        {
+            @Nonnull
+            @Override
+            public SplitableIterator<T> iterator()
+            {
+                return LazyMultiIterator.transformed(map.iterator(), e -> () -> IndexedIterator.iterator(IndexedHelper.repeating(e.getKey(), e.getValue())));
+            }
+
+            @Nonnull
+            @Override
+            public Spliterator<T> spliterator()
+            {
+                return iterator().spliterator(map.spliterator().characteristics());
+            }
+        };
     }
 
     @Override

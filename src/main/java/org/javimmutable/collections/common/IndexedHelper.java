@@ -155,4 +155,27 @@ public class IndexedHelper
             }
         };
     }
+
+    public static <T> Indexed<T> repeating(T value,
+                                           int count)
+    {
+        return new Indexed<T>()
+        {
+            @Override
+            public T get(int index)
+            {
+                if (index < 0 || index >= count) {
+                    throw new ArrayIndexOutOfBoundsException();
+                } else {
+                    return value;
+                }
+            }
+
+            @Override
+            public int size()
+            {
+                return count;
+            }
+        };
+    }
 }
