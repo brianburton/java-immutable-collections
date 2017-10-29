@@ -49,7 +49,7 @@ import java.util.Set;
 public interface JImmutableSetMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>>,
             Mapped<K, JImmutableSet<V>>,
-            Streamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
+            IterableStreamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
             Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
             InvariantCheckable
 {
@@ -357,7 +357,7 @@ public interface JImmutableSetMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    Streamable<K> keys();
+    IterableStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the specified key's set.
@@ -366,5 +366,5 @@ public interface JImmutableSetMap<K, V>
      * @return a (possibly empty) Streamable for traversing the values associated with key
      */
     @Nonnull
-    Streamable<V> values(@Nonnull K key);
+    IterableStreamable<V> values(@Nonnull K key);
 }

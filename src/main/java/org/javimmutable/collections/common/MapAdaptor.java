@@ -36,9 +36,9 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
@@ -245,7 +245,7 @@ public class MapAdaptor<K, V>
             }
 
             @Nonnull
-            private Streamable<Entry<K, V>> streamable()
+            private IterableStreamable<Entry<K, V>> streamable()
             {
                 return TransformStreamable.of(map, e -> MapEntry.of(e));
             }

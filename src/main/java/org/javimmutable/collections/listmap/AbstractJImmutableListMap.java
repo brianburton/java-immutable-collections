@@ -38,11 +38,11 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Insertable;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
@@ -123,14 +123,14 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Nonnull
     @Override
-    public Streamable<K> keys()
+    public IterableStreamable<K> keys()
     {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public Streamable<V> values(@Nonnull K key)
+    public IterableStreamable<V> values(@Nonnull K key)
     {
         return getList(key);
     }

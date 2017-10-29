@@ -37,9 +37,9 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Insertable;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
@@ -118,14 +118,14 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public Streamable<K> keys()
+    public IterableStreamable<K> keys()
     {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public Streamable<V> values()
+    public IterableStreamable<V> values()
     {
         return TransformStreamable.ofValues(this);
     }

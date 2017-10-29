@@ -48,7 +48,7 @@ import java.util.Map;
 public interface JImmutableMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>>,
             Mapped<K, V>,
-            Streamable<JImmutableMap.Entry<K, V>>,
+            IterableStreamable<JImmutableMap.Entry<K, V>>,
             Cursorable<JImmutableMap.Entry<K, V>>,
             InvariantCheckable
 {
@@ -180,11 +180,11 @@ public interface JImmutableMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    Streamable<K> keys();
+    IterableStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the Map's values.
      */
     @Nonnull
-    Streamable<V> values();
+    IterableStreamable<V> values();
 }

@@ -2,8 +2,8 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Streamable;
 
 import javax.annotation.Nonnull;
 import java.util.Spliterator;
@@ -12,7 +12,7 @@ import java.util.Spliterator;
  * Streamable implementation that creates Streams using Cursors provided by a factory method.
  */
 public class CursorStreamable<T>
-    implements Streamable<T>
+    implements IterableStreamable<T>
 {
     private final int characteristics;
     private final Func0<Cursor<T>> cursorFactory;

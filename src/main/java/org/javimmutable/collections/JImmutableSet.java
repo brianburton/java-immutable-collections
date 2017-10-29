@@ -50,7 +50,7 @@ import java.util.Set;
 public interface JImmutableSet<T>
     extends Insertable<T>,
             Cursorable<T>,
-            Streamable<T>,
+            IterableStreamable<T>,
             InvariantCheckable
 {
     /**

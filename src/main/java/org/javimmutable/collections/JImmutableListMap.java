@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 public interface JImmutableListMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>>,
             Mapped<K, JImmutableList<V>>,
-            Streamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+            IterableStreamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             InvariantCheckable
 {
@@ -133,7 +133,7 @@ public interface JImmutableListMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    Streamable<K> keys();
+    IterableStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the specified key's list.
@@ -142,5 +142,5 @@ public interface JImmutableListMap<K, V>
      * @return a (possibly empty) Streamable for traversing the values associated with key
      */
     @Nonnull
-    Streamable<V> values(@Nonnull K key);
+    IterableStreamable<V> values(@Nonnull K key);
 }

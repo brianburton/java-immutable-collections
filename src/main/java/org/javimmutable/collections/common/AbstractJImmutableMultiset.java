@@ -37,11 +37,11 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -556,7 +556,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Nonnull
     @Override
-    public Streamable<JImmutableMap.Entry<T, Integer>> entries()
+    public IterableStreamable<JImmutableMap.Entry<T, Integer>> entries()
     {
         return map;
     }

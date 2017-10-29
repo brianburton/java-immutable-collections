@@ -36,10 +36,10 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
@@ -243,7 +243,7 @@ public class ArrayToMapAdaptor<T>
             }
 
             @Nonnull
-            private Streamable<Entry<Integer, T>> streamable()
+            private IterableStreamable<Entry<Integer, T>> streamable()
             {
                 return TransformStreamable.of(map, e -> MapEntry.of(e));
             }

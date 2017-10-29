@@ -54,7 +54,7 @@ public interface JImmutableList<T>
     extends Insertable<T>,
             Indexed<T>,
             Cursorable<T>,
-            Streamable<T>,
+            IterableStreamable<T>,
             InvariantCheckable
 {
     interface Builder<T>

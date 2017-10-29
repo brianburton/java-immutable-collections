@@ -582,7 +582,7 @@ public interface JImmutableMultiset<T>
      * @return Streamable of JImmutableMap.Entries
      */
     @Nonnull
-    Streamable<JImmutableMap.Entry<T, Integer>> entries();
+    IterableStreamable<JImmutableMap.Entry<T, Integer>> entries();
 
     /**
      * Returns the number of occurrences associated with the specified value. If the value is not

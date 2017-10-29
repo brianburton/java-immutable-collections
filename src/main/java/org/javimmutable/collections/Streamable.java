@@ -2,28 +2,27 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
- * Interface for classes that can produce java.util.Streams.   Extends Iterable so that the default implementations
- * can use spliterator() method defined there.
+ * Interface for objects that can produce a Stream on demand.  This interface only requires implementation
+ * of a stream() method so it can easily be used with lambdas.
+ * @param <T>
  */
 public interface Streamable<T>
-    extends Iterable<T>
 {
+    /**
+     * Produce a Stream supporting non-parallel computations.
+     */
     @Nonnull
-    @Override
-    SplitableIterator<T> iterator();
+    Stream<T> stream();
 
-    @Nonnull
-    default Stream<T> stream()
-    {
-        return StreamSupport.stream(spliterator(), false);
-    }
-
+    /**
+     * Produce a Stream for use in parallel computations if possible.   Might return a non-parallel stream
+     * if the underlying class does not support splitting the stream.
+     */
     @Nonnull
     default Stream<T> parallelStream()
     {
-        return StreamSupport.stream(spliterator(), true);
+        return stream();
     }
 }

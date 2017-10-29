@@ -39,10 +39,10 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Insertable;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Streamable;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
@@ -104,14 +104,14 @@ public abstract class AbstractJImmutableArray<T>
 
     @Nonnull
     @Override
-    public Streamable<Integer> keys()
+    public IterableStreamable<Integer> keys()
     {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public Streamable<T> values()
+    public IterableStreamable<T> values()
     {
         return TransformStreamable.ofValues(this);
     }

@@ -54,7 +54,7 @@ import java.util.Map;
 public interface JImmutableArray<T>
     extends Indexed<T>,
             Insertable<JImmutableMap.Entry<Integer, T>>,
-            Streamable<JImmutableMap.Entry<Integer, T>>,
+            IterableStreamable<JImmutableMap.Entry<Integer, T>>,
             Cursorable<JImmutableMap.Entry<Integer, T>>,
             InvariantCheckable
 {
@@ -167,11 +167,11 @@ public interface JImmutableArray<T>
      * Creates a Streamable to access all of the array's keys.
      */
     @Nonnull
-    Streamable<Integer> keys();
+    IterableStreamable<Integer> keys();
 
     /**
      * Creates a Streamable to access all of the array's values.
      */
     @Nonnull
-    Streamable<T> values();
+    IterableStreamable<T> values();
 }
