@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -776,7 +777,7 @@ public class JImmutableBtreeListTest
     public void testInsert()
     {
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         list = list.insert(0);
         expected.add(0);
         for (int i = 1; i <= 1000; ++i) {
@@ -801,7 +802,7 @@ public class JImmutableBtreeListTest
     public void testInsertAtSize()
     {
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         for (int i = 1; i <= 1000; ++i) {
             list = list.insert(list.size(), i);
             expected.add(i);
@@ -818,7 +819,7 @@ public class JImmutableBtreeListTest
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(500);
             JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
                 if ((value % 2) == 0) {
@@ -834,6 +835,8 @@ public class JImmutableBtreeListTest
             assertEquals(expected, list.getList());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < size; ++i) {
@@ -845,6 +848,8 @@ public class JImmutableBtreeListTest
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -859,6 +864,8 @@ public class JImmutableBtreeListTest
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -867,7 +874,7 @@ public class JImmutableBtreeListTest
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
 
             for (int loops = 1; loops <= 200; ++loops) {
@@ -930,6 +937,8 @@ public class JImmutableBtreeListTest
             assertEquals(expected, list.getList());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int n = 0; n < list.size(); ++n) {
@@ -941,6 +950,8 @@ public class JImmutableBtreeListTest
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -952,6 +963,8 @@ public class JImmutableBtreeListTest
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -961,7 +974,7 @@ public class JImmutableBtreeListTest
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(3000);
             JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
                 if (list.isEmpty()) {
@@ -983,6 +996,8 @@ public class JImmutableBtreeListTest
             list.checkInvariants();
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < list.size(); ++i) {
@@ -994,6 +1009,8 @@ public class JImmutableBtreeListTest
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -1005,6 +1022,8 @@ public class JImmutableBtreeListTest
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -1015,7 +1034,7 @@ public class JImmutableBtreeListTest
         for (int loop = 1; loop <= 200; ++loop) {
             int size = 1 + random.nextInt(3000);
             JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             for (int i = 0; i < size; ++i) {
                 List<Integer> values = makeValues(random, size);
                 int index = (list.size() == 0) ? 0 : random.nextInt(list.size());
@@ -1040,6 +1059,8 @@ public class JImmutableBtreeListTest
             assertEquals(expected, list.getList());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             Cursor<Integer> cursor = list.cursor().next();
             for (int i = 0; i < list.size(); ++i) {
@@ -1051,6 +1072,8 @@ public class JImmutableBtreeListTest
             assertEquals(false, cursor.hasValue());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -1062,7 +1085,8 @@ public class JImmutableBtreeListTest
             assertEquals(0, list.size());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
             StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
-
+            StandardCursorTest.indexedIteratorTest(list, list.size(), list.cursor().iterator());
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -1224,7 +1248,7 @@ public class JImmutableBtreeListTest
 
     public void testBuilder()
     {
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         for (int i = 0; i <= 11842; ++i) {
             source.add(i);
             JImmutableBtreeList<Integer> list = JImmutableBtreeList.<Integer>builder().add(source).build();
@@ -1266,7 +1290,7 @@ public class JImmutableBtreeListTest
     private List<Integer> makeValues(Random random,
                                      int size)
     {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             list.add(random.nextInt(size));
         }
