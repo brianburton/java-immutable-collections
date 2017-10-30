@@ -37,6 +37,7 @@ package org.javimmutable.collections.stress_test;
 
 
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.List;
@@ -74,6 +75,6 @@ public abstract class AbstractListStressTestable
     {
         System.out.printf("checking cursor with size %d%n", list.size());
         StandardCursorTest.listCursorTest(expected, list.cursor());
-        StandardCursorTest.listIteratorTest(expected, list.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
     }
 }

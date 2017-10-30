@@ -45,6 +45,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.util.JImmutables;
@@ -117,7 +118,7 @@ public class JImmutableSetMapStressTester
                 }
                 case 2: { //insert(Entry<K, V>)
                     String value = RandomKeyManager.makeValue(tokens, random);
-                    MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
+                    MapEntry<String, String> entry = new MapEntry<>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
                     addAt(expected, key, value);
                     break;
@@ -149,25 +150,25 @@ public class JImmutableSetMapStressTester
                 case 7: { //intersection(K, Cursorable)
                     JImmutableList<String> values = makeIntersectList(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values);
-                    expected.put(key, JImmutables.<String>set());
+                    expected.put(key, JImmutables.set());
                     break;
                 }
                 case 8: { //intersection(K, Collection)
                     JImmutableList<String> values = makeIntersectList(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values.getList());
-                    expected.put(key, JImmutables.<String>set());
+                    expected.put(key, JImmutables.set());
                     break;
                 }
                 case 9: { //intersection(K, JSet)
                     JImmutableSet<String> values = makeIntersectSet(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values);
-                    expected.put(key, JImmutables.<String>set());
+                    expected.put(key, JImmutables.set());
                     break;
                 }
                 case 10: { //intersection(K, Set)
                     JImmutableSet<String> values = makeIntersectSet(tokens, random, key, expected);
                     setmap = setmap.intersection(key, values.getSet());
-                    expected.put(key, JImmutables.<String>set());
+                    expected.put(key, JImmutables.set());
                     break;
                 }
                 default:
@@ -195,7 +196,7 @@ public class JImmutableSetMapStressTester
                 }
                 case 2: { //insert(Entry<K, V>)
                     String value = makeUpdateValue(tokens, random, key, expected);
-                    MapEntry<String, String> entry = new MapEntry<String, String>(key, value);
+                    MapEntry<String, String> entry = new MapEntry<>(key, value);
                     setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
                     addAt(expected, key, value);
                     break;
@@ -341,7 +342,7 @@ public class JImmutableSetMapStressTester
                 }
                 case 5: { //get(K)
                     JImmutableSet<String> set = setmap.get(key);
-                    JImmutableSet<String> expectedSet = (expected.containsKey(key)) ? expected.get(key) : null;
+                    JImmutableSet<String> expectedSet = expected.getOrDefault(key, null);
                     if (!((set == null && expectedSet == null) || (expectedSet != null && expectedSet.equals(set)))) {
                         throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedSet, set));
                     }
@@ -357,7 +358,7 @@ public class JImmutableSetMapStressTester
                 }
                 case 7: { //find(K)
                     Holder<JImmutableSet<String>> holder = setmap.find(key);
-                    Holder<JImmutableSet<String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.<JImmutableSet<String>>of();
+                    Holder<JImmutableSet<String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.of();
                     if (!equivalentHolder(holder, expectedHolder)) {
                         throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
                     }
@@ -422,35 +423,37 @@ public class JImmutableSetMapStressTester
                               final Map<String, JImmutableSet<String>> expected)
     {
         System.out.printf("checking cursor with size %d%n", setmap.size());
-        List<String> keys = new ArrayList<String>();
-        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForCursor = new ArrayList<JImmutableMap.Entry<String, JImmutableSet<String>>>();
-        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForIterator = new ArrayList<JImmutableMap.Entry<String, JImmutableSet<String>>>();
+        List<String> keys = new ArrayList<>();
+        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForCursor = new ArrayList<>();
+        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForIterator = new ArrayList<>();
 
 
         if (setmap instanceof JImmutableHashSetMap) {
             for (JImmutableMap.Entry<String, JImmutableSet<String>> entry : setmap) {
                 keys.add(entry.getKey());
-                entriesForCursor.add(new MapEntry<String, JImmutableSet<String>>(entry.getKey(), entry.getValue()));
+                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
             }
             for (Cursor<JImmutableMap.Entry<String, JImmutableSet<String>>> c = setmap.cursor().start(); c.hasValue(); c = c.next()) {
-                entriesForIterator.add(new MapEntry<String, JImmutableSet<String>>(c.getValue().getKey(), c.getValue().getValue()));
+                entriesForIterator.add(new MapEntry<>(c.getValue().getKey(), c.getValue().getValue()));
             }
         } else {
             keys.addAll(expected.keySet());
             for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
-                entriesForCursor.add(new MapEntry<String, JImmutableSet<String>>(entry.getKey(), entry.getValue()));
+                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
             }
             entriesForIterator = entriesForCursor;
         }
 
         StandardCursorTest.listCursorTest(keys, setmap.keysCursor());
         StandardCursorTest.listCursorTest(entriesForCursor, setmap.cursor());
-        StandardCursorTest.listIteratorTest(entriesForIterator, setmap.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, setmap.keys());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entriesForIterator, setmap);
 
         for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
             List<String> values = asList(entry.getValue());
             StandardCursorTest.listCursorTest(values, setmap.valuesCursor(key));
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(values, setmap.values(key));
         }
     }
 
@@ -459,7 +462,7 @@ public class JImmutableSetMapStressTester
                          String key,
                          Cursorable<String> values)
     {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         expected.put(key, set.union(values));
     }
 
@@ -467,7 +470,7 @@ public class JImmutableSetMapStressTester
                                 String key,
                                 Cursorable<String> values)
     {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         expected.put(key, set.intersection(values));
     }
 
@@ -495,7 +498,7 @@ public class JImmutableSetMapStressTester
                        String key,
                        String value)
     {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         set = set.insert(value);
         expected.put(key, set);
     }
@@ -504,7 +507,7 @@ public class JImmutableSetMapStressTester
                           String key,
                           Cursorable<String> values)
     {
-        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.<String>set();
+        JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         expected.put(key, set.insertAll(values));
     }
 

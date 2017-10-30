@@ -37,6 +37,7 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
@@ -236,14 +237,14 @@ public class JImmutableSetStressTester
             case 0: {//intersection(Cursorable)
                 JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                 set = set.intersection(intersectionValues);
-                expected.retainAll(new HashSet<String>(intersectionValues.getList()));
+                expected.retainAll(new HashSet<>(intersectionValues.getList()));
                 keys.retainAll(intersectionValues);
                 break;
             }
             case 1: { //intersection(Collection)
                 JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                 set = set.intersection(intersectionValues.getList());
-                expected.retainAll(new HashSet<String>(intersectionValues.getList()));
+                expected.retainAll(new HashSet<>(intersectionValues.getList()));
                 keys.retainAll(intersectionValues);
                 break;
             }
@@ -342,9 +343,11 @@ public class JImmutableSetStressTester
             iteratorListTest = asList(set.cursor());
             verifyCursorHasAllExpectedValues(cursorListTest, keys);
             verifyCursorHasAllExpectedValues(iteratorListTest, keys);
+            StandardIterableStreamableTests.verifyUnorderedUsingCollection(expected, set);
         } else {
             cursorListTest = asList(expected);
             iteratorListTest = cursorListTest;
+            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, set);
         }
         StandardCursorTest.listCursorTest(cursorListTest, set.cursor());
         StandardCursorTest.listIteratorTest(iteratorListTest, set.iterator());
@@ -361,12 +364,10 @@ public class JImmutableSetStressTester
     private void verifyCursorHasAllExpectedValues(List<String> cursorKeys,
                                                   RandomKeyManager keys)
     {
-        List<String> expectedValues = new ArrayList<String>();
+        List<String> expectedValues = new ArrayList<>();
         expectedValues.addAll(keys.allAllocatedJList().getList());
-        List<String> actualValues = new ArrayList<String>();
-        for (String value : cursorKeys) {
-            actualValues.add(value);
-        }
+        List<String> actualValues = new ArrayList<>();
+        actualValues.addAll(cursorKeys);
         Collections.sort(expectedValues);
         Collections.sort(actualValues);
         if (!expectedValues.equals(actualValues)) {

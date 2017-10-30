@@ -46,6 +46,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -76,12 +77,12 @@ import java.util.Set;
  * before the multiset is empty.
  */
 public class JImmutableMultisetStressTester
-        extends AbstractSetStressTestable
+    extends AbstractSetStressTestable
 {
     private final JImmutableMultiset<String> multi;
 
     public JImmutableMultisetStressTester(JImmutableMultiset<String> multi)
-            throws NoSuchMethodException
+        throws NoSuchMethodException
     {
         this.multi = multi.deleteAll();
     }
@@ -96,11 +97,11 @@ public class JImmutableMultisetStressTester
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+        throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
         JImmutableMultiset<String> multi = this.multi;
         Multiset<String> expected = getEmptyMultiset();
-        List<String> multiList = new ArrayList<String>();
+        List<String> multiList = new ArrayList<>();
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableMultisetStressTest on %s of size %d%n", getName(multi), size);
 
@@ -307,7 +308,7 @@ public class JImmutableMultisetStressTester
                     break;
                 }
                 case 5: { //containsAllOccurrences(Set)
-                    Set<String> values = new HashSet<String>(makeContainsList(tokens, random, multiList, expected));
+                    Set<String> values = new HashSet<>(makeContainsList(tokens, random, multiList, expected));
                     if (multi.containsAllOccurrences(values) != expected.containsAll(values)) {
                         throw new RuntimeException(String.format("containsAllOccurrences(Set) method call failed for %s" +
                                                                  " - expected %b found %b%n",
@@ -454,7 +455,7 @@ public class JImmutableMultisetStressTester
                               final Multiset<String> expected)
     {
         final List<String> expectedList;
-        final List<JImmutableMap.Entry<String, Integer>> entries = new ArrayList<JImmutableMap.Entry<String, Integer>>();
+        final List<JImmutableMap.Entry<String, Integer>> entries = new ArrayList<>();
         System.out.printf("checking cursor with size %d%n", multi.occurrenceCount());
 
         //HashMultiset iterates in a different order than JImmutableHashMultiset. Therefore, to test
@@ -464,12 +465,12 @@ public class JImmutableMultisetStressTester
         if (multi instanceof JImmutableHashMultiset) {
             expectedList = asList(multi.occurrenceCursor());
             for (String uniqueVal : multi) {
-                entries.add(new MapEntry<String, Integer>(uniqueVal, multi.count(uniqueVal)));
+                entries.add(new MapEntry<>(uniqueVal, multi.count(uniqueVal)));
             }
         } else {
             expectedList = asList(expected);
             for (Multiset.Entry<String> expectedEntry : expected.entrySet()) {
-                entries.add(new MapEntry<String, Integer>(expectedEntry.getElement(), expectedEntry.getCount()));
+                entries.add(new MapEntry<>(expectedEntry.getElement(), expectedEntry.getCount()));
             }
         }
 
@@ -484,6 +485,8 @@ public class JImmutableMultisetStressTester
 
         StandardCursorTest.listCursorTest(expectedList, multi.occurrenceCursor());
         StandardCursorTest.listCursorTest(entries, multi.entryCursor());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(expectedList, multi.occurrences());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, multi.entries());
     }
 
     private void verifyContents(final JImmutableMultiset<String> multi,
@@ -518,6 +521,7 @@ public class JImmutableMultisetStressTester
                              List<String> expected)
     {
         StandardCursorTest.listCursorTest(expected, set.occurrenceCursor());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, set.occurrences());
     }
 
     //precondition: multi must not have had a union performed with values yet.
@@ -600,8 +604,8 @@ public class JImmutableMultisetStressTester
         }
     }
 
-    private Multiset<String> expectedUnion(Multiset<String> expected,
-                                           Iterable<String> values)
+    private void expectedUnion(Multiset<String> expected,
+                               Iterable<String> values)
     {
         Multiset<String> intermediate = LinkedHashMultiset.create();
         for (String value : values) {
@@ -615,7 +619,6 @@ public class JImmutableMultisetStressTester
                 expected.setCount(value, valueCount);
             }
         }
-        return expected;
     }
 
     //on average, adds 1 occurrence to multi when used with insert methods

@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -83,7 +84,7 @@ public class JImmutableArrayStressTester
                         JImmutableList<String> tokens)
     {
         final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
-        final Map<Integer, String> expected = new TreeMap<Integer, String>();
+        final Map<Integer, String> expected = new TreeMap<>();
         JImmutableArray<String> array = this.array;
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
 
@@ -101,7 +102,7 @@ public class JImmutableArrayStressTester
                     break;
                 }
                 case 1: { //insert(Entry<Integer, T>)
-                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<Integer, String>(index, value);
+                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
                     array = (JImmutableArray<String>)array.insert(entry);
                     expected.put(index, value);
                     break;
@@ -124,7 +125,7 @@ public class JImmutableArrayStressTester
                     break;
                 }
                 case 1: { //insert(Entry<Integer, T>)
-                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<Integer, String>(index, value);
+                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
                     array = (JImmutableArray<String>)array.insert(entry);
                     expected.put(index, value);
                     break;
@@ -161,7 +162,7 @@ public class JImmutableArrayStressTester
                 switch (random.nextInt(4)) {
                 case 0: { //get(int)
                     String value = array.get(index);
-                    String expectedValue = (expected.containsKey(index)) ? expected.get(index) : null;
+                    String expectedValue = expected.getOrDefault(index, null);
                     if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
                         throw new RuntimeException(String.format("get(index) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
                     }
@@ -170,7 +171,7 @@ public class JImmutableArrayStressTester
                 }
                 case 1: { //getValueOr(int, T)
                     String value = array.getValueOr(index, "");
-                    String expectedValue = (expected.containsKey(index)) ? expected.get(index) : "";
+                    String expectedValue = expected.getOrDefault(index, "");
                     assert value != null;
                     if (!value.equals(expectedValue)) {
                         throw new RuntimeException(String.format("getValueOr(index, default) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
@@ -180,7 +181,7 @@ public class JImmutableArrayStressTester
                 }
                 case 2: { //find(int)
                     Holder<String> holder = array.find(index);
-                    Holder<String> expectedHolder = (expected.containsKey(index)) ? Holders.of(expected.get(index)) : Holders.<String>of();
+                    Holder<String> expectedHolder = (expected.containsKey(index)) ? Holders.of(expected.get(index)) : Holders.of();
                     if (!equivalentHolder(holder, expectedHolder)) {
                         throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                     }
@@ -188,7 +189,7 @@ public class JImmutableArrayStressTester
                 }
                 case 3: { //findEntry(int)
                     Holder<JImmutableMap.Entry<Integer, String>> holder = array.findEntry(index);
-                    Holder<JImmutableMap.Entry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.<JImmutableMap.Entry<Integer, String>>of(new MapEntry<Integer, String>(index, expected.get(index))) : Holders.<JImmutableMap.Entry<Integer, String>>of();
+                    Holder<JImmutableMap.Entry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
                     if (!equivalentHolder(holder, expectedHolder)) {
                         throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                     }
@@ -252,16 +253,18 @@ public class JImmutableArrayStressTester
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
-        final List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<JImmutableMap.Entry<Integer, String>>();
+        final List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<>();
 
         for (Map.Entry<Integer, String> entry : expected.entrySet()) {
-            entries.add(new MapEntry<Integer, String>(entry.getKey(), entry.getValue()));
+            entries.add(new MapEntry<>(entry.getKey(), entry.getValue()));
         }
 
         StandardCursorTest.listCursorTest(indices, array.keysCursor());
         StandardCursorTest.listCursorTest(values, array.valuesCursor());
         StandardCursorTest.listCursorTest(entries, array.cursor());
-        StandardCursorTest.listIteratorTest(entries, array.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(indices, array.keys());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, array.values());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
     private void verifyIndexList(JImmutableRandomAccessList<Integer> indexList,

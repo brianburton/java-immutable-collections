@@ -37,7 +37,10 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
@@ -161,5 +164,15 @@ public class MapEntry<K, V>
         addToString(sb, entry.getKey());
         sb.append("=");
         addToString(sb, entry.getValue());
+    }
+
+    public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<JImmutableMap.Entry<K, V>> source)
+    {
+        return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
+    }
+
+    public static <K, V> List<JImmutableMap.Entry<K, V>> toImmutableEntries(@Nonnull Collection<Map.Entry<K, V>> source)
+    {
+        return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
     }
 }
