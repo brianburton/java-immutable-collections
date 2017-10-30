@@ -61,6 +61,10 @@ public class StandardJImmutableMapTests
         verifyOrderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyOrderedUsingCollection(expectedMap.keySet(), map.keys());
         verifyOrderedUsingCollection(expectedMap.values(), map.values());
+        final Map<K, V> proxy = map.getMap();
+        verifyOrderedUsingCollection(expectedMap.entrySet(), proxy.entrySet());
+        verifyOrderedUsingCollection(expectedMap.keySet(), proxy.keySet());
+        verifyOrderedUsingCollection(expectedMap.values(), proxy.values());
     }
 
     public static <K, V> void verifyEnumeration(@Nonnull List<JImmutableMap.Entry<K, V>> expectedEntries,
@@ -71,17 +75,30 @@ public class StandardJImmutableMapTests
         verifyOrderedUsingCollection(expectedEntries, map);
         verifyOrderedUsingCollection(expectedKeys, map.keys());
         verifyOrderedUsingCollection(expectedValues, map.values());
+        final Map<K, V> proxy = map.getMap();
+        verifyOrderedUsingCollection(expectedEntries, proxy.entrySet(), reverseEntries());
+        verifyOrderedUsingCollection(expectedKeys, proxy.keySet());
+        verifyOrderedUsingCollection(expectedValues, proxy.values());
     }
 
-    public static void verifyEnumeration(@Nonnull HashMap<Integer, Integer> expectedMap,
-                                         @Nonnull JImmutableMap<Integer, Integer> map)
+    public static <K, V> void verifyEnumeration(@Nonnull HashMap<K, V> expectedMap,
+                                                @Nonnull JImmutableMap<K, V> map)
     {
         verifyUnorderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyUnorderedUsingCollection(expectedMap.keySet(), map.keys());
         verifyUnorderedUsingCollection(expectedMap.values(), map.values());
+        final Map<K, V> proxy = map.getMap();
+        verifyUnorderedUsingCollection(expectedMap.entrySet(), proxy.entrySet());
+        verifyUnorderedUsingCollection(expectedMap.keySet(), proxy.keySet());
+        verifyUnorderedUsingCollection(expectedMap.values(), proxy.values());
     }
 
     private static <K, V> Function<JImmutableMap.Entry<K, V>, Map.Entry<K, V>> entries()
+    {
+        return ie -> MapEntry.of(ie);
+    }
+
+    private static <K, V> Function<Map.Entry<K, V>, JImmutableMap.Entry<K, V>> reverseEntries()
     {
         return ie -> MapEntry.of(ie);
     }

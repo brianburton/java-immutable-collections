@@ -58,8 +58,24 @@ public class StandardIterableStreamableTests
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
+    public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
+                                                        @Nonnull Collection<T> source)
+    {
+        verifyOrderedUsingCollection(expected, source, Function.identity());
+    }
+
     public static <S, T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
                                                            @Nonnull IterableStreamable<S> source,
+                                                           @Nonnull Function<S, T> transforminator)
+    {
+        verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        verifyOrderedStream(expected.stream(), source.stream(), transforminator);
+        verifyOrderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
+    }
+
+    public static <S, T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
+                                                           @Nonnull Collection<S> source,
                                                            @Nonnull Function<S, T> transforminator)
     {
         verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
@@ -74,8 +90,24 @@ public class StandardIterableStreamableTests
         verifyUnorderedUsingCollection(expected, source, Function.identity());
     }
 
+    public static <T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
+                                                          @Nonnull Collection<T> source)
+    {
+        verifyUnorderedUsingCollection(expected, source, Function.identity());
+    }
+
     public static <S, T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
                                                              @Nonnull IterableStreamable<S> source,
+                                                             @Nonnull Function<S, T> transforminator)
+    {
+        verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        verifyUnorderedStream(expected.stream(), source.stream(), transforminator);
+        verifyUnorderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
+    }
+
+    public static <S, T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
+                                                             @Nonnull Collection<S> source,
                                                              @Nonnull Function<S, T> transforminator)
     {
         verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
