@@ -37,6 +37,7 @@ package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.common.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
@@ -58,9 +59,16 @@ public class IndexedIterator<T>
         this.index = index;
     }
 
+
     public static <T> IndexedIterator<T> iterator(@Nonnull Indexed<T> values)
     {
         return new IndexedIterator<>(values, -1, values.size() - 1);
+    }
+
+    public static IndexedIterator<Integer> forRange(int low,
+                                                    int high)
+    {
+        return iterator(IndexedHelper.range(low, high));
     }
 
     @Override

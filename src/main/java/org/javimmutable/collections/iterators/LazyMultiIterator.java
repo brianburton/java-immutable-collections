@@ -36,6 +36,7 @@
 package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 
@@ -116,6 +117,21 @@ public class LazyMultiIterator<T>
         }
         advanced = false;
         return nextValue;
+    }
+
+    @Override
+    public boolean isSplitAllowed()
+    {
+        return source.isSplitAllowed();
+    }
+
+    @Nonnull
+    @Override
+    public SplitIterator<T> splitIterator()
+    {
+        final SplitIterator<SplitableIterable<T>> split = source.splitIterator();
+        return new SplitIterator<>(new LazyMultiIterator<>(split.getLeft(), iterator, advanced, hasNext, nextValue),
+                                   new LazyMultiIterator<>(split.getRight(), null, false, false, null));
     }
 
     private void advance()

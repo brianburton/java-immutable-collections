@@ -188,6 +188,30 @@ public class IndexedHelper
         };
     }
 
+    @Nonnull
+    public static Indexed<Integer> range(int low,
+                                         int high)
+    {
+        final int size = high - low + 1;
+        return new Indexed<Integer>()
+        {
+            @Override
+            public Integer get(int index)
+            {
+                if (index < 0 || index >= size) {
+                    throw new ArrayIndexOutOfBoundsException();
+                }
+                return low + index;
+            }
+
+            @Override
+            public int size()
+            {
+                return size;
+            }
+        };
+    }
+
     /**
      * Creates a mutable List containing all values from the Indexed.
      */

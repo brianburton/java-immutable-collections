@@ -41,6 +41,8 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitCursor;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.IndexedList;
 
@@ -291,6 +293,15 @@ public class StandardCursorTest
         SplitCursor<T> split = cursor.splitCursor();
         listCursorTest(left, split.getLeft());
         listCursorTest(right, split.getRight());
+    }
+
+    public static <T> void verifySplit(SplitableIterator<T> cursor,
+                                       List<T> left,
+                                       List<T> right)
+    {
+        SplitIterator<T> split = cursor.splitIterator();
+        listIteratorTest(left, split.getLeft());
+        listIteratorTest(right, split.getRight());
     }
 
     private static class ListLookup<T>
