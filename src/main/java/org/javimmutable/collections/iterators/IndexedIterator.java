@@ -59,7 +59,6 @@ public class IndexedIterator<T>
         this.index = index;
     }
 
-
     public static <T> IndexedIterator<T> iterator(@Nonnull Indexed<T> values)
     {
         return new IndexedIterator<>(values, -1, values.size() - 1);

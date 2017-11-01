@@ -36,19 +36,17 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 public class StandardIterableStreamableTests
 {
@@ -68,8 +66,8 @@ public class StandardIterableStreamableTests
                                                            @Nonnull IterableStreamable<S> source,
                                                            @Nonnull Function<S, T> transforminator)
     {
-        verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
         verifyOrderedStream(expected.stream(), source.stream(), transforminator);
         verifyOrderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
@@ -78,8 +76,8 @@ public class StandardIterableStreamableTests
                                                            @Nonnull Collection<S> source,
                                                            @Nonnull Function<S, T> transforminator)
     {
-        verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
         verifyOrderedStream(expected.stream(), source.stream(), transforminator);
         verifyOrderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
@@ -100,8 +98,8 @@ public class StandardIterableStreamableTests
                                                              @Nonnull IterableStreamable<S> source,
                                                              @Nonnull Function<S, T> transforminator)
     {
-        verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
         verifyUnorderedStream(expected.stream(), source.stream(), transforminator);
         verifyUnorderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
@@ -110,40 +108,10 @@ public class StandardIterableStreamableTests
                                                              @Nonnull Collection<S> source,
                                                              @Nonnull Function<S, T> transforminator)
     {
-        verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
         verifyUnorderedStream(expected.stream(), source.stream(), transforminator);
         verifyUnorderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
-    }
-
-    public static <S, T> void verifyOrderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,
-                                                                 @Nonnull Iterator<S> actual,
-                                                                 @Nonnull Function<S, T> transforminator)
-    {
-        while (expected.hasNext()) {
-            assertEquals(expected.next(), transforminator.apply(actual.next()));
-        }
-        try {
-            actual.next();
-            fail("did not throw NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
-    }
-
-    public static <S, T> void verifyOrderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                                @Nonnull Iterator<S> actual,
-                                                                @Nonnull Function<S, T> transforminator)
-    {
-        while (expected.hasNext()) {
-            assertEquals(true, actual.hasNext());
-            assertEquals(expected.next(), transforminator.apply(actual.next()));
-        }
-        assertEquals(false, actual.hasNext());
-        try {
-            actual.next();
-            fail("did not throw NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
     }
 
     public static <S, T> void verifyOrderedStream(@Nonnull Stream<T> expected,
@@ -153,45 +121,6 @@ public class StandardIterableStreamableTests
         List<T> expectedList = expected.collect(Collectors.toList());
         List<T> actualList = actual.map(v -> transforminator.apply(v)).collect(Collectors.toList());
         assertEquals(expectedList, actualList);
-    }
-
-
-    public static <S, T> void verifyUnorderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,
-                                                                   @Nonnull Iterator<S> actual,
-                                                                   @Nonnull Function<S, T> transforminator)
-    {
-        final Set<T> expectedValues = new HashSet<>();
-        final Set<T> actualValues = new HashSet<>();
-        while (expected.hasNext()) {
-            expectedValues.add(expected.next());
-            actualValues.add(transforminator.apply(actual.next()));
-        }
-        assertEquals(expectedValues, actualValues);
-        try {
-            actual.next();
-            fail("did not throw NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
-    }
-
-    public static <S, T> void verifyUnorderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                                  @Nonnull Iterator<S> actual,
-                                                                  @Nonnull Function<S, T> transforminator)
-    {
-        final Set<T> expectedValues = new HashSet<>();
-        final Set<T> actualValues = new HashSet<>();
-        while (expected.hasNext()) {
-            assertEquals(true, actual.hasNext());
-            expectedValues.add(expected.next());
-            actualValues.add(transforminator.apply(actual.next()));
-        }
-        assertEquals(false, actual.hasNext());
-        assertEquals(expectedValues, actualValues);
-        try {
-            actual.next();
-            fail("did not throw NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
     }
 
     public static <S, T> void verifyUnorderedStream(@Nonnull Stream<T> expected,
