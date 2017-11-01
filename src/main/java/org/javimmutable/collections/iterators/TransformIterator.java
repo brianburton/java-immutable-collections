@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
 
@@ -61,16 +60,6 @@ public class TransformIterator<S, T>
                                                     @Nonnull Function<S, T> transforminator)
     {
         return new TransformIterator<>(source, transforminator);
-    }
-
-    public static <K, V> SplitableIterator<K> ofKeys(@Nonnull SplitableIterator<JImmutableMap.Entry<K, V>> source)
-    {
-        return of(source, e -> e.getKey());
-    }
-
-    public static <K, V> SplitableIterator<V> ofValues(@Nonnull SplitableIterator<JImmutableMap.Entry<K, V>> source)
-    {
-        return of(source, e -> e.getValue());
     }
 
     @Override
