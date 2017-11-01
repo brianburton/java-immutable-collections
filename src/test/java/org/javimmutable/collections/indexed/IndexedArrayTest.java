@@ -33,36 +33,33 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.indexed;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-import java.util.List;
+import java.util.Arrays;
 
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.*;
-
-public class IndexedHelperTest
+public class IndexedArrayTest
     extends TestCase
 {
     public void test()
     {
-        verifyIndexed(asList(1), IndexedHelper.indexed(1));
-        verifyIndexed(asList(1, 2), IndexedHelper.indexed(1, 2));
-        verifyIndexed(asList(1, 2, 3), IndexedHelper.indexed(1, 2, 3));
+        verifyEquals(IndexedArray.retained(new Integer[]{7, 8, 9}), list(7, 8, 9));
+        verifyEquals(IndexedArray.copied(new Integer[]{7, 8, 9}), list(7, 8, 9));
     }
 
-    private void verifyIndexed(List<Integer> expected,
-                               Indexed<Integer> actual)
+    private Indexed<Integer> list(Integer... values)
     {
-        assertThat(actual.size()).isEqualTo(expected.size());
+        return IndexedList.retained(Arrays.asList(values));
+    }
+
+    private void verifyEquals(Indexed<Integer> expected,
+                              Indexed<Integer> actual)
+    {
+        assertEquals(expected.size(), actual.size());
         for (int i = 0; i < expected.size(); ++i) {
-            assertThat(actual.get(i)).isEqualTo(expected.get(i));
+            assertEquals(expected.get(i), actual.get(i));
         }
-        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
-            .isThrownBy(() -> expected.get(-1));
-        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
-            .isThrownBy(() -> expected.get(expected.size()));
     }
 }

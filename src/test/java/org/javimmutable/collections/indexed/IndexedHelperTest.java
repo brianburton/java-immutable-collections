@@ -33,56 +33,36 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.indexed;
 
+import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
-/**
- * Indexed implementation backed by a java array.
- */
-@Immutable
-public class IndexedArray<T>
-    implements Indexed<T>
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.*;
+
+public class IndexedHelperTest
+    extends TestCase
 {
-    private final T[] values;
-
-    /**
-     * Produces an instance using a clone of the specified array to ensure that changes to the array
-     * will not influence the values returned by the instance's methods.  This is generally preferred
-     * to the unsafe() constructor.
-     */
-    public static <T> IndexedArray<T> copied(T[] values)
+    public void test()
     {
-        return new IndexedArray<T>(values.clone());
+        verifyIndexed(asList(1), IndexedHelper.indexed(1));
+        verifyIndexed(asList(1, 2), IndexedHelper.indexed(1, 2));
+        verifyIndexed(asList(1, 2, 3), IndexedHelper.indexed(1, 2, 3));
     }
 
-    /**
-     * Produces an instance using the provided array.  This makes the instance unsafe for sharing since
-     * changes to the array will cause changes to this instance's values.  However this can be useful
-     * when performance is important and the instance will not be shared or retained beyond a single
-     * method scope.
-     */
-    public static <T> IndexedArray<T> retained(T[] values)
+    private void verifyIndexed(List<Integer> expected,
+                               Indexed<Integer> actual)
     {
-        return new IndexedArray<T>(values);
-    }
-
-    private IndexedArray(T[] values)
-    {
-        this.values = values;
-    }
-
-    @Override
-    public T get(int index)
-    {
-        return values[index];
-    }
-
-    @Override
-    public int size()
-    {
-        return values.length;
+        assertThat(actual.size()).isEqualTo(expected.size());
+        for (int i = 0; i < expected.size(); ++i) {
+            assertThat(actual.get(i)).isEqualTo(expected.get(i));
+        }
+        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
+            .isThrownBy(() -> expected.get(-1));
+        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
+            .isThrownBy(() -> expected.get(expected.size()));
     }
 }

@@ -38,9 +38,9 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;

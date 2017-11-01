@@ -38,12 +38,12 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedList;
 
 import java.util.ArrayList;
 import java.util.Collections;

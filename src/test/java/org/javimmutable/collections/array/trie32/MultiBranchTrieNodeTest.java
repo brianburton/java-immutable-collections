@@ -39,9 +39,9 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.indexed.IndexedArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;

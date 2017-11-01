@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedList;
 
 import java.util.List;
 

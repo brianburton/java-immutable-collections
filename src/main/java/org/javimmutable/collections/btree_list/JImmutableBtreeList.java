@@ -41,10 +41,10 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.IndexedList;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.indexed.IndexedList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

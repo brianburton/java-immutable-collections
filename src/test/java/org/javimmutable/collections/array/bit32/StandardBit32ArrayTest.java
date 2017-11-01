@@ -39,8 +39,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.indexed.IndexedArray;
 
 public class StandardBit32ArrayTest
         extends TestCase

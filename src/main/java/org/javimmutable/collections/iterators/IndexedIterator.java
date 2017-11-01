@@ -37,7 +37,7 @@ package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
-import org.javimmutable.collections.common.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;

@@ -43,8 +43,8 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitCursor;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedList;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedList;
 
 import java.util.ArrayList;
 import java.util.Arrays;

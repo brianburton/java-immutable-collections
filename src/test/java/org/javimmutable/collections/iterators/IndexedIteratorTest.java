@@ -36,7 +36,7 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.common.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.iterators.StandardIteratorTests.*;

@@ -37,6 +37,7 @@ package org.javimmutable.collections.common;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedArray;
 
 import java.util.ArrayList;
 import java.util.List;

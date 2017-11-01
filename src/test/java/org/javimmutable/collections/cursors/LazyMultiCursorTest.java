@@ -38,8 +38,8 @@ package org.javimmutable.collections.cursors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
 import java.util.Arrays;
 

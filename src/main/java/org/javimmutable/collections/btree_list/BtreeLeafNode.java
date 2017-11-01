@@ -40,8 +40,8 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.common.IndexedArray;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;

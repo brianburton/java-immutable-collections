@@ -3,8 +3,8 @@ package org.javimmutable.collections.iterators;
 import junit.framework.TestCase;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.IndexedArray;
-import org.javimmutable.collections.common.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
 import static com.google.common.primitives.Ints.asList;
 import static org.assertj.core.api.Assertions.*;

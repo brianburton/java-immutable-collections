@@ -33,33 +33,63 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.indexed;
 
-import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-import java.util.Arrays;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class IndexedArrayTest
-    extends TestCase
+@Immutable
+public class IndexedList<T>
+        implements Indexed<T>
 {
-    public void test()
+    private final List<? extends T> values;
+
+    private IndexedList(List<? extends T> values)
     {
-        verifyEquals(IndexedArray.retained(new Integer[]{7, 8, 9}), list(7, 8, 9));
-        verifyEquals(IndexedArray.copied(new Integer[]{7, 8, 9}), list(7, 8, 9));
+        this.values = values;
     }
 
-    private Indexed<Integer> list(Integer... values)
+    /**
+     * Produces an instance using a copy of the specified List to ensure that changes to the List
+     * will not influence the values returned by the instance's methods.  This is generally preferred
+     * to the unsafe() constructor.
+     *
+     * @param values
+     * @param <T>
+     * @return
+     */
+    public static <T> IndexedList<T> copied(List<? extends T> values)
     {
-        return IndexedList.retained(Arrays.asList(values));
+        return new IndexedList<T>(new ArrayList<T>(values));
     }
 
-    private void verifyEquals(Indexed<Integer> expected,
-                              Indexed<Integer> actual)
+    /**
+     * Produces an instance using the provided List.  This makes the instance unsafe for sharing since
+     * changes to the List will cause changes to this instance's values.  However this can be useful
+     * when performance is important and the instance will not be shared or retained beyond a single
+     * method scope.
+     *
+     * @param values
+     * @param <T>
+     * @return
+     */
+    public static <T> IndexedList<T> retained(List<? extends T> values)
     {
-        assertEquals(expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); ++i) {
-            assertEquals(expected.get(i), actual.get(i));
-        }
+        return new IndexedList<T>(values);
+    }
+
+    @Override
+    public T get(int index)
+    {
+        return values.get(index);
+    }
+
+    @Override
+    public int size()
+    {
+        return values.size();
     }
 }

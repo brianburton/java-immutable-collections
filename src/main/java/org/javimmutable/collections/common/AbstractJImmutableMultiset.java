@@ -45,6 +45,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
