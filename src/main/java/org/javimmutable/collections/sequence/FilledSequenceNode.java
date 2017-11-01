@@ -33,34 +33,56 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.iterators;
+package org.javimmutable.collections.sequence;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedHelper;
+import org.javimmutable.collections.InsertableSequence;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
-
-public class TransformIteratorTest
-    extends TestCase
+@Immutable
+public class FilledSequenceNode<T>
+    implements InsertableSequence<T>
 {
-    public void test()
+    private final InsertableSequence<T> next;
+    private final T value;
+
+    private FilledSequenceNode(@Nonnull InsertableSequence<T> next,
+                               @Nullable T value)
     {
-        verifyOrderedIterable(asList(), () -> iterator(IndexedHelper.empty()));
-        verifyOrderedIterable(asList(1), () -> iterator(IndexedHelper.indexed(0)));
-        verifyOrderedIterable(asList(1, 2), () -> iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.empty()));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.indexed(0)));
-        verifyOrderedSplit(true, asList(1), asList(2), iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(true, asList(1), asList(2, 3), iterator(IndexedHelper.indexed(0, 1, 2)));
-        verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), iterator(IndexedHelper.range(0, 4)));
+        this.next = next;
+        this.value = value;
     }
 
-    private TransformIterator<Integer, Integer> iterator(@Nonnull Indexed<Integer> source)
+    public static <T> InsertableSequence<T> of(@Nullable T value)
     {
-        return TransformIterator.of(IndexedIterator.iterator(source), x -> x + 1);
+        return new FilledSequenceNode<>(EmptySequenceNode.of(), value);
+    }
+
+    @Nonnull
+    @Override
+    public InsertableSequence<T> insert(T value)
+    {
+        return new FilledSequenceNode<>(this, value);
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
+    public T getHead()
+    {
+        return value;
+    }
+
+    @Nonnull
+    @Override
+    public InsertableSequence<T> getTail()
+    {
+        return next;
     }
 }

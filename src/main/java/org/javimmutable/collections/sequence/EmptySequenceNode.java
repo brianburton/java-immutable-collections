@@ -33,34 +33,52 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.iterators;
+package org.javimmutable.collections.sequence;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedHelper;
+import org.javimmutable.collections.InsertableSequence;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
-
-public class TransformIteratorTest
-    extends TestCase
+@Immutable
+public final class EmptySequenceNode<T>
+    implements InsertableSequence<T>
 {
-    public void test()
+    private static final InsertableSequence EMPTY = new EmptySequenceNode();
+
+    private EmptySequenceNode()
     {
-        verifyOrderedIterable(asList(), () -> iterator(IndexedHelper.empty()));
-        verifyOrderedIterable(asList(1), () -> iterator(IndexedHelper.indexed(0)));
-        verifyOrderedIterable(asList(1, 2), () -> iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.empty()));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.indexed(0)));
-        verifyOrderedSplit(true, asList(1), asList(2), iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(true, asList(1), asList(2, 3), iterator(IndexedHelper.indexed(0, 1, 2)));
-        verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), iterator(IndexedHelper.range(0, 4)));
     }
 
-    private TransformIterator<Integer, Integer> iterator(@Nonnull Indexed<Integer> source)
+    @SuppressWarnings("unchecked")
+    public static <T> InsertableSequence<T> of()
     {
-        return TransformIterator.of(IndexedIterator.iterator(source), x -> x + 1);
+        return (InsertableSequence<T>)EMPTY;
+    }
+
+    @Nonnull
+    @Override
+    public InsertableSequence<T> insert(T value)
+    {
+        return FilledSequenceNode.of(value);
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return true;
+    }
+
+    @Override
+    public T getHead()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public InsertableSequence<T> getTail()
+    {
+        throw new UnsupportedOperationException();
     }
 }

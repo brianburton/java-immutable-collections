@@ -33,34 +33,40 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.iterators;
+package org.javimmutable.collections.sequence;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedHelper;
-
-import javax.annotation.Nonnull;
+import org.javimmutable.collections.InsertableSequence;
+import org.javimmutable.collections.Sequence;
 
 import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
-public class TransformIteratorTest
+public class FilledSequenceNodeTest
     extends TestCase
 {
     public void test()
     {
-        verifyOrderedIterable(asList(), () -> iterator(IndexedHelper.empty()));
-        verifyOrderedIterable(asList(1), () -> iterator(IndexedHelper.indexed(0)));
-        verifyOrderedIterable(asList(1, 2), () -> iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.empty()));
-        verifyOrderedSplit(false, asList(), asList(), iterator(IndexedHelper.indexed(0)));
-        verifyOrderedSplit(true, asList(1), asList(2), iterator(IndexedHelper.indexed(0, 1)));
-        verifyOrderedSplit(true, asList(1), asList(2, 3), iterator(IndexedHelper.indexed(0, 1, 2)));
-        verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), iterator(IndexedHelper.range(0, 4)));
+        InsertableSequence<String> seq = FilledSequenceNode.of("z");
+        verifyContents(asList("z"), seq);
+        verifyContents(asList("y", "z"), seq.insert("y"));
+        verifyContents(asList("x", "z"), seq.insert("x"));
     }
 
-    private TransformIterator<Integer, Integer> iterator(@Nonnull Indexed<Integer> source)
+    private void verifyContents(Iterable<String> expected,
+                                Sequence<String> seq)
     {
-        return TransformIterator.of(IndexedIterator.iterator(source), x -> x + 1);
+        for (String value : expected) {
+            assertEquals(true, seq instanceof FilledSequenceNode);
+            assertEquals(false, seq.isEmpty());
+            assertEquals(value, seq.getHead());
+            seq = seq.getTail();
+        }
+        assertEquals(true, seq instanceof EmptySequenceNode);
+        assertEquals(true, seq.isEmpty());
+        try {
+            seq.getTail();
+            fail();
+        } catch (UnsupportedOperationException ignored) {
+        }
     }
 }

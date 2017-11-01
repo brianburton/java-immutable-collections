@@ -38,6 +38,7 @@ package org.javimmutable.collections.util;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
@@ -62,6 +63,8 @@ import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
+import org.javimmutable.collections.sequence.EmptySequenceNode;
+import org.javimmutable.collections.sequence.FilledSequenceNode;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
@@ -1191,5 +1194,21 @@ public final class JImmutables
     public static <T> JImmutableArray<T> array(List<? extends T> source)
     {
         return TrieArray.<T>builder().add(source).build();
+    }
+
+    /**
+     * Creates an empty InsertableSequence.
+     */
+    public static <T> InsertableSequence<T> sequence()
+    {
+        return EmptySequenceNode.of();
+    }
+
+    /**
+     * Creates an InsertableSequence with a single value.
+     */
+    public static <T> InsertableSequence<T> sequence(T value)
+    {
+        return FilledSequenceNode.of(value);
     }
 }

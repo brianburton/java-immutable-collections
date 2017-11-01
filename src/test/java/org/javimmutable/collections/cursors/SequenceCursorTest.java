@@ -37,10 +37,11 @@ package org.javimmutable.collections.cursors;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.sequence.EmptySequenceNode;
+import org.javimmutable.collections.sequence.FilledSequenceNode;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class SequenceCursorTest
@@ -48,81 +49,25 @@ public class SequenceCursorTest
 {
     public void testEmptyList()
     {
-        Sequence<Integer> list = new Empty<>();
+        Sequence<Integer> list = EmptySequenceNode.of();
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.emptyCursorTest(cursor);
     }
 
     public void testSingleList()
     {
-        Sequence<Integer> list = new SimpleSequence<>(100, new Empty<>());
+        Sequence<Integer> list = FilledSequenceNode.of(100);
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.listCursorTest(Arrays.asList(100), cursor);
     }
 
     public void testMultiList()
     {
-        Sequence<Integer> list = new Empty<>();
+        InsertableSequence<Integer> list = EmptySequenceNode.of();
         for (int i = 8; i >= 1; --i) {
-            list = new SimpleSequence<>(i, list);
+            list = list.insert(i);
         }
         Cursor<Integer> cursor = SequenceCursor.of(list);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), cursor);
-    }
-
-    private static class Empty<T>
-        implements Sequence<T>
-    {
-        @Override
-        public boolean isEmpty()
-        {
-            return true;
-        }
-
-        @Override
-        public T getHead()
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Nonnull
-        @Override
-        public Sequence<T> getTail()
-        {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    private static class SimpleSequence<T>
-        implements Sequence<T>
-    {
-        private final T head;
-        private final Sequence<T> tail;
-
-        private SimpleSequence(@Nullable T head,
-                               @Nonnull Sequence<T> tail)
-        {
-            this.tail = tail;
-            this.head = head;
-        }
-
-        @Override
-        public boolean isEmpty()
-        {
-            return false;
-        }
-
-        @Override
-        public T getHead()
-        {
-            return head;
-        }
-
-        @Nonnull
-        @Override
-        public Sequence<T> getTail()
-        {
-            return tail;
-        }
     }
 }

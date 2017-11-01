@@ -36,43 +36,18 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Sequence;
+import org.javimmutable.collections.sequence.EmptySequenceNode;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
  * Singleton Sequence implementation for an empty sequence.
- *
- * @param <T>
  */
 @Immutable
-public class EmptySequence<T>
-        implements Sequence<T>
+public abstract class EmptySequence<T>
 {
-    private static final EmptySequence INSTANCE = new EmptySequence();
-
-    @SuppressWarnings("unchecked")
     public static <T> Sequence<T> of()
     {
-        return (Sequence<T>)INSTANCE;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return true;
-    }
-
-    @Override
-    public T getHead()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public Sequence<T> getTail()
-    {
-        return this;
+        return EmptySequenceNode.of();
     }
 }
