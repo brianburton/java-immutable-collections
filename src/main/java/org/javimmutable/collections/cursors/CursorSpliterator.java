@@ -33,41 +33,62 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.cursors;
 
-import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.SplitCursor;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import javax.annotation.Nonnull;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
-public class IteratorAdaptorTest
-        extends TestCase
+public class CursorSpliterator<T>
+    implements Spliterator<T>
 {
-    public void testNextOnly()
+    private final int characteristics;
+    private Cursor<T> cursor;
+
+    public CursorSpliterator(int characteristics,
+                             @Nonnull Cursor<T> cursor)
     {
-        Cursor<Integer> cursor = StandardCursor.forRange(1, 3);
-        Iterator<Integer> iterator = IteratorAdaptor.of(cursor);
-        assertEquals(Integer.valueOf(1), iterator.next());
-        assertEquals(Integer.valueOf(2), iterator.next());
-        assertEquals(Integer.valueOf(3), iterator.next());
-        // calling next() at end throws
-        try {
-            iterator.next();
-            fail();
-        } catch (NoSuchElementException ignored) {
-            // expected
-        }
+        this.characteristics = characteristics;
+        this.cursor = cursor.start();
     }
 
-    public void testStandardFeatures()
+    @Override
+    public boolean tryAdvance(Consumer<? super T> action)
     {
-        StandardCursorTest.listIteratorTest(Arrays.<Integer>asList(), IteratorAdaptor.of(StandardCursor.<Integer>of()));
-        StandardCursorTest.listIteratorTest(Arrays.asList(1), IteratorAdaptor.of(StandardCursor.forRange(1, 1)));
-        StandardCursorTest.listIteratorTest(Arrays.asList(1, 2), IteratorAdaptor.of(StandardCursor.forRange(1, 2)));
-        StandardCursorTest.listIteratorTest(Arrays.asList(1, 2, 3), IteratorAdaptor.of(StandardCursor.forRange(1, 3)));
+        if (action == null) {
+            throw new NullPointerException();
+        }
+        if (cursor.hasValue()) {
+            action.accept(cursor.getValue());
+            cursor = cursor.next();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Spliterator<T> trySplit()
+    {
+        if (cursor.isSplitAllowed()) {
+            SplitCursor<T> split = cursor.splitCursor();
+            cursor = split.getRight().start();
+            return new CursorSpliterator<>(characteristics, split.getLeft());
+        }
+        return null;
+    }
+
+    @Override
+    public long estimateSize()
+    {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
+    public int characteristics()
+    {
+        return characteristics;
     }
 }

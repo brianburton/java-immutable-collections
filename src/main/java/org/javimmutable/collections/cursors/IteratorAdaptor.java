@@ -33,62 +33,93 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.common;
+package org.javimmutable.collections.cursors;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.SplitCursor;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
-import java.util.function.Consumer;
 
-public class CursorSpliterator<T>
-    implements Spliterator<T>
+/**
+ * Adaptor to traverse a Cursor using the Iterator API.   Evaluation of the Cursor
+ * is lazy in the sense that Cursor.next() is not called for the first time until
+ * the hasNext() method is called.  The next() method automatically calls the
+ * Cursor's next() method after obtaining the current value to return as its
+ * result.  In this way the protocol matches how Iterators behave.
+ */
+public class IteratorAdaptor<T>
+    implements SplitableIterator<T>
 {
-    private final int characteristics;
+    private boolean starting;
     private Cursor<T> cursor;
 
-    public CursorSpliterator(int characteristics,
-                             @Nonnull Cursor<T> cursor)
+    public IteratorAdaptor(Cursor<T> cursor)
     {
-        this.characteristics = characteristics;
-        this.cursor = cursor.start();
+        this.starting = true;
+        this.cursor = cursor;
     }
 
-    @Override
-    public boolean tryAdvance(Consumer<? super T> action)
+    public static <V> IteratorAdaptor<V> of(Cursor<V> cursor)
     {
-        if (action == null) {
-            throw new NullPointerException();
-        }
-        if (cursor.hasValue()) {
-            action.accept(cursor.getValue());
+        return new IteratorAdaptor<V>(cursor);
+    }
+
+    public boolean hasNext()
+    {
+        start();
+        return cursor.hasValue();
+    }
+
+    public T next()
+    {
+        try {
+            start();
+            T answer = cursor.getValue();
             cursor = cursor.next();
-            return true;
+            return answer;
+        } catch (Cursor.NoValueException ignored) {
+            throw new NoSuchElementException();
         }
-        return false;
+    }
+
+    public void remove()
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Spliterator<T> trySplit()
+    public boolean isSplitAllowed()
     {
-        if (cursor.isSplitAllowed()) {
-            SplitCursor<T> split = cursor.splitCursor();
-            cursor = split.getRight().start();
-            return new CursorSpliterator<>(characteristics, split.getLeft());
+        return cursor.isSplitAllowed();
+    }
+
+    @Nonnull
+    @Override
+    public SplitIterator<T> splitIterator()
+    {
+        if (!cursor.isSplitAllowed()) {
+            throw new UnsupportedOperationException();
         }
-        return null;
+        final SplitCursor<T> split = cursor.splitCursor();
+        return new SplitIterator<>(IteratorAdaptor.of(split.getLeft()), IteratorAdaptor.of(split.getRight()));
     }
 
+    @Nonnull
     @Override
-    public long estimateSize()
+    public Spliterator<T> spliterator(int characteristics)
     {
-        return Long.MAX_VALUE;
+        return new CursorSpliterator<>(characteristics, cursor);
     }
 
-    @Override
-    public int characteristics()
+    private void start()
     {
-        return characteristics;
+        if (starting) {
+            starting = false;
+            cursor = cursor.start();
+        }
     }
 }
