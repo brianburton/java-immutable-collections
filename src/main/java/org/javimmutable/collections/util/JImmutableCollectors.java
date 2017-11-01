@@ -68,7 +68,7 @@ public class JImmutableCollectors
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableList<T>> list()
+    public static <T> Collector<T, ?, JImmutableList<T>> toList()
     {
         return new CollectorImpl<>(ORDERED,
                                    JImmutables.list(),
@@ -77,7 +77,7 @@ public class JImmutableCollectors
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> ralist()
+    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> toRalist()
     {
         return new CollectorImpl<>(ORDERED,
                                    JImmutables.ralist(),
@@ -86,7 +86,7 @@ public class JImmutableCollectors
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableSet<T>> set()
+    public static <T> Collector<T, ?, JImmutableSet<T>> toSet()
     {
         return new CollectorImpl<>(UNORDERED,
                                    JImmutables.set(),
@@ -95,7 +95,7 @@ public class JImmutableCollectors
     }
 
     @Nonnull
-    public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> sortedSet()
+    public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> toSortedSet()
     {
         return new CollectorImpl<>(UNORDERED,
                                    JImmutables.<T>sortedSet(),
@@ -104,7 +104,7 @@ public class JImmutableCollectors
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableSet<T>> sortedSet(@Nonnull Comparator<T> comparator)
+    public static <T> Collector<T, ?, JImmutableSet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {
         return new CollectorImpl<>(UNORDERED,
                                    JImmutables.sortedSet(comparator),
