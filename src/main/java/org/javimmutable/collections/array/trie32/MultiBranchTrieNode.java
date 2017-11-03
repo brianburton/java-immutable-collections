@@ -53,7 +53,9 @@ public class MultiBranchTrieNode<T>
     extends TrieNode<T>
 {
     // used by SignedOrderCursorSource to determine which index to use next
-    private static final IndexList SIGNED_INDEX_LIST = new IndexList(2, new IndexList(3, new IndexList(0, new IndexList(1, null))));
+    private static final int[] SIGNED_INDEX_BITS = new int[]{
+        0b0100, 0b1000, 0b0001, 0b0010
+    };
 
     private final int shift;
     private final int bitmask;
@@ -486,12 +488,10 @@ public class MultiBranchTrieNode<T>
     {
         final TrieNode<T>[] nodes = allocate(entries.length);
         int offset = 0;
-        IndexList next = SIGNED_INDEX_LIST;
-        while (next != null) {
-            if ((bitmask & next.bit) != 0) {
-                nodes[offset++] = entries[realIndex(bitmask, next.bit)];
+        for (int bit : SIGNED_INDEX_BITS) {
+            if ((bitmask & bit) != 0) {
+                nodes[offset++] = entries[realIndex(bitmask, bit)];
             }
-            next = next.next;
         }
         assert offset == nodes.length;
         return IndexedArray.retained(nodes);
@@ -507,18 +507,5 @@ public class MultiBranchTrieNode<T>
     static <T> TrieNode<T>[] allocate(int size)
     {
         return (TrieNode<T>[])new TrieNode[size];
-    }
-
-    private static class IndexList
-    {
-        private final int bit;
-        private final IndexList next;
-
-        private IndexList(int index,
-                          IndexList next)
-        {
-            this.bit = 1 << index;
-            this.next = next;
-        }
     }
 }

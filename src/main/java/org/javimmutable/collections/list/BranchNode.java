@@ -91,9 +91,9 @@ class BranchNode<T>
     {
         this(node.getDepth() + 1,
              node.size() + 1,
-             new LeafNode<T>(prefixValue),
+             new LeafNode<>(prefixValue),
              ListHelper.allocateSingleNode(node),
-             EmptyNode.<T>of());
+             EmptyNode.of());
         assert node.isFull();
     }
 
@@ -102,9 +102,9 @@ class BranchNode<T>
     {
         this(node.getDepth() + 1,
              node.size() + 1,
-             EmptyNode.<T>of(),
+             EmptyNode.of(),
              ListHelper.allocateSingleNode(node),
-             new LeafNode<T>(suffixValue));
+             new LeafNode<>(suffixValue));
         assert node.isFull();
     }
 
@@ -119,7 +119,7 @@ class BranchNode<T>
             return LeafNode.fromList(leaves, 0, nodeCount);
         }
 
-        List<Node<T>> nodes = new ArrayList<Node<T>>();
+        List<Node<T>> nodes = new ArrayList<>();
         int offset = 0;
         while (offset < nodeCount) {
             nodes.add(LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount)));
@@ -139,7 +139,7 @@ class BranchNode<T>
                 for (int i = 0; i < 32; ++i) {
                     newNodes[i] = nodes.get(srcOffset++);
                 }
-                nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth), EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+                nodes.set(dstOffset++, new BranchNode<>(depth, ListHelper.sizeForDepth(depth), EmptyNode.of(), newNodes, EmptyNode.of()));
                 nodeCount -= 32;
             }
             // collect remaining nodes
@@ -150,14 +150,14 @@ class BranchNode<T>
                 for (int i = 0; i < newNodes.length; ++i) {
                     newNodes[i] = nodes.get(srcOffset++);
                 }
-                nodes.set(dstOffset++, new BranchNode<T>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.<T>of(), newNodes, EmptyNode.<T>of()));
+                nodes.set(dstOffset++, new BranchNode<>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.of(), newNodes, EmptyNode.of()));
             } else {
                 // all but last remaining nodes are full
                 Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount - 1);
                 for (int i = 0; i < newNodes.length; ++i) {
                     newNodes[i] = nodes.get(srcOffset++);
                 }
-                nodes.set(dstOffset++, new BranchNode<T>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.<T>of(), newNodes, lastNode));
+                nodes.set(dstOffset++, new BranchNode<>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.of(), newNodes, lastNode));
             }
             nodeCount = dstOffset;
             depth += 1;
@@ -168,7 +168,7 @@ class BranchNode<T>
 
     static <T> Builder<T> builder()
     {
-        return new Builder<T>();
+        return new Builder<>();
     }
 
     static <T> BranchNode<T> forTesting(int depth,
@@ -176,11 +176,11 @@ class BranchNode<T>
                                         Node<T>[] nodes,
                                         Node<T> suffix)
     {
-        return new BranchNode<T>(depth,
-                                 prefix.size() + (nodes.length * 32) + suffix.size(),
-                                 prefix,
-                                 nodes.clone(),
-                                 suffix);
+        return new BranchNode<>(depth,
+                                prefix.size() + (nodes.length * 32) + suffix.size(),
+                                prefix,
+                                nodes.clone(),
+                                suffix);
     }
 
     @Override
@@ -219,13 +219,13 @@ class BranchNode<T>
                 return prefix;
             } else {
                 int depth = 1 + Math.max(prefix.getDepth(), suffix.getDepth());
-                return new BranchNode<T>(depth, size, prefix, nodes, suffix);
+                return new BranchNode<>(depth, size, prefix, nodes, suffix);
             }
         } else if ((nodes.length == 1) && prefix.isEmpty() && suffix.isEmpty()) {
             return nodes[0];
         } else {
             int depth = 1 + nodes[0].getDepth();
-            return new BranchNode<T>(depth, size, prefix, nodes, suffix);
+            return new BranchNode<>(depth, size, prefix, nodes, suffix);
         }
     }
 
@@ -269,10 +269,10 @@ class BranchNode<T>
     public Node<T> insertFirst(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(value, this);
+            return new BranchNode<>(value, this);
         }
         if (prefix.getDepth() < (depth - 1)) {
-            return new BranchNode<T>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
+            return new BranchNode<>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
         }
         assert prefix.getDepth() == (depth - 1);
         assert !prefix.isFull();
@@ -286,17 +286,17 @@ class BranchNode<T>
         } else {
             newNodes = nodes;
         }
-        return new BranchNode<T>(depth, size + 1, newPrefix, newNodes, suffix);
+        return new BranchNode<>(depth, size + 1, newPrefix, newNodes, suffix);
     }
 
     @Override
     public Node<T> insertLast(T value)
     {
         if (isFull()) {
-            return new BranchNode<T>(this, value);
+            return new BranchNode<>(this, value);
         }
         if (suffix.getDepth() < (depth - 1)) {
-            return new BranchNode<T>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
+            return new BranchNode<>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
         }
         assert suffix.getDepth() == (depth - 1);
         assert !suffix.isFull();
@@ -310,7 +310,7 @@ class BranchNode<T>
         } else {
             newNodes = nodes;
         }
-        return new BranchNode<T>(depth, size + 1, prefix, newNodes, newSuffix);
+        return new BranchNode<>(depth, size + 1, prefix, newNodes, newSuffix);
     }
 
     @Override
@@ -343,7 +343,7 @@ class BranchNode<T>
                           T value)
     {
         if (prefix.containsIndex(index)) {
-            return new BranchNode<T>(depth, size, prefix.assign(index, value), nodes, suffix);
+            return new BranchNode<>(depth, size, prefix.assign(index, value), nodes, suffix);
         }
         index -= prefix.size();
         final int fullNodeSize = ListHelper.sizeForDepth(depth - 1);
@@ -351,11 +351,11 @@ class BranchNode<T>
         if (arrayIndex < nodes.length) {
             Node<T>[] newNodes = nodes.clone();
             newNodes[arrayIndex] = nodes[arrayIndex].assign(index - (arrayIndex * fullNodeSize), value);
-            return new BranchNode<T>(depth, size, prefix, newNodes, suffix);
+            return new BranchNode<>(depth, size, prefix, newNodes, suffix);
         }
         index -= nodes.length * fullNodeSize;
         if (suffix.containsIndex(index)) {
-            return new BranchNode<T>(depth, size, prefix, nodes, suffix.assign(index, value));
+            return new BranchNode<>(depth, size, prefix, nodes, suffix.assign(index, value));
         }
         throw new IndexOutOfBoundsException();
     }
@@ -463,7 +463,7 @@ class BranchNode<T>
     static class Builder<T>
         implements MutableBuilder<T, Node<T>>
     {
-        private final List<T> leaves = new ArrayList<T>();
+        private final List<T> leaves = new ArrayList<>();
 
         @Nonnull
         @Override
