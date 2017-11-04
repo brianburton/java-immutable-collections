@@ -62,6 +62,9 @@ public interface IterableStreamable<T>
      */
     int getSpliteratorCharacteristics();
 
+    /**
+     * Default implementation that creates a Spliterator from a newly created Iterator.
+     */
     @Nonnull
     @Override
     default Spliterator<T> spliterator()

@@ -45,6 +45,11 @@ import java.util.function.Consumer;
 public abstract class AbstractSplitableIterator<T>
     implements SplitableIterator<T>
 {
+    /**
+     * Returns a Spliterator with the specified characteristics that use this
+     * Iterator to visit all elements.  Advancing the Spliterator also advances
+     * this Iterator so the two cannot be used at the same time.
+     */
     @Nonnull
     @Override
     public Spliterator<T> spliterator(int characteristics)

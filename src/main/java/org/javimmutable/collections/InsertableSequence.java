@@ -44,10 +44,17 @@ public interface InsertableSequence<T>
     extends Insertable<T>,
             Sequence<T>
 {
+    /**
+     * Creates and returns a new InsertableSequence with value at its head
+     * and this Sequence as its tail.
+     */
     @Nonnull
     @Override
     InsertableSequence<T> insert(T value);
 
+    /**
+     * Returns the tail of this InsertableSequence which is always itself an InsertableSequence.
+     */
     @Nonnull
     @Override
     InsertableSequence<T> getTail();

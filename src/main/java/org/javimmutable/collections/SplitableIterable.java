@@ -37,6 +37,9 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Extension of Iterable for objects whose iterator method returns a SplitableIterator.
+ */
 public interface SplitableIterable<T>
     extends Iterable<T>
 {

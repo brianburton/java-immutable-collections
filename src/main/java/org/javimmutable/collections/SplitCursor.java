@@ -35,27 +35,38 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+/**
+ * Container object holding two Cursors.  The two Cursors visit different
+ * elements from the same original Cursors.  The left Cursors always visits elements
+ * that would that come before the elements visited by the right Cursors in the
+ * original Cursors.  Visiting all elements in the left Cursors and then visiting
+ * all elements in the right Cursors yields exactly the same elements as visiting
+ * all elements from the original Cursors.
+ */
 @Immutable
 public class SplitCursor<T>
 {
     private final Cursor<T> left;
     private final Cursor<T> right;
 
-    public SplitCursor(Cursor<T> left,
-                       Cursor<T> right)
+    public SplitCursor(@Nonnull Cursor<T> left,
+                       @Nonnull Cursor<T> right)
     {
         this.left = left;
         this.right = right;
     }
 
+    @Nonnull
     public Cursor<T> getLeft()
     {
         return left;
     }
 
+    @Nonnull
     public Cursor<T> getRight()
     {
         return right;
