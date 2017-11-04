@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.function.BiFunction;
 
 /**
  * Extension of Iterable for objects whose iterator method returns a SplitableIterator.
@@ -46,4 +47,18 @@ public interface SplitableIterable<T>
     @Override
     @Nonnull
     SplitableIterator<T> iterator();
+
+    /**
+     * Default reduce operation.  Can be used without requiring a stream to quickly collect
+     * information from an iterable object in a single thread.
+     */
+    default <R> R reduce(R initialValue,
+                         @Nonnull BiFunction<R, T, R> operator)
+    {
+        R result = initialValue;
+        for (T value : this) {
+            result = operator.apply(result, value);
+        }
+        return result;
+    }
 }

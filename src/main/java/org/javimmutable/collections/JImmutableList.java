@@ -258,8 +258,7 @@ public interface JImmutableList<T>
     default JImmutableList<T> select(@Nonnull Predicate<T> predicate)
     {
         JImmutableList<T> answer = deleteAll();
-        for (Cursor<T> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
-            final T value = cursor.getValue();
+        for (T value : this) {
             if (predicate.test(value)) {
                 answer = answer.insert(value);
             }

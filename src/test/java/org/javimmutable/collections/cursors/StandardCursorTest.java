@@ -52,7 +52,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.*;
@@ -84,17 +83,6 @@ public class StandardCursorTest
         emptyCursorTest(StandardCursor.of(() -> new StandardCursor.RangeSource(1, -1)));
         listCursorTest(Arrays.asList(1), StandardCursor.of(() -> new StandardCursor.RangeSource(1, 1)));
         listCursorTest(Arrays.asList(1, 2), StandardCursor.of(() -> new StandardCursor.RangeSource(1, 2)));
-    }
-
-    public void testReduce()
-    {
-        final Double zero = 0.0;
-        final BiFunction<Double, Integer, Double> operator = (s, v) -> s + ((double)v) / 2.0;
-        assertSame(zero, StandardCursor.<Integer>emptyCursorable().reduce(zero, operator));
-        assertEquals(0.0, rangeCursorable(0, 0).reduce(zero, operator));
-        assertEquals(0.5, rangeCursorable(0, 1).reduce(zero, operator));
-        assertEquals(1.5, rangeCursorable(0, 2).reduce(zero, operator));
-        assertEquals(3.0, rangeCursorable(0, 3).reduce(zero, operator));
     }
 
     public void testSplitAllowed()

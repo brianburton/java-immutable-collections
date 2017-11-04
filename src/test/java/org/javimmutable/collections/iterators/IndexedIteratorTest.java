@@ -36,7 +36,10 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.indexed.IndexedHelper;
+
+import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
@@ -54,5 +57,26 @@ public class IndexedIteratorTest
         verifyOrderedSplit(true, asList(1), asList(2), IndexedIterator.iterator(IndexedHelper.indexed(1, 2)));
         verifyOrderedSplit(true, asList(1), asList(2, 3), IndexedIterator.iterator(IndexedHelper.indexed(1, 2, 3)));
         verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), IndexedIterator.forRange(1, 5));
+    }
+
+    public void testReduce()
+    {
+        final Double zero = 0.0;
+        final BiFunction<Double, Integer, Double> operator = (s, v) -> s + ((double)v) / 2.0;
+        assertSame(zero, emptyIterable().reduce(zero, operator));
+        assertEquals(0.0, rangeIterable(0).reduce(zero, operator));
+        assertEquals(0.5, rangeIterable(1).reduce(zero, operator));
+        assertEquals(1.5, rangeIterable(2).reduce(zero, operator));
+        assertEquals(3.0, rangeIterable(3).reduce(zero, operator));
+    }
+
+    private SplitableIterable<Integer> emptyIterable()
+    {
+        return () -> EmptyIterator.of();
+    }
+
+    private SplitableIterable<Integer> rangeIterable(int high)
+    {
+        return () -> IndexedIterator.forRange(0, high);
     }
 }

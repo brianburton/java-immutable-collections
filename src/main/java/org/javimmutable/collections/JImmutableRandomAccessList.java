@@ -45,15 +45,13 @@ import java.util.function.Predicate;
 /**
  * Extension of JImmutableList that allows insertion and deletion at arbitrary
  * indexes within the list.
- *
- * @param <T>
  */
 @Immutable
 public interface JImmutableRandomAccessList<T>
-        extends JImmutableList<T>
+    extends JImmutableList<T>
 {
     interface Builder<T>
-            extends MutableBuilder<T, JImmutableRandomAccessList<T>>
+        extends MutableBuilder<T, JImmutableRandomAccessList<T>>
     {
     }
 
@@ -61,9 +59,6 @@ public interface JImmutableRandomAccessList<T>
      * Replaces the value at the specified index (which must be within current
      * bounds of the list) with the new value.
      *
-     * @param index
-     * @param value
-     * @return
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
@@ -72,9 +67,6 @@ public interface JImmutableRandomAccessList<T>
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableRandomAccessList<T> insert(@Nullable T value);
@@ -83,10 +75,6 @@ public interface JImmutableRandomAccessList<T>
      * Insert value at index (which must be within 0 to size).
      * Shifts all values at and after index one position to the right and adds 1
      * to size of the list.
-     *
-     * @param index
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableRandomAccessList<T> insert(int index,
@@ -95,9 +83,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableRandomAccessList<T> insertFirst(@Nullable T value);
@@ -105,9 +90,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      * Synonym for insert().
-     *
-     * @param value
-     * @return
      */
     @Nonnull
     JImmutableRandomAccessList<T> insertLast(@Nullable T value);
@@ -116,7 +98,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAllLast()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -126,7 +107,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAllLast()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -136,7 +116,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAllLast()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -146,7 +125,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAllLast()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -158,8 +136,6 @@ public interface JImmutableRandomAccessList<T>
      * Shifts all values at and after index x positions to the right and adds x
      * to size of the list, where x is the number of elements being inserted.
      *
-     * @param index
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -172,8 +148,6 @@ public interface JImmutableRandomAccessList<T>
      * Shifts all values at and after index x positions to the right and adds x
      * to size of the list, where x is the number of elements being inserted.
      *
-     * @param index
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -186,8 +160,6 @@ public interface JImmutableRandomAccessList<T>
      * Shifts all values at and after index x positions to the right and adds x
      * to size of the list, where x is the number of elements being inserted.
      *
-     * @param index
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -200,8 +172,6 @@ public interface JImmutableRandomAccessList<T>
      * Shifts all values at and after index x positions to the right and adds x
      * to size of the list, where x is the number of elements being inserted.
      *
-     * @param index
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -211,7 +181,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -220,7 +189,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -229,7 +197,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -238,7 +205,6 @@ public interface JImmutableRandomAccessList<T>
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -248,7 +214,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -258,7 +223,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -268,7 +232,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -278,7 +241,6 @@ public interface JImmutableRandomAccessList<T>
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
      *
-     * @param values
      * @return instance of list containing the collection
      */
     @Nonnull
@@ -306,9 +268,6 @@ public interface JImmutableRandomAccessList<T>
      * Delete value at index (which must be within the current bounds of the list).
      * Shifts all values at and after index one position to the left and subtracts 1
      * from size of the list.
-     *
-     * @param index
-     * @return
      */
     @Nonnull
     JImmutableRandomAccessList<T> delete(int index);
@@ -333,8 +292,7 @@ public interface JImmutableRandomAccessList<T>
     {
         JImmutableRandomAccessList<T> answer = this;
         int index = 0;
-        for (Cursor<T> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
-            final T value = cursor.getValue();
+        for (T value : this) {
             assert value == answer.get(index);
             if (predicate.test(value)) {
                 answer = answer.delete(index);
