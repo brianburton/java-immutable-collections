@@ -51,14 +51,15 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collector.Characteristics;
 
 /**
  * Utility class providing static methods for collecting various immutable collections using streams.
  */
 public class JImmutableCollectors
 {
-    static final Set<Collector.Characteristics> ORDERED = JImmutables.<Collector.Characteristics>set().getSet();
-    static final Set<Collector.Characteristics> UNORDERED = JImmutables.set(Collector.Characteristics.UNORDERED).getSet();
+    static final Set<Characteristics> ORDERED = JImmutables.set(Characteristics.CONCURRENT).getSet();
+    static final Set<Characteristics> UNORDERED = JImmutables.set(Characteristics.UNORDERED, Characteristics.CONCURRENT).getSet();
 
     private JImmutableCollectors()
     {
@@ -177,12 +178,12 @@ public class JImmutableCollectors
     private static class CollectorImpl<T, C>
         implements Collector<T, Accumulator<T, C>, C>
     {
-        private final Set<Collector.Characteristics> characteristics;
+        private final Set<Characteristics> characteristics;
         private final C empty;
         private final Func2<C, T, C> adder;
         private final Func2<C, C, C> combiner;
 
-        private CollectorImpl(@Nonnull Set<Collector.Characteristics> characteristics,
+        private CollectorImpl(@Nonnull Set<Characteristics> characteristics,
                               @Nonnull C empty,
                               @Nonnull Func2<C, T, C> adder,
                               @Nonnull Func2<C, C, C> combiner)
