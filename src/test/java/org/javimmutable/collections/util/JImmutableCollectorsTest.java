@@ -36,32 +36,53 @@
 package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.JImmutableListMap;
+import org.javimmutable.collections.tree.ComparableComparator;
 
-import static java.util.Arrays.asList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@SuppressWarnings("SimplifyStreamApiCallChains")
 public class JImmutableCollectorsTest
     extends TestCase
 {
-    public void testSerial()
+    public void testCollections()
     {
-        assertEquals(JImmutables.list(1, 2, 3), asList(1, 2, 3).stream().collect(JImmutableCollectors.toList()));
-        assertEquals(JImmutables.ralist(1, 2, 3), asList(1, 2, 3).stream().collect(JImmutableCollectors.toRalist()));
-        assertEquals(JImmutables.set(1, 2, 3), asList(1, 2, 3, 3, 1, 2).stream().collect(JImmutableCollectors.toSet()));
-        assertEquals(JImmutables.sortedSet(1, 2, 3), asList(1, 2, 3, 3, 1, 2).stream().collect(JImmutableCollectors.toSortedSet()));
-        assertEquals(JImmutables.sortedSet(String.CASE_INSENSITIVE_ORDER, "a", "B", "c"), asList("a", "B", "c", "A", "b", "C").stream().collect(JImmutableCollectors.toSortedSet(String.CASE_INSENSITIVE_ORDER)));
-        assertEquals(JImmutables.listMap().insert(0, 1).insert(0, 5).insert(1, 14).insert(3, 37),
-                     asList(1, 14, 37, 5).stream().collect(JImmutableCollectors.groupingBy(x -> x / 10)));
+        final List<Integer> source = IntStream.rangeClosed(1, 1200).boxed().collect(Collectors.toList());
+        final Comparator<Integer> comparator = ComparableComparator.of();
+        Collections.shuffle(source);
+        verifyCollection(source, values -> JImmutables.list(values), () -> JImmutableCollectors.toList());
+        verifyCollection(source, values -> JImmutables.ralist(values), () -> JImmutableCollectors.toRalist());
+        verifyCollection(source, values -> JImmutables.set(values), () -> JImmutableCollectors.toSet());
+        verifyCollection(source, values -> JImmutables.sortedSet(values), () -> JImmutableCollectors.toSortedSet());
+        verifyCollection(source, values -> JImmutables.sortedSet(comparator, values), () -> JImmutableCollectors.toSortedSet(comparator));
+        verifyCollection(source, values -> createGroupingByExpected(values, x -> x / 7), () -> JImmutableCollectors.groupingBy(x -> x / 7));
     }
 
-    public void testParallel()
+    private JImmutableListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,
+                                                                         Func1<Integer, Integer> keyTransform)
     {
-        assertEquals(JImmutables.list(1, 2, 3), asList(1, 2, 3).parallelStream().collect(JImmutableCollectors.toList()));
-        assertEquals(JImmutables.ralist(1, 2, 3), asList(1, 2, 3).parallelStream().collect(JImmutableCollectors.toRalist()));
-        assertEquals(JImmutables.set(1, 2, 3), asList(1, 2, 3, 3, 1, 2).parallelStream().collect(JImmutableCollectors.toSet()));
-        assertEquals(JImmutables.sortedSet(1, 2, 3), asList(1, 2, 3, 3, 1, 2).parallelStream().collect(JImmutableCollectors.toSortedSet()));
-        assertEquals(JImmutables.sortedSet(String.CASE_INSENSITIVE_ORDER, "a", "B", "c"), asList("a", "B", "c", "A", "b", "C").parallelStream().collect(JImmutableCollectors.toSortedSet(String.CASE_INSENSITIVE_ORDER)));
-        assertEquals(JImmutables.listMap().insert(0, 1).insert(0, 5).insert(1, 14).insert(3, 37),
-                     asList(1, 14, 37, 5).parallelStream().collect(JImmutableCollectors.groupingBy(x -> x / 10)));
+        JImmutableListMap<Integer, Integer> expected = JImmutables.listMap();
+        for (Integer value : source) {
+            final Integer key = keyTransform.apply(value);
+            expected = expected.insert(key, value);
+        }
+        return expected;
+    }
+
+    private <C> void verifyCollection(List<Integer> source,
+                                      Func1<List<Integer>, C> collectionFactory,
+                                      Func0<Collector<Integer, ?, C>> collectorFactory)
+    {
+        C expected = collectionFactory.apply(source);
+        C actual = source.stream().collect(collectorFactory.apply());
+        assertEquals(expected, actual);
+        actual = source.parallelStream().collect(collectorFactory.apply());
+        assertEquals(expected, actual);
     }
 }
