@@ -67,6 +67,9 @@ public class JImmutableCollectors
     {
     }
 
+    /**
+     * Collects values into a JImmutableList.
+     */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> toList()
     {
@@ -76,6 +79,9 @@ public class JImmutableCollectors
                                    (a, b) -> a.insertAll(b));
     }
 
+    /**
+     * Collects values into a JImmutableRandomAccessList.
+     */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> toRalist()
     {
@@ -85,6 +91,9 @@ public class JImmutableCollectors
                                    (a, b) -> a.insertAll(b));
     }
 
+    /**
+     * Collects values into a hashed JImmutableSet.
+     */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSet()
     {
@@ -94,6 +103,9 @@ public class JImmutableCollectors
                                    (a, b) -> a.insertAll(b));
     }
 
+    /**
+     * Collects values into a sorted JImmutableSet using natural sort order of elements.
+     */
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> toSortedSet()
     {
@@ -103,6 +115,9 @@ public class JImmutableCollectors
                                    (a, b) -> a.insertAll(b));
     }
 
+    /**
+     * Collects values into a sorted JImmutableSet using specified Comparator.
+     */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {
@@ -112,6 +127,10 @@ public class JImmutableCollectors
                                    (a, b) -> a.insertAll(b));
     }
 
+    /**
+     * Collects values into a hashed JImmutableListMap using the specified classifier function
+     * to generate keys from the encountered elements.
+     */
     @Nonnull
     public static <T, K> Collector<T, ?, JImmutableListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {

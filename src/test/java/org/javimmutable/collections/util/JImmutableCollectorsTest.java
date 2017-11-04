@@ -43,7 +43,7 @@ import static java.util.Arrays.asList;
 public class JImmutableCollectorsTest
     extends TestCase
 {
-    public void test()
+    public void testSerial()
     {
         assertEquals(JImmutables.list(1, 2, 3), asList(1, 2, 3).stream().collect(JImmutableCollectors.toList()));
         assertEquals(JImmutables.ralist(1, 2, 3), asList(1, 2, 3).stream().collect(JImmutableCollectors.toRalist()));
@@ -52,5 +52,16 @@ public class JImmutableCollectorsTest
         assertEquals(JImmutables.sortedSet(String.CASE_INSENSITIVE_ORDER, "a", "B", "c"), asList("a", "B", "c", "A", "b", "C").stream().collect(JImmutableCollectors.toSortedSet(String.CASE_INSENSITIVE_ORDER)));
         assertEquals(JImmutables.listMap().insert(0, 1).insert(0, 5).insert(1, 14).insert(3, 37),
                      asList(1, 14, 37, 5).stream().collect(JImmutableCollectors.groupingBy(x -> x / 10)));
+    }
+
+    public void testParallel()
+    {
+        assertEquals(JImmutables.list(1, 2, 3), asList(1, 2, 3).parallelStream().collect(JImmutableCollectors.toList()));
+        assertEquals(JImmutables.ralist(1, 2, 3), asList(1, 2, 3).parallelStream().collect(JImmutableCollectors.toRalist()));
+        assertEquals(JImmutables.set(1, 2, 3), asList(1, 2, 3, 3, 1, 2).parallelStream().collect(JImmutableCollectors.toSet()));
+        assertEquals(JImmutables.sortedSet(1, 2, 3), asList(1, 2, 3, 3, 1, 2).parallelStream().collect(JImmutableCollectors.toSortedSet()));
+        assertEquals(JImmutables.sortedSet(String.CASE_INSENSITIVE_ORDER, "a", "B", "c"), asList("a", "B", "c", "A", "b", "C").parallelStream().collect(JImmutableCollectors.toSortedSet(String.CASE_INSENSITIVE_ORDER)));
+        assertEquals(JImmutables.listMap().insert(0, 1).insert(0, 5).insert(1, 14).insert(3, 37),
+                     asList(1, 14, 37, 5).parallelStream().collect(JImmutableCollectors.groupingBy(x -> x / 10)));
     }
 }
