@@ -57,11 +57,8 @@ import java.util.stream.Collector;
  */
 public class JImmutableCollectors
 {
-    static final Set<Collector.Characteristics> ORDERED = JImmutables.set(Collector.Characteristics.CONCURRENT)
-        .getSet();
-    static final Set<Collector.Characteristics> UNORDERED = JImmutables.set(Collector.Characteristics.UNORDERED,
-                                                                            Collector.Characteristics.CONCURRENT)
-        .getSet();
+    static final Set<Collector.Characteristics> ORDERED = JImmutables.<Collector.Characteristics>set().getSet();
+    static final Set<Collector.Characteristics> UNORDERED = JImmutables.set(Collector.Characteristics.UNORDERED).getSet();
 
     private JImmutableCollectors()
     {
