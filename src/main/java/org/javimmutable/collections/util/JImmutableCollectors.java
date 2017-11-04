@@ -134,7 +134,7 @@ public class JImmutableCollectors
     @Nonnull
     public static <T, K> Collector<T, ?, JImmutableListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {
-        return new CollectorImpl<>(UNORDERED,
+        return new CollectorImpl<>(ORDERED,
                                    JImmutables.listMap(),
                                    (a, v) -> a.insert(classifier.apply(v), v),
                                    (a, b) -> combine(a, b));
