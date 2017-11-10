@@ -37,16 +37,18 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.sequence.EmptySequenceNode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -194,18 +196,19 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
-        ArrayList<T> temp = new ArrayList<>();
+        InsertableSequence<T> seq = EmptySequenceNode.of();
         while (values.hasNext()) {
-            temp.add(values.next());
+            seq = seq.insert(values.next());
         }
-        return insertAllFirstReverse(temp);
+        return insertAllFirstImpl(seq);
     }
 
-    private JImmutableArrayList<T> insertAllFirstReverse(ArrayList<T> temp)
+    private JImmutableArrayList<T> insertAllFirstImpl(Sequence<T> seq)
     {
         Node<T> newRoot = root;
-        for (int x = temp.size() - 1; x >= 0; x--) {
-            newRoot = newRoot.insertFirst(temp.get(x));
+        while (!seq.isEmpty()) {
+            newRoot = newRoot.insertFirst(seq.getHead());
+            seq = seq.getTail();
         }
         return new JImmutableArrayList<>(newRoot);
     }
