@@ -36,34 +36,29 @@
 package org.javimmutable.collections.setmap;
 
 
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 
 public class JImmutableHashSetMapTest
-        extends AbstractJImmutableSetMapTestTestCase
+    extends AbstractJImmutableSetMapTestCase
 {
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.<Integer, Integer>of());
-        verifyRandom(JImmutableHashSetMap.<Integer, Integer>of(), new HashMap<Integer, Set<Integer>>());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.of());
+        verifyRandom(JImmutableHashSetMap.of(), new HashMap<>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                              MapEntry.of(2, map.getSet(2)),
-                                                                                                              MapEntry.of(3, map.getSet(3))),
+        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                        MapEntry.of(2, map.getSet(2)),
+                                                        MapEntry.of(3, map.getSet(3))),
                                           map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                                MapEntry.of(2, map.getSet(2)),
-                                                                                                                MapEntry.of(3, map.getSet(3))),
+        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                          MapEntry.of(2, map.getSet(2)),
+                                                          MapEntry.of(3, map.getSet(3))),
                                             map.iterator());
     }
 

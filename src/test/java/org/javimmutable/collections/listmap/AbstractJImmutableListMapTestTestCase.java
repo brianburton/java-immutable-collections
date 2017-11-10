@@ -36,6 +36,7 @@
 package org.javimmutable.collections.listmap;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
@@ -46,7 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public abstract class AbstractJImmutableListMapTestTestCase
-        extends TestCase
+    extends TestCase
 {
     public JImmutableListMap<Integer, Integer> verifyOperations(JImmutableListMap<Integer, Integer> map)
     {
@@ -68,9 +69,9 @@ public abstract class AbstractJImmutableListMapTestTestCase
         assertSame(map.getList(1), map.get(1));
         assertEquals(2, map.getList(1).size());
 
-        map = (JImmutableListMap<Integer, Integer>)map.insert(MapEntry.of(3, 87));
-        map = (JImmutableListMap<Integer, Integer>)map.insert(MapEntry.of(2, 87));
-        map = (JImmutableListMap<Integer, Integer>)map.insert(MapEntry.of(1, 87));
+        map = map.insert(MapEntry.of(3, 87));
+        map = map.insert(MapEntry.of(2, 87));
+        map = map.insert(MapEntry.of(1, 87));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(100, 18, 87), map.getList(1).getList());
@@ -103,7 +104,33 @@ public abstract class AbstractJImmutableListMapTestTestCase
         StandardCursorTest.listCursorTest(Arrays.asList(100, 18, 87), map.valuesCursor(1));
         StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
         StandardCursorTest.listCursorTest(Arrays.asList(300, 7, 7, 14), map.valuesCursor(3));
-        StandardCursorTest.listCursorTest(Collections.<Integer>emptyList(), map.valuesCursor(4));
+        StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+
+        verifyTransform(map);
+
         return map;
+    }
+
+    private void verifyTransform(JImmutableListMap<Integer, Integer> map)
+    {
+        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeAll = list -> list.deleteAll();
+        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeLarge = list -> list.reject(x -> x >= 10);
+        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeEven = list -> list.reject(x -> x % 2 == 0);
+
+        final int goodKey = 1;
+        final int badKey = 2;
+
+        final JImmutableListMap<Integer, Integer> start = map.deleteAll().insertAll(goodKey, Arrays.asList(1, 2, 3, 4, 5, 6));
+        final JImmutableList<Integer> oddOnly = start.getList(goodKey).reject(x -> x % 2 == 0);
+
+        assertSame(start, start.transform(goodKey, removeLarge));
+        assertEquals(start.assign(goodKey, oddOnly), start.transform(goodKey, removeEven));
+        assertSame(start, start.transform(badKey, removeLarge));
+
+        assertSame(start, start.transformIfPresent(goodKey, removeLarge));
+        assertEquals(start.assign(goodKey, oddOnly), start.transformIfPresent(goodKey, removeEven));
+        assertSame(start, start.transform(badKey, removeLarge));
+        assertSame(start, start.transformIfPresent(badKey, removeAll));
+        assertSame(start, start.transformIfPresent(badKey, removeAll));
     }
 }

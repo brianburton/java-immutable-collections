@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Interface for immutable sets.
@@ -259,4 +260,44 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     Set<T> getSet();
+
+    /**
+     * Returns a set of the same type as this containing only those elements for which
+     * predicate returns true.  Implementations are optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return set of same type as this containing only those elements for which predicate returns true
+     */
+    @Nonnull
+    default JImmutableSet<T> select(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableSet<T> answer = deleteAll();
+        for (T value : this) {
+            if (predicate.test(value)) {
+                answer = answer.insert(value);
+            }
+        }
+        return answer.size() == size() ? this : answer;
+    }
+
+    /**
+     * Returns a set of the same type as this containing all those elements for which
+     * predicate returns false.  Implementations are optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return set of same type as this containing only those elements for which predicate returns false
+     */
+    @Nonnull
+    default JImmutableSet<T> reject(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableSet<T> answer = this;
+        for (T value : this) {
+            if (predicate.test(value)) {
+                answer = answer.delete(value);
+            }
+        }
+        return answer.size() == size() ? this : answer;
+    }
 }

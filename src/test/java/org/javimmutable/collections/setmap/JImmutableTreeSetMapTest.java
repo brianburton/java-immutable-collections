@@ -43,14 +43,11 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
 public class JImmutableTreeSetMapTest
-        extends AbstractJImmutableSetMapTestTestCase
+    extends AbstractJImmutableSetMapTestCase
 {
     @SuppressWarnings("unchecked")
     public void testNormalOrder()

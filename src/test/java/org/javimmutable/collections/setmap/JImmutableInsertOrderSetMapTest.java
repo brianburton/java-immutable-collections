@@ -46,7 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 public class JImmutableInsertOrderSetMapTest
-        extends AbstractJImmutableSetMapTestTestCase
+    extends AbstractJImmutableSetMapTestCase
 {
     @SuppressWarnings("unchecked")
     public void test()

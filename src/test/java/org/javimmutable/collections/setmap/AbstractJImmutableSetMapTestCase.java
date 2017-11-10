@@ -36,6 +36,7 @@
 package org.javimmutable.collections.setmap;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
@@ -57,7 +58,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public abstract class AbstractJImmutableSetMapTestTestCase
+public abstract class AbstractJImmutableSetMapTestCase
     extends TestCase
 {
     public JImmutableSetMap<Integer, Integer> verifyOperations(JImmutableSetMap<Integer, Integer> map)
@@ -121,7 +122,34 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
         StandardCursorTest.listCursorTest(Arrays.asList(7, 14, 300), map.valuesCursor(3));
         StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+
+        verifyTransform(map);
+
         return map;
+    }
+
+
+    private void verifyTransform(JImmutableSetMap<Integer, Integer> map)
+    {
+        final Func1<JImmutableSet<Integer>, JImmutableSet<Integer>> removeAll = set -> set.deleteAll();
+        final Func1<JImmutableSet<Integer>, JImmutableSet<Integer>> removeLarge = set -> set.reject(x -> x >= 10);
+        final Func1<JImmutableSet<Integer>, JImmutableSet<Integer>> removeEven = set -> set.reject(x -> x % 2 == 0);
+
+        final int goodKey = 1;
+        final int badKey = 2;
+
+        final JImmutableSetMap<Integer, Integer> start = map.deleteAll().insertAll(goodKey, Arrays.asList(1, 2, 3, 4, 5, 6));
+        final JImmutableSet<Integer> oddOnly = start.getSet(goodKey).reject(x -> x % 2 == 0);
+
+        assertSame(start, start.transform(goodKey, removeLarge));
+        assertEquals(start.assign(goodKey, oddOnly), start.transform(goodKey, removeEven));
+        assertSame(start, start.transform(badKey, removeLarge));
+
+        assertSame(start, start.transformIfPresent(goodKey, removeLarge));
+        assertEquals(start.assign(goodKey, oddOnly), start.transformIfPresent(goodKey, removeEven));
+        assertSame(start, start.transform(badKey, removeLarge));
+        assertSame(start, start.transformIfPresent(badKey, removeAll));
+        assertSame(start, start.transformIfPresent(badKey, removeAll));
     }
 
     private void verifyContains(JImmutableSetMap<Integer, Integer> emptyMap)

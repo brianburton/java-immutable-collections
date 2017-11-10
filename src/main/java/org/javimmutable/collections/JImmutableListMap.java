@@ -168,6 +168,45 @@ public interface JImmutableListMap<K, V>
     }
 
     /**
+     * Apply the specified transform function to the List assigned to the specified key and assign the result
+     * to the key in this map.  If no List is currently assigned to the key the transform function is called
+     * with an empty list.
+     *
+     * @param key       key holding list to be updated
+     * @param transform function to update the list
+     * @return new map with update applied to list associated with key
+     */
+    default JImmutableListMap<K, V> transform(@Nonnull K key,
+                                              @Nonnull Func1<JImmutableList<V>, JImmutableList<V>> transform)
+    {
+        final JImmutableList<V> current = getList(key);
+        final JImmutableList<V> transformed = transform.apply(current);
+        return (transformed == current) ? this : assign(key, transformed);
+    }
+
+    /**
+     * Apply the specified transform function to the List assigned to the specified key and assign the result
+     * to the key in this map.  If no list is currently assigned to the key the transform function is never
+     * called and this map is returned unchanged.
+     *
+     * @param key       key holding list to be updated
+     * @param transform function to update the list
+     * @return new map with update applied to list associated with key
+     */
+    default JImmutableListMap<K, V> transformIfPresent(@Nonnull K key,
+                                                       @Nonnull Func1<JImmutableList<V>, JImmutableList<V>> transform)
+    {
+        final JImmutableList<V> current = get(key);
+        if (current != null) {
+            final JImmutableList<V> transformed = transform.apply(current);
+            if (transformed != current) {
+                return assign(key, transformed);
+            }
+        }
+        return this;
+    }
+
+    /**
      * Return the number of keys in the map.
      */
     int size();

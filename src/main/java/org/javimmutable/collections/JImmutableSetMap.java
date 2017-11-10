@@ -272,6 +272,44 @@ public interface JImmutableSetMap<K, V>
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                         @Nonnull Set<? extends V> other);
 
+    /**
+     * Apply the specified transform function to the Set assigned to the specified key and assign the result
+     * to the key in this map.  If no Set is currently assigned to the key the transform function is called
+     * with an empty set.
+     *
+     * @param key       key holding set to be updated
+     * @param transform function to update the set
+     * @return new map with update applied to set associated with key
+     */
+    default JImmutableSetMap<K, V> transform(@Nonnull K key,
+                                             @Nonnull Func1<JImmutableSet<V>, JImmutableSet<V>> transform)
+    {
+        final JImmutableSet<V> current = getSet(key);
+        final JImmutableSet<V> transformed = transform.apply(current);
+        return (transformed == current) ? this : assign(key, transformed);
+    }
+
+    /**
+     * Apply the specified transform function to the Set assigned to the specified key and assign the result
+     * to the key in this map.  If no set is currently assigned to the key the transform function is never
+     * called and this map is returned unchanged.
+     *
+     * @param key       key holding set to be updated
+     * @param transform function to update the set
+     * @return new map with update applied to set associated with key
+     */
+    default JImmutableSetMap<K, V> transformIfPresent(@Nonnull K key,
+                                                      @Nonnull Func1<JImmutableSet<V>, JImmutableSet<V>> transform)
+    {
+        final JImmutableSet<V> current = get(key);
+        if (current != null) {
+            final JImmutableSet<V> transformed = transform.apply(current);
+            if (transformed != current) {
+                return assign(key, transformed);
+            }
+        }
+        return this;
+    }
 
     /**
      * Return the number of keys in the map.
