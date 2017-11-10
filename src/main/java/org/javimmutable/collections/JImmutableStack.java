@@ -46,7 +46,7 @@ import java.util.List;
  */
 @Immutable
 public interface JImmutableStack<T>
-    extends Insertable<T>,
+    extends Insertable<T, JImmutableStack<T>>,
             Sequence<T>,
             Cursorable<T>,
             IterableStreamable<T>,

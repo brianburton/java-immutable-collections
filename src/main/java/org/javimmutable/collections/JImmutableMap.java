@@ -46,7 +46,7 @@ import java.util.Map;
  */
 @Immutable
 public interface JImmutableMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>>,
+    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>,
             Mapped<K, V>,
             IterableStreamable<JImmutableMap.Entry<K, V>>,
             Cursorable<JImmutableMap.Entry<K, V>>,
@@ -70,7 +70,7 @@ public interface JImmutableMap<K, V>
      */
     @Nonnull
     @Override
-    Insertable<Entry<K, V>> insert(@Nonnull Entry<K, V> value);
+    JImmutableMap<K, V> insert(@Nonnull Entry<K, V> value);
 
     /**
      * Search for a value within the map and return a Holder indicating if the value

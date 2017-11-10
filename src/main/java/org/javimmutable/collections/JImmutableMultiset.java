@@ -402,6 +402,17 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values);
 
+
+    /**
+     * Adds each occurrence in values to the multiset.
+     * Synonymous to calling insert on each element of values.
+     *
+     * @param values contains occurrences to be added
+     * @return new multiset reflecting the change
+     */
+    @Nonnull
+    <V extends T> JImmutableMultiset<T> insertAll(@Nonnull V[] values);
+
     /**
      * Combines all occurrences from other and the multiset. If only the multiset or
      * other contains a value, that value's count is preserved in the new multiset.

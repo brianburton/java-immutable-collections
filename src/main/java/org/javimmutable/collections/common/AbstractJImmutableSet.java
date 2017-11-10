@@ -69,6 +69,13 @@ public abstract class AbstractJImmutableSet<T>
         return (newMap != map) ? create(newMap) : this;
     }
 
+    @Nonnull
+    @Override
+    public JImmutableSet<T> getInsertableSelf()
+    {
+        return this;
+    }
+
     @Override
     @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values)

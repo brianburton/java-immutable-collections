@@ -53,7 +53,7 @@ import java.util.Map;
 @Immutable
 public interface JImmutableArray<T>
     extends Indexed<T>,
-            Insertable<JImmutableMap.Entry<Integer, T>>,
+            Insertable<JImmutableMap.Entry<Integer, T>, JImmutableArray<T>>,
             IterableStreamable<JImmutableMap.Entry<Integer, T>>,
             Cursorable<JImmutableMap.Entry<Integer, T>>,
             InvariantCheckable

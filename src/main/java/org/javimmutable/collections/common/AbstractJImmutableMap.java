@@ -36,7 +36,6 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
@@ -65,9 +64,16 @@ public abstract class AbstractJImmutableMap<K, V>
      */
     @Override
     @Nonnull
-    public Insertable<Entry<K, V>> insert(@Nonnull Entry<K, V> e)
+    public JImmutableMap<K, V> insert(@Nonnull Entry<K, V> e)
     {
         return assign(e.getKey(), e.getValue());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableMap<K, V> getInsertableSelf()
+    {
+        return this;
     }
 
     @Nonnull

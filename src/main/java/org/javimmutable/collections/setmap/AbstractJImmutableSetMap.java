@@ -39,7 +39,6 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
@@ -121,6 +120,13 @@ public abstract class AbstractJImmutableSetMap<K, V>
                                             @Nonnull Iterator<? extends V> values)
     {
         return create(contents.assign(key, insertAllInSet(getSet(key), values)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSetMap<K, V> getInsertableSelf()
+    {
+        return this;
     }
 
     @Override
@@ -360,7 +366,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> e)
+    public JImmutableSetMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> e)
     {
         return insert(e.getKey(), e.getValue());
     }

@@ -37,7 +37,6 @@ package org.javimmutable.collections.listmap;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
@@ -85,6 +84,13 @@ public abstract class AbstractJImmutableListMap<K, V>
                                           @Nullable V value)
     {
         return create(contents.assign(key, insertInList(getList(key), value)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableListMap<K, V> getInsertableSelf()
+    {
+        return this;
     }
 
     @Nonnull
@@ -143,7 +149,7 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> e)
+    public JImmutableListMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> e)
     {
         return insert(e.getKey(), e.getValue());
     }

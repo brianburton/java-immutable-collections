@@ -38,7 +38,6 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
@@ -82,9 +81,16 @@ public abstract class AbstractJImmutableArray<T>
      */
     @Override
     @Nonnull
-    public Insertable<JImmutableMap.Entry<Integer, T>> insert(@Nullable JImmutableMap.Entry<Integer, T> e)
+    public JImmutableArray<T> insert(@Nullable JImmutableMap.Entry<Integer, T> e)
     {
         return (e == null) ? this : assign(e.getKey(), e.getValue());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArray<T> getInsertableSelf()
+    {
+        return this;
     }
 
     @Nonnull

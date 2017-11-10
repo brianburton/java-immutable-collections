@@ -51,7 +51,7 @@ import java.util.function.Predicate;
  */
 @Immutable
 public interface JImmutableList<T>
-    extends Insertable<T>,
+    extends Insertable<T, JImmutableList<T>>,
             Indexed<T>,
             Cursorable<T>,
             IterableStreamable<T>,

@@ -48,7 +48,7 @@ import java.util.Set;
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
 public interface JImmutableSet<T>
-    extends Insertable<T>,
+    extends Insertable<T, JImmutableSet<T>>,
             Cursorable<T>,
             IterableStreamable<T>,
             InvariantCheckable

@@ -89,7 +89,7 @@ public final class Functions
      */
     public static <T> Cursor<T> reverse(Cursor<? extends T> cursor)
     {
-        return insertAll(JImmutableLinkedStack.<T>of(), cursor).cursor();
+        return JImmutableLinkedStack.<T>of().insertAll(cursor).cursor();
     }
 
     /**
@@ -101,12 +101,12 @@ public final class Functions
      * @param list   list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R>> A collectAll(Cursor<? extends T> cursor,
-                                                               A list,
-                                                               Func1<? super T, R> func)
+    public static <T, R, A extends Insertable<R, A>> A collectAll(Cursor<? extends T> cursor,
+                                                                  A list,
+                                                                  Func1<? super T, R> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            list = (A)list.insert(func.apply(cursor.getValue()));
+            list = list.insert(func.apply(cursor.getValue()));
         }
         return list;
     }
@@ -120,14 +120,14 @@ public final class Functions
      * @param list   list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R>> A collectSome(Cursor<? extends T> cursor,
-                                                                A list,
-                                                                Func1<? super T, Holder<R>> func)
+    public static <T, R, A extends Insertable<R, A>> A collectSome(Cursor<? extends T> cursor,
+                                                                   A list,
+                                                                   Func1<? super T, Holder<R>> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             Holder<R> mappedValue = func.apply(cursor.getValue());
             if (mappedValue.isFilled()) {
-                list = (A)list.insert(mappedValue.getValue());
+                list = list.insert(mappedValue.getValue());
             }
         }
         return list;
@@ -158,13 +158,13 @@ public final class Functions
      * @param list   list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A reject(Cursor<? extends T> cursor,
-                                                        A list,
-                                                        Func1<? super T, Boolean> func)
+    public static <T, A extends Insertable<T, A>> A reject(Cursor<? extends T> cursor,
+                                                           A list,
+                                                           Func1<? super T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (!func.apply(cursor.getValue())) {
-                list = (A)list.insert(cursor.getValue());
+                list = list.insert(cursor.getValue());
             }
         }
         return list;
@@ -179,13 +179,13 @@ public final class Functions
      * @param list   list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A select(Cursor<? extends T> cursor,
-                                                        A list,
-                                                        Func1<? super T, Boolean> func)
+    public static <T, A extends Insertable<T, A>> A select(Cursor<? extends T> cursor,
+                                                           A list,
+                                                           Func1<? super T, Boolean> func)
     {
         for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
             if (func.apply(cursor.getValue())) {
-                list = (A)list.insert(cursor.getValue());
+                list = list.insert(cursor.getValue());
             }
         }
         return list;
@@ -195,40 +195,31 @@ public final class Functions
     /**
      * Add all values form the iterator to the addable.
      */
-    @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A insertAll(A addable,
-                                                           Iterator<? extends T> iterator)
+    @Deprecated
+    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
+                                                              Iterator<? extends T> iterator)
     {
-        while (iterator.hasNext()) {
-            addable = (A)addable.insert(iterator.next());
-        }
-        return addable;
+        return addable.insertAll(iterator);
     }
 
     /**
      * Add all values form the cursor to the addable.
      */
-    @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A insertAll(A addable,
-                                                           Cursor<? extends T> cursor)
+    @Deprecated
+    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
+                                                              Cursor<? extends T> cursor)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            addable = (A)addable.insert(cursor.getValue());
-        }
-        return addable;
+        return addable.insertAll(cursor);
     }
 
     /**
      * Add all values form the array to the addable.
      */
-    @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T>> A insertAll(A addable,
-                                                           T[] values)
+    @Deprecated
+    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
+                                                              T[] values)
     {
-        for (T value : values) {
-            addable = (A)addable.insert(value);
-        }
-        return addable;
+        return addable.insertAll(values);
     }
 
     public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,

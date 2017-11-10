@@ -100,6 +100,13 @@ public abstract class JImmutableLinkedStack
         public abstract JImmutableStack<V> insert(@Nullable V value);
 
         @Nonnull
+        @Override
+        public JImmutableStack<V> getInsertableSelf()
+        {
+            return this;
+        }
+
+        @Nonnull
         public abstract JImmutableStack<V> getTail();
 
         @Nonnull

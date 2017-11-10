@@ -191,6 +191,13 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
+    public JImmutableList<T> getInsertableSelf()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public JImmutableBtreeList<T> insertFirst(@Nullable T value)
     {
         return create(root.insertAt(0, value));

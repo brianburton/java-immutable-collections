@@ -38,13 +38,15 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Interface for maps that map keys to lists of values.
  */
 @Immutable
 public interface JImmutableListMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>>,
+    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableListMap<K, V>>,
             Mapped<K, JImmutableList<V>>,
             IterableStreamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
@@ -78,7 +80,7 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     @Override
-    Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> value);
+    JImmutableListMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> value);
 
     /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
@@ -89,6 +91,46 @@ public interface JImmutableListMap<K, V>
                                    @Nullable V value);
 
     /**
+     * Adds all of the elements of the specified collection to the List for the specified key.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
+                                              @Nonnull Cursorable<? extends V> values)
+    {
+        return assign(key, getList(key).insertAll(values));
+    }
+
+    /**
+     * Adds all of the elements of the specified collection to the List for the specified key.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
+                                              @Nonnull Collection<? extends V> values)
+    {
+        return assign(key, getList(key).insertAll(values));
+    }
+
+    /**
+     * Adds all of the elements of the specified collection to the List for the specified key.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
+                                              @Nonnull Cursor<? extends V> values)
+    {
+        return assign(key, getList(key).insertAll(values));
+    }
+
+    /**
+     * Adds all of the elements of the specified collection to the List for the specified key.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
+                                              @Nonnull Iterator<? extends V> values)
+    {
+        return assign(key, getList(key).insertAll(values));
+    }
+
+    /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
      *
@@ -97,6 +139,54 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     JImmutableListMap<K, V> delete(@Nonnull K key);
+
+    /**
+     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
+     * current map if the keys were contained in the map.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> delete(@Nonnull Cursorable<? extends K> keys)
+    {
+        return delete(keys.cursor());
+    }
+
+    /**
+     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
+     * current map if the keys were contained in the map.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> delete(@Nonnull Collection<? extends K> keys)
+    {
+        return delete(keys.iterator());
+    }
+
+    /**
+     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
+     * current map if the keys were contained in the map.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> delete(@Nonnull Cursor<? extends K> keys)
+    {
+        JImmutableListMap<K, V> map = this;
+        for (Cursor<? extends K> cursor = keys.start(); cursor.hasValue(); cursor = cursor.next()) {
+            map = map.delete(cursor.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
+     * current map if the keys were contained in the map.
+     */
+    @Nonnull
+    default JImmutableListMap<K, V> delete(@Nonnull Iterator<? extends K> keys)
+    {
+        JImmutableListMap<K, V> map = this;
+        while (keys.hasNext()) {
+            map = map.delete(keys.next());
+        }
+        return map;
+    }
 
     /**
      * Return the number of keys in the map.

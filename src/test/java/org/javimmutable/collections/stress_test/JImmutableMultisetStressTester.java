@@ -755,11 +755,11 @@ public class JImmutableMultisetStressTester
         return repeats;
     }
 
-    private Insertable<String> makeIntersectInsertable(JImmutableList<String> tokens,
-                                                       Random random,
-                                                       List<String> multiList,
-                                                       Multiset<String> expected,
-                                                       Insertable<String> values)
+    private <C extends Insertable<String, C>> Insertable<String, C> makeIntersectInsertable(JImmutableList<String> tokens,
+                                                                                            Random random,
+                                                                                            List<String> multiList,
+                                                                                            Multiset<String> expected,
+                                                                                            Insertable<String, C> values)
     {
         int maxSize = multiList.size() / 20;
         for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {

@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  * Sequence that allows insertion of new element at head of the sequence.
  */
 public interface InsertableSequence<T>
-    extends Insertable<T>,
+    extends Insertable<T, InsertableSequence<T>>,
             Sequence<T>
 {
     /**
@@ -58,4 +58,11 @@ public interface InsertableSequence<T>
     @Nonnull
     @Override
     InsertableSequence<T> getTail();
+
+    @Nonnull
+    @Override
+    default InsertableSequence<T> getInsertableSelf()
+    {
+        return this;
+    }
 }

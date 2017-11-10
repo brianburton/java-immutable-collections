@@ -36,23 +36,80 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Implemented by classes that can "insert" some type of value into themselves.
  * The meaning of "insert" can vary between implementations but must be sensible in the
  * context in which it is used.  Implementing classes are free to deal with duplicates
  * as best fits their nature.  For example Lists can add duplicates but Maps cannot.
- *
- * @param <T>
  */
-public interface Insertable<T>
+public interface Insertable<T, C extends Insertable<T, C>>
 {
     /**
      * Add value to the container in some manner appropriate to the implementation.
-     *
-     * @param value
-     * @return
      */
     @Nonnull
-    Insertable<T> insert(T value);
+    C insert(T value);
+
+    /**
+     * Required by the java type system to allow the various insertAll() methods have access
+     * to this as an instance of C rather than Insertable.
+     */
+    @Nonnull
+    C getInsertableSelf();
+
+    /**
+     * Add all values to the container in some manner appropriate to the implementation.
+     */
+    @Nonnull
+    default C insertAll(@Nonnull Cursor<? extends T> cursor)
+    {
+        return insertAll(cursor.iterator());
+    }
+
+    /**
+     * Add all values to the container in some manner appropriate to the implementation.
+     */
+    @Nonnull
+    default C insertAll(@Nonnull Iterator<? extends T> iterator)
+    {
+        C container = getInsertableSelf();
+        while (iterator.hasNext()) {
+            container = container.insert(iterator.next());
+        }
+        return container;
+    }
+
+    /**
+     * Add all values to the container in some manner appropriate to the implementation.
+     */
+    @Nonnull
+    default C insertAll(@Nonnull Cursorable<? extends T> cursorable)
+    {
+        return insertAll(cursorable.cursor().iterator());
+    }
+
+    /**
+     * Add all values to the container in some manner appropriate to the implementation.
+     */
+    @Nonnull
+    default C insertAll(@Nonnull Collection<? extends T> collection)
+    {
+        return insertAll(collection.iterator());
+    }
+
+    /**
+     * Add all values to the container in some manner appropriate to the implementation.
+     */
+    @Nonnull
+    default <V extends T> C insertAll(@Nonnull V[] values)
+    {
+        C container = getInsertableSelf();
+        for (V value : values) {
+            container = container.insert(value);
+        }
+        return container;
+    }
 }

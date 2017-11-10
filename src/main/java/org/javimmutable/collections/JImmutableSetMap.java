@@ -47,7 +47,7 @@ import java.util.Set;
  */
 @Immutable
 public interface JImmutableSetMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>>,
+    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableSetMap<K, V>>,
             Mapped<K, JImmutableSet<V>>,
             IterableStreamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
             Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
@@ -75,7 +75,7 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     @Override
-    Insertable<JImmutableMap.Entry<K, V>> insert(@Nonnull JImmutableMap.Entry<K, V> value);
+    JImmutableSetMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> value);
 
     /**
      * Add value to the Set for the specified key. Note that if the value has already been

@@ -127,6 +127,13 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
+    public JImmutableList<T> getInsertableSelf()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public JImmutableArrayList<T> insert(@Nonnull Iterable<? extends T> values)
     {
         Node<T> newRoot = root;

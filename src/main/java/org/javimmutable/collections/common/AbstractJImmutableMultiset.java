@@ -45,6 +45,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
@@ -90,6 +91,13 @@ public abstract class AbstractJImmutableMultiset<T>
         } else {
             return new Editor().delta(value, count).build();
         }
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableSet<T> getInsertableSelf()
+    {
+        return this;
     }
 
     @Override
@@ -340,6 +348,13 @@ public abstract class AbstractJImmutableMultiset<T>
             }
         }
         return editor.build();
+    }
+
+    @Nonnull
+    @Override
+    public <V extends T> JImmutableMultiset<T> insertAll(@Nonnull V[] values)
+    {
+        return insertAll(IndexedIterator.iterator(IndexedArray.retained(values)));
     }
 
     @Override
