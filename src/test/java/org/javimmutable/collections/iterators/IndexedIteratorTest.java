@@ -36,10 +36,9 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.indexed.IndexedHelper;
-
-import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
@@ -62,12 +61,12 @@ public class IndexedIteratorTest
     public void testReduce()
     {
         final Double zero = 0.0;
-        final BiFunction<Double, Integer, Double> operator = (s, v) -> s + ((double)v) / 2.0;
-        assertSame(zero, emptyIterable().reduce(zero, operator));
-        assertEquals(0.0, rangeIterable(0).reduce(zero, operator));
-        assertEquals(0.5, rangeIterable(1).reduce(zero, operator));
-        assertEquals(1.5, rangeIterable(2).reduce(zero, operator));
-        assertEquals(3.0, rangeIterable(3).reduce(zero, operator));
+        final Func2<Double, Integer, Double> operator = (s, v) -> s + ((double)v) / 2.0;
+        assertSame(zero, emptyIterable().inject(zero, operator));
+        assertEquals(0.0, rangeIterable(0).inject(zero, operator));
+        assertEquals(0.5, rangeIterable(1).inject(zero, operator));
+        assertEquals(1.5, rangeIterable(2).inject(zero, operator));
+        assertEquals(3.0, rangeIterable(3).inject(zero, operator));
     }
 
     private SplitableIterable<Integer> emptyIterable()

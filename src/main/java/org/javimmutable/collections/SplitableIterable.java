@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
-import java.util.function.BiFunction;
 
 /**
  * Extension of Iterable for objects whose iterator method returns a SplitableIterator.
@@ -49,16 +48,21 @@ public interface SplitableIterable<T>
     SplitableIterator<T> iterator();
 
     /**
-     * Default reduce operation.  Can be used without requiring a stream to quickly collect
-     * information from an iterable object in a single thread.
+     * Apply the specified accumulator to all elements in iterator order calling the accumulator function
+     * for each element.  The first call to accumulator is passed initialValue and first element in the sequence.
+     * All remaining calls to accumulator are passed the result from the previous call and next element in the sequence.
+     *
+     * @param initialValue value passed to accumulator on first call
+     * @param accumulator method called to compute result
+     * @return result from last call to accumulator
      */
-    default <R> R inject(R initialValue,
-                         @Nonnull BiFunction<R, T, R> operator)
+    default <V> V inject(V initialValue,
+                         Func2<V, T, V> accumulator)
     {
-        R result = initialValue;
+        V answer = initialValue;
         for (T value : this) {
-            result = operator.apply(result, value);
+            answer = accumulator.apply(answer, value);
         }
-        return result;
+        return answer;
     }
 }

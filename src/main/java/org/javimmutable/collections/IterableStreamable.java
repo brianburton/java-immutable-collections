@@ -48,7 +48,7 @@ import java.util.stream.StreamSupport;
  * creation implementations use spliterator().
  */
 public interface IterableStreamable<T>
-    extends Iterable<T>,
+    extends SplitableIterable<T>,
             Streamable<T>
 {
     /**
@@ -179,8 +179,8 @@ public interface IterableStreamable<T>
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAllMatching(@Nonnull C collection,
-                                                              @Nonnull Predicate<T> predicate)
+    default <C extends Insertable<T, C>> C collectAll(@Nonnull C collection,
+                                                      @Nonnull Predicate<T> predicate)
     {
         for (T value : this) {
             if (predicate.test(value)) {
@@ -199,18 +199,16 @@ public interface IterableStreamable<T>
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAtMostMatching(int maxToCollect,
-                                                                 @Nonnull C collection,
-                                                                 @Nonnull Predicate<T> predicate)
+    default <C extends Insertable<T, C>> C collectAtMost(int maxToCollect,
+                                                         @Nonnull C collection,
+                                                         @Nonnull Predicate<T> predicate)
     {
-        int remaining = Math.max(0, maxToCollect);
-        for (T value : this) {
-            if (remaining == 0) {
-                break;
-            }
+        final Iterator<T> iterator = iterator();
+        while (maxToCollect > 0 && iterator.hasNext()) {
+            final T value = iterator.next();
             if (predicate.test(value)) {
                 collection = collection.insert(value);
-                remaining -= 1;
+                maxToCollect -= 1;
             }
         }
         return collection;
@@ -224,8 +222,8 @@ public interface IterableStreamable<T>
      * @param transform  transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C collectAll(@Nonnull C collection,
-                                                         @Nonnull Func1<T, A> transform)
+    default <A, C extends Insertable<A, C>> C transformAll(@Nonnull C collection,
+                                                           @Nonnull Func1<T, A> transform)
     {
         for (T value : this) {
             collection = collection.insert(transform.apply(value));
@@ -243,17 +241,15 @@ public interface IterableStreamable<T>
      * @param transform    transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C collectAtMost(int maxToCollect,
-                                                            @Nonnull C collection,
-                                                            @Nonnull Func1<T, A> transform)
+    default <A, C extends Insertable<A, C>> C transformAtMost(int maxToCollect,
+                                                              @Nonnull C collection,
+                                                              @Nonnull Func1<T, A> transform)
     {
-        int remaining = Math.max(0, maxToCollect);
-        for (T value : this) {
-            if (remaining == 0) {
-                break;
-            }
+        final Iterator<T> iterator = iterator();
+        while (maxToCollect > 0 && iterator.hasNext()) {
+            final T value = iterator.next();
             collection = collection.insert(transform.apply(value));
-            remaining -= 1;
+            maxToCollect -= 1;
         }
         return collection;
     }
@@ -266,8 +262,8 @@ public interface IterableStreamable<T>
      * @param transform  transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C collectSome(@Nonnull C collection,
-                                                          @Nonnull Func1<T, Holder<A>> transform)
+    default <A, C extends Insertable<A, C>> C transformSome(@Nonnull C collection,
+                                                            @Nonnull Func1<T, Holder<A>> transform)
     {
         for (T value : this) {
             Holder<A> transformed = transform.apply(value);
@@ -288,27 +284,25 @@ public interface IterableStreamable<T>
      * @param transform    transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C collectAtMostSome(int maxToCollect,
-                                                                @Nonnull C collection,
-                                                                @Nonnull Func1<T, Holder<A>> transform)
+    default <A, C extends Insertable<A, C>> C transformAtMostSome(int maxToCollect,
+                                                                  @Nonnull C collection,
+                                                                  @Nonnull Func1<T, Holder<A>> transform)
     {
-        int remaining = Math.max(0, maxToCollect);
-        for (T value : this) {
-            if (remaining == 0) {
-                break;
-            }
+        final Iterator<T> iterator = iterator();
+        while (maxToCollect > 0 && iterator.hasNext()) {
+            final T value = iterator.next();
             Holder<A> transformed = transform.apply(value);
             if (transformed.isFilled()) {
                 collection = collection.insert(transformed.getValue());
-                remaining -= 1;
+                maxToCollect -= 1;
             }
         }
         return collection;
     }
 
     /**
-     * Apply the transform function to all elements in iterator order and add the contents of
-     * non-empty Holders to the specified collections.  All elements for which predicate
+     * Apply the predicate to all elements in iterator order and add the elements to
+     * the specified collections based on predicate return value.  All elements for which predicate
      * returns true are added to matched.  All others are added to unmatched.  Resulting
      * collections are packaged into Partitions object and returned.
      *
@@ -350,24 +344,6 @@ public interface IterableStreamable<T>
             answer = accumulator.apply(answer, iterator.next());
         }
         return Holders.of(answer);
-    }
-
-    /**
-     * Apply the specified accumulator to all elements in iterator order calling the accumulator function
-     * for each element.  The first call to accumulator is passed initialValue and first element in the sequence.
-     * All remaining calls to accumulator are passed the result from the previous call and next element in the sequence.
-     *
-     * @param accumulator method called to compute result
-     * @return result from last call to accumulator
-     */
-    default <V> V inject(V initialValue,
-                         Func2<V, T, V> accumulator)
-    {
-        V answer = initialValue;
-        for (T value : this) {
-            answer = accumulator.apply(answer, value);
-        }
-        return answer;
     }
 
     class Partitions<T>
