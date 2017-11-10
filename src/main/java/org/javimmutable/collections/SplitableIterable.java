@@ -52,7 +52,7 @@ public interface SplitableIterable<T>
      * Default reduce operation.  Can be used without requiring a stream to quickly collect
      * information from an iterable object in a single thread.
      */
-    default <R> R reduce(R initialValue,
+    default <R> R inject(R initialValue,
                          @Nonnull BiFunction<R, T, R> operator)
     {
         R result = initialValue;
