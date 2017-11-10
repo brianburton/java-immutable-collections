@@ -45,6 +45,7 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -219,7 +220,7 @@ public final class Functions
     public static <T, A extends Insertable<T, A>> A insertAll(A addable,
                                                               T[] values)
     {
-        return addable.insertAll(values);
+        return addable.insertAll(Arrays.asList(values));
     }
 
     public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,

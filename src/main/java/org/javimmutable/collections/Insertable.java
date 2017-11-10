@@ -89,17 +89,4 @@ public interface Insertable<T, C extends Insertable<T, C>>
     {
         return insertAll(iterable.iterator());
     }
-
-    /**
-     * Add all values to the container in some manner appropriate to the implementation.
-     */
-    @Nonnull
-    default <V extends T> C insertAll(@Nonnull V[] values)
-    {
-        C container = getInsertableSelf();
-        for (V value : values) {
-            container = container.insert(value);
-        }
-        return container;
-    }
 }
