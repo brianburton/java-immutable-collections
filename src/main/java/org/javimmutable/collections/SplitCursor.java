@@ -41,11 +41,11 @@ import java.util.Objects;
 
 /**
  * Container object holding two Cursors.  The two Cursors visit different
- * elements from the same original Cursors.  The left Cursors always visits elements
- * that would that come before the elements visited by the right Cursors in the
- * original Cursors.  Visiting all elements in the left Cursors and then visiting
- * all elements in the right Cursors yields exactly the same elements as visiting
- * all elements from the original Cursors.
+ * elements from the same original Cursor.  The left Cursor always visits elements
+ * that would that come before the elements visited by the right Cursor in the
+ * original Cursor.  Visiting all elements in the left Cursor and then visiting
+ * all elements in the right Cursor yields exactly the same elements as visiting
+ * all elements from the original Cursor.
  */
 @Immutable
 public class SplitCursor<T>
