@@ -36,7 +36,10 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.Spliterator;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -82,5 +85,331 @@ public interface IterableStreamable<T>
     default Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
+    }
+
+    /**
+     * Count the total number of elements in iterator.
+     *
+     * @return total number of elements in iterator.
+     */
+    default int count()
+    {
+        int answer = 0;
+        for (T ignored : this) {
+            answer += 1;
+        }
+        return answer;
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order and return number of times
+     * predicate returned true.
+     *
+     * @param predicate test applied to each element
+     * @return number of times predicate returned true
+     */
+    default int count(@Nonnull Predicate<T> predicate)
+    {
+        int answer = 0;
+        for (T value : this) {
+            if (predicate.test(value)) {
+                answer += 1;
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order and return true if the
+     * predicate returns true for all elements.  Iteration of elements stops immediately
+     * if predicate returns false.  Returns true if there are no elements.
+     *
+     * @param predicate test to apply to each element
+     * @return true if no elements to process or predicate returned true for all elements, otherwise false
+     */
+    default boolean allMatch(@Nonnull Predicate<T> predicate)
+    {
+        for (T value : this) {
+            if (!predicate.test(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order and return true if the
+     * predicate returns true for any element.  Iteration of elements stops immediately
+     * if predicate returns true.  Returns false if there are no elements.
+     *
+     * @param predicate test to apply to each element
+     * @return false if no elements to process or predicate returned false for all elements, otherwise true
+     */
+    default boolean anyMatch(@Nonnull Predicate<T> predicate)
+    {
+        for (T value : this) {
+            if (predicate.test(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order until the predicate returns true.
+     *
+     * @param predicate test to apply to each element
+     * @return empty if predicate always returns false otherwise Holder containing value for which predicate returned true
+     */
+    default Holder<T> first(@Nonnull Predicate<T> predicate)
+    {
+        for (T value : this) {
+            if (predicate.test(value)) {
+                return Holders.of(value);
+            }
+        }
+        return Holders.of();
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order and add any elements for which
+     * predicate returns true to the collection.
+     *
+     * @param collection collection to accumulate the transformed values
+     * @param predicate  predicate applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <C extends Insertable<T, C>> C collectAllMatching(@Nonnull C collection,
+                                                              @Nonnull Predicate<T> predicate)
+    {
+        for (T value : this) {
+            if (predicate.test(value)) {
+                collection = collection.insert(value);
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the predicate to every element in iterator order and add any elements for which
+     * predicate returns true to the collection.  Iteration stops if maxToCollect values have
+     * been added to collection.
+     *
+     * @param collection collection to accumulate the transformed values
+     * @param predicate  predicate applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <C extends Insertable<T, C>> C collectAtMostMatching(int maxToCollect,
+                                                                 @Nonnull C collection,
+                                                                 @Nonnull Predicate<T> predicate)
+    {
+        int remaining = Math.max(0, maxToCollect);
+        for (T value : this) {
+            if (remaining == 0) {
+                break;
+            }
+            if (predicate.test(value)) {
+                collection = collection.insert(value);
+                remaining -= 1;
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add each transformed
+     * value to the specified collection.
+     *
+     * @param collection collection to accumulate the transformed values
+     * @param transform  transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <A, C extends Insertable<A, C>> C collectAll(@Nonnull C collection,
+                                                         @Nonnull Func1<T, A> transform)
+    {
+        for (T value : this) {
+            collection = collection.insert(transform.apply(value));
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to the specified collection.  Stops iteration and returns immediately
+     * if maxToCollect values have been added to the collection.
+     *
+     * @param maxToCollect maximum number of values to add to collection
+     * @param collection   collection to accumulate the transformed values
+     * @param transform    transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <A, C extends Insertable<A, C>> C collectAtMost(int maxToCollect,
+                                                            @Nonnull C collection,
+                                                            @Nonnull Func1<T, A> transform)
+    {
+        int remaining = Math.max(0, maxToCollect);
+        for (T value : this) {
+            if (remaining == 0) {
+                break;
+            }
+            collection = collection.insert(transform.apply(value));
+            remaining -= 1;
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to the specified collection.
+     *
+     * @param collection collection to accumulate the transformed values
+     * @param transform  transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <A, C extends Insertable<A, C>> C collectSome(@Nonnull C collection,
+                                                          @Nonnull Func1<T, Holder<A>> transform)
+    {
+        for (T value : this) {
+            Holder<A> transformed = transform.apply(value);
+            if (transformed.isFilled()) {
+                collection = collection.insert(transformed.getValue());
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to the specified collection.  Stops iteration and returns immediately
+     * if maxToCollect values have been added to the collection.
+     *
+     * @param maxToCollect maximum number of values to add to collection
+     * @param collection   collection to accumulate the transformed values
+     * @param transform    transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    default <A, C extends Insertable<A, C>> C collectAtMostSome(int maxToCollect,
+                                                                @Nonnull C collection,
+                                                                @Nonnull Func1<T, Holder<A>> transform)
+    {
+        int remaining = Math.max(0, maxToCollect);
+        for (T value : this) {
+            if (remaining == 0) {
+                break;
+            }
+            Holder<A> transformed = transform.apply(value);
+            if (transformed.isFilled()) {
+                collection = collection.insert(transformed.getValue());
+                remaining -= 1;
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to the specified collections.  All elements for which predicate
+     * returns true are added to matched.  All others are added to unmatched.  Resulting
+     * collections are packaged into Partitions object and returned.
+     *
+     * @param matched   collection to accumulate the matched elements
+     * @param unmatched collection to accumulate the unmatched elements
+     * @param predicate predicate applied to each element
+     * @return Partitions containing (matched,unmatched)
+     */
+    default <C extends Insertable<T, C>> Partitions<C> partition(@Nonnull C matched,
+                                                                 @Nonnull C unmatched,
+                                                                 @Nonnull Predicate<T> predicate)
+    {
+        for (T value : this) {
+            if (predicate.test(value)) {
+                matched = matched.insert(value);
+            } else {
+                unmatched = unmatched.insert(value);
+            }
+        }
+        return new Partitions<>(matched, unmatched);
+    }
+
+    /**
+     * Apply the specified accumulator to all elements in iterator order calling the accumulator function
+     * for each element.  The first call to accumulator is passed the first element in the sequence.
+     * All remaining calls to accumulator are passed the result from the previous call.
+     *
+     * @param accumulator method called to compute result
+     * @return empty Holder if the sequence is empty, otherwise Holder containing result from last call to accumulator
+     */
+    default Holder<T> reduce(Func2<T, T, T> accumulator)
+    {
+        Iterator<T> iterator = iterator();
+        if (!iterator.hasNext()) {
+            return Holders.of();
+        }
+        T answer = iterator.next();
+        while (iterator.hasNext()) {
+            answer = accumulator.apply(answer, iterator.next());
+        }
+        return Holders.of(answer);
+    }
+
+    /**
+     * Apply the specified accumulator to all elements in iterator order calling the accumulator function
+     * for each element.  The first call to accumulator is passed initialValue and first element in the sequence.
+     * All remaining calls to accumulator are passed the result from the previous call and next element in the sequence.
+     *
+     * @param accumulator method called to compute result
+     * @return result from last call to accumulator
+     */
+    default <V> V inject(V initialValue,
+                         Func2<V, T, V> accumulator)
+    {
+        V answer = initialValue;
+        for (T value : this) {
+            answer = accumulator.apply(answer, value);
+        }
+        return answer;
+    }
+
+    class Partitions<T>
+    {
+        private final T matched;
+        private final T unmatched;
+
+        public Partitions(T matched,
+                          T unmatched)
+        {
+            this.matched = matched;
+            this.unmatched = unmatched;
+        }
+
+        public T getMatched()
+        {
+            return matched;
+        }
+
+        public T getUnmatched()
+        {
+            return unmatched;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Partitions<?> that = (Partitions<?>)o;
+            return Objects.equals(matched, that.matched) &&
+                   Objects.equals(unmatched, that.unmatched);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(matched, unmatched);
+        }
     }
 }
