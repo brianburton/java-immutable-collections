@@ -37,7 +37,6 @@ package org.javimmutable.collections.setmap;
 
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
@@ -50,7 +49,6 @@ import org.javimmutable.collections.hash.JImmutableHashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -93,15 +91,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                            @Nonnull Cursorable<? extends V> values)
-    {
-        return insertAll(key, values.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                            @Nonnull Collection<? extends V> values)
+                                            @Nonnull Iterable<? extends V> values)
     {
         return insertAll(key, values.iterator());
     }
@@ -134,7 +124,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     {
         return !contents.find(key).isEmpty();
     }
-    //TODO: add method to unit tests
 
     @Override
     public boolean contains(@Nonnull K key,
@@ -145,14 +134,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Override
     public boolean containsAll(@Nonnull K key,
-                               @Nonnull Cursorable<? extends V> values)
-    {
-        return containsAll(key, values.cursor());
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull K key,
-                               @Nonnull Collection<? extends V> values)
+                               @Nonnull Iterable<? extends V> values)
     {
         return containsAll(key, values.iterator());
 
@@ -175,14 +157,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Override
     public boolean containsAny(@Nonnull K key,
-                               @Nonnull Cursorable<? extends V> values)
-    {
-        return containsAny(key, values.cursor());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull K key,
-                               @Nonnull Collection<? extends V> values)
+                               @Nonnull Iterable<? extends V> values)
     {
         return containsAny(key, values.iterator());
     }
@@ -220,15 +195,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                            @Nonnull Cursorable<? extends V> other)
-    {
-        return deleteAll(key, other.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                            @Nonnull Collection<? extends V> other)
+                                            @Nonnull Iterable<? extends V> other)
     {
         return deleteAll(key, other.iterator());
     }
@@ -253,15 +220,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> union(@Nonnull K key,
-                                        @Nonnull Cursorable<? extends V> other)
-    {
-        return union(key, other.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> union(@Nonnull K key,
-                                        @Nonnull Collection<? extends V> other)
+                                        @Nonnull Iterable<? extends V> other)
     {
         return union(key, other.iterator());
     }
@@ -286,15 +245,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                               @Nonnull Cursorable<? extends V> other)
-    {
-        return intersection(key, other.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                               @Nonnull Collection<? extends V> other)
+                                               @Nonnull Iterable<? extends V> other)
     {
         return intersection(key, other.iterator());
     }

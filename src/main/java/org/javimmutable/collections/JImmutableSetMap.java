@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -86,18 +85,11 @@ public interface JImmutableSetMap<K, V>
                                   @Nonnull V value);
 
     /**
-     * Adds all of the elements of the specified collection to the Set for the specified key.
+     * Adds all of the elements of the specified Iterable to the Set for the specified key.
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                     @Nonnull Cursorable<? extends V> values);
-
-    /**
-     * Adds all of the elements of the specified collection to the Set for the specified key.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                     @Nonnull Collection<? extends V> values);
+                                     @Nonnull Iterable<? extends V> values);
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
@@ -132,15 +124,7 @@ public interface JImmutableSetMap<K, V>
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
-                        @Nonnull Cursorable<? extends V> values);
-
-    /**
-     * Determines if the Set at key contains all values in the specified collection.
-     *
-     * @return true if the Set contains the values
-     */
-    boolean containsAll(@Nonnull K key,
-                        @Nonnull Collection<? extends V> values);
+                        @Nonnull Iterable<? extends V> values);
 
     /**
      * Determines if the Set at key contains all values in the specified collection.
@@ -158,22 +142,13 @@ public interface JImmutableSetMap<K, V>
     boolean containsAll(@Nonnull K key,
                         @Nonnull Iterator<? extends V> values);
 
-
-    /**
-     * Determines if the Set at key conains any values in the specified collection.
-     *
-     * @return true if the Set contains a value
-     */
-    boolean containsAny(@Nonnull K key,
-                        @Nonnull Cursorable<? extends V> values);
-
     /**
      * Determines if the Set at key contains any values in the specified collection.
      *
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull K key,
-                        @Nonnull Collection<? extends V> values);
+                        @Nonnull Iterable<? extends V> values);
 
     /**
      * Determines if the Set at key contains any values in the specified collection.
@@ -213,15 +188,7 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                     @Nonnull Cursorable<? extends V> other);
-
-    /**
-     * Deletes the elements in other at the specified key. Returns a new map if the
-     * values were deleted or the current map if the key was not contained in the map.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                     @Nonnull Collection<? extends V> other);
+                                     @Nonnull Iterable<? extends V> other);
 
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
@@ -244,14 +211,7 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
-                                 @Nonnull Cursorable<? extends V> other);
-
-    /**
-     * Adds all values from other to the Set at key
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> union(@Nonnull K key,
-                                 @Nonnull Collection<? extends V> other);
+                                 @Nonnull Iterable<? extends V> other);
 
     /**
      * Adds all values from other to the Set at key
@@ -274,16 +234,7 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Cursorable<? extends V> other);
-
-    /**
-     * Removes all values from the Set at key that are not contained in the other
-     * collection. If the given key is not present in the map, an empty set is added
-     * to the map.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Collection<? extends V> other);
+                                        @Nonnull Iterable<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other

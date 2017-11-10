@@ -42,12 +42,12 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.IterableCursor;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +58,7 @@ import java.util.Random;
 import java.util.Set;
 
 public abstract class AbstractJImmutableSetMapTestTestCase
-        extends TestCase
+    extends TestCase
 {
     public JImmutableSetMap<Integer, Integer> verifyOperations(JImmutableSetMap<Integer, Integer> map)
     {
@@ -79,32 +79,32 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         map = map.insert(1, 18);
         assertFalse(map.isEmpty());
         assertEquals(1, map.size());
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 18)), map.getSet(1).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 18)), map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
         assertEquals(2, map.getSet(1).size());
 
-        map = (JImmutableSetMap<Integer, Integer>)map.insert(MapEntry.of(3, 87));
-        map = (JImmutableSetMap<Integer, Integer>)map.insert(MapEntry.of(2, 87));
-        map = (JImmutableSetMap<Integer, Integer>)map.insert(MapEntry.of(1, 87));
-        map = (JImmutableSetMap<Integer, Integer>)map.insert(MapEntry.of(1, 87));
+        map = map.insert(MapEntry.of(3, 87));
+        map = map.insert(MapEntry.of(2, 87));
+        map = map.insert(MapEntry.of(1, 87));
+        map = map.insert(MapEntry.of(1, 87));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
         assertEquals(3, map.getSet(1).size());
         assertSame(map.getSet(1), map.get(1));
-        assertEquals(new HashSet<Integer>(Arrays.asList(87)), map.getSet(2).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(87)), map.getSet(2).getSet());
         assertSame(map.getSet(2), map.get(2));
-        assertEquals(new HashSet<Integer>(Arrays.asList(87)), map.getSet(3).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(87)), map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
 
         map = map.assign(3, JImmutableHashSet.<Integer>of().insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
-        assertEquals(new HashSet<Integer>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
-        assertEquals(new HashSet<Integer>(Arrays.asList(87)), map.getSet(2).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(87)), map.getSet(2).getSet());
         assertSame(map.getSet(2), map.get(2));
-        assertEquals(new HashSet<Integer>(Arrays.asList(300, 7, 14)), map.getSet(3).getSet());
+        assertEquals(new HashSet<>(Arrays.asList(300, 7, 14)), map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
 
         final JImmutableSet<Integer> defaultValue = JImmutableHashSet.<Integer>of().insert(17);
@@ -120,7 +120,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         StandardCursorTest.listCursorTest(Arrays.asList(18, 87, 100), map.valuesCursor(1));
         StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
         StandardCursorTest.listCursorTest(Arrays.asList(7, 14, 300), map.valuesCursor(3));
-        StandardCursorTest.listCursorTest(Collections.<Integer>emptyList(), map.valuesCursor(4));
+        StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
         return map;
     }
 
@@ -200,10 +200,9 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         assertEquals(false, jetMap.contains(1, 20));
 
         final Set<Integer> values = asSet(1, 2, 3, 4);
-        HashMap<Integer, Set<Integer>> expected = new HashMap<Integer, Set<Integer>>();
+        HashMap<Integer, Set<Integer>> expected = new HashMap<>();
         expected.put(1, values);
         verifyExpected(expected, 1, values);
-        verifyContents(jetMap.union(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.union(1, values), expected);
         verifyContents(jetMap.union(1, IterableCursor.of(values)), expected);
         verifyContents(jetMap.union(1, values.iterator()), expected);
@@ -211,9 +210,9 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         //intersect with larger set
         jetMap = emptyMap.union(1, values);
         final Set<Integer> withExtra = asSet(0, 1, 2, 3, 4, 5);
-        Set<Integer> intersectionSet = new HashSet<Integer>(withExtra);
+        Set<Integer> intersectionSet = new HashSet<>(withExtra);
         JImmutableSet<Integer> intersectionJet = emptyJet.union(withExtra);
-        verifyContents(jetMap.intersection(1, IterableCursorable.of(withExtra)), expected);
+        verifyContents(jetMap.intersection(1, asIterable(withExtra)), expected);
         verifyContents(jetMap.intersection(1, withExtra), expected);
         verifyContents(jetMap.intersection(1, IterableCursor.of(withExtra)), expected);
         verifyContents(jetMap.intersection(1, withExtra.iterator()), expected);
@@ -222,9 +221,9 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 
         //intersect with smaller set
         jetMap = emptyMap.union(1, withExtra);
-        intersectionSet = new HashSet<Integer>(values);
+        intersectionSet = new HashSet<>(values);
         intersectionJet = emptyJet.union(values);
-        verifyContents(jetMap.intersection(1, IterableCursorable.of(values)), expected);
+        verifyContents(jetMap.intersection(1, asIterable(values)), expected);
         verifyContents(jetMap.intersection(1, values), expected);
         verifyContents(jetMap.intersection(1, IterableCursor.of(values)), expected);
         verifyContents(jetMap.intersection(1, values.iterator()), expected);
@@ -235,15 +234,17 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         expected.put(1, emptySet);
         verifyExpected(expected, 1, emptySet);
         verifyExpected(expected, 1, emptySet);
-        verifyContents(emptyMap.intersection(1, IterableCursorable.of(withExtra)), expected);
+        verifyContents(emptyMap.intersection(1, asIterable(withExtra)), expected);
         verifyContents(emptyMap.intersection(1, withExtra), expected);
         verifyContents(emptyMap.intersection(1, IterableCursor.of(withExtra)), expected);
         verifyContents(emptyMap.intersection(1, withExtra.iterator()), expected);
+        verifyContents(emptyMap.intersection(1, intersectionJet), expected);
+        verifyContents(emptyMap.intersection(1, intersectionSet), expected);
 
         //non-empty set intersection with empty set
-        intersectionSet = new HashSet<Integer>();
+        intersectionSet = new HashSet<>();
         intersectionJet = emptyJet;
-        verifyContents(jetMap.intersection(1, IterableCursorable.of(emptySet)), expected);
+        verifyContents(jetMap.intersection(1, asIterable(emptySet)), expected);
         verifyContents(jetMap.intersection(1, emptySet), expected);
         verifyContents(jetMap.intersection(1, IterableCursor.of(emptySet)), expected);
         verifyContents(jetMap.intersection(1, emptySet.iterator()), expected);
@@ -254,7 +255,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         expected.put(1, asSet(0, 5));
         verifyExpected(expected, 1, asSet(0, 5));
         jetMap = emptyMap.union(1, withExtra);
-        verifyContents(jetMap.deleteAll(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.deleteAll(1, values), expected);
         verifyContents(jetMap.deleteAll(1, IterableCursor.of(values)), expected);
         verifyContents(jetMap.deleteAll(1, values.iterator()), expected);
@@ -263,7 +263,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         jetMap = emptyMap.union(1, values);
         expected.put(1, emptySet);
         verifyExpected(expected, 1, emptySet);
-        verifyContents(jetMap.deleteAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.deleteAll(1, withExtra), expected);
         verifyContents(jetMap.deleteAll(1, IterableCursor.of(withExtra)), expected);
         verifyContents(jetMap.deleteAll(1, withExtra.iterator()), expected);
@@ -272,7 +271,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         jetMap = emptyMap;
         expected.put(1, values);
         verifyExpected(expected, 1, values);
-        verifyContents(jetMap.insertAll(1, IterableCursorable.of(values)), expected);
         verifyContents(jetMap.insertAll(1, values), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(values)), expected);
         verifyContents(jetMap.insertAll(1, values.iterator()), expected);
@@ -281,7 +279,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         jetMap = emptyMap.union(1, values);
         expected.put(1, withExtra);
         verifyExpected(expected, 1, withExtra);
-        verifyContents(jetMap.insertAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
@@ -290,7 +287,6 @@ public abstract class AbstractJImmutableSetMapTestTestCase
         jetMap = emptyMap.union(1, Arrays.asList(4, 5, 6, 7));
         expected.put(1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyExpected(expected, 1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
-        verifyContents(jetMap.insertAll(1, IterableCursorable.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, IterableCursor.of(withExtra)), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
@@ -307,24 +303,20 @@ public abstract class AbstractJImmutableSetMapTestTestCase
             for (Integer v : values) {
                 assertEquals(true, jetMap.contains(key, v));
             }
-            assertEquals(true, jetMap.containsAll(key, IterableCursorable.of(values)));
             assertEquals(true, jetMap.containsAll(key, values));
             assertEquals(true, jetMap.containsAll(key, IterableCursor.of(values)));
             assertEquals(true, jetMap.containsAll(key, values.iterator()));
 
-            assertEquals(!values.isEmpty(), jetMap.containsAny(key, IterableCursorable.of(values)));
             assertEquals(!values.isEmpty(), jetMap.containsAny(key, values));
             assertEquals(!values.isEmpty(), jetMap.containsAny(key, IterableCursor.of(values)));
             assertEquals(!values.isEmpty(), jetMap.containsAny(key, values.iterator()));
 
             if (!values.isEmpty()) {
                 List<Integer> subset = Arrays.asList(values.iterator().next());
-                assertEquals(true, jetMap.containsAll(key, IterableCursorable.of(subset)));
                 assertEquals(true, jetMap.containsAll(key, subset));
                 assertEquals(true, jetMap.containsAll(key, IterableCursor.of(subset)));
                 assertEquals(true, jetMap.containsAll(key, subset.iterator()));
 
-                assertEquals(true, jetMap.containsAny(key, IterableCursorable.of(subset)));
                 assertEquals(true, jetMap.containsAny(key, subset));
                 assertEquals(true, jetMap.containsAny(key, IterableCursor.of(subset)));
                 assertEquals(true, jetMap.containsAny(key, subset.iterator()));
@@ -343,7 +335,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 
             for (int loops = 0; loops < (4 * size); ++loops) {
                 Integer key = random.nextInt(size);
-                Set<Integer> set = new HashSet<Integer>();
+                Set<Integer> set = new HashSet<>();
                 for (int n = random.nextInt(3); n > 0; --n) {
                     set.add(random.nextInt(size));
                 }
@@ -409,7 +401,7 @@ public abstract class AbstractJImmutableSetMapTestTestCase
                     if (expected.containsKey(key)) {
                         expected.get(key).retainAll(set);
                     } else {
-                        expected.put(key, new HashSet<Integer>());
+                        expected.put(key, new HashSet<>());
                     }
                     assertEquals(expected.size(), jetMap.size());
                     break;
@@ -451,11 +443,17 @@ public abstract class AbstractJImmutableSetMapTestTestCase
 
     protected Set<Integer> asSet(int... args)
     {
-        Set<Integer> set = new HashSet<Integer>();
+        Set<Integer> set = new HashSet<>();
         for (int arg : args) {
             set.add(arg);
         }
         return set;
+    }
+
+    // forces java type system to use Iterable version of method
+    protected Iterable<Integer> asIterable(Collection<Integer> values)
+    {
+        return values;
     }
 
     protected void verifyExpected(Map<Integer, Set<Integer>> expected,
