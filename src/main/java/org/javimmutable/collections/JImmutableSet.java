@@ -59,6 +59,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the value
      */
     @Nonnull
+    @Override
     JImmutableSet<T> insert(@Nonnull T value);
 
     /**
@@ -67,22 +68,16 @@ public interface JImmutableSet<T>
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values);
-
+    @Override
+    JImmutableSet<T> insertAll(@Nonnull Iterable<? extends T> values);
+    
     /**
      * Adds all of the elements of the specified collection to the set.
      *
      * @return instance of set containing the collection
      */
     @Nonnull
-    JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values);
-
-    /**
-     * Adds all of the elements of the specified collection to the set.
-     *
-     * @return instance of set containing the collection
-     */
-    @Nonnull
+    @Override
     JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -91,6 +86,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the collection
      */
     @Nonnull
+    @Override
     JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**

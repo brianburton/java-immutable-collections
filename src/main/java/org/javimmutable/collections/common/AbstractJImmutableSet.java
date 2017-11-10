@@ -78,14 +78,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insertAll(@Nonnull Cursorable<? extends T> values)
-    {
-        return union(values.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableSet<T> insertAll(@Nonnull Collection<? extends T> values)
+    public JImmutableSet<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return union(values.iterator());
     }

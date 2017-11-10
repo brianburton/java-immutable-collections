@@ -36,7 +36,6 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
@@ -50,7 +49,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -212,14 +210,7 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableBtreeList<T> insertAll(@Nonnull Cursorable<? extends T> values)
-    {
-        return insertAllLast(values);
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAll(@Nonnull Collection<? extends T> values)
+    public JImmutableBtreeList<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return insertAllLast(values);
     }
@@ -241,15 +232,7 @@ public class JImmutableBtreeList<T>
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
-                                            @Nonnull Cursorable<? extends T> values)
-    {
-        return insertAll(index, values.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAll(int index,
-                                            @Nonnull Collection<? extends T> values)
+                                            @Nonnull Iterable<? extends T> values)
     {
         return insertAll(index, values.iterator());
     }
@@ -286,14 +269,7 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
-    {
-        return insertAll(0, values);
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
+    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
         return insertAll(0, values);
     }
@@ -315,17 +291,11 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
+    public JImmutableBtreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
         return insertAll(size(), values);
     }
 
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAllLast(@Nonnull Collection<? extends T> values)
-    {
-        return insertAll(size(), values);
-    }
 
     @Nonnull
     @Override
@@ -492,7 +462,7 @@ public class JImmutableBtreeList<T>
 
         @Nonnull
         @Override
-        public Builder<T> add(Collection<? extends T> source)
+        public Builder<T> add(Iterable<? extends T> source)
         {
             add(source.iterator());
             return this;

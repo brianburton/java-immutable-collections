@@ -508,7 +508,7 @@ public class JImmutableSetMapStressTester
                           Cursorable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
-        expected.put(key, set.insertAll(values));
+        expected.put(key, set.insertAll(values.cursor()));
     }
 
     private int randomGrowingSize(Random random)

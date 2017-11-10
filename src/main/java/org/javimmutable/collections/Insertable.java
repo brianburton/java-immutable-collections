@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -86,18 +85,9 @@ public interface Insertable<T, C extends Insertable<T, C>>
      * Add all values to the container in some manner appropriate to the implementation.
      */
     @Nonnull
-    default C insertAll(@Nonnull Cursorable<? extends T> cursorable)
+    default C insertAll(@Nonnull Iterable<? extends T> iterable)
     {
-        return insertAll(cursorable.cursor().iterator());
-    }
-
-    /**
-     * Add all values to the container in some manner appropriate to the implementation.
-     */
-    @Nonnull
-    default C insertAll(@Nonnull Collection<? extends T> collection)
-    {
-        return insertAll(collection.iterator());
+        return insertAll(iterable.iterator());
     }
 
     /**

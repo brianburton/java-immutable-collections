@@ -36,7 +36,6 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.SplitableIterator;
@@ -48,7 +47,6 @@ import org.javimmutable.collections.cursors.Cursors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -159,14 +157,7 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableArrayList<T> insertAll(@Nonnull Cursorable<? extends T> values)
-    {
-        return insertAllLast(values);
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableArrayList<T> insertAll(@Nonnull Collection<? extends T> values)
+    public JImmutableArrayList<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return insertAllLast(values);
     }
@@ -187,18 +178,9 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableArrayList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values)
+    public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
-        return insertAllFirst(values.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableArrayList<T> insertAllFirst(@Nonnull Collection<? extends T> values)
-    {
-        ArrayList<T> temp = new ArrayList<>(values.size());
-        temp.addAll(values);
-        return insertAllFirstReverse(temp);
+        return insertAllFirst(values.iterator());
     }
 
     @Nonnull
@@ -230,14 +212,7 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableArrayList<T> insertAllLast(@Nonnull Cursorable<? extends T> values)
-    {
-        return insertAllLast(values.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableArrayList<T> insertAllLast(@Nonnull Collection<? extends T> values)
+    public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
         return insertAllLast(values.iterator());
     }
@@ -389,7 +364,7 @@ public class JImmutableArrayList<T>
 
         @Nonnull
         @Override
-        public Builder<T> add(Collection<? extends T> source)
+        public Builder<T> add(Iterable<? extends T> source)
         {
             builder.add(source);
             return this;

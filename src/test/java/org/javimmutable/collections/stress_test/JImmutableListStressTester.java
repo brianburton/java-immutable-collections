@@ -36,7 +36,6 @@
 package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public class JImmutableListStressTester
                 }
                 case 4: { //insertAll(Cursorable)
                     List<String> values = makeInsertList(tokens, random);
-                    list = list.insertAll(IterableCursorable.of(values));
+                    list = list.insertAll(plainIterable(values));
                     expected.addAll(values);
                     break;
                 }
@@ -119,7 +118,7 @@ public class JImmutableListStressTester
                 }
                 case 6: { //insertAllLast(Cursorable)
                     List<String> values = makeInsertList(tokens, random);
-                    list = list.insertAllLast(IterableCursorable.of(values));
+                    list = list.insertAllLast(plainIterable(values));
                     expected.addAll(values);
                     break;
                 }
@@ -131,7 +130,7 @@ public class JImmutableListStressTester
                 }
                 case 8: { //insertAllFirst(Cursorable)
                     List<String> values = makeInsertList(tokens, random);
-                    list = list.insertAllFirst(IterableCursorable.of(values));
+                    list = list.insertAllFirst(plainIterable(values));
                     expected.addAll(0, values);
                     break;
                 }

@@ -360,7 +360,8 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> insertAll(@Nonnull Cursorable<? extends T> values);
+    @Override
+    JImmutableMultiset<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds each occurrence in values to the multiset.
@@ -370,16 +371,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> insertAll(@Nonnull Collection<? extends T> values);
-
-    /**
-     * Adds each occurrence in values to the multiset.
-     * Synonymous to calling insert on each element of values.
-     *
-     * @param values contains occurrences to be added
-     * @return new multiset reflecting the change
-     */
-    @Nonnull
+    @Override
     JImmutableMultiset<T> insertAll(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -390,6 +382,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
+    @Override
     JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -411,6 +404,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
+    @Override
     <V extends T> JImmutableMultiset<T> insertAll(@Nonnull V[] values);
 
     /**

@@ -170,7 +170,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         try {
-            list.insertAll(-1, getCursorable(Collections.<Integer>emptyList()));
+            list.insertAll(-1, plainIterable(Collections.<Integer>emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -194,7 +194,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         try {
-            list.insertAll(-1, getCursorable(Arrays.asList(0, 1, 2, 3)));
+            list.insertAll(-1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -219,7 +219,7 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         try {
-            list.insertAll(-1, getCursorable(Collections.<Integer>emptyList()));
+            list.insertAll(-1, plainIterable(Collections.<Integer>emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -243,7 +243,7 @@ public class JImmutableBtreeListTest
 
         //values into values
         try {
-            list.insertAll(-1, getCursorable(Arrays.asList(0, 1, 2, 3)));
+            list.insertAll(-1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -269,7 +269,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        checkCursorable = list.insertAll(0, getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
         checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
@@ -280,7 +280,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         expected = list.insert(4).insert(5);
-        checkCursorable = list.insertAll(0, getCursorable(Arrays.asList(4, 5)));
+        checkCursorable = list.insertAll(0, plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAll(0, Arrays.asList(4, 5));
         checkCursor = list.insertAll(0, getCursor(Arrays.asList(4, 5)));
         checkIterator = list.insertAll(0, Arrays.asList(4, 5).iterator());
@@ -291,7 +291,7 @@ public class JImmutableBtreeListTest
 
         //empty into values
         list = list.insert(4).insert(5);
-        checkCursorable = list.insertAll(0, getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
         checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
@@ -303,7 +303,7 @@ public class JImmutableBtreeListTest
         //values into values
         expected = JImmutableBtreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
-        checkCursorable = list.insertAll(0, getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCursorable = list.insertAll(0, plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAll(0, Arrays.asList(0, 1, 2, 3));
         checkCursor = list.insertAll(0, getCursor(Arrays.asList(0, 1, 2, 3)));
         checkIterator = list.insertAll(0, Arrays.asList(0, 1, 2, 3).iterator());
@@ -316,7 +316,7 @@ public class JImmutableBtreeListTest
         //empty into empty -- should fail
         list = JImmutableBtreeList.of();
         try {
-            list.insertAll(1, getCursorable(Collections.<Integer>emptyList()));
+            list.insertAll(1, plainIterable(Collections.<Integer>emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -340,7 +340,7 @@ public class JImmutableBtreeListTest
 
         //values into empty -- should fail
         try {
-            list.insertAll(1, getCursorable(Arrays.asList(1, 2)));
+            list.insertAll(1, plainIterable(Arrays.asList(1, 2)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -365,7 +365,7 @@ public class JImmutableBtreeListTest
         //empty into values -- should work
         list = list.insert(0).insert(3);
         expected = list;
-        checkCursorable = list.insertAll(0, getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
         checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
@@ -377,7 +377,7 @@ public class JImmutableBtreeListTest
         //values into values -- should work
         expected = JImmutableBtreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAll(1, getCursorable(Arrays.asList(1, 2)));
+        checkCursorable = list.insertAll(1, plainIterable(Arrays.asList(1, 2)));
         checkCollection = list.insertAll(1, Arrays.asList(1, 2));
         checkCursor = list.insertAll(1, getCursor(Arrays.asList(1, 2)));
         checkIterator = list.insertAll(1, Arrays.asList(1, 2).iterator());
@@ -390,7 +390,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         expected = list;
-        checkCursorable = list.insertAll(list.size(), getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(list.size(), Collections.<Integer>emptyList());
         checkCursor = list.insertAll(list.size(), getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
@@ -401,7 +401,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         expected = list.insert(0).insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAll(list.size(), getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAll(list.size(), Arrays.asList(0, 1, 2, 3));
         checkCursor = list.insertAll(list.size(), getCursor(Arrays.asList(0, 1, 2, 3)));
         checkIterator = list.insertAll(list.size(), Arrays.asList(0, 1, 2, 3).iterator());
@@ -412,7 +412,7 @@ public class JImmutableBtreeListTest
 
         //empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAll(list.size(), getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(list.size(), Collections.<Integer>emptyList());
         checkCursor = list.insertAll(list.size(), getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
@@ -423,7 +423,7 @@ public class JImmutableBtreeListTest
 
         //values into values
         expected = expected.insert(4).insert(5);
-        checkCursorable = list.insertAll(list.size(), getCursorable(Arrays.asList(4, 5)));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAll(list.size(), Arrays.asList(4, 5));
         checkCursor = list.insertAll(list.size(), getCursor(Arrays.asList(4, 5)));
         checkIterator = list.insertAll(list.size(), Arrays.asList(4, 5).iterator());
@@ -436,7 +436,7 @@ public class JImmutableBtreeListTest
         // empty into empty
         list = JImmutableBtreeList.of();
         try {
-            list.insertAll(list.size() + 1, getCursorable(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, plainIterable(Collections.<Integer>emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -460,7 +460,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         try {
-            list.insertAll(list.size() + 1, getCursorable(Arrays.asList(0, 1, 2, 3)));
+            list.insertAll(list.size() + 1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -485,7 +485,7 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         try {
-            list.insertAll(list.size() + 1, getCursorable(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, plainIterable(Collections.<Integer>emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -509,7 +509,7 @@ public class JImmutableBtreeListTest
 
         //values into values
         try {
-            list.insertAll(list.size() + 1, getCursorable(Arrays.asList(0, 1, 2, 3)));
+            list.insertAll(list.size() + 1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
@@ -537,7 +537,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        JImmutableBtreeList<Integer> checkCursorable = list.insertAllFirst(getCursorable(Collections.<Integer>emptyList()));
+        JImmutableBtreeList<Integer> checkCursorable = list.insertAllFirst(plainIterable(Collections.<Integer>emptyList()));
         JImmutableBtreeList<Integer> checkCollection = list.insertAllFirst(Collections.<Integer>emptyList());
         JImmutableBtreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.<Integer>emptyList()));
         JImmutableBtreeList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
@@ -548,7 +548,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         expected = list.insert(4).insert(5);
-        checkCursorable = list.insertAllFirst(getCursorable(Arrays.asList(4, 5)));
+        checkCursorable = list.insertAllFirst(plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAllFirst(Arrays.asList(4, 5));
         checkCursor = list.insertAllFirst(getCursor(Arrays.asList(4, 5)));
         checkIterator = list.insertAllFirst(Arrays.asList(4, 5).iterator());
@@ -560,7 +560,7 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         expected = list;
-        checkCursorable = list.insertAllFirst(getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllFirst(plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAllFirst(Collections.<Integer>emptyList());
         checkCursor = list.insertAllFirst(getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
@@ -572,7 +572,7 @@ public class JImmutableBtreeListTest
         //values into values
         expected = JImmutableBtreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
-        checkCursorable = list.insertAllFirst(getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCursorable = list.insertAllFirst(plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAllFirst(Arrays.asList(0, 1, 2, 3));
         checkCursor = list.insertAllFirst(getCursor(Arrays.asList(0, 1, 2, 3)));
         checkIterator = list.insertAllFirst(Arrays.asList(0, 1, 2, 3).iterator());
@@ -588,7 +588,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        JImmutableBtreeList<Integer> checkCursorable = list.insertAll(getCursorable(Collections.<Integer>emptyList()));
+        JImmutableBtreeList<Integer> checkCursorable = list.insertAll(plainIterable(Collections.<Integer>emptyList()));
         JImmutableBtreeList<Integer> checkCollection = list.insertAll(Collections.<Integer>emptyList());
         JImmutableBtreeList<Integer> checkCursor = list.insertAll(getCursor(Collections.<Integer>emptyList()));
         JImmutableBtreeList<Integer> checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
@@ -599,7 +599,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         expected = list.insert(0);
-        checkCursorable = list.insertAll(getCursorable(Collections.singletonList(0)));
+        checkCursorable = list.insertAll(plainIterable(Collections.singletonList(0)));
         checkCollection = list.insertAll(Collections.singletonList(0));
         checkCursor = list.insertAll(getCursor(Collections.singletonList(0)));
         checkIterator = list.insertAll(Collections.singletonList(0).iterator());
@@ -611,7 +611,7 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(0);
         expected = list;
-        checkCursorable = list.insertAll(getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAll(Collections.<Integer>emptyList());
         checkCursor = list.insertAll(getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
@@ -622,7 +622,7 @@ public class JImmutableBtreeListTest
 
         //values into values
         expected = list.insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAll(getCursorable(Arrays.asList(1, 2, 3)));
+        checkCursorable = list.insertAll(plainIterable(Arrays.asList(1, 2, 3)));
         checkCollection = list.insertAll(Arrays.asList(1, 2, 3));
         checkCursor = list.insertAll(getCursor(Arrays.asList(1, 2, 3)));
         checkIterator = list.insertAll(Arrays.asList(1, 2, 3).iterator());
@@ -635,7 +635,7 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         expected = list;
-        checkCursorable = list.insertAllLast(getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllLast(plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAllLast(Collections.<Integer>emptyList());
         checkCursor = list.insertAllLast(getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAllLast(Collections.<Integer>emptyList().iterator());
@@ -646,7 +646,7 @@ public class JImmutableBtreeListTest
 
         //values into empty
         expected = list.insert(0).insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAllLast(getCursorable(Arrays.asList(0, 1, 2, 3)));
+        checkCursorable = list.insertAllLast(plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAllLast(Arrays.asList(0, 1, 2, 3));
         checkCursor = list.insertAllLast(getCursor(Arrays.asList(0, 1, 2, 3)));
         checkIterator = list.insertAll(Arrays.asList(0, 1, 2, 3).iterator());
@@ -658,7 +658,7 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
         expected = list;
-        checkCursorable = list.insertAllLast(getCursorable(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllLast(plainIterable(Collections.<Integer>emptyList()));
         checkCollection = list.insertAllLast(Collections.<Integer>emptyList());
         checkCursor = list.insertAllLast(getCursor(Collections.<Integer>emptyList()));
         checkIterator = list.insertAllLast(Collections.<Integer>emptyList().iterator());
@@ -669,7 +669,7 @@ public class JImmutableBtreeListTest
 
         //values into values
         expected = list.insert(4).insert(5);
-        checkCursorable = list.insertAllLast(getCursorable(Arrays.asList(4, 5)));
+        checkCursorable = list.insertAllLast(plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAllLast(Arrays.asList(4, 5));
         checkCursor = list.insertAllLast(getCursor(Arrays.asList(4, 5)));
         checkIterator = list.insertAllLast(Arrays.asList(4, 5).iterator());
@@ -881,7 +881,7 @@ public class JImmutableBtreeListTest
                 switch (random.nextInt(5)) {
                 case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
                     List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllFirst(getCursorable(values)) : list.insertAllFirst(getCursor(values));
+                    list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
                     expected.addAll(0, values);
                     break;
                 }
@@ -893,7 +893,7 @@ public class JImmutableBtreeListTest
                 }
                 case 2: { //insertAllLast(Cursorable)
                     List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllLast(getCursorable(values)) : list.insertAllLast(getCursor(values));
+                    list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(getCursor(values));
                     expected.addAll(values);
                     break;
                 }
@@ -1042,7 +1042,7 @@ public class JImmutableBtreeListTest
                 int parameter = random.nextInt(4);
                 switch (parameter) {
                 case 0:  //insertAll(Cursorable)
-                    list = list.insertAll(index, getCursorable(values));
+                    list = list.insertAll(index, plainIterable(values));
                     break;
                 case 1: //insertAll(Collection)
                     list = list.insertAll(index, values);
@@ -1297,9 +1297,9 @@ public class JImmutableBtreeListTest
         return list;
     }
 
-    private IterableCursorable<Integer> getCursorable(List<Integer> values)
+    private Iterable<Integer> plainIterable(List<Integer> values)
     {
-        return IterableCursorable.of(values);
+        return () -> values.iterator();
     }
 
     private Cursor<Integer> getCursor(List<Integer> values)

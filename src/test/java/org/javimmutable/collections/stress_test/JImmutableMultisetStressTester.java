@@ -139,7 +139,7 @@ public class JImmutableMultisetStressTester
                 }
                 case 3: { //insertAll(Cursorable)
                     Multiset<String> values = HashMultiset.create(makeInsertJList(tokens, random, multiList, expected));
-                    multi = multi.insertAll(IterableCursorable.of(values));
+                    multi = multi.insertAll(plainIterable(values));
                     expected.addAll(values);
                     multiList.addAll(values);
                     break;

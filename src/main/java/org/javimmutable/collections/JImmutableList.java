@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -117,7 +116,8 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Cursorable<? extends T> values);
+    @Override
+    JImmutableList<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -125,14 +125,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(@Nonnull Collection<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
+    @Override
     JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -141,6 +134,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -149,16 +143,8 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
-
+    JImmutableList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
+    
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
@@ -182,17 +168,8 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Collection<? extends T> values);
-
+    JImmutableList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
+    
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()

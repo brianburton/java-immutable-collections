@@ -37,7 +37,6 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
@@ -95,7 +94,7 @@ public class JImmutableRandomAccessListStressTester
                 }
                 case 1: { //insertAll(int, Cursorable);
                     List<String> values = makeInsertList(tokens, random);
-                    ralist = ralist.insertAll(index, IterableCursorable.of(values));
+                    ralist = ralist.insertAll(index, plainIterable(values));
                     expected.addAll(index, values);
                     break;
                 }

@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -90,7 +89,7 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Collection<? extends T> source);
+    MutableBuilder<T, C> add(Iterable<? extends T> source);
 
     /**
      * Adds all values in the array to the values included in the collection when build() is called.

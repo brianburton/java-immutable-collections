@@ -37,7 +37,6 @@ package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
@@ -64,6 +63,7 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
+import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
@@ -165,9 +165,8 @@ public class JImmutablesTest
         verifyOrdered(isStack, asList(), () -> JImmutables.stack());
         verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack("w", "x", "y", "z"));
         verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack(cursor("w", "x", "y", "z")));
-        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack(cursorable("w", "x", "y", "z")));
+        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack(iterable("w", "x", "y", "z")));
         verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack(iterator("w", "x", "y", "z")));
-        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> JImmutables.stack(collection("w", "x", "y", "z")));
     }
 
     public void testList()
@@ -188,10 +187,9 @@ public class JImmutablesTest
         verifyOrdered(isList, asList("a", "b", "c", "d", "e"), () -> list(indexed("a", "b", "c", "d", "e")));
         verifyOrdered(isList, asList("b", "c", "d"), () -> list(indexed("a", "b", "c", "d", "e"), 1, 4));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(JImmutables.insertOrderSet("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> list(JImmutables.array("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(iterator("a", "b", "c")));
+        verifyOrdered(isList, asList("a", "b", "c"), () -> list(list("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(asList("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> list(collection("a", "b", "c")));
     }
 
     public void testLargeList()
@@ -219,10 +217,9 @@ public class JImmutablesTest
         verifyOrdered(isRalist, asList(), () -> JImmutables.ralist());
         verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist("a", "b", "c"));
         verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(cursor("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c", "d", "e"), () -> JImmutables.ralist(cursorable("a", "b", "c", "d", "e")));
+        verifyOrdered(isRalist, asList("a", "b", "c", "d", "e"), () -> JImmutables.ralist(iterable("a", "b", "c", "d", "e")));
         verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(iterator("a", "b", "c")));
         verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(asList("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(collection("a", "b", "c")));
     }
 
     @SuppressWarnings("AssertEqualsBetweenInconvertibleTypes")
@@ -329,9 +326,8 @@ public class JImmutablesTest
         verifyUnordered(isSet, asList(), () -> set());
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set(cursor("a", "b", "c")));
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set("a", "b", "c"));
-        verifyUnordered(isSet, asList("a", "b", "c", "d", "e"), () -> set(cursorable("a", "b", "c", "d", "e")));
+        verifyUnordered(isSet, asList("a", "b", "c", "d", "e"), () -> set(iterable("a", "b", "c", "d", "e")));
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set(iterator("a", "b", "c")));
-        verifyUnordered(isSet, asList("a", "b", "c"), () -> set(collection("a", "b", "c")));
     }
 
     public void testSortedSet()
@@ -362,16 +358,14 @@ public class JImmutablesTest
         verifyOrdered(isSortedSet, asList(), () -> JImmutables.<String>sortedSet());
         verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet("z", "w", "y", "x"));
         verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet(cursor("z", "w", "y", "x")));
-        verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet(cursorable("z", "w", "y", "x")));
+        verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet(iterable("z", "w", "y", "x")));
         verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet(iterator("z", "w", "y", "x")));
-        verifyOrdered(isSortedSet, sorted, () -> JImmutables.sortedSet(collection("z", "w", "y", "x")));
 
         verifyOrdered(isSortedSet, asList(), () -> JImmutables.sortedSet(reverse));
         verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, "x", "w", "z", "y"));
         verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, cursor("x", "w", "z", "y")));
-        verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, cursorable("x", "w", "z", "y")));
+        verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, iterable("x", "w", "z", "y")));
         verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, iterator("x", "w", "z", "y")));
-        verifyOrdered(isSortedSet, reversed, () -> JImmutables.sortedSet(reverse, collection("x", "w", "z", "y")));
     }
 
     public void testInsertOrderSet()
@@ -381,9 +375,8 @@ public class JImmutablesTest
         verifyOrdered(isInsertOrderSet, asList(), () -> JImmutables.<String>insertOrderSet());
         verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet("x", "w", "z", "y"));
         verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(cursor("x", "w", "z", "y")));
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(cursorable("x", "w", "z", "y")));
+        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(iterable("x", "w", "z", "y")));
         verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(iterator("x", "w", "z", "y")));
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(collection("x", "w", "z", "y")));
     }
 
     public void testMultiset()
@@ -392,9 +385,8 @@ public class JImmutablesTest
         verifyUnordered(isMultiset, entryList(), () -> JImmutables.<String>multiset(), occurrences);
         verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset("y", "x", "y", "x", "y"), occurrences);
         verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(cursor("y", "x", "y", "x", "y")), occurrences);
-        verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(cursorable("y", "x", "y", "x", "y")), occurrences);
+        verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(iterable("y", "x", "y", "x", "y")), occurrences);
         verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(iterator("y", "x", "y", "x", "y")), occurrences);
-        verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(collection("y", "x", "y", "x", "y")), occurrences);
     }
 
     public void testSortedMultiset()
@@ -407,16 +399,14 @@ public class JImmutablesTest
         verifyOrdered(isSortedMultiset, entryList(), () -> JImmutables.<String>sortedMultiset(), occurrences);
         verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset("y", "x", "y", "x", "y"), occurrences);
         verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset(cursor("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset(cursorable("y", "x", "y", "x", "y")), occurrences);
+        verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset(iterable("y", "x", "y", "x", "y")), occurrences);
         verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset(iterator("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset(collection("y", "x", "y", "x", "y")), occurrences);
 
         verifyOrdered(isSortedMultiset, entryList(), () -> JImmutables.sortedMultiset(reverse), occurrences);
         verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, "y", "x", "y", "x", "y"), occurrences);
         verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, cursor("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, cursorable("y", "x", "y", "x", "y")), occurrences);
+        verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, iterable("y", "x", "y", "x", "y")), occurrences);
         verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, iterator("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isSortedMultiset, reversed, () -> JImmutables.sortedMultiset(reverse, collection("y", "x", "y", "x", "y")), occurrences);
     }
 
     public void testInsertOrderMultiset()
@@ -427,9 +417,8 @@ public class JImmutablesTest
         verifyOrdered(isInsertOrderMultiset, entryList(), () -> JImmutables.<String>insertOrderMultiset(), occurrences);
         verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset("y", "x", "y", "x", "y"), occurrences);
         verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset(cursor("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset(cursorable("y", "x", "y", "x", "y")), occurrences);
+        verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset(iterable("y", "x", "y", "x", "y")), occurrences);
         verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset(iterator("y", "x", "y", "x", "y")), occurrences);
-        verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset(collection("y", "x", "y", "x", "y")), occurrences);
     }
 
     public void testListMap()
@@ -630,18 +619,13 @@ public class JImmutablesTest
         return StandardCursor.of(indexed(values));
     }
 
-    private <T> Cursorable<T> cursorable(T... values)
+    private <T> Iterable<T> iterable(T... values)
     {
-        return () -> StandardCursor.of(indexed(values));
+        return () -> IndexedIterator.iterator(indexed(values));
     }
 
     private <T> Iterator<T> iterator(T... values)
     {
         return asList(values).iterator();
-    }
-
-    private <T> Collection<T> collection(T... values)
-    {
-        return asList(values);
     }
 }

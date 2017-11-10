@@ -317,14 +317,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> insertAll(@Nonnull Cursorable<? extends T> values)
-    {
-        return insertAll(values.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> insertAll(@Nonnull Collection<? extends T> values)
+    public JImmutableMultiset<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return insertAll(values.iterator());
     }

@@ -149,26 +149,26 @@ public final class StandardJImmutableSetTests
 
         //insertAll
         //empty into empty
-        assertSame(template, template.insertAll(IterableCursorable.of(template)));
+        assertSame(template, template.insertAll(plainIterable(template)));
         assertSame(template, template.insertAll(template));
         assertSame(template, template.insertAll(IterableCursor.of(template)));
         assertSame(template, template.insertAll(template.iterator()));
 
         //values into empty
-        verifyContents(template.insertAll(IterableCursorable.of(values)), values);
+        verifyContents(template.insertAll(plainIterable(values)), values);
         verifyContents(template.insertAll(values), values);
         verifyContents(template.insertAll(IterableCursor.of(values)), values);
         verifyContents(template.insertAll(values.iterator()), values);
 
         //empty into values
         jet = template.union(values);
-        assertSame(jet, jet.insertAll(IterableCursorable.of(template)));
+        assertSame(jet, jet.insertAll(plainIterable(template)));
         assertSame(jet, jet.insertAll(template));
         assertSame(jet, jet.insertAll(IterableCursor.of(values)));
         assertSame(jet, jet.insertAll(values.iterator()));
 
         //values into values
-        verifyContents(jet.insertAll(IterableCursorable.of(withExtra)), withExtra);
+        verifyContents(jet.insertAll(plainIterable(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra), withExtra);
         verifyContents(jet.insertAll(IterableCursor.of(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra.iterator()), withExtra);
@@ -176,12 +176,18 @@ public final class StandardJImmutableSetTests
         final List<Integer> higher = Arrays.asList(4, 5, 6, 7);
         jet = template.union(higher);
         final List<Integer> combinedSet = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
-        verifyContents(jet.insertAll(IterableCursorable.of(withExtra)), combinedSet);
+        verifyContents(jet.insertAll(plainIterable(withExtra)), combinedSet);
         verifyContents(jet.insertAll(withExtra), combinedSet);
         verifyContents(jet.insertAll(IterableCursor.of(withExtra)), combinedSet);
         verifyContents(jet.insertAll(withExtra.iterator()), combinedSet);
     }
 
+    // forces java type system to use overload for plain Iterable
+    private static <T> Iterable<T> plainIterable(Iterable<T> source)
+    {
+        return () -> source.iterator();
+    }
+    
     private static void testVarious(JImmutableSet<Integer> template)
     {
         List<Integer> expected = Arrays.asList(100, 200, 300, 400);

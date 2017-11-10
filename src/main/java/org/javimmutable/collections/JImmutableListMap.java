@@ -95,17 +95,7 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     default JImmutableListMap<K, V> insertAll(@Nonnull K key,
-                                              @Nonnull Cursorable<? extends V> values)
-    {
-        return assign(key, getList(key).insertAll(values));
-    }
-
-    /**
-     * Adds all of the elements of the specified collection to the List for the specified key.
-     */
-    @Nonnull
-    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
-                                              @Nonnull Collection<? extends V> values)
+                                              @Nonnull Iterable<? extends V> values)
     {
         return assign(key, getList(key).insertAll(values));
     }

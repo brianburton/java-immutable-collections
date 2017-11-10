@@ -125,4 +125,9 @@ public abstract class AbstractStressTestable
             throw new RuntimeException(String.format("final size is %d but expected approx %d%n", actual, expected));
         }
     }
+
+    protected <T> Iterable<T> plainIterable(Iterable<T> values)
+    {
+        return () -> values.iterator();
+    }
 }

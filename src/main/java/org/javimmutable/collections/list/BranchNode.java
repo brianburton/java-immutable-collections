@@ -48,7 +48,6 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -502,7 +501,7 @@ class BranchNode<T>
 
         @Nonnull
         @Override
-        public Builder<T> add(Collection<? extends T> source)
+        public Builder<T> add(Iterable<? extends T> source)
         {
             add(source.iterator());
             return this;

@@ -404,7 +404,7 @@ public class StandardJImmutableMultisetTests
         Multiset<Integer> expected = HashMultiset.create();
 
         //empty into empty
-        verifyContents(empty.insertAll(IterableCursorable.of(emptyList)), expected);
+        verifyContents(empty.insertAll(plainIterable(emptyList)), expected);
         verifyContents(empty.insertAll(emptyList), expected);
         verifyContents(empty.insertAll(IterableCursor.of(emptyList)), expected);
         verifyContents(empty.insertAll(emptyList.iterator()), expected);
@@ -412,14 +412,14 @@ public class StandardJImmutableMultisetTests
 
         //values into empty
         expected.addAll(values);
-        verifyContents(empty.insertAll(IterableCursorable.of(values)), expected);
+        verifyContents(empty.insertAll(plainIterable(values)), expected);
         verifyContents(empty.insertAll(values), expected);
         verifyContents(empty.insertAll(IterableCursor.of(values)), expected);
         verifyContents(empty.insertAll(values.iterator()), expected);
         verifyContents(empty.insertAll(asJMSet(values)), expected);
 
         //empty into values
-        verifyContents(jmet.insertAll(IterableCursorable.of(emptyList)), expected);
+        verifyContents(jmet.insertAll(plainIterable(emptyList)), expected);
         verifyContents(jmet.insertAll(emptyList), expected);
         verifyContents(jmet.insertAll(IterableCursor.of(emptyList)), expected);
         verifyContents(jmet.insertAll(emptyList.iterator()), expected);
@@ -430,7 +430,7 @@ public class StandardJImmutableMultisetTests
         values = Arrays.asList(0, 0, 1, 2, 3);
         expected.clear();
         expected.addAll(Arrays.asList(0, 0, 1, 1, 2, 3, 3, 3, 4));
-        verifyContents(jmet.insertAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.insertAll(plainIterable(values)), expected);
         verifyContents(jmet.insertAll(values), expected);
         verifyContents(jmet.insertAll(IterableCursor.of(values)), expected);
         verifyContents(jmet.insertAll(values.iterator()), expected);
@@ -440,13 +440,18 @@ public class StandardJImmutableMultisetTests
         values = Arrays.asList(0, 0, 2);
         expected.clear();
         expected.addAll(Arrays.asList(0, 0, 1, 2, 3, 3, 4));
-        verifyContents(jmet.insertAll(IterableCursorable.of(values)), expected);
+        verifyContents(jmet.insertAll(plainIterable(values)), expected);
         verifyContents(jmet.insertAll(values), expected);
         verifyContents(jmet.insertAll(IterableCursor.of(values)), expected);
         verifyContents(jmet.insertAll(values.iterator()), expected);
         verifyContents(jmet.insertAll(asJMSet(values)), expected);
     }
 
+    private static Iterable<Integer> plainIterable(List<Integer> values)
+    {
+        return () -> values.iterator();
+    }
+    
     private static void verifyDeleteAll(JImmutableMultiset<Integer> empty)
     {
         List<Integer> values = Arrays.asList(1, 3, 3, 4);

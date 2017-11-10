@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
@@ -101,7 +100,8 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableRandomAccessList<T> insertAll(@Nonnull Cursorable<? extends T> values);
+    @Override
+    JImmutableRandomAccessList<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -110,15 +110,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableRandomAccessList<T> insertAll(@Nonnull Collection<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAllLast()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAll(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -128,6 +120,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -140,20 +133,8 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     JImmutableRandomAccessList<T> insertAll(int index,
-                                            @Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Inserts all elements at index (which must be within 0 to size) in the same
-     * order they appear in the Iterable.
-     * Shifts all values at and after index x positions to the right and adds x
-     * to size of the list, where x is the number of elements being inserted.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableRandomAccessList<T> insertAll(int index,
-                                            @Nonnull Collection<? extends T> values);
-
+                                            @Nonnull Iterable<? extends T> values);
+    
     /**
      * Inserts all elements at index (which must be within 0 to size) in the same
      * order they appear in the Iterable.
@@ -184,15 +165,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Collection<? extends T> values);
+    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -217,17 +190,8 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Collection<? extends T> values);
-
+    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
+    
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
