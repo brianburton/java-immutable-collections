@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -135,9 +134,9 @@ public interface JImmutableListMap<K, V>
      * current map if the keys were contained in the map.
      */
     @Nonnull
-    default JImmutableListMap<K, V> delete(@Nonnull Cursorable<? extends K> keys)
+    default JImmutableListMap<K, V> deleteAll(@Nonnull Iterable<? extends K> keys)
     {
-        return delete(keys.cursor());
+        return deleteAll(keys.iterator());
     }
 
     /**
@@ -145,17 +144,7 @@ public interface JImmutableListMap<K, V>
      * current map if the keys were contained in the map.
      */
     @Nonnull
-    default JImmutableListMap<K, V> delete(@Nonnull Collection<? extends K> keys)
-    {
-        return delete(keys.iterator());
-    }
-
-    /**
-     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
-     * current map if the keys were contained in the map.
-     */
-    @Nonnull
-    default JImmutableListMap<K, V> delete(@Nonnull Cursor<? extends K> keys)
+    default JImmutableListMap<K, V> deleteAll(@Nonnull Cursor<? extends K> keys)
     {
         JImmutableListMap<K, V> map = this;
         for (Cursor<? extends K> cursor = keys.start(); cursor.hasValue(); cursor = cursor.next()) {
@@ -169,7 +158,7 @@ public interface JImmutableListMap<K, V>
      * current map if the keys were contained in the map.
      */
     @Nonnull
-    default JImmutableListMap<K, V> delete(@Nonnull Iterator<? extends K> keys)
+    default JImmutableListMap<K, V> deleteAll(@Nonnull Iterator<? extends K> keys)
     {
         JImmutableListMap<K, V> map = this;
         while (keys.hasNext()) {
