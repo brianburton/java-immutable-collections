@@ -36,7 +36,6 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
@@ -46,7 +45,6 @@ import org.javimmutable.collections.cursors.Cursors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -104,13 +102,7 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
-    public boolean containsAll(@Nonnull Cursorable<? extends T> values)
-    {
-        return containsAll(values.cursor());
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull Collection<? extends T> values)
+    public boolean containsAll(@Nonnull Iterable<? extends T> values)
     {
         return containsAll(values.iterator());
     }
@@ -138,13 +130,7 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
-    public boolean containsAny(@Nonnull Cursorable<? extends T> values)
-    {
-        return containsAny(values.cursor());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull Collection<? extends T> values)
+    public boolean containsAny(@Nonnull Iterable<? extends T> values)
     {
         return containsAny(values.iterator());
     }
@@ -181,14 +167,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Cursorable<? extends T> other)
-    {
-        return deleteAll(other.cursor());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Collection<? extends T> other)
+    public JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other)
     {
         return deleteAll(other.iterator());
     }
@@ -216,14 +195,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Cursorable<? extends T> other)
-    {
-        return union(other.cursor().iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> union(@Nonnull Collection<? extends T> other)
+    public JImmutableSet<T> union(@Nonnull Iterable<? extends T> other)
     {
         return union(other.iterator());
     }
@@ -251,14 +223,7 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Cursorable<? extends T> other)
-    {
-        return intersection(other.cursor().iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull Collection<? extends T> other)
+    public JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return intersection(other.iterator());
     }

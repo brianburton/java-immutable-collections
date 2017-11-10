@@ -36,7 +36,6 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
@@ -53,7 +52,6 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -118,13 +116,7 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAll(@Nonnull Cursorable<? extends T> other)
-    {
-        return containsAll(other.cursor().iterator());
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull Collection<? extends T> other)
+    public boolean containsAll(@Nonnull Iterable<? extends T> other)
     {
         return containsAll(other.iterator());
     }
@@ -147,13 +139,7 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurrences(@Nonnull Cursorable<? extends T> other)
-    {
-        return containsAllOccurrences(other.cursor().iterator());
-    }
-
-    @Override
-    public boolean containsAllOccurrences(@Nonnull Collection<? extends T> other)
+    public boolean containsAllOccurrences(@Nonnull Iterable<? extends T> other)
     {
         return containsAllOccurrences(other.iterator());
     }
@@ -184,13 +170,7 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAny(@Nonnull Cursorable<? extends T> other)
-    {
-        return containsAny(other.cursor().iterator());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull Collection<? extends T> other)
+    public boolean containsAny(@Nonnull Iterable<? extends T> other)
     {
         return containsAny(other.iterator());
     }
@@ -240,14 +220,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAll(@Nonnull Cursorable<? extends T> other)
-    {
-        return deleteAll(other.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> deleteAll(@Nonnull Collection<? extends T> other)
+    public JImmutableMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other)
     {
         return deleteAll(other.iterator());
     }
@@ -275,14 +248,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Cursorable<? extends T> other)
-    {
-        return deleteAllOccurrences(other.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Collection<? extends T> other)
+    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other)
     {
         return deleteAllOccurrences(other.iterator());
     }
@@ -359,14 +325,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> union(@Nonnull Cursorable<? extends T> other)
-    {
-        return union(other.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> union(@Nonnull Collection<? extends T> other)
+    public JImmutableMultiset<T> union(@Nonnull Iterable<? extends T> other)
     {
         return union(other.iterator());
     }
@@ -403,14 +362,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Cursorable<? extends T> other)
-    {
-        return intersection(other.cursor().iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Collection<? extends T> other)
+    public JImmutableMultiset<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return intersection(other.iterator());
     }

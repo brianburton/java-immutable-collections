@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -70,7 +69,7 @@ public interface JImmutableSet<T>
     @Nonnull
     @Override
     JImmutableSet<T> insertAll(@Nonnull Iterable<? extends T> values);
-    
+
     /**
      * Adds all of the elements of the specified collection to the set.
      *
@@ -101,14 +100,7 @@ public interface JImmutableSet<T>
      *
      * @return true if the Set contains the values
      */
-    boolean containsAll(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Determines if the Set contains all values in the specified collection.
-     *
-     * @return true if the Set contains the values
-     */
-    boolean containsAll(@Nonnull Collection<? extends T> values);
+    boolean containsAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Determines if the Set contains all values in the specified collection.
@@ -129,14 +121,7 @@ public interface JImmutableSet<T>
      *
      * @return true if the Set contains a value
      */
-    boolean containsAny(@Nonnull Cursorable<? extends T> values);
-
-    /**
-     * Determines if the Set contains any values in the specified collection.
-     *
-     * @return true if the Set contains a value
-     */
-    boolean containsAny(@Nonnull Collection<? extends T> values);
+    boolean containsAny(@Nonnull Iterable<? extends T> values);
 
     /**
      * Determines if the Set contains any values in the specified collection.
@@ -166,15 +151,7 @@ public interface JImmutableSet<T>
      * @return instance of set without the values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll(@Nonnull Cursorable<? extends T> other);
-
-    /**
-     * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
-     *
-     * @return instance of set without the values
-     */
-    @Nonnull
-    JImmutableSet<T> deleteAll(@Nonnull Collection<? extends T> other);
+    JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
@@ -199,16 +176,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the values
      */
     @Nonnull
-    JImmutableSet<T> union(@Nonnull Cursorable<? extends T> other);
-
-    /**
-     * Adds all values from other to the Set.
-     *
-     * @param other source of values to add
-     * @return instance of set containing the values
-     */
-    @Nonnull
-    JImmutableSet<T> union(@Nonnull Collection<? extends T> other);
+    JImmutableSet<T> union(@Nonnull Iterable<? extends T> other);
 
     /**
      * Adds all values from other to the Set.
@@ -234,15 +202,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Cursorable<? extends T> other);
-
-    /**
-     * Removes all values from the Set that are not contained in the other collection.
-     *
-     * @return instance of set with unmatched values removed
-     */
-    @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Collection<? extends T> other);
+    JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.

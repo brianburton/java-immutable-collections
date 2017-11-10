@@ -38,7 +38,6 @@ package org.javimmutable.collections.stress_test;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -180,37 +179,21 @@ public class JImmutableSetStressTester
                     }
                     break;
                 }
-                case 1: { //containsAll(Cursorable)
-                    JImmutableList<String> values = keys.randomContainsJList(5);
-                    if (set.containsAll(values) != expected.containsAll(values.getList())) {
-                        throw new RuntimeException(String.format("containsAll(Cursorable) method call failed for %s - expected %b found %b%n",
-                                                                 values, set.containsAll(IterableCursorable.of(values)),
-                                                                 expected.containsAll(values.getList())));
-                    }
-                    break;
-                }
-                case 2: { //containsAll(Collection)
+                case 1:
+                case 2: { //containsAll(Iterable)
                     JImmutableList<String> values = keys.randomContainsJList(5);
                     if (set.containsAll(values.getList()) != expected.containsAll(values.getList())) {
-                        throw new RuntimeException(String.format("containsAll(Collection) method call failed for %s - expected %b found %b%n",
+                        throw new RuntimeException(String.format("containsAll(Iterable) method call failed for %s - expected %b found %b%n",
                                                                  values, set.containsAll(values),
                                                                  expected.containsAll(values.getList())));
                     }
                     break;
                 }
-                case 3: { //containsAny(Cursorable)
-                    JImmutableList<String> values = keys.randomContainsJList(5);
-                    if (set.containsAny(values) != containsAny(expected, values.getList())) {
-                        throw new RuntimeException(String.format("containsAny(Cursorable) method call failed for %s - expected %b found %b%n",
-                                                                 values, set.containsAny(IterableCursorable.of(values)),
-                                                                 expected.containsAll(values.getList())));
-                    }
-                    break;
-                }
-                case 4: { //containsAny(Collection)
+                case 3:
+                case 4: { //containsAny(Iterable)
                     JImmutableList<String> values = keys.randomContainsJList(5);
                     if (set.containsAny(values.getList()) != containsAny(expected, values.getList())) {
-                        throw new RuntimeException(String.format("containsAny(Collection) method call failed for %s - expected %b found %b%n",
+                        throw new RuntimeException(String.format("containsAny(Iterable) method call failed for %s - expected %b found %b%n",
                                                                  values, set.containsAny(values),
                                                                  expected.containsAll(values.getList())));
                     }

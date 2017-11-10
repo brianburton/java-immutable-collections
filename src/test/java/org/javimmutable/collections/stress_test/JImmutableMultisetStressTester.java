@@ -47,7 +47,6 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
@@ -161,14 +160,8 @@ public class JImmutableMultisetStressTester
                     }
                     break;
                 }
-                case 6: { //union(Cursorable)
-                    Multiset<String> values = HashMultiset.create(makeUnionJList(tokens, random, multiList, expected));
-                    multiListUnion(multiList, multi, values);
-                    expectedUnion(expected, values);
-                    multi = multi.union(IterableCursorable.of(values));
-                    break;
-                }
-                case 7: { //union(Collection)
+                case 6:
+                case 7: { //union(Iterable)
                     Multiset<String> values = HashMultiset.create(makeUnionJList(tokens, random, multiList, expected));
                     multiListUnion(multiList, multi, values);
                     expectedUnion(expected, values);
@@ -228,13 +221,8 @@ public class JImmutableMultisetStressTester
                         break;
                     }
                 }
-                case 3: { //deleteAllOccurrences(Cursorable)
-                    Multiset<String> values = HashMultiset.create(makeDeleteJList(tokens, random, multiList, expected));
-                    multi = multi.deleteAllOccurrences(IterableCursorable.of(values));
-                    removeAllByOccurrence(expected, values);
-                    break;
-                }
-                case 4: { //deleteAllOccurrences(Collection)
+                case 3:
+                case 4: { //deleteAllOccurrences(Iterable)
                     Multiset<String> values = HashMultiset.create(makeDeleteJList(tokens, random, multiList, expected));
                     multi = multi.deleteAllOccurrences(values);
                     removeAllByOccurrence(expected, values);
@@ -267,17 +255,8 @@ public class JImmutableMultisetStressTester
                     }
                     break;
                 }
-                case 1: { //containsAllOccurrences(Cursorable)
-                    List<String> values = makeContainsRepeatsList(tokens, random, multiList, expected);
-                    if (multi.containsAllOccurrences(IterableCursorable.of(values)) != containsAllByOccurrence(expected, values)) {
-                        throw new RuntimeException(String.format("containsAllOccurrences(Cursorable) method call failed" +
-                                                                 " for %s - expected %b found %b%n", values,
-                                                                 multi.containsAllOccurrences(IterableCursorable.of(values)),
-                                                                 containsAllByOccurrence(expected, values)));
-                    }
-                    break;
-                }
-                case 2: { //containsAllOccurrences(Collection)
+                case 1:
+                case 2: { //containsAllOccurrences(Iterable)
                     List<String> values = makeContainsRepeatsList(tokens, random, multiList, expected);
                     if (multi.containsAllOccurrences(values) != containsAllByOccurrence(expected, values)) {
                         throw new RuntimeException(String.format("containsAllOccurrences(Collection) method call failed " +
@@ -341,13 +320,8 @@ public class JImmutableMultisetStressTester
             }
             int command = (multiList.size() < size / 3) ? 5 : 3;
             switch (random.nextInt(command)) {
-            case 0: { //intersection(Cursorable)
-                Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
-                removeAllByOccurrence(expected, deleteValues);
-                multi = multi.intersection(IterableCursorable.of(values));
-                break;
-            }
-            case 1: { //intersection(Collection)
+            case 0:
+            case 1: { //intersection(Iterable)
                 Multiset<String> values = makeIntersectValues(tokens, random, multiList, expected);
                 removeAllByOccurrence(expected, deleteValues);
                 multi = multi.intersection(values);

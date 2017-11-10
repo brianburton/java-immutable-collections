@@ -460,7 +460,7 @@ public class JImmutableSetMapStressTester
 
     private void unionAt(Map<String, JImmutableSet<String>> expected,
                          String key,
-                         Cursorable<String> values)
+                         Iterable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         expected.put(key, set.union(values));
@@ -468,7 +468,7 @@ public class JImmutableSetMapStressTester
 
     private void intersectionAt(Map<String, JImmutableSet<String>> expected,
                                 String key,
-                                Cursorable<String> values)
+                                Iterable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
         expected.put(key, set.intersection(values));
@@ -476,7 +476,7 @@ public class JImmutableSetMapStressTester
 
     private void removeAllAt(Map<String, JImmutableSet<String>> expected,
                              String key,
-                             Cursorable<String> values)
+                             Iterable<String> values)
     {
         if (expected.containsKey(key)) {
             JImmutableSet<String> set = expected.get(key);

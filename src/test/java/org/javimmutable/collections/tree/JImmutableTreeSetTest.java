@@ -36,11 +36,9 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
-import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -68,7 +66,7 @@ public class JImmutableTreeSetTest
     @SuppressWarnings("OverlyLongMethod")
     public void test()
     {
-        Cursorable<String> expected = IterableCursorable.of(Arrays.asList("fred", "wilma", "betty", "barney"));
+        Iterable<String> expected = Arrays.asList("fred", "wilma", "betty", "barney");
 
         JImmutableSet<String> set = JImmutableTreeSet.of();
         assertTrue(set.isEmpty());
