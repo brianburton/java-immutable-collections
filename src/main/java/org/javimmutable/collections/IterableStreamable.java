@@ -177,7 +177,7 @@ public interface IterableStreamable<T>
      * @param collection collection to accumulate the values
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAll(@Nonnull C collection)
+    default <C extends Insertable<T, C>> C collect(@Nonnull C collection)
     {
         for (T value : this) {
             collection = collection.insert(value);
@@ -191,8 +191,8 @@ public interface IterableStreamable<T>
      * @param collection collection to accumulate the values
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAtMost(int maxToCollect,
-                                                         @Nonnull C collection)
+    default <C extends Insertable<T, C>> C collect(int maxToCollect,
+                                                   @Nonnull C collection)
     {
         final Iterator<T> iterator = iterator();
         for (int i = 0; i < maxToCollect && iterator.hasNext(); ++i) {
@@ -209,8 +209,8 @@ public interface IterableStreamable<T>
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAll(@Nonnull C collection,
-                                                      @Nonnull Predicate<T> predicate)
+    default <C extends Insertable<T, C>> C collect(@Nonnull C collection,
+                                                   @Nonnull Predicate<T> predicate)
     {
         for (T value : this) {
             if (predicate.test(value)) {
@@ -229,9 +229,9 @@ public interface IterableStreamable<T>
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */
-    default <C extends Insertable<T, C>> C collectAtMost(int maxToCollect,
-                                                         @Nonnull C collection,
-                                                         @Nonnull Predicate<T> predicate)
+    default <C extends Insertable<T, C>> C collect(int maxToCollect,
+                                                   @Nonnull C collection,
+                                                   @Nonnull Predicate<T> predicate)
     {
         final Iterator<T> iterator = iterator();
         while (maxToCollect > 0 && iterator.hasNext()) {
@@ -252,8 +252,8 @@ public interface IterableStreamable<T>
      * @param transform  transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C transformAll(@Nonnull C collection,
-                                                           @Nonnull Func1<T, A> transform)
+    default <A, C extends Insertable<A, C>> C transform(@Nonnull C collection,
+                                                        @Nonnull Func1<T, A> transform)
     {
         for (T value : this) {
             collection = collection.insert(transform.apply(value));
@@ -271,9 +271,9 @@ public interface IterableStreamable<T>
      * @param transform    transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C transformAtMost(int maxToCollect,
-                                                              @Nonnull C collection,
-                                                              @Nonnull Func1<T, A> transform)
+    default <A, C extends Insertable<A, C>> C transform(int maxToCollect,
+                                                        @Nonnull C collection,
+                                                        @Nonnull Func1<T, A> transform)
     {
         final Iterator<T> iterator = iterator();
         while (maxToCollect > 0 && iterator.hasNext()) {
@@ -314,9 +314,9 @@ public interface IterableStreamable<T>
      * @param transform    transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    default <A, C extends Insertable<A, C>> C transformAtMostSome(int maxToCollect,
-                                                                  @Nonnull C collection,
-                                                                  @Nonnull Func1<T, Holder<A>> transform)
+    default <A, C extends Insertable<A, C>> C transformSome(int maxToCollect,
+                                                            @Nonnull C collection,
+                                                            @Nonnull Func1<T, Holder<A>> transform)
     {
         final Iterator<T> iterator = iterator();
         while (maxToCollect > 0 && iterator.hasNext()) {

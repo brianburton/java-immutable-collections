@@ -89,50 +89,50 @@ public class IterableStreamableTest
 
     public void testCollectAll()
     {
-        assertSame(set(), list().collectAll(set()));
-        assertEquals(set(1), list(1).collectAll(set()));
-        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collectAll(set()));
+        assertSame(set(), list().collect(set()));
+        assertEquals(set(1), list(1).collect(set()));
+        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collect(set()));
     }
 
     public void testCollectAtMost()
     {
-        assertSame(set(), list().collectAtMost(100, set()));
-        assertSame(set(), list(1).collectAtMost(0, set()));
-        assertEquals(set(1), list(1).collectAtMost(1, set()));
-        assertEquals(set(1), list(1).collectAtMost(100, set()));
-        assertEquals(set(1), list(1, 2, 3, 4, 5).collectAtMost(1, set()));
-        assertEquals(set(1, 2, 3), list(1, 2, 3, 4, 5).collectAtMost(3, set()));
-        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collectAtMost(5, set()));
+        assertSame(set(), list().collect(100, set()));
+        assertSame(set(), list(1).collect(0, set()));
+        assertEquals(set(1), list(1).collect(1, set()));
+        assertEquals(set(1), list(1).collect(100, set()));
+        assertEquals(set(1), list(1, 2, 3, 4, 5).collect(1, set()));
+        assertEquals(set(1, 2, 3), list(1, 2, 3, 4, 5).collect(3, set()));
+        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collect(5, set()));
     }
 
     public void testCollectAllMatching()
     {
-        assertEquals(list(), list().collectAll(list(), x -> true));
-        assertEquals(list(1, 3, 5), list(1, 3, 5).collectAll(list(), x -> true));
-        assertEquals(list(1, 5), list(1, 3, 5).collectAll(list(), x -> x != 3));
+        assertEquals(list(), list().collect(list(), x -> true));
+        assertEquals(list(1, 3, 5), list(1, 3, 5).collect(list(), x -> true));
+        assertEquals(list(1, 5), list(1, 3, 5).collect(list(), x -> x != 3));
     }
 
     public void testCollectAtMostMatching()
     {
-        assertEquals(list(), list().collectAtMost(3, list(), x -> true));
-        assertEquals(list(), list(1, 3, 5).collectAtMost(0, list(), x -> true));
-        assertEquals(list(), list(1, 3, 5).collectAtMost(-10, list(), x -> true));
-        assertEquals(list(1), list(1, 3, 5).collectAtMost(1, list(), x -> true));
-        assertEquals(list(1, 3), list(1, 3, 5).collectAtMost(2, list(), x -> true));
-        assertEquals(list(1, 5), list(1, 3, 5, 7).collectAtMost(2, list(), x -> x != 3));
+        assertEquals(list(), list().collect(3, list(), x -> true));
+        assertEquals(list(), list(1, 3, 5).collect(0, list(), x -> true));
+        assertEquals(list(), list(1, 3, 5).collect(-10, list(), x -> true));
+        assertEquals(list(1), list(1, 3, 5).collect(1, list(), x -> true));
+        assertEquals(list(1, 3), list(1, 3, 5).collect(2, list(), x -> true));
+        assertEquals(list(1, 5), list(1, 3, 5, 7).collect(2, list(), x -> x != 3));
     }
 
     public void testTransformAll()
     {
-        assertEquals(list(), list().transformAll(list(), x -> x));
-        assertEquals(list(-1), list(1).transformAll(list(), x -> -x));
-        assertEquals(list(-1, -3, -5), list(1, 3, 5).transformAll(list(), x -> -x));
+        assertEquals(list(), list().transform(list(), x -> x));
+        assertEquals(list(-1), list(1).transform(list(), x -> -x));
+        assertEquals(list(-1, -3, -5), list(1, 3, 5).transform(list(), x -> -x));
     }
 
     public void testTransformAtMost()
     {
-        assertEquals(list(), list().transformAtMost(10, list(), x -> x));
-        assertEquals(list(-1, -3), list(1, 3, 5).transformAtMost(2, list(), x -> -x));
+        assertEquals(list(), list().transform(10, list(), x -> x));
+        assertEquals(list(-1, -3), list(1, 3, 5).transform(2, list(), x -> -x));
     }
 
     public void testTransformSome()
@@ -143,9 +143,9 @@ public class IterableStreamableTest
 
     public void testTransformAtMostSome()
     {
-        assertEquals(list(), list().transformAtMostSome(10, list(), x -> Holders.of(x)));
-        assertEquals(list(9, -1, -5), list(1, 3, 5).transformAtMostSome(10, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
-        assertEquals(list(9, -1), list(1, 3, 5).transformAtMostSome(1, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
+        assertEquals(list(), list().transformSome(10, list(), x -> Holders.of(x)));
+        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(10, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
+        assertEquals(list(9, -1), list(1, 3, 5).transformSome(1, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
     }
 
     public void testPartition()
@@ -178,9 +178,9 @@ public class IterableStreamableTest
 
     public void testConversions()
     {
-        assertEquals(set(3, 5), list(5, 3, 3, 5).transformAll(JImmutables.<Integer>sortedSet(), x -> x));
-        assertEquals(JImmutables.multiset(3, 3, 5, 5), list(5, 3, 3, 5).transformAll(JImmutables.<Integer>sortedMultiset(), x -> x));
-        assertEquals(JImmutables.map().assign(3, 6).assign(5, 10), list(5, 3, 3, 5).transformAll(JImmutables.sortedMap(), x -> MapEntry.of(x, 2 * x)));
-        assertEquals(JImmutables.listMap().assign(3, list(3, 3)).assign(5, list(5)), list(3, 5, 3).transformAll(JImmutables.sortedListMap(), x -> MapEntry.of(x, x)));
+        assertEquals(set(3, 5), list(5, 3, 3, 5).transform(JImmutables.<Integer>sortedSet(), x -> x));
+        assertEquals(JImmutables.multiset(3, 3, 5, 5), list(5, 3, 3, 5).transform(JImmutables.<Integer>sortedMultiset(), x -> x));
+        assertEquals(JImmutables.map().assign(3, 6).assign(5, 10), list(5, 3, 3, 5).transform(JImmutables.sortedMap(), x -> MapEntry.of(x, 2 * x)));
+        assertEquals(JImmutables.listMap().assign(3, list(3, 3)).assign(5, list(5)), list(3, 5, 3).transform(JImmutables.sortedListMap(), x -> MapEntry.of(x, x)));
     }
 }
