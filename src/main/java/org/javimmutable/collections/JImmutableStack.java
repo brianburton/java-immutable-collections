@@ -57,18 +57,21 @@ public interface JImmutableStack<T>
     /**
      * Accesses the first value in the List.
      */
+    @Override
     T getHead();
 
     /**
      * Accesses the rest of the List (i.e. the entry after the head entry).
      */
     @Nonnull
+    @Override
     JImmutableStack<T> getTail();
 
     /**
      * Returns a new list containing the value before the element returned by getHead().
      */
     @Nonnull
+    @Override
     JImmutableStack<T> insert(@Nullable T value);
 
     /**

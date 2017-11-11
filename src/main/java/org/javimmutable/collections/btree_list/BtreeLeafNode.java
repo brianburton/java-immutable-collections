@@ -71,7 +71,7 @@ class BtreeLeafNode<T>
         for (int i = 0; i < length; ++i) {
             values[i] = source.get(offset + i);
         }
-        return new BtreeLeafNode<T>(values);
+        return new BtreeLeafNode<>(values);
     }
 
     private BtreeLeafNode(T[] values)
@@ -102,7 +102,7 @@ class BtreeLeafNode<T>
     public BtreeNode<T> assign(int index,
                                T value)
     {
-        return new BtreeLeafNode<T>(ArrayHelper.assign(values, index, value));
+        return new BtreeLeafNode<>(ArrayHelper.assign(values, index, value));
     }
 
     @Nonnull
@@ -113,14 +113,14 @@ class BtreeLeafNode<T>
         final T[] newValues = ArrayHelper.insert(this, values, index, value);
         if (values.length == MAX_CHILDREN) {
             if (index == values.length) {
-                return BtreeInsertResult.createSplit(new BtreeLeafNode<T>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN + 1)),
-                                                     new BtreeLeafNode<T>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN + 1, newValues.length)));
+                return BtreeInsertResult.createSplit(new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN + 1)),
+                                                     new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN + 1, newValues.length)));
             } else {
-                return BtreeInsertResult.createSplit(new BtreeLeafNode<T>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN)),
-                                                     new BtreeLeafNode<T>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN, newValues.length)));
+                return BtreeInsertResult.createSplit(new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN)),
+                                                     new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN, newValues.length)));
             }
         } else {
-            return BtreeInsertResult.createInPlace(new BtreeLeafNode<T>(newValues));
+            return BtreeInsertResult.createInPlace(new BtreeLeafNode<>(newValues));
         }
     }
 
@@ -166,7 +166,7 @@ class BtreeLeafNode<T>
         if ((values.length == 1) && (index == 0)) {
             return BtreeEmptyNode.of();
         } else {
-            return new BtreeLeafNode<T>(ArrayHelper.delete(this, values, index));
+            return new BtreeLeafNode<>(ArrayHelper.delete(this, values, index));
         }
     }
 
@@ -176,7 +176,7 @@ class BtreeLeafNode<T>
     {
         final BtreeLeafNode<T> leaf = (BtreeLeafNode<T>)sibling;
         assert (leaf.values.length + values.length) <= MAX_CHILDREN;
-        return new BtreeLeafNode<T>(ArrayHelper.concat(this, values, leaf.values));
+        return new BtreeLeafNode<>(ArrayHelper.concat(this, values, leaf.values));
     }
 
     @Nonnull
@@ -186,8 +186,8 @@ class BtreeLeafNode<T>
         final BtreeLeafNode<T> leaf = (BtreeLeafNode<T>)sibling;
         assert (leaf.values.length + values.length) >= MAX_CHILDREN;
         assert (leaf.values.length + values.length) <= (2 * MAX_CHILDREN);
-        return Tuple2.<BtreeNode<T>, BtreeNode<T>>of(new BtreeLeafNode<T>(ArrayHelper.subArray(this, values, leaf.values, 0, MIN_CHILDREN)),
-                                                     new BtreeLeafNode<T>(ArrayHelper.subArray(this, values, leaf.values, MIN_CHILDREN, values.length + leaf.values.length)));
+        return Tuple2.of(new BtreeLeafNode<>(ArrayHelper.subArray(this, values, leaf.values, 0, MIN_CHILDREN)),
+                         new BtreeLeafNode<>(ArrayHelper.subArray(this, values, leaf.values, MIN_CHILDREN, values.length + leaf.values.length)));
     }
 
     @Nonnull

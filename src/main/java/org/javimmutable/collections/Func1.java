@@ -40,6 +40,7 @@ import java.util.function.Function;
 /**
  * Interface for functions that take a single parameter.
  */
+@FunctionalInterface
 public interface Func1<P, R>
     extends Function<P, R>
 {

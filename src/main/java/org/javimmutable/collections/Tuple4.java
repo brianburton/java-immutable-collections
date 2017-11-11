@@ -39,11 +39,6 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable container for 4 values.
- *
- * @param <A>
- * @param <B>
- * @param <C>
- * @param <D>
  */
 @Immutable
 public class Tuple4<A, B, C, D>

@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 /**
  * Interface for functions that take four parameters.
  */
+@FunctionalInterface
 public interface Func4<P1, P2, P3, P4, R>
 {
     R apply(P1 p1,

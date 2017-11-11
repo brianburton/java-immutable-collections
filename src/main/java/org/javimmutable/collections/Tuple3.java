@@ -39,10 +39,6 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable container for 3 values.
- *
- * @param <A>
- * @param <B>
- * @param <C>
  */
 @Immutable
 public class Tuple3<A, B, C>

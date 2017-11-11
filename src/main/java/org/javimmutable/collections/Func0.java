@@ -40,6 +40,7 @@ package org.javimmutable.collections;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface Func0<T>
 {
     T apply();

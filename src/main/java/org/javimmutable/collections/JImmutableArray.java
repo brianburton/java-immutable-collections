@@ -67,6 +67,7 @@ public interface JImmutableArray<T>
      * @return value associated with index or null if no value is associated
      */
     @Nullable
+    @Override
     T get(int index);
 
 
@@ -130,6 +131,7 @@ public interface JImmutableArray<T>
     /**
      * Return the number of entries in the map.
      */
+    @Override
     int size();
 
     /**

@@ -48,7 +48,6 @@ public interface MutableBuilder<T, C>
     /**
      * Adds the specified value to the values included in the collection when build() is called.
      *
-     * @param value
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull

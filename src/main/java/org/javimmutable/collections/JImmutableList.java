@@ -72,6 +72,7 @@ public interface JImmutableList<T>
      *
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
+    @Override
     T get(int index);
 
     /**
@@ -88,6 +89,7 @@ public interface JImmutableList<T>
      * Adds a value to the end of the list.  May be invoked on an empty list.
      */
     @Nonnull
+    @Override
     JImmutableList<T> insert(@Nullable T value);
 
     /**
@@ -144,7 +146,7 @@ public interface JImmutableList<T>
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
-    
+
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      *
@@ -169,7 +171,7 @@ public interface JImmutableList<T>
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
-    
+
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()

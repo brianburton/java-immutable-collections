@@ -84,7 +84,7 @@ public final class RAListTimingComparison
             int removes = 0;
             int gets = 0;
             long startMap = System.currentTimeMillis();
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (expected.isEmpty()) {

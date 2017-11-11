@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 /**
  * Interface for functions that take two parameters.
  */
+@FunctionalInterface
 public interface Func2<P1, P2, R>
 {
     R apply(P1 p1,

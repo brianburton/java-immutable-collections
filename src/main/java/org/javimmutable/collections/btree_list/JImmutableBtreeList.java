@@ -468,9 +468,10 @@ public class JImmutableBtreeList<T>
             return this;
         }
 
+        @SafeVarargs
         @Nonnull
         @Override
-        public <K extends T> Builder<T> add(K... source)
+        public final <K extends T> Builder<T> add(K... source)
         {
             for (T value : source) {
                 add(value);

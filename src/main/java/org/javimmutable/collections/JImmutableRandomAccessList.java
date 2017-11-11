@@ -61,6 +61,7 @@ public interface JImmutableRandomAccessList<T>
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> assign(int index,
                                          @Nullable T value);
 
@@ -68,6 +69,7 @@ public interface JImmutableRandomAccessList<T>
      * Adds a value to the end of the list.  May be invoked on an empty list.
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insert(@Nullable T value);
 
     /**
@@ -84,6 +86,7 @@ public interface JImmutableRandomAccessList<T>
      * Synonym for insert()
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertFirst(@Nullable T value);
 
     /**
@@ -91,6 +94,7 @@ public interface JImmutableRandomAccessList<T>
      * Synonym for insert().
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertLast(@Nullable T value);
 
     /**
@@ -134,7 +138,7 @@ public interface JImmutableRandomAccessList<T>
     @Nonnull
     JImmutableRandomAccessList<T> insertAll(int index,
                                             @Nonnull Iterable<? extends T> values);
-    
+
     /**
      * Inserts all elements at index (which must be within 0 to size) in the same
      * order they appear in the Iterable.
@@ -165,6 +169,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
 
     /**
@@ -173,6 +178,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -181,6 +187,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -190,8 +197,9 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
-    
+
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
      * Synonym for insertAll()
@@ -199,6 +207,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
 
     /**
@@ -208,6 +217,7 @@ public interface JImmutableRandomAccessList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -217,6 +227,7 @@ public interface JImmutableRandomAccessList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> deleteFirst();
 
     /**
@@ -226,6 +237,7 @@ public interface JImmutableRandomAccessList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> deleteLast();
 
     /**
@@ -240,6 +252,7 @@ public interface JImmutableRandomAccessList<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> deleteAll();
 
     /**

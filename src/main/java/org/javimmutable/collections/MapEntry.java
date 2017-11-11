@@ -51,20 +51,21 @@ public class MapEntry<K, V>
     implements JImmutableMap.Entry<K, V>,
                Map.Entry<K, V>
 {
+    @Nonnull
     protected final K key;
     protected final V value;
 
-    public MapEntry(Map.Entry<K, V> entry)
+    public MapEntry(@Nonnull Map.Entry<K, V> entry)
     {
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(JImmutableMap.Entry<K, V> entry)
+    public MapEntry(@Nonnull JImmutableMap.Entry<K, V> entry)
     {
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(K key,
+    public MapEntry(@Nonnull K key,
                     V value)
     {
         this.key = key;
@@ -72,19 +73,19 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> of(Map.Entry<K, V> entry)
+    public static <K, V> MapEntry<K, V> of(@Nonnull Map.Entry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> of(JImmutableMap.Entry<K, V> entry)
+    public static <K, V> MapEntry<K, V> of(@Nonnull JImmutableMap.Entry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> of(K key,
+    public static <K, V> MapEntry<K, V> of(@Nonnull K key,
                                            V value)
     {
         return new MapEntry<K, V>(key, value);

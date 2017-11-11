@@ -482,6 +482,7 @@ public interface JImmutableMultiset<T>
      * @return Cursor that behaves as if multiset was a JImmutableSet
      */
     @Nonnull
+    @Override
     Cursor<T> cursor();
 
     /**
@@ -533,11 +534,13 @@ public interface JImmutableMultiset<T>
     /**
      * @return true only if the multiset contains no values
      */
+    @Override
     boolean isEmpty();
 
     /**
      * @return total number of unique values in the multiset. Same as the number of items in cursor() and entryCursor().
      */
+    @Override
     int size();
 
     /**

@@ -38,6 +38,7 @@ package org.javimmutable.collections.util;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 
+import javax.annotation.Nonnull;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
@@ -59,7 +60,7 @@ import java.util.Set;
  * NOTE: this adaptor is NOT thread safe.  Do not use it in a multi-threaded environment.
  */
 public abstract class MutableMapAdaptor<K, V>
-        extends AbstractMap<K, V>
+    extends AbstractMap<K, V>
 {
     private final Set<Map.Entry<K, V>> entries;
 
@@ -70,18 +71,15 @@ public abstract class MutableMapAdaptor<K, V>
 
     /**
      * Implemented by derived classes to allow this adaptor to access their JImmutableMap instance.
-     *
-     * @return
      */
     protected abstract JImmutableMap<K, V> accessMap();
 
     /**
      * Implemented by derived classes to allow this adaptor to replace their JImmutableMap instance.
-     *
-     * @return
      */
     protected abstract void replaceMap(JImmutableMap<K, V> newMap);
 
+    @Nonnull
     @Override
     public Set<Entry<K, V>> entrySet()
     {
@@ -98,8 +96,9 @@ public abstract class MutableMapAdaptor<K, V>
     }
 
     private class MutableEntrySet
-            extends AbstractSet<Map.Entry<K, V>>
+        extends AbstractSet<Map.Entry<K, V>>
     {
+        @Nonnull
         @Override
         public Iterator<Entry<K, V>> iterator()
         {
@@ -150,7 +149,7 @@ public abstract class MutableMapAdaptor<K, V>
     }
 
     private class MutableEntryIterator
-            implements Iterator<Map.Entry<K, V>>
+        implements Iterator<Map.Entry<K, V>>
     {
         private JImmutableMap<K, V> startingMap;
         private Cursor<JImmutableMap.Entry<K, V>> current;
@@ -199,7 +198,7 @@ public abstract class MutableMapAdaptor<K, V>
         }
 
         private class MutableMapEntry
-                extends AbstractMap.SimpleEntry<K, V>
+            extends AbstractMap.SimpleEntry<K, V>
         {
             private MutableMapEntry(JImmutableMap.Entry<K, V> entry)
             {

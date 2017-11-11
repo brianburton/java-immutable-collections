@@ -59,7 +59,7 @@ public final class ReflectionFunctions
      * Encapsulates the various checked exceptions that can be thrown by the java reflection methods.
      */
     public static class ReflectionException
-            extends RuntimeException
+        extends RuntimeException
     {
         public ReflectionException(Throwable throwable)
         {
@@ -71,7 +71,7 @@ public final class ReflectionFunctions
      * Exception thrown if caller requests a static class but reflection finds a non-static class (or vice versa).
      */
     public static class StaticMismatchException
-            extends RuntimeException
+        extends RuntimeException
     {
         public StaticMismatchException()
         {
@@ -85,12 +85,11 @@ public final class ReflectionFunctions
      * @param obj  the object whose method should be invoked
      * @param name the name of the method to invoke
      * @param <R>  the return type of the function
-     * @return
      */
     public static <R> Func0<R> method(final Object obj,
                                       String name)
     {
-        return new ReflectionFunc0<R>(findMethod(obj.getClass(), name, false), obj);
+        return new ReflectionFunc0<>(findMethod(obj.getClass(), name, false), obj);
     }
 
     /**
@@ -101,13 +100,12 @@ public final class ReflectionFunctions
      * @param arg1Class Class of parameter 1 of the method
      * @param <P1>      parameter 1 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, R> Func1<P1, R> method(final Object obj,
                                               String name,
                                               Class<P1> arg1Class)
     {
-        return new ReflectionFunc1<P1, R>(findMethod(obj.getClass(), name, false, arg1Class), obj);
+        return new ReflectionFunc1<>(findMethod(obj.getClass(), name, false, arg1Class), obj);
     }
 
     /**
@@ -119,15 +117,13 @@ public final class ReflectionFunctions
      * @param arg2Class Class of parameter 2 of the method
      * @param <P1>      parameter 1 type
      * @param <P2>      parameter 2 type
-     * @param <R>
-     * @return
      */
     public static <P1, P2, R> Func2<P1, P2, R> method(final Object obj,
                                                       String name,
                                                       Class<P1> arg1Class,
                                                       Class<P2> arg2Class)
     {
-        return new ReflectionFunc2<P1, P2, R>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class), obj);
+        return new ReflectionFunc2<>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class), obj);
     }
 
     /**
@@ -142,7 +138,6 @@ public final class ReflectionFunctions
      * @param <P2>      parameter 2 type
      * @param <P3>      parameter 3 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, P2, P3, R> Func3<P1, P2, P3, R> method(final Object obj,
                                                               String name,
@@ -150,7 +145,7 @@ public final class ReflectionFunctions
                                                               Class<P2> arg2Class,
                                                               Class<P3> arg3Class)
     {
-        return new ReflectionFunc3<P1, P2, P3, R>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class, arg3Class), obj);
+        return new ReflectionFunc3<>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class, arg3Class), obj);
     }
 
     /**
@@ -167,7 +162,6 @@ public final class ReflectionFunctions
      * @param <P3>      parameter 3 type
      * @param <P4>      parameter 4 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, P2, P3, P4, R> Func4<P1, P2, P3, P4, R> method(final Object obj,
                                                                       String name,
@@ -176,7 +170,7 @@ public final class ReflectionFunctions
                                                                       Class<P3> arg3Class,
                                                                       Class<P4> arg4Class)
     {
-        return new ReflectionFunc4<P1, P2, P3, P4, R>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class, arg3Class, arg4Class), obj);
+        return new ReflectionFunc4<>(findMethod(obj.getClass(), name, false, arg1Class, arg2Class, arg3Class, arg4Class), obj);
     }
 
     /**
@@ -186,12 +180,11 @@ public final class ReflectionFunctions
      *
      * @param name  name of the method to invoke
      * @param klass class of the instance object parameter
-     * @return
      */
     public static <OT, R> Func1<OT, R> method(String name,
                                               Class<OT> klass)
     {
-        return new ParamReflectionFunc1<OT, R>(findMethod(klass, name, false));
+        return new ParamReflectionFunc1<>(findMethod(klass, name, false));
     }
 
     /**
@@ -203,13 +196,12 @@ public final class ReflectionFunctions
      * @param name      name of the method to invoke
      * @param arg1Class Class of parameter 1 of the method
      * @param klass     class of the instance object parameter
-     * @return
      */
     public static <P1, OT, R> Func2<P1, OT, R> method(String name,
                                                       Class<P1> arg1Class,
                                                       Class<OT> klass)
     {
-        return new ParamReflectionFunc2<P1, OT, R>(findMethod(klass, name, false, arg1Class));
+        return new ParamReflectionFunc2<>(findMethod(klass, name, false, arg1Class));
     }
 
     /**
@@ -222,14 +214,13 @@ public final class ReflectionFunctions
      * @param arg1Class Class of parameter 1 of the method
      * @param arg2Class Class of parameter 2 of the method
      * @param klass     class of the instance object parameter
-     * @return
      */
     public static <P1, P2, OT, R> Func3<P1, P2, OT, R> method(String name,
                                                               Class<P1> arg1Class,
                                                               Class<P2> arg2Class,
                                                               Class<OT> klass)
     {
-        return new ParamReflectionFunc3<P1, P2, OT, R>(findMethod(klass, name, false, arg1Class, arg2Class));
+        return new ParamReflectionFunc3<>(findMethod(klass, name, false, arg1Class, arg2Class));
     }
 
     /**
@@ -243,7 +234,6 @@ public final class ReflectionFunctions
      * @param arg2Class Class of parameter 2 of the method
      * @param arg3Class Class of parameter 3 of the method
      * @param klass     class of the instance object parameter
-     * @return
      */
     public static <P1, P2, P3, OT, R> Func4<P1, P2, P3, OT, R> method(String name,
                                                                       Class<P1> arg1Class,
@@ -251,7 +241,7 @@ public final class ReflectionFunctions
                                                                       Class<P3> arg3Class,
                                                                       Class<OT> klass)
     {
-        return new ParamReflectionFunc4<P1, P2, P3, OT, R>(findMethod(klass, name, false, arg1Class, arg2Class, arg3Class));
+        return new ParamReflectionFunc4<>(findMethod(klass, name, false, arg1Class, arg2Class, arg3Class));
     }
 
     /**
@@ -259,12 +249,11 @@ public final class ReflectionFunctions
      *
      * @param name the name of the method to invoke
      * @param <R>  the return type of the function
-     * @return
      */
     public static <R> Func0<R> staticMethod(final Class klass,
                                             String name)
     {
-        return new ReflectionFunc0<R>(findMethod(klass, name, true), null);
+        return new ReflectionFunc0<>(findMethod(klass, name, true), null);
     }
 
     /**
@@ -274,13 +263,12 @@ public final class ReflectionFunctions
      * @param arg1Class Class of parameter 1 of the method
      * @param <P1>      parameter 1 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, R> Func1<P1, R> staticMethod(final Class klass,
                                                     String name,
                                                     Class<P1> arg1Class)
     {
-        return new ReflectionFunc1<P1, R>(findMethod(klass, name, true, arg1Class), null);
+        return new ReflectionFunc1<>(findMethod(klass, name, true, arg1Class), null);
     }
 
     /**
@@ -292,14 +280,13 @@ public final class ReflectionFunctions
      * @param <P1>      parameter 1 type
      * @param <P2>      parameter 2 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, P2, R> Func2<P1, P2, R> staticMethod(final Class klass,
                                                             String name,
                                                             Class<P1> arg1Class,
                                                             Class<P2> arg2Class)
     {
-        return new ReflectionFunc2<P1, P2, R>(findMethod(klass, name, true, arg1Class, arg2Class), null);
+        return new ReflectionFunc2<>(findMethod(klass, name, true, arg1Class, arg2Class), null);
     }
 
     /**
@@ -313,7 +300,6 @@ public final class ReflectionFunctions
      * @param <P2>      parameter 2 type
      * @param <P3>      parameter 3 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, P2, P3, R> Func3<P1, P2, P3, R> staticMethod(final Class klass,
                                                                     String name,
@@ -321,7 +307,7 @@ public final class ReflectionFunctions
                                                                     Class<P2> arg2Class,
                                                                     Class<P3> arg3Class)
     {
-        return new ReflectionFunc3<P1, P2, P3, R>(findMethod(klass, name, true, arg1Class, arg2Class, arg3Class), null);
+        return new ReflectionFunc3<>(findMethod(klass, name, true, arg1Class, arg2Class, arg3Class), null);
     }
 
     /**
@@ -337,7 +323,6 @@ public final class ReflectionFunctions
      * @param <P3>      parameter 3 type
      * @param <P4>      parameter 4 type
      * @param <R>       the return type of the function
-     * @return
      */
     public static <P1, P2, P3, P4, R> Func4<P1, P2, P3, P4, R> staticMethod(final Class klass,
                                                                             String name,
@@ -346,7 +331,7 @@ public final class ReflectionFunctions
                                                                             Class<P3> arg3Class,
                                                                             Class<P4> arg4Class)
     {
-        return new ReflectionFunc4<P1, P2, P3, P4, R>(findMethod(klass, name, true, arg1Class, arg2Class, arg3Class, arg4Class), null);
+        return new ReflectionFunc4<>(findMethod(klass, name, true, arg1Class, arg2Class, arg3Class, arg4Class), null);
     }
 
     private static class NoInstanceReflectionBase
@@ -360,7 +345,7 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionBase
-            extends NoInstanceReflectionBase
+        extends NoInstanceReflectionBase
     {
         protected final Object obj;
 
@@ -373,8 +358,8 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionFunc0<R>
-            extends ReflectionBase
-            implements Func0<R>
+        extends ReflectionBase
+        implements Func0<R>
     {
         private ReflectionFunc0(Method method,
                                 Object obj)
@@ -390,8 +375,8 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionFunc1<P1, R>
-            extends ReflectionBase
-            implements Func1<P1, R>
+        extends ReflectionBase
+        implements Func1<P1, R>
     {
         private ReflectionFunc1(Method method,
                                 Object obj)
@@ -407,8 +392,8 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionFunc2<P1, P2, R>
-            extends ReflectionBase
-            implements Func2<P1, P2, R>
+        extends ReflectionBase
+        implements Func2<P1, P2, R>
     {
         private ReflectionFunc2(Method method,
                                 Object obj)
@@ -425,8 +410,8 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionFunc3<P1, P2, P3, R>
-            extends ReflectionBase
-            implements Func3<P1, P2, P3, R>
+        extends ReflectionBase
+        implements Func3<P1, P2, P3, R>
     {
         private ReflectionFunc3(Method method,
                                 Object obj)
@@ -444,8 +429,8 @@ public final class ReflectionFunctions
     }
 
     private static class ReflectionFunc4<P1, P2, P3, P4, R>
-            extends ReflectionBase
-            implements Func4<P1, P2, P3, P4, R>
+        extends ReflectionBase
+        implements Func4<P1, P2, P3, P4, R>
     {
         private ReflectionFunc4(Method method,
                                 Object obj)
@@ -464,8 +449,8 @@ public final class ReflectionFunctions
     }
 
     private static class ParamReflectionFunc1<OT, R>
-            extends NoInstanceReflectionBase
-            implements Func1<OT, R>
+        extends NoInstanceReflectionBase
+        implements Func1<OT, R>
     {
         private ParamReflectionFunc1(Method method)
         {
@@ -480,8 +465,8 @@ public final class ReflectionFunctions
     }
 
     private static class ParamReflectionFunc2<P1, OT, R>
-            extends NoInstanceReflectionBase
-            implements Func2<P1, OT, R>
+        extends NoInstanceReflectionBase
+        implements Func2<P1, OT, R>
     {
         private ParamReflectionFunc2(Method method)
         {
@@ -497,8 +482,8 @@ public final class ReflectionFunctions
     }
 
     private static class ParamReflectionFunc3<P1, P2, OT, R>
-            extends NoInstanceReflectionBase
-            implements Func3<P1, P2, OT, R>
+        extends NoInstanceReflectionBase
+        implements Func3<P1, P2, OT, R>
     {
         private ParamReflectionFunc3(Method method)
         {
@@ -515,8 +500,8 @@ public final class ReflectionFunctions
     }
 
     private static class ParamReflectionFunc4<P1, P2, P3, OT, R>
-            extends NoInstanceReflectionBase
-            implements Func4<P1, P2, P3, OT, R>
+        extends NoInstanceReflectionBase
+        implements Func4<P1, P2, P3, OT, R>
     {
         private ParamReflectionFunc4(Method method)
         {
@@ -539,9 +524,7 @@ public final class ReflectionFunctions
     {
         try {
             return method.invoke(obj, params);
-        } catch (IllegalAccessException e) {
-            throw new ReflectionException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new ReflectionException(e);
         }
     }

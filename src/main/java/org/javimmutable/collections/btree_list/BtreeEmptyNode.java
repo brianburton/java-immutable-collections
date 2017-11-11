@@ -89,7 +89,7 @@ class BtreeEmptyNode<T>
                                          T value)
     {
         if (index == 0) {
-            return BtreeInsertResult.createInPlace(new BtreeLeafNode<T>(value));
+            return BtreeInsertResult.createInPlace(new BtreeLeafNode<>(value));
         } else {
             throw new IndexOutOfBoundsException();
         }
@@ -99,7 +99,7 @@ class BtreeEmptyNode<T>
     @Override
     public BtreeInsertResult<T> append(T value)
     {
-        return BtreeInsertResult.createInPlace(new BtreeLeafNode<T>(value));
+        return BtreeInsertResult.createInPlace(new BtreeLeafNode<>(value));
     }
 
     @Nonnull
