@@ -60,6 +60,7 @@ public class JImmutableBtreeList<T>
     implements JImmutableRandomAccessList<T>
 {
     private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<>(BtreeEmptyNode.of());
+    private static final int BUILDER_CHILDREN_PER_NODE = Math.max(BtreeNode.MIN_CHILDREN, BtreeNode.MAX_CHILDREN - 2);
 
     private final BtreeNode<T> root;
 
@@ -96,9 +97,9 @@ public class JImmutableBtreeList<T>
                 remaining = 0;
                 offset = nodeCount;
             } else {
-                node = BtreeLeafNode.of(values, offset, offset + BtreeNode.MIN_CHILDREN);
-                remaining -= BtreeNode.MIN_CHILDREN;
-                offset += BtreeNode.MIN_CHILDREN;
+                node = BtreeLeafNode.of(values, offset, offset + BUILDER_CHILDREN_PER_NODE);
+                remaining -= BUILDER_CHILDREN_PER_NODE;
+                offset += BUILDER_CHILDREN_PER_NODE;
             }
             nodes.add(node);
         }
@@ -116,9 +117,9 @@ public class JImmutableBtreeList<T>
                     remaining = 0;
                     offset = nodeCount;
                 } else {
-                    node = BtreeBranchNode.of(indexed, offset, offset + BtreeNode.MIN_CHILDREN);
-                    remaining -= BtreeNode.MIN_CHILDREN;
-                    offset += BtreeNode.MIN_CHILDREN;
+                    node = BtreeBranchNode.of(indexed, offset, offset + BUILDER_CHILDREN_PER_NODE);
+                    remaining -= BUILDER_CHILDREN_PER_NODE;
+                    offset += BUILDER_CHILDREN_PER_NODE;
                 }
                 nodes.set(branchCount, node);
                 branchCount += 1;
