@@ -5,11 +5,13 @@ org.javimmutable.collections.btree_list
 org.javimmutable.collections.common
 org.javimmutable.collections.cursors
 org.javimmutable.collections.hash
+org.javimmutable.collections.indexed
 org.javimmutable.collections.inorder
 org.javimmutable.collections.iocursors
+org.javimmutable.collections.iterators
 org.javimmutable.collections.list
 org.javimmutable.collections.listmap
+org.javimmutable.collections.sequence
 org.javimmutable.collections.setmap
 org.javimmutable.collections.tree
-org.javimmutable.collections.tree_list
 org.javimmutable.collections.util
