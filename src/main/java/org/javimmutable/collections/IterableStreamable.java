@@ -172,10 +172,40 @@ public interface IterableStreamable<T>
     }
 
     /**
+     * Add all elements to the collection.
+     *
+     * @param collection collection to accumulate the values
+     * @return the collection after all elements have been processed
+     */
+    default <C extends Insertable<T, C>> C collectAll(@Nonnull C collection)
+    {
+        for (T value : this) {
+            collection = collection.insert(value);
+        }
+        return collection;
+    }
+
+    /**
+     * Add the first maxToCollect elements to the collection
+     *
+     * @param collection collection to accumulate the values
+     * @return the collection after all elements have been processed
+     */
+    default <C extends Insertable<T, C>> C collectAtMost(int maxToCollect,
+                                                         @Nonnull C collection)
+    {
+        final Iterator<T> iterator = iterator();
+        for (int i = 0; i < maxToCollect && iterator.hasNext(); ++i) {
+            collection = collection.insert(iterator.next());
+        }
+        return collection;
+    }
+
+    /**
      * Apply the predicate to every element in iterator order and add any elements for which
      * predicate returns true to the collection.
      *
-     * @param collection collection to accumulate the transformed values
+     * @param collection collection to accumulate the values
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */
@@ -195,7 +225,7 @@ public interface IterableStreamable<T>
      * predicate returns true to the collection.  Iteration stops if maxToCollect values have
      * been added to collection.
      *
-     * @param collection collection to accumulate the transformed values
+     * @param collection collection to accumulate the values
      * @param predicate  predicate applied to each element
      * @return the collection after all elements have been processed
      */

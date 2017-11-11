@@ -42,7 +42,7 @@ import org.javimmutable.collections.IterableStreamable.Partitions;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MapEntry;
 
-import static org.javimmutable.collections.util.JImmutables.list;
+import static org.javimmutable.collections.util.JImmutables.*;
 
 public class IterableStreamableTest
     extends TestCase
@@ -87,6 +87,24 @@ public class IterableStreamableTest
         assertEquals(Holders.of(3), list(1, 3, 5).first(x -> x >= 3));
     }
 
+    public void testCollectAll()
+    {
+        assertSame(set(), list().collectAll(set()));
+        assertEquals(set(1), list(1).collectAll(set()));
+        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collectAll(set()));
+    }
+
+    public void testCollectAtMost()
+    {
+        assertSame(set(), list().collectAtMost(100, set()));
+        assertSame(set(), list(1).collectAtMost(0, set()));
+        assertEquals(set(1), list(1).collectAtMost(1, set()));
+        assertEquals(set(1), list(1).collectAtMost(100, set()));
+        assertEquals(set(1), list(1, 2, 3, 4, 5).collectAtMost(1, set()));
+        assertEquals(set(1, 2, 3), list(1, 2, 3, 4, 5).collectAtMost(3, set()));
+        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collectAtMost(5, set()));
+    }
+
     public void testCollectAllMatching()
     {
         assertEquals(list(), list().collectAll(list(), x -> true));
@@ -104,26 +122,26 @@ public class IterableStreamableTest
         assertEquals(list(1, 5), list(1, 3, 5, 7).collectAtMost(2, list(), x -> x != 3));
     }
 
-    public void testCollectAll()
+    public void testTransformAll()
     {
         assertEquals(list(), list().transformAll(list(), x -> x));
         assertEquals(list(-1), list(1).transformAll(list(), x -> -x));
         assertEquals(list(-1, -3, -5), list(1, 3, 5).transformAll(list(), x -> -x));
     }
 
-    public void testCollectAtMost()
+    public void testTransformAtMost()
     {
         assertEquals(list(), list().transformAtMost(10, list(), x -> x));
         assertEquals(list(-1, -3), list(1, 3, 5).transformAtMost(2, list(), x -> -x));
     }
 
-    public void testCollectSome()
+    public void testTransformSome()
     {
         assertEquals(list(), list().transformSome(list(), x -> Holders.of(x)));
         assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
     }
 
-    public void testCollectAtMostSome()
+    public void testTransformAtMostSome()
     {
         assertEquals(list(), list().transformAtMostSome(10, list(), x -> Holders.of(x)));
         assertEquals(list(9, -1, -5), list(1, 3, 5).transformAtMostSome(10, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
@@ -160,7 +178,7 @@ public class IterableStreamableTest
 
     public void testConversions()
     {
-        assertEquals(JImmutables.set(3, 5), list(5, 3, 3, 5).transformAll(JImmutables.<Integer>sortedSet(), x -> x));
+        assertEquals(set(3, 5), list(5, 3, 3, 5).transformAll(JImmutables.<Integer>sortedSet(), x -> x));
         assertEquals(JImmutables.multiset(3, 3, 5, 5), list(5, 3, 3, 5).transformAll(JImmutables.<Integer>sortedMultiset(), x -> x));
         assertEquals(JImmutables.map().assign(3, 6).assign(5, 10), list(5, 3, 3, 5).transformAll(JImmutables.sortedMap(), x -> MapEntry.of(x, 2 * x)));
         assertEquals(JImmutables.listMap().assign(3, list(3, 3)).assign(5, list(5)), list(3, 5, 3).transformAll(JImmutables.sortedListMap(), x -> MapEntry.of(x, x)));
