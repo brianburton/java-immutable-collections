@@ -39,7 +39,6 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -149,7 +148,7 @@ public class JImmutableBtreeListTest
 
     public void testInsertIterable()
     {
-        JImmutableList<Integer> list = JImmutableBtreeList.of();
+        JImmutableRandomAccessList<Integer> list = JImmutableBtreeList.of();
         StandardCursorTest.emptyCursorTest(list.cursor());
 
         list = list.insert(Arrays.asList(1, 2, 3));
@@ -170,19 +169,19 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         try {
-            list.insertAll(-1, plainIterable(Collections.<Integer>emptyList()));
+            list.insertAll(-1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(-1, Collections.<Integer>emptyList());
+            list.insertAll(-1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(-1, getCursor(Collections.<Integer>emptyList()));
+            list.insertAll(-1, getCursor(Collections.emptyList()));
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
@@ -219,19 +218,19 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         try {
-            list.insertAll(-1, plainIterable(Collections.<Integer>emptyList()));
+            list.insertAll(-1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(-1, Collections.<Integer>emptyList());
+            list.insertAll(-1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(-1, getCursor(Collections.<Integer>emptyList()));
+            list.insertAll(-1, getCursor(Collections.emptyList()));
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
@@ -269,9 +268,9 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(0, Collections.emptyList());
+        checkCursor = list.insertAll(0, getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -291,9 +290,9 @@ public class JImmutableBtreeListTest
 
         //empty into values
         list = list.insert(4).insert(5);
-        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(0, Collections.emptyList());
+        checkCursor = list.insertAll(0, getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -316,19 +315,19 @@ public class JImmutableBtreeListTest
         //empty into empty -- should fail
         list = JImmutableBtreeList.of();
         try {
-            list.insertAll(1, plainIterable(Collections.<Integer>emptyList()));
+            list.insertAll(1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(1, Collections.<Integer>emptyList());
+            list.insertAll(1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(1, getCursor(Collections.<Integer>emptyList()));
+            list.insertAll(1, getCursor(Collections.emptyList()));
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
@@ -365,9 +364,9 @@ public class JImmutableBtreeListTest
         //empty into values -- should work
         list = list.insert(0).insert(3);
         expected = list;
-        checkCursorable = list.insertAll(0, plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(0, Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(0, getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(0, plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(0, Collections.emptyList());
+        checkCursor = list.insertAll(0, getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(0, Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -390,9 +389,9 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         expected = list;
-        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(list.size(), Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(list.size(), getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(list.size(), Collections.emptyList());
+        checkCursor = list.insertAll(list.size(), getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -412,9 +411,9 @@ public class JImmutableBtreeListTest
 
         //empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
-        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(list.size(), Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(list.size(), getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(list.size(), plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(list.size(), Collections.emptyList());
+        checkCursor = list.insertAll(list.size(), getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -436,19 +435,19 @@ public class JImmutableBtreeListTest
         // empty into empty
         list = JImmutableBtreeList.of();
         try {
-            list.insertAll(list.size() + 1, plainIterable(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(list.size() + 1, Collections.<Integer>emptyList());
+            list.insertAll(list.size() + 1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(list.size() + 1, getCursor(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, getCursor(Collections.emptyList()));
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
@@ -485,19 +484,19 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         try {
-            list.insertAll(list.size() + 1, plainIterable(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(list.size() + 1, Collections.<Integer>emptyList());
+            list.insertAll(list.size() + 1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
         try {
-            list.insertAll(list.size() + 1, getCursor(Collections.<Integer>emptyList()));
+            list.insertAll(list.size() + 1, getCursor(Collections.emptyList()));
         } catch (IndexOutOfBoundsException ignored) {
             //expected
         }
@@ -537,9 +536,9 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        JImmutableBtreeList<Integer> checkCursorable = list.insertAllFirst(plainIterable(Collections.<Integer>emptyList()));
-        JImmutableBtreeList<Integer> checkCollection = list.insertAllFirst(Collections.<Integer>emptyList());
-        JImmutableBtreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.<Integer>emptyList()));
+        JImmutableBtreeList<Integer> checkCursorable = list.insertAllFirst(plainIterable(Collections.emptyList()));
+        JImmutableBtreeList<Integer> checkCollection = list.insertAllFirst(Collections.emptyList());
+        JImmutableBtreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
         JImmutableBtreeList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -560,9 +559,9 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(4).insert(5);
         expected = list;
-        checkCursorable = list.insertAllFirst(plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAllFirst(Collections.<Integer>emptyList());
-        checkCursor = list.insertAllFirst(getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllFirst(plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAllFirst(Collections.emptyList());
+        checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
         checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -588,9 +587,9 @@ public class JImmutableBtreeListTest
         //empty into empty
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
         JImmutableBtreeList<Integer> expected = list;
-        JImmutableBtreeList<Integer> checkCursorable = list.insertAll(plainIterable(Collections.<Integer>emptyList()));
-        JImmutableBtreeList<Integer> checkCollection = list.insertAll(Collections.<Integer>emptyList());
-        JImmutableBtreeList<Integer> checkCursor = list.insertAll(getCursor(Collections.<Integer>emptyList()));
+        JImmutableBtreeList<Integer> checkCursorable = list.insertAll(plainIterable(Collections.emptyList()));
+        JImmutableBtreeList<Integer> checkCollection = list.insertAll(Collections.emptyList());
+        JImmutableBtreeList<Integer> checkCursor = list.insertAll(getCursor(Collections.emptyList()));
         JImmutableBtreeList<Integer> checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -611,9 +610,9 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(0);
         expected = list;
-        checkCursorable = list.insertAll(plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAll(Collections.<Integer>emptyList());
-        checkCursor = list.insertAll(getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAll(plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAll(Collections.emptyList());
+        checkCursor = list.insertAll(getCursor(Collections.emptyList()));
         checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -635,9 +634,9 @@ public class JImmutableBtreeListTest
         //empty into empty
         list = JImmutableBtreeList.of();
         expected = list;
-        checkCursorable = list.insertAllLast(plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAllLast(Collections.<Integer>emptyList());
-        checkCursor = list.insertAllLast(getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllLast(plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAllLast(Collections.emptyList());
+        checkCursor = list.insertAllLast(getCursor(Collections.emptyList()));
         checkIterator = list.insertAllLast(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -658,9 +657,9 @@ public class JImmutableBtreeListTest
         //empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
         expected = list;
-        checkCursorable = list.insertAllLast(plainIterable(Collections.<Integer>emptyList()));
-        checkCollection = list.insertAllLast(Collections.<Integer>emptyList());
-        checkCursor = list.insertAllLast(getCursor(Collections.<Integer>emptyList()));
+        checkCursorable = list.insertAllLast(plainIterable(Collections.emptyList()));
+        checkCollection = list.insertAllLast(Collections.emptyList());
+        checkCursor = list.insertAllLast(getCursor(Collections.emptyList()));
         checkIterator = list.insertAllLast(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
@@ -1090,7 +1089,6 @@ public class JImmutableBtreeListTest
         }
     }
 
-
     public void testCursor()
     {
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
@@ -1226,7 +1224,7 @@ public class JImmutableBtreeListTest
 
     public void testStreams()
     {
-        JImmutableList<Integer> list = JImmutableBtreeList.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
+        JImmutableRandomAccessList<Integer> list = JImmutableBtreeList.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 
@@ -1241,7 +1239,7 @@ public class JImmutableBtreeListTest
 
     public void testParallelStreams()
     {
-        final JImmutableList<Integer> original = JImmutableBtreeList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
+        final JImmutableRandomAccessList<Integer> original = JImmutableBtreeList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
         final List<Integer> collected = original.stream().parallel().collect(toList());
         assertEquals(original.getList(), collected);
     }
@@ -1256,30 +1254,17 @@ public class JImmutableBtreeListTest
             list.checkInvariants();
         }
 
-        Func0<? extends MutableBuilder<Integer, JImmutableRandomAccessList<Integer>>> factory = new Func0<JImmutableBtreeList.Builder<Integer>>()
-        {
-            @Override
-            public JImmutableBtreeList.Builder<Integer> apply()
-            {
-                return JImmutableBtreeList.builder();
+        Func0<? extends MutableBuilder<Integer, JImmutableRandomAccessList<Integer>>> factory = (Func0<JImmutableBtreeList.Builder<Integer>>)() -> JImmutableBtreeList.builder();
+
+        Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean> comparator = (list, tree) -> {
+            tree.checkInvariants();
+            for (int i = 0; i < list.size(); ++i) {
+                assertEquals(list.get(i), tree.get(i));
             }
+            return true;
         };
 
-        Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean> comparator = new Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean>()
-        {
-            @Override
-            public Boolean apply(List<Integer> list,
-                                 JImmutableRandomAccessList<Integer> tree)
-            {
-                ((JImmutableBtreeList<Integer>)tree).checkInvariants();
-                for (int i = 0; i < list.size(); ++i) {
-                    assertEquals(list.get(i), tree.get(i));
-                }
-                return true;
-            }
-        };
-
-        StandardMutableBuilderTests.verifyBuilder(source, factory, (comparator));
+        StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
     }
 
     private JImmutableRandomAccessList<Integer> ralist(Integer... values)

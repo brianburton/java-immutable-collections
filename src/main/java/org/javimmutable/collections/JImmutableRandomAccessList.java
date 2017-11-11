@@ -72,6 +72,13 @@ public interface JImmutableRandomAccessList<T>
     @Override
     JImmutableRandomAccessList<T> insert(@Nullable T value);
 
+    @Nonnull
+    @Override
+    default JImmutableRandomAccessList<T> insert(@Nonnull Iterable<? extends T> values)
+    {
+        return insertAll(values);
+    }
+
     /**
      * Insert value at index (which must be within 0 to size).
      * Shifts all values at and after index one position to the right and adds 1
@@ -254,6 +261,27 @@ public interface JImmutableRandomAccessList<T>
     @Nonnull
     @Override
     JImmutableRandomAccessList<T> deleteAll();
+
+    /**
+     * Returns a list of the same type as this containing only those elements for which
+     * predicate returns true.  Implementations are optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return list of same type as this containing only those elements for which predicate returns true
+     */
+    @Nonnull
+    @Override
+    default JImmutableRandomAccessList<T> select(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableRandomAccessList<T> answer = deleteAll();
+        for (T value : this) {
+            if (predicate.test(value)) {
+                answer = answer.insert(value);
+            }
+        }
+        return answer.size() == size() ? this : answer;
+    }
 
     /**
      * Returns a list of the same type as this containing all those elements for which
