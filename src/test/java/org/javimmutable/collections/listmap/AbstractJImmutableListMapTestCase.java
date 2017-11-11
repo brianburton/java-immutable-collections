@@ -40,13 +40,18 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-public abstract class AbstractJImmutableListMapTestTestCase
+import static com.google.common.primitives.Ints.asList;
+
+public abstract class AbstractJImmutableListMapTestCase
     extends TestCase
 {
     public JImmutableListMap<Integer, Integer> verifyOperations(JImmutableListMap<Integer, Integer> map)
@@ -81,6 +86,7 @@ public abstract class AbstractJImmutableListMapTestTestCase
         assertEquals(Arrays.asList(87), map.getList(3).getList());
         assertSame(map.getList(3), map.get(3));
 
+        JImmutableListMap<Integer, Integer> preInsertMap = map;
         map = map.assign(3, JImmutableArrayList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
@@ -91,6 +97,16 @@ public abstract class AbstractJImmutableListMapTestTestCase
         assertEquals(Arrays.asList(300, 7, 7, 14), map.getList(3).getList());
         assertSame(map.getList(3), map.get(3));
 
+        preInsertMap = preInsertMap.delete(3);
+        final List<Integer> insertValuesList = asList(300, 7, 7, 14);
+        assertEquals(map, preInsertMap.insertAll(3, insertValuesList));
+        assertEquals(map, preInsertMap.insertAll(3, insertValuesList.iterator()));
+        assertEquals(map, preInsertMap.insertAll(3, StandardCursor.of(IndexedList.retained(insertValuesList))));
+
+        assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1)));
+        assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
+        assertEquals(map.delete(1).delete(3), map.deleteAll(StandardCursor.of(IndexedList.retained(asList(3, 1)))));
+        
         final JImmutableList<Integer> defaultValue = JImmutableArrayList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
         assertNull(map.get(8));

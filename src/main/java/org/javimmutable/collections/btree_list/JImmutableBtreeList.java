@@ -190,7 +190,7 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> getInsertableSelf()
+    public JImmutableBtreeList<T> getInsertableSelf()
     {
         return this;
     }
@@ -355,9 +355,9 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableRandomAccessList<T> insert(@Nonnull Iterable<? extends T> values)
+    public JImmutableBtreeList<T> insert(@Nonnull Iterable<? extends T> values)
     {
-        JImmutableRandomAccessList<T> answer = this;
+        JImmutableBtreeList<T> answer = this;
         for (T value : values) {
             answer = answer.insertLast(value);
         }

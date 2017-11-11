@@ -46,7 +46,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 public class JImmutableTreeListMapTest
-    extends AbstractJImmutableListMapTestTestCase
+    extends AbstractJImmutableListMapTestCase
 {
     @SuppressWarnings("unchecked")
     public void testNormalOrder()

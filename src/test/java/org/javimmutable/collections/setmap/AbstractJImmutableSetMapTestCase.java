@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class AbstractJImmutableSetMapTestCase
     extends TestCase
@@ -107,6 +108,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertSame(map.getSet(2), map.get(2));
         assertEquals(new HashSet<>(Arrays.asList(300, 7, 14)), map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
+        assertEquals(map.getSet(3), map.values(3).stream().collect(Collectors.toSet()));
 
         final JImmutableSet<Integer> defaultValue = JImmutableHashSet.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());

@@ -43,7 +43,7 @@ import java.util.List;
 
 @Immutable
 public class IndexedList<T>
-        implements Indexed<T>
+    implements Indexed<T>
 {
     private final List<? extends T> values;
 
@@ -56,10 +56,6 @@ public class IndexedList<T>
      * Produces an instance using a copy of the specified List to ensure that changes to the List
      * will not influence the values returned by the instance's methods.  This is generally preferred
      * to the unsafe() constructor.
-     *
-     * @param values
-     * @param <T>
-     * @return
      */
     public static <T> IndexedList<T> copied(List<? extends T> values)
     {
@@ -71,10 +67,6 @@ public class IndexedList<T>
      * changes to the List will cause changes to this instance's values.  However this can be useful
      * when performance is important and the instance will not be shared or retained beyond a single
      * method scope.
-     *
-     * @param values
-     * @param <T>
-     * @return
      */
     public static <T> IndexedList<T> retained(List<? extends T> values)
     {

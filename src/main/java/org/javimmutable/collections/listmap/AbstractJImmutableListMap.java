@@ -219,7 +219,6 @@ public abstract class AbstractJImmutableListMap<K, V>
         for (JImmutableMap.Entry<K, JImmutableList<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
-        //TODO: review checkListMapInvariants()
     }
 
     /**
