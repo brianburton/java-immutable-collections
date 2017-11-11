@@ -35,19 +35,34 @@
 
 package org.javimmutable.collections.setmap;
 
+import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.tree.ComparableComparator;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.JImmutableTreeSet;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.TreeMap;
 
-public class JImmutableTreeSetMapTest
+import static java.util.stream.Collectors.toList;
+
+public class JImmutableTemplateSetMapTest
     extends AbstractJImmutableSetMapTestCase
 {
-    public void testNormalOrder()
+    public void testVarious()
     {
+        final Comparator<Integer> reverse = ComparableComparator.<Integer>of().reversed();
+        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of(reverse);
+        final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
+                                                                                     emptySet.insert(8).insert(25));
+        assertEquals(true, empty.isEmpty());
+        assertEquals(0, empty.count());
+        assertEquals(0, empty.keys().count());
+        assertNull(empty.get(1));
         JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.of());
         verifyRandom(JImmutableTreeSetMap.of(), new TreeMap<>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
@@ -59,38 +74,17 @@ public class JImmutableTreeSetMapTest
                                                           MapEntry.of(2, map.getSet(2)),
                                                           MapEntry.of(3, map.getSet(3))),
                                             map.iterator());
-    }
 
-    public void testReverseOrder()
-    {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.of(Comparator.<Integer>reverseOrder()));
-        StandardCursorTest.listCursorTest(Arrays.asList(3, 2, 1), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(3, map.getSet(3)),
-                                                        MapEntry.of(2, map.getSet(2)),
-                                                        MapEntry.of(1, map.getSet(1))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(3, map.getSet(3)),
-                                                          MapEntry.of(2, map.getSet(2)),
-                                                          MapEntry.of(1, map.getSet(1))),
-                                            map.iterator());
-    }
-
-    public void testEquals()
-    {
-        JImmutableSetMap<Integer, Integer> a = JImmutableTreeSetMap.of();
-        JImmutableSetMap<Integer, Integer> b = JImmutableTreeSetMap.of();
-        assertEquals(a, b);
-        assertEquals(b, a);
-
-        a = a.insert(1, 10);
-        assertFalse(a.equals(b));
-        b = b.insert(1, 10);
-        assertEquals(a, b);
-        assertEquals(b, a);
-        a = a.insert(1, 12);
-        assertFalse(a.equals(b));
-        b = b.insert(1, 12);
-        assertEquals(a, b);
-        assertEquals(b, a);
+        map = empty
+            .insert(10, 100)
+            .insert(10, 111)
+            .insert(7, 5)
+            .insert(3, 8)
+            .insert(7, 12)
+            .insert(3, 90);
+        assertEquals(Arrays.asList(3, 7, 10), map.keys().stream().collect(toList()));
+        assertEquals(Arrays.asList(90, 8), map.getSet(3).stream().collect(toList()));
+        assertEquals(Arrays.asList(12, 5), map.getSet(7).stream().collect(toList()));
+        assertEquals(Arrays.asList(111, 100), map.getSet(10).stream().collect(toList()));
     }
 }
