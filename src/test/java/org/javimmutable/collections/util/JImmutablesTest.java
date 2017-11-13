@@ -460,23 +460,24 @@ public class JImmutablesTest
     public void testTemplateSetMap()
     {
         final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.map(), JImmutables.set());
-        verifyUnordered(isSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testTemplateSortedSetMap()
     {
-        final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
-        final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.sortedMap(reverse), JImmutables.set());
-        verifyOrdered(isSortedSetMap, entryList(entry("x", set(3)), entry("y", set(1)), entry("z", set(2))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
-        verifyOrdered(isSortedSetMap, entryList(entry("z", set(2)), entry("y", set(1)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
+        final Comparator<String> reversedComparator = ComparableComparator.<String>of().reversed();
+        final JImmutableSetMap<String, Integer> forward = JImmutables.setMap(JImmutables.<String, JImmutableSet<Integer>>sortedMap(), JImmutables.set());
+        final JImmutableSetMap<String, Integer> reverse = JImmutables.setMap(JImmutables.sortedMap(reversedComparator), JImmutables.set());
+        verifyOrdered(isTemplateSetMap, entryList(entry("x", set(3)), entry("y", set(1)), entry("z", set(2))), () -> forward.insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isTemplateSetMap, entryList(entry("z", set(2)), entry("y", set(1)), entry("x", set(3))), () -> reverse.insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testTemplateInsertOrderSetMap()
     {
         final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.insertOrderMap(), JImmutables.set());
-        verifyOrdered(isInsertOrderSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
     }
-    
+
     public void testSequence()
     {
         verifyOrdered(isEmptyInsertableSequence, asList(), () -> JImmutables.<String>sequence(), x -> SequenceIterator.iterator(x));
