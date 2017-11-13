@@ -87,4 +87,27 @@ public class JImmutableTemplateSetMapTest
         assertEquals(Arrays.asList(12, 5), map.getSet(7).stream().collect(toList()));
         assertEquals(Arrays.asList(111, 100), map.getSet(10).stream().collect(toList()));
     }
+
+    public void testEquals()
+    {
+        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of();
+        final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
+                                                                                     emptySet.insert(8).insert(25));
+        JImmutableSetMap<Integer, Integer> a = empty;
+        JImmutableSetMap<Integer, Integer> b = empty;
+        assertEquals(a, b);
+        assertEquals(b, a);
+
+        a = a.insert(1, 10);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 10);
+        assertEquals(a, b);
+        assertEquals(b, a);
+        a = a.insert(1, 12);
+        assertFalse(a.equals(b));
+        b = b.insert(1, 12);
+        assertEquals(a, b);
+        assertEquals(b, a);
+    }
 }
