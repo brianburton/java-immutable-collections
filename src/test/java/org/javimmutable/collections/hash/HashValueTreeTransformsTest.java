@@ -40,11 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.btree_map.BranchNode;
-import org.javimmutable.collections.btree_map.LeafNode;
-import org.javimmutable.collections.btree_map.Node;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.tree.BranchNode;
+import org.javimmutable.collections.tree.LeafNode;
+import org.javimmutable.collections.tree.Node;
 
 import java.util.ArrayList;
 import java.util.List;

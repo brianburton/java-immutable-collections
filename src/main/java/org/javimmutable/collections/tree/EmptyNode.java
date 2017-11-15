@@ -40,59 +40,123 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Comparator;
 
 @Immutable
 public class EmptyNode<K, V>
-    extends TreeNode<K, V>
+    implements Node<K, V>
 {
+    @SuppressWarnings("unchecked")
     static final EmptyNode INSTANCE = new EmptyNode();
 
-    private EmptyNode()
+    @SuppressWarnings("unchecked")
+    public static <K, V> Node<K, V> of()
     {
+        return INSTANCE;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <K, V> EmptyNode<K, V> of()
+    @Nullable
+    @Override
+    public K baseKey()
     {
-        return (EmptyNode<K, V>)INSTANCE;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public V getValueOr(Comparator<K> props,
-                        K key,
+    public int childCount()
+    {
+        return 0;
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return 0;
+    }
+
+    @Override
+    public V getValueOr(@Nonnull Comparator<K> comparator,
+                        @Nonnull K key,
                         V defaultValue)
     {
         return defaultValue;
     }
 
-    @Override
-    public Holder<V> find(Comparator<K> props,
-                          K key)
-    {
-        return Holders.of();
-    }
-
-    @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
-                                                       K key)
-    {
-        return Holders.of();
-    }
-
-    @Override
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
-    {
-    }
-
-    @Override
     @Nonnull
+    @Override
+    public Holder<V> find(@Nonnull Comparator<K> comparator,
+                          @Nonnull K key)
+    {
+        return Holders.of();
+    }
+
+    @Nonnull
+    @Override
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Comparator<K> comparator,
+                                                       @Nonnull K key)
+    {
+        return Holders.of();
+    }
+
+    @Nonnull
+    @Override
+    public UpdateResult<K, V> assign(@Nonnull Comparator<K> comparator,
+                                     @Nonnull K key,
+                                     V value)
+    {
+        return UpdateResult.createInPlace(new LeafNode<>(key, value), 1);
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> delete(@Nonnull Comparator<K> comparator,
+                             @Nonnull K key)
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> mergeChildren(@Nonnull Node<K, V> sibling)
+    {
+        return sibling;
+    }
+
+    @Nonnull
+    @Override
+    public Tuple2<Node<K, V>, Node<K, V>> distributeChildren(@Nonnull Node<K, V> sibling)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> compress()
+    {
+        return this;
+    }
+
+    @Override
+    public int depth()
+    {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return true;
+    }
+
+    @Nonnull
+    @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return StandardCursor.of();
@@ -106,47 +170,7 @@ public class EmptyNode<K, V>
     }
 
     @Override
-    public boolean isEmpty()
+    public void checkInvariants(@Nonnull Comparator<K> comparator)
     {
-        return true;
-    }
-
-    @Override
-    int verifyDepthsMatch()
-    {
-        return 0;
-    }
-
-    @Override
-    K getMaxKey()
-    {
-        return null;
-    }
-
-    @Override
-    UpdateResult<K, V> assignImpl(Comparator<K> props,
-                                  K key,
-                                  V value)
-    {
-        return UpdateResult.createInPlace(new LeafNode<K, V>(key, value), 1);
-    }
-
-    @Override
-    DeleteResult<K, V> deleteImpl(Comparator<K> props,
-                                  K key)
-    {
-        return DeleteResult.createUnchanged();
-    }
-
-    @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
-    {
-        throw new UnsupportedOperationException();
     }
 }

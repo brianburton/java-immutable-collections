@@ -35,11 +35,15 @@
 
 package org.javimmutable.collections.tree;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class UpdateResult<K, V>
 {
+    @SuppressWarnings("unchecked")
+    private static UpdateResult UNCHANGED = new UpdateResult(Type.UNCHANGED, null, null, 0);
+
     public enum Type
     {
         UNCHANGED,
@@ -48,13 +52,13 @@ public class UpdateResult<K, V>
     }
 
     public final Type type;
-    public final TreeNode<K, V> newNode;
-    public final TreeNode<K, V> extraNode;
+    public final Node<K, V> newNode;
+    public final Node<K, V> extraNode;
     public final int sizeDelta;
 
     private UpdateResult(Type type,
-                         TreeNode<K, V> newNode,
-                         TreeNode<K, V> extraNode,
+                         Node<K, V> newNode,
+                         Node<K, V> extraNode,
                          int sizeDelta)
     {
         this.type = type;
@@ -63,114 +67,31 @@ public class UpdateResult<K, V>
         this.sizeDelta = sizeDelta;
     }
 
-    public static <K, V> UpdateResult<K, V> createUnchanged()
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    static <K, V> UpdateResult<K, V> createUnchanged()
     {
-        return new UpdateResult<K, V>(Type.UNCHANGED, null, null, 0);
+        return UNCHANGED;
     }
 
-    public static <K, V> UpdateResult<K, V> createInPlace(TreeNode<K, V> newNode,
-                                                          int sizeDelta)
+    @Nonnull
+    static <K, V> UpdateResult<K, V> createInPlace(@Nonnull Node<K, V> newNode,
+                                                   int sizeDelta)
     {
-        return new UpdateResult<K, V>(Type.INPLACE, newNode, null, sizeDelta);
+        return new UpdateResult<>(Type.INPLACE, newNode, null, sizeDelta);
     }
 
-    public static <K, V> UpdateResult<K, V> createSplit(TreeNode<K, V> newNode,
-                                                        TreeNode<K, V> extraNode,
-                                                        int sizeDelta)
+    @Nonnull
+    static <K, V> UpdateResult<K, V> createSplit(@Nonnull Node<K, V> newNode,
+                                                 @Nonnull Node<K, V> extraNode,
+                                                 int sizeDelta)
     {
-        return new UpdateResult<K, V>(Type.SPLIT, newNode, extraNode, sizeDelta);
-    }
-
-    public TreeNode<K, V> createTwoNode()
-    {
-        return new TwoNode<K, V>(newNode,
-                                 extraNode,
-                                 newNode.getMaxKey(),
-                                 extraNode.getMaxKey());
-    }
-
-    public TreeNode<K, V> createLeftTwoNode(TreeNode<K, V> right,
-                                            K rightMax)
-    {
-        return new TwoNode<K, V>(newNode,
-                                 right,
-                                 newNode.getMaxKey(),
-                                 rightMax);
-    }
-
-    public TreeNode<K, V> createLeftThreeNode(TreeNode<K, V> right,
-                                              K rightMax)
-    {
-        return new ThreeNode<K, V>(newNode,
-                                   extraNode,
-                                   right,
-                                   newNode.getMaxKey(),
-                                   extraNode.getMaxKey(),
-                                   rightMax);
-    }
-
-    public TreeNode<K, V> createRightTwoNode(TreeNode<K, V> left,
-                                             K leftMax)
-    {
-        return new TwoNode<K, V>(left,
-                                 newNode,
-                                 leftMax,
-                                 newNode.getMaxKey());
-    }
-
-    public TreeNode<K, V> createRightThreeNode(TreeNode<K, V> left,
-                                               K leftMax)
-    {
-        return new ThreeNode<K, V>(left,
-                                   newNode,
-                                   extraNode,
-                                   leftMax,
-                                   newNode.getMaxKey(),
-                                   extraNode.getMaxKey());
-    }
-
-    @SuppressWarnings("RedundantIfStatement")
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        UpdateResult that = (UpdateResult)o;
-
-        if (sizeDelta != that.sizeDelta) {
-            return false;
-        }
-        if (extraNode != null ? !extraNode.equals(that.extraNode) : that.extraNode != null) {
-            return false;
-        }
-        if (newNode != null ? !newNode.equals(that.newNode) : that.newNode != null) {
-            return false;
-        }
-        if (type != that.type) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (newNode != null ? newNode.hashCode() : 0);
-        result = 31 * result + (extraNode != null ? extraNode.hashCode() : 0);
-        result = 31 * result + sizeDelta;
-        return result;
+        return new UpdateResult<>(Type.SPLIT, newNode, extraNode, sizeDelta);
     }
 
     @Override
     public String toString()
     {
-        return String.format("<%s,%s,%s>", type, newNode, extraNode);
+        return String.format("<%s,%s,%s,%d>", type, newNode, extraNode, sizeDelta);
     }
 }

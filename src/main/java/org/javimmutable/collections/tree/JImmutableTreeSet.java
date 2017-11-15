@@ -37,7 +37,6 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 
 import javax.annotation.Nonnull;
@@ -57,7 +56,7 @@ public class JImmutableTreeSet<T>
 
     private JImmutableTreeSet(Comparator<T> comparator)
     {
-        this(JImmutableBtreeMap.of(comparator), comparator);
+        this(JImmutableTreeMap.of(comparator), comparator);
     }
 
     private JImmutableTreeSet(JImmutableMap<T, Boolean> map,

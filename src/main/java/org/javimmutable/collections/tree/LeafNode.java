@@ -40,157 +40,126 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 
 @Immutable
 public class LeafNode<K, V>
-    extends TreeNode<K, V>
-    implements JImmutableMap.Entry<K, V>,
+    implements Node<K, V>,
+               JImmutableMap.Entry<K, V>,
                Holder<V>
 {
-    private final K nodeKey;
+    private final K key;
     private final V value;
 
-    public LeafNode(K key,
+    public LeafNode(@Nonnull K key,
                     V value)
     {
-        this.nodeKey = key;
+        this.key = key;
         this.value = value;
     }
 
-    @Nonnull
-    public K getKey()
+    @Override
+    public K baseKey()
     {
-        return nodeKey;
-    }
-
-    public V getValue()
-    {
-        return value;
-    }
-
-    public boolean isEmpty()
-    {
-        return false;
-    }
-
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    public V getValueOrNull()
-    {
-        return value;
-    }
-
-    public V getValueOr(V defaultValue)
-    {
-        return value;
+        return key;
     }
 
     @Override
-    public V getValueOr(Comparator<K> props,
-                        K searchKey,
-                        V defaultValue)
-    {
-        return props.compare(searchKey, nodeKey) == 0 ? value : defaultValue;
-    }
-
-    @Override
-    public Holder<V> find(Comparator<K> props,
-                          K searchKey)
-    {
-        return props.compare(searchKey, nodeKey) == 0 ? this : Holders.of();
-    }
-
-    @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Comparator<K> props,
-                                                       K searchKey)
-    {
-        return props.compare(searchKey, nodeKey) == 0 ? Holders.of(this) : Holders.of();
-    }
-
-    @Override
-    K getMaxKey()
-    {
-        return nodeKey;
-    }
-
-    @Override
-    UpdateResult<K, V> assignImpl(Comparator<K> props,
-                                  K key,
-                                  V value)
-    {
-        final int diff = props.compare(key, nodeKey);
-        if (diff == 0) {
-            if (this.value == value) { // value identity - useful for sets, booleans, etc
-                return UpdateResult.createUnchanged();
-            } else {
-                return UpdateResult.createInPlace(new LeafNode<>(key, value), 0);
-            }
-        } else if (diff < 0) {
-            return UpdateResult.createSplit(new LeafNode<>(key, value), this, 1);
-        } else {
-            return UpdateResult.createSplit(this, new LeafNode<>(key, value), 1);
-        }
-    }
-
-    @Override
-    public void addEntriesTo(Collection<JImmutableMap.Entry<K, V>> collection)
-    {
-        collection.add(this);
-    }
-
-    @Override
-    public int verifyDepthsMatch()
+    public int childCount()
     {
         return 1;
     }
 
     @Override
-    DeleteResult<K, V> deleteImpl(Comparator<K> props,
-                                  K key)
+    public int valueCount()
     {
-        if (props.compare(key, nodeKey) == 0) {
-            return DeleteResult.createEliminated();
+        return 1;
+    }
+
+    @Override
+    public V getValueOr(@Nonnull Comparator<K> comparator,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return comparator.compare(this.key, key) == 0 ? value : defaultValue;
+    }
+
+    @Nonnull
+    @Override
+    public Holder<V> find(@Nonnull Comparator<K> comparator,
+                          @Nonnull K key)
+    {
+        return comparator.compare(this.key, key) == 0 ? this : Holders.of();
+    }
+
+    @Nonnull
+    @Override
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Comparator<K> comparator,
+                                                       @Nonnull K key)
+    {
+        return comparator.compare(this.key, key) == 0 ? Holders.of(this) : Holders.of();
+    }
+
+    @Nonnull
+    @Override
+    public UpdateResult<K, V> assign(@Nonnull Comparator<K> comparator,
+                                     @Nonnull K key,
+                                     V value)
+    {
+        final LeafNode<K, V> newLeaf = new LeafNode<>(key, value);
+        final int diff = comparator.compare(this.key, key);
+        if (diff == 0) {
+            return (this.value == value) ? UpdateResult.createUnchanged() : UpdateResult.createInPlace(newLeaf, 0);
         } else {
-            return DeleteResult.createUnchanged();
+            return (diff < 0) ? UpdateResult.createSplit(this, newLeaf, 1) : UpdateResult.createSplit(newLeaf, this, 1);
         }
     }
 
-    @Override
-    DeleteMergeResult<K, V> leftDeleteMerge(TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<>(new TwoNode<>(node,
-                                                     this,
-                                                     node.getMaxKey(),
-                                                     nodeKey));
-    }
-
-    @Override
-    DeleteMergeResult<K, V> rightDeleteMerge(TreeNode<K, V> node)
-    {
-        return new DeleteMergeResult<>(new TwoNode<>(this,
-                                                     node,
-                                                     nodeKey,
-                                                     node.getMaxKey()));
-    }
-
-    @Override
-    public String toString()
-    {
-        return String.format("%s => %s", nodeKey, value);
-    }
-
-    @Override
     @Nonnull
+    @Override
+    public Node<K, V> delete(@Nonnull Comparator<K> comparator,
+                             @Nonnull K key)
+    {
+        final int diff = comparator.compare(this.key, key);
+        return (diff == 0) ? EmptyNode.of() : this;
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> mergeChildren(@Nonnull Node<K, V> sibling)
+    {
+        return new BranchNode<>(this, sibling);
+    }
+
+    @Nonnull
+    @Override
+    public Tuple2<Node<K, V>, Node<K, V>> distributeChildren(@Nonnull Node<K, V> sibling)
+    {
+        return Tuple2.of(this, sibling);
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> compress()
+    {
+        return this;
+    }
+
+    @Override
+    public int depth()
+    {
+        return 0;
+    }
+
+    @Nonnull
+    @Override
     public Cursor<JImmutableMap.Entry<K, V>> cursor()
     {
         return SingleValueCursor.of(this);
@@ -203,7 +172,54 @@ public class LeafNode<K, V>
         return SingleValueIterator.of(this);
     }
 
-    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public void checkInvariants(@Nonnull Comparator<K> comparator)
+    {
+    }
+
+    @Nonnull
+    @Override
+    public K getKey()
+    {
+        return key;
+    }
+
+    @Override
+    public V getValue()
+    {
+        return value;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isFilled()
+    {
+        return true;
+    }
+
+    @Override
+    public V getValueOrNull()
+    {
+        return value;
+    }
+
+    @Override
+    public V getValueOr(V defaultValue)
+    {
+        return value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "<" + key + "," + value + ">";
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -213,24 +229,14 @@ public class LeafNode<K, V>
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        LeafNode leafNode = (LeafNode)o;
-
-        if (nodeKey != null ? !nodeKey.equals(leafNode.nodeKey) : leafNode.nodeKey != null) {
-            return false;
-        }
-        if (value != null ? !value.equals(leafNode.value) : leafNode.value != null) {
-            return false;
-        }
-
-        return true;
+        LeafNode<?, ?> leafNode = (LeafNode<?, ?>)o;
+        return Objects.equals(key, leafNode.key) &&
+               Objects.equals(value, leafNode.value);
     }
 
     @Override
     public int hashCode()
     {
-        int result = nodeKey != null ? nodeKey.hashCode() : 0;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
+        return Objects.hash(key, value);
     }
 }

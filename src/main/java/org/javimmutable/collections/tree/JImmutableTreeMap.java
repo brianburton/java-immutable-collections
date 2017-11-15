@@ -40,7 +40,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
@@ -55,25 +54,16 @@ import java.util.Map;
 public class JImmutableTreeMap<K, V>
     extends AbstractJImmutableMap<K, V>
 {
+    private static final Comparator EMPTY_COMPARATOR = ComparableComparator.of();
     @SuppressWarnings("unchecked")
-    private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(new ComparableComparator());
+    private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(EMPTY_COMPARATOR, EmptyNode.of(), 0);
 
     private final Comparator<K> comparator;
-    private final TreeNode<K, V> root;
+    private final Node<K, V> root;
     private final int size;
 
-    /**
-     * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     */
-    private JImmutableTreeMap(Comparator<K> comparator)
-    {
-        this(comparator, EmptyNode.of(), 0);
-    }
-
-    private JImmutableTreeMap(Comparator<K> comparator,
-                              TreeNode<K, V> root,
+    private JImmutableTreeMap(@Nonnull Comparator<K> comparator,
+                              @Nonnull Node<K, V> root,
                               int size)
     {
         this.comparator = comparator;
@@ -82,27 +72,23 @@ public class JImmutableTreeMap<K, V>
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Nonnull
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of()
     {
         return EMPTY;
     }
 
-    /**
-     * Constructs an empty map using the specified Comparator.  Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     */
-    @Deprecated
-    public static <K, V> JImmutableTreeMap<K, V> of(Comparator<K> comparator)
+    @Nonnull
+    public static <K, V> JImmutableTreeMap<K, V> of(@Nonnull Comparator<K> comparator)
     {
-        return new JImmutableTreeMap<>(comparator);
+        return new JImmutableTreeMap<>(comparator, EmptyNode.of(), 0);
     }
 
     /**
      * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
      * to compare the keys.
      */
+    @Nonnull
     @Deprecated
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
     {
@@ -117,9 +103,7 @@ public class JImmutableTreeMap<K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        if (key == null) {
-            throw new NullPointerException();
-        }
+        Conditions.stopNull(key);
         return root.getValueOr(comparator, key, defaultValue);
     }
 
@@ -145,12 +129,16 @@ public class JImmutableTreeMap<K, V>
                                           V value)
     {
         Conditions.stopNull(key);
-        MutableDelta sizeDelta = new MutableDelta();
-        TreeNode<K, V> newRoot = root.assign(comparator, key, value, sizeDelta);
-        if (newRoot == root) {
+        final UpdateResult<K, V> result = root.assign(comparator, key, value);
+        switch (result.type) {
+        case UNCHANGED:
             return this;
-        } else {
-            return create(newRoot, sizeDelta.getValue());
+        case INPLACE:
+            return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
+        case SPLIT:
+            return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
+        default:
+            throw new IllegalStateException("unknown UpdateResult.Type value");
         }
     }
 
@@ -159,12 +147,13 @@ public class JImmutableTreeMap<K, V>
     public JImmutableTreeMap<K, V> delete(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        MutableDelta sizeDelta = new MutableDelta();
-        TreeNode<K, V> newRoot = root.delete(comparator, key, sizeDelta);
+        final Node<K, V> newRoot = root.delete(comparator, key);
         if (newRoot == root) {
             return this;
+        } else if (size == 1) {
+            return deleteAll();
         } else {
-            return create(newRoot, sizeDelta.getValue());
+            return new JImmutableTreeMap<>(comparator, newRoot.compress(), size - 1);
         }
     }
 
@@ -178,14 +167,20 @@ public class JImmutableTreeMap<K, V>
     @Override
     public JImmutableTreeMap<K, V> deleteAll()
     {
-        return of(comparator);
+        return (comparator == EMPTY_COMPARATOR) ? EMPTY : new JImmutableTreeMap<>(comparator, EmptyNode.of(), 0);
     }
 
-    @Override
     @Nonnull
+    @Override
     public Cursor<Entry<K, V>> cursor()
     {
         return root.cursor();
+    }
+
+    @Override
+    public int getSpliteratorCharacteristics()
+    {
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nonnull
@@ -196,40 +191,24 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
+    public void checkInvariants()
     {
-        return StreamConstants.SPLITERATOR_ORDERED;
+        root.checkInvariants(comparator);
     }
 
-    public List<K> getKeysList()
+    @Nonnull
+    public Comparator<K> getComparator()
+    {
+        return comparator;
+    }
+
+    @Nonnull
+    List<K> getKeysList()
     {
         List<K> keys = new LinkedList<>();
         for (Entry<K, V> entry : this) {
             keys.add(entry.getKey());
         }
         return Collections.unmodifiableList(keys);
-    }
-
-    public void verifyDepthsMatch()
-    {
-        root.verifyDepthsMatch();
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        verifyDepthsMatch();
-        //TODO: add more than verifyDepthsMatch?
-    }
-
-    public Comparator<K> getComparator()
-    {
-        return comparator;
-    }
-
-    private JImmutableTreeMap<K, V> create(TreeNode<K, V> root,
-                                           int sizeDelta)
-    {
-        return new JImmutableTreeMap<>(comparator, root, size + sizeDelta);
     }
 }

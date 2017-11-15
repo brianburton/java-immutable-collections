@@ -41,9 +41,9 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import java.util.Arrays;
 
@@ -137,8 +137,8 @@ public class FunctionsTest
 
     public void testAssignAll()
     {
-        final JImmutableMap<String, String> expected = JImmutableBtreeMap.<String, String>of().assign("a", "A").assign("b", "B");
-        assertEquals(expected, Functions.assignAll(JImmutableBtreeMap.of(), expected));
-        assertEquals(expected, Functions.assignAll(JImmutableBtreeMap.of(), expected.getMap()));
+        final JImmutableMap<String, String> expected = JImmutableTreeMap.<String, String>of().assign("a", "A").assign("b", "B");
+        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected));
+        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected.getMap()));
     }
 }

@@ -210,7 +210,7 @@ public class JImmutableTreeMapTest
         JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         map = map.assign(1, 2).assign(3, 4);
         JImmutableTreeMap<Integer, Integer> cleared = map.deleteAll();
-        assertNotSame(JImmutableTreeMap.<Integer, Integer>of(), cleared);
+        assertSame(JImmutableTreeMap.<Integer, Integer>of(), cleared);
         assertEquals(0, cleared.size());
         assertSame(map.getComparator(), cleared.getComparator());
         verifyEmptyEnumeration(cleared);
@@ -295,12 +295,7 @@ public class JImmutableTreeMapTest
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
                                                     Integer value)
     {
-        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
-        treeMap = treeMap.assign(value, value);
-        treeMap.verifyDepthsMatch();
-        assertEquals(true, treeMap.find(value).isFilled());
-        assertEquals(value, treeMap.find(value).getValue());
-        return treeMap;
+        return add(map, value, value);
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
@@ -309,7 +304,7 @@ public class JImmutableTreeMapTest
     {
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap = treeMap.assign(key, value);
-        treeMap.verifyDepthsMatch();
+        treeMap.checkInvariants();
         assertEquals(true, treeMap.find(key).isFilled());
         assertEquals(value, treeMap.find(key).getValue());
         return treeMap;
@@ -320,7 +315,7 @@ public class JImmutableTreeMapTest
     {
         map = map.assignAll(extra);
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
-        treeMap.verifyDepthsMatch();
+        treeMap.checkInvariants();
         for (JImmutableMap.Entry<Integer, Integer> entry : extra) {
             assertEquals(true, treeMap.find(entry.getKey()).isFilled());
             assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
@@ -333,7 +328,7 @@ public class JImmutableTreeMapTest
     {
         map = map.assignAll(extra);
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
-        treeMap.verifyDepthsMatch();
+        treeMap.checkInvariants();
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
             assertEquals(true, treeMap.find(entry.getKey()).isFilled());
             assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
@@ -346,7 +341,7 @@ public class JImmutableTreeMapTest
     {
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap = treeMap.delete(value);
-        treeMap.verifyDepthsMatch();
+        treeMap.checkInvariants();
         assertEquals(true, treeMap.find(value).isEmpty());
         return treeMap;
     }

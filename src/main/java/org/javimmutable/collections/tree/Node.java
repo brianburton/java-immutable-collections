@@ -35,23 +35,72 @@
 
 package org.javimmutable.collections.tree;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.Tuple2;
 
-public class EmptyNodeTest
-        extends TestCase
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Comparator;
+
+public interface Node<K, V>
+    extends Cursorable<JImmutableMap.Entry<K, V>>,
+            SplitableIterable<JImmutableMap.Entry<K, V>>
 {
-    public void testVarious()
+    int MIN_CHILDREN = 16;
+    int MAX_CHILDREN = 2 * MIN_CHILDREN;
+
+    @Nullable
+    K baseKey();
+
+    /**
+     * @return number of direct children of this node
+     */
+    int childCount();
+
+    /**
+     * @return number of values of descendants of this node
+     */
+    int valueCount();
+
+    V getValueOr(@Nonnull Comparator<K> comparator,
+                 @Nonnull K key,
+                 V defaultValue);
+
+    @Nonnull
+    Holder<V> find(@Nonnull Comparator<K> comparator,
+                   @Nonnull K key);
+
+    @Nonnull
+    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Comparator<K> comparator,
+                                                @Nonnull K key);
+
+    @Nonnull
+    UpdateResult<K, V> assign(@Nonnull Comparator<K> comparator,
+                              @Nonnull K key,
+                              V value);
+
+    @Nonnull
+    Node<K, V> delete(@Nonnull Comparator<K> comparator,
+                      @Nonnull K key);
+
+    @Nonnull
+    Node<K, V> mergeChildren(@Nonnull Node<K, V> sibling);
+
+    @Nonnull
+    Tuple2<Node<K, V>, Node<K, V>> distributeChildren(@Nonnull Node<K, V> sibling);
+
+    @Nonnull
+    Node<K, V> compress();
+    
+    int depth();
+
+    default boolean isEmpty()
     {
-        final TreeNode<String, String> empty = EmptyNode.of();
-        MutableDelta delta = new MutableDelta();
-        assertEquals(new LeafNode<String, String>("a", "A"), empty.assign(ComparableComparator.<String>of(), "a", "A", delta));
-        assertEquals(1, delta.getValue());
-
-        delta = new MutableDelta();
-        assertEquals(empty, empty.delete(ComparableComparator.<String>of(), "a", delta));
-        assertEquals(0, delta.getValue());
-
-        assertEquals(true, empty.isEmpty());
+        return false;
     }
+
+    void checkInvariants(@Nonnull Comparator<K> comparator);
 }

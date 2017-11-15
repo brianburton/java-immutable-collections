@@ -38,7 +38,7 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
@@ -52,7 +52,7 @@ public class JImmutableTreeSetMap<K, V>
     extends AbstractJImmutableSetMap<K, V>
 {
     @SuppressWarnings({"unchecked"})
-    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableBtreeMap.of());
+    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.of());
 
     private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
     {
@@ -76,7 +76,7 @@ public class JImmutableTreeSetMap<K, V>
      */
     public static <K, V> JImmutableTreeSetMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeSetMap<>(JImmutableBtreeMap.of(comparator));
+        return new JImmutableTreeSetMap<>(JImmutableTreeMap.of(comparator));
     }
 
     @Override

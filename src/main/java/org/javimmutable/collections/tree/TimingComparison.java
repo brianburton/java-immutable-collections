@@ -36,7 +36,6 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -107,7 +106,7 @@ public final class TimingComparison
         gets = 0;
         long startPer = System.currentTimeMillis();
 //        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
-        JImmutableMap<Integer, Integer> map = JImmutableBtreeMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
