@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -78,11 +79,19 @@ public final class StandardJImmutableSetTests
         assertEquals(false, jet.isEmpty());
         assertEquals(true, jet.contains(10));
 
+        assertEquals((Integer)10, jet.get(10));
+        assertEquals((Integer)10, jet.getValueOr(10, 25));
+        assertEquals(Holders.of(10), jet.find(10));
+        
         jet = jet.delete(10);
         assertEquals(0, jet.size());
         assertEquals(true, template.isEmpty());
         assertEquals(false, jet.contains(10));
 
+        assertEquals(null, jet.get(10));
+        assertEquals((Integer)25, jet.getValueOr(10, 25));
+        assertEquals(Holders.of(), jet.find(10));
+        
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
         verifyContents(jet.union(values), values);
         verifyContents(jet.union(IterableCursor.of(values)), values);

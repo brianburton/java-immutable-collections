@@ -51,6 +51,7 @@ public interface JImmutableSet<T>
     extends Insertable<T, JImmutableSet<T>>,
             Cursorable<T>,
             IterableStreamable<T>,
+            Mapped<T, T>,
             InvariantCheckable
 {
     /**
@@ -260,6 +261,46 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     Set<T> getSet();
+
+    /**
+     * Returns the specified key if its contained in the set.  Otherwise returns null.
+     *
+     * @param key identifies the value to retrieve
+     * @return the key or null
+     */
+    @Nullable
+    @Override
+    default T get(T key)
+    {
+        return contains(key) ? key : null;
+    }
+
+    /**
+     * Returns the specified key if its contained in the set.  Otherwise returns defaultValue.
+     *
+     * @param key identifies the value to retrieve
+     * @return the key or defaultValue
+     */
+    @Override
+    default T getValueOr(T key,
+                         T defaultValue)
+    {
+        return contains(key) ? key : defaultValue;
+    }
+
+    /**
+     * Returns a Holder containing the specified key if its contained in the set.
+     * Otherwise returns an empty Holder.
+     *
+     * @param key identifies the value to retrieve
+     * @return possibly empty Holder
+     */
+    @Nonnull
+    @Override
+    default Holder<T> find(T key)
+    {
+        return contains(key) ? Holders.of(key) : Holders.of();
+    }
 
     /**
      * Returns a set of the same type as this containing only those elements for which
