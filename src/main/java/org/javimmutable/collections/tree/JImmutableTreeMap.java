@@ -72,10 +72,20 @@ public class JImmutableTreeMap<K, V>
         this(comparator, EmptyNode.of(), 0);
     }
 
+    private JImmutableTreeMap(Comparator<K> comparator,
+                              TreeNode<K, V> root,
+                              int size)
+    {
+        this.comparator = comparator;
+        this.root = root;
+        this.size = size;
+    }
+
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of()
     {
-        return (JImmutableTreeMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     /**
@@ -83,6 +93,7 @@ public class JImmutableTreeMap<K, V>
      * The Comparator will be retained and used throughout the life of the map and its offspring and will
      * be aggressively shared so it is imperative that the Comparator be completely immutable.
      */
+    @Deprecated
     public static <K, V> JImmutableTreeMap<K, V> of(Comparator<K> comparator)
     {
         return new JImmutableTreeMap<>(comparator);
@@ -92,6 +103,7 @@ public class JImmutableTreeMap<K, V>
      * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
      * to compare the keys.
      */
+    @Deprecated
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
     {
         JImmutableTreeMap<K, V> answer = of();
@@ -99,15 +111,6 @@ public class JImmutableTreeMap<K, V>
             answer = answer.assign(entry.getKey(), entry.getValue());
         }
         return answer;
-    }
-
-    private JImmutableTreeMap(Comparator<K> comparator,
-                              TreeNode<K, V> root,
-                              int size)
-    {
-        this.comparator = comparator;
-        this.root = root;
-        this.size = size;
     }
 
     @Override

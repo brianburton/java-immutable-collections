@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
@@ -46,7 +47,7 @@ import java.util.TreeMap;
 
 @Immutable
 public class JImmutableTreeMultiset<T>
-        extends AbstractJImmutableMultiset<T>
+    extends AbstractJImmutableMultiset<T>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeMultiset EMPTY = new JImmutableTreeMultiset(new ComparableComparator());
@@ -55,7 +56,7 @@ public class JImmutableTreeMultiset<T>
 
     private JImmutableTreeMultiset(Comparator<T> comparator)
     {
-        this(JImmutableTreeMap.of(comparator), 0, comparator);
+        this(JImmutableBtreeMap.of(comparator), 0, comparator);
     }
 
     private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,

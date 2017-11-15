@@ -53,6 +53,7 @@ import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.hash.EmptyHashMap;
@@ -76,7 +77,6 @@ import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
 import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 
@@ -107,7 +107,7 @@ public class JImmutablesTest
     private final Predicate<JImmutableList> isRalist = x -> x instanceof JImmutableBtreeList;
     private final Predicate<JImmutableMap> isEmptyMap = x -> x instanceof EmptyHashMap;
     private final Predicate<JImmutableMap> isMap = x -> x instanceof JImmutableHashMap;
-    private final Predicate<JImmutableMap> isSortedMap = x -> x instanceof JImmutableTreeMap;
+    private final Predicate<JImmutableMap> isSortedMap = x -> x instanceof JImmutableBtreeMap;
     private final Predicate<JImmutableMap> isInsertOrderMap = x -> x instanceof JImmutableInsertOrderMap;
     private final Predicate<JImmutableSet> isSet = x -> x instanceof JImmutableHashSet;
     private final Predicate<JImmutableSet> isSortedSet = x -> x instanceof JImmutableTreeSet;

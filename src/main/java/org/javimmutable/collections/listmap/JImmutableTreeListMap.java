@@ -38,7 +38,7 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
@@ -51,8 +51,8 @@ import java.util.Comparator;
 public class JImmutableTreeListMap<K, V>
     extends AbstractJImmutableListMap<K, V>
 {
-    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
-    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.<Comparable, Object>of());
+    @SuppressWarnings({"unchecked"})
+    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableBtreeMap.of());
 
     private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents)
     {
@@ -66,7 +66,7 @@ public class JImmutableTreeListMap<K, V>
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> JImmutableTreeListMap<K, V> of()
     {
-        return (JImmutableTreeListMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     /**
@@ -76,7 +76,7 @@ public class JImmutableTreeListMap<K, V>
      */
     public static <K, V> JImmutableTreeListMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator));
+        return new JImmutableTreeListMap<>(JImmutableBtreeMap.of(comparator));
     }
 
     @Override

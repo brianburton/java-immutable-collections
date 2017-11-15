@@ -38,9 +38,9 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class JImmutableTemplateSetMapTest
     public void testVarious()
     {
         final Comparator<Integer> reverse = ComparableComparator.<Integer>of().reversed();
-        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableBtreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableBtreeMap.of();
         final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of(reverse);
         final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
                                                                                      emptySet.insert(8).insert(25));
@@ -90,7 +90,7 @@ public class JImmutableTemplateSetMapTest
 
     public void testEquals()
     {
-        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableBtreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableBtreeMap.of();
         final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of();
         final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
                                                                                      emptySet.insert(8).insert(25));

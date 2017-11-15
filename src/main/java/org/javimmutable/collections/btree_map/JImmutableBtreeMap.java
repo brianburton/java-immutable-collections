@@ -145,6 +145,12 @@ public class JImmutableBtreeMap<K, V>
     }
 
     @Nonnull
+    public Comparator<K> getComparator()
+    {
+        return comparator;
+    }
+
+    @Nonnull
     List<K> getKeysList()
     {
         List<K> keys = new LinkedList<>();
@@ -152,11 +158,5 @@ public class JImmutableBtreeMap<K, V>
             keys.add(entry.getKey());
         }
         return Collections.unmodifiableList(keys);
-    }
-
-    @Nonnull
-    Comparator<K> getComparator()
-    {
-        return comparator;
     }
 }

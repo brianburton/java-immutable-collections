@@ -38,7 +38,7 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
@@ -46,16 +46,13 @@ import java.util.Comparator;
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in sorted order using a Comparator
  * of the natural ordering of the keys if they implement Comparable.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class JImmutableTreeSetMap<K, V>
-        extends AbstractJImmutableSetMap<K, V>
+    extends AbstractJImmutableSetMap<K, V>
 {
-    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
-    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.<Comparable, Object>of());
+    @SuppressWarnings({"unchecked"})
+    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableBtreeMap.of());
 
     private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
     {
@@ -65,10 +62,6 @@ public class JImmutableTreeSetMap<K, V>
     /**
      * Constructs an empty set map whose keys are sorted in their natural ordering. The keys must
      * implement Comparable.
-     *
-     * @param <K>
-     * @param <V>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> JImmutableTreeSetMap<K, V> of()
@@ -80,12 +73,10 @@ public class JImmutableTreeSetMap<K, V>
      * Constructs an empty set map using the specified Comparator. Note that the Comparator MUST BE IMMUTABLE.
      * The Comparator will be retained and used throughout the life of the map and its offspring and will
      * be aggressively shared, so it is imperative that the Comparator be completely immutable.
-     *
-     * @param comparator
      */
     public static <K, V> JImmutableTreeSetMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeSetMap<K, V>(JImmutableTreeMap.<K, JImmutableSet<V>>of(comparator));
+        return new JImmutableTreeSetMap<>(JImmutableBtreeMap.of(comparator));
     }
 
     @Override
@@ -97,6 +88,6 @@ public class JImmutableTreeSetMap<K, V>
     @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
-        return new JImmutableTreeSetMap<K, V>(map);
+        return new JImmutableTreeSetMap<>(map);
     }
 }

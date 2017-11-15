@@ -49,6 +49,7 @@ import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -69,7 +70,6 @@ import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
 import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 
@@ -364,7 +364,7 @@ public final class JImmutables
      */
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap()
     {
-        return JImmutableTreeMap.of();
+        return JImmutableBtreeMap.of();
     }
 
     /**
@@ -375,7 +375,7 @@ public final class JImmutables
      */
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(@Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.of(), source);
+        return Functions.assignAll(JImmutableBtreeMap.of(), source);
     }
 
     /**
@@ -402,7 +402,7 @@ public final class JImmutables
      */
     public static <K, V> JImmutableMap<K, V> sortedMap(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeMap.of(comparator);
+        return JImmutableBtreeMap.of(comparator);
     }
 
     /**
@@ -419,7 +419,7 @@ public final class JImmutables
     public static <K, V> JImmutableMap<K, V> sortedMap(@Nonnull Comparator<K> comparator,
                                                        @Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.of(comparator), source);
+        return Functions.assignAll(JImmutableBtreeMap.of(comparator), source);
     }
 
     /**
@@ -438,13 +438,13 @@ public final class JImmutables
     public static <K, V> JImmutableMap<K, V> sortedMap(@Nonnull Comparator<K> comparator,
                                                        @Nonnull JImmutableMap<K, V> source)
     {
-        if (source instanceof JImmutableTreeMap) {
-            JImmutableTreeMap treemap = (JImmutableTreeMap)source;
+        if (source instanceof JImmutableBtreeMap) {
+            final JImmutableBtreeMap treemap = (JImmutableBtreeMap)source;
             if (treemap.getComparator().equals(comparator)) {
                 return source;
             }
         }
-        return Functions.assignAll(JImmutableTreeMap.of(comparator), source);
+        return Functions.assignAll(JImmutableBtreeMap.of(comparator), source);
     }
 
     /**
