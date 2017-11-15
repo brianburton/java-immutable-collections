@@ -117,7 +117,7 @@ public class JImmutableBtreeMap<K, V>
         } else if (size == 1) {
             return deleteAll();
         } else {
-            return new JImmutableBtreeMap<>(comparator, newRoot, size - 1);
+            return new JImmutableBtreeMap<>(comparator, newRoot.compress(), size - 1);
         }
     }
 

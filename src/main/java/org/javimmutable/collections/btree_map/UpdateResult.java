@@ -40,21 +40,21 @@ import javax.annotation.concurrent.Immutable;
 
 @SuppressWarnings("unchecked")
 @Immutable
-class UpdateResult<K, V>
+public class UpdateResult<K, V>
 {
     private static UpdateResult UNCHANGED = new UpdateResult(Type.UNCHANGED, null, null, 0);
 
-    enum Type
+    public enum Type
     {
         UNCHANGED,
         INPLACE,
         SPLIT
     }
 
-    final Type type;
-    final Node<K, V> newNode;
-    final Node<K, V> extraNode;
-    final int sizeDelta;
+    public final Type type;
+    public final Node<K, V> newNode;
+    public final Node<K, V> extraNode;
+    public final int sizeDelta;
 
     private UpdateResult(Type type,
                          Node<K, V> newNode,

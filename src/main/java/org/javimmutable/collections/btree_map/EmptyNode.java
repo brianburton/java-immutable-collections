@@ -101,6 +101,13 @@ public class EmptyNode<K, V>
         throw new UnsupportedOperationException();
     }
 
+    @Nonnull
+    @Override
+    public Node<K, V> compress()
+    {
+        return this;
+    }
+
     @Override
     public int depth()
     {

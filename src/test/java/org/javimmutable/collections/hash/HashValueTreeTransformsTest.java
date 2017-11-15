@@ -40,11 +40,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.btree_map.BranchNode;
+import org.javimmutable.collections.btree_map.LeafNode;
+import org.javimmutable.collections.btree_map.Node;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.tree.LeafNode;
-import org.javimmutable.collections.tree.TreeNode;
-import org.javimmutable.collections.tree.TwoNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,41 +54,41 @@ public class HashValueTreeTransformsTest
 {
     public void testUpdateDelete()
     {
-        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<Integer, Integer>();
+        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<>();
         MutableDelta delta = new MutableDelta();
-        TreeNode<Integer, Integer> value = transforms.update(Holders.<TreeNode<Integer, Integer>>of(), 10, 100, delta);
+        Node<Integer, Integer> value = transforms.update(Holders.of(), 10, 100, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(new LeafNode<Integer, Integer>(10, 100), value);
+        assertEquals(new LeafNode<>(10, 100), value);
 
         delta = new MutableDelta();
         value = transforms.update(Holders.of(value), 10, 1000, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new LeafNode<Integer, Integer>(10, 1000), value);
+        assertEquals(new LeafNode<>(10, 1000), value);
 
         delta = new MutableDelta();
         value = transforms.update(Holders.of(value), 12, 60, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 1000), new LeafNode<Integer, Integer>(12, 60), 10, 12), value);
+        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 60)), value);
 
         delta = new MutableDelta();
         value = transforms.update(Holders.of(value), 12, 90, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 1000), new LeafNode<Integer, Integer>(12, 90), 10, 12), value);
+        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 90)), value);
 
         delta = new MutableDelta();
-        Holder<TreeNode<Integer, Integer>> deleted = transforms.delete(value, 87, delta);
+        Holder<Node<Integer, Integer>> deleted = transforms.delete(value, 87, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new TwoNode<Integer, Integer>(new LeafNode<Integer, Integer>(10, 1000), new LeafNode<Integer, Integer>(12, 90), 10, 12), deleted.getValue());
+        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 90)), deleted.getValue());
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted.getValue(), 10, delta);
         assertEquals(-1, delta.getValue());
-        assertEquals(new LeafNode<Integer, Integer>(12, 90), deleted.getValue());
+        assertEquals(new LeafNode<>(12, 90), deleted.getValue());
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted.getValue(), 40, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new LeafNode<Integer, Integer>(12, 90), deleted.getValue());
+        assertEquals(new LeafNode<>(12, 90), deleted.getValue());
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted.getValue(), 12, delta);
@@ -98,9 +98,9 @@ public class HashValueTreeTransformsTest
 
     public void testFindGet()
     {
-        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<Integer, Integer>();
+        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<>();
         MutableDelta delta = new MutableDelta();
-        TreeNode<Integer, Integer> value = transforms.update(Holders.<TreeNode<Integer, Integer>>of(), 10, 100, delta);
+        Node<Integer, Integer> value = transforms.update(Holders.of(), 10, 100, delta);
         value = transforms.update(Holders.of(value), 18, 180, delta);
         value = transforms.update(Holders.of(value), 12, 60, delta);
         value = transforms.update(Holders.of(value), -6, -60, delta);
@@ -119,7 +119,7 @@ public class HashValueTreeTransformsTest
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(value, -6));
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(value, 11));
 
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(MapEntry.of(-6, -60));
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));

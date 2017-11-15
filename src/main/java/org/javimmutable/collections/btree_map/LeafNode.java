@@ -12,6 +12,7 @@ import org.javimmutable.collections.iterators.SingleValueIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
+import java.util.Objects;
 
 @Immutable
 public class LeafNode<K, V>
@@ -109,6 +110,13 @@ public class LeafNode<K, V>
         return Tuple2.of(this, sibling);
     }
 
+    @Nonnull
+    @Override
+    public Node<K, V> compress()
+    {
+        return this;
+    }
+
     @Override
     public int depth()
     {
@@ -175,5 +183,25 @@ public class LeafNode<K, V>
     public String toString()
     {
         return "<" + key + "," + value + ">";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LeafNode<?, ?> leafNode = (LeafNode<?, ?>)o;
+        return Objects.equals(key, leafNode.key) &&
+               Objects.equals(value, leafNode.value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(key, value);
     }
 }

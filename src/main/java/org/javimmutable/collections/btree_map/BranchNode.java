@@ -14,7 +14,9 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 
 @Immutable
 public class BranchNode<K, V>
@@ -25,8 +27,8 @@ public class BranchNode<K, V>
     private final K baseKey;
     private final int childCount;
 
-    BranchNode(@Nonnull Node<K, V> child1,
-               @Nonnull Node<K, V> child2)
+    public BranchNode(@Nonnull Node<K, V> child1,
+                      @Nonnull Node<K, V> child2)
     {
         children = allocate(2);
         children[0] = child1;
@@ -202,6 +204,13 @@ public class BranchNode<K, V>
                          new BranchNode<>(ArrayHelper.subArray(this, children, branch.children, MIN_CHILDREN, childCount + branch.childCount)));
     }
 
+    @Nonnull
+    @Override
+    public Node<K, V> compress()
+    {
+        return children.length == 1 ? children[0] : this;
+    }
+
     @Override
     public int depth()
     {
@@ -250,6 +259,27 @@ public class BranchNode<K, V>
     public Node<K, V>[] allocate(int size)
     {
         return new Node[size];
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BranchNode<?, ?> that = (BranchNode<?, ?>)o;
+        return childCount == that.childCount &&
+               Arrays.equals(children, that.children) &&
+               Objects.equals(baseKey, that.baseKey);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(children, baseKey, childCount);
     }
 
     static <K, V> int findChildIndex(@Nonnull Comparator<K> comparator,

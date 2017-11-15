@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
-interface Node<K, V>
+public interface Node<K, V>
     extends Cursorable<JImmutableMap.Entry<K, V>>,
             SplitableIterable<JImmutableMap.Entry<K, V>>
 {
@@ -92,6 +92,9 @@ interface Node<K, V>
     @Nonnull
     Tuple2<Node<K, V>, Node<K, V>> distributeChildren(@Nonnull Node<K, V> sibling);
 
+    @Nonnull
+    Node<K, V> compress();
+    
     int depth();
 
     default boolean isEmpty()

@@ -41,71 +41,90 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
+import org.javimmutable.collections.btree_map.BranchNode;
+import org.javimmutable.collections.btree_map.LeafNode;
+import org.javimmutable.collections.btree_map.Node;
+import org.javimmutable.collections.btree_map.UpdateResult;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.TreeNode;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
- * Transforms implementation that stores values in TreeNodes (2-3 trees).
+ * Transforms implementation that stores values in Node objects (b-trees trees).
  * Usable with keys that implement Comparable.  Will fail with any other
  * type of key.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 class HashValueTreeTransforms<K extends Comparable<K>, V>
-        implements Transforms<TreeNode<K, V>, K, V>
+    implements Transforms<Node<K, V>, K, V>
 {
     private final Comparator<K> comparator = ComparableComparator.of();
 
     @Override
-    public TreeNode<K, V> update(Holder<TreeNode<K, V>> leaf,
-                                 K key,
-                                 V value,
-                                 MutableDelta delta)
+    public Node<K, V> update(Holder<Node<K, V>> leaf,
+                             K key,
+                             V value,
+                             MutableDelta delta)
     {
         if (leaf.isEmpty()) {
-            return TreeNode.<K, V>of().assign(comparator, key, value, delta);
+            delta.add(1);
+            return new LeafNode<>(key, value);
         } else {
-            return leaf.getValue().assign(comparator, key, value, delta);
+            final Node<K, V> oldLeaf = leaf.getValue();
+            final UpdateResult<K, V> result = oldLeaf.assign(comparator, key, value);
+            switch (result.type) {
+            case UNCHANGED:
+                return oldLeaf;
+            case INPLACE:
+                delta.add(result.sizeDelta);
+                return result.newNode;
+            case SPLIT:
+                delta.add(result.sizeDelta);
+                return new BranchNode<>(result.newNode, result.extraNode);
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
+            }
         }
     }
 
     @Override
-    public Holder<TreeNode<K, V>> delete(TreeNode<K, V> leaf,
-                                         K key,
-                                         MutableDelta delta)
+    public Holder<Node<K, V>> delete(Node<K, V> leaf,
+                                     K key,
+                                     MutableDelta delta)
     {
-        final TreeNode<K, V> newTree = leaf.delete(comparator, key, delta);
-        return (newTree.isEmpty()) ? Holders.<TreeNode<K, V>>of() : Holders.of(newTree);
+        final Node<K, V> newLeaf = leaf.delete(comparator, key);
+        if (newLeaf == leaf) {
+            return Holders.of(leaf);
+        } else {
+            delta.add(-1);
+            return newLeaf.isEmpty() ? Holders.of() : Holders.of(newLeaf.compress());
+        }
     }
 
     @Override
-    public Holder<V> findValue(TreeNode<K, V> leaf,
+    public Holder<V> findValue(Node<K, V> leaf,
                                K key)
     {
         return leaf.find(comparator, key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(TreeNode<K, V> leaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(Node<K, V> leaf,
                                                        K key)
     {
         return leaf.findEntry(comparator, key);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(TreeNode<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Node<K, V> leaf)
     {
         return leaf.cursor();
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(TreeNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Node<K, V> leaf)
     {
         return leaf.iterator();
     }
