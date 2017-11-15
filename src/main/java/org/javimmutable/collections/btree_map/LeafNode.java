@@ -47,6 +47,14 @@ public class LeafNode<K, V>
         return 1;
     }
 
+    @Override
+    public V getValueOr(@Nonnull Comparator<K> comparator,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return comparator.compare(this.key, key) == 0 ? value : defaultValue;
+    }
+
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull Comparator<K> comparator,

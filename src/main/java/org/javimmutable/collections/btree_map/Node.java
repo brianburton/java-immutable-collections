@@ -65,6 +65,10 @@ interface Node<K, V>
      */
     int valueCount();
 
+    V getValueOr(@Nonnull Comparator<K> comparator,
+                 @Nonnull K key,
+                 V defaultValue);
+
     @Nonnull
     Holder<V> find(@Nonnull Comparator<K> comparator,
                    @Nonnull K key);

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class JImmutableBtreeMap<K, V>
     extends AbstractJImmutableMap<K, V>
@@ -47,6 +48,29 @@ public class JImmutableBtreeMap<K, V>
         return new JImmutableBtreeMap<>(comparator, EmptyNode.of(), 0);
     }
 
+    /**
+     * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
+     * to compare the keys.
+     */
+    @Nonnull
+    @Deprecated
+    public static <K extends Comparable<K>, V> JImmutableBtreeMap<K, V> of(Map<K, V> map)
+    {
+        JImmutableBtreeMap<K, V> answer = of();
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            answer = answer.assign(entry.getKey(), entry.getValue());
+        }
+        return answer;
+    }
+
+    @Override
+    public V getValueOr(K key,
+                        V defaultValue)
+    {
+        Conditions.stopNull(key);
+        return root.getValueOr(comparator, key, defaultValue);
+    }
+
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
@@ -61,14 +85,6 @@ public class JImmutableBtreeMap<K, V>
     {
         Conditions.stopNull(key);
         return root.findEntry(comparator, key);
-    }
-
-    @Override
-    public V getValueOr(K key,
-                        V defaultValue)
-    {
-        Conditions.stopNull(key);
-        return root.find(comparator, key).getValueOr(defaultValue);
     }
 
     @Nonnull
@@ -126,12 +142,6 @@ public class JImmutableBtreeMap<K, V>
     }
 
     @Override
-    public void checkInvariants()
-    {
-        root.checkInvariants(comparator);
-    }
-
-    @Override
     public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_ORDERED;
@@ -142,6 +152,12 @@ public class JImmutableBtreeMap<K, V>
     public SplitableIterator<Entry<K, V>> iterator()
     {
         return root.iterator();
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        root.checkInvariants(comparator);
     }
 
     @Nonnull

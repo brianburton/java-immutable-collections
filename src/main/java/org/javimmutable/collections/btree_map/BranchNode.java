@@ -65,6 +65,16 @@ public class BranchNode<K, V>
         return answer;
     }
 
+    @Override
+    public V getValueOr(@Nonnull Comparator<K> comparator,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        final Node<K, V>[] children = this.children;
+        final int index = findChildIndex(comparator, key, children, -1);
+        return (index >= 0) ? children[index].getValueOr(comparator, key, defaultValue) : defaultValue;
+    }
+
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull Comparator<K> comparator,

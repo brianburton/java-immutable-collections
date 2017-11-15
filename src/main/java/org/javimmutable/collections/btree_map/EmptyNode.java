@@ -46,6 +46,14 @@ public class EmptyNode<K, V>
         return 0;
     }
 
+    @Override
+    public V getValueOr(@Nonnull Comparator<K> comparator,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return defaultValue;
+    }
+
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull Comparator<K> comparator,
