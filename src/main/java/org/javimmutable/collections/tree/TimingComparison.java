@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.btree_map.JImmutableBtreeMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -79,7 +80,7 @@ public final class TimingComparison
         int removes = 0;
         int gets = 0;
         long startMap = System.currentTimeMillis();
-        Map<Integer, Integer> expected = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> expected = new TreeMap<>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
@@ -105,7 +106,8 @@ public final class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
+//        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
+        JImmutableMap<Integer, Integer> map = JImmutableBtreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
@@ -125,7 +127,7 @@ public final class TimingComparison
         }
         long endPer = System.currentTimeMillis();
         System.out.printf("2-3 adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endPer - startPer));
-        map.verifyDepthsMatch();
+        map.checkInvariants();
 
         Iterator<Map.Entry<Integer, Integer>> expectedIter = expected.entrySet().iterator();
         Iterator<JImmutableMap.Entry<Integer, Integer>> mapIter = map.iterator();
