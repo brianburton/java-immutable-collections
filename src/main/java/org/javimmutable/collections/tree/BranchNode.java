@@ -72,7 +72,7 @@ public class BranchNode<K, V>
         childCount = 2;
     }
 
-    BranchNode(@Nonnull Node<K, V>[] children)
+    private BranchNode(@Nonnull Node<K, V>[] children)
     {
         this.children = children;
         this.baseKey = children[0].baseKey();
@@ -185,24 +185,24 @@ public class BranchNode<K, V>
             return this;
         }
 
-        final int childCount = this.childCount;
+        final int thisChildCount = this.childCount;
         final int newChildCount = newChild.childCount();
         if (newChildCount >= MIN_CHILDREN) {
             return new BranchNode<>(ArrayHelper.assign(children, index, newChild));
         } else if (newChildCount == 0) {
-            if (childCount == 1) {
+            if (thisChildCount == 1) {
                 return EmptyNode.of();
             } else {
                 return new BranchNode<>(ArrayHelper.delete(this, children, index));
             }
-        } else if (childCount == 1) {
+        } else if (thisChildCount == 1) {
             // special case for the root
             return new BranchNode<>(ArrayHelper.assign(children, index, newChild));
         } else {
             Node<K, V> mergeChild;
             Node<K, V> nextChild;
             int mergeIndex;
-            if (index == (childCount - 1)) {
+            if (index == (thisChildCount - 1)) {
                 // can't merge at the end of the array
                 mergeIndex = index - 1;
                 mergeChild = children[mergeIndex];
@@ -243,7 +243,7 @@ public class BranchNode<K, V>
     @Override
     public Node<K, V> compress()
     {
-        return children.length == 1 ? children[0] : this;
+        return children.length == 1 ? children[0].compress() : this;
     }
 
     @Override
