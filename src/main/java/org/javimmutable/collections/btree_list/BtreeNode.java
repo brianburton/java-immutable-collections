@@ -85,6 +85,12 @@ interface BtreeNode<T>
     @Nonnull
     BtreeNode<T> firstChild();
 
+    @Nonnull
+    default BtreeNode<T> compress()
+    {
+        return this;
+    }
+
     boolean containsIndex(int index);
 
     int depth();

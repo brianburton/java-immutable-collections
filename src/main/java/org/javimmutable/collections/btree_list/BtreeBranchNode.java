@@ -254,6 +254,13 @@ class BtreeBranchNode<T>
         return children[0];
     }
 
+    @Nonnull
+    @Override
+    public BtreeNode<T> compress()
+    {
+        return children.length == 1 ? children[0].compress() : this;
+    }
+
     @Override
     public void checkInvariants()
     {
