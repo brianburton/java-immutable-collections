@@ -56,10 +56,17 @@ class BtreeBranchNode<T>
     BtreeBranchNode(@Nonnull BtreeNode<T> child1,
                     @Nonnull BtreeNode<T> child2)
     {
+        this(child1, child2, child1.valueCount() + child2.valueCount());
+    }
+
+    BtreeBranchNode(@Nonnull BtreeNode<T> child1,
+                    @Nonnull BtreeNode<T> child2,
+                    int valueCount)
+    {
         children = allocateNodes(2);
         children[0] = child1;
         children[1] = child2;
-        valueCount = child1.valueCount() + child2.valueCount();
+        this.valueCount = valueCount;
     }
 
     private BtreeBranchNode(@Nonnull BtreeNode<T>[] children)
@@ -142,6 +149,7 @@ class BtreeBranchNode<T>
     {
         final Location<T> loc = findIndexForInsertAppend(index);
         final BtreeInsertResult<T> result = loc.child.insertAt(loc.logicalIndex, value);
+        final BtreeNode<T>[] children = this.children;
         if (result.type == BtreeInsertResult.Type.INPLACE) {
             final BtreeNode<T>[] newChildren = ArrayHelper.assign(children, loc.childIndex, result.newNode);
             return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + 1));
@@ -179,50 +187,44 @@ class BtreeBranchNode<T>
     @Override
     public BtreeNode<T> delete(int index)
     {
+        final BtreeNode<T>[] children = this.children;
+        final int thisChildCount = children.length;
         final Location<T> loc = findIndexForGetAssign(index);
+        final int childIndex = loc.childIndex;
+        final int newValueCount = this.valueCount - 1;
         final BtreeNode<T> newChild = loc.child.delete(loc.logicalIndex);
-        if (newChild.valueCount() == 0) {
-            if (children.length == 1) {
+        final int newChildCount = newChild.childCount();
+        if (newChildCount >= MIN_CHILDREN) {
+            return new BtreeBranchNode<>(ArrayHelper.assign(children, childIndex, newChild), newValueCount);
+        } else if (newChildCount == 0) {
+            if (thisChildCount == 1) {
                 return BtreeEmptyNode.of();
             } else {
-                return new BtreeBranchNode<>(ArrayHelper.delete(this, children, loc.childIndex));
+                return new BtreeBranchNode<>(ArrayHelper.delete(this, children, childIndex), newValueCount);
             }
-        } else if (newChild.childCount() >= MIN_CHILDREN) {
-            return new BtreeBranchNode<>(ArrayHelper.assign(children, loc.childIndex, newChild));
-        } else if (children.length == 1) {
+        } else if (thisChildCount == 1) {
             // special case for the root
-            return new BtreeBranchNode<>(ArrayHelper.assign(children, loc.childIndex, newChild));
+            return new BtreeBranchNode<>(ArrayHelper.assign(children, childIndex, newChild), newValueCount);
         } else {
-            int mergeIndex = loc.childIndex;
-            if (mergeIndex > 0) {
-                if (mergeIndex == (children.length - 1)) {
-                    // can't merge at the end of the array
-                    mergeIndex = children.length - 2;
-                } else {
-                    // always merge with the larger of the two neighboring nodes
-                    if (children[mergeIndex - 1].childCount() > children[mergeIndex + 1].childCount()) {
-                        mergeIndex -= 1;
-                    }
-                }
-            }
             BtreeNode<T> mergeChild;
             BtreeNode<T> nextChild;
-            if (mergeIndex == loc.childIndex) {
-                mergeChild = newChild;
-                nextChild = children[mergeIndex + 1];
-            } else {
-                assert mergeIndex == loc.childIndex - 1;
+            int mergeIndex;
+            if (childIndex == (thisChildCount - 1)) {
+                // can't merge at the end of the array
+                mergeIndex = childIndex - 1;
                 mergeChild = children[mergeIndex];
                 nextChild = newChild;
+            } else {
+                mergeIndex = childIndex;
+                mergeChild = newChild;
+                nextChild = children[childIndex + 1];
             }
             if ((mergeChild.childCount() + nextChild.childCount()) <= MAX_CHILDREN) {
-                return new BtreeBranchNode<>(ArrayHelper.assignDelete(this,
-                                                                      children,
-                                                                      mergeIndex,
-                                                                      mergeChild.mergeChildren(nextChild)));
+                final BtreeNode<T> merged = mergeChild.mergeChildren(nextChild);
+                return new BtreeBranchNode<>(ArrayHelper.assignDelete(this, children, mergeIndex, merged), newValueCount);
             } else {
                 final Tuple2<BtreeNode<T>, BtreeNode<T>> distributed = mergeChild.distributeChildren(nextChild);
-                return new BtreeBranchNode<>(ArrayHelper.assignTwo(children, mergeIndex, distributed.getFirst(), distributed.getSecond()));
+                return new BtreeBranchNode<>(ArrayHelper.assignTwo(children, mergeIndex, distributed.getFirst(), distributed.getSecond()), newValueCount);
             }
         }
     }
@@ -233,7 +235,7 @@ class BtreeBranchNode<T>
     {
         final BtreeBranchNode<T> branch = (BtreeBranchNode<T>)sibling;
         assert (children.length + branch.children.length) <= MAX_CHILDREN;
-        return new BtreeBranchNode<>(ArrayHelper.concat(this, children, branch.children));
+        return new BtreeBranchNode<>(ArrayHelper.concat(this, children, branch.children), valueCount + branch.valueCount);
     }
 
     @Nonnull
