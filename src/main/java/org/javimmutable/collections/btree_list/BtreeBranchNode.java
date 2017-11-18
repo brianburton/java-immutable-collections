@@ -156,16 +156,13 @@ class BtreeBranchNode<T>
         } else {
             assert result.type == BtreeInsertResult.Type.SPLIT;
             final BtreeNode<T>[] newChildren = ArrayHelper.assignInsert(this, children, loc.childIndex, result.newNode, result.extraNode);
-            if (children.length == MAX_CHILDREN) {
-                if (index == valueCount) {
-                    return BtreeInsertResult.createSplit(new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, 0, MIN_CHILDREN + 1)),
-                                                         new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, MIN_CHILDREN + 1, newChildren.length)));
-                } else {
-                    return BtreeInsertResult.createSplit(new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, 0, MIN_CHILDREN)),
-                                                         new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, MIN_CHILDREN, newChildren.length)));
-                }
-            } else {
+            final int newLength = newChildren.length;
+            if (newLength <= MAX_CHILDREN) {
                 return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + 1));
+            } else {
+                final int breakPoint = (index < valueCount) ? MIN_CHILDREN : newLength - MIN_CHILDREN;
+                return BtreeInsertResult.createSplit(new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, 0, breakPoint)),
+                                                     new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, breakPoint, newLength)));
             }
         }
     }

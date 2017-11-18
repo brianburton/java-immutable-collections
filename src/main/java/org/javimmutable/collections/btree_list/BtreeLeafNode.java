@@ -111,16 +111,13 @@ class BtreeLeafNode<T>
                                          T value)
     {
         final T[] newValues = ArrayHelper.insert(this, values, index, value);
-        if (values.length == MAX_CHILDREN) {
-            if (index == values.length) {
-                return BtreeInsertResult.createSplit(new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN + 1)),
-                                                     new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN + 1, newValues.length)));
-            } else {
-                return BtreeInsertResult.createSplit(new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, 0, MIN_CHILDREN)),
-                                                     new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, MIN_CHILDREN, newValues.length)));
-            }
-        } else {
+        final int newLength = newValues.length;
+        if (newLength <= MAX_CHILDREN) {
             return BtreeInsertResult.createInPlace(new BtreeLeafNode<>(newValues));
+        } else {
+            final int breakPoint = (index < values.length) ? MIN_CHILDREN : newLength - MIN_CHILDREN;
+            return BtreeInsertResult.createSplit(new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, 0, breakPoint)),
+                                                 new BtreeLeafNode<>(ArrayHelper.subArray(this, newValues, breakPoint, newLength)));
         }
     }
 
