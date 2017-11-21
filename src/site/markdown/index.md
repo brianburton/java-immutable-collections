@@ -197,7 +197,7 @@ Let's start off by stating the obvious.  Mutable collections are faster than imm
 
 The real questions are: how much faster are mutable collections and will you really notice the difference.  Based on benchmark runs a JImmutableHashMap is about 2-3 times slower than a HashMap but is about 1.5x faster than a TreeMap.  Unless your application spends most of its time CPU bound updating collections you probably won't notice much of a difference using an immutable collection.
 
-Here is a sample run using the org.javimmutable.collections.hash.TimingComparison benchmark program that comes with JImmutable Collections.  The program uses a random number generator to create sequences of puts, gets, and deletes.  The program can be tweaked in a variety of ways but the primary setting is the number of loops (operations) to perform.  The program repeats the same series of random operations on a TreeMap<Inetger, Integer>, a JImmutables.map(), and a JImmutables.array().  These test runs were performed on a MacBook Pro with heap settings -Xms384m -Xmx512m.
+Here is a sample run using the org.javimmutable.collections.util.MapTimingComparison benchmark program that comes with JImmutable Collections.  The program uses a random number generator to create sequences of puts, gets, and deletes.  The program can be tweaked in a variety of ways but the primary setting is the number of loops (operations) to perform.  The program repeats the same series of random operations on a TreeMap<Inetger, Integer>, a JImmutables.map(), and a JImmutables.array().  These test runs were performed on a MacBook Pro with heap settings -Xms384m -Xmx512m.
 
 ````
     // subset of results for 250k ops run using TreeMap averages include many other runs
