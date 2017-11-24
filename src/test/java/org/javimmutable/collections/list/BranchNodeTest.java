@@ -36,19 +36,22 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.indexed.IndexedArray;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public class BranchNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testDeleteFirst()
     {
-        Node<Integer> node = BranchNode.forTesting(2, leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
+        Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
         assertEquals(36, node.size());
         node.checkInvariants();
 
@@ -75,7 +78,7 @@ public class BranchNodeTest
 
         changed = changed.deleteFirst();
         assertEquals(0, changed.size());
-        StandardCursorTest.listCursorTest(Collections.<Integer>emptyList(), changed.cursor());
+        StandardCursorTest.listCursorTest(Collections.emptyList(), changed.cursor());
 
         try {
             changed.deleteFirst();
@@ -87,7 +90,7 @@ public class BranchNodeTest
 
     public void testDeleteLast()
     {
-        Node<Integer> node = BranchNode.forTesting(2, leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
+        Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
         assertEquals(36, node.size());
         node.checkInvariants();
 
@@ -118,7 +121,7 @@ public class BranchNodeTest
 
         changed = changed.deleteLast();
         assertEquals(0, changed.size());
-        StandardCursorTest.listCursorTest(Collections.<Integer>emptyList(), changed.cursor());
+        StandardCursorTest.listCursorTest(Collections.emptyList(), changed.cursor());
         changed.checkInvariants();
 
         try {
@@ -131,7 +134,7 @@ public class BranchNodeTest
 
     public void testInsertFirst()
     {
-        Node<Integer> node = BranchNode.forTesting(2, EmptyNode.<Integer>of(), ListHelper.<Integer>allocateNodes(0), EmptyNode.<Integer>of());
+        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), ListHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
 
@@ -174,7 +177,7 @@ public class BranchNodeTest
 
     public void testInsertLast()
     {
-        Node<Integer> node = BranchNode.forTesting(2, EmptyNode.<Integer>of(), ListHelper.<Integer>allocateNodes(0), EmptyNode.<Integer>of());
+        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), ListHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
 
@@ -230,7 +233,7 @@ public class BranchNodeTest
 
     public void testGetAndAssign()
     {
-        Node<Integer> node = BranchNode.forTesting(2, leaf(2, 1), nodesArray(3, 3), leaf(2, 99));
+        Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(3, 3), leaf(2, 99));
         assertEquals(100, node.size());
         node.checkInvariants();
 
@@ -427,6 +430,17 @@ public class BranchNodeTest
     {
         List<Integer> expected = new ArrayList<Integer>();
         assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
+
+        BranchNode.Builder<Integer> b = BranchNode.builder();
+        b.add(1);
+        b.add(2, 3);
+        b.add(Arrays.asList(4, 5));
+        b.add(StandardCursor.forRange(6, 7));
+        b.add(IndexedArray.retained(new Integer[]{8, 9}));
+        Node<Integer> n = b.build();
+        for (int i = 1; i <= 9; ++i) {
+            assertEquals((Integer)i, n.get(i - 1));
+        }
 
         for (int size = 1; size <= 33000; ++size) {
             expected.add(size);

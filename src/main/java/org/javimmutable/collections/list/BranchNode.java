@@ -48,6 +48,7 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,13 +119,14 @@ class BranchNode<T>
             return LeafNode.fromList(leaves, 0, nodeCount);
         }
 
-        List<Node<T>> nodes = new ArrayList<>();
+        final Node<T>[] nodes = ListHelper.allocateNodes(1 + (leaves.size() / 32));
         int offset = 0;
+        int index = 0;
         while (offset < nodeCount) {
-            nodes.add(LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount)));
+            nodes[index++] = LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount));
             offset += 32;
         }
-        nodeCount = nodes.size();
+        nodeCount = index;
 
         // loop invariant - all nodes except last one are always full
         // last one is possibly full
@@ -134,35 +136,35 @@ class BranchNode<T>
             int srcOffset = 0;
             // fill all full nodes
             while (nodeCount > 32) {
-                Node<T>[] newNodes = ListHelper.allocateNodes(32);
-                for (int i = 0; i < 32; ++i) {
-                    newNodes[i] = nodes.get(srcOffset++);
-                }
-                nodes.set(dstOffset++, new BranchNode<>(depth, ListHelper.sizeForDepth(depth), EmptyNode.of(), newNodes, EmptyNode.of()));
+                final Node<T>[] newNodes = ListHelper.allocateNodes(32);
+                System.arraycopy(nodes, srcOffset, newNodes, 0, 32);
+                nodes[dstOffset++] = new BranchNode<>(depth, ListHelper.sizeForDepth(depth), EmptyNode.of(), newNodes, EmptyNode.of());
+                srcOffset += 32;
                 nodeCount -= 32;
             }
             // collect remaining nodes
-            Node<T> lastNode = nodes.get(srcOffset + (nodeCount - 1));
-            if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
-                // all remaining nodes are full
-                Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
-                for (int i = 0; i < newNodes.length; ++i) {
-                    newNodes[i] = nodes.get(srcOffset++);
+            if (nodeCount == 1) {
+                nodes[dstOffset++] = nodes[srcOffset];
+            } else if (nodeCount > 1) {
+                final Node<T> lastNode = nodes[srcOffset + nodeCount - 1];
+                if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
+                    // all remaining nodes are full
+                    final Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
+                    System.arraycopy(nodes, srcOffset, newNodes, 0, nodeCount);
+                    nodes[dstOffset++] = new BranchNode<>(depth, ListHelper.sizeForDepth(depth - 1) * nodeCount, EmptyNode.of(), newNodes, EmptyNode.of());
+                } else {
+                    // all but last remaining nodes are full
+                    final int newNodesLength = nodeCount - 1;
+                    final Node<T>[] newNodes = ListHelper.allocateNodes(newNodesLength);
+                    System.arraycopy(nodes, srcOffset, newNodes, 0, newNodesLength);
+                    nodes[dstOffset++] = new BranchNode<>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodesLength) + lastNode.size(), EmptyNode.of(), newNodes, lastNode);
                 }
-                nodes.set(dstOffset++, new BranchNode<>(depth, ListHelper.sizeForDepth(depth - 1) * newNodes.length, EmptyNode.of(), newNodes, EmptyNode.of()));
-            } else {
-                // all but last remaining nodes are full
-                Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount - 1);
-                for (int i = 0; i < newNodes.length; ++i) {
-                    newNodes[i] = nodes.get(srcOffset++);
-                }
-                nodes.set(dstOffset++, new BranchNode<>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodes.length) + lastNode.size(), EmptyNode.of(), newNodes, lastNode));
             }
             nodeCount = dstOffset;
             depth += 1;
         }
         assert nodeCount == 1;
-        return nodes.get(0);
+        return nodes[0];
     }
 
     static <T> Builder<T> builder()
@@ -170,12 +172,11 @@ class BranchNode<T>
         return new Builder<>();
     }
 
-    static <T> BranchNode<T> forTesting(int depth,
-                                        Node<T> prefix,
+    static <T> BranchNode<T> forTesting(Node<T> prefix,
                                         Node<T>[] nodes,
                                         Node<T> suffix)
     {
-        return new BranchNode<>(depth,
+        return new BranchNode<>(2,
                                 prefix.size() + (nodes.length * 32) + suffix.size(),
                                 prefix,
                                 nodes.clone(),
@@ -422,7 +423,7 @@ class BranchNode<T>
             return nodes[index - 1];
         }
     }
-    
+
     @Override
     public void checkInvariants()
     {
@@ -456,7 +457,6 @@ class BranchNode<T>
             node.checkInvariants();
         }
         suffix.checkInvariants();
-        //TODO: review checkInvariants()
     }
 
     static class Builder<T>
@@ -484,7 +484,7 @@ class BranchNode<T>
         public Builder<T> add(Cursor<? extends T> source)
         {
             for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-                add(cursor.getValue());
+                leaves.add(cursor.getValue());
             }
             return this;
         }
@@ -494,7 +494,7 @@ class BranchNode<T>
         public Builder<T> add(Iterator<? extends T> source)
         {
             while (source.hasNext()) {
-                add(source.next());
+                leaves.add(source.next());
             }
             return this;
         }
@@ -503,17 +503,15 @@ class BranchNode<T>
         @Override
         public Builder<T> add(Iterable<? extends T> source)
         {
-            add(source.iterator());
-            return this;
+            return add(source.iterator());
         }
 
+        @SafeVarargs
         @Nonnull
         @Override
-        public <K extends T> Builder<T> add(K... source)
+        public final <K extends T> Builder<T> add(K... source)
         {
-            for (T value : source) {
-                add(value);
-            }
+            leaves.addAll(Arrays.asList(source));
             return this;
         }
 
@@ -531,7 +529,7 @@ class BranchNode<T>
                               int limit)
         {
             for (int i = offset; i < limit; ++i) {
-                add(source.get(i));
+                leaves.add(source.get(i));
             }
             return this;
         }
