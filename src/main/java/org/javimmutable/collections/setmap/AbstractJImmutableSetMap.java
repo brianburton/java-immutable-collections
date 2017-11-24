@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.iterators.EntryIterableStreamable;
 
@@ -333,7 +334,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Override
     public int getSpliteratorCharacteristics()
     {
-        return contents.getSpliteratorCharacteristics();
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nonnull
