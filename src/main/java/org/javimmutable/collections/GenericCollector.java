@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
@@ -58,19 +59,21 @@ public final class GenericCollector
     @Nonnull
     public static <T, C> Collector<T, ?, C> ordered(@Nonnull C initialValue,
                                                     @Nonnull C empty,
+                                                    @Nonnull Predicate<C> isEmpty,
                                                     @Nonnull Func2<C, T, C> adder,
                                                     @Nonnull Func2<C, C, C> combiner)
     {
-        return new CollectorImpl<>(ORDERED, initialValue, empty, adder, combiner);
+        return new CollectorImpl<>(ORDERED, initialValue, empty, isEmpty, adder, combiner);
     }
 
     @Nonnull
     public static <T, C> Collector<T, ?, C> unordered(@Nonnull C initialValue,
                                                       @Nonnull C empty,
+                                                      @Nonnull Predicate<C> isEmpty,
                                                       @Nonnull Func2<C, T, C> adder,
                                                       @Nonnull Func2<C, C, C> combiner)
     {
-        return new CollectorImpl<>(UNORDERED, initialValue, empty, adder, combiner);
+        return new CollectorImpl<>(UNORDERED, initialValue, empty, isEmpty, adder, combiner);
     }
 
 
@@ -87,11 +90,12 @@ public final class GenericCollector
         private CollectorImpl(@Nonnull Set<Characteristics> characteristics,
                               @Nonnull C initialValues,
                               @Nonnull C empty,
+                              @Nonnull Predicate<C> isEmpty,
                               @Nonnull Func2<C, T, C> adder,
                               @Nonnull Func2<C, C, C> combiner)
         {
             this.characteristics = characteristics;
-            this.initialValues = initialValues;
+            this.initialValues = isEmpty.test(initialValues) ? null : initialValues;
             this.empty = empty;
             this.adder = adder;
             this.combiner = combiner;
@@ -118,7 +122,11 @@ public final class GenericCollector
         @Override
         public Function<Accumulator<T, C>, C> finisher()
         {
-            return a -> combiner.apply(initialValues, a.list);
+            if (initialValues == null) {
+                return a -> a.list;
+            } else {
+                return a -> combiner.apply(initialValues, a.list);
+            }
         }
 
         @Override

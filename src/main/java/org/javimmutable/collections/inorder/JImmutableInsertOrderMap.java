@@ -50,7 +50,6 @@ import org.javimmutable.collections.iterators.TransformIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
@@ -187,7 +186,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

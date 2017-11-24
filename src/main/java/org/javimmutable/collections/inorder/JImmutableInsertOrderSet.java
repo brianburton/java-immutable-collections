@@ -81,7 +81,7 @@ public class JImmutableInsertOrderSet<T>
     @Override
     public Collector<T, ?, JImmutableSet<T>> setCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

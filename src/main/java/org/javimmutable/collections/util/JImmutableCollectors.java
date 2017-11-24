@@ -114,6 +114,7 @@ public final class JImmutableCollectors
     {
         return GenericCollector.ordered(JImmutables.listMap(),
                                         JImmutables.listMap(),
+                                        a -> a.isEmpty(),
                                         (a, v) -> a.insert(classifier.apply(v), v),
                                         (a, b) -> a.insertAll(b.entries()));
     }

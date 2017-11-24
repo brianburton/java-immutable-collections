@@ -82,14 +82,14 @@ public class JImmutableInsertOrderMultiset<T>
     @Override
     public Collector<T, ?, JImmutableSet<T>> setCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Nonnull
     @Override
     public Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
     {
-        return GenericCollector.ordered(this,deleteAll(),  (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

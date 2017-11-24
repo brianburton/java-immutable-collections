@@ -371,6 +371,6 @@ public interface JImmutableSetMap<K, V>
     @Nonnull
     default Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> setMapCollector()
     {
-        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
+        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
     }
 }

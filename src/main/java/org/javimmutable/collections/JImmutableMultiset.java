@@ -556,6 +556,6 @@ public interface JImmutableMultiset<T>
     @Nonnull
     default Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
     {
-        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

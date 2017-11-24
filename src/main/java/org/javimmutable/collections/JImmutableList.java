@@ -267,6 +267,6 @@ public interface JImmutableList<T>
     @Nonnull
     default Collector<T, ?, JImmutableList<T>> listCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

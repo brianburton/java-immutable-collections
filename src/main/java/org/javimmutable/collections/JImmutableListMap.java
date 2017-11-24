@@ -260,12 +260,12 @@ public interface JImmutableListMap<K, V>
     IterableStreamable<JImmutableMap.Entry<K, V>> entries();
 
     /**
-     * Returns a Collector that creates a set of the same type as this containing all
+     * Returns a Collector that creates a listMap of the same type as this containing all
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
     default Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> listMapCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
     }
 }

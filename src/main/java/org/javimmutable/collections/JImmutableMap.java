@@ -197,6 +197,6 @@ public interface JImmutableMap<K, V>
     @Nonnull
     default Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
     {
-        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

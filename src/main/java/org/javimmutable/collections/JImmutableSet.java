@@ -350,6 +350,6 @@ public interface JImmutableSet<T>
     @Nonnull
     default Collector<T, ?, JImmutableSet<T>> setCollector()
     {
-        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

@@ -316,6 +316,6 @@ public interface JImmutableRandomAccessList<T>
     @Nonnull
     default Collector<T, ?, JImmutableRandomAccessList<T>> ralistCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }
