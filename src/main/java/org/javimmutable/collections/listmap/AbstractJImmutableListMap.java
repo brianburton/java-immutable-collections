@@ -146,7 +146,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     @Override
     public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
     {
-        return new EntryIterableStreamable<>(this, StreamConstants.SPLITERATOR_ORDERED);
+        return new EntryIterableStreamable<>(this);
     }
 
     @Override
@@ -173,7 +173,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     @Override
     public int getSpliteratorCharacteristics()
     {
-        return contents.getSpliteratorCharacteristics();
+        return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nullable
