@@ -45,6 +45,7 @@ import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.iterators.EntryIterableStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -375,6 +376,13 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> deleteAll()
     {
         return create(contents.deleteAll());
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
+    {
+        return new EntryIterableStreamable<>(this);
     }
 
     @Override

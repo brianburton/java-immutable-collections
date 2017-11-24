@@ -35,13 +35,17 @@
 
 package org.javimmutable.collections.inorder;
 
+import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMultiset;
+import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collector;
 
 /**
  * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,
@@ -72,6 +76,20 @@ public class JImmutableInsertOrderMultiset<T>
     public JImmutableInsertOrderMultiset<T> deleteAll()
     {
         return of();
+    }
+
+    @Nonnull
+    @Override
+    public Collector<T, ?, JImmutableSet<T>> setCollector()
+    {
+        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    }
+
+    @Nonnull
+    @Override
+    public Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
+    {
+        return GenericCollector.ordered(this,deleteAll(),  (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

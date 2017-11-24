@@ -41,6 +41,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 
 /**
  * Interface for containers that store items in list form with individual items available
@@ -257,5 +258,15 @@ public interface JImmutableList<T>
     default JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
     {
         return select(predicate.negate());
+    }
+
+    /**
+     * Returns a Collector that creates a list of the same type as this containing all
+     * of the collected values inserted after whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<T, ?, JImmutableList<T>> listCollector()
+    {
+        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

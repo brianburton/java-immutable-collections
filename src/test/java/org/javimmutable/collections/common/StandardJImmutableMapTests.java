@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static junit.framework.Assert.assertEquals;
 import static org.javimmutable.collections.common.StandardIterableStreamableTests.*;
 
 public class StandardJImmutableMapTests
@@ -65,6 +66,7 @@ public class StandardJImmutableMapTests
         verifyOrderedUsingCollection(expectedMap.entrySet(), proxy.entrySet());
         verifyOrderedUsingCollection(expectedMap.keySet(), proxy.keySet());
         verifyOrderedUsingCollection(expectedMap.values(), proxy.values());
+        testCollector(map.assignAll(expectedMap), map);
     }
 
     public static <K, V> void verifyEnumeration(@Nonnull List<JImmutableMap.Entry<K, V>> expectedEntries,
@@ -79,6 +81,7 @@ public class StandardJImmutableMapTests
         verifyOrderedUsingCollection(expectedEntries, proxy.entrySet(), reverseEntries());
         verifyOrderedUsingCollection(expectedKeys, proxy.keySet());
         verifyOrderedUsingCollection(expectedValues, proxy.values());
+        testCollector(map.insertAll(expectedEntries), map);
     }
 
     public static <K, V> void verifyEnumeration(@Nonnull HashMap<K, V> expectedMap,
@@ -91,6 +94,15 @@ public class StandardJImmutableMapTests
         verifyUnorderedUsingCollection(expectedMap.entrySet(), proxy.entrySet());
         verifyUnorderedUsingCollection(expectedMap.keySet(), proxy.keySet());
         verifyUnorderedUsingCollection(expectedMap.values(), proxy.values());
+        testCollector(map.assignAll(expectedMap), map);
+    }
+
+    private static <K, V> void testCollector(JImmutableMap<K, V> values,
+                                             JImmutableMap<K, V> template)
+    {
+        JImmutableMap<K, V> expected = template.insertAll(values);
+        JImmutableMap<K, V> actual = values.parallelStream().collect(template.mapCollector());
+        assertEquals(expected, actual);
     }
 
     private static <K, V> Function<JImmutableMap.Entry<K, V>, Map.Entry<K, V>> entries()

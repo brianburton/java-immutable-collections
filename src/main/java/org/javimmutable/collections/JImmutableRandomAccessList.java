@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 
 /**
  * Extension of JImmutableList that allows insertion and deletion at arbitrary
@@ -306,5 +307,15 @@ public interface JImmutableRandomAccessList<T>
             }
         }
         return answer.size() == size() ? this : answer;
+    }
+
+    /**
+     * Returns a Collector that creates a list of the same type as this containing all
+     * of the collected values inserted after whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<T, ?, JImmutableRandomAccessList<T>> ralistCollector()
+    {
+        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

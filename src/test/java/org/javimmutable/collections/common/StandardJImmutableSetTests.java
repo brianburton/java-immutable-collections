@@ -36,6 +36,7 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -45,8 +46,10 @@ import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -64,6 +67,7 @@ public final class StandardJImmutableSetTests
         testVarious(template);
         testWithMultiset(template);
         testRandom(template);
+        testCollector(template.insert(-1).insert(-2));
         verifyIntersectionOrder(template);
 
         assertEquals(0, template.size());
@@ -82,7 +86,7 @@ public final class StandardJImmutableSetTests
         assertEquals((Integer)10, jet.get(10));
         assertEquals((Integer)10, jet.getValueOr(10, 25));
         assertEquals(Holders.of(10), jet.find(10));
-        
+
         jet = jet.delete(10);
         assertEquals(0, jet.size());
         assertEquals(true, template.isEmpty());
@@ -91,7 +95,7 @@ public final class StandardJImmutableSetTests
         assertEquals(null, jet.get(10));
         assertEquals((Integer)25, jet.getValueOr(10, 25));
         assertEquals(Holders.of(), jet.find(10));
-        
+
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
         verifyContents(jet.union(values), values);
         verifyContents(jet.union(IterableCursor.of(values)), values);
@@ -165,8 +169,16 @@ public final class StandardJImmutableSetTests
         jet = template.union(values);
         assertSame(jet, jet.insertAll(plainIterable(template)));
         assertSame(jet, jet.insertAll(template));
-        assertSame(jet, jet.insertAll(IterableCursor.of(values)));
-        assertSame(jet, jet.insertAll(values.iterator()));
+        assertSame(jet, jet.insertAll(IterableCursor.of(template)));
+        assertSame(jet, jet.insertAll(template.iterator()));
+
+        // union with self should yield same set (no changes)
+        if (!(template instanceof JImmutableMultiset)) {
+            assertSame(jet, jet.insertAll(plainIterable(jet)));
+            assertSame(jet, jet.insertAll(jet));
+            assertSame(jet, jet.insertAll(IterableCursor.of(jet)));
+            assertSame(jet, jet.insertAll(jet.iterator()));
+        }
 
         //values into values
         verifyContents(jet.insertAll(plainIterable(withExtra)), withExtra);
@@ -188,7 +200,25 @@ public final class StandardJImmutableSetTests
     {
         return () -> source.iterator();
     }
-    
+
+    private static void testCollector(JImmutableSet<Integer> template)
+    {
+        Collection<Integer> values = new ArrayList<>();
+        for (int i = 1; i <= 10; ++i) {
+            values.add(i);
+            if (i % 2 == 0) {
+                values.add(11 - i);
+            }
+        }
+
+        if (template instanceof JImmutableMultiset) {
+            values = new LinkedHashSet<>(values);
+        }
+        JImmutableSet<Integer> expected = template.insertAll(values);
+        JImmutableSet<Integer> actual = values.parallelStream().collect(template.setCollector());
+        assertEquals(expected, actual);
+    }
+
     private static void testVarious(JImmutableSet<Integer> template)
     {
         List<Integer> expected = Arrays.asList(100, 200, 300, 400);
@@ -391,8 +421,10 @@ public final class StandardJImmutableSetTests
                 assertEquals(expected.size(), set.size());
             }
             assertEquals(expected, set.getSet());
-            for (Integer value : set) {
-                assertSame(set, set.insert(value));
+            if (!(set instanceof JImmutableMultiset)) {
+                for (Integer value : set) {
+                    assertSame(set, set.insert(value));
+                }
             }
             for (Integer value : set) {
                 set = set.delete(value);
@@ -407,7 +439,7 @@ public final class StandardJImmutableSetTests
     {
         return collection;
     }
-    
+
     private static void verifyContents(JImmutableSet<Integer> jet,
                                        List<Integer> expected)
     {

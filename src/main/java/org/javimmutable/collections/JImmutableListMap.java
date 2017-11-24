@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
+import java.util.stream.Collector;
 
 /**
  * Interface for maps that map keys to lists of values.
@@ -251,4 +252,20 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     IterableStreamable<V> values(@Nonnull K key);
+
+    /**
+     * Creates a Streamable to access all of the Map's entries.
+     */
+    @Nonnull
+    IterableStreamable<JImmutableMap.Entry<K, V>> entries();
+
+    /**
+     * Returns a Collector that creates a set of the same type as this containing all
+     * of the collected values inserted over whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> listMapCollector()
+    {
+        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
+    }
 }

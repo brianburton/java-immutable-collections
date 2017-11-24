@@ -67,8 +67,10 @@ public class StandardJImmutableMultisetTests
         StandardCursorTest.emptyCursorTest(empty.cursor());
         StandardCursorTest.emptyCursorTest(empty.entryCursor());
         StandardCursorTest.emptyCursorTest(empty.occurrenceCursor());
+        StandardJImmutableSetTests.verifySet(empty);
         testVarious(empty);
         testEquals(empty);
+        testCollector(empty.insert(1).insert(1));
 
         verifyContents(empty, HashMultiset.create());
 
@@ -134,6 +136,20 @@ public class StandardJImmutableMultisetTests
         verifyIntersectionOrder(empty);
     }
 
+    private static void testCollector(JImmutableMultiset<Integer> template)
+    {
+        List<Integer> values = new ArrayList<>();
+        for (int i = 1; i <= 500; ++i) {
+            values.add(i);
+            if (i % 2 == 0) {
+                values.add(501 - i);
+            }
+        }
+        JImmutableMultiset<Integer> expected = template.insertAll(values);
+        JImmutableMultiset<Integer> actual = values.parallelStream().collect(template.multisetCollector());
+        assertEquals(expected, actual);
+    }
+    
     private static void verifyUnion(JImmutableMultiset<Integer> empty)
     {
         final List<Integer> values = Arrays.asList(1, 3, 3, 4);

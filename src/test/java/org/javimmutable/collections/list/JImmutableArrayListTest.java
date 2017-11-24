@@ -689,8 +689,8 @@ public class JImmutableArrayListTest
     public void testParallelStreams()
     {
         final JImmutableList<Integer> original = JImmutableArrayList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
-        final List<Integer> collected = original.stream().parallel().collect(toList());
-        assertEquals(original.getList(), collected);
+        assertEquals(original, original.stream().parallel().collect(JImmutableArrayList.of().listCollector()));
+        assertEquals(original.getList(), original.stream().parallel().collect(toList()));
     }
 
     private JImmutableList<Integer> mklist(Integer... values)

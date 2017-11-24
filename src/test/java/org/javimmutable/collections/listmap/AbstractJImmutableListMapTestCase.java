@@ -39,13 +39,16 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -106,7 +109,7 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1)));
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
         assertEquals(map.delete(1).delete(3), map.deleteAll(StandardCursor.of(IndexedList.retained(asList(3, 1)))));
-        
+
         final JImmutableList<Integer> defaultValue = JImmutableArrayList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
         assertNull(map.get(8));
@@ -123,6 +126,7 @@ public abstract class AbstractJImmutableListMapTestCase
         StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
 
         verifyTransform(map);
+        verifyCollector(map.insert(-10, -20).insert(-45, 90));
 
         return map;
     }
@@ -148,5 +152,20 @@ public abstract class AbstractJImmutableListMapTestCase
         assertSame(start, start.transform(badKey, removeLarge));
         assertSame(start, start.transformIfPresent(badKey, removeAll));
         assertSame(start, start.transformIfPresent(badKey, removeAll));
+    }
+
+    private static void verifyCollector(JImmutableListMap<Integer, Integer> template)
+    {
+        Collection<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        for (int i = 1; i <= 500; ++i) {
+            values.add(MapEntry.of(i, i));
+            if (i % 2 == 0) {
+                values.add(MapEntry.of(i, -i));
+            }
+        }
+
+        JImmutableListMap<Integer, Integer> expected = template.insertAll(values);
+        JImmutableListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());
+        assertEquals(expected, actual);
     }
 }

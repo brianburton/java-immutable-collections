@@ -56,9 +56,9 @@ public class JImmutableHashMultisetTest
 {
     public void testStandard()
     {
-        StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.<Integer>of());
-        StandardJImmutableMultisetTests.testRandom(JImmutableHashMultiset.<Integer>of(),
-                                                   TreeMultiset.<Integer>create());
+        StandardJImmutableMultisetTests.verifyMultiset(JImmutableHashMultiset.of());
+        StandardJImmutableMultisetTests.testRandom(JImmutableHashMultiset.of(),
+                                                   TreeMultiset.create());
     }
 
     public void test()
@@ -151,7 +151,7 @@ public class JImmutableHashMultisetTest
         assertEquals(jmet, jmet2.deleteOccurrence("capaldi", 12).deleteOccurrence("eccleston", 9));
         assertEquals(jmet, jmet2.deleteAll(asList("capaldi", "eccleston")));
 
-        List<String> extra = new ArrayList<String>();
+        List<String> extra = new ArrayList<>();
         for (int i = 0; i < 9; ++i) {
             extra.add("eccleston");
         }
@@ -207,7 +207,7 @@ public class JImmutableHashMultisetTest
 
     private Set<String> asSet(String... args)
     {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         Collections.addAll(set, args);
         return set;
     }

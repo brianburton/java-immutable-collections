@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
+import org.javimmutable.collections.iterators.EntryIterableStreamable;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
@@ -138,6 +139,13 @@ public abstract class AbstractJImmutableListMap<K, V>
     public IterableStreamable<V> values(@Nonnull K key)
     {
         return getList(key);
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
+    {
+        return new EntryIterableStreamable<>(this);
     }
 
     @Override

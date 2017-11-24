@@ -36,6 +36,7 @@
 package org.javimmutable.collections.inorder;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -49,6 +50,8 @@ import org.javimmutable.collections.iterators.TransformIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+
+import java.util.stream.Collector;
 
 import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
@@ -178,6 +181,13 @@ public class JImmutableInsertOrderMap<K, V>
     public int getSpliteratorCharacteristics()
     {
         return SPLITERATOR_ORDERED;
+    }
+
+    @Nonnull
+    @Override
+    public Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    {
+        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

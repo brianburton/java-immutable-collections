@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
+import java.util.stream.Collector;
 
 /**
  * Interface for immutable data structures that allow storage and retrieval of
@@ -188,4 +189,14 @@ public interface JImmutableMap<K, V>
      */
     @Nonnull
     IterableStreamable<V> values();
+
+    /**
+     * Returns a Collector that creates a set of the same type as this containing all
+     * of the collected values inserted over whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    {
+        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    }
 }

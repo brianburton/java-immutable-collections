@@ -250,6 +250,19 @@ public class JImmutableInsertOrderMapTest
         assertEquals(asList(), inOrderMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), inOrderMap.assign(1, 10).values().stream().collect(Collectors.toList()));
         assertEquals(asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
+        
+        List<Integer> keys = new ArrayList<>();
+        JImmutableMap<Integer, Integer> map = inOrderMap;
+        Random r = new Random();
+        for (int i = 1; i <= 1000; ++i) {
+            final int key = r.nextInt();
+            keys.add(key);
+            map = map.assign(key, i);
+        }
+        assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+        
+        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
+        assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
     }
 
     private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,

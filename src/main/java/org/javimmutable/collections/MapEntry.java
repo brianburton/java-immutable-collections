@@ -109,7 +109,17 @@ public class MapEntry<K, V>
     {
         throw new UnsupportedOperationException();
     }
+    
+    public JImmutableMap.Entry<K, V> jimmutableEntry()
+    {
+        return this;
+    }
 
+    public Map.Entry<K, V> javaEntry()
+    {
+        return this;
+    }
+    
     @Override
     public int hashCode()
     {

@@ -1240,8 +1240,8 @@ public class JImmutableBtreeListTest
     public void testParallelStreams()
     {
         final JImmutableRandomAccessList<Integer> original = JImmutableBtreeList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
-        final List<Integer> collected = original.stream().parallel().collect(toList());
-        assertEquals(original.getList(), collected);
+        assertEquals(original, original.stream().parallel().collect(JImmutableBtreeList.of().ralistCollector()));
+        assertEquals(original.getList(), original.stream().parallel().collect(toList()));
     }
 
     public void testBuilder()

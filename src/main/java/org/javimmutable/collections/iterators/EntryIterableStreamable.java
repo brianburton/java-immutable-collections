@@ -33,72 +33,35 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 
-@Immutable
-public class JImmutableTreeMultiset<T>
-    extends AbstractJImmutableMultiset<T>
+public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D extends IterableStreamable<JImmutableMap.Entry<K, C>>>
+    implements IterableStreamable<JImmutableMap.Entry<K, V>>
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableTreeMultiset EMPTY = new JImmutableTreeMultiset(new ComparableComparator());
+    private final D source;
 
-    private final Comparator<T> comparator;
-
-    private JImmutableTreeMultiset(Comparator<T> comparator)
+    public EntryIterableStreamable(D source)
     {
-        this(JImmutableTreeMap.of(comparator), 0, comparator);
-    }
-
-    private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,
-                                   int occurrences,
-                                   Comparator<T> comparator)
-    {
-        super(map, occurrences);
-        this.comparator = comparator;
+        this.source = source;
     }
 
     @Nonnull
     @Override
-    public JImmutableTreeMultiset<T> deleteAll()
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return of(comparator);
-    }
-
-    public Comparator<T> getComparator()
-    {
-        return comparator;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> JImmutableTreeMultiset<T> of()
-    {
-        return EMPTY;
-    }
-
-    public static <T> JImmutableTreeMultiset<T> of(Comparator<T> comparator)
-    {
-        return new JImmutableTreeMultiset<>(comparator);
+        return LazyMultiIterator.transformed(source.iterator(), e -> () -> TransformIterator.of(e.getValue().iterator(), v -> MapEntry.of(e.getKey(), v)));
     }
 
     @Override
-    protected JImmutableTreeMultiset<T> create(JImmutableMap<T, Integer> map,
-                                               int occurrences)
+    public int getSpliteratorCharacteristics()
     {
-        return new JImmutableTreeMultiset<>(map, occurrences, comparator);
-    }
-
-    @Override
-    protected Map<T, Integer> emptyMutableMap()
-    {
-        return new TreeMap<>(comparator);
+        return source.getSpliteratorCharacteristics();
     }
 }

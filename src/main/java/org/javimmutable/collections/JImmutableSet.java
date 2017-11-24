@@ -41,6 +41,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 
 /**
  * Interface for immutable sets.
@@ -340,5 +341,15 @@ public interface JImmutableSet<T>
             }
         }
         return answer.size() == size() ? this : answer;
+    }
+
+    /**
+     * Returns a Collector that creates a set of the same type as this containing all
+     * of the collected values inserted over whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<T, ?, JImmutableSet<T>> setCollector()
+    {
+        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

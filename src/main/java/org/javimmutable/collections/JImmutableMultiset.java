@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collector;
 
 /**
  * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
@@ -547,4 +548,14 @@ public interface JImmutableMultiset<T>
      * @return the total number of occurrences in the multiset. Same as the number of items in occurrenceCursor().
      */
     int occurrenceCount();
+
+    /**
+     * Returns a Collector that creates a multiset of the same type as this containing all
+     * of the collected values inserted over whatever starting values this already contained.
+     */
+    @Nonnull
+    default Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
+    {
+        return GenericCollector.unordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    }
 }

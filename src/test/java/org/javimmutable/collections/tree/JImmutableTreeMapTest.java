@@ -290,6 +290,17 @@ public class JImmutableTreeMapTest
         assertEquals(asList(), treeMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), treeMap.assign(1, 10).values().stream().collect(Collectors.toList()));
         assertEquals(asList(10, 40), treeMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
+        
+        List<Integer> keys = new ArrayList<>();
+        JImmutableMap<Integer, Integer> map = treeMap;
+        Random r = new Random();
+        for (int i = 1; i <= 1000; ++i) {
+            final int key = r.nextInt();
+            keys.add(key);
+            map = map.assign(key, i);
+        }
+        Collections.sort(keys);
+        assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

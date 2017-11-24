@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.inorder;
 
+import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
@@ -43,6 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collector;
 
 /**
  * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
@@ -73,6 +75,13 @@ public class JImmutableInsertOrderSet<T>
     public JImmutableSet<T> deleteAll()
     {
         return of();
+    }
+
+    @Nonnull
+    @Override
+    public Collector<T, ?, JImmutableSet<T>> setCollector()
+    {
+        return GenericCollector.ordered(this, deleteAll(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

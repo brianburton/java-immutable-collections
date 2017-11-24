@@ -47,6 +47,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.util.JImmutables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -126,7 +127,8 @@ public abstract class AbstractJImmutableSetMapTestCase
         StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
 
         verifyTransform(map);
-
+        verifyCollector(map.insert(-10, -20).insert(-45, 90));
+        
         return map;
     }
 
@@ -492,5 +494,20 @@ public abstract class AbstractJImmutableSetMapTestCase
     {
         assertEquals(true, expected.containsKey(key));
         assertEquals(true, expected.get(key).containsAll(values));
+    }
+
+    private static void verifyCollector(JImmutableSetMap<Integer, Integer> template)
+    {
+        Collection<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        for (int i = 1; i <= 500; ++i) {
+            values.add(MapEntry.of(i, i));
+            if (i % 2 == 0) {
+                values.add(MapEntry.of(i, -i));
+            }
+        }
+
+        JImmutableSetMap<Integer, Integer> expected = template.insertAll(values);
+        JImmutableSetMap<Integer, Integer> actual = values.parallelStream().collect(template.setMapCollector());
+        assertEquals(expected, actual);
     }
 }
