@@ -51,7 +51,7 @@ public class JImmutableTreeListMapTest
     @SuppressWarnings("unchecked")
     public void testNormalOrder()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of());
+        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(), false);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
                                                         MapEntry.of(2, map.getList(2)),
@@ -66,7 +66,7 @@ public class JImmutableTreeListMapTest
     @SuppressWarnings("unchecked")
     public void testReverseOrder()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(Comparator.<Integer>reverseOrder()));
+        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(Comparator.<Integer>reverseOrder()), true);
         StandardCursorTest.listCursorTest(Arrays.asList(3, 2, 1), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(3, map.getList(3)),
                                                         MapEntry.of(2, map.getList(2)),

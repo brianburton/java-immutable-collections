@@ -50,7 +50,7 @@ public class JImmutableInsertOrderListMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of());
+        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of(), false);
         StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
                                                         MapEntry.of(3, map.getList(3)),

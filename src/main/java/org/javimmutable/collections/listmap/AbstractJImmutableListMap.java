@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EntryIterableStreamable;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
@@ -145,7 +146,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     @Override
     public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
     {
-        return new EntryIterableStreamable<>(this);
+        return new EntryIterableStreamable<>(this, StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Override

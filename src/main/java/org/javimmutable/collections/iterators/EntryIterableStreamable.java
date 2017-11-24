@@ -46,10 +46,13 @@ public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D ex
     implements IterableStreamable<JImmutableMap.Entry<K, V>>
 {
     private final D source;
+    private final int characteristics;
 
-    public EntryIterableStreamable(D source)
+    public EntryIterableStreamable(@Nonnull D source,
+                                   int characteristics)
     {
         this.source = source;
+        this.characteristics = characteristics;
     }
 
     @Nonnull
@@ -62,6 +65,6 @@ public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D ex
     @Override
     public int getSpliteratorCharacteristics()
     {
-        return source.getSpliteratorCharacteristics();
+        return characteristics;
     }
 }
