@@ -90,6 +90,22 @@ public class HamtBranchNode<T, K, V>
         return EMPTY;
     }
 
+    @SuppressWarnings("unchecked")
+    static <T, K, V> HamtNode<T, K, V> forLeafExpansion(int hashCode,
+                                                        @Nonnull T value)
+    {
+        if (hashCode == 0) {
+            return new HamtBranchNode<>(0, value, EMPTY_NODES);
+        } else {
+            final int index = hashCode & MASK;
+            final int remainder = hashCode >>> SHIFT;
+            final int bit = 1 << index;
+            final HamtNode<T, K, V>[] children = new HamtNode[1];
+            children[0] = forLeafExpansion(remainder, value);
+            return new HamtBranchNode<>(bit, null, children);
+        }
+    }
+
     @Override
     public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
                           int hashCode,
@@ -163,7 +179,7 @@ public class HamtBranchNode<T, K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<T, K, V> newChild = empty().assign(transforms, remainder, hashKey, value, sizeDelta);
+            final HamtNode<T, K, V> newChild = new HamtLeafNode<>(remainder, transforms.update(null, hashKey, value, sizeDelta));
             final HamtNode<T, K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren);
         } else {
