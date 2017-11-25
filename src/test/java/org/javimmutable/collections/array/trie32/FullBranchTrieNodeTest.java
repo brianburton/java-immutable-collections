@@ -36,7 +36,6 @@
 package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
@@ -133,7 +132,7 @@ public class FullBranchTrieNodeTest
         Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<>();
         List<Map<String, String>> list = new ArrayList<>();
         for (int i = 0; i < 32; ++i) {
-            list.add(tx.update(Holders.of(), String.valueOf(i), String.valueOf(i), new MutableDelta()));
+            list.add(tx.update(null, String.valueOf(i), String.valueOf(i), new MutableDelta()));
         }
         TrieNode<Map<String, String>> node = FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
         for (int i = 0; i < 32; ++i) {

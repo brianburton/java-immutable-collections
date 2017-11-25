@@ -47,6 +47,7 @@ import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,19 +60,20 @@ import java.util.TreeMap;
 class TestOnlyTransforms<K, V>
     implements Transforms<Map<K, V>, K, V>
 {
+    @Nonnull
     @Override
-    public Map<K, V> update(Holder<Map<K, V>> leaf,
-                            K key,
-                            V value,
-                            MutableDelta delta)
+    public Map<K, V> update(@Nullable Map<K, V> leaf,
+                            @Nonnull K key,
+                            @Nullable V value,
+                            @Nonnull MutableDelta delta)
     {
-        if (leaf.isEmpty()) {
+        if (leaf == null) {
             delta.add(1);
             Map<K, V> map = new TreeMap<>();
             map.put(key, value);
             return map;
         } else {
-            Map<K, V> map = new TreeMap<>(leaf.getValue());
+            Map<K, V> map = new TreeMap<>(leaf);
             if (!map.containsKey(key)) {
                 delta.add(1);
                 map.put(key, value);
@@ -80,40 +82,48 @@ class TestOnlyTransforms<K, V>
                 map.put(key, value);
                 return map;
             } else {
-                return leaf.getValue();
+                return leaf;
             }
         }
     }
 
     @Override
-    public Holder<Map<K, V>> delete(Map<K, V> leaf,
-                                    K key,
-                                    MutableDelta delta)
+    public Map<K, V> delete(@Nonnull Map<K, V> leaf,
+                            @Nonnull K key,
+                            @Nonnull MutableDelta delta)
     {
         if (leaf.containsKey(key)) {
             Map<K, V> map = new TreeMap<>(leaf);
             delta.subtract(1);
             map.remove(key);
             if (map.isEmpty()) {
-                return Holders.of();
+                return null;
             } else {
-                return Holders.of(map);
+                return map;
             }
         } else {
-            return Holders.of(leaf);
+            return leaf;
         }
     }
 
     @Override
-    public Holder<V> findValue(Map<K, V> leaf,
-                               K key)
+    public V getValueOr(@Nonnull Map<K, V> leaf,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return leaf.getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public Holder<V> findValue(@Nonnull Map<K, V> leaf,
+                               @Nonnull K key)
     {
         return Holders.fromNullable(leaf.get(key));
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Map<K, V> leaf,
-                                                       K key)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Map<K, V> leaf,
+                                                       @Nonnull K key)
     {
         V value = leaf.get(key);
         if (value == null) {
@@ -124,13 +134,13 @@ class TestOnlyTransforms<K, V>
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Map<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull Map<K, V> leaf)
     {
         return IterableCursor.of(entryList(leaf));
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Map<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Map<K, V> leaf)
     {
         return IndexedIterator.iterator(IndexedList.retained(entryList(leaf)));
     }

@@ -36,7 +36,6 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
@@ -46,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HashValueListTransformsTest
-        extends TestCase
+    extends TestCase
 {
     private SingleHashValueListNode<Integer, Integer> single(int key,
                                                              int value)
@@ -62,57 +61,60 @@ public class HashValueListTransformsTest
 
     public void testUpdateDelete()
     {
-        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<Integer, Integer>();
+        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<>();
         MutableDelta delta = new MutableDelta();
-        HashValueListNode<Integer, Integer> value = transforms.update(Holders.<HashValueListNode<Integer, Integer>>of(), 10, 100, delta);
+        HashValueListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         assertEquals(1, delta.getValue());
         assertEquals(single(10, 100), value);
 
         delta = new MutableDelta();
-        value = transforms.update(Holders.of(value), 10, 1000, delta);
+        value = transforms.update(value, 10, 1000, delta);
         assertEquals(0, delta.getValue());
         assertEquals(single(10, 1000), value);
 
         delta = new MutableDelta();
-        value = transforms.update(Holders.of(value), 12, 60, delta);
+        value = transforms.update(value, 12, 60, delta);
         assertEquals(1, delta.getValue());
         assertEquals(multi(single(10, 1000), single(12, 60)), value);
 
         delta = new MutableDelta();
-        value = transforms.update(Holders.of(value), 12, 90, delta);
+        value = transforms.update(value, 12, 90, delta);
         assertEquals(0, delta.getValue());
         assertEquals(multi(single(10, 1000), single(12, 90)), value);
 
         delta = new MutableDelta();
-        Holder<HashValueListNode<Integer, Integer>> deleted = transforms.delete(value, 87, delta);
+        HashValueListNode<Integer, Integer> deleted = transforms.delete(value, 87, delta);
+        assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(multi(single(10, 1000), single(12, 90)), deleted.getValue());
+        assertEquals(multi(single(10, 1000), single(12, 90)), deleted);
 
         delta = new MutableDelta();
-        deleted = transforms.delete(deleted.getValue(), 10, delta);
+        deleted = transforms.delete(deleted, 10, delta);
+        assertNotNull(deleted);
         assertEquals(-1, delta.getValue());
-        assertEquals(single(12, 90), deleted.getValue());
+        assertEquals(single(12, 90), deleted);
 
         delta = new MutableDelta();
-        deleted = transforms.delete(deleted.getValue(), 40, delta);
+        deleted = transforms.delete(deleted, 40, delta);
+        assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(single(12, 90), deleted.getValue());
+        assertEquals(single(12, 90), deleted);
 
         delta = new MutableDelta();
-        deleted = transforms.delete(deleted.getValue(), 12, delta);
+        deleted = transforms.delete(deleted, 12, delta);
+        assertNull(deleted);
         assertEquals(-1, delta.getValue());
-        assertEquals(true, deleted.isEmpty());
     }
 
     public void testFindGet()
     {
-        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<Integer, Integer>();
+        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<>();
         MutableDelta delta = new MutableDelta();
-        HashValueListNode<Integer, Integer> value = transforms.update(Holders.<HashValueListNode<Integer, Integer>>of(), 10, 100, delta);
-        value = transforms.update(Holders.of(value), 18, 180, delta);
-        value = transforms.update(Holders.of(value), 12, 60, delta);
-        value = transforms.update(Holders.of(value), -6, -60, delta);
-        value = transforms.update(Holders.of(value), 12, 90, delta);
+        HashValueListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
+        value = transforms.update(value, 18, 180, delta);
+        value = transforms.update(value, 12, 60, delta);
+        value = transforms.update(value, -6, -60, delta);
+        value = transforms.update(value, 12, 90, delta);
         assertEquals(4, delta.getValue());
 
         assertEquals(Holders.of(100), transforms.findValue(value, 10));
@@ -127,7 +129,7 @@ public class HashValueListTransformsTest
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(single(-6, -60)), transforms.findEntry(value, -6));
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(value, 11));
 
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<JImmutableMap.Entry<Integer, Integer>>();
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(single(12, 90));
         expected.add(single(10, 100));
         expected.add(single(18, 180));

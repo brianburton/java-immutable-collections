@@ -44,10 +44,10 @@ public class SingleHashValueListNodeTest
     public void testKeyMatches()
     {
         SingleHashValueListNode<String, String> v = SingleHashValueListNode.of("a", "aa");
-        assertEquals(true, v.getValueForKey("a").isFilled());
-        assertEquals("aa", v.getValueForKey("a").getValue());
-        assertEquals("aa", v.getValueForKey("a").getValueOr("x"));
-        assertEquals("aa", v.getValueForKey("a").getValueOrNull());
+        assertEquals(true, v.findValueForKey("a").isFilled());
+        assertEquals("aa", v.findValueForKey("a").getValue());
+        assertEquals("aa", v.findValueForKey("a").getValueOr("x"));
+        assertEquals("aa", v.findValueForKey("a").getValueOrNull());
 
         assertEquals("a", v.getKey());
         assertEquals("aa", v.getValue());
@@ -61,10 +61,10 @@ public class SingleHashValueListNodeTest
         HashValueListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
         assertEquals(true, nv instanceof SingleHashValueListNode);
         assertEquals(0, sizeDelta.getValue());
-        assertEquals(true, nv.getValueForKey("a").isFilled());
-        assertEquals("A", nv.getValueForKey("a").getValue());
-        assertEquals("A", nv.getValueForKey("a").getValueOr("x"));
-        assertEquals("A", nv.getValueForKey("a").getValueOrNull());
+        assertEquals(true, nv.findValueForKey("a").isFilled());
+        assertEquals("A", nv.findValueForKey("a").getValue());
+        assertEquals("A", nv.findValueForKey("a").getValueOr("x"));
+        assertEquals("A", nv.findValueForKey("a").getValueOrNull());
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);
@@ -75,9 +75,9 @@ public class SingleHashValueListNodeTest
     public void testKeyMismatches()
     {
         SingleHashValueListNode<String, String> v = SingleHashValueListNode.of("b", "bb");
-        assertEquals(false, v.getValueForKey("a").isFilled());
-        assertEquals("x", v.getValueForKey("a").getValueOr("x"));
-        assertEquals(null, v.getValueForKey("a").getValueOrNull());
+        assertEquals(false, v.findValueForKey("a").isFilled());
+        assertEquals("x", v.findValueForKey("a").getValueOr("x"));
+        assertEquals(null, v.findValueForKey("a").getValueOrNull());
 
         assertEquals(null, v.getEntryForKey("a"));
 
@@ -85,14 +85,14 @@ public class SingleHashValueListNodeTest
         HashValueListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
         assertEquals(true, nv instanceof MultiHashValueListNode);
         assertEquals(1, sizeDelta.getValue());
-        assertEquals(true, nv.getValueForKey("a").isFilled());
-        assertEquals("A", nv.getValueForKey("a").getValue());
-        assertEquals("A", nv.getValueForKey("a").getValueOr("x"));
-        assertEquals("A", nv.getValueForKey("a").getValueOrNull());
-        assertEquals(true, nv.getValueForKey("b").isFilled());
-        assertEquals("bb", nv.getValueForKey("b").getValue());
-        assertEquals("bb", nv.getValueForKey("b").getValueOr("x"));
-        assertEquals("bb", nv.getValueForKey("b").getValueOrNull());
+        assertEquals(true, nv.findValueForKey("a").isFilled());
+        assertEquals("A", nv.findValueForKey("a").getValue());
+        assertEquals("A", nv.findValueForKey("a").getValueOr("x"));
+        assertEquals("A", nv.findValueForKey("a").getValueOrNull());
+        assertEquals(true, nv.findValueForKey("b").isFilled());
+        assertEquals("bb", nv.findValueForKey("b").getValue());
+        assertEquals("bb", nv.findValueForKey("b").getValueOr("x"));
+        assertEquals("bb", nv.findValueForKey("b").getValueOrNull());
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("a", sizeDelta);

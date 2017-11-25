@@ -46,6 +46,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class TrieNodeTest
@@ -158,53 +159,61 @@ public class TrieNodeTest
     private static class TrivialTransforms
         implements Transforms<Integer, Integer, Integer>
     {
+        @Nonnull
         @Override
-        public Integer update(Holder<Integer> leaf,
-                              Integer key,
+        public Integer update(Integer leaf,
+                              @Nonnull Integer key,
                               Integer value,
-                              MutableDelta delta)
+                              @Nonnull MutableDelta delta)
         {
-            if (leaf.isEmpty()) {
+            if (leaf == null) {
                 delta.add(1);
                 return value;
             } else {
-                Integer oldValue = leaf.getValue();
-                return ((oldValue != null) && oldValue.equals(value)) ? oldValue : value;
+                return leaf.equals(value) ? leaf : value;
             }
         }
 
         @Override
-        public Holder<Integer> delete(Integer leaf,
-                                      Integer key,
-                                      MutableDelta delta)
+        public Integer delete(@Nonnull Integer leaf,
+                              @Nonnull Integer key,
+                              @Nonnull MutableDelta delta)
         {
             delta.subtract(1);
-            return Holders.of();
+            return null;
         }
 
         @Override
-        public Holder<Integer> findValue(Integer leaf,
-                                         Integer key)
+        public Integer getValueOr(@Nonnull Integer leaf,
+                                  @Nonnull Integer key,
+                                  Integer defaultValue)
+        {
+            return leaf;
+        }
+
+        @Override
+        public Holder<Integer> findValue(@Nonnull Integer leaf,
+                                         @Nonnull Integer key)
         {
             return Holders.of(leaf);
         }
 
         @Override
-        public Holder<JImmutableMap.Entry<Integer, Integer>> findEntry(Integer leaf,
-                                                                       Integer key)
+        public Holder<JImmutableMap.Entry<Integer, Integer>> findEntry(@Nonnull Integer leaf,
+                                                                       @Nonnull Integer key)
         {
             return Holders.of(MapEntry.of(key, leaf));
         }
 
         // this is wrong since its guessing the key but ok for unit tests
         @Override
-        public Cursor<JImmutableMap.Entry<Integer, Integer>> cursor(Integer leaf)
+        public Cursor<JImmutableMap.Entry<Integer, Integer>> cursor(@Nonnull Integer leaf)
         {
             return SingleValueCursor.of(findEntry(leaf, leaf).getValue());
         }
 
         @Override
-        public SplitableIterator<JImmutableMap.Entry<Integer, Integer>> iterator(Integer leaf)
+        public SplitableIterator<JImmutableMap.Entry<Integer, Integer>> iterator(@Nonnull Integer leaf)
         {
             return SingleValueIterator.of(findEntry(leaf, leaf).getValue());
         }

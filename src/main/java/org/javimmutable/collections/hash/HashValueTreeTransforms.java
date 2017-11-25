@@ -37,7 +37,6 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
@@ -48,6 +47,7 @@ import org.javimmutable.collections.tree.LeafNode;
 import org.javimmutable.collections.tree.Node;
 import org.javimmutable.collections.tree.UpdateResult;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
@@ -62,21 +62,21 @@ class HashValueTreeTransforms<K extends Comparable<K>, V>
 {
     private final Comparator<K> comparator = ComparableComparator.of();
 
+    @Nonnull
     @Override
-    public Node<K, V> update(Holder<Node<K, V>> leaf,
-                             K key,
+    public Node<K, V> update(Node<K, V> leaf,
+                             @Nonnull K key,
                              V value,
-                             MutableDelta delta)
+                             @Nonnull MutableDelta delta)
     {
-        if (leaf.isEmpty()) {
+        if (leaf == null) {
             delta.add(1);
             return new LeafNode<>(key, value);
         } else {
-            final Node<K, V> oldLeaf = leaf.getValue();
-            final UpdateResult<K, V> result = oldLeaf.assign(comparator, key, value);
+            final UpdateResult<K, V> result = leaf.assign(comparator, key, value);
             switch (result.type) {
             case UNCHANGED:
-                return oldLeaf;
+                return leaf;
             case INPLACE:
                 delta.add(result.sizeDelta);
                 return result.newNode;
@@ -90,41 +90,49 @@ class HashValueTreeTransforms<K extends Comparable<K>, V>
     }
 
     @Override
-    public Holder<Node<K, V>> delete(Node<K, V> leaf,
-                                     K key,
-                                     MutableDelta delta)
+    public Node<K, V> delete(@Nonnull Node<K, V> leaf,
+                             @Nonnull K key,
+                             @Nonnull MutableDelta delta)
     {
         final Node<K, V> newLeaf = leaf.delete(comparator, key);
         if (newLeaf == leaf) {
-            return Holders.of(leaf);
+            return leaf;
         } else {
             delta.add(-1);
-            return newLeaf.isEmpty() ? Holders.of() : Holders.of(newLeaf.compress());
+            return newLeaf.isEmpty() ? null : newLeaf.compress();
         }
     }
 
     @Override
-    public Holder<V> findValue(Node<K, V> leaf,
-                               K key)
+    public V getValueOr(@Nonnull Node<K, V> leaf,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return leaf.getValueOr(comparator, key, defaultValue);
+    }
+
+    @Override
+    public Holder<V> findValue(@Nonnull Node<K, V> leaf,
+                               @Nonnull K key)
     {
         return leaf.find(comparator, key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(Node<K, V> leaf,
-                                                       K key)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node<K, V> leaf,
+                                                       @Nonnull K key)
     {
         return leaf.findEntry(comparator, key);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Node<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull Node<K, V> leaf)
     {
         return leaf.cursor();
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Node<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node<K, V> leaf)
     {
         return leaf.iterator();
     }

@@ -67,24 +67,36 @@ class MultiHashValueListNode<K, V>
     static <K, V> MultiHashValueListNode<K, V> of(K key,
                                                   V value)
     {
-        return new MultiHashValueListNode<K, V>(null, SingleHashValueListNode.of(key, value));
+        return new MultiHashValueListNode<>(null, SingleHashValueListNode.of(key, value));
     }
 
     static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
                                                   SingleHashValueListNode<K, V> entry2)
     {
-        return new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(null, entry1), entry2);
+        return new MultiHashValueListNode<>(new MultiHashValueListNode<>(null, entry1), entry2);
     }
 
     static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
                                                   SingleHashValueListNode<K, V> entry2,
                                                   SingleHashValueListNode<K, V> entry3)
     {
-        return new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(new MultiHashValueListNode<K, V>(null, entry1), entry2), entry3);
+        return new MultiHashValueListNode<>(new MultiHashValueListNode<>(new MultiHashValueListNode<>(null, entry1), entry2), entry3);
     }
 
     @Override
-    public Holder<V> getValueForKey(K key)
+    public V getValueForKey(K key,
+                            V defaultValue)
+    {
+        SingleHashValueListNode<K, V> answer = getEntryForKeyImpl(key);
+        if (answer != null) {
+            return answer.getValue();
+        } else {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public Holder<V> findValueForKey(K key)
     {
         SingleHashValueListNode<K, V> answer = getEntryForKeyImpl(key);
         if (answer != null) {
@@ -108,11 +120,11 @@ class MultiHashValueListNode<K, V>
         SingleHashValueListNode<K, V> entry = getEntryForKeyImpl(key);
         if (entry == null) {
             sizeDelta.add(1);
-            return new MultiHashValueListNode<K, V>(this, SingleHashValueListNode.of(key, value));
+            return new MultiHashValueListNode<>(this, SingleHashValueListNode.of(key, value));
         } else if (entry.getValue() == value) {
             return this;
         } else {
-            return new MultiHashValueListNode<K, V>(removeKeyFromList(key), SingleHashValueListNode.of(key, value));
+            return new MultiHashValueListNode<>(removeKeyFromList(key), SingleHashValueListNode.of(key, value));
         }
     }
 
@@ -210,7 +222,7 @@ class MultiHashValueListNode<K, V>
         MultiHashValueListNode<K, V> newList = null;
         for (MultiHashValueListNode<K, V> node = this; node != null; node = node.next) {
             if (!node.keyEquals(key)) {
-                newList = new MultiHashValueListNode<K, V>(newList, node.entry);
+                newList = new MultiHashValueListNode<>(newList, node.entry);
             }
         }
         return newList;

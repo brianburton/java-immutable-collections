@@ -43,56 +43,66 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class HashValueListTransforms<K, V>
-        implements Transforms<HashValueListNode<K, V>, K, V>
+    implements Transforms<HashValueListNode<K, V>, K, V>
 {
+    @Nonnull
     @Override
-    public HashValueListNode<K, V> update(Holder<HashValueListNode<K, V>> oldLeaf,
-                                          K key,
+    public HashValueListNode<K, V> update(HashValueListNode<K, V> leaf,
+                                          @Nonnull K key,
                                           V value,
-                                          MutableDelta delta)
+                                          @Nonnull MutableDelta delta)
     {
-        if (oldLeaf.isEmpty()) {
+        if (leaf == null) {
             delta.add(1);
             return SingleHashValueListNode.of(key, value);
         } else {
-            return oldLeaf.getValue().setValueForKey(key, value, delta);
+            return leaf.setValueForKey(key, value, delta);
         }
     }
 
     @Override
-    public Holder<HashValueListNode<K, V>> delete(HashValueListNode<K, V> oldLeaf,
-                                                  K key,
-                                                  MutableDelta delta)
+    public HashValueListNode<K, V> delete(@Nonnull HashValueListNode<K, V> leaf,
+                                          @Nonnull K key,
+                                          @Nonnull MutableDelta delta)
     {
-        return Holders.fromNullable(oldLeaf.deleteValueForKey(key, delta));
+        return leaf.deleteValueForKey(key, delta);
     }
 
     @Override
-    public Holder<V> findValue(HashValueListNode<K, V> oldLeaf,
-                               K key)
+    public V getValueOr(@Nonnull HashValueListNode<K, V> leaf,
+                        @Nonnull K key,
+                        V defaultValue)
     {
-        return oldLeaf.getValueForKey(key);
+        return leaf.getValueForKey(key, defaultValue);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(HashValueListNode<K, V> oldLeaf,
-                                                       K key)
+    public Holder<V> findValue(@Nonnull HashValueListNode<K, V> leaf,
+                               @Nonnull K key)
     {
-        return Holders.fromNullable(oldLeaf.getEntryForKey(key));
+        return leaf.findValueForKey(key);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(HashValueListNode<K, V> leaf)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull HashValueListNode<K, V> leaf,
+                                                       @Nonnull K key)
+    {
+        return Holders.fromNullable(leaf.getEntryForKey(key));
+    }
+
+    @Override
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull HashValueListNode<K, V> leaf)
     {
         return leaf.cursor();
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(HashValueListNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull HashValueListNode<K, V> leaf)
     {
         return leaf.iterator();
     }
