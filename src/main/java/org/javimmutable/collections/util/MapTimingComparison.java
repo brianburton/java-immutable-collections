@@ -40,7 +40,6 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.trie32.TrieArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.JImmutableHamtMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import java.util.HashMap;
@@ -54,6 +53,7 @@ public final class MapTimingComparison
     }
 
     public static void main(String[] argv)
+        throws Exception
     {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
@@ -96,6 +96,7 @@ public final class MapTimingComparison
                                 MutableDelta hashElapsed,
                                 MutableDelta treeElapsed,
                                 MutableDelta arrayElapsed)
+        throws Exception
     {
         Random random = new Random(seed);
         int adds = 0;
@@ -125,6 +126,7 @@ public final class MapTimingComparison
         System.out.printf("java map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
         expected = null;
         System.gc();
+        Thread.sleep(500);
 
         random = new Random(seed);
         adds = 0;
@@ -154,36 +156,38 @@ public final class MapTimingComparison
         System.out.printf("jimm tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
+        Thread.sleep(500);
 
-        random = new Random(seed);
-        adds = 0;
-        removes = 0;
-        gets = 0;
-        startMillis = System.currentTimeMillis();
-        map = JImmutableHashMap.of();
-        for (int i = 1; i <= loops; ++i) {
-            int command = random.nextInt(maxCommand);
-            if (command <= 2) {
-                Integer key = random.nextInt(maxKey);
-                Integer value = random.nextInt(maxValue);
-                map = map.assign(key, value);
-                adds += 1;
-            } else if (command == 3) {
-                Integer key = random.nextInt(maxKey);
-                map = map.delete(key);
-                removes += 1;
-            } else {
-                Integer key = random.nextInt(maxKey);
-                map.getValueOr(key, null);
-                gets += 1;
-            }
-        }
-        endMillis = System.currentTimeMillis();
-        hashElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm hash adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
-        map = null;
-        System.gc();
-
+//        random = new Random(seed);
+//        adds = 0;
+//        removes = 0;
+//        gets = 0;
+//        startMillis = System.currentTimeMillis();
+//        map = JImmutableHamtMap.of();
+//        for (int i = 1; i <= loops; ++i) {
+//            int command = random.nextInt(maxCommand);
+//            if (command <= 2) {
+//                Integer key = random.nextInt(maxKey);
+//                Integer value = random.nextInt(maxValue);
+//                map = map.assign(key, value);
+//                adds += 1;
+//            } else if (command == 3) {
+//                Integer key = random.nextInt(maxKey);
+//                map = map.delete(key);
+//                removes += 1;
+//            } else {
+//                Integer key = random.nextInt(maxKey);
+//                map.getValueOr(key, null);
+//                gets += 1;
+//            }
+//        }
+//        endMillis = System.currentTimeMillis();
+//        hashElapsed.add((int)(endMillis - startMillis));
+//        System.out.printf("jimm hamt adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+//        map = null;
+//        System.gc();
+//        Thread.sleep(500);
+                  
         random = new Random(seed);
         adds = 0;
         removes = 0;
@@ -209,10 +213,11 @@ public final class MapTimingComparison
         }
         endMillis = System.currentTimeMillis();
         hashElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm hamt adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        System.out.printf("jimm hash adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
-
+        Thread.sleep(500);
+                
         random = new Random(seed);
         adds = 0;
         removes = 0;
@@ -241,5 +246,6 @@ public final class MapTimingComparison
         System.out.printf("jimm arry adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, array.size(), (endMillis - startMillis));
         array = null;
         System.gc();
+        Thread.sleep(500);
     }
 }

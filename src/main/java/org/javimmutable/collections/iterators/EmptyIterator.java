@@ -47,9 +47,10 @@ public class EmptyIterator<T>
 {
     private static final SplitableIterator INSTANCE = new EmptyIterator();
 
+    @SuppressWarnings("unchecked")
     public static <T> SplitableIterator<T> of()
     {
-        return (SplitableIterator<T>)INSTANCE;
+        return INSTANCE;
     }
 
     @Override

@@ -44,6 +44,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hamt.HamtNode;
 
 import javax.annotation.Nonnull;
@@ -61,11 +62,11 @@ public class JImmutableHamtMap<T, K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHamtMap LIST_EMPTY = new JImmutableHamtMap(HamtNode.of(), 0, LIST_TRANSFORMS);
+    static final JImmutableHamtMap LIST_EMPTY = new JImmutableHamtMap(HamtEmptyNode.of(), 0, LIST_TRANSFORMS);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHamtMap TREE_EMPTY = new JImmutableHamtMap(HamtNode.of(), 0, TREE_TRANSFORMS);
+    static final JImmutableHamtMap TREE_EMPTY = new JImmutableHamtMap(HamtEmptyNode.of(), 0, TREE_TRANSFORMS);
 
     private final HamtNode<T> root;
     private final int size;
