@@ -40,21 +40,18 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
-import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -254,41 +251,6 @@ public class HamtBranchNode<T, K, V>
     public HamtNode<T, K, V>[] allocate(int size)
     {
         return (size == 0) ? EMPTY_NODES : new HamtNode[size];
-    }
-
-    @Override
-    @Nonnull
-    public IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
-    {
-        return new IterableStreamable<JImmutableMap.Entry<K, V>>()
-        {
-            @Nonnull
-            @Override
-            public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
-            {
-                return HamtBranchNode.this.iterator(transforms);
-            }
-
-            @Override
-            public int getSpliteratorCharacteristics()
-            {
-                return StreamConstants.SPLITERATOR_UNORDERED;
-            }
-        };
-    }
-
-    @Override
-    @Nonnull
-    public IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
-    {
-        return TransformStreamable.ofKeys(entries(transforms));
-    }
-
-    @Override
-    @Nonnull
-    public IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
-    {
-        return TransformStreamable.ofValues(entries(transforms));
     }
 
     @Override

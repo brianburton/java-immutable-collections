@@ -38,7 +38,6 @@ package org.javimmutable.collections.hamt;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
@@ -76,15 +75,6 @@ public interface HamtNode<T, K, V>
                              @Nonnull MutableDelta sizeDelta);
 
     boolean isEmpty();
-
-    @Nonnull
-    IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms);
-
-    @Nonnull
-    IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms);
-
-    @Nonnull
-    IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms);
 
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms);

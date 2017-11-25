@@ -36,12 +36,15 @@
 package org.javimmutable.collections.hamt;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -162,7 +165,7 @@ public class HamtBranchNodeTest
     {
         Set<String> expected = new HashSet<>();
         expected.addAll(asList(values));
-        Set<String> actual = node.values(transforms).stream().collect(Collectors.toSet());
+        Set<String> actual = collectValues(transforms, node);
         assertEquals(expected, actual);
     }
 
@@ -172,7 +175,19 @@ public class HamtBranchNodeTest
     {
         Set<Integer> expected = new HashSet<>();
         expected.addAll(values);
-        Set<Integer> actual = node.keys(transforms).stream().collect(Collectors.toSet());
+        Set<Integer> actual = collectValues(transforms, node);
         assertEquals(expected, actual);
+    }
+
+    @Nonnull
+    private <T, K, V> Set<V> collectValues(Transforms<T, K, V> transforms,
+                                           HamtNode<T, K, V> node)
+    {
+        Iterator<JImmutableMap.Entry<K, V>> iterator = node.iterator(transforms);
+        Set<V> actual = new HashSet<>();
+        while (iterator.hasNext()) {
+            actual.add(iterator.next().getValue());
+        }
+        return actual;
     }
 }
