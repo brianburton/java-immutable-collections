@@ -51,52 +51,52 @@ import org.javimmutable.collections.iterators.TransformStreamable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class HamtEmptyNode<T>
-    implements HamtNode<T>
+public class HamtEmptyNode<T, K, V>
+    implements HamtNode<T, K, V>
 {
     private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
 
 
     @SuppressWarnings("unchecked")
-    public static <T> HamtNode<T> of()
+    public static <T, K, V> HamtNode<T, K, V> of()
     {
         return EMPTY;
     }
 
     @Override
-    public <K, V> Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
-                                 int hashCode,
-                                 @Nonnull K hashKey)
+    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+                          int hashCode,
+                          @Nonnull K hashKey)
     {
         return Holders.of();
     }
 
     @Override
-    public <K, V> V getValueOr(@Nonnull Transforms<T, K, V> transforms,
-                               int hashCode,
-                               @Nonnull K hashKey,
-                               V defaultValue)
+    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+                        int hashCode,
+                        @Nonnull K hashKey,
+                        V defaultValue)
     {
         return defaultValue;
     }
 
     @Nonnull
     @Override
-    public <K, V> HamtNode<T> assign(@Nonnull Transforms<T, K, V> transforms,
-                                     int hashCode,
-                                     @Nonnull K hashKey,
-                                     @Nullable V value,
-                                     @Nonnull MutableDelta sizeDelta)
+    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nullable V value,
+                                    @Nonnull MutableDelta sizeDelta)
     {
-        return HamtBranchNode.<T>of().assign(transforms, hashCode, hashKey, value, sizeDelta);
+        return HamtBranchNode.<T, K, V>of().assign(transforms, hashCode, hashKey, value, sizeDelta);
     }
 
     @Nonnull
     @Override
-    public <K, V> HamtNode<T> delete(@Nonnull Transforms<T, K, V> transforms,
-                                     int hashCode,
-                                     @Nonnull K hashKey,
-                                     @Nonnull MutableDelta sizeDelta)
+    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull MutableDelta sizeDelta)
     {
         return this;
     }
@@ -109,7 +109,7 @@ public class HamtEmptyNode<T>
 
     @Nonnull
     @Override
-    public <K, V> IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
     {
         return new IterableStreamable<JImmutableMap.Entry<K, V>>()
         {
@@ -130,28 +130,28 @@ public class HamtEmptyNode<T>
 
     @Nonnull
     @Override
-    public <K, V> IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofKeys(entries(transforms));
     }
 
     @Nonnull
     @Override
-    public <K, V> IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofValues(entries(transforms));
     }
 
     @Nonnull
     @Override
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
     {
         return EmptyIterator.of();
     }
 
     @Nonnull
     @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
     {
         return StandardCursor.of();
     }

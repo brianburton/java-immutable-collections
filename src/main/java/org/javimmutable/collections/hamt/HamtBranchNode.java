@@ -61,9 +61,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class HamtBranchNode<T>
-    implements ArrayHelper.Allocator<HamtNode<T>>,
-               HamtNode<T>
+public class HamtBranchNode<T, K, V>
+    implements ArrayHelper.Allocator<HamtNode<T, K, V>>,
+               HamtNode<T, K, V>
 {
     private static final HamtBranchNode[] EMPTY_NODES = new HamtBranchNode[0];
     @SuppressWarnings("unchecked")
@@ -75,12 +75,12 @@ public class HamtBranchNode<T>
     private final int bitmask;
     private final boolean filled;
     private final T value;
-    private final HamtNode<T>[] children;
+    private final HamtNode<T, K, V>[] children;
 
     private HamtBranchNode(int bitmask,
                            boolean filled,
                            T value,
-                           HamtNode<T>[] children)
+                           HamtNode<T, K, V>[] children)
     {
         this.bitmask = bitmask;
         this.filled = filled;
@@ -89,15 +89,15 @@ public class HamtBranchNode<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> HamtNode<T> of()
+    public static <T, K, V> HamtNode<T, K, V> of()
     {
         return EMPTY;
     }
 
     @Override
-    public <K, V> Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
-                                 int hashCode,
-                                 @Nonnull K hashKey)
+    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+                          int hashCode,
+                          @Nonnull K hashKey)
     {
         if (hashCode == 0) {
             if (filled) {
@@ -119,10 +119,10 @@ public class HamtBranchNode<T>
     }
 
     @Override
-    public <K, V> V getValueOr(@Nonnull Transforms<T, K, V> transforms,
-                               int hashCode,
-                               @Nonnull K hashKey,
-                               V defaultValue)
+    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+                        int hashCode,
+                        @Nonnull K hashKey,
+                        V defaultValue)
     {
         if (hashCode == 0) {
             if (filled) {
@@ -145,13 +145,13 @@ public class HamtBranchNode<T>
 
     @Override
     @Nonnull
-    public <K, V> HamtNode<T> assign(@Nonnull Transforms<T, K, V> transforms,
-                                     int hashCode,
-                                     @Nonnull K hashKey,
-                                     @Nullable V value,
-                                     @Nonnull MutableDelta sizeDelta)
+    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nullable V value,
+                                    @Nonnull MutableDelta sizeDelta)
     {
-        final HamtNode<T>[] children = this.children;
+        final HamtNode<T, K, V>[] children = this.children;
         final int bitmask = this.bitmask;
         final T thisValue = this.value;
         if (hashCode == 0) {
@@ -172,16 +172,16 @@ public class HamtBranchNode<T>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<T> newChild = empty().assign(transforms, remainder, hashKey, value, sizeDelta);
-            final HamtNode<T>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
+            final HamtNode<T, K, V> newChild = empty().assign(transforms, remainder, hashKey, value, sizeDelta);
+            final HamtNode<T, K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, filled, thisValue, newChildren);
         } else {
-            final HamtNode<T> child = children[childIndex];
-            final HamtNode<T> newChild = child.assign(transforms, remainder, hashKey, value, sizeDelta);
+            final HamtNode<T, K, V> child = children[childIndex];
+            final HamtNode<T, K, V> newChild = child.assign(transforms, remainder, hashKey, value, sizeDelta);
             if (newChild == child) {
                 return this;
             } else {
-                final HamtNode<T>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
+                final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
                 return new HamtBranchNode<>(bitmask, filled, thisValue, newChildren);
             }
         }
@@ -189,13 +189,13 @@ public class HamtBranchNode<T>
 
     @Override
     @Nonnull
-    public <K, V> HamtNode<T> delete(@Nonnull Transforms<T, K, V> transforms,
-                                     int hashCode,
-                                     @Nonnull K hashKey,
-                                     @Nonnull MutableDelta sizeDelta)
+    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull MutableDelta sizeDelta)
     {
         final int bitmask = this.bitmask;
-        final HamtNode<T>[] children = this.children;
+        final HamtNode<T, K, V>[] children = this.children;
         final T value = this.value;
         final boolean filled = this.filled;
         if (hashCode == 0) {
@@ -219,19 +219,19 @@ public class HamtBranchNode<T>
         if ((bitmask & bit) == 0) {
             return this;
         } else {
-            final HamtNode<T> child = children[childIndex];
-            final HamtNode<T> newChild = child.delete(transforms, remainder, hashKey, sizeDelta);
+            final HamtNode<T, K, V> child = children[childIndex];
+            final HamtNode<T, K, V> newChild = child.delete(transforms, remainder, hashKey, sizeDelta);
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
                 if ((children.length == 1) && !filled) {
                     return HamtEmptyNode.of();
                 } else {
-                    final HamtNode<T>[] newChildren = ArrayHelper.delete(this, children, childIndex);
+                    final HamtNode<T, K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);
                     return new HamtBranchNode<>(bitmask & ~bit, filled, value, newChildren);
                 }
             } else {
-                final HamtNode<T>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
+                final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
                 return new HamtBranchNode<>(bitmask, filled, value, newChildren);
             }
         }
@@ -244,7 +244,7 @@ public class HamtBranchNode<T>
     }
 
     @SuppressWarnings("unchecked")
-    private HamtNode<T> empty()
+    private HamtNode<T, K, V> empty()
     {
         return EMPTY;
     }
@@ -258,14 +258,14 @@ public class HamtBranchNode<T>
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public HamtNode<T>[] allocate(int size)
+    public HamtNode<T, K, V>[] allocate(int size)
     {
         return (size == 0) ? EMPTY_NODES : new HamtNode[size];
     }
 
     @Override
     @Nonnull
-    public <K, V> IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
     {
         return new IterableStreamable<JImmutableMap.Entry<K, V>>()
         {
@@ -286,28 +286,28 @@ public class HamtBranchNode<T>
 
     @Override
     @Nonnull
-    public <K, V> IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofKeys(entries(transforms));
     }
 
     @Override
     @Nonnull
-    public <K, V> IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
+    public IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofValues(entries(transforms));
     }
 
     @Override
     @Nonnull
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
     {
         return LazyMultiIterator.transformed(indexedForIterator(), node -> () -> iteratorHelper(node.iterator(), transforms));
     }
 
     @Nonnull
-    private <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iteratorHelper(SplitableIterator<T> value,
-                                                                               Transforms<T, K, V> transforms)
+    private SplitableIterator<JImmutableMap.Entry<K, V>> iteratorHelper(SplitableIterator<T> value,
+                                                                        Transforms<T, K, V> transforms)
     {
         return LazyMultiIterator.transformed(value, t -> () -> transforms.iterator(t));
     }
@@ -321,14 +321,14 @@ public class HamtBranchNode<T>
 
     @Override
     @Nonnull
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
     {
         return LazyMultiCursor.transformed(indexedForCursor(), node -> () -> cursorHelper(node.cursor(), transforms));
     }
 
     @Nonnull
-    private <K, V> Cursor<JImmutableMap.Entry<K, V>> cursorHelper(Cursor<T> value,
-                                                                  Transforms<T, K, V> transforms)
+    private Cursor<JImmutableMap.Entry<K, V>> cursorHelper(Cursor<T> value,
+                                                           Transforms<T, K, V> transforms)
     {
         return LazyMultiCursor.transformed(value, t -> () -> transforms.cursor(t));
     }

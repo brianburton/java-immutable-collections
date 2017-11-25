@@ -48,47 +48,47 @@ import org.javimmutable.collections.common.MutableDelta;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface HamtNode<T>
+public interface HamtNode<T, K, V>
     extends SplitableIterable<T>,
             Cursorable<T>
 
 {
-    <K, V> Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
-                          int hashCode,
-                          @Nonnull K hashKey);
+    Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+                   int hashCode,
+                   @Nonnull K hashKey);
 
-    <K, V> V getValueOr(@Nonnull Transforms<T, K, V> transforms,
-                        int hashCode,
-                        @Nonnull K hashKey,
-                        V defaultValue);
-
-    @Nonnull
-    <K, V> HamtNode<T> assign(@Nonnull Transforms<T, K, V> transforms,
-                              int hashCode,
-                              @Nonnull K hashKey,
-                              @Nullable V value,
-                              @Nonnull MutableDelta sizeDelta);
+    V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+                 int hashCode,
+                 @Nonnull K hashKey,
+                 V defaultValue);
 
     @Nonnull
-    <K, V> HamtNode<T> delete(@Nonnull Transforms<T, K, V> transforms,
-                              int hashCode,
-                              @Nonnull K hashKey,
-                              @Nonnull MutableDelta sizeDelta);
+    HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+                             int hashCode,
+                             @Nonnull K hashKey,
+                             @Nullable V value,
+                             @Nonnull MutableDelta sizeDelta);
+
+    @Nonnull
+    HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+                             int hashCode,
+                             @Nonnull K hashKey,
+                             @Nonnull MutableDelta sizeDelta);
 
     boolean isEmpty();
 
     @Nonnull
-    <K, V> IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms);
+    IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms);
 
     @Nonnull
-    <K, V> IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms);
+    IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms);
 
     @Nonnull
-    <K, V> IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms);
+    IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms);
 
     @Nonnull
-    <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms);
+    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms);
 
     @Nonnull
-    <K, V> Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms);
+    Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms);
 }

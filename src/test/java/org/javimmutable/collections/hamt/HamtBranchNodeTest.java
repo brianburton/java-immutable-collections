@@ -56,12 +56,12 @@ public class HamtBranchNodeTest
     public void testVarious()
     {
         final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>> empty = HamtEmptyNode.of();
+        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         assertEquals(null, empty.getValueOr(transforms, 1, 1, null));
         verifyContents(transforms, empty);
 
         MutableDelta delta = new MutableDelta();
-        HamtNode<MapEntry<Integer, String>> node = empty.assign(transforms, 1, 1, "able", delta);
+        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 1, 1, "able", delta);
         assertEquals(1, delta.getValue());
         assertEquals("able", node.getValueOr(transforms, 1, 1, null));
         verifyContents(transforms, node, "able");
@@ -139,7 +139,7 @@ public class HamtBranchNodeTest
 
         final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
         final MutableDelta size = new MutableDelta();
-        HamtNode<MapEntry<Integer, Integer>> node = HamtEmptyNode.of();
+        HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
         for (Integer key : domain) {
             node = node.assign(transforms, key, key, key, size);
         }
@@ -157,7 +157,7 @@ public class HamtBranchNodeTest
     }
 
     private void verifyContents(Transforms<MapEntry<Integer, String>, Integer, String> transforms,
-                                HamtNode<MapEntry<Integer, String>> node,
+                                HamtNode<MapEntry<Integer, String>, Integer, String> node,
                                 String... values)
     {
         Set<String> expected = new HashSet<>();
@@ -167,7 +167,7 @@ public class HamtBranchNodeTest
     }
 
     private void verifyIntContents(Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms,
-                                   HamtNode<MapEntry<Integer, Integer>> node,
+                                   HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node,
                                    List<Integer> values)
     {
         Set<Integer> expected = new HashSet<>();

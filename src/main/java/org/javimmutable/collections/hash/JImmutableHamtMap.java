@@ -68,11 +68,11 @@ public class JImmutableHamtMap<T, K, V>
     @SuppressWarnings("unchecked")
     static final JImmutableHamtMap TREE_EMPTY = new JImmutableHamtMap(HamtEmptyNode.of(), 0, TREE_TRANSFORMS);
 
-    private final HamtNode<T> root;
+    private final HamtNode<T, K, V> root;
     private final int size;
     private final Transforms<T, K, V> transforms;
 
-    private JImmutableHamtMap(HamtNode<T> root,
+    private JImmutableHamtMap(HamtNode<T, K, V> root,
                               int size,
                               Transforms<T, K, V> transforms)
     {
@@ -169,7 +169,7 @@ public class JImmutableHamtMap<T, K, V>
                                       V value)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        HamtNode<T> newRoot = root.assign(transforms, key.hashCode(), key, value, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.assign(transforms, key.hashCode(), key, value, sizeDelta);
         if (newRoot == root) {
             return this;
         } else {
@@ -182,7 +182,7 @@ public class JImmutableHamtMap<T, K, V>
     public JImmutableMap<K, V> delete(@Nonnull K key)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        HamtNode<T> newRoot = root.delete(transforms, key.hashCode(), key, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.delete(transforms, key.hashCode(), key, sizeDelta);
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty()) {
