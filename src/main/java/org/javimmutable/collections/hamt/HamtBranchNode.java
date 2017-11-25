@@ -67,23 +67,22 @@ public class HamtBranchNode<T, K, V>
 {
     private static final HamtBranchNode[] EMPTY_NODES = new HamtBranchNode[0];
     @SuppressWarnings("unchecked")
-    private static final HamtNode EMPTY = new HamtBranchNode(0, false, null, EMPTY_NODES);
+    private static final HamtNode EMPTY = new HamtBranchNode(0, null, EMPTY_NODES);
 
     private static final int SHIFT = 5;
     private static final int MASK = 0x1f;
 
     private final int bitmask;
-    private final boolean filled;
+    @Nullable
     private final T value;
+    @Nonnull
     private final HamtNode<T, K, V>[] children;
 
     private HamtBranchNode(int bitmask,
-                           boolean filled,
-                           T value,
-                           HamtNode<T, K, V>[] children)
+                           @Nullable T value,
+                           @Nonnull HamtNode<T, K, V>[] children)
     {
         this.bitmask = bitmask;
-        this.filled = filled;
         this.value = value;
         this.children = children;
     }
@@ -100,7 +99,7 @@ public class HamtBranchNode<T, K, V>
                           @Nonnull K hashKey)
     {
         if (hashCode == 0) {
-            if (filled) {
+            if (value != null) {
                 return transforms.findValue(value, hashKey);
             } else {
                 return Holders.of();
@@ -125,8 +124,8 @@ public class HamtBranchNode<T, K, V>
                         V defaultValue)
     {
         if (hashCode == 0) {
-            if (filled) {
-                return transforms.findValue(value, hashKey).getValueOr(defaultValue);
+            if (value != null) {
+                return transforms.getValueOr(value, hashKey, defaultValue);
             } else {
                 return defaultValue;
             }
@@ -155,16 +154,11 @@ public class HamtBranchNode<T, K, V>
         final int bitmask = this.bitmask;
         final T thisValue = this.value;
         if (hashCode == 0) {
-            if (filled) {
-                final T newValue = transforms.update(Holders.of(thisValue), hashKey, value, sizeDelta);
-                if (thisValue == newValue) {
-                    return this;
-                } else {
-                    return new HamtBranchNode<>(bitmask, true, newValue, children);
-                }
+            final T newValue = transforms.update(thisValue, hashKey, value, sizeDelta);
+            if (thisValue == newValue) {
+                return this;
             } else {
-                final T newValue = transforms.update(Holders.of(), hashKey, value, sizeDelta);
-                return new HamtBranchNode<>(bitmask, true, newValue, children);
+                return new HamtBranchNode<>(bitmask, newValue, children);
             }
         }
         final int index = hashCode & MASK;
@@ -174,7 +168,7 @@ public class HamtBranchNode<T, K, V>
         if ((bitmask & bit) == 0) {
             final HamtNode<T, K, V> newChild = empty().assign(transforms, remainder, hashKey, value, sizeDelta);
             final HamtNode<T, K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
-            return new HamtBranchNode<>(bitmask | bit, filled, thisValue, newChildren);
+            return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren);
         } else {
             final HamtNode<T, K, V> child = children[childIndex];
             final HamtNode<T, K, V> newChild = child.assign(transforms, remainder, hashKey, value, sizeDelta);
@@ -182,7 +176,7 @@ public class HamtBranchNode<T, K, V>
                 return this;
             } else {
                 final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return new HamtBranchNode<>(bitmask, filled, thisValue, newChildren);
+                return new HamtBranchNode<>(bitmask, thisValue, newChildren);
             }
         }
     }
@@ -197,16 +191,15 @@ public class HamtBranchNode<T, K, V>
         final int bitmask = this.bitmask;
         final HamtNode<T, K, V>[] children = this.children;
         final T value = this.value;
-        final boolean filled = this.filled;
         if (hashCode == 0) {
-            if (filled) {
-                final Holder<T> newValue = transforms.delete(value, hashKey, sizeDelta);
+            if (value != null) {
+                final T newValue = transforms.delete(value, hashKey, sizeDelta);
                 if (newValue == value) {
                     return this;
-                } else if (newValue.isEmpty()) {
-                    return (bitmask == 0) ? HamtEmptyNode.of() : new HamtBranchNode<>(bitmask, false, null, children);
+                } else if (newValue == null) {
+                    return (bitmask == 0) ? HamtEmptyNode.of() : new HamtBranchNode<>(bitmask, null, children);
                 } else {
-                    return new HamtBranchNode<>(bitmask, true, newValue.getValue(), children);
+                    return new HamtBranchNode<>(bitmask, newValue, children);
                 }
             } else {
                 return this;
@@ -224,15 +217,15 @@ public class HamtBranchNode<T, K, V>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                if ((children.length == 1) && !filled) {
+                if ((children.length == 1) && (value == null)) {
                     return HamtEmptyNode.of();
                 } else {
                     final HamtNode<T, K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);
-                    return new HamtBranchNode<>(bitmask & ~bit, filled, value, newChildren);
+                    return new HamtBranchNode<>(bitmask & ~bit, value, newChildren);
                 }
             } else {
                 final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return new HamtBranchNode<>(bitmask, filled, value, newChildren);
+                return new HamtBranchNode<>(bitmask, value, newChildren);
             }
         }
     }
@@ -240,7 +233,7 @@ public class HamtBranchNode<T, K, V>
     @Override
     public boolean isEmpty()
     {
-        return bitmask == 0 && !filled;
+        return bitmask == 0 && value == null;
     }
 
     @SuppressWarnings("unchecked")
@@ -343,7 +336,7 @@ public class HamtBranchNode<T, K, V>
     @Override
     public String toString()
     {
-        return "(" + filled + "," + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
+        return "(" + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
     }
 
     private Indexed<SplitableIterable<T>> indexedForIterator()
@@ -354,7 +347,7 @@ public class HamtBranchNode<T, K, V>
             public SplitableIterable<T> get(int index)
             {
                 if (index == 0) {
-                    if (filled) {
+                    if (value != null) {
                         return () -> SingleValueIterator.of(value);
                     } else {
                         return () -> EmptyIterator.of();
@@ -380,7 +373,7 @@ public class HamtBranchNode<T, K, V>
             public Cursorable<T> get(int index)
             {
                 if (index == 0) {
-                    if (filled) {
+                    if (value != null) {
                         return () -> SingleValueCursor.of(value);
                     } else {
                         return () -> StandardCursor.of();

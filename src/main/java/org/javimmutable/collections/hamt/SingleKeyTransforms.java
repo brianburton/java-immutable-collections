@@ -46,20 +46,23 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class SingleKeyTransforms<K, V>
     implements Transforms<MapEntry<K, V>, K, V>
 {
+    @Nonnull
     @Override
-    public MapEntry<K, V> update(Holder<MapEntry<K, V>> leafHolder,
-                                 K key,
-                                 V value,
-                                 MutableDelta delta)
+    public MapEntry<K, V> update(@Nullable MapEntry<K, V> leaf,
+                                 @Nonnull K key,
+                                 @Nullable V value,
+                                 @Nonnull MutableDelta delta)
     {
-        if (leafHolder.isEmpty()) {
+        if (leaf == null) {
             delta.add(1);
             return MapEntry.of(key, value);
         } else {
-            final MapEntry<K, V> leaf = leafHolder.getValue();
             if (leaf.getKey().equals(key) && leaf.getValue() == value) {
                 return leaf;
             } else {
@@ -69,40 +72,48 @@ public class SingleKeyTransforms<K, V>
     }
 
     @Override
-    public Holder<MapEntry<K, V>> delete(MapEntry<K, V> leaf,
-                                         K key,
-                                         MutableDelta delta)
+    public MapEntry<K, V> delete(@Nonnull MapEntry<K, V> leaf,
+                                 @Nonnull K key,
+                                 @Nonnull MutableDelta delta)
     {
         if (leaf.getKey().equals(key)) {
             delta.subtract(1);
-            return Holders.of();
+            return null;
         } else {
-            return Holders.of(leaf);
+            return leaf;
         }
     }
 
     @Override
-    public Holder<V> findValue(MapEntry<K, V> leaf,
-                               K key)
+    public V getValueOr(@Nonnull MapEntry<K, V> leaf,
+                        @Nonnull K key,
+                        V defaultValue)
+    {
+        return leaf.getKey().equals(key) ? leaf.getValue() : defaultValue;
+    }
+
+    @Override
+    public Holder<V> findValue(@Nonnull MapEntry<K, V> leaf,
+                               @Nonnull K key)
     {
         return leaf.getKey().equals(key) ? Holders.of(leaf.getValue()) : Holders.of();
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(MapEntry<K, V> leaf,
-                                                       K key)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull MapEntry<K, V> leaf,
+                                                       @Nonnull K key)
     {
         return leaf.getKey().equals(key) ? Holders.of(leaf) : Holders.of();
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(MapEntry<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull MapEntry<K, V> leaf)
     {
         return SingleValueCursor.of(leaf);
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(MapEntry<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull MapEntry<K, V> leaf)
     {
         return SingleValueIterator.of(leaf);
     }

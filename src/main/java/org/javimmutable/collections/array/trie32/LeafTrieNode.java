@@ -45,6 +45,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -53,11 +54,12 @@ public class LeafTrieNode<T>
     implements Holder<T>
 {
     private final int index;
+    @Nonnull
     private final T value;
     private final int shift;
 
     private LeafTrieNode(int index,
-                         T value,
+                         @Nonnull T value,
                          int shift)
     {
         this.index = index;
@@ -66,9 +68,9 @@ public class LeafTrieNode<T>
     }
 
     static <T> LeafTrieNode<T> of(int index,
-                                  T value)
+                                  @Nonnull T value)
     {
-        return new LeafTrieNode<T>(index, value, shiftForIndex(index));
+        return new LeafTrieNode<>(index, value, shiftForIndex(index));
     }
 
     @Override
@@ -94,7 +96,7 @@ public class LeafTrieNode<T>
                                V defaultValue)
     {
         assert shift >= -5;
-        return (this.index == index) ? transforms.findValue(value, key).getValueOr(defaultValue) : defaultValue;
+        return (this.index == index) ? transforms.getValueOr(value, key, defaultValue) : defaultValue;
     }
 
     @Override
@@ -144,7 +146,7 @@ public class LeafTrieNode<T>
     {
         assert shift >= -5;
         if (this.index == index) {
-            final T newValue = transforms.update(Holders.of(this.value), key, value, sizeDelta);
+            final T newValue = transforms.update(this.value, key, value, sizeDelta);
             if (this.value == newValue) {
                 return this;
             } else {
@@ -180,13 +182,13 @@ public class LeafTrieNode<T>
     {
         assert shift >= -5;
         if (this.index == index) {
-            final Holder<T> newValue = transforms.delete(value, key, sizeDelta);
-            if (newValue.isEmpty()) {
+            final T newValue = transforms.delete(value, key, sizeDelta);
+            if (newValue == null) {
                 return of();
-            } else if (newValue.getValue() == value) {
+            } else if (newValue == value) {
                 return this;
             } else {
-                return withValue(newValue.getValue());
+                return withValue(newValue);
             }
         } else {
             assert shift >= 0;
@@ -258,6 +260,7 @@ public class LeafTrieNode<T>
         return true;
     }
 
+    @Nonnull
     @Override
     public T getValue()
     {
@@ -295,7 +298,7 @@ public class LeafTrieNode<T>
             return false;
         }
         //noinspection RedundantIfStatement
-        if ((value != null) ? !value.equals(that.value) : (that.value != null)) {
+        if (!value.equals(that.value)) {
             return false;
         }
 
@@ -306,13 +309,13 @@ public class LeafTrieNode<T>
     public int hashCode()
     {
         int result = index;
-        result = 31 * result + ((value != null) ? value.hashCode() : 0);
+        result = 31 * result + value.hashCode();
         result = 31 * result + shift;
         return result;
     }
 
     private TrieNode<T> withValue(T newValue)
     {
-        return new LeafTrieNode<T>(index, newValue, shift);
+        return new LeafTrieNode<>(index, newValue, shift);
     }
 }

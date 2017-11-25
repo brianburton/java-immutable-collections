@@ -67,11 +67,18 @@ class SingleHashValueListNode<K, V>
     static <K, V> SingleHashValueListNode<K, V> of(K key,
                                                    V value)
     {
-        return new SingleHashValueListNode<K, V>(key, value);
+        return new SingleHashValueListNode<>(key, value);
     }
 
     @Override
-    public Holder<V> getValueForKey(K key)
+    public V getValueForKey(K key,
+                            V defaultValue)
+    {
+        return this.key.equals(key) ? value : defaultValue;
+    }
+
+    @Override
+    public Holder<V> findValueForKey(K key)
     {
         return this.key.equals(key) ? this : Holders.of();
     }
@@ -88,10 +95,10 @@ class SingleHashValueListNode<K, V>
                                                   MutableDelta sizeDelta)
     {
         if (key.equals(this.key)) {
-            return (this.value == value) ? this : new SingleHashValueListNode<K, V>(key, value);
+            return (this.value == value) ? this : new SingleHashValueListNode<>(key, value);
         } else {
             sizeDelta.add(1);
-            return MultiHashValueListNode.of(this, new SingleHashValueListNode<K, V>(key, value));
+            return MultiHashValueListNode.of(this, new SingleHashValueListNode<>(key, value));
         }
     }
 

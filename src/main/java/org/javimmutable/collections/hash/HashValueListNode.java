@@ -45,7 +45,10 @@ public interface HashValueListNode<K, V>
     extends Cursorable<JImmutableMap.Entry<K, V>>,
             SplitableIterable<JImmutableMap.Entry<K, V>>
 {
-    Holder<V> getValueForKey(K key);
+    V getValueForKey(K key,
+                     V defaultValue);
+
+    Holder<V> findValueForKey(K key);
 
     JImmutableMap.Entry<K, V> getEntryForKey(K key);
 

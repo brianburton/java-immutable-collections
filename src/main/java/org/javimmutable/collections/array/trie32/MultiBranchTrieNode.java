@@ -46,6 +46,7 @@ import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -59,11 +60,12 @@ public class MultiBranchTrieNode<T>
 
     private final int shift;
     private final int bitmask;
+    @Nonnull
     private final TrieNode<T>[] entries;
 
     private MultiBranchTrieNode(int shift,
                                 int bitmask,
-                                TrieNode<T>[] entries)
+                                @Nonnull TrieNode<T>[] entries)
     {
         assert shift >= 0;
         this.shift = shift;
@@ -79,7 +81,7 @@ public class MultiBranchTrieNode<T>
 
     static <T> MultiBranchTrieNode<T> forIndex(int shift,
                                                int index,
-                                               TrieNode<T> child)
+                                               @Nonnull TrieNode<T> child)
     {
         int branchIndex = ((index >>> shift) & 0x1f);
         return forBranchIndex(shift, branchIndex, child);
@@ -87,7 +89,7 @@ public class MultiBranchTrieNode<T>
 
     static <T> MultiBranchTrieNode<T> forBranchIndex(int shift,
                                                      int branchIndex,
-                                                     TrieNode<T> child)
+                                                     @Nonnull TrieNode<T> child)
     {
         assert (branchIndex >= 0) && (branchIndex < 32);
         TrieNode<T>[] entries = allocate(1);
@@ -96,7 +98,7 @@ public class MultiBranchTrieNode<T>
     }
 
     static <T> MultiBranchTrieNode<T> forEntries(int shift,
-                                                 TrieNode<T>[] entries)
+                                                 @Nonnull TrieNode<T>[] entries)
     {
         final int length = entries.length;
         final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
@@ -105,7 +107,7 @@ public class MultiBranchTrieNode<T>
 
     static <T> MultiBranchTrieNode<T> forSource(int index,
                                                 int size,
-                                                Indexed<? extends T> source,
+                                                @Nonnull Indexed<? extends T> source,
                                                 int offset)
     {
         final TrieNode<T>[] entries = allocate(size);
@@ -117,7 +119,7 @@ public class MultiBranchTrieNode<T>
     }
 
     static <T> MultiBranchTrieNode<T> fullWithout(int shift,
-                                                  TrieNode<T>[] entries,
+                                                  @Nonnull TrieNode<T>[] entries,
                                                   int withoutIndex)
     {
         assert entries.length == 32;
@@ -236,7 +238,7 @@ public class MultiBranchTrieNode<T>
         final int childIndex = realIndex(bitmask, bit);
         final TrieNode<T>[] entries = this.entries;
         if ((bitmask & bit) == 0) {
-            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(Holders.of(), key, value, sizeDelta));
+            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(null, key, value, sizeDelta));
             return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
         } else {
             final TrieNode<T> child = entries[childIndex];

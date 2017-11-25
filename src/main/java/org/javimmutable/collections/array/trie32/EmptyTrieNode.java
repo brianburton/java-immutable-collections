@@ -116,7 +116,7 @@ public class EmptyTrieNode<T>
                                      Transforms<T, K, V> transforms,
                                      MutableDelta sizeDelta)
     {
-        return LeafTrieNode.of(index, transforms.update(Holders.of(), key, value, sizeDelta));
+        return LeafTrieNode.of(index, transforms.update(null, key, value, sizeDelta));
     }
 
     @Override
