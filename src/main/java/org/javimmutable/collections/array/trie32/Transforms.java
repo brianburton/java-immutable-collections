@@ -38,8 +38,10 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.TransformIterator;
 
 /**
  * Interface for transformation objects that manage the leaf nodes in the hash table.

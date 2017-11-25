@@ -1,6 +1,8 @@
 package org.javimmutable.collections.hamt;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
 import java.util.Collections;
@@ -18,75 +20,76 @@ public class HamtNodeTest
 {
     public void testVarious()
     {
-        HamtNode<String> empty = HamtNode.of();
-        assertEquals(null, empty.getValueOr(1, null));
-        verifyContents(empty);
+        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
+        HamtNode<MapEntry<Integer, String>> empty = HamtNode.of();
+        assertEquals(null, empty.getValueOr(transforms, 1, 1, null));
+        verifyContents(transforms, empty);
 
         MutableDelta delta = new MutableDelta();
-        HamtNode<String> node = empty.assign(1, "able", delta);
+        HamtNode<MapEntry<Integer, String>> node = empty.assign(transforms, 1, 1, "able", delta);
         assertEquals(1, delta.getValue());
-        assertEquals("able", node.getValueOr(1, null));
-        verifyContents(node, "able");
+        assertEquals("able", node.getValueOr(transforms, 1, 1, null));
+        verifyContents(transforms, node, "able");
 
-        assertSame(node, node.assign(1, "able", delta));
+        assertSame(node, node.assign(transforms, 1, 1, "able", delta));
         assertEquals(1, delta.getValue());
 
-        node = node.assign(1, "baker", delta);
+        node = node.assign(transforms, 1, 1, "baker", delta);
         assertEquals(1, delta.getValue());
-        assertEquals("baker", node.getValueOr(1, null));
-        verifyContents(node, "baker");
+        assertEquals("baker", node.getValueOr(transforms, 1, 1, null));
+        verifyContents(transforms, node, "baker");
 
-        node = node.assign(-1, "charlie", delta);
+        node = node.assign(transforms, -1, -1, "charlie", delta);
         assertEquals(2, delta.getValue());
-        assertEquals("charlie", node.getValueOr(-1, null));
-        verifyContents(node, "baker", "charlie");
+        assertEquals("charlie", node.getValueOr(transforms, -1, -1, null));
+        verifyContents(transforms, node, "baker", "charlie");
 
-        assertSame(node, node.assign(-1, "charlie", delta));
+        assertSame(node, node.assign(transforms, -1, -1, "charlie", delta));
         assertEquals(2, delta.getValue());
 
-        node = node.assign(7, "delta", delta);
+        node = node.assign(transforms, 7, 7, "delta", delta);
         assertEquals(3, delta.getValue());
-        assertEquals("delta", node.getValueOr(7, null));
-        verifyContents(node, "baker", "charlie", "delta");
+        assertEquals("delta", node.getValueOr(transforms, 7, 7, null));
+        verifyContents(transforms, node, "baker", "charlie", "delta");
 
-        node = node.assign(4725297, "echo", delta);
+        node = node.assign(transforms, 4725297, 4725297, "echo", delta);
         assertEquals(4, delta.getValue());
-        assertEquals("echo", node.getValueOr(4725297, null));
-        verifyContents(node, "baker", "charlie", "delta", "echo");
+        assertEquals("echo", node.getValueOr(transforms, 4725297, 4725297, null));
+        verifyContents(transforms, node, "baker", "charlie", "delta", "echo");
 
-        assertSame(node, node.delete(-2, delta));
+        assertSame(node, node.delete(transforms, -2, -2, delta));
         assertEquals(4, delta.getValue());
-        verifyContents(node, "baker", "charlie", "delta", "echo");
+        verifyContents(transforms, node, "baker", "charlie", "delta", "echo");
 
-        node = node.assign(33, "foxtrot", delta);
+        node = node.assign(transforms, 33, 33, "foxtrot", delta);
         assertEquals(5, delta.getValue());
-        assertEquals("foxtrot", node.getValueOr(33, null));
-        verifyContents(node, "baker", "charlie", "delta", "echo", "foxtrot");
+        assertEquals("foxtrot", node.getValueOr(transforms, 33, 33, null));
+        verifyContents(transforms, node, "baker", "charlie", "delta", "echo", "foxtrot");
 
-        node = node.delete(1, delta);
+        node = node.delete(transforms, 1, 1, delta);
         assertEquals(4, delta.getValue());
-        assertEquals(null, node.getValueOr(1, null));
-        verifyContents(node, "charlie", "delta", "echo", "foxtrot");
+        assertEquals(null, node.getValueOr(transforms, 1, 1, null));
+        verifyContents(transforms, node, "charlie", "delta", "echo", "foxtrot");
 
-        assertSame(node, node.delete(-2, delta));
+        assertSame(node, node.delete(transforms, -2, -2, delta));
         assertEquals(4, delta.getValue());
 
-        node = node.delete(4725297, delta);
+        node = node.delete(transforms, 4725297, 4725297, delta);
         assertEquals(3, delta.getValue());
-        assertEquals(null, node.getValueOr(4725297, null));
-        verifyContents(node, "charlie", "delta", "foxtrot");
+        assertEquals(null, node.getValueOr(transforms, 4725297, 4725297, null));
+        verifyContents(transforms, node, "charlie", "delta", "foxtrot");
 
-        node = node.delete(-1, delta);
+        node = node.delete(transforms, -1, -1, delta);
         assertEquals(2, delta.getValue());
-        assertEquals(null, node.getValueOr(-1, null));
-        verifyContents(node, "delta", "foxtrot");
+        assertEquals(null, node.getValueOr(transforms, -1, -1, null));
+        verifyContents(transforms, node, "delta", "foxtrot");
 
-        node = node.delete(7, delta);
+        node = node.delete(transforms, 7, 7, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(null, node.getValueOr(7, null));
-        verifyContents(node, "foxtrot");
+        assertEquals(null, node.getValueOr(transforms, 7, 7, null));
+        verifyContents(transforms, node, "foxtrot");
 
-        node = node.delete(33, delta);
+        node = node.delete(transforms, 33, 33, delta);
         assertEquals(0, delta.getValue());
         assertSame(HamtNode.of(), node);
     }
@@ -99,39 +102,42 @@ public class HamtNodeTest
             .map(i -> r.nextInt())
             .collect(Collectors.toList());
 
+        final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
         final MutableDelta size = new MutableDelta();
-        HamtNode<Integer> node = HamtNode.of();
+        HamtNode<MapEntry<Integer, Integer>> node = HamtNode.of();
         for (Integer key : domain) {
-            node = node.assign(key, key, size);
+            node = node.assign(transforms, key, key, key, size);
         }
-        verifyIntContents(node, domain);
+        verifyIntContents(transforms, node, domain);
 
         final MutableDelta zero = new MutableDelta();
         Collections.shuffle(domain);
         for (Integer key : domain) {
-            node = node.delete(key, size);
-            assertSame(node, node.delete(key, zero));
+            node = node.delete(transforms, key, key, size);
+            assertSame(node, node.delete(transforms, key, key, zero));
         }
         assertSame(HamtNode.of(), node);
         assertEquals(0, size.getValue());
         assertEquals(0, zero.getValue());
     }
 
-    private void verifyContents(HamtNode<String> node,
+    private void verifyContents(Transforms<MapEntry<Integer, String>, Integer, String> transforms,
+                                HamtNode<MapEntry<Integer, String>> node,
                                 String... values)
     {
         Set<String> expected = new HashSet<>();
         expected.addAll(asList(values));
-        Set<String> actual = node.stream().collect(Collectors.toSet());
+        Set<String> actual = node.values(transforms).stream().collect(Collectors.toSet());
         assertEquals(expected, actual);
     }
 
-    private void verifyIntContents(HamtNode<Integer> node,
+    private void verifyIntContents(Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms,
+                                   HamtNode<MapEntry<Integer, Integer>> node,
                                    List<Integer> values)
     {
         Set<Integer> expected = new HashSet<>();
         expected.addAll(values);
-        Set<Integer> actual = node.stream().collect(Collectors.toSet());
+        Set<Integer> actual = node.keys(transforms).stream().collect(Collectors.toSet());
         assertEquals(expected, actual);
     }
 }

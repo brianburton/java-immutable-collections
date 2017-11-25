@@ -1,23 +1,20 @@
 package org.javimmutable.collections.hamt;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
-import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,9 +23,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class HamtNode<T>
     implements ArrayHelper.Allocator<HamtNode<T>>,
-               Holder<T>,
-               IterableStreamable<T>,
-               Cursorable<T>
+               SplitableIterable<T>
 {
     private static final HamtNode[] EMPTY_NODES = new HamtNode[0];
     @SuppressWarnings("unchecked")
@@ -59,70 +54,58 @@ public class HamtNode<T>
         return EMPTY;
     }
 
-    @Nonnull
-    public Holder<T> find(int key)
+    public <K, V> V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+                               int hashCode,
+                               @Nonnull K hashKey,
+                               V defaultValue)
     {
-        if (key == 0) {
-            return this;
+        if (hashCode == 0) {
+            return filled ? transforms.findValue(value, hashKey).getValueOr(defaultValue) : defaultValue;
         }
-        final int index = key & MASK;
-        final int remainder = key >>> SHIFT;
-        final int bit = 1 << index;
-        if ((bitmask & bit) == 0) {
-            return Holders.of();
-        } else {
-            final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].find(remainder);
-        }
-    }
-
-    public T getValueOr(int key,
-                        T defaultValue)
-    {
-        if (key == 0) {
-            return filled ? value : defaultValue;
-        }
-        final int index = key & MASK;
-        final int remainder = key >>> SHIFT;
+        final int index = hashCode & MASK;
+        final int remainder = hashCode >>> SHIFT;
         final int bit = 1 << index;
         if ((bitmask & bit) == 0) {
             return defaultValue;
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].getValueOr(remainder, defaultValue);
+            return children[childIndex].getValueOr(transforms, remainder, hashKey, defaultValue);
         }
     }
 
     @Nonnull
-    public HamtNode<T> assign(int key,
-                              @Nullable T value,
-                              @Nonnull MutableDelta sizeDelta)
+    public <K, V> HamtNode<T> assign(@Nonnull Transforms<T, K, V> transforms,
+                                     int hashCode,
+                                     @Nonnull K hashKey,
+                                     @Nullable V value,
+                                     @Nonnull MutableDelta sizeDelta)
     {
         final HamtNode<T>[] children = this.children;
         final int bitmask = this.bitmask;
-        if (key == 0) {
+        if (hashCode == 0) {
             if (filled) {
-                if (this.value == value) {
+                final T newValue = transforms.update(Holders.of(this.value), hashKey, value, sizeDelta);
+                if (this.value == newValue) {
                     return this;
                 } else {
-                    return new HamtNode<>(bitmask, true, value, children);
+                    return new HamtNode<>(bitmask, true, newValue, children);
                 }
             } else {
-                sizeDelta.add(1);
-                return new HamtNode<>(bitmask, true, value, children);
+                final T newValue = transforms.update(Holders.of(), hashKey, value, sizeDelta);
+                return new HamtNode<>(bitmask, true, newValue, children);
             }
         }
-        final int index = key & MASK;
-        final int remainder = key >>> SHIFT;
+        final int index = hashCode & MASK;
+        final int remainder = hashCode >>> SHIFT;
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<T> newChild = empty().assign(remainder, value, sizeDelta);
+            final HamtNode<T> newChild = empty().assign(transforms, remainder, hashKey, value, sizeDelta);
             final HamtNode<T>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtNode<>(bitmask | bit, filled, this.value, newChildren);
         } else {
             final HamtNode<T> child = children[childIndex];
-            final HamtNode<T> newChild = child.assign(remainder, value, sizeDelta);
+            final HamtNode<T> newChild = child.assign(transforms, remainder, hashKey, value, sizeDelta);
             if (newChild == child) {
                 return this;
             } else {
@@ -133,28 +116,37 @@ public class HamtNode<T>
     }
 
     @Nonnull
-    public HamtNode<T> delete(int key,
-                              @Nonnull MutableDelta sizeDelta)
+    public <K, V> HamtNode<T> delete(@Nonnull Transforms<T, K, V> transforms,
+                                     int hashCode,
+                                     @Nonnull K hashKey,
+                                     @Nonnull MutableDelta sizeDelta)
     {
         final int bitmask = this.bitmask;
         final HamtNode<T>[] children = this.children;
-        if (key == 0) {
+        final T value = this.value;
+        if (hashCode == 0) {
             if (filled) {
-                sizeDelta.subtract(1);
-                return (bitmask == 0) ? of() : new HamtNode<>(bitmask, false, null, children);
+                final Holder<T> newValue = transforms.delete(value, hashKey, sizeDelta);
+                if (newValue == value) {
+                    return this;
+                } else if (newValue.isEmpty()) {
+                    return (bitmask == 0) ? of() : new HamtNode<>(bitmask, false, null, children);
+                } else {
+                    return new HamtNode<>(bitmask, true, newValue.getValue(), children);
+                }
             } else {
                 return this;
             }
         }
-        final int index = key & MASK;
-        final int remainder = key >>> SHIFT;
+        final int index = hashCode & MASK;
+        final int remainder = hashCode >>> SHIFT;
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             return this;
         } else {
             final HamtNode<T> child = children[childIndex];
-            final HamtNode<T> newChild = child.delete(remainder, sizeDelta);
+            final HamtNode<T> newChild = child.delete(transforms, remainder, hashKey, sizeDelta);
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
@@ -174,33 +166,6 @@ public class HamtNode<T>
     public boolean isEmpty()
     {
         return bitmask == 0 && !filled;
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return filled;
-    }
-
-    @Override
-    public T getValue()
-    {
-        if (filled) {
-            return value;
-        }
-        throw new UnsupportedOperationException("cannot get empty value");
-    }
-
-    @Override
-    public T getValueOrNull()
-    {
-        return filled ? value : null;
-    }
-
-    @Override
-    public T getValueOr(T defaultValue)
-    {
-        return filled ? value : defaultValue;
     }
 
     @SuppressWarnings("unchecked")
@@ -224,29 +189,60 @@ public class HamtNode<T>
     }
 
     @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
+    public <K, V> IterableStreamable<JImmutableMap.Entry<K, V>> entries(@Nonnull Transforms<T, K, V> transforms)
     {
-        return LazyMultiIterator.iterator(IndexedIterator.iterator(indexedForIterator()));
+        return new IterableStreamable<JImmutableMap.Entry<K, V>>()
+        {
+            @Nonnull
+            @Override
+            public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+            {
+                return HamtNode.this.iterator(transforms);
+            }
+
+            @Override
+            public int getSpliteratorCharacteristics()
+            {
+                return StreamConstants.SPLITERATOR_UNORDERED;
+            }
+        };
     }
 
-    @Override
-    public int getSpliteratorCharacteristics()
+    @Nonnull
+    public <K, V> IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
     {
-        return StreamConstants.SPLITERATOR_UNORDERED;
+        return TransformStreamable.ofKeys(entries(transforms));
+    }    
+    
+    @Nonnull
+    public <K, V> IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
+    {
+        return TransformStreamable.ofValues(entries(transforms));
+    }    
+    
+    @Nonnull
+    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    {
+        return LazyMultiIterator.transformed(indexedForIterator(), node -> () -> iteratorHelper(node.iterator(), transforms));
+    }
+
+    private <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iteratorHelper(SplitableIterator<T> value,
+                                                                               Transforms<T, K, V> transforms)
+    {
+        return LazyMultiIterator.transformed(value, t -> () -> transforms.iterator(t));
     }
 
     @Nonnull
     @Override
-    public Cursor<T> cursor()
+    public SplitableIterator<T> iterator()
     {
-        return LazyMultiCursor.cursor(StandardCursor.of(indexedForCursor()));
+        return LazyMultiIterator.iterator(indexedForIterator());
     }
 
     @Override
     public String toString()
     {
-        return "(" + filled + "," + value + "," + bitmask + "," + children.length + ")";
+        return "(" + filled + "," + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
     }
 
     private Indexed<SplitableIterable<T>> indexedForIterator()
@@ -275,29 +271,29 @@ public class HamtNode<T>
         };
     }
 
-    private Indexed<Cursorable<T>> indexedForCursor()
-    {
-        return new Indexed<Cursorable<T>>()
-        {
-            @Override
-            public Cursorable<T> get(int index)
-            {
-                if (index == 0) {
-                    if (filled) {
-                        return () -> SingleValueCursor.of(value);
-                    } else {
-                        return () -> StandardCursor.of();
-                    }
-                } else {
-                    return children[index - 1];
-                }
-            }
-
-            @Override
-            public int size()
-            {
-                return children.length + 1;
-            }
-        };
-    }
+//    private Indexed<Cursorable<T>> indexedForCursor()
+//    {
+//        return new Indexed<Cursorable<T>>()
+//        {
+//            @Override
+//            public Cursorable<T> get(int index)
+//            {
+//                if (index == 0) {
+//                    if (filled) {
+//                        return () -> SingleValueCursor.of(value);
+//                    } else {
+//                        return () -> StandardCursor.of();
+//                    }
+//                } else {
+//                    return children[index - 1];
+//                }
+//            }
+//
+//            @Override
+//            public int size()
+//            {
+//                return children.length + 1;
+//            }
+//        };
+//    }
 }
