@@ -1,5 +1,7 @@
 package org.javimmutable.collections.hamt;
 
+import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
@@ -11,6 +13,9 @@ import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
@@ -23,7 +28,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class HamtNode<T>
     implements ArrayHelper.Allocator<HamtNode<T>>,
-               SplitableIterable<T>
+               SplitableIterable<T>,
+               Cursorable<T>
 {
     private static final HamtNode[] EMPTY_NODES = new HamtNode[0];
     @SuppressWarnings("unchecked")
@@ -52,6 +58,24 @@ public class HamtNode<T>
     public static <T> HamtNode<T> of()
     {
         return EMPTY;
+    }
+
+    public <K, V> Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+                                 int hashCode,
+                                 @Nonnull K hashKey)
+    {
+        if (hashCode == 0) {
+            return filled ? transforms.findValue(value, hashKey) : Holders.of();
+        }
+        final int index = hashCode & MASK;
+        final int remainder = hashCode >>> SHIFT;
+        final int bit = 1 << index;
+        if ((bitmask & bit) == 0) {
+            return Holders.of();
+        } else {
+            final int childIndex = realIndex(bitmask, bit);
+            return children[childIndex].find(transforms, remainder, hashKey);
+        }
     }
 
     public <K, V> V getValueOr(@Nonnull Transforms<T, K, V> transforms,
@@ -212,20 +236,21 @@ public class HamtNode<T>
     public <K, V> IterableStreamable<K> keys(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofKeys(entries(transforms));
-    }    
-    
+    }
+
     @Nonnull
     public <K, V> IterableStreamable<V> values(@Nonnull Transforms<T, K, V> transforms)
     {
         return TransformStreamable.ofValues(entries(transforms));
-    }    
-    
+    }
+
     @Nonnull
     public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
     {
         return LazyMultiIterator.transformed(indexedForIterator(), node -> () -> iteratorHelper(node.iterator(), transforms));
     }
 
+    @Nonnull
     private <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> iteratorHelper(SplitableIterator<T> value,
                                                                                Transforms<T, K, V> transforms)
     {
@@ -237,6 +262,26 @@ public class HamtNode<T>
     public SplitableIterator<T> iterator()
     {
         return LazyMultiIterator.iterator(indexedForIterator());
+    }
+
+    @Nonnull
+    public <K, V> Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    {
+        return LazyMultiCursor.transformed(indexedForCursor(), node -> () -> cursorHelper(node.cursor(), transforms));
+    }
+
+    @Nonnull
+    private <K, V> Cursor<JImmutableMap.Entry<K, V>> cursorHelper(Cursor<T> value,
+                                                                  Transforms<T, K, V> transforms)
+    {
+        return LazyMultiCursor.transformed(value, t -> () -> transforms.cursor(t));
+    }
+
+    @Nonnull
+    @Override
+    public Cursor<T> cursor()
+    {
+        return LazyMultiCursor.cursor(indexedForCursor());
     }
 
     @Override
@@ -271,29 +316,29 @@ public class HamtNode<T>
         };
     }
 
-//    private Indexed<Cursorable<T>> indexedForCursor()
-//    {
-//        return new Indexed<Cursorable<T>>()
-//        {
-//            @Override
-//            public Cursorable<T> get(int index)
-//            {
-//                if (index == 0) {
-//                    if (filled) {
-//                        return () -> SingleValueCursor.of(value);
-//                    } else {
-//                        return () -> StandardCursor.of();
-//                    }
-//                } else {
-//                    return children[index - 1];
-//                }
-//            }
-//
-//            @Override
-//            public int size()
-//            {
-//                return children.length + 1;
-//            }
-//        };
-//    }
+    private Indexed<Cursorable<T>> indexedForCursor()
+    {
+        return new Indexed<Cursorable<T>>()
+        {
+            @Override
+            public Cursorable<T> get(int index)
+            {
+                if (index == 0) {
+                    if (filled) {
+                        return () -> SingleValueCursor.of(value);
+                    } else {
+                        return () -> StandardCursor.of();
+                    }
+                } else {
+                    return children[index - 1];
+                }
+            }
+
+            @Override
+            public int size()
+            {
+                return children.length + 1;
+            }
+        };
+    }
 }
