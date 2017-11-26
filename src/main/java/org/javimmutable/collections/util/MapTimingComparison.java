@@ -158,36 +158,6 @@ public final class MapTimingComparison
         System.gc();
         Thread.sleep(500);
 
-//        random = new Random(seed);
-//        adds = 0;
-//        removes = 0;
-//        gets = 0;
-//        startMillis = System.currentTimeMillis();
-//        map = JImmutableHamtMap.of();
-//        for (int i = 1; i <= loops; ++i) {
-//            int command = random.nextInt(maxCommand);
-//            if (command <= 2) {
-//                Integer key = random.nextInt(maxKey);
-//                Integer value = random.nextInt(maxValue);
-//                map = map.assign(key, value);
-//                adds += 1;
-//            } else if (command == 3) {
-//                Integer key = random.nextInt(maxKey);
-//                map = map.delete(key);
-//                removes += 1;
-//            } else {
-//                Integer key = random.nextInt(maxKey);
-//                map.getValueOr(key, null);
-//                gets += 1;
-//            }
-//        }
-//        endMillis = System.currentTimeMillis();
-//        hashElapsed.add((int)(endMillis - startMillis));
-//        System.out.printf("jimm hamt adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
-//        map = null;
-//        System.gc();
-//        Thread.sleep(500);
-                  
         random = new Random(seed);
         adds = 0;
         removes = 0;

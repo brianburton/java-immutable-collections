@@ -38,6 +38,7 @@ package org.javimmutable.collections.hamt;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
@@ -49,7 +50,8 @@ import javax.annotation.Nullable;
 
 public interface HamtNode<T, K, V>
     extends SplitableIterable<T>,
-            Cursorable<T>
+            Cursorable<T>,
+            InvariantCheckable
 
 {
     Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
@@ -81,4 +83,9 @@ public interface HamtNode<T, K, V>
 
     @Nonnull
     Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms);
+
+    @Override
+    default void checkInvariants()
+    {
+    }
 }

@@ -103,6 +103,11 @@ public class HamtLeafNode<T, K, V>
         }
     }
 
+    public HamtNode<T, K, V> liftNode(int index)
+    {
+        return new HamtLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, value);
+    }
+    
     @Override
     public boolean isEmpty()
     {

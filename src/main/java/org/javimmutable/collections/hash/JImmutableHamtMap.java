@@ -222,7 +222,7 @@ public class JImmutableHamtMap<T, K, V>
     @Override
     public void checkInvariants()
     {
-        //TODO: fix empty checkInvariants()
+        root.checkInvariants();
     }
 
     // for unit test to verify proper transforms selected

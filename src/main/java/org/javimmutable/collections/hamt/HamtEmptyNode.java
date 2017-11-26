@@ -85,7 +85,7 @@ public class HamtEmptyNode<T, K, V>
                                     @Nullable V value,
                                     @Nonnull MutableDelta sizeDelta)
     {
-        return HamtBranchNode.<T, K, V>of().assign(transforms, hashCode, hashKey, value, sizeDelta);
+        return new HamtLeafNode<>(hashCode, transforms.update(null, hashKey, value, sizeDelta));
     }
 
     @Nonnull

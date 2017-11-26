@@ -63,11 +63,9 @@ public class HamtBranchNode<T, K, V>
                HamtNode<T, K, V>
 {
     private static final HamtBranchNode[] EMPTY_NODES = new HamtBranchNode[0];
-    @SuppressWarnings("unchecked")
-    private static final HamtNode EMPTY = new HamtBranchNode(0, null, EMPTY_NODES);
 
-    private static final int SHIFT = 5;
-    private static final int MASK = 0x1f;
+    static final int SHIFT = 5;
+    static final int MASK = 0x1f;
 
     private final int bitmask;
     @Nullable
@@ -82,12 +80,6 @@ public class HamtBranchNode<T, K, V>
         this.bitmask = bitmask;
         this.value = value;
         this.children = children;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T, K, V> HamtNode<T, K, V> of()
-    {
-        return EMPTY;
     }
 
     @SuppressWarnings("unchecked")
@@ -210,7 +202,11 @@ public class HamtBranchNode<T, K, V>
                 if (newValue == value) {
                     return this;
                 } else if (newValue == null) {
-                    return (bitmask == 0) ? HamtEmptyNode.of() : new HamtBranchNode<>(bitmask, null, children);
+                    if (bitmask == 0) {
+                        return HamtEmptyNode.of();
+                    } else {
+                        return createForDelete(bitmask, null, children);
+                    }
                 } else {
                     return new HamtBranchNode<>(bitmask, newValue, children);
                 }
@@ -230,29 +226,40 @@ public class HamtBranchNode<T, K, V>
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
-                if ((children.length == 1) && (value == null)) {
-                    return HamtEmptyNode.of();
+                if (children.length == 1) {
+                    if (value == null) {
+                        return HamtEmptyNode.of();
+                    } else {
+                        return new HamtLeafNode<>(hashCode, value);
+                    }
                 } else {
                     final HamtNode<T, K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);
-                    return new HamtBranchNode<>(bitmask & ~bit, value, newChildren);
+                    return createForDelete(bitmask & ~bit, value, newChildren);
                 }
             } else {
                 final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return new HamtBranchNode<>(bitmask, value, newChildren);
+                return createForDelete(bitmask, value, newChildren);
             }
         }
+    }
+
+    private HamtNode<T, K, V> createForDelete(int bitmask,
+                                              T value,
+                                              @Nonnull HamtNode<T, K, V>[] children)
+    {
+        if ((value == null) && (children.length == 1)) {
+            final HamtNode<T, K, V> child = children[0];
+            if (child instanceof HamtLeafNode) {
+                return ((HamtLeafNode<T, K, V>)child).liftNode(Integer.numberOfTrailingZeros(bitmask));
+            }
+        }
+        return new HamtBranchNode<>(bitmask, value, children);
     }
 
     @Override
     public boolean isEmpty()
     {
         return bitmask == 0 && value == null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private HamtNode<T, K, V> empty()
-    {
-        return EMPTY;
     }
 
     private static int realIndex(int bitmask,
@@ -266,7 +273,7 @@ public class HamtBranchNode<T, K, V>
     @Override
     public HamtNode<T, K, V>[] allocate(int size)
     {
-        return (size == 0) ? EMPTY_NODES : new HamtNode[size];
+        return new HamtNode[size];
     }
 
     @Override
@@ -315,6 +322,17 @@ public class HamtBranchNode<T, K, V>
     public String toString()
     {
         return "(" + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if ((value == null) && (children.length == 1)) {
+            if (children[0] instanceof HamtLeafNode) {
+                // we should have replaced ourselves with a leaf
+                throw new IllegalStateException();
+            }
+        }
     }
 
     private Indexed<SplitableIterable<T>> indexedForIterator()

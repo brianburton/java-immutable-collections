@@ -132,6 +132,34 @@ public class HamtBranchNodeTest
         assertSame(empty, node);
     }
 
+    public void testRollupOnDelete()
+    {
+        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
+        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        MutableDelta delta = new MutableDelta();
+
+        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        assertEquals("able", node.getValueOr(transforms, 0x1fffff, 0x1fffff, null));
+        verifyContents(transforms, node, "able");
+
+        node = node.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        assertEquals(true, node instanceof HamtBranchNode);
+        assertEquals(2, delta.getValue());
+        verifyContents(transforms, node, "able", "baker");
+
+        node = node.delete(transforms, 0x1fffff, 0x1fffff, delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        verifyContents(transforms, node, "baker");
+
+        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        assertEquals(true, node instanceof HamtEmptyNode);
+        assertEquals(0, delta.getValue());
+        verifyContents(transforms, node);
+    }
+
     public void testRandom()
     {
         final Random r = new Random();
