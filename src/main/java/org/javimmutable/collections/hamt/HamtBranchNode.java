@@ -250,7 +250,14 @@ public class HamtBranchNode<T, K, V>
         if ((value == null) && (children.length == 1)) {
             final HamtNode<T, K, V> child = children[0];
             if (child instanceof HamtLeafNode) {
-                return ((HamtLeafNode<T, K, V>)child).liftNode(Integer.numberOfTrailingZeros(bitmask));
+                final HamtLeafNode<T, K, V> leaf = (HamtLeafNode<T, K, V>)child;
+                return leaf.liftNode(Integer.numberOfTrailingZeros(bitmask));
+            }
+            if (child instanceof HamtBranchNode) {
+                final HamtBranchNode<T, K, V> branch = (HamtBranchNode<T, K, V>)child;
+                if (branch.value != null && branch.children.length == 0) {
+                    return new HamtLeafNode<>(Integer.numberOfTrailingZeros(bitmask), branch.value);
+                }
             }
         }
         return new HamtBranchNode<>(bitmask, value, children);
