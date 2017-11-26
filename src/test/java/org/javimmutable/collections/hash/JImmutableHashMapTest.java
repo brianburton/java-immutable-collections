@@ -243,10 +243,10 @@ public class JImmutableHashMapTest
     public void testEnumeration()
     {
         JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
+        HashMap<Integer, Integer> expected = new HashMap<>();
         for (int i = 0; i < 100000; ++i) {
             map = map.assign(i, 2 * i);
-            expected.add(MapEntry.of(i, 2 * i));
+            expected.put(i, 2 * i);
             assertEquals(expected.size(), map.size());
         }
         verifyEnumeration(expected, map);

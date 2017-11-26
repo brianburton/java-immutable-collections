@@ -48,7 +48,9 @@ import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,8 +59,15 @@ import static com.google.common.primitives.Ints.asList;
 public abstract class AbstractJImmutableListMapTestCase
     extends TestCase
 {
+    public enum Ordering
+    {
+        HASH,
+        INORDER,
+        REVERSED
+    }
+
     public JImmutableListMap<Integer, Integer> verifyOperations(JImmutableListMap<Integer, Integer> map,
-                                                                boolean reversed)
+                                                                Ordering ordering)
     {
         assertTrue(map.isEmpty());
         assertEquals(0, map.size());
@@ -127,7 +136,7 @@ public abstract class AbstractJImmutableListMapTestCase
         StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
 
         verifyTransform(map);
-        verifyCollector(map.insert(-10, -20).insert(-45, 90), reversed);
+        verifyCollector(map.insert(-10, -20).insert(-45, 90), ordering);
 
         return map;
     }
@@ -156,15 +165,28 @@ public abstract class AbstractJImmutableListMapTestCase
     }
 
     private static void verifyCollector(JImmutableListMap<Integer, Integer> template,
-                                        boolean reversed)
+                                        Ordering ordering)
     {
         List<JImmutableMap.Entry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> MapEntry.of(i, -i)).collect(Collectors.toList());
-
-        List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
-        if (reversed) {
-            Collections.reverse(entries);
+        switch (ordering) {
+        case HASH: {
+            Set<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
+            Set<JImmutableMap.Entry<Integer, Integer>> expected = new HashSet<>(values);
+            assertEquals(expected, entries);
+            break;
         }
-        assertEquals(values, entries);
+        case INORDER: {
+            List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+            assertEquals(values, entries);
+            break;
+        }
+        case REVERSED: {
+            List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+            Collections.reverse(entries);
+            assertEquals(values, entries);
+            break;
+        }
+        }
 
         JImmutableListMap<Integer, Integer> expected = template.insertAll(values);
         JImmutableListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());

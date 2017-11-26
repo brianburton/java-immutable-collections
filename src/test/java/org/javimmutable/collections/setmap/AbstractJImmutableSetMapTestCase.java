@@ -63,7 +63,15 @@ import java.util.stream.Collectors;
 public abstract class AbstractJImmutableSetMapTestCase
     extends TestCase
 {
-    public JImmutableSetMap<Integer, Integer> verifyOperations(JImmutableSetMap<Integer, Integer> map)
+    public enum Ordering
+    {
+        INORDER,
+        REVERSED,
+        HASH
+    }
+
+    public JImmutableSetMap<Integer, Integer> verifyOperations(JImmutableSetMap<Integer, Integer> map,
+                                                               Ordering ordering)
     {
         verifySetOperations(map);
         verifyContains(map);
@@ -100,7 +108,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertEquals(new HashSet<>(Arrays.asList(87)), map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
 
-        map = map.assign(3, JImmutableHashSet.<Integer>of().insert(300).insert(7).insert(7).insert(14));
+        map = map.assign(3, map.getSet(Integer.MIN_VALUE).insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(new HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
@@ -121,10 +129,22 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertTrue(map.deleteAll().isEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
-        StandardCursorTest.listCursorTest(Arrays.asList(18, 87, 100), map.valuesCursor(1));
-        StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
-        StandardCursorTest.listCursorTest(Arrays.asList(7, 14, 300), map.valuesCursor(3));
-        StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+        if (ordering == Ordering.HASH) {
+            StandardCursorTest.listCursorTest(Arrays.asList(100, 18, 87), map.valuesCursor(1));
+            StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
+            StandardCursorTest.listCursorTest(Arrays.asList(7, 300, 14), map.valuesCursor(3));
+            StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+        } else if (ordering == Ordering.REVERSED) {
+            StandardCursorTest.listCursorTest(Arrays.asList(100, 87, 18), map.valuesCursor(1));
+            StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
+            StandardCursorTest.listCursorTest(Arrays.asList(300, 14, 7), map.valuesCursor(3));
+            StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+        } else {
+            StandardCursorTest.listCursorTest(Arrays.asList(18, 87, 100), map.valuesCursor(1));
+            StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
+            StandardCursorTest.listCursorTest(Arrays.asList(7, 14, 300), map.valuesCursor(3));
+            StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+        }
 
         verifyTransform(map);
         verifyCollector(map.insert(-10, -20).insert(-45, 90));

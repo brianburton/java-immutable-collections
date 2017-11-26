@@ -230,7 +230,7 @@ public class HamtBranchNode<T, K, V>
                     if (value == null) {
                         return HamtEmptyNode.of();
                     } else {
-                        return new HamtLeafNode<>(hashCode, value);
+                        return new HamtLeafNode<>(0, value);
                     }
                 } else {
                     final HamtNode<T, K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);

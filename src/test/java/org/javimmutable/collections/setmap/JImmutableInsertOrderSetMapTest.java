@@ -51,7 +51,7 @@ public class JImmutableInsertOrderSetMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.<Integer, Integer>of());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.<Integer, Integer>of(), Ordering.HASH);
         verifyRandom(JImmutableInsertOrderSetMap.<Integer, Integer>of(), new LinkedHashMap<Integer, Set<Integer>>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),

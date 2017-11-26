@@ -57,6 +57,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Function;
 
 import static junit.framework.Assert.*;
 
@@ -149,7 +151,7 @@ public class StandardJImmutableMultisetTests
         JImmutableMultiset<Integer> actual = values.parallelStream().collect(template.multisetCollector());
         assertEquals(expected, actual);
     }
-    
+
     private static void verifyUnion(JImmutableMultiset<Integer> empty)
     {
         final List<Integer> values = Arrays.asList(1, 3, 3, 4);
@@ -741,7 +743,9 @@ public class StandardJImmutableMultisetTests
             verifyContents(jmet, expected);
 
             //verify ordering is the same in both sets
-            assertEquals(new ArrayList<>(expected.elementSet()), new ArrayList<>(jmet.getSet()));
+            if ((jmet.getSpliteratorCharacteristics() & Spliterator.ORDERED) != 0) {
+                assertEquals(new ArrayList<>(expected.elementSet()), new ArrayList<>(jmet.getSet()));
+            }
             verifyCursor(jmet, expected);
 
             for (Integer value : expected) {
@@ -751,7 +755,6 @@ public class StandardJImmutableMultisetTests
             assertEquals(0, jmet.size());
             assertEquals(0, jmet.occurrenceCount());
             assertEquals(true, jmet.isEmpty());
-
         }
     }
 
@@ -795,16 +798,15 @@ public class StandardJImmutableMultisetTests
     public static <T> void verifyCursor(final JImmutableMultiset<T> jmet,
                                         final Multiset<T> expected)
     {
-        final List<T> expectedSet = new ArrayList<>();
-        expectedSet.addAll(expected.elementSet());
+        final ExpectedOrderSorter<T> ordering = new ExpectedOrderSorter<>(jmet.iterator());
+        List<T> expectedSet = ordering.sort(expected.elementSet(), Function.identity());
+        List<T> expectedList = ordering.sort(expected, Function.identity());
 
-        final List<T> expectedList = new ArrayList<>();
-        expectedList.addAll(expected);
-
-        final List<JImmutableMap.Entry<T, Integer>> entries = new ArrayList<>();
+        List<JImmutableMap.Entry<T, Integer>> rawEntries = new ArrayList<>();
         for (Multiset.Entry<T> mentry : expected.entrySet()) {
-            entries.add(new MapEntry<>(mentry.getElement(), mentry.getCount()));
+            rawEntries.add(new MapEntry<>(mentry.getElement(), mentry.getCount()));
         }
+        List<JImmutableMap.Entry<T, Integer>> entries = ordering.sort(rawEntries, e -> e.getKey());
         assertEquals(entries.size(), jmet.size());
 
         StandardCursorTest.listCursorTest(expectedSet, jmet.cursor());

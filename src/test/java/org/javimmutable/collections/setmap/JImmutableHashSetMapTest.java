@@ -49,7 +49,7 @@ public class JImmutableHashSetMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.of());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.of(), Ordering.HASH);
         verifyRandom(JImmutableHashSetMap.of(), new HashMap<>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),

@@ -160,6 +160,19 @@ public class HamtBranchNodeTest
         verifyContents(transforms, node);
     }
 
+    public void testDeleteCollapseBranchIntoLeaf()
+    {
+        final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
+        final MutableDelta size = new MutableDelta();
+        HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
+        node = node.assign(transforms, 7129, 7129, 1, size);
+        node = node.assign(transforms, 985, 985, 2, size);
+        node = node.delete(transforms, 7129, 7129, size);
+        assertEquals(Integer.valueOf(2), node.getValueOr(transforms, 985, 985, -1));
+        node = node.delete(transforms, 985, 985, size);
+        assertSame(HamtEmptyNode.of(), node);
+    }
+    
     public void testRandom()
     {
         final Random r = new Random();
@@ -191,20 +204,30 @@ public class HamtBranchNodeTest
                                 HamtNode<MapEntry<Integer, String>, Integer, String> node,
                                 String... values)
     {
-        Set<String> expected = new HashSet<>();
-        expected.addAll(asList(values));
+        Set<String> expected = new HashSet<>(asList(values));
         Set<String> actual = collectValues(transforms, node);
         assertEquals(expected, actual);
+        verifyConnectivity(transforms, node);
     }
 
     private void verifyIntContents(Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms,
                                    HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node,
                                    List<Integer> values)
     {
-        Set<Integer> expected = new HashSet<>();
-        expected.addAll(values);
+        Set<Integer> expected = new HashSet<>(values);
         Set<Integer> actual = collectValues(transforms, node);
         assertEquals(expected, actual);
+        verifyConnectivity(transforms, node);
+    }
+
+    private <T, K, V> void verifyConnectivity(Transforms<T, K, V> transforms,
+                                              HamtNode<T, K, V> node)
+    {
+        final Iterator<JImmutableMap.Entry<K, V>> iterator = node.iterator(transforms);
+        while (iterator.hasNext()) {
+            final JImmutableMap.Entry<K, V> entry = iterator.next();
+            assertEquals(entry.getValue(), node.getValueOr(transforms, entry.getKey().hashCode(), entry.getKey(), null));
+        }
     }
 
     @Nonnull

@@ -63,7 +63,7 @@ public class JImmutableTemplateSetMapTest
         assertEquals(0, empty.count());
         assertEquals(0, empty.keys().count());
         assertNull(empty.get(1));
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.of());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
         verifyRandom(JImmutableTreeSetMap.of(), new TreeMap<>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
         StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),

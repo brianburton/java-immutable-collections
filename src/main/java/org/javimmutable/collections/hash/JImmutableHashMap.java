@@ -42,9 +42,10 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
-import org.javimmutable.collections.array.trie32.TrieNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.hamt.HamtEmptyNode;
+import org.javimmutable.collections.hamt.HamtNode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -61,17 +62,17 @@ public class JImmutableHashMap<T, K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(TrieNode.of(), 0, LIST_TRANSFORMS);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, LIST_TRANSFORMS);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(TrieNode.of(), 0, TREE_TRANSFORMS);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, TREE_TRANSFORMS);
 
-    private final TrieNode<T> root;
+    private final HamtNode<T, K, V> root;
     private final int size;
     private final Transforms<T, K, V> transforms;
 
-    private JImmutableHashMap(TrieNode<T> root,
+    private JImmutableHashMap(HamtNode<T, K, V> root,
                               int size,
                               Transforms<T, K, V> transforms)
     {
@@ -90,7 +91,7 @@ public class JImmutableHashMap<T, K, V>
     @SuppressWarnings("unchecked")
     public static <K, V> EmptyHashMap<K, V> of()
     {
-        return (EmptyHashMap<K, V>)EmptyHashMap.INSTANCE;
+        return EmptyHashMap.INSTANCE;
     }
 
     /**
@@ -140,14 +141,14 @@ public class JImmutableHashMap<T, K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        return root.getValueOr(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, defaultValue);
+        return root.getValueOr(transforms, key.hashCode(), key, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        return root.find(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms);
+        return root.find(transforms, key.hashCode(), key);
     }
 
     @Nonnull
@@ -168,7 +169,7 @@ public class JImmutableHashMap<T, K, V>
                                       V value)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        TrieNode<T> newRoot = root.assign(TrieNode.ROOT_SHIFT, key.hashCode(), key, value, transforms, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.assign(transforms, key.hashCode(), key, value, sizeDelta);
         if (newRoot == root) {
             return this;
         } else {
@@ -181,7 +182,7 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> delete(@Nonnull K key)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        TrieNode<T> newRoot = root.delete(TrieNode.ROOT_SHIFT, key.hashCode(), key, transforms, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.delete(transforms, key.hashCode(), key, sizeDelta);
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty()) {
@@ -208,20 +209,20 @@ public class JImmutableHashMap<T, K, V>
     @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
-        return root.anyOrderEntryCursor(transforms);
+        return root.cursor(transforms);
     }
 
     @Nonnull
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return root.anyOrderEntryIterator(transforms);
+        return root.iterator(transforms);
     }
 
     @Override
     public void checkInvariants()
     {
-        //TODO: fix empty checkInvariants()
+        root.checkInvariants();
     }
 
     // for unit test to verify proper transforms selected

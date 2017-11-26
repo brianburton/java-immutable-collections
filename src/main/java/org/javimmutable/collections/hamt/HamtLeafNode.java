@@ -107,7 +107,7 @@ public class HamtLeafNode<T, K, V>
     {
         return new HamtLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, value);
     }
-    
+
     @Override
     public boolean isEmpty()
     {
