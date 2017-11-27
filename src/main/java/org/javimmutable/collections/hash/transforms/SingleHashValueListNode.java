@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.hash.transforms;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-class SingleHashValueListNode<K, V>
+public class SingleHashValueListNode<K, V>
     implements HashValueListNode<K, V>,
                JImmutableMap.Entry<K, V>,
                Holder<V>

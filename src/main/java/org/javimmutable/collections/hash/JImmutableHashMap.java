@@ -44,8 +44,10 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hamt.HamtEmptyNode;
-import org.javimmutable.collections.hamt.HamtNode;
+import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
+import org.javimmutable.collections.hash.hamt.HamtNode;
+import org.javimmutable.collections.hash.transforms.HashValueListTransforms;
+import org.javimmutable.collections.hash.transforms.HashValueTreeTransforms;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

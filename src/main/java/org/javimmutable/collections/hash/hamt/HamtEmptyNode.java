@@ -33,59 +33,102 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hamt;
+package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.InvariantCheckable;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface HamtNode<T, K, V>
-    extends SplitableIterable<T>,
-            Cursorable<T>,
-            InvariantCheckable
-
+public class HamtEmptyNode<T, K, V>
+    implements HamtNode<T, K, V>
 {
-    Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
-                   int hashCode,
-                   @Nonnull K hashKey);
+    private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
 
-    V getValueOr(@Nonnull Transforms<T, K, V> transforms,
-                 int hashCode,
-                 @Nonnull K hashKey,
-                 V defaultValue);
 
-    @Nonnull
-    HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
-                             int hashCode,
-                             @Nonnull K hashKey,
-                             @Nullable V value,
-                             @Nonnull MutableDelta sizeDelta);
-
-    @Nonnull
-    HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
-                             int hashCode,
-                             @Nonnull K hashKey,
-                             @Nonnull MutableDelta sizeDelta);
-
-    boolean isEmpty();
-
-    @Nonnull
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms);
-
-    @Nonnull
-    Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms);
+    @SuppressWarnings("unchecked")
+    public static <T, K, V> HamtNode<T, K, V> of()
+    {
+        return EMPTY;
+    }
 
     @Override
-    default void checkInvariants()
+    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+                          int hashCode,
+                          @Nonnull K hashKey)
     {
+        return Holders.of();
+    }
+
+    @Override
+    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+                        int hashCode,
+                        @Nonnull K hashKey,
+                        V defaultValue)
+    {
+        return defaultValue;
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nullable V value,
+                                    @Nonnull MutableDelta sizeDelta)
+    {
+        return new HamtLeafNode<>(hashCode, transforms.update(null, hashKey, value, sizeDelta));
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull MutableDelta sizeDelta)
+    {
+        return this;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return true;
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    {
+        return EmptyIterator.of();
+    }
+
+    @Nonnull
+    @Override
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    {
+        return StandardCursor.of();
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<T> iterator()
+    {
+        return EmptyIterator.of();
+    }
+
+    @Nonnull
+    @Override
+    public Cursor<T> cursor()
+    {
+        return StandardCursor.of();
     }
 }

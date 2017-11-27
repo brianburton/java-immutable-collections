@@ -33,76 +33,106 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.hash.transforms;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.tree.BranchNode;
+import org.javimmutable.collections.tree.ComparableComparator;
+import org.javimmutable.collections.tree.LeafNode;
+import org.javimmutable.collections.tree.Node;
+import org.javimmutable.collections.tree.UpdateResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Comparator;
 
+/**
+ * Transforms implementation that stores values in Node objects (b-trees trees).
+ * Usable with keys that implement Comparable.  Will fail with any other
+ * type of key.
+ */
 @Immutable
-class HashValueListTransforms<K, V>
-    implements Transforms<HashValueListNode<K, V>, K, V>
+public class HashValueTreeTransforms<K extends Comparable<K>, V>
+    implements Transforms<Node<K, V>, K, V>
 {
+    private final Comparator<K> comparator = ComparableComparator.of();
+
     @Nonnull
     @Override
-    public HashValueListNode<K, V> update(HashValueListNode<K, V> leaf,
-                                          @Nonnull K key,
-                                          V value,
-                                          @Nonnull MutableDelta delta)
+    public Node<K, V> update(Node<K, V> leaf,
+                             @Nonnull K key,
+                             V value,
+                             @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return SingleHashValueListNode.of(key, value);
+            return new LeafNode<>(key, value);
         } else {
-            return leaf.setValueForKey(key, value, delta);
+            final UpdateResult<K, V> result = leaf.assign(comparator, key, value);
+            switch (result.type) {
+            case UNCHANGED:
+                return leaf;
+            case INPLACE:
+                delta.add(result.sizeDelta);
+                return result.newNode;
+            case SPLIT:
+                delta.add(result.sizeDelta);
+                return new BranchNode<>(result.newNode, result.extraNode);
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
+            }
         }
     }
 
     @Override
-    public HashValueListNode<K, V> delete(@Nonnull HashValueListNode<K, V> leaf,
-                                          @Nonnull K key,
-                                          @Nonnull MutableDelta delta)
+    public Node<K, V> delete(@Nonnull Node<K, V> leaf,
+                             @Nonnull K key,
+                             @Nonnull MutableDelta delta)
     {
-        return leaf.deleteValueForKey(key, delta);
+        final Node<K, V> newLeaf = leaf.delete(comparator, key);
+        if (newLeaf == leaf) {
+            return leaf;
+        } else {
+            delta.add(-1);
+            return newLeaf.isEmpty() ? null : newLeaf.compress();
+        }
     }
 
     @Override
-    public V getValueOr(@Nonnull HashValueListNode<K, V> leaf,
+    public V getValueOr(@Nonnull Node<K, V> leaf,
                         @Nonnull K key,
                         V defaultValue)
     {
-        return leaf.getValueForKey(key, defaultValue);
+        return leaf.getValueOr(comparator, key, defaultValue);
     }
 
     @Override
-    public Holder<V> findValue(@Nonnull HashValueListNode<K, V> leaf,
+    public Holder<V> findValue(@Nonnull Node<K, V> leaf,
                                @Nonnull K key)
     {
-        return leaf.findValueForKey(key);
+        return leaf.find(comparator, key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull HashValueListNode<K, V> leaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node<K, V> leaf,
                                                        @Nonnull K key)
     {
-        return Holders.fromNullable(leaf.getEntryForKey(key));
+        return leaf.findEntry(comparator, key);
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull HashValueListNode<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull Node<K, V> leaf)
     {
         return leaf.cursor();
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull HashValueListNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node<K, V> leaf)
     {
         return leaf.iterator();
     }

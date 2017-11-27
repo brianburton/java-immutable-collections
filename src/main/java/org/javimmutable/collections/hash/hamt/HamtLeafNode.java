@@ -1,4 +1,4 @@
-package org.javimmutable.collections.hamt;
+package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;

@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hamt;
+package org.javimmutable.collections.hash.transforms;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -42,93 +42,68 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
-public class HamtEmptyNode<T, K, V>
-    implements HamtNode<T, K, V>
+@Immutable
+public class HashValueListTransforms<K, V>
+    implements Transforms<HashValueListNode<K, V>, K, V>
 {
-    private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
-
-
-    @SuppressWarnings("unchecked")
-    public static <T, K, V> HamtNode<T, K, V> of()
+    @Nonnull
+    @Override
+    public HashValueListNode<K, V> update(HashValueListNode<K, V> leaf,
+                                          @Nonnull K key,
+                                          V value,
+                                          @Nonnull MutableDelta delta)
     {
-        return EMPTY;
+        if (leaf == null) {
+            delta.add(1);
+            return SingleHashValueListNode.of(key, value);
+        } else {
+            return leaf.setValueForKey(key, value, delta);
+        }
     }
 
     @Override
-    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
-                          int hashCode,
-                          @Nonnull K hashKey)
+    public HashValueListNode<K, V> delete(@Nonnull HashValueListNode<K, V> leaf,
+                                          @Nonnull K key,
+                                          @Nonnull MutableDelta delta)
     {
-        return Holders.of();
+        return leaf.deleteValueForKey(key, delta);
     }
 
     @Override
-    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
-                        int hashCode,
-                        @Nonnull K hashKey,
+    public V getValueOr(@Nonnull HashValueListNode<K, V> leaf,
+                        @Nonnull K key,
                         V defaultValue)
     {
-        return defaultValue;
-    }
-
-    @Nonnull
-    @Override
-    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nullable V value,
-                                    @Nonnull MutableDelta sizeDelta)
-    {
-        return new HamtLeafNode<>(hashCode, transforms.update(null, hashKey, value, sizeDelta));
-    }
-
-    @Nonnull
-    @Override
-    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nonnull MutableDelta sizeDelta)
-    {
-        return this;
+        return leaf.getValueForKey(key, defaultValue);
     }
 
     @Override
-    public boolean isEmpty()
+    public Holder<V> findValue(@Nonnull HashValueListNode<K, V> leaf,
+                               @Nonnull K key)
     {
-        return true;
+        return leaf.findValueForKey(key);
     }
 
-    @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull HashValueListNode<K, V> leaf,
+                                                       @Nonnull K key)
     {
-        return EmptyIterator.of();
+        return Holders.fromNullable(leaf.getEntryForKey(key));
     }
 
-    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull HashValueListNode<K, V> leaf)
     {
-        return StandardCursor.of();
+        return leaf.cursor();
     }
 
-    @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull HashValueListNode<K, V> leaf)
     {
-        return EmptyIterator.of();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of();
+        return leaf.iterator();
     }
 }
