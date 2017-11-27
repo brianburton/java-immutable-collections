@@ -40,6 +40,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.hash.transforms.HashValueListNode;
+import org.javimmutable.collections.hash.transforms.HashValueListTransforms;
+import org.javimmutable.collections.hash.transforms.SingleKeyTransforms;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -130,6 +133,56 @@ public class HamtBranchNodeTest
         node = node.delete(transforms, 33, 33, delta);
         assertEquals(0, delta.getValue());
         assertSame(empty, node);
+    }
+
+    public void testAssignDelete()
+    {
+        final Checked a = new Checked(1, 11);
+        final Checked b = new Checked(2, 12);
+        final Checked c = new Checked(1, 13);
+        final Checked d = new Checked(2, 14);
+        final Checked e = new Checked(2, 15);
+        final Checked x = new Checked(0, 20);
+        final Checked y = new Checked(0, 25);
+        final Checked z = new Checked(0, 29);
+        final MutableDelta size = new MutableDelta();
+        final HashValueListTransforms<Checked, Integer> transforms = new HashValueListTransforms<>();
+
+        HamtNode<HashValueListNode<Checked, Integer>, Checked, Integer> node = HamtEmptyNode.of();
+
+        node = node.assign(transforms, a.hashCode, a, 100, size);
+        assertEquals(1, size.getValue());
+        assertSame(node, node.assign(transforms, a.hashCode, a, 100, size));
+
+        node = node.assign(transforms, b.hashCode, b, 100, size);
+        assertEquals(2, size.getValue());
+        assertSame(node, node.assign(transforms, a.hashCode, a, 100, size));
+        assertSame(node, node.assign(transforms, b.hashCode, b, 100, size));
+        assertSame(node, node.delete(transforms, z.hashCode, z, size));
+        assertEquals(null, node.find(transforms, z.hashCode, z).getValueOrNull());
+        assertEquals(null, node.getValueOr(transforms, z.hashCode, z, null));
+
+        node = node.assign(transforms, c.hashCode, c, 100, size);
+        assertEquals(3, size.getValue());
+
+        node = node.assign(transforms, x.hashCode, x, 200, size);
+        assertEquals(4, size.getValue());
+
+        node = node.assign(transforms, y.hashCode, y, 200, size);
+        assertEquals(5, size.getValue());
+
+        assertSame(node, node.delete(transforms, d.hashCode, d, size));
+        assertSame(node, node.delete(transforms, e.hashCode, e, size));
+        assertSame(node, node.delete(transforms, z.hashCode, z, size));
+
+        node = node
+            .delete(transforms, x.hashCode, x, size)
+            .delete(transforms, a.hashCode, a, size)
+            .delete(transforms, b.hashCode, b, size)
+            .delete(transforms, c.hashCode, c, size)
+            .delete(transforms, y.hashCode, y, size);
+        assertEquals(0, size.getValue());
+        assertSame(HamtEmptyNode.of(), node);
     }
 
     public void testRollupOnDelete()
@@ -256,32 +309,38 @@ public class HamtBranchNodeTest
         node = node.delete(transforms, 985, 985, size);
         assertSame(HamtEmptyNode.of(), node);
     }
-    
+
     public void testRandom()
     {
-        final Random r = new Random();
-        final List<Integer> domain = IntStream.range(1, 1200)
-            .boxed()
-            .map(i -> r.nextInt())
-            .collect(Collectors.toList());
-
         final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
-        final MutableDelta size = new MutableDelta();
-        HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
-        for (Integer key : domain) {
-            node = node.assign(transforms, key, key, key, size);
-        }
-        verifyIntContents(transforms, node, domain);
+        final Random r = new Random();
 
-        final MutableDelta zero = new MutableDelta();
-        Collections.shuffle(domain);
-        for (Integer key : domain) {
-            node = node.delete(transforms, key, key, size);
-            assertSame(node, node.delete(transforms, key, key, zero));
+        for (int loop = 1; loop <= 50; ++loop) {
+            final List<Integer> domain = IntStream.range(1, 1200)
+                .boxed()
+                .map(i -> r.nextInt())
+                .collect(Collectors.toList());
+
+            final MutableDelta size = new MutableDelta();
+            HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
+            for (Integer key : domain) {
+                node = node.assign(transforms, key, key, key, size);
+                assertEquals(node.getValueOr(transforms, key, key, -1), node.find(transforms, key, key).getValueOr(-1));
+            }
+            verifyIntContents(transforms, node, domain);
+
+            final MutableDelta zero = new MutableDelta();
+            Collections.shuffle(domain);
+            for (Integer key : domain) {
+                node = node.delete(transforms, key, key, size);
+                assertSame(node, node.delete(transforms, key, key, zero));
+                assertEquals(null, node.getValueOr(transforms, key, key, null));
+                assertEquals(null, node.find(transforms, key, key).getValueOr(null));
+            }
+            assertSame(HamtEmptyNode.of(), node);
+            assertEquals(0, size.getValue());
+            assertEquals(0, zero.getValue());
         }
-        assertSame(HamtEmptyNode.of(), node);
-        assertEquals(0, size.getValue());
-        assertEquals(0, zero.getValue());
     }
 
     private void verifyContents(Transforms<MapEntry<Integer, String>, Integer, String> transforms,
@@ -307,10 +366,10 @@ public class HamtBranchNodeTest
     private <T, K, V> void verifyConnectivity(Transforms<T, K, V> transforms,
                                               HamtNode<T, K, V> node)
     {
-        final Iterator<JImmutableMap.Entry<K, V>> iterator = node.iterator(transforms);
-        while (iterator.hasNext()) {
-            final JImmutableMap.Entry<K, V> entry = iterator.next();
-            assertEquals(entry.getValue(), node.getValueOr(transforms, entry.getKey().hashCode(), entry.getKey(), null));
+        for (JImmutableMap.Entry<K, V> entry : node.cursor(transforms)) {
+            final V usingGet = node.getValueOr(transforms, entry.getKey().hashCode(), entry.getKey(), null);
+            final V usingFind = node.find(transforms, entry.getKey().hashCode(), entry.getKey()).getValueOrNull();
+            assertEquals(entry.getValue(), usingGet);
         }
     }
 
@@ -325,4 +384,5 @@ public class HamtBranchNodeTest
         }
         return actual;
     }
+
 }
