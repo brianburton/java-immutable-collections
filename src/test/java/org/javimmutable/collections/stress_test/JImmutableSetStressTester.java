@@ -37,16 +37,16 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
@@ -58,7 +58,7 @@ import java.util.Set;
  * before the set is empty.
  */
 public class JImmutableSetStressTester
-        extends AbstractSetStressTestable
+    extends AbstractSetStressTestable
 {
     private final JImmutableSet<String> set;
     private final Class<? extends Set> expectedClass;
@@ -83,7 +83,7 @@ public class JImmutableSetStressTester
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException
+        throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Set<String> expected = expectedClass.newInstance();
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
@@ -203,7 +203,7 @@ public class JImmutableSetStressTester
                     throw new RuntimeException();
                 }
             }
-            verifyCursor(set, expected, keys);
+            verifyCursor(set, expected);
         }
         verifyContents(set, expected);
         verifyKeys(keys, expected);
@@ -310,30 +310,19 @@ public class JImmutableSetStressTester
     }
 
     private void verifyCursor(final JImmutableSet<String> set,
-                              final Set<String> expected,
-                              RandomKeyManager keys)
+                              final Set<String> expected)
     {
         System.out.printf("checking cursor with size %d%n", set.size());
-        List<String> cursorListTest;
-        List<String> iteratorListTest;
 
-        //HashSet iterates in a different order than JImmutableHashSet. Therefore, to test
-        //the cursor and iterator for that class, the list of values cannot be built from
-        //expected. Other implementations are in the same order as the java.util classes,
-        //and can have the test list built from expected.
+        List<String> expectedList = asList(expected);
         if (cursorOrder == CursorOrder.UNORDERED) {
-            cursorListTest = asList(set.getSet());
-            iteratorListTest = asList(set.cursor());
-            verifyCursorHasAllExpectedValues(cursorListTest, keys);
-            verifyCursorHasAllExpectedValues(iteratorListTest, keys);
-            StandardIterableStreamableTests.verifyUnorderedUsingCollection(expected, set);
-        } else {
-            cursorListTest = asList(expected);
-            iteratorListTest = cursorListTest;
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, set);
+            final ExpectedOrderSorter<String> ordering = new ExpectedOrderSorter<>(set.iterator());
+            expectedList = ordering.sort(expectedList, Function.identity());
         }
-        StandardCursorTest.listCursorTest(cursorListTest, set.cursor());
-        StandardCursorTest.listIteratorTest(iteratorListTest, set.iterator());
+
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(expectedList, set);
+        StandardCursorTest.listCursorTest(expectedList, set.cursor());
+        StandardCursorTest.listIteratorTest(expectedList, set.iterator());
     }
 
     private void verifyOrder(JImmutableSet<String> set,
@@ -341,20 +330,6 @@ public class JImmutableSetStressTester
     {
         if (cursorOrder == CursorOrder.INSERT_ORDER) {
             StandardCursorTest.listCursorTest(expected.getList(), set.cursor());
-        }
-    }
-
-    private void verifyCursorHasAllExpectedValues(List<String> cursorKeys,
-                                                  RandomKeyManager keys)
-    {
-        List<String> expectedValues = new ArrayList<>();
-        expectedValues.addAll(keys.allAllocatedJList().getList());
-        List<String> actualValues = new ArrayList<>();
-        actualValues.addAll(cursorKeys);
-        Collections.sort(expectedValues);
-        Collections.sort(actualValues);
-        if (!expectedValues.equals(actualValues)) {
-            throw new RuntimeException("keys returned by set cursor do not match keys in key manager");
         }
     }
 

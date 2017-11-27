@@ -46,7 +46,6 @@ import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -253,11 +252,7 @@ public class JImmutableArrayStressTester
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
-        final List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<>();
-
-        for (Map.Entry<Integer, String> entry : expected.entrySet()) {
-            entries.add(new MapEntry<>(entry.getKey(), entry.getValue()));
-        }
+        final List<JImmutableMap.Entry<Integer, String>> entries = makeEntriesList(expected);
 
         StandardCursorTest.listCursorTest(indices, array.keysCursor());
         StandardCursorTest.listCursorTest(values, array.valuesCursor());

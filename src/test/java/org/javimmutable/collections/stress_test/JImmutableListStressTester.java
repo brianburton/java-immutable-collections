@@ -72,7 +72,7 @@ public class JImmutableListStressTester
                         JImmutableList<String> tokens)
     {
         JImmutableList<String> list = this.list;
-        List<String> expected = new ArrayList<String>();
+        List<String> expected = new ArrayList<>();
         int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 

@@ -70,7 +70,7 @@ public class JImmutableRandomAccessListStressTester
     public void execute(Random random,
                         JImmutableList<String> tokens)
     {
-        List<String> expected = new ArrayList<String>();
+        List<String> expected = new ArrayList<>();
         JImmutableRandomAccessList<String> ralist = this.ralist;
         int size = 1 + random.nextInt(100000);
 

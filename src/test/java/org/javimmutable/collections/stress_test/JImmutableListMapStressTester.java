@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -117,7 +116,7 @@ public class JImmutableListMapStressTester
                 case 2: { //insert(Entry<K, V>)
                     String value = RandomKeyManager.makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<>(key, value);
-                    listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
+                    listmap = listmap.insert(entry);
                     addAt(expected, key, value);
                     break;
                 }
@@ -146,7 +145,7 @@ public class JImmutableListMapStressTester
                 case 2: { //insert(Entry<K, V>)
                     String value = RandomKeyManager.makeValue(tokens, random);
                     JImmutableMap.Entry<String, String> entry = new MapEntry<>(key, value);
-                    listmap = (JImmutableListMap<String, String>)listmap.insert(entry);
+                    listmap = listmap.insert(entry);
                     addAt(expected, key, value);
                     break;
                 }
@@ -249,30 +248,17 @@ public class JImmutableListMapStressTester
 
     {
         System.out.printf("checking cursor with size %d%n", listmap.size());
-        List<String> keys = new ArrayList<>();
-        List<JImmutableMap.Entry<String, JImmutableList<String>>> entriesForCursor = new ArrayList<>();
-        List<JImmutableMap.Entry<String, JImmutableList<String>>> entriesForIterator = new ArrayList<>();
-
+        List<JImmutableMap.Entry<String, JImmutableList<String>>> entries = makeEntriesList(expected);
         if (listmap instanceof JImmutableHashListMap) {
-            for (JImmutableMap.Entry<String, JImmutableList<String>> entry : listmap) {
-                keys.add(entry.getKey());
-                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
-            }
-            for (Cursor<JImmutableMap.Entry<String, JImmutableList<String>>> c = listmap.cursor().start(); c.hasValue(); c = c.next()) {
-                entriesForIterator.add(new MapEntry<>(c.getValue().getKey(), c.getValue().getValue()));
-            }
-        } else {
-            keys.addAll(expected.keySet());
-            for (Map.Entry<String, JImmutableList<String>> entry : expected.entrySet()) {
-                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
-            }
-            entriesForIterator = entriesForCursor;
+            final ExpectedOrderSorter<String> ordering = new ExpectedOrderSorter<>(listmap.keys().iterator());
+            entries = ordering.sort(entries, e -> e.getKey());
         }
+        List<String> keys = extractKeys(entries);
 
         StandardCursorTest.listCursorTest(keys, listmap.keysCursor());
-        StandardCursorTest.listCursorTest(entriesForCursor, listmap.cursor());
+        StandardCursorTest.listCursorTest(entries, listmap.cursor());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, listmap.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entriesForIterator, listmap);
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, listmap);
 
         for (Map.Entry<String, JImmutableList<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
@@ -330,6 +316,7 @@ public class JImmutableListMapStressTester
     }
 
     //used in debugging
+    @SuppressWarnings("unused")
     private void printStats(JImmutableListMap<String, String> listmap)
     {
         double size = listmap.size();

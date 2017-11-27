@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -45,12 +44,12 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -67,8 +66,9 @@ import java.util.Random;
  * of the test. 18% will contain only one value. 52% will contain between two and ten
  * values, and the remaining 5% will contain between eleven and over a hundred values.
  */
+@SuppressWarnings("Duplicates")
 public class JImmutableSetMapStressTester
-        extends AbstractMapStressTestable
+    extends AbstractMapStressTestable
 {
     private final JImmutableSetMap<String, String> setmap;
     private final Class<? extends Map> expectedClass;
@@ -90,7 +90,7 @@ public class JImmutableSetMapStressTester
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException
+        throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Map<String, JImmutableSet<String>> expected = expectedClass.newInstance();
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
@@ -119,7 +119,7 @@ public class JImmutableSetMapStressTester
                 case 2: { //insert(Entry<K, V>)
                     String value = RandomKeyManager.makeValue(tokens, random);
                     MapEntry<String, String> entry = new MapEntry<>(key, value);
-                    setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
+                    setmap = setmap.insert(entry);
                     addAt(expected, key, value);
                     break;
                 }
@@ -197,7 +197,7 @@ public class JImmutableSetMapStressTester
                 case 2: { //insert(Entry<K, V>)
                     String value = makeUpdateValue(tokens, random, key, expected);
                     MapEntry<String, String> entry = new MapEntry<>(key, value);
-                    setmap = (JImmutableSetMap<String, String>)setmap.insert(entry);
+                    setmap = setmap.insert(entry);
                     addAt(expected, key, value);
                     break;
                 }
@@ -423,31 +423,18 @@ public class JImmutableSetMapStressTester
                               final Map<String, JImmutableSet<String>> expected)
     {
         System.out.printf("checking cursor with size %d%n", setmap.size());
-        List<String> keys = new ArrayList<>();
-        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForCursor = new ArrayList<>();
-        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entriesForIterator = new ArrayList<>();
 
-
+        List<JImmutableMap.Entry<String, JImmutableSet<String>>> entries = makeEntriesList(expected);
         if (setmap instanceof JImmutableHashSetMap) {
-            for (JImmutableMap.Entry<String, JImmutableSet<String>> entry : setmap) {
-                keys.add(entry.getKey());
-                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
-            }
-            for (Cursor<JImmutableMap.Entry<String, JImmutableSet<String>>> c = setmap.cursor().start(); c.hasValue(); c = c.next()) {
-                entriesForIterator.add(new MapEntry<>(c.getValue().getKey(), c.getValue().getValue()));
-            }
-        } else {
-            keys.addAll(expected.keySet());
-            for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
-                entriesForCursor.add(new MapEntry<>(entry.getKey(), entry.getValue()));
-            }
-            entriesForIterator = entriesForCursor;
+            final ExpectedOrderSorter<String> ordering = new ExpectedOrderSorter<>(setmap.keys().iterator());
+            entries = ordering.sort(entries, e -> e.getKey());
         }
+        List<String> keys = extractKeys(entries);
 
         StandardCursorTest.listCursorTest(keys, setmap.keysCursor());
-        StandardCursorTest.listCursorTest(entriesForCursor, setmap.cursor());
+        StandardCursorTest.listCursorTest(entries, setmap.cursor());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, setmap.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entriesForIterator, setmap);
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, setmap);
 
         for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
             String key = entry.getKey();

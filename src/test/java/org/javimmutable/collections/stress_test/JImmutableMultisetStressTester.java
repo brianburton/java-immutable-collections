@@ -46,6 +46,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -53,12 +54,15 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.util.JImmutables;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Test program for all implementations of JImmutableMultiset. Divided into four sections:
@@ -425,28 +429,35 @@ public class JImmutableMultisetStressTester
         return multi;
     }
 
+    @Nonnull
+    private <K> List<JImmutableMap.Entry<K, Integer>> makeMultisetEntriesList(Multiset<K> expected)
+    {
+        final List<JImmutableMap.Entry<K, Integer>> entries = new ArrayList<>();
+
+        for (Multiset.Entry<K> entry : expected.entrySet()) {
+            entries.add(new MapEntry<>(entry.getElement(), entry.getCount()));
+        }
+        return entries;
+    }
+
+    private <K> List<K> extractOccurrences(List<JImmutableMap.Entry<K, Integer>> entries)
+    {
+        return entries.stream()
+            .flatMap(e -> IntStream.range(0, e.getValue()).boxed().map(i -> e.getKey()))
+            .collect(Collectors.toList());
+    }
+
     private void verifyCursor(final JImmutableMultiset<String> multi,
                               final Multiset<String> expected)
     {
-        final List<String> expectedList;
-        final List<JImmutableMap.Entry<String, Integer>> entries = new ArrayList<>();
         System.out.printf("checking cursor with size %d%n", multi.occurrenceCount());
 
-        //HashMultiset iterates in a different order than JImmutableHashMultiset. Therefore, to test
-        //the cursor and iterator for that class, the list of values cannot be built from
-        //expected. Other implementations are in the same order as the Guava classes,
-        //and can have the test list built from expected.
+        List<JImmutableMap.Entry<String, Integer>> entries = makeMultisetEntriesList(expected);
         if (multi instanceof JImmutableHashMultiset) {
-            expectedList = asList(multi.occurrenceCursor());
-            for (String uniqueVal : multi) {
-                entries.add(new MapEntry<>(uniqueVal, multi.count(uniqueVal)));
-            }
-        } else {
-            expectedList = asList(expected);
-            for (Multiset.Entry<String> expectedEntry : expected.entrySet()) {
-                entries.add(new MapEntry<>(expectedEntry.getElement(), expectedEntry.getCount()));
-            }
+            final ExpectedOrderSorter<String> ordering = new ExpectedOrderSorter<>(multi.iterator());
+            entries = ordering.sort(entries, e -> e.getKey());
         }
+        List<String> expectedList = extractOccurrences(entries);
 
         if (expectedList.size() != multi.occurrenceCount()) {
             throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n",

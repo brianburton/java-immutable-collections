@@ -38,12 +38,16 @@ package org.javimmutable.collections.stress_test;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.util.JImmutables;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
@@ -55,7 +59,7 @@ public abstract class AbstractStressTestable
 {
     abstract void execute(Random random,
                           JImmutableList<String> tokens)
-            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
+        throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
 
     abstract JImmutableList<String> getOptions();
 
@@ -129,5 +133,26 @@ public abstract class AbstractStressTestable
     protected <T> Iterable<T> plainIterable(Iterable<T> values)
     {
         return () -> values.iterator();
+    }
+
+    @Nonnull
+    protected <K, V> List<JImmutableMap.Entry<K, V>> makeEntriesList(Map<K, V> expected)
+    {
+        final List<JImmutableMap.Entry<K, V>> entries = new ArrayList<>();
+
+        for (Map.Entry<K, V> entry : expected.entrySet()) {
+            entries.add(new MapEntry<>(entry.getKey(), entry.getValue()));
+        }
+        return entries;
+    }
+
+    protected <K, V> List<K> extractKeys(List<JImmutableMap.Entry<K, V>> entries)
+    {
+        return entries.stream().map(e -> e.getKey()).collect(Collectors.toList());
+    }
+
+    protected <K, V> List<V> extractValues(List<JImmutableMap.Entry<K, V>> entries)
+    {
+        return entries.stream().map(e -> e.getValue()).collect(Collectors.toList());
     }
 }
