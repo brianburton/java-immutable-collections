@@ -37,12 +37,10 @@ package org.javimmutable.collections.hash.hamt;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.transforms.HashValueListNode;
 import org.javimmutable.collections.hash.transforms.HashValueListTransforms;
-import org.javimmutable.collections.hash.transforms.SingleKeyTransforms;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -61,13 +59,14 @@ public class HamtBranchNodeTest
 {
     public void testVarious()
     {
-        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final HashValueListTransforms<Integer, String> transforms = new HashValueListTransforms<>();
+
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         assertEquals(null, empty.getValueOr(transforms, 1, 1, null));
         verifyContents(transforms, empty);
 
         MutableDelta delta = new MutableDelta();
-        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 1, 1, "able", delta);
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> node = empty.assign(transforms, 1, 1, "able", delta);
         assertEquals(1, delta.getValue());
         assertEquals("able", node.getValueOr(transforms, 1, 1, null));
         verifyContents(transforms, node, "able");
@@ -187,11 +186,11 @@ public class HamtBranchNodeTest
 
     public void testRollupOnDelete()
     {
-        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final Transforms<HashValueListNode<Integer, String>, Integer, String> transforms = new HashValueListTransforms<>();
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> node = empty.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
         assertEquals(true, node instanceof HamtLeafNode);
         assertEquals(1, delta.getValue());
         assertEquals("able", node.getValueOr(transforms, 0x1fffff, 0x1fffff, null));
@@ -215,11 +214,11 @@ public class HamtBranchNodeTest
 
     public void testRollupOnDelete2()
     {
-        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final Transforms<HashValueListNode<Integer, String>, Integer, String> transforms = new HashValueListTransforms<>();
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
         assertEquals(true, node instanceof HamtLeafNode);
         assertEquals(1, delta.getValue());
         assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
@@ -243,11 +242,11 @@ public class HamtBranchNodeTest
 
     public void testRollupOnDelete3()
     {
-        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final Transforms<HashValueListNode<Integer, String>, Integer, String> transforms = new HashValueListTransforms<>();
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
         assertEquals(true, node instanceof HamtLeafNode);
         assertEquals(1, delta.getValue());
         assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
@@ -271,11 +270,11 @@ public class HamtBranchNodeTest
 
     public void testRollupOnDelete4()
     {
-        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
-        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final Transforms<HashValueListNode<Integer, String>, Integer, String> transforms = new HashValueListTransforms<>();
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffffff, 0x2fffffff, "baker", delta);
+        HamtNode<HashValueListNode<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffffff, 0x2fffffff, "baker", delta);
         assertEquals(true, node instanceof HamtLeafNode);
         assertEquals(1, delta.getValue());
         assertEquals("baker", node.getValueOr(transforms, 0x2fffffff, 0x2fffffff, null));
@@ -299,9 +298,9 @@ public class HamtBranchNodeTest
 
     public void testDeleteCollapseBranchIntoLeaf()
     {
-        final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
+        final Transforms<HashValueListNode<Integer, Integer>, Integer, Integer> transforms = new HashValueListTransforms<>();
         final MutableDelta size = new MutableDelta();
-        HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
+        HamtNode<HashValueListNode<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
         node = node.assign(transforms, 7129, 7129, 1, size);
         node = node.assign(transforms, 985, 985, 2, size);
         node = node.delete(transforms, 7129, 7129, size);
@@ -312,7 +311,7 @@ public class HamtBranchNodeTest
 
     public void testRandom()
     {
-        final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
+        final Transforms<HashValueListNode<Integer, Integer>, Integer, Integer> transforms = new HashValueListTransforms<>();
         final Random r = new Random();
 
         for (int loop = 1; loop <= 50; ++loop) {
@@ -322,7 +321,7 @@ public class HamtBranchNodeTest
                 .collect(Collectors.toList());
 
             final MutableDelta size = new MutableDelta();
-            HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
+            HamtNode<HashValueListNode<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
             for (Integer key : domain) {
                 node = node.assign(transforms, key, key, key, size);
                 assertEquals(node.getValueOr(transforms, key, key, -1), node.find(transforms, key, key).getValueOr(-1));
@@ -343,8 +342,8 @@ public class HamtBranchNodeTest
         }
     }
 
-    private void verifyContents(Transforms<MapEntry<Integer, String>, Integer, String> transforms,
-                                HamtNode<MapEntry<Integer, String>, Integer, String> node,
+    private void verifyContents(Transforms<HashValueListNode<Integer, String>, Integer, String> transforms,
+                                HamtNode<HashValueListNode<Integer, String>, Integer, String> node,
                                 String... values)
     {
         Set<String> expected = new HashSet<>(asList(values));
@@ -353,8 +352,8 @@ public class HamtBranchNodeTest
         verifyConnectivity(transforms, node);
     }
 
-    private void verifyIntContents(Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms,
-                                   HamtNode<MapEntry<Integer, Integer>, Integer, Integer> node,
+    private void verifyIntContents(Transforms<HashValueListNode<Integer, Integer>, Integer, Integer> transforms,
+                                   HamtNode<HashValueListNode<Integer, Integer>, Integer, Integer> node,
                                    List<Integer> values)
     {
         Set<Integer> expected = new HashSet<>(values);
