@@ -12,6 +12,7 @@ import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree
@@ -74,7 +75,18 @@ public class HamtLeafNode<T, K, V>
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
             }
+        } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
+            // our path is longer so expand using new value then add our values to tree
+            final MutableDelta ignored = new MutableDelta();
+            final Iterator<JImmutableMap.Entry<K, V>> entries = transforms.iterator(thisValue);
+            HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(hashCode, transforms.update(null, hashKey, value, sizeDelta));
+            while (entries.hasNext()) {
+                JImmutableMap.Entry<K, V> entry = entries.next();
+                expanded = expanded.assign(transforms, thisHashCode, entry.getKey(), entry.getValue(), ignored);
+            }
+            return expanded;
         } else {
+            // our path is shorter so expand using our hashcode then add new value to tree
             final HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(thisHashCode, thisValue);
             return expanded.assign(transforms, hashCode, hashKey, value, sizeDelta);
         }

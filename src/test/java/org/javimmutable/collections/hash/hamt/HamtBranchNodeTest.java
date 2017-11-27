@@ -160,6 +160,90 @@ public class HamtBranchNodeTest
         verifyContents(transforms, node);
     }
 
+    public void testRollupOnDelete2()
+    {
+        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
+        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        MutableDelta delta = new MutableDelta();
+
+        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
+        verifyContents(transforms, node, "baker");
+
+        node = node.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
+        assertEquals(true, node instanceof HamtBranchNode);
+        assertEquals(2, delta.getValue());
+        verifyContents(transforms, node, "able", "baker");
+
+        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        verifyContents(transforms, node, "able");
+
+        node = node.delete(transforms, 0x1fffff, 0x1fffff, delta);
+        assertEquals(true, node instanceof HamtEmptyNode);
+        assertEquals(0, delta.getValue());
+        verifyContents(transforms, node);
+    }
+
+    public void testRollupOnDelete3()
+    {
+        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
+        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        MutableDelta delta = new MutableDelta();
+
+        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
+        verifyContents(transforms, node, "baker");
+
+        node = node.assign(transforms, 0x4fffffff, 0x4fffffff, "able", delta);
+        assertEquals(true, node instanceof HamtBranchNode);
+        assertEquals(2, delta.getValue());
+        verifyContents(transforms, node, "able", "baker");
+
+        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        verifyContents(transforms, node, "able");
+
+        node = node.delete(transforms, 0x4fffffff, 0x4fffffff, delta);
+        assertEquals(true, node instanceof HamtEmptyNode);
+        assertEquals(0, delta.getValue());
+        verifyContents(transforms, node);
+    }
+
+    public void testRollupOnDelete4()
+    {
+        final Transforms<MapEntry<Integer, String>, Integer, String> transforms = new SingleKeyTransforms<>();
+        HamtNode<MapEntry<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        MutableDelta delta = new MutableDelta();
+
+        HamtNode<MapEntry<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffffff, 0x2fffffff, "baker", delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        assertEquals("baker", node.getValueOr(transforms, 0x2fffffff, 0x2fffffff, null));
+        verifyContents(transforms, node, "baker");
+
+        node = node.assign(transforms, 0x4fffff, 0x4fffff, "able", delta);
+        assertEquals(true, node instanceof HamtBranchNode);
+        assertEquals(2, delta.getValue());
+        verifyContents(transforms, node, "able", "baker");
+
+        node = node.delete(transforms, 0x2fffffff, 0x2fffffff, delta);
+        assertEquals(true, node instanceof HamtLeafNode);
+        assertEquals(1, delta.getValue());
+        verifyContents(transforms, node, "able");
+
+        node = node.delete(transforms, 0x4fffff, 0x4fffff, delta);
+        assertEquals(true, node instanceof HamtEmptyNode);
+        assertEquals(0, delta.getValue());
+        verifyContents(transforms, node);
+    }
+
     public void testDeleteCollapseBranchIntoLeaf()
     {
         final Transforms<MapEntry<Integer, Integer>, Integer, Integer> transforms = new SingleKeyTransforms<>();
