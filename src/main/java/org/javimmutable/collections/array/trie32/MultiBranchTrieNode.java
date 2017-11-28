@@ -53,11 +53,6 @@ import javax.annotation.concurrent.Immutable;
 public class MultiBranchTrieNode<T>
     extends TrieNode<T>
 {
-    // used by SignedOrderCursorSource to determine which index to use next
-    private static final int[] SIGNED_INDEX_BITS = new int[]{
-        0b0100, 0b1000, 0b0001, 0b0010
-    };
-
     private final int shift;
     private final int bitmask;
     @Nonnull
@@ -336,12 +331,21 @@ public class MultiBranchTrieNode<T>
 
     private TrieNode<T>[] entriesForSignedOrderIteration()
     {
+        final TrieNode<T>[] entries = this.entries;
         final TrieNode<T>[] nodes = allocate(entries.length);
+        final int bitmask = this.bitmask;
         int offset = 0;
-        for (int bit : SIGNED_INDEX_BITS) {
-            if ((bitmask & bit) != 0) {
-                nodes[offset++] = entries[realIndex(bitmask, bit)];
-            }
+        if ((bitmask & 0b0100) != 0) {
+            nodes[offset++] = entries[realIndex(bitmask, 0b0100)];
+        }
+        if ((bitmask & 0b1000) != 0) {
+            nodes[offset++] = entries[realIndex(bitmask, 0b1000)];
+        }
+        if ((bitmask & 0b0001) != 0) {
+            nodes[offset++] = entries[realIndex(bitmask, 0b0001)];
+        }
+        if ((bitmask & 0b0010) != 0) {
+            nodes[offset++] = entries[realIndex(bitmask, 0b0010)];
         }
         assert offset == nodes.length;
         return nodes;
