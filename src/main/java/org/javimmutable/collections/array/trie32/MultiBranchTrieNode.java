@@ -153,24 +153,6 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> V getValueOr(int shift,
-                               int index,
-                               K key,
-                               Transforms<T, K, V> transforms,
-                               V defaultValue)
-    {
-        assert this.shift == shift;
-        final int bit = 1 << ((index >>> shift) & 0x1f);
-        final int bitmask = this.bitmask;
-        if ((bitmask & bit) == 0) {
-            return defaultValue;
-        } else {
-            final int childIndex = realIndex(bitmask, bit);
-            return entries[childIndex].getValueOr(shift - 5, index, key, transforms, defaultValue);
-        }
-    }
-
-    @Override
     public Holder<T> find(int shift,
                           int index)
     {
@@ -182,23 +164,6 @@ public class MultiBranchTrieNode<T>
         } else {
             final int childIndex = realIndex(bitmask, bit);
             return entries[childIndex].find(shift - 5, index);
-        }
-    }
-
-    @Override
-    public <K, V> Holder<V> find(int shift,
-                                 int index,
-                                 K key,
-                                 Transforms<T, K, V> transforms)
-    {
-        assert this.shift == shift;
-        final int bit = 1 << ((index >>> shift) & 0x1f);
-        final int bitmask = this.bitmask;
-        if ((bitmask & bit) == 0) {
-            return Holders.of();
-        } else {
-            final int childIndex = realIndex(bitmask, bit);
-            return entries[childIndex].find(shift - 5, index, key, transforms);
         }
     }
 
@@ -225,29 +190,6 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> TrieNode<T> assign(int shift,
-                                     int index,
-                                     K key,
-                                     V value,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
-    {
-        assert this.shift == shift;
-        final int bit = 1 << ((index >>> shift) & 0x1f);
-        final int bitmask = this.bitmask;
-        final int childIndex = realIndex(bitmask, bit);
-        final TrieNode<T>[] entries = this.entries;
-        if ((bitmask & bit) == 0) {
-            final TrieNode<T> newChild = LeafTrieNode.of(index, transforms.update(null, key, value, sizeDelta));
-            return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
-        } else {
-            final TrieNode<T> child = entries[childIndex];
-            final TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
-            return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);
-        }
-    }
-
-    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
@@ -262,27 +204,6 @@ public class MultiBranchTrieNode<T>
             final int childIndex = realIndex(bitmask, bit);
             final TrieNode<T> child = entries[childIndex];
             final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
-            return selectNodeForDeleteResult(shift, bit, bitmask, entries, childIndex, child, newChild);
-        }
-    }
-
-    @Override
-    public <K, V> TrieNode<T> delete(int shift,
-                                     int index,
-                                     K key,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
-    {
-        assert this.shift == shift;
-        final int bit = 1 << ((index >>> shift) & 0x1f);
-        final int bitmask = this.bitmask;
-        final TrieNode<T>[] entries = this.entries;
-        if ((bitmask & bit) == 0) {
-            return this;
-        } else {
-            final int childIndex = realIndex(bitmask, bit);
-            final TrieNode<T> child = entries[childIndex];
-            TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
             return selectNodeForDeleteResult(shift, bit, bitmask, entries, childIndex, child, newChild);
         }
     }
@@ -312,12 +233,6 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
-    {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor(transforms));
-    }
-
-    @Override
     public Cursor<T> anyOrderValueCursor()
     {
         return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
@@ -330,16 +245,6 @@ public class MultiBranchTrieNode<T>
             return anyOrderEntryCursor();
         } else {
             return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryCursor());
-        }
-    }
-
-    @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> signedOrderEntryCursor(Transforms<T, K, V> transforms)
-    {
-        if (shift != ROOT_SHIFT) {
-            return anyOrderEntryCursor(transforms);
-        } else {
-            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryCursor(transforms));
         }
     }
 
@@ -360,12 +265,6 @@ public class MultiBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator(transforms));
-    }
-
-    @Override
     public SplitableIterator<T> anyOrderValueIterator()
     {
         return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueIterator());
@@ -378,16 +277,6 @@ public class MultiBranchTrieNode<T>
             return anyOrderEntryIterator();
         } else {
             return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryIterator());
-        }
-    }
-
-    @Override
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> signedOrderEntryIterator(Transforms<T, K, V> transforms)
-    {
-        if (shift != ROOT_SHIFT) {
-            return anyOrderEntryIterator(transforms);
-        } else {
-            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryIterator(transforms));
         }
     }
 

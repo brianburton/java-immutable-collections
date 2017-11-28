@@ -44,7 +44,6 @@ import org.javimmutable.collections.indexed.IndexedList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FullBranchTrieNodeTest
     extends TestCase
@@ -127,52 +126,4 @@ public class FullBranchTrieNodeTest
         StandardCursorTest.listIteratorTest(entryList, node.signedOrderEntryIterator());
     }
 
-    public void testTransformOperations()
-    {
-        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<>();
-        List<Map<String, String>> list = new ArrayList<>();
-        for (int i = 0; i < 32; ++i) {
-            list.add(tx.update(null, String.valueOf(i), String.valueOf(i), new MutableDelta()));
-        }
-        TrieNode<Map<String, String>> node = FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
-        for (int i = 0; i < 32; ++i) {
-            assertEquals(String.valueOf(i), node.getValueOr(0, i, String.valueOf(i), tx, null));
-            assertEquals(String.valueOf(i), node.find(0, i, String.valueOf(i), tx).getValue());
-            assertEquals(null, node.getValueOr(0, 32 + i, String.valueOf(i), tx, null));
-            assertEquals(true, node.find(0, 32 + i, String.valueOf(i), tx).isEmpty());
-        }
-        for (int i = 31; i >= 0; --i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(0, i, String.valueOf(i), String.format("%d", -i), tx, delta);
-            assertTrue(node instanceof FullBranchTrieNode);
-            assertEquals(0, delta.getValue());
-        }
-        for (int i = 0; i < 32; ++i) {
-            assertEquals(String.valueOf(-i), node.getValueOr(0, i, String.valueOf(i), tx, null));
-            assertEquals(String.valueOf(-i), node.find(0, i, String.valueOf(i), tx).getValue());
-        }
-        for (int i = 0; i < 32; ++i) {
-            MutableDelta delta = new MutableDelta();
-            TrieNode<Map<String, String>> changed = node.delete(0, i, String.valueOf(i), tx, delta);
-            assertEquals(-1, delta.getValue());
-            assertTrue(changed instanceof MultiBranchTrieNode);
-            for (int k = 0; k < 32; ++k) {
-                if (k != i) {
-                    assertEquals(String.valueOf(-k), changed.getValueOr(0, k, String.valueOf(k), tx, null));
-                    assertEquals(String.valueOf(-k), changed.find(0, k, String.valueOf(k), tx).getValue());
-                } else {
-                    assertEquals(null, changed.getValueOr(0, k, String.valueOf(k), tx, null));
-                    assertEquals(null, changed.find(0, k, String.valueOf(k), tx).getValueOr(null));
-                }
-            }
-        }
-        List<JImmutableMap.Entry<String, String>> entryList = new ArrayList<>();
-        for (int i = 0; i < 32; ++i) {
-            entryList.add(MapEntry.of(String.valueOf(i), String.valueOf(-i)));
-        }
-        StandardCursorTest.listCursorTest(entryList, node.anyOrderEntryCursor(tx));
-        StandardCursorTest.listCursorTest(entryList, node.signedOrderEntryCursor(tx));
-        StandardCursorTest.listIteratorTest(entryList, node.anyOrderEntryIterator(tx));
-        StandardCursorTest.listIteratorTest(entryList, node.signedOrderEntryIterator(tx));
-    }
 }

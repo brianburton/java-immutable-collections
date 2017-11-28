@@ -91,35 +91,12 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> V getValueOr(int shift,
-                               int index,
-                               K key,
-                               Transforms<T, K, V> transforms,
-                               V defaultValue)
-    {
-        assert this.shift == shift;
-        final int childIndex = (index >>> shift) & 0x1f;
-        return entries[childIndex].getValueOr(shift - 5, index, key, transforms, defaultValue);
-    }
-
-    @Override
     public Holder<T> find(int shift,
                           int index)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         return entries[childIndex].find(shift - 5, index);
-    }
-
-    @Override
-    public <K, V> Holder<V> find(int shift,
-                                 int index,
-                                 K key,
-                                 Transforms<T, K, V> transforms)
-    {
-        assert this.shift == shift;
-        final int childIndex = (index >>> shift) & 0x1f;
-        return entries[childIndex].find(shift - 5, index, key, transforms);
     }
 
     @Override
@@ -140,25 +117,6 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> TrieNode<T> assign(int shift,
-                                     int index,
-                                     K key,
-                                     V value,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
-    {
-        assert this.shift == shift;
-        final int childIndex = (index >>> shift) & 0x1f;
-        final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.assign(shift - 5, index, key, value, transforms, sizeDelta);
-        if (newChild == child) {
-            return this;
-        } else {
-            return createUpdatedEntries(shift, childIndex, newChild);
-        }
-    }
-
-    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
@@ -167,20 +125,6 @@ public class FullBranchTrieNode<T>
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
         final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
-        return createDeleteResultNode(shift, childIndex, child, newChild);
-    }
-
-    @Override
-    public <K, V> TrieNode<T> delete(int shift,
-                                     int index,
-                                     K key,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
-    {
-        assert this.shift == shift;
-        final int childIndex = (index >>> shift) & 0x1f;
-        final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.delete(shift - 5, index, key, transforms, sizeDelta);
         return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 
@@ -203,12 +147,6 @@ public class FullBranchTrieNode<T>
     }
 
     @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(final Transforms<T, K, V> transforms)
-    {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor(transforms));
-    }
-
-    @Override
     public Cursor<T> anyOrderValueCursor()
     {
         return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
@@ -218,12 +156,6 @@ public class FullBranchTrieNode<T>
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
     {
         return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator());
-    }
-
-    @Override
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator(transforms));
     }
 
     @Override

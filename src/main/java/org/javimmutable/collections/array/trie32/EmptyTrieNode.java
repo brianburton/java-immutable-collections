@@ -73,27 +73,8 @@ public class EmptyTrieNode<T>
     }
 
     @Override
-    public <K, V> V getValueOr(int shift,
-                               int index,
-                               K key,
-                               Transforms<T, K, V> transforms,
-                               V defaultValue)
-    {
-        return defaultValue;
-    }
-
-    @Override
     public Holder<T> find(int shift,
                           int index)
-    {
-        return Holders.of();
-    }
-
-    @Override
-    public <K, V> Holder<V> find(int shift,
-                                 int index,
-                                 K key,
-                                 Transforms<T, K, V> transforms)
     {
         return Holders.of();
     }
@@ -109,30 +90,9 @@ public class EmptyTrieNode<T>
     }
 
     @Override
-    public <K, V> TrieNode<T> assign(int shift,
-                                     int index,
-                                     K key,
-                                     V value,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
-    {
-        return LeafTrieNode.of(index, transforms.update(null, key, value, sizeDelta));
-    }
-
-    @Override
     public TrieNode<T> delete(int shift,
                               int index,
                               MutableDelta sizeDelta)
-    {
-        return this;
-    }
-
-    @Override
-    public <K, V> TrieNode<T> delete(int shift,
-                                     int index,
-                                     K key,
-                                     Transforms<T, K, V> transforms,
-                                     MutableDelta sizeDelta)
     {
         return this;
     }
@@ -162,12 +122,6 @@ public class EmptyTrieNode<T>
     }
 
     @Override
-    public <K, V> Cursor<JImmutableMap.Entry<K, V>> anyOrderEntryCursor(Transforms<T, K, V> transforms)
-    {
-        return StandardCursor.of();
-    }
-
-    @Override
     public Cursor<T> anyOrderValueCursor()
     {
         return StandardCursor.of();
@@ -175,12 +129,6 @@ public class EmptyTrieNode<T>
 
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return EmptyIterator.of();
-    }
-
-    @Override
-    public <K, V> SplitableIterator<JImmutableMap.Entry<K, V>> anyOrderEntryIterator(Transforms<T, K, V> transforms)
     {
         return EmptyIterator.of();
     }

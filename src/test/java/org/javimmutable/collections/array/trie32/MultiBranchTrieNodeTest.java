@@ -46,7 +46,6 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("StringConcatenationMissingWhitespace")
 public class MultiBranchTrieNodeTest
@@ -281,46 +280,6 @@ public class MultiBranchTrieNodeTest
         assertSame(leaf, node.trimmedToMinimumDepth());
     }
 
-    public void testTransforms()
-    {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
-        TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(20);
-        for (int i = 0; i < 31; ++i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), i, "value" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-            delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), 100 + i, "xvalue" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-        }
-        for (int i = 30; i >= 0; --i) {
-            assertEquals("value" + i, node.getValueOr(20, shiftIndex(20, i), i, tx, null));
-            assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i), i, tx));
-            assertEquals("xvalue" + i, node.getValueOr(20, shiftIndex(20, i), 100 + i, tx, null));
-            assertEquals(Holders.of("xvalue" + i), node.find(20, shiftIndex(20, i), 100 + i, tx));
-        }
-        for (int i = 30; i >= 0; --i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.delete(20, shiftIndex(20, i), i, tx, delta);
-            assertEquals(-1, delta.getValue());
-
-            assertEquals(null, node.getValueOr(20, shiftIndex(20, i), i, tx, null));
-            assertEquals(Holders.<String>of(), node.find(20, shiftIndex(20, i), i, tx));
-            assertEquals("xvalue" + i, node.getValueOr(20, shiftIndex(20, i), 100 + i, tx, null));
-            assertEquals(Holders.of("xvalue" + i), node.find(20, shiftIndex(20, i), 100 + i, tx));
-
-            delta = new MutableDelta();
-            node = node.delete(20, shiftIndex(20, i), 100 + i, tx, delta);
-            assertEquals(-1, delta.getValue());
-        }
-        for (int i = 30; i >= 0; --i) {
-            assertEquals(null, node.getValueOr(20, shiftIndex(20, i), i, tx, null));
-            assertEquals(Holders.<String>of(), node.find(20, shiftIndex(20, i), i, tx));
-            assertEquals(null, node.getValueOr(20, shiftIndex(20, i), 100 + i, tx, null));
-            assertEquals(Holders.<String>of(), node.find(20, shiftIndex(20, i), 100 + i, tx));
-        }
-    }
-
     public void testNonRootCursors()
     {
         final int length = 32;
@@ -374,57 +333,6 @@ public class MultiBranchTrieNodeTest
         StandardCursorTest.listIteratorTest(signedOrderValues, node.signedOrderValueIterator());
         StandardCursorTest.listIteratorTest(anyOrderEntries, node.anyOrderEntryIterator());
         StandardCursorTest.listIteratorTest(signedOrderEntries, node.signedOrderEntryIterator());
-    }
-
-    public void testNonRootTransformCursors()
-    {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
-        TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(20);
-        for (int i = 0; i < 31; ++i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), i, "value" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-            delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), 100 + i, "xvalue" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-        }
-        List<JImmutableMap.Entry<Integer, String>> entries = new ArrayList<>();
-        for (int i = 0; i < 31; ++i) {
-            entries.add(MapEntry.of(i, "value" + i));
-            entries.add(MapEntry.of(100 + i, "xvalue" + i));
-        }
-        StandardCursorTest.listCursorTest(entries, node.anyOrderEntryCursor(tx));
-        StandardCursorTest.listCursorTest(entries, node.signedOrderEntryCursor(tx));
-        StandardCursorTest.listIteratorTest(entries, node.anyOrderEntryIterator(tx));
-        StandardCursorTest.listIteratorTest(entries, node.signedOrderEntryIterator(tx));
-    }
-
-    public void testRootTransformCursors()
-    {
-        Transforms<Map<Integer, String>, Integer, String> tx = new TestOnlyTransforms<>();
-        TrieNode<Map<Integer, String>> node = MultiBranchTrieNode.forTesting(TrieNode.ROOT_SHIFT);
-        for (int i = 0; i < 4; ++i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), i, "value" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-            delta = new MutableDelta();
-            node = node.assign(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), 100 + i, "xvalue" + i, tx, delta);
-            assertEquals(1, delta.getValue());
-        }
-        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<>();
-        for (int i = 0; i < 4; ++i) {
-            anyOrderEntries.add(MapEntry.of(i, "value" + i));
-            anyOrderEntries.add(MapEntry.of(100 + i, "xvalue" + i));
-        }
-        List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<>();
-        for (Integer i : Arrays.asList(2, 3, 0, 1)) {
-            signedOrderEntries.add(MapEntry.of(i, "value" + i));
-            signedOrderEntries.add(MapEntry.of(100 + i, "xvalue" + i));
-        }
-        StandardCursorTest.listCursorTest(anyOrderEntries, node.anyOrderEntryCursor(tx));
-        StandardCursorTest.listCursorTest(signedOrderEntries, node.signedOrderEntryCursor(tx));
-        StandardCursorTest.listIteratorTest(anyOrderEntries, node.anyOrderEntryIterator(tx));
-        StandardCursorTest.listIteratorTest(signedOrderEntries, node.signedOrderEntryIterator(tx));
     }
 
     private int shiftIndex(int shift,

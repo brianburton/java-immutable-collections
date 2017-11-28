@@ -37,20 +37,15 @@ package org.javimmutable.collections.array.trie32;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class SingleBranchTrieNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testConstructors()
     {
@@ -116,72 +111,6 @@ public class SingleBranchTrieNodeTest
         delta = new MutableDelta();
         assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, delta));
         assertEquals(-1, delta.getValue());
-    }
-
-    public void testTransforms()
-    {
-        Transforms<Map<String, String>, String, String> tx = new TestOnlyTransforms<>();
-        Map<String, String> map = new TreeMap<>();
-        map.put("a", "A");
-        map.put("b", "B");
-        LeafTrieNode<Map<String, String>> child = LeafTrieNode.of(30 << 20, map);
-        SingleBranchTrieNode<Map<String, String>> node = SingleBranchTrieNode.forBranchIndex(20, 30, child);
-        assertEquals(null, node.getValueOr(20, 31 << 20, null));
-        assertEquals("A", node.getValueOr(20, 30 << 20, "a", tx, null));
-        assertEquals("B", node.getValueOr(20, 30 << 20, "b", tx, null));
-        assertEquals(null, node.getValueOr(20, 30 << 20, "c", tx, null));
-        assertEquals(Holders.<String>of(), node.find(20, 31 << 20, "a", tx));
-        assertEquals(Holders.of("A"), node.find(20, 30 << 20, "a", tx));
-        assertEquals(Holders.of("B"), node.find(20, 30 << 20, "b", tx));
-        assertEquals(Holders.<String>of(), node.find(20, 30 << 20, "c", tx));
-        List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<>();
-        expectedEntries.add(MapEntry.of("a", "A"));
-        expectedEntries.add(MapEntry.of("b", "B"));
-        StandardCursorTest.listCursorTest(expectedEntries, node.anyOrderEntryCursor(tx));
-        StandardCursorTest.listCursorTest(expectedEntries, node.signedOrderEntryCursor(tx));
-        StandardCursorTest.listIteratorTest(expectedEntries, node.anyOrderEntryIterator(tx));
-        StandardCursorTest.listIteratorTest(expectedEntries, node.signedOrderEntryIterator(tx));
-
-        MutableDelta delta = new MutableDelta();
-        assertSame(node, node.assign(20, 30 << 20, "a", "A", tx, delta));
-        assertEquals(0, delta.getValue());
-
-        delta = new MutableDelta();
-        assertSame(node, node.delete(20, 18 << 20, "a", tx, delta));
-        assertEquals(0, delta.getValue());
-
-        delta = new MutableDelta();
-        TrieNode<Map<String, String>> newNode = node.delete(20, 30 << 20, "a", tx, delta);
-        assertTrue(newNode instanceof LeafTrieNode);
-        assertEquals(-1, delta.getValue());
-        assertEquals(null, newNode.getValueOr(20, 30 << 20, "a", tx, null));
-        assertEquals("B", newNode.getValueOr(20, 30 << 20, "b", tx, null));
-
-        delta = new MutableDelta();
-        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, "b", tx, delta));
-        assertEquals(-1, delta.getValue());
-
-        delta = new MutableDelta();
-        newNode = node.assign(20, 30 << 20, "a", "AA", tx, delta);
-        assertEquals(0, delta.getValue());
-        assertTrue(newNode instanceof SingleBranchTrieNode);
-        assertEquals("AA", newNode.getValueOr(20, 30 << 20, "a", tx, null));
-
-        delta = new MutableDelta();
-        newNode = node.assign(20, 18 << 20, "x", "X", tx, delta);
-        assertEquals(1, delta.getValue());
-        assertTrue(newNode instanceof MultiBranchTrieNode);
-        assertEquals("A", newNode.getValueOr(20, 30 << 20, "a", tx, null));
-        assertEquals("X", newNode.getValueOr(20, 18 << 20, "x", tx, null));
-
-        delta = new MutableDelta();
-        newNode = newNode.delete(20, 18 << 20, "x", tx, delta);
-        assertTrue(newNode instanceof LeafTrieNode);
-        assertEquals(-1, delta.getValue());
-
-        delta = new MutableDelta();
-        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, "a", tx, delta).delete(20, 30 << 20, "b", tx, delta));
-        assertEquals(-2, delta.getValue());
     }
 
     @SuppressWarnings({"unchecked", "PointlessBitwiseExpression"})
