@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -49,25 +49,25 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class SingleHashValueListNode<K, V>
-    implements HashValueListNode<K, V>,
+public class SingleValueListNode<K, V>
+    implements ListNode<K, V>,
                JImmutableMap.Entry<K, V>,
                Holder<V>
 {
     private final K key;
     private final V value;
 
-    private SingleHashValueListNode(K key,
-                                    V value)
+    private SingleValueListNode(K key,
+                                V value)
     {
         this.key = key;
         this.value = value;
     }
 
-    static <K, V> SingleHashValueListNode<K, V> of(K key,
-                                                   V value)
+    static <K, V> SingleValueListNode<K, V> of(K key,
+                                               V value)
     {
-        return new SingleHashValueListNode<>(key, value);
+        return new SingleValueListNode<>(key, value);
     }
 
     @Override
@@ -90,21 +90,21 @@ public class SingleHashValueListNode<K, V>
     }
 
     @Override
-    public HashValueListNode<K, V> setValueForKey(K key,
-                                                  V value,
-                                                  MutableDelta sizeDelta)
+    public ListNode<K, V> setValueForKey(K key,
+                                         V value,
+                                         MutableDelta sizeDelta)
     {
         if (key.equals(this.key)) {
-            return (this.value == value) ? this : new SingleHashValueListNode<>(key, value);
+            return (this.value == value) ? this : new SingleValueListNode<>(key, value);
         } else {
             sizeDelta.add(1);
-            return MultiHashValueListNode.of(this, new SingleHashValueListNode<>(key, value));
+            return MultiValueListNode.of(this, new SingleValueListNode<>(key, value));
         }
     }
 
     @Override
-    public HashValueListNode<K, V> deleteValueForKey(K key,
-                                                     MutableDelta sizeDelta)
+    public ListNode<K, V> deleteValueForKey(K key,
+                                            MutableDelta sizeDelta)
     {
         if (this.key.equals(key)) {
             sizeDelta.subtract(1);
@@ -175,7 +175,7 @@ public class SingleHashValueListNode<K, V>
             return false;
         }
 
-        SingleHashValueListNode that = (SingleHashValueListNode)o;
+        SingleValueListNode that = (SingleValueListNode)o;
 
         if (key != null ? !key.equals(that.key) : that.key != null) {
             return false;

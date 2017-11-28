@@ -33,13 +33,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.tree.BranchNode;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -57,8 +56,8 @@ import java.util.Comparator;
  * type of key.
  */
 @Immutable
-public class HashValueTreeTransforms<K extends Comparable<K>, V>
-    implements Transforms<Node<K, V>, K, V>
+public class TreeCollisionMap<K extends Comparable<K>, V>
+    implements CollisionMap<Node<K, V>, K, V>
 {
     private final Comparator<K> comparator = ComparableComparator.of();
 

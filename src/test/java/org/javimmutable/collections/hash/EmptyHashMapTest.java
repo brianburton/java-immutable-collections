@@ -50,12 +50,12 @@ public class EmptyHashMapTest
         JImmutableMap<String, Integer> comparableMap = JImmutableHashMap.of();
         comparableMap = comparableMap.assign("a", 100);
         assertTrue(comparableMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)comparableMap).getTransforms());
+        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)comparableMap).getCollisionMap());
 
         JImmutableMap<Object, Integer> otherMap = JImmutableHashMap.of();
         otherMap = otherMap.assign(new Object(), 100);
         assertTrue(otherMap instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.LIST_TRANSFORMS, ((JImmutableHashMap)otherMap).getTransforms());
+        assertSame(JImmutableHashMap.LIST_COLLISION_MAP, ((JImmutableHashMap)otherMap).getCollisionMap());
     }
 
     public void testAssignAll()
@@ -71,14 +71,14 @@ public class EmptyHashMapTest
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
 
         map = JImmutableHashMap.of();
         expected = expected.assign("b", 12).assign("c", 14);
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
 
 
         map = JImmutableHashMap.of();
@@ -92,7 +92,7 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
 
         map = JImmutableHashMap.of();
         expected2.put("b", 12);
@@ -100,6 +100,6 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof JImmutableHashMap);
-        assertSame(JImmutableHashMap.TREE_TRANSFORMS, ((JImmutableHashMap)map).getTransforms());
+        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
     }
 }

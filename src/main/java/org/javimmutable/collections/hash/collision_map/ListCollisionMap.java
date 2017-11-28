@@ -33,48 +33,47 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class HashValueListTransforms<K, V>
-    implements Transforms<HashValueListNode<K, V>, K, V>
+public class ListCollisionMap<K, V>
+    implements CollisionMap<ListNode<K, V>, K, V>
 {
     @Nonnull
     @Override
-    public HashValueListNode<K, V> update(HashValueListNode<K, V> leaf,
-                                          @Nonnull K key,
-                                          V value,
-                                          @Nonnull MutableDelta delta)
+    public ListNode<K, V> update(ListNode<K, V> leaf,
+                                 @Nonnull K key,
+                                 V value,
+                                 @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return SingleHashValueListNode.of(key, value);
+            return SingleValueListNode.of(key, value);
         } else {
             return leaf.setValueForKey(key, value, delta);
         }
     }
 
     @Override
-    public HashValueListNode<K, V> delete(@Nonnull HashValueListNode<K, V> leaf,
-                                          @Nonnull K key,
-                                          @Nonnull MutableDelta delta)
+    public ListNode<K, V> delete(@Nonnull ListNode<K, V> leaf,
+                                 @Nonnull K key,
+                                 @Nonnull MutableDelta delta)
     {
         return leaf.deleteValueForKey(key, delta);
     }
 
     @Override
-    public V getValueOr(@Nonnull HashValueListNode<K, V> leaf,
+    public V getValueOr(@Nonnull ListNode<K, V> leaf,
                         @Nonnull K key,
                         V defaultValue)
     {
@@ -82,27 +81,27 @@ public class HashValueListTransforms<K, V>
     }
 
     @Override
-    public Holder<V> findValue(@Nonnull HashValueListNode<K, V> leaf,
+    public Holder<V> findValue(@Nonnull ListNode<K, V> leaf,
                                @Nonnull K key)
     {
         return leaf.findValueForKey(key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull HashValueListNode<K, V> leaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull ListNode<K, V> leaf,
                                                        @Nonnull K key)
     {
         return Holders.fromNullable(leaf.getEntryForKey(key));
     }
 
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull HashValueListNode<K, V> leaf)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull ListNode<K, V> leaf)
     {
         return leaf.cursor();
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull HashValueListNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull ListNode<K, V> leaf)
     {
         return leaf.iterator();
     }

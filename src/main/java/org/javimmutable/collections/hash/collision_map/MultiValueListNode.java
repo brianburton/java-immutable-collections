@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -50,44 +50,44 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class MultiHashValueListNode<K, V>
-    implements HashValueListNode<K, V>,
+public class MultiValueListNode<K, V>
+    implements ListNode<K, V>,
                Sequence<JImmutableMap.Entry<K, V>>
 {
-    private final MultiHashValueListNode<K, V> next;
-    private final SingleHashValueListNode<K, V> entry;
+    private final MultiValueListNode<K, V> next;
+    private final SingleValueListNode<K, V> entry;
 
-    private MultiHashValueListNode(MultiHashValueListNode<K, V> next,
-                                   SingleHashValueListNode<K, V> entry)
+    private MultiValueListNode(MultiValueListNode<K, V> next,
+                               SingleValueListNode<K, V> entry)
     {
         this.next = next;
         this.entry = entry;
     }
 
-    static <K, V> MultiHashValueListNode<K, V> of(K key,
-                                                  V value)
+    static <K, V> MultiValueListNode<K, V> of(K key,
+                                              V value)
     {
-        return new MultiHashValueListNode<>(null, SingleHashValueListNode.of(key, value));
+        return new MultiValueListNode<>(null, SingleValueListNode.of(key, value));
     }
 
-    static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
-                                                  SingleHashValueListNode<K, V> entry2)
+    static <K, V> MultiValueListNode<K, V> of(SingleValueListNode<K, V> entry1,
+                                              SingleValueListNode<K, V> entry2)
     {
-        return new MultiHashValueListNode<>(new MultiHashValueListNode<>(null, entry1), entry2);
+        return new MultiValueListNode<>(new MultiValueListNode<>(null, entry1), entry2);
     }
 
-    static <K, V> MultiHashValueListNode<K, V> of(SingleHashValueListNode<K, V> entry1,
-                                                  SingleHashValueListNode<K, V> entry2,
-                                                  SingleHashValueListNode<K, V> entry3)
+    static <K, V> MultiValueListNode<K, V> of(SingleValueListNode<K, V> entry1,
+                                              SingleValueListNode<K, V> entry2,
+                                              SingleValueListNode<K, V> entry3)
     {
-        return new MultiHashValueListNode<>(new MultiHashValueListNode<>(new MultiHashValueListNode<>(null, entry1), entry2), entry3);
+        return new MultiValueListNode<>(new MultiValueListNode<>(new MultiValueListNode<>(null, entry1), entry2), entry3);
     }
 
     @Override
     public V getValueForKey(K key,
                             V defaultValue)
     {
-        SingleHashValueListNode<K, V> answer = getEntryForKeyImpl(key);
+        SingleValueListNode<K, V> answer = getEntryForKeyImpl(key);
         if (answer != null) {
             return answer.getValue();
         } else {
@@ -98,7 +98,7 @@ public class MultiHashValueListNode<K, V>
     @Override
     public Holder<V> findValueForKey(K key)
     {
-        SingleHashValueListNode<K, V> answer = getEntryForKeyImpl(key);
+        SingleValueListNode<K, V> answer = getEntryForKeyImpl(key);
         if (answer != null) {
             return answer;
         } else {
@@ -113,29 +113,29 @@ public class MultiHashValueListNode<K, V>
     }
 
     @Override
-    public MultiHashValueListNode<K, V> setValueForKey(K key,
-                                                       V value,
-                                                       MutableDelta sizeDelta)
+    public MultiValueListNode<K, V> setValueForKey(K key,
+                                                   V value,
+                                                   MutableDelta sizeDelta)
     {
-        SingleHashValueListNode<K, V> entry = getEntryForKeyImpl(key);
+        SingleValueListNode<K, V> entry = getEntryForKeyImpl(key);
         if (entry == null) {
             sizeDelta.add(1);
-            return new MultiHashValueListNode<>(this, SingleHashValueListNode.of(key, value));
+            return new MultiValueListNode<>(this, SingleValueListNode.of(key, value));
         } else if (entry.getValue() == value) {
             return this;
         } else {
-            return new MultiHashValueListNode<>(removeKeyFromList(key), SingleHashValueListNode.of(key, value));
+            return new MultiValueListNode<>(removeKeyFromList(key), SingleValueListNode.of(key, value));
         }
     }
 
     @Override
-    public HashValueListNode<K, V> deleteValueForKey(K key,
-                                                     MutableDelta sizeDelta)
+    public ListNode<K, V> deleteValueForKey(K key,
+                                            MutableDelta sizeDelta)
     {
         if (getEntryForKey(key) == null) {
             return this;
         }
-        MultiHashValueListNode<K, V> newList = removeKeyFromList(key);
+        MultiValueListNode<K, V> newList = removeKeyFromList(key);
         sizeDelta.subtract(1);
         return (newList != null && newList.next == null) ? newList.entry : newList;
     }
@@ -187,7 +187,7 @@ public class MultiHashValueListNode<K, V>
             return false;
         }
 
-        MultiHashValueListNode that = (MultiHashValueListNode)o;
+        MultiValueListNode that = (MultiValueListNode)o;
 
         if (entry != null ? !entry.equals(that.entry) : that.entry != null) {
             return false;
@@ -217,20 +217,20 @@ public class MultiHashValueListNode<K, V>
                '}';
     }
 
-    private MultiHashValueListNode<K, V> removeKeyFromList(K key)
+    private MultiValueListNode<K, V> removeKeyFromList(K key)
     {
-        MultiHashValueListNode<K, V> newList = null;
-        for (MultiHashValueListNode<K, V> node = this; node != null; node = node.next) {
+        MultiValueListNode<K, V> newList = null;
+        for (MultiValueListNode<K, V> node = this; node != null; node = node.next) {
             if (!node.keyEquals(key)) {
-                newList = new MultiHashValueListNode<>(newList, node.entry);
+                newList = new MultiValueListNode<>(newList, node.entry);
             }
         }
         return newList;
     }
 
-    private SingleHashValueListNode<K, V> getEntryForKeyImpl(K key)
+    private SingleValueListNode<K, V> getEntryForKeyImpl(K key)
     {
-        for (MultiHashValueListNode<K, V> node = this; node != null; node = node.next) {
+        for (MultiValueListNode<K, V> node = this; node != null; node = node.next) {
             if (node.keyEquals(key)) {
                 return node.entry;
             }

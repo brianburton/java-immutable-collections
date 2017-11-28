@@ -41,13 +41,13 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.hash.collision_map.CollisionMap;
+import org.javimmutable.collections.hash.collision_map.ListCollisionMap;
+import org.javimmutable.collections.hash.collision_map.TreeCollisionMap;
 import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hash.hamt.HamtNode;
-import org.javimmutable.collections.hash.transforms.HashValueListTransforms;
-import org.javimmutable.collections.hash.transforms.HashValueTreeTransforms;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -57,30 +57,30 @@ public class JImmutableHashMap<T, K, V>
     extends AbstractJImmutableMap<K, V>
 {
     // we only need one instance of the transformations object
-    static final HashValueListTransforms LIST_TRANSFORMS = new HashValueListTransforms();
+    static final ListCollisionMap LIST_COLLISION_MAP = new ListCollisionMap();
 
     // we only need one instance of the transformations object
-    static final HashValueTreeTransforms TREE_TRANSFORMS = new HashValueTreeTransforms();
+    static final TreeCollisionMap TREE_COLLISION_MAP = new TreeCollisionMap();
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, LIST_TRANSFORMS);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, LIST_COLLISION_MAP);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, TREE_TRANSFORMS);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, TREE_COLLISION_MAP);
 
     private final HamtNode<T, K, V> root;
     private final int size;
-    private final Transforms<T, K, V> transforms;
+    private final CollisionMap<T, K, V> collisionMap;
 
     private JImmutableHashMap(HamtNode<T, K, V> root,
                               int size,
-                              Transforms<T, K, V> transforms)
+                              CollisionMap<T, K, V> collisionMap)
     {
         this.root = root;
         this.size = size;
-        this.transforms = transforms;
+        this.collisionMap = collisionMap;
     }
 
     /**
@@ -143,14 +143,14 @@ public class JImmutableHashMap<T, K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        return root.getValueOr(transforms, key.hashCode(), key, defaultValue);
+        return root.getValueOr(collisionMap, key.hashCode(), key, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        return root.find(transforms, key.hashCode(), key);
+        return root.find(collisionMap, key.hashCode(), key);
     }
 
     @Nonnull
@@ -171,11 +171,11 @@ public class JImmutableHashMap<T, K, V>
                                       V value)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        HamtNode<T, K, V> newRoot = root.assign(transforms, key.hashCode(), key, value, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.assign(collisionMap, key.hashCode(), key, value, sizeDelta);
         if (newRoot == root) {
             return this;
         } else {
-            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), transforms);
+            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), collisionMap);
         }
     }
 
@@ -184,13 +184,13 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> delete(@Nonnull K key)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        HamtNode<T, K, V> newRoot = root.delete(transforms, key.hashCode(), key, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.delete(collisionMap, key.hashCode(), key, sizeDelta);
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty()) {
             return of();
         } else {
-            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), transforms);
+            return new JImmutableHashMap<>(newRoot, size + sizeDelta.getValue(), collisionMap);
         }
     }
 
@@ -211,14 +211,14 @@ public class JImmutableHashMap<T, K, V>
     @Nonnull
     public Cursor<Entry<K, V>> cursor()
     {
-        return root.cursor(transforms);
+        return root.cursor(collisionMap);
     }
 
     @Nonnull
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return root.iterator(transforms);
+        return root.iterator(collisionMap);
     }
 
     @Override
@@ -228,8 +228,8 @@ public class JImmutableHashMap<T, K, V>
     }
 
     // for unit test to verify proper transforms selected
-    Transforms getTransforms()
+    CollisionMap getCollisionMap()
     {
-        return transforms;
+        return collisionMap;
     }
 }

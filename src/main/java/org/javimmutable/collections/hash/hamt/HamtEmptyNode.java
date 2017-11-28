@@ -40,9 +40,9 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.hash.collision_map.CollisionMap;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
@@ -61,7 +61,7 @@ public class HamtEmptyNode<T, K, V>
     }
 
     @Override
-    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+    public Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
                           int hashCode,
                           @Nonnull K hashKey)
     {
@@ -69,7 +69,7 @@ public class HamtEmptyNode<T, K, V>
     }
 
     @Override
-    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+    public V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
                         int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
@@ -79,18 +79,18 @@ public class HamtEmptyNode<T, K, V>
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+    public HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
                                     int hashCode,
                                     @Nonnull K hashKey,
                                     @Nullable V value,
                                     @Nonnull MutableDelta sizeDelta)
     {
-        return new HamtLeafNode<>(hashCode, transforms.update(null, hashKey, value, sizeDelta));
+        return new HamtLeafNode<>(hashCode, collisionMap.update(null, hashKey, value, sizeDelta));
     }
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+    public HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
                                     int hashCode,
                                     @Nonnull K hashKey,
                                     @Nonnull MutableDelta sizeDelta)
@@ -106,14 +106,14 @@ public class HamtEmptyNode<T, K, V>
 
     @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap)
     {
         return EmptyIterator.of();
     }
 
     @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap)
     {
         return StandardCursor.of();
     }

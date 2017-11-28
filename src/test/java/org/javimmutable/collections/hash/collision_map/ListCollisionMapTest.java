@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
@@ -44,26 +44,26 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HashValueListTransformsTest
+public class ListCollisionMapTest
     extends TestCase
 {
-    private SingleHashValueListNode<Integer, Integer> single(int key,
-                                                             int value)
+    private SingleValueListNode<Integer, Integer> single(int key,
+                                                         int value)
     {
-        return SingleHashValueListNode.of(key, value);
+        return SingleValueListNode.of(key, value);
     }
 
-    private HashValueListNode<Integer, Integer> multi(SingleHashValueListNode<Integer, Integer> e1,
-                                                      SingleHashValueListNode<Integer, Integer> e2)
+    private ListNode<Integer, Integer> multi(SingleValueListNode<Integer, Integer> e1,
+                                             SingleValueListNode<Integer, Integer> e2)
     {
-        return MultiHashValueListNode.of(e1, e2);
+        return MultiValueListNode.of(e1, e2);
     }
 
     public void testUpdateDelete()
     {
-        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<>();
+        ListCollisionMap<Integer, Integer> transforms = new ListCollisionMap<>();
         MutableDelta delta = new MutableDelta();
-        HashValueListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
+        ListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         assertEquals(1, delta.getValue());
         assertEquals(single(10, 100), value);
 
@@ -83,7 +83,7 @@ public class HashValueListTransformsTest
         assertEquals(multi(single(10, 1000), single(12, 90)), value);
 
         delta = new MutableDelta();
-        HashValueListNode<Integer, Integer> deleted = transforms.delete(value, 87, delta);
+        ListNode<Integer, Integer> deleted = transforms.delete(value, 87, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
         assertEquals(multi(single(10, 1000), single(12, 90)), deleted);
@@ -108,9 +108,9 @@ public class HashValueListTransformsTest
 
     public void testFindGet()
     {
-        HashValueListTransforms<Integer, Integer> transforms = new HashValueListTransforms<>();
+        ListCollisionMap<Integer, Integer> transforms = new ListCollisionMap<>();
         MutableDelta delta = new MutableDelta();
-        HashValueListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
+        ListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         value = transforms.update(value, 18, 180, delta);
         value = transforms.update(value, 12, 60, delta);
         value = transforms.update(value, -6, -60, delta);

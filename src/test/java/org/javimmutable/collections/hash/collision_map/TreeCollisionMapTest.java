@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
@@ -48,12 +48,12 @@ import org.javimmutable.collections.tree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HashValueTreeTransformsTest
+public class TreeCollisionMapTest
     extends TestCase
 {
     public void testUpdateDelete()
     {
-        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<>();
+        TreeCollisionMap<Integer, Integer> transforms = new TreeCollisionMap<>();
         MutableDelta delta = new MutableDelta();
         Node<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         assertEquals(1, delta.getValue());
@@ -100,7 +100,7 @@ public class HashValueTreeTransformsTest
 
     public void testFindGet()
     {
-        HashValueTreeTransforms<Integer, Integer> transforms = new HashValueTreeTransforms<>();
+        TreeCollisionMap<Integer, Integer> transforms = new TreeCollisionMap<>();
         MutableDelta delta = new MutableDelta();
         Node<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         value = transforms.update(value, 18, 180, delta);

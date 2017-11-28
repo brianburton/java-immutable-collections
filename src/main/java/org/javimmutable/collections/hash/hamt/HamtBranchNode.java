@@ -43,12 +43,12 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.cursors.StandardCursor;
+import org.javimmutable.collections.hash.collision_map.CollisionMap;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
@@ -99,13 +99,13 @@ public class HamtBranchNode<T, K, V>
     }
 
     @Override
-    public Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+    public Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
                           int hashCode,
                           @Nonnull K hashKey)
     {
         if (hashCode == 0) {
             if (value != null) {
-                return transforms.findValue(value, hashKey);
+                return collisionMap.findValue(value, hashKey);
             } else {
                 return Holders.of();
             }
@@ -118,19 +118,19 @@ public class HamtBranchNode<T, K, V>
             return Holders.of();
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].find(transforms, remainder, hashKey);
+            return children[childIndex].find(collisionMap, remainder, hashKey);
         }
     }
 
     @Override
-    public V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+    public V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
                         int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
         if (hashCode == 0) {
             if (value != null) {
-                return transforms.getValueOr(value, hashKey, defaultValue);
+                return collisionMap.getValueOr(value, hashKey, defaultValue);
             } else {
                 return defaultValue;
             }
@@ -143,13 +143,13 @@ public class HamtBranchNode<T, K, V>
             return defaultValue;
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].getValueOr(transforms, remainder, hashKey, defaultValue);
+            return children[childIndex].getValueOr(collisionMap, remainder, hashKey, defaultValue);
         }
     }
 
     @Override
     @Nonnull
-    public HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+    public HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
                                     int hashCode,
                                     @Nonnull K hashKey,
                                     @Nullable V value,
@@ -159,7 +159,7 @@ public class HamtBranchNode<T, K, V>
         final int bitmask = this.bitmask;
         final T thisValue = this.value;
         if (hashCode == 0) {
-            final T newValue = transforms.update(thisValue, hashKey, value, sizeDelta);
+            final T newValue = collisionMap.update(thisValue, hashKey, value, sizeDelta);
             if (thisValue == newValue) {
                 return this;
             } else {
@@ -171,12 +171,12 @@ public class HamtBranchNode<T, K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<T, K, V> newChild = new HamtLeafNode<>(remainder, transforms.update(null, hashKey, value, sizeDelta));
+            final HamtNode<T, K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(null, hashKey, value, sizeDelta));
             final HamtNode<T, K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren);
         } else {
             final HamtNode<T, K, V> child = children[childIndex];
-            final HamtNode<T, K, V> newChild = child.assign(transforms, remainder, hashKey, value, sizeDelta);
+            final HamtNode<T, K, V> newChild = child.assign(collisionMap, remainder, hashKey, value, sizeDelta);
             if (newChild == child) {
                 return this;
             } else {
@@ -188,7 +188,7 @@ public class HamtBranchNode<T, K, V>
 
     @Override
     @Nonnull
-    public HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+    public HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
                                     int hashCode,
                                     @Nonnull K hashKey,
                                     @Nonnull MutableDelta sizeDelta)
@@ -198,7 +198,7 @@ public class HamtBranchNode<T, K, V>
         final T value = this.value;
         if (hashCode == 0) {
             if (value != null) {
-                final T newValue = transforms.delete(value, hashKey, sizeDelta);
+                final T newValue = collisionMap.delete(value, hashKey, sizeDelta);
                 if (newValue == value) {
                     return this;
                 } else if (newValue == null) {
@@ -222,7 +222,7 @@ public class HamtBranchNode<T, K, V>
             return this;
         } else {
             final HamtNode<T, K, V> child = children[childIndex];
-            final HamtNode<T, K, V> newChild = child.delete(transforms, remainder, hashKey, sizeDelta);
+            final HamtNode<T, K, V> newChild = child.delete(collisionMap, remainder, hashKey, sizeDelta);
             if (newChild == child) {
                 return this;
             } else if (newChild.isEmpty()) {
@@ -285,16 +285,16 @@ public class HamtBranchNode<T, K, V>
 
     @Override
     @Nonnull
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap)
     {
-        return LazyMultiIterator.transformed(indexedForIterator(), node -> () -> iteratorHelper(node.iterator(), transforms));
+        return LazyMultiIterator.transformed(indexedForIterator(), node -> () -> iteratorHelper(node.iterator(), collisionMap));
     }
 
     @Nonnull
     private SplitableIterator<JImmutableMap.Entry<K, V>> iteratorHelper(SplitableIterator<T> value,
-                                                                        Transforms<T, K, V> transforms)
+                                                                        CollisionMap<T, K, V> collisionMap)
     {
-        return LazyMultiIterator.transformed(value, t -> () -> transforms.iterator(t));
+        return LazyMultiIterator.transformed(value, t -> () -> collisionMap.iterator(t));
     }
 
     @Nonnull
@@ -306,16 +306,16 @@ public class HamtBranchNode<T, K, V>
 
     @Override
     @Nonnull
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms)
+    public Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap)
     {
-        return LazyMultiCursor.transformed(indexedForCursor(), node -> () -> cursorHelper(node.cursor(), transforms));
+        return LazyMultiCursor.transformed(indexedForCursor(), node -> () -> cursorHelper(node.cursor(), collisionMap));
     }
 
     @Nonnull
     private Cursor<JImmutableMap.Entry<K, V>> cursorHelper(Cursor<T> value,
-                                                           Transforms<T, K, V> transforms)
+                                                           CollisionMap<T, K, V> collisionMap)
     {
-        return LazyMultiCursor.transformed(value, t -> () -> transforms.cursor(t));
+        return LazyMultiCursor.transformed(value, t -> () -> collisionMap.cursor(t));
     }
 
     @Nonnull

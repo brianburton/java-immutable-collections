@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
@@ -41,7 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
 
-public interface HashValueListNode<K, V>
+public interface ListNode<K, V>
     extends Cursorable<JImmutableMap.Entry<K, V>>,
             SplitableIterable<JImmutableMap.Entry<K, V>>
 {
@@ -52,10 +52,10 @@ public interface HashValueListNode<K, V>
 
     JImmutableMap.Entry<K, V> getEntryForKey(K key);
 
-    HashValueListNode<K, V> setValueForKey(K key,
-                                           V value,
-                                           MutableDelta sizeDelta);
+    ListNode<K, V> setValueForKey(K key,
+                                  V value,
+                                  MutableDelta sizeDelta);
 
-    HashValueListNode<K, V> deleteValueForKey(K key,
-                                              MutableDelta sizeDelta);
+    ListNode<K, V> deleteValueForKey(K key,
+                                     MutableDelta sizeDelta);
 }

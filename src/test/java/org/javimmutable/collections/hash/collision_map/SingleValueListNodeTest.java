@@ -33,17 +33,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.transforms;
+package org.javimmutable.collections.hash.collision_map;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.MutableDelta;
 
-public class SingleHashValueListNodeTest
+public class SingleValueListNodeTest
         extends TestCase
 {
     public void testKeyMatches()
     {
-        SingleHashValueListNode<String, String> v = SingleHashValueListNode.of("a", "aa");
+        SingleValueListNode<String, String> v = SingleValueListNode.of("a", "aa");
         assertEquals(true, v.findValueForKey("a").isFilled());
         assertEquals("aa", v.findValueForKey("a").getValue());
         assertEquals("aa", v.findValueForKey("a").getValueOr("x"));
@@ -58,8 +58,8 @@ public class SingleHashValueListNodeTest
         assertSame(v, v.setValueForKey("a", "aa", null));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashValueListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof SingleHashValueListNode);
+        ListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof SingleValueListNode);
         assertEquals(0, sizeDelta.getValue());
         assertEquals(true, nv.findValueForKey("a").isFilled());
         assertEquals("A", nv.findValueForKey("a").getValue());
@@ -74,7 +74,7 @@ public class SingleHashValueListNodeTest
 
     public void testKeyMismatches()
     {
-        SingleHashValueListNode<String, String> v = SingleHashValueListNode.of("b", "bb");
+        SingleValueListNode<String, String> v = SingleValueListNode.of("b", "bb");
         assertEquals(false, v.findValueForKey("a").isFilled());
         assertEquals("x", v.findValueForKey("a").getValueOr("x"));
         assertEquals(null, v.findValueForKey("a").getValueOrNull());
@@ -82,8 +82,8 @@ public class SingleHashValueListNodeTest
         assertEquals(null, v.getEntryForKey("a"));
 
         MutableDelta sizeDelta = new MutableDelta();
-        HashValueListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
-        assertEquals(true, nv instanceof MultiHashValueListNode);
+        ListNode<String, String> nv = v.setValueForKey("a", "A", sizeDelta);
+        assertEquals(true, nv instanceof MultiValueListNode);
         assertEquals(1, sizeDelta.getValue());
         assertEquals(true, nv.findValueForKey("a").isFilled());
         assertEquals("A", nv.findValueForKey("a").getValue());

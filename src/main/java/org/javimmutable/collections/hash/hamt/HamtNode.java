@@ -42,8 +42,8 @@ import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.Transforms;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.hash.collision_map.CollisionMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,24 +54,24 @@ public interface HamtNode<T, K, V>
             InvariantCheckable
 
 {
-    Holder<V> find(@Nonnull Transforms<T, K, V> transforms,
+    Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
                    int hashCode,
                    @Nonnull K hashKey);
 
-    V getValueOr(@Nonnull Transforms<T, K, V> transforms,
+    V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
                  int hashCode,
                  @Nonnull K hashKey,
                  V defaultValue);
 
     @Nonnull
-    HamtNode<T, K, V> assign(@Nonnull Transforms<T, K, V> transforms,
+    HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
                              int hashCode,
                              @Nonnull K hashKey,
                              @Nullable V value,
                              @Nonnull MutableDelta sizeDelta);
 
     @Nonnull
-    HamtNode<T, K, V> delete(@Nonnull Transforms<T, K, V> transforms,
+    HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
                              int hashCode,
                              @Nonnull K hashKey,
                              @Nonnull MutableDelta sizeDelta);
@@ -79,10 +79,10 @@ public interface HamtNode<T, K, V>
     boolean isEmpty();
 
     @Nonnull
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(Transforms<T, K, V> transforms);
+    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap);
 
     @Nonnull
-    Cursor<JImmutableMap.Entry<K, V>> cursor(Transforms<T, K, V> transforms);
+    Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap);
 
     @Override
     default void checkInvariants()
