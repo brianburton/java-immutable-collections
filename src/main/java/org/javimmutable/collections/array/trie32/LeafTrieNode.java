@@ -39,7 +39,6 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
@@ -51,7 +50,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class LeafTrieNode<T>
     extends TrieNode<T>
-    implements Holder<T>
+    implements JImmutableMap.Entry<Integer, T>,
+               Holder<T>
 {
     private final int index;
     @Nonnull
@@ -77,6 +77,13 @@ public class LeafTrieNode<T>
     public boolean isEmpty()
     {
         return false;
+    }
+
+    @Nonnull
+    @Override
+    public Integer getKey()
+    {
+        return index;
     }
 
     @Override
@@ -152,28 +159,18 @@ public class LeafTrieNode<T>
         }
     }
 
+    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return SingleValueCursor.of(MapEntry.of(index, value));
+        return SingleValueIterator.of(this);
     }
 
+    @Nonnull
     @Override
-    public Cursor<T> anyOrderValueCursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return SingleValueCursor.of(value);
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return SingleValueIterator.of(MapEntry.of(index, value));
-    }
-
-    @Override
-    public SplitableIterator<T> anyOrderValueIterator()
-    {
-        return SingleValueIterator.of(value);
+        return SingleValueCursor.of(this);
     }
 
     @Override

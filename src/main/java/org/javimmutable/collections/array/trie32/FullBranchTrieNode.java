@@ -45,6 +45,7 @@ import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -140,28 +141,18 @@ public class FullBranchTrieNode<T>
         return false;
     }
 
+    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor());
+        return LazyMultiIterator.iterator(IndexedArray.retained(entries));
     }
 
+    @Nonnull
     @Override
-    public Cursor<T> anyOrderValueCursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator());
-    }
-
-    @Override
-    public SplitableIterator<T> anyOrderValueIterator()
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueIterator());
+        return LazyMultiCursor.cursor(IndexedArray.retained(entries));
     }
 
     private TrieNode<T> createUpdatedEntries(int shift,

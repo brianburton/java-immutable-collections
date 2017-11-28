@@ -41,7 +41,6 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class SingleBranchTrieNodeTest
@@ -69,14 +68,8 @@ public class SingleBranchTrieNodeTest
         assertEquals("value", node.getValueOr(20, 30 << 20, null));
         assertEquals(Holders.<String>of(), node.find(20, 31 << 20));
         assertEquals(Holders.of("value"), node.find(20, 30 << 20));
-        StandardCursorTest.listCursorTest(Arrays.asList("value"), node.anyOrderValueCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList("value"), node.signedOrderValueCursor());
-        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryCursor());
-        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryCursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList("value"), node.anyOrderValueIterator());
-        StandardCursorTest.listIteratorTest(Arrays.asList("value"), node.signedOrderValueIterator());
-        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.anyOrderEntryIterator());
-        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.signedOrderEntryIterator());
+        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.cursor());
+        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.iterator());
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "value", delta));

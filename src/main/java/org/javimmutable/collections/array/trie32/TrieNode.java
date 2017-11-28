@@ -35,17 +35,19 @@
 
 package org.javimmutable.collections.array.trie32;
 
-import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public abstract class TrieNode<T>
+    implements Cursorable<JImmutableMap.Entry<Integer, T>>,
+               SplitableIterable<JImmutableMap.Entry<Integer, T>>
 {
     public static final int ROOT_SHIFT = 30;
 
@@ -86,34 +88,6 @@ public abstract class TrieNode<T>
         }
         return node;
     }
-
-    public Cursor<JImmutableMap.Entry<Integer, T>> signedOrderEntryCursor()
-    {
-        return anyOrderEntryCursor();
-    }
-
-    public Cursor<T> signedOrderValueCursor()
-    {
-        return anyOrderValueCursor();
-    }
-
-    public abstract Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor();
-
-    public abstract Cursor<T> anyOrderValueCursor();
-
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> signedOrderEntryIterator()
-    {
-        return anyOrderEntryIterator();
-    }
-
-    public SplitableIterator<T> signedOrderValueIterator()
-    {
-        return anyOrderValueIterator();
-    }
-
-    public abstract SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator();
-
-    public abstract SplitableIterator<T> anyOrderValueIterator();
 
     public static <T> TrieNode<T> of()
     {

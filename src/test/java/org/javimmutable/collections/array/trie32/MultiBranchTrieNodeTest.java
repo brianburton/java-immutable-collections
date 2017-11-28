@@ -294,14 +294,8 @@ public class MultiBranchTrieNodeTest
             values.add(node.getValueOr(20, shiftIndex(20, i), null));
             entries.add(MapEntry.of(shiftIndex(20, i), values.get(i)));
         }
-        StandardCursorTest.listCursorTest(values, node.anyOrderValueCursor());
-        StandardCursorTest.listCursorTest(values, node.signedOrderValueCursor());
-        StandardCursorTest.listCursorTest(entries, node.anyOrderEntryCursor());
-        StandardCursorTest.listCursorTest(entries, node.signedOrderEntryCursor());
-        StandardCursorTest.listIteratorTest(values, node.anyOrderValueIterator());
-        StandardCursorTest.listIteratorTest(values, node.signedOrderValueIterator());
-        StandardCursorTest.listIteratorTest(entries, node.anyOrderEntryIterator());
-        StandardCursorTest.listIteratorTest(entries, node.signedOrderEntryIterator());
+        StandardCursorTest.listCursorTest(entries, node.cursor());
+        StandardCursorTest.listIteratorTest(entries, node.iterator());
     }
 
     public void testRootCursors()
@@ -312,27 +306,15 @@ public class MultiBranchTrieNodeTest
             entries[i] = LeafTrieNode.of(shiftIndex(TrieNode.ROOT_SHIFT, i), "value" + i);
         }
         final MultiBranchTrieNode<String> node = MultiBranchTrieNode.forEntries(TrieNode.ROOT_SHIFT, entries);
-        List<String> anyOrderValues = new ArrayList<>();
-        List<JImmutableMap.Entry<Integer, String>> anyOrderEntries = new ArrayList<>();
         List<String> signedOrderValues = new ArrayList<>();
         List<JImmutableMap.Entry<Integer, String>> signedOrderEntries = new ArrayList<>();
-        for (int i = 0; i < length; ++i) {
-            anyOrderValues.add(node.getValueOr(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), null));
-            anyOrderEntries.add(MapEntry.of(shiftIndex(TrieNode.ROOT_SHIFT, i), anyOrderValues.get(i)));
-        }
         for (Integer i : Arrays.asList(2, 3, 0, 1)) {
             String value = node.getValueOr(TrieNode.ROOT_SHIFT, shiftIndex(TrieNode.ROOT_SHIFT, i), null);
             signedOrderValues.add(value);
             signedOrderEntries.add(MapEntry.of(shiftIndex(TrieNode.ROOT_SHIFT, i), value));
         }
-        StandardCursorTest.listCursorTest(anyOrderValues, node.anyOrderValueCursor());
-        StandardCursorTest.listCursorTest(signedOrderValues, node.signedOrderValueCursor());
-        StandardCursorTest.listCursorTest(anyOrderEntries, node.anyOrderEntryCursor());
-        StandardCursorTest.listCursorTest(signedOrderEntries, node.signedOrderEntryCursor());
-        StandardCursorTest.listIteratorTest(anyOrderValues, node.anyOrderValueIterator());
-        StandardCursorTest.listIteratorTest(signedOrderValues, node.signedOrderValueIterator());
-        StandardCursorTest.listIteratorTest(anyOrderEntries, node.anyOrderEntryIterator());
-        StandardCursorTest.listIteratorTest(signedOrderEntries, node.signedOrderEntryIterator());
+        StandardCursorTest.listCursorTest(signedOrderEntries, node.cursor());
+        StandardCursorTest.listIteratorTest(signedOrderEntries, node.iterator());
     }
 
     private int shiftIndex(int shift,

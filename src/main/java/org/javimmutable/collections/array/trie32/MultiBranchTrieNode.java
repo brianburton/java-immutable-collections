@@ -73,6 +73,7 @@ public class MultiBranchTrieNode<T>
         this.entries = entries;
     }
 
+    @SuppressWarnings("SameParameterValue")
     static <T> MultiBranchTrieNode<T> forTesting(int shift)
     {
         TrieNode<T>[] entries = allocate(0);
@@ -226,67 +227,25 @@ public class MultiBranchTrieNode<T>
         return (bitmask == 1) ? entries[0].trimmedToMinimumDepth() : this;
     }
 
+    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
-    {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryCursor());
-    }
-
-    @Override
-    public Cursor<T> anyOrderValueCursor()
-    {
-        return LazyMultiCursor.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueCursor());
-    }
-
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> signedOrderEntryCursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         if (shift != ROOT_SHIFT) {
-            return anyOrderEntryCursor();
+            return LazyMultiCursor.cursor(IndexedArray.retained(entries));
         } else {
-            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryCursor());
+            return LazyMultiCursor.cursor(IndexedArray.retained(entriesForSignedOrderIteration()));
         }
     }
 
+    @Nonnull
     @Override
-    public Cursor<T> signedOrderValueCursor()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         if (shift != ROOT_SHIFT) {
-            return anyOrderValueCursor();
+            return LazyMultiIterator.iterator(IndexedArray.retained(entries));
         } else {
-            return LazyMultiCursor.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderValueCursor());
-        }
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderEntryIterator());
-    }
-
-    @Override
-    public SplitableIterator<T> anyOrderValueIterator()
-    {
-        return LazyMultiIterator.transformed(IndexedArray.retained(entries), node -> () -> node.anyOrderValueIterator());
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> signedOrderEntryIterator()
-    {
-        if (shift != ROOT_SHIFT) {
-            return anyOrderEntryIterator();
-        } else {
-            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderEntryIterator());
-        }
-    }
-
-    @Override
-    public SplitableIterator<T> signedOrderValueIterator()
-    {
-        if (shift != ROOT_SHIFT) {
-            return anyOrderValueIterator();
-        } else {
-            return LazyMultiIterator.transformed(indexedForSignedOrder(), node -> () -> node.anyOrderValueIterator());
+            return LazyMultiIterator.iterator(IndexedArray.retained(entriesForSignedOrderIteration()));
         }
     }
 
@@ -375,7 +334,7 @@ public class MultiBranchTrieNode<T>
         }
     }
 
-    private Indexed<TrieNode<T>> indexedForSignedOrder()
+    private TrieNode<T>[] entriesForSignedOrderIteration()
     {
         final TrieNode<T>[] nodes = allocate(entries.length);
         int offset = 0;
@@ -385,7 +344,7 @@ public class MultiBranchTrieNode<T>
             }
         }
         assert offset == nodes.length;
-        return IndexedArray.retained(nodes);
+        return nodes;
     }
 
     private static int realIndex(int bitmask,

@@ -116,14 +116,8 @@ public class FullBranchTrieNodeTest
             list.add(String.valueOf(-i));
             entryList.add(MapEntry.of(i, String.valueOf(-i)));
         }
-        StandardCursorTest.listCursorTest(list, node.anyOrderValueCursor());
-        StandardCursorTest.listCursorTest(list, node.signedOrderValueCursor());
-        StandardCursorTest.listCursorTest(entryList, node.anyOrderEntryCursor());
-        StandardCursorTest.listCursorTest(entryList, node.signedOrderEntryCursor());
-        StandardCursorTest.listIteratorTest(list, node.anyOrderValueIterator());
-        StandardCursorTest.listIteratorTest(list, node.signedOrderValueIterator());
-        StandardCursorTest.listIteratorTest(entryList, node.anyOrderEntryIterator());
-        StandardCursorTest.listIteratorTest(entryList, node.signedOrderEntryIterator());
+        StandardCursorTest.listCursorTest(entryList, node.cursor());
+        StandardCursorTest.listIteratorTest(entryList, node.iterator());
     }
 
 }

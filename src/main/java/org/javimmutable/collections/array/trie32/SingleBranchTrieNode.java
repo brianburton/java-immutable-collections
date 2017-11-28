@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -151,28 +152,18 @@ public class SingleBranchTrieNode<T>
         return (branchIndex == 0) ? child.trimmedToMinimumDepth() : this;
     }
 
+    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return child.anyOrderEntryCursor();
+        return child.iterator();
     }
 
+    @Nonnull
     @Override
-    public Cursor<T> anyOrderValueCursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return child.anyOrderValueCursor();
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return child.anyOrderEntryIterator();
-    }
-
-    @Override
-    public SplitableIterator<T> anyOrderValueIterator()
-    {
-        return child.anyOrderValueIterator();
+        return child.cursor();
     }
 
     // for tests

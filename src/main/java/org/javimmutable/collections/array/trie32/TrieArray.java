@@ -196,14 +196,14 @@ public class TrieArray<T>
     @Nonnull
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return root.signedOrderEntryCursor();
+        return root.cursor();
     }
 
     @Nonnull
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return root.signedOrderEntryIterator();
+        return root.iterator();
     }
 
     @Override
@@ -301,9 +301,10 @@ public class TrieArray<T>
             return this;
         }
 
+        @SafeVarargs
         @Nonnull
         @Override
-        public <K extends T> Builder<T> add(K... source)
+        public final <K extends T> Builder<T> add(K... source)
         {
             for (T value : source) {
                 add(value);

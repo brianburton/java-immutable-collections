@@ -44,6 +44,7 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -115,26 +116,16 @@ public class EmptyTrieNode<T>
         return this;
     }
 
+    @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> anyOrderEntryCursor()
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return StandardCursor.of();
     }
 
+    @Nonnull
     @Override
-    public Cursor<T> anyOrderValueCursor()
-    {
-        return StandardCursor.of();
-    }
-
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> anyOrderEntryIterator()
-    {
-        return EmptyIterator.of();
-    }
-
-    @Override
-    public SplitableIterator<T> anyOrderValueIterator()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return EmptyIterator.of();
     }
