@@ -38,10 +38,8 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.iterators.TransformIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,6 +51,7 @@ import javax.annotation.Nullable;
  * If the transforms object is not immutable it can cause the table to become
  * corrupted over time and/or make older versions of the table invalid.
  */
+@Deprecated
 public interface Transforms<T, K, V>
 {
     /**
