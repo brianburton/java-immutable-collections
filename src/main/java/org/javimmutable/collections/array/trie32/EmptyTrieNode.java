@@ -129,4 +129,9 @@ public class EmptyTrieNode<T>
     {
         return EmptyIterator.of();
     }
+
+    @Override
+    public void checkInvariants()
+    {
+    }
 }

@@ -166,6 +166,17 @@ public class SingleBranchTrieNode<T>
         return child.cursor();
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        if (shift < 0 || shift > ROOT_SHIFT) {
+            throw new IllegalStateException("illegal shift value: " + shift);
+        }
+        if (branchIndex < 0 || branchIndex >= 32) {
+            throw new IllegalStateException("illegal branchIndex value: " + branchIndex);
+        }
+    }
+
     // for tests
     int getBranchIndex()
     {

@@ -209,7 +209,7 @@ public class TrieArray<T>
     @Override
     public void checkInvariants()
     {
-        //TODO: fix empty checkInvariants()
+        root.checkInvariants();
     }
 
     public static class Builder<T>
@@ -253,15 +253,15 @@ public class TrieArray<T>
                     }
                     TrieNode<T> branch;
                     switch (count) {
-                    case 1:
-                        branch = SingleBranchTrieNode.forBranchIndex(shift, 0, nodes[0]);
-                        break;
-                    case 32:
-                        branch = new FullBranchTrieNode<>(shift, nodes);
-                        break;
-                    default:
-                        branch = MultiBranchTrieNode.forEntries(shift, nodes);
-                        break;
+                        case 1:
+                            branch = SingleBranchTrieNode.forBranchIndex(shift, 0, nodes[0]);
+                            break;
+                        case 32:
+                            branch = new FullBranchTrieNode<>(shift, nodes);
+                            break;
+                        default:
+                            branch = MultiBranchTrieNode.forEntries(shift, nodes);
+                            break;
                     }
                     set(dst, dstOffset++, branch);
                 }

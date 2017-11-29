@@ -38,6 +38,7 @@ package org.javimmutable.collections.array.trie32;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
@@ -47,7 +48,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class TrieNode<T>
     implements Cursorable<JImmutableMap.Entry<Integer, T>>,
-               SplitableIterable<JImmutableMap.Entry<Integer, T>>
+               SplitableIterable<JImmutableMap.Entry<Integer, T>>,
+               InvariantCheckable
 {
     public static final int ROOT_SHIFT = 30;
 
@@ -105,69 +107,69 @@ public abstract class TrieNode<T>
         }
 
         switch (size) {
-        case 0:
-            return of();
+            case 0:
+                return of();
 
-        case 1:
-            return LeafTrieNode.of(index, source.get(offset));
+            case 1:
+                return LeafTrieNode.of(index, source.get(offset));
 
-        case 32:
-            return FullBranchTrieNode.fromSource(index, source, offset);
+            case 32:
+                return FullBranchTrieNode.fromSource(index, source, offset);
 
-        default:
-            return MultiBranchTrieNode.forSource(index, size, source, offset);
+            default:
+                return MultiBranchTrieNode.forSource(index, size, source, offset);
         }
     }
 
     public static int shiftForIndex(int index)
     {
         switch (Integer.numberOfLeadingZeros(index)) {
-        case 0:
-        case 1:
-            return 30;
+            case 0:
+            case 1:
+                return 30;
 
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-            return 25;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return 25;
 
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-            return 20;
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+                return 20;
 
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-            return 15;
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+                return 15;
 
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-            return 10;
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+                return 10;
 
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-            return 5;
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 26:
+                return 5;
 
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-            return 0;
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+            case 31:
+            case 32:
+                return 0;
         }
         throw new IllegalArgumentException();
     }

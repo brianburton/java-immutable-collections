@@ -244,6 +244,17 @@ public class MultiBranchTrieNode<T>
         }
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        if (shift < 0 || shift > ROOT_SHIFT) {
+            throw new IllegalStateException("illegal shift value: " + shift);
+        }
+        if (entries.length != Integer.bitCount(bitmask)) {
+            throw new IllegalStateException("unexpected entries size: expected=" + Integer.bitCount(bitmask) + " actual=" + entries.length);
+        }
+    }
+
     // for use by unit tests
     int getBitmask()
     {
@@ -304,25 +315,25 @@ public class MultiBranchTrieNode<T>
     {
         if (newChild.isEmpty()) {
             switch (entries.length) {
-            case 1:
-                return of();
-            case 2: {
-                final int newBitmask = bitmask & ~bit;
-                final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
-                final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
-                if (remainingChild.isLeaf()) {
-                    return remainingChild;
-                } else {
-                    return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
+                case 1:
+                    return of();
+                case 2: {
+                    final int newBitmask = bitmask & ~bit;
+                    final int remainingIndex = Integer.numberOfTrailingZeros(newBitmask);
+                    final TrieNode<T> remainingChild = entries[realIndex(bitmask, 1 << remainingIndex)];
+                    if (remainingChild.isLeaf()) {
+                        return remainingChild;
+                    } else {
+                        return SingleBranchTrieNode.forBranchIndex(shift, remainingIndex, remainingChild);
+                    }
                 }
-            }
-            default: {
-                final int newLength = entries.length - 1;
-                final TrieNode<T>[] newArray = allocate(newLength);
-                System.arraycopy(entries, 0, newArray, 0, childIndex);
-                System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
-                return new MultiBranchTrieNode<>(shift, bitmask & ~bit, newArray);
-            }
+                default: {
+                    final int newLength = entries.length - 1;
+                    final TrieNode<T>[] newArray = allocate(newLength);
+                    System.arraycopy(entries, 0, newArray, 0, childIndex);
+                    System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
+                    return new MultiBranchTrieNode<>(shift, bitmask & ~bit, newArray);
+                }
             }
         } else {
             return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);

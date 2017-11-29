@@ -90,6 +90,7 @@ public class TrieArrayTest
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
             assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
         }
+        array.checkInvariants();
     }
 
     public void testSequential()
@@ -220,6 +221,7 @@ public class TrieArrayTest
                 map.put(index, i);
                 assertEquals(i + 1, array.size());
             }
+            array.checkInvariants();
             assertEquals(array.getMap(), map);
             StandardCursorTest.listCursorTest(keys, array.keysCursor());
             StandardCursorTest.listCursorTest(values, array.valuesCursor());
@@ -232,6 +234,7 @@ public class TrieArrayTest
                 assertEquals(Holders.of(i), array.find(index));
                 assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(index, i)), array.findEntry(index));
             }
+            array.checkInvariants();
             for (int i = 0; i < length; ++i) {
                 final Integer index = indexes.get(i);
                 array = array.assign(index, i - 1);
@@ -240,6 +243,7 @@ public class TrieArrayTest
                 assertEquals(Holders.of(i - 1), array.find(index));
                 assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(index, i - 1)), array.findEntry(index));
             }
+            array.checkInvariants();
             for (int i = 0; i < length; ++i) {
                 final Integer index = indexes.get(i);
                 array = array.delete(index);
@@ -249,6 +253,7 @@ public class TrieArrayTest
                 assertEquals(Holders.<Integer>of(), array.find(index));
                 assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), array.findEntry(index));
             }
+            array.checkInvariants();
         }
     }
 

@@ -155,6 +155,17 @@ public class FullBranchTrieNode<T>
         return LazyMultiCursor.cursor(IndexedArray.retained(entries));
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        if (shift < 0 || shift > ROOT_SHIFT) {
+            throw new IllegalStateException("illegal shift value: " + shift);
+        }
+        if (entries.length != 32) {
+            throw new IllegalStateException("unexpected entries size: expected=32 actual=" + entries.length);
+        }
+    }
+
     private TrieNode<T> createUpdatedEntries(int shift,
                                              int childIndex,
                                              TrieNode<T> newChild)

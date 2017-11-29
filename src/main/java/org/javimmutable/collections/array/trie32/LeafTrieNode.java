@@ -54,12 +54,11 @@ public class LeafTrieNode<T>
                Holder<T>
 {
     private final int index;
-    @Nonnull
     private final T value;
     private final int shift;
 
     private LeafTrieNode(int index,
-                         @Nonnull T value,
+                         T value,
                          int shift)
     {
         this.index = index;
@@ -196,6 +195,14 @@ public class LeafTrieNode<T>
     public T getValueOr(T defaultValue)
     {
         return value;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if (shift < -5 || shift > ROOT_SHIFT) {
+            throw new IllegalStateException("illegal shift value: " + shift);
+        }
     }
 
     @Override
