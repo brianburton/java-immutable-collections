@@ -55,14 +55,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-public class TrieArrayTest
+public class JImmutableTrieArrayTest
     extends TestCase
 {
     // this method is intended for use in debugger to watch the structural changes
     @SuppressWarnings("UnusedAssignment")
     public void testTrimming()
     {
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         array = array.assign(0, 0);
 //        array = array.assign(-1, -1);
         array = array.assign(33, 33);
@@ -79,7 +79,7 @@ public class TrieArrayTest
     {
         Random r = new Random(20L);
         Map<Integer, Integer> expected = new TreeMap<>();
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         for (int loop = 1; loop <= 20000; ++loop) {
             int index = r.nextInt(2000) - 1000;
             int value = r.nextInt();
@@ -96,7 +96,7 @@ public class TrieArrayTest
     public void testSequential()
     {
         Map<Integer, Integer> expected = new TreeMap<>();
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         for (int i = 0; i <= 20000; ++i) {
             array = array.assign(i, i);
             expected.put(i, i);
@@ -109,7 +109,7 @@ public class TrieArrayTest
 
     public void testDepthTrimDoesNotBreakIndexing()
     {
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         for (int i = 0; i < 10000; ++i) {
             array = array.assign(i, i);
         }
@@ -133,7 +133,7 @@ public class TrieArrayTest
 
     public void testDeleteToEmpty()
     {
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         for (int i = 0; i < 10000; ++i) {
             array = array.assign(i, i);
         }
@@ -162,7 +162,7 @@ public class TrieArrayTest
 
     public void testCursor()
     {
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
 
         List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
@@ -185,7 +185,7 @@ public class TrieArrayTest
 
     public void testIterator()
     {
-        JImmutableArray<Integer> array = TrieArray.of();
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
         array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
 
         List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
@@ -212,7 +212,7 @@ public class TrieArrayTest
             Map<Integer, Integer> map = new TreeMap<>();
             List<Integer> keys = new ArrayList<>();
             List<Integer> values = new ArrayList<>();
-            JImmutableArray<Integer> array = TrieArray.of();
+            JImmutableArray<Integer> array = JImmutableTrieArray.of();
             for (int i = 0; i < length; ++i) {
                 final Integer index = indexes.get(i);
                 array = array.assign(index, i);
@@ -263,14 +263,14 @@ public class TrieArrayTest
         List<Integer> source = new ArrayList<>();
         for (int length = 1; length <= 1026; ++length) {
             source.add(length);
-            JImmutableArray<Integer> array = TrieArray.of(IndexedList.retained(source), 0, source.size());
+            JImmutableArray<Integer> array = JImmutableTrieArray.of(IndexedList.retained(source), 0, source.size());
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
                 assertEquals(source.get(i), array.get(i));
             }
 
             if (length > 1) {
-                array = TrieArray.of(IndexedList.retained(source), 1, length);
+                array = JImmutableTrieArray.of(IndexedList.retained(source), 1, length);
                 assertEquals(length - 1, array.size());
                 for (int i = 0; i < array.size(); ++i) {
                     assertEquals(source.get(i + 1), array.get(i));
@@ -284,10 +284,10 @@ public class TrieArrayTest
         List<Integer> source = new ArrayList<>();
         for (int length = 1; length <= 1024; ++length) {
             source.add(length);
-            TrieArray.Builder<Integer> builder = TrieArray.builder();
+            JImmutableTrieArray.Builder<Integer> builder = JImmutableTrieArray.builder();
             builder.add(source);
             JImmutableArray<Integer> array = builder.build();
-            JImmutableArray<Integer> stdarray = TrieArray.oldof(IndexedList.retained(source), 0, source.size());
+            JImmutableArray<Integer> stdarray = JImmutableTrieArray.oldof(IndexedList.retained(source), 0, source.size());
             assertEquals(array.getMap(), stdarray.getMap());
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
@@ -296,16 +296,16 @@ public class TrieArrayTest
         }
         for (int length = 1025; length <= 10000; ++length) {
             source.add(length);
-            JImmutableArray<Integer> array = TrieArray.<Integer>builder().add(source).build();
+            JImmutableArray<Integer> array = JImmutableTrieArray.<Integer>builder().add(source).build();
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
                 assertEquals(source.get(i), array.get(i));
             }
         }
 
-        Func0<MutableBuilder<Integer, TrieArray<Integer>>> factory = () -> TrieArray.builder();
+        Func0<MutableBuilder<Integer, JImmutableTrieArray<Integer>>> factory = () -> JImmutableTrieArray.builder();
 
-        Func2<List<Integer>, TrieArray<Integer>, Boolean> comparator = (list, tree) -> {
+        Func2<List<Integer>, JImmutableTrieArray<Integer>, Boolean> comparator = (list, tree) -> {
             for (int i = 0; i < list.size(); ++i) {
                 assertEquals(list.get(i), tree.get(i));
             }

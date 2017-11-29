@@ -127,6 +127,7 @@ public class JImmutableHashMapTest
                 }
             }
 
+            map.checkInvariants();
             verifyEnumeration(expected, map);
 
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {

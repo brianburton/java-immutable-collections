@@ -47,7 +47,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.array.trie32.TrieArray;
+import org.javimmutable.collections.array.trie32.JImmutableTrieArray;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -1042,7 +1042,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array()
     {
-        return TrieArray.of();
+        return JImmutableTrieArray.of();
     }
 
     /**
@@ -1053,7 +1053,7 @@ public final class JImmutables
     @SafeVarargs
     public static <T> JImmutableArray<T> array(T... source)
     {
-        return TrieArray.<T>builder().add(source).build();
+        return JImmutableTrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -1064,7 +1064,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(@Nonnull Cursor<JImmutableMap.Entry<Integer, T>> source)
     {
-        return TrieArray.<T>of().insertAll(source);
+        return JImmutableTrieArray.<T>of().insertAll(source);
     }
 
     /**
@@ -1075,7 +1075,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(@Nonnull Indexed<? extends T> source)
     {
-        return TrieArray.<T>builder().add(source).build();
+        return JImmutableTrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -1089,7 +1089,7 @@ public final class JImmutables
                                                int offset,
                                                int limit)
     {
-        return TrieArray.<T>builder().add(source, offset, limit).build();
+        return JImmutableTrieArray.<T>builder().add(source, offset, limit).build();
     }
 
     /**
@@ -1100,7 +1100,7 @@ public final class JImmutables
      */
     public static <T> JImmutableArray<T> array(@Nonnull Iterable<? extends T> source)
     {
-        return TrieArray.<T>builder().add(source).build();
+        return JImmutableTrieArray.<T>builder().add(source).build();
     }
 
     /**

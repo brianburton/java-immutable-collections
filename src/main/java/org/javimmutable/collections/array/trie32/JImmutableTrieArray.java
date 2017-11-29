@@ -54,17 +54,17 @@ import java.util.Iterator;
 import java.util.List;
 
 @Immutable
-public class TrieArray<T>
+public class JImmutableTrieArray<T>
     extends AbstractJImmutableArray<T>
 {
     @SuppressWarnings("unchecked")
-    private static final TrieArray EMPTY = new TrieArray(TrieNode.of(), 0);
+    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of(), 0);
 
     private final TrieNode<T> root;
     private final int size;
 
-    private TrieArray(TrieNode<T> root,
-                      int size)
+    private JImmutableTrieArray(TrieNode<T> root,
+                                int size)
     {
         this.root = root;
         this.size = size;
@@ -76,9 +76,9 @@ public class TrieArray<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> TrieArray<T> of()
+    public static <T> JImmutableTrieArray<T> of()
     {
-        return (TrieArray<T>)EMPTY;
+        return EMPTY;
     }
 
     /**
@@ -94,7 +94,7 @@ public class TrieArray<T>
                                             int offset,
                                             int limit)
     {
-        return TrieArray.<T>builder().add(source, offset, limit).build();
+        return JImmutableTrieArray.<T>builder().add(source, offset, limit).build();
     }
 
     // made obsolete by Builder but retained for use in unit test
@@ -110,7 +110,7 @@ public class TrieArray<T>
 
         // small lists can be directly constructed from a single leaf array
         if (size <= 32) {
-            return new TrieArray<>(TrieNode.fromSource(0, source, offset, limit), size);
+            return new JImmutableTrieArray<>(TrieNode.fromSource(0, source, offset, limit), size);
         }
 
         // first construct an array containing a single level of arrays of leaves
@@ -125,7 +125,7 @@ public class TrieArray<T>
         }
 
         // then add any extras left over above that size
-        JImmutableArray<T> array = new TrieArray<>(MultiBranchTrieNode.forEntries(5, branchArray), index);
+        JImmutableArray<T> array = new JImmutableTrieArray<>(MultiBranchTrieNode.forEntries(5, branchArray), index);
         while (offset < limit) {
             array = array.assign(index++, source.get(offset++));
         }
@@ -157,25 +157,25 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public TrieArray<T> assign(int index,
-                               @Nullable T value)
+    public JImmutableTrieArray<T> assign(int index,
+                                         @Nullable T value)
     {
         MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
         newRoot = newRoot.assign(newRoot.getShift(), index, value, sizeDelta);
-        return (newRoot == root) ? this : new TrieArray<>(newRoot, size + sizeDelta.getValue());
+        return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot, size + sizeDelta.getValue());
     }
 
     @Nonnull
     @Override
-    public TrieArray<T> delete(int index)
+    public JImmutableTrieArray<T> delete(int index)
     {
         if (root.getShift() < TrieNode.shiftForIndex(index)) {
             return this;
         } else {
             MutableDelta sizeDelta = new MutableDelta();
             final TrieNode<T> newRoot = root.delete(root.getShift(), index, sizeDelta).trimmedToMinimumDepth();
-            return (newRoot == root) ? this : new TrieArray<>(newRoot, size + sizeDelta.getValue());
+            return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot, size + sizeDelta.getValue());
         }
     }
 
@@ -187,7 +187,7 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public TrieArray<T> deleteAll()
+    public JImmutableTrieArray<T> deleteAll()
     {
         return of();
     }
@@ -213,7 +213,7 @@ public class TrieArray<T>
     }
 
     public static class Builder<T>
-        implements MutableBuilder<T, TrieArray<T>>
+        implements MutableBuilder<T, JImmutableTrieArray<T>>
     {
         private final List<TrieNode<T>> leaves = new ArrayList<>();
 
@@ -228,7 +228,7 @@ public class TrieArray<T>
 
         @Nonnull
         @Override
-        public TrieArray<T> build()
+        public JImmutableTrieArray<T> build()
         {
             int nodeCount = leaves.size();
             if (nodeCount == 0) {
@@ -236,10 +236,10 @@ public class TrieArray<T>
             }
 
             if (nodeCount == 1) {
-                return new TrieArray<>(leaves.get(0), 1);
+                return new JImmutableTrieArray<>(leaves.get(0), 1);
             }
 
-            List<TrieNode<T>> dst = new ArrayList<>();
+            List<TrieNode<T>> dst = new ArrayList<>(1 + (leaves.size() / 32));
             List<TrieNode<T>> src = leaves;
             int shift = 0;
             while (nodeCount > 1) {
@@ -247,7 +247,7 @@ public class TrieArray<T>
                 int srcOffset = 0;
                 while (srcOffset < nodeCount) {
                     final int count = Math.min(32, nodeCount - srcOffset);
-                    TrieNode<T>[] nodes = allocate(count);
+                    final TrieNode<T>[] nodes = allocate(count);
                     for (int i = 0; i < count; ++i) {
                         nodes[i] = src.get(srcOffset++);
                     }
@@ -270,7 +270,7 @@ public class TrieArray<T>
                 nodeCount = dstOffset;
             }
             assert nodeCount == 1;
-            return new TrieArray<>(dst.get(0), leaves.size());
+            return new JImmutableTrieArray<>(dst.get(0), leaves.size());
         }
 
         @Nonnull

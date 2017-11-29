@@ -42,7 +42,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.trie32.TrieArray;
+import org.javimmutable.collections.array.trie32.JImmutableTrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
@@ -68,13 +68,13 @@ public class JImmutableInsertOrderMap<K, V>
     extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieArray.of(), JImmutableHashMap.of(), 0);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTrieArray.of(), JImmutableHashMap.of(), 0);
 
-    private final TrieArray<Node<K, V>> sortedNodes;
+    private final JImmutableTrieArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
     private final int nextIndex;
 
-    private JImmutableInsertOrderMap(TrieArray<Node<K, V>> sortedNodes,
+    private JImmutableInsertOrderMap(JImmutableTrieArray<Node<K, V>> sortedNodes,
                                      JImmutableMap<K, Node<K, V>> hashedNodes,
                                      int nextIndex)
     {
