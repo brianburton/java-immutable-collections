@@ -68,7 +68,7 @@ public class JImmutableInsertOrderMap<K, V>
     extends AbstractJImmutableMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTrieArray.of(), JImmutableHashMap.of(), 0);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTrieArray.of(), JImmutableHashMap.of(), Integer.MIN_VALUE);
 
     private final JImmutableTrieArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
