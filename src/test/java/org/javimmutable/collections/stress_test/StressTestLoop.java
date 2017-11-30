@@ -40,7 +40,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.array.bit32.Bit32Array;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
@@ -109,7 +108,6 @@ public class StressTestLoop
             .insert(new JImmutableListMapStressTester(JImmutables.sortedListMap(), TreeMap.class))
 
             .insert(new JImmutableArrayStressTester(JImmutables.array(), ArrayIndexRange.INTEGER))
-            .insert(new JImmutableArrayStressTester(Bit32Array.of(), ArrayIndexRange.BIT32))
 
             .insert(new JImmutableStackStressTester(JImmutables.stack()));
 
