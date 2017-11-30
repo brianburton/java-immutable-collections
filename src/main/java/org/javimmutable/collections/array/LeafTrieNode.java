@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.array.trie32;
+package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
@@ -41,28 +41,48 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.cursors.SingleValueCursor;
+import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class EmptyTrieNode<T>
+public class LeafTrieNode<T>
     extends TrieNode<T>
+    implements JImmutableMap.Entry<Integer, T>,
+               Holder<T>
 {
-    private static final EmptyTrieNode EMPTY = new EmptyTrieNode();
+    private final int index;
+    private final T value;
+    private final int shift;
 
-    @SuppressWarnings("unchecked")
-    static <T> EmptyTrieNode<T> instance()
+    private LeafTrieNode(int index,
+                         T value,
+                         int shift)
     {
-        return (EmptyTrieNode<T>)EMPTY;
+        this.index = index;
+        this.value = value;
+        this.shift = shift;
+    }
+
+    static <T> LeafTrieNode<T> of(int index,
+                                  @Nonnull T value)
+    {
+        return new LeafTrieNode<>(index, value, shiftForIndex(index));
     }
 
     @Override
     public boolean isEmpty()
     {
-        return true;
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public Integer getKey()
+    {
+        return index;
     }
 
     @Override
@@ -70,14 +90,16 @@ public class EmptyTrieNode<T>
                         int index,
                         T defaultValue)
     {
-        return defaultValue;
+        assert shift >= -5;
+        return (this.index == index) ? value : defaultValue;
     }
 
     @Override
     public Holder<T> find(int shift,
                           int index)
     {
-        return Holders.of();
+        assert shift >= -5;
+        return (this.index == index) ? this : Holders.of();
     }
 
     @Override
@@ -86,8 +108,17 @@ public class EmptyTrieNode<T>
                               T value,
                               MutableDelta sizeDelta)
     {
-        sizeDelta.add(1);
-        return LeafTrieNode.of(index, value);
+        assert shift >= -5;
+        if (this.index == index) {
+            if (this.value == value) {
+                return this;
+            } else {
+                return withValue(value);
+            }
+        } else {
+            assert shift >= 0;
+            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
+        }
     }
 
     @Override
@@ -95,13 +126,20 @@ public class EmptyTrieNode<T>
                               int index,
                               MutableDelta sizeDelta)
     {
-        return this;
+        assert shift >= -5;
+        if (this.index == index) {
+            sizeDelta.subtract(1);
+            return of();
+        } else {
+            assert shift > 0;
+            return this;
+        }
     }
 
     @Override
     public int getShift()
     {
-        return 0;
+        return shift;
     }
 
     @Override
@@ -113,25 +151,97 @@ public class EmptyTrieNode<T>
     @Override
     public TrieNode<T> paddedToMinimumDepthForShift(int shift)
     {
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return StandardCursor.of();
+        if (this.shift >= shift) {
+            return this;
+        } else {
+            return SingleBranchTrieNode.forIndex(shift, index, this);
+        }
     }
 
     @Nonnull
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return EmptyIterator.of();
+        return SingleValueIterator.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
+    {
+        return SingleValueCursor.of(this);
+    }
+
+    @Override
+    public boolean isFilled()
+    {
+        return true;
+    }
+
+    @Nonnull
+    @Override
+    public T getValue()
+    {
+        return value;
+    }
+
+    @Override
+    public T getValueOrNull()
+    {
+        return value;
+    }
+
+    @Override
+    public T getValueOr(T defaultValue)
+    {
+        return value;
     }
 
     @Override
     public void checkInvariants()
     {
+        if (shift < -5 || shift > ROOT_SHIFT) {
+            throw new IllegalStateException("illegal shift value: " + shift);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
+
+        LeafTrieNode that = (LeafTrieNode)o;
+
+        if (index != that.index) {
+            return false;
+        }
+        if (shift != that.shift) {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if (!value.equals(that.value)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = index;
+        result = 31 * result + value.hashCode();
+        result = 31 * result + shift;
+        return result;
+    }
+
+    private TrieNode<T> withValue(T newValue)
+    {
+        return new LeafTrieNode<>(index, newValue, shift);
     }
 }

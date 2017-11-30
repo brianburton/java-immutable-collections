@@ -37,7 +37,7 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.trie32.JImmutableTrieArray;
+import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;

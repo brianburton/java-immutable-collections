@@ -33,43 +33,46 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.array.trie32;
+package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.cursors.LazyMultiCursor;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class LeafTrieNode<T>
+public class FullBranchTrieNode<T>
     extends TrieNode<T>
-    implements JImmutableMap.Entry<Integer, T>,
-               Holder<T>
 {
-    private final int index;
-    private final T value;
     private final int shift;
+    private final TrieNode<T>[] entries;
 
-    private LeafTrieNode(int index,
-                         T value,
-                         int shift)
+    FullBranchTrieNode(int shift,
+                       TrieNode<T>[] entries)
     {
-        this.index = index;
-        this.value = value;
+        assert shift != ROOT_SHIFT;
         this.shift = shift;
+        this.entries = entries;
     }
 
-    static <T> LeafTrieNode<T> of(int index,
-                                  @Nonnull T value)
+    static <T> FullBranchTrieNode<T> fromSource(int index,
+                                                Indexed<? extends T> source,
+                                                int offset)
     {
-        return new LeafTrieNode<>(index, value, shiftForIndex(index));
+        assert (source.size() - offset) >= 32;
+        TrieNode<T>[] entries = MultiBranchTrieNode.allocate(32);
+        for (int i = 0; i < 32; ++i) {
+            entries[i] = LeafTrieNode.of(index++, source.get(offset++));
+        }
+        return new FullBranchTrieNode<>(0, entries);
     }
 
     @Override
@@ -78,28 +81,23 @@ public class LeafTrieNode<T>
         return false;
     }
 
-    @Nonnull
-    @Override
-    public Integer getKey()
-    {
-        return index;
-    }
-
     @Override
     public T getValueOr(int shift,
                         int index,
                         T defaultValue)
     {
-        assert shift >= -5;
-        return (this.index == index) ? value : defaultValue;
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        return entries[childIndex].getValueOr(shift - 5, index, defaultValue);
     }
 
     @Override
     public Holder<T> find(int shift,
                           int index)
     {
-        assert shift >= -5;
-        return (this.index == index) ? this : Holders.of();
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        return entries[childIndex].find(shift - 5, index);
     }
 
     @Override
@@ -108,16 +106,14 @@ public class LeafTrieNode<T>
                               T value,
                               MutableDelta sizeDelta)
     {
-        assert shift >= -5;
-        if (this.index == index) {
-            if (this.value == value) {
-                return this;
-            } else {
-                return withValue(value);
-            }
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        final TrieNode<T> child = entries[childIndex];
+        final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+        if (newChild == child) {
+            return this;
         } else {
-            assert shift >= 0;
-            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
+            return createUpdatedEntries(shift, childIndex, newChild);
         }
     }
 
@@ -126,14 +122,11 @@ public class LeafTrieNode<T>
                               int index,
                               MutableDelta sizeDelta)
     {
-        assert shift >= -5;
-        if (this.index == index) {
-            sizeDelta.subtract(1);
-            return of();
-        } else {
-            assert shift > 0;
-            return this;
-        }
+        assert this.shift == shift;
+        final int childIndex = (index >>> shift) & 0x1f;
+        final TrieNode<T> child = entries[childIndex];
+        final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+        return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 
     @Override
@@ -145,103 +138,55 @@ public class LeafTrieNode<T>
     @Override
     public boolean isLeaf()
     {
-        return true;
-    }
-
-    @Override
-    public TrieNode<T> paddedToMinimumDepthForShift(int shift)
-    {
-        if (this.shift >= shift) {
-            return this;
-        } else {
-            return SingleBranchTrieNode.forIndex(shift, index, this);
-        }
+        return false;
     }
 
     @Nonnull
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return SingleValueIterator.of(this);
+        return LazyMultiIterator.iterator(IndexedArray.retained(entries));
     }
 
     @Nonnull
     @Override
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
-        return SingleValueCursor.of(this);
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    @Nonnull
-    @Override
-    public T getValue()
-    {
-        return value;
-    }
-
-    @Override
-    public T getValueOrNull()
-    {
-        return value;
-    }
-
-    @Override
-    public T getValueOr(T defaultValue)
-    {
-        return value;
+        return LazyMultiCursor.cursor(IndexedArray.retained(entries));
     }
 
     @Override
     public void checkInvariants()
     {
-        if (shift < -5 || shift > ROOT_SHIFT) {
+        if (shift < 0 || shift > ROOT_SHIFT) {
             throw new IllegalStateException("illegal shift value: " + shift);
         }
+        if (entries.length != 32) {
+            throw new IllegalStateException("unexpected entries size: expected=32 actual=" + entries.length);
+        }
     }
 
-    @Override
-    public boolean equals(Object o)
+    private TrieNode<T> createUpdatedEntries(int shift,
+                                             int childIndex,
+                                             TrieNode<T> newChild)
     {
-        if (this == o) {
-            return true;
-        }
-        if ((o == null) || (getClass() != o.getClass())) {
-            return false;
-        }
-
-        LeafTrieNode that = (LeafTrieNode)o;
-
-        if (index != that.index) {
-            return false;
-        }
-        if (shift != that.shift) {
-            return false;
-        }
-        //noinspection RedundantIfStatement
-        if (!value.equals(that.value)) {
-            return false;
-        }
-
-        return true;
+        assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
+        TrieNode<T>[] newEntries = entries.clone();
+        newEntries[childIndex] = newChild;
+        return new FullBranchTrieNode<>(shift, newEntries);
     }
 
-    @Override
-    public int hashCode()
+    private TrieNode<T> createDeleteResultNode(int shift,
+                                               int childIndex,
+                                               TrieNode<T> child,
+                                               TrieNode<T> newChild)
     {
-        int result = index;
-        result = 31 * result + value.hashCode();
-        result = 31 * result + shift;
-        return result;
-    }
-
-    private TrieNode<T> withValue(T newValue)
-    {
-        return new LeafTrieNode<>(index, newValue, shift);
+        if (newChild == child) {
+            return this;
+        } else if (newChild.isEmpty()) {
+            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
+        } else {
+            return createUpdatedEntries(shift, childIndex, newChild);
+        }
     }
 }
