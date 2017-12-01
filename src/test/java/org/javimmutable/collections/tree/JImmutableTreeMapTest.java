@@ -185,10 +185,12 @@ public class JImmutableTreeMapTest
                         assertEquals(expected.get(key), map.get(key));
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
                         assertEquals(expected.get(key), map.find(key).getValue());
+                        assertEquals(MapEntry.of(key, expected.get(key)), map.findEntry(key).getValue());
                     } else {
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                         assertEquals(true, map.find(key).isEmpty());
+                        assertEquals(true, map.findEntry(key).isEmpty());
                     }
 
                 }

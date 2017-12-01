@@ -205,6 +205,22 @@ public class JImmutableTrieArrayTest
         StandardCursorTest.listIteratorTest(entries, array.iterator());
     }
 
+    public void testSignedOrderIteration()
+    {
+        final int numLoops = 100000;
+        final int increment = (Integer.MAX_VALUE / numLoops) * 2;
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
+        int index = Integer.MIN_VALUE;
+        for (int i = 0; i < numLoops; ++i) {
+            expected.add(MapEntry.of(index, -index));
+            array = array.assign(index, -index);
+            index += increment;
+        }
+        StandardCursorTest.listIteratorTest(expected, array.iterator());
+        StandardCursorTest.listCursorTest(expected, array.cursor());
+    }
+
     public void testVarious()
     {
         List<Integer> indexes = createBranchIndexes();
