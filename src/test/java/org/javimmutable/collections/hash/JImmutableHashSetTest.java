@@ -36,16 +36,19 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -203,6 +206,19 @@ public class JImmutableHashSetTest
     {
         JImmutableSet<Integer> mset = JImmutableHashSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
+        final JImmutableSet<String> empty = JImmutableHashSet.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFADwPF+xhAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yMDAwljAwJlYAAIYCjBFlAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c", "b")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAIkSBsZEIE4C4uQKAIJXlKptAAAA");
     }
 
     private List<String> iterToList(Iterable<String> source)

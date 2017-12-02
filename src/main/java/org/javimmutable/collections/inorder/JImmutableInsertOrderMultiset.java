@@ -40,9 +40,11 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderMultisetProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collector;
@@ -54,10 +56,12 @@ import java.util.stream.Collector;
  */
 @Immutable
 public class JImmutableInsertOrderMultiset<T>
-        extends AbstractJImmutableMultiset<T>
+    extends AbstractJImmutableMultiset<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderMultiset EMPTY = new JImmutableInsertOrderMultiset(JImmutableInsertOrderMap.of(), 0);
+    private static final long serialVersionUID = -121805;
 
     private JImmutableInsertOrderMultiset(JImmutableMap<T, Integer> map,
                                           int occurrences)
@@ -103,5 +107,10 @@ public class JImmutableInsertOrderMultiset<T>
     protected Map<T, Integer> emptyMutableMap()
     {
         return new LinkedHashMap<>();
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableInsertOrderMultisetProxy(this);
     }
 }

@@ -40,20 +40,24 @@ import com.google.common.collect.Multiset;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 public class JImmutableInsertOrderMultisetTest
@@ -254,6 +258,19 @@ public class JImmutableInsertOrderMultisetTest
     {
         JImmutableMultiset<Integer> mset = JImmutableInsertOrderMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(Arrays.asList(4, 3, 2, 1), mset.stream().collect(toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
+        final JImmutableMultiset<String> empty = JImmutableInsertOrderMultiset.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA8XguO8XN160ey0BMrignIOBgfklAxBUAAAXsoiKxgAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA8XguO8XN160ey0BMrignIOBgfklAwMDYwkDY2I5C4hVAQAdP8yD0AAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("c", "b", "a", "b")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA8XguO8XN160ey0BMrignIOBgfklA5AoYWBMLmcBshiBrCQwiwnISoSIVQAA8No8O+QAAAA=");
     }
 
     private Set<String> asSet(String... args)

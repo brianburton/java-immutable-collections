@@ -36,10 +36,12 @@
 package org.javimmutable.collections.inorder;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
@@ -165,20 +168,20 @@ public class JImmutableInsertOrderSetTest
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
                 switch (command) {
-                case 0:
-                case 1:
-                    set = set.insert(value);
-                    expected.add(value);
-                    assertEquals(true, set.contains(value));
-                    break;
-                case 2:
-                    assertEquals(expected.contains(value), set.contains(value));
-                    break;
-                case 3:
-                    set = set.delete(value);
-                    expected.remove(value);
-                    assertEquals(false, set.contains(value));
-                    break;
+                    case 0:
+                    case 1:
+                        set = set.insert(value);
+                        expected.add(value);
+                        assertEquals(true, set.contains(value));
+                        break;
+                    case 2:
+                        assertEquals(expected.contains(value), set.contains(value));
+                        break;
+                    case 3:
+                        set = set.delete(value);
+                        expected.remove(value);
+                        assertEquals(false, set.contains(value));
+                        break;
                 }
                 assertEquals(expected.size(), set.size());
             }
@@ -255,6 +258,19 @@ public class JImmutableInsertOrderSetTest
     {
         JImmutableSet<Integer> mset = JImmutableInsertOrderSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(4, 3, 2, 1), mset);
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
+        final JImmutableSet<String> empty = JImmutableInsertOrderSet.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGYCgAgAReV7EvAAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGRgYGEsYGBMrADE9pgfAAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c", "b")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGYBECQNjIhAnAXFyBQD1GRthyAAAAA==");
     }
 
     private List<String> iterToList(Iterable<String> source)

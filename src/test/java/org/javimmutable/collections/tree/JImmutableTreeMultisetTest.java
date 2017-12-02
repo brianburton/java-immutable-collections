@@ -39,9 +39,11 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultiset;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -57,7 +60,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 
 public class JImmutableTreeMultisetTest
-        extends TestCase
+    extends TestCase
 {
     public void testStandard()
     {
@@ -271,7 +274,28 @@ public class JImmutableTreeMultisetTest
         JImmutableMultiset<Integer> mset = JImmutableTreeMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(Arrays.asList(1, 2, 3, 4), mset.stream().collect(toList()));
     }
-    
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
+        JImmutableMultiset<String> empty = JImmutableTreeMultiset.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGJAGACI03kMIAQAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGANjCQNjIoRVAQC9L5XSEgEAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGANLCQOjE5jFCGS5wFmJcFYyhFUBANrTLOQwAQAA");
+
+        empty = JImmutableTreeMultiset.of(String.CASE_INSENSITIVE_ORDER);
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKu1gIYn6uUk5qXrBZcUZealqzgnFqd65hWn5hVnlmSWpTrn5xYkFiWW5BeVM8fUxgQ8PccEMwBIAwDamNY4/AAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKu1gIYn6uUk5qXrBZcUZealqzgnFqd65hWn5hVnlmSWpTrn5xYkFiWW5BeVM8fUxgQ8PccEM4CBsYSBMRHCqgAATA0U7gYBAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
+                                                     "H4sIAAAAAAAAAJXOzQpBURDA8fG18wAewMribOyVjxSlFEupcZtuR+eeozmDS3kjGy+iPISFZG2HewlZmtV/avo12wsUPEPbcaimuNBRNBecGFKBM4YC0c565Yk1Gr3GdFXdzvtoyES9uRHtSfrs4tU9nVu5WgSIGbp/oPWJF8ZAvvgPPL4edofauZTCs2UeIHdKvq4kOCqDNlQDYW3DchM9dawn67XoBTVdNENGcbzMjTaj/nGffQOQF8jgszJJNT4VfKr1qvgB3x3n5CQBAAA=");
+    }
+
     private Set<String> asSet(String... args)
     {
         Set<String> set = new HashSet<>();

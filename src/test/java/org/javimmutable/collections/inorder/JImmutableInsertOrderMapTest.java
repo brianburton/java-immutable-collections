@@ -36,14 +36,17 @@
 package org.javimmutable.collections.inorder;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,31 +133,31 @@ public class JImmutableInsertOrderMapTest
             for (int i = 0; i < 2500; ++i) {
                 int command = r.nextInt(3);
                 switch (command) {
-                case 0:
-                case 1:
-                    int key = r.nextInt(500);
-                    int value = r.nextInt(500);
-                    map = map.assign(key, value);
-                    expected.put(key, value);
-                    //noinspection ConstantConditions
-                    assertEquals(value, (int)map.get(key));
-                    assertEquals(value, (int)map.getValueOr(key, value - 1000));
-                    assertEquals(value, (int)map.find(key).getValueOrNull());
-                    assertEquals(Holders.of(value), map.find(key));
-                    assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
-                    break;
-                case 2:
-                    JImmutableInsertOrderMap<Integer, Integer> col = JImmutableInsertOrderMap.of();
-                    int times = r.nextInt(3);
+                    case 0:
+                    case 1:
+                        int key = r.nextInt(500);
+                        int value = r.nextInt(500);
+                        map = map.assign(key, value);
+                        expected.put(key, value);
+                        //noinspection ConstantConditions
+                        assertEquals(value, (int)map.get(key));
+                        assertEquals(value, (int)map.getValueOr(key, value - 1000));
+                        assertEquals(value, (int)map.find(key).getValueOrNull());
+                        assertEquals(Holders.of(value), map.find(key));
+                        assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
+                        break;
+                    case 2:
+                        JImmutableInsertOrderMap<Integer, Integer> col = JImmutableInsertOrderMap.of();
+                        int times = r.nextInt(3);
 
-                    for (int rep = 0; rep < times; rep++) {
-                        key = r.nextInt(500);
-                        value = r.nextInt(500);
-                        col = col.assign(key, value);
-                    }
-                    expected.putAll(col.getMap());
-                    map = (r.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
-                    break;
+                        for (int rep = 0; rep < times; rep++) {
+                            key = r.nextInt(500);
+                            value = r.nextInt(500);
+                            col = col.assign(key, value);
+                        }
+                        expected.putAll(col.getMap());
+                        map = (r.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
+                        break;
                 }
 
             }
@@ -250,7 +253,7 @@ public class JImmutableInsertOrderMapTest
         assertEquals(asList(), inOrderMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), inOrderMap.assign(1, 10).values().stream().collect(Collectors.toList()));
         assertEquals(asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
-        
+
         List<Integer> keys = new ArrayList<>();
         JImmutableMap<Integer, Integer> map = inOrderMap;
         Random r = new Random();
@@ -260,9 +263,22 @@ public class JImmutableInsertOrderMapTest
             map = map.assign(key, i);
         }
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
-        
+
         map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
+        final JImmutableMap<Integer, String> empty = JImmutableInsertOrderMap.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZtGzFW8C37GYgcwsKOdgYGB+yQAEFQD69iMavAAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of(1, "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZtGzFW8C37GYgcwsKOdgYGB+ycDAwAh0tiDQ7ES9nMS8dD3PvJLU9NQioUcLlnxvbLdgYmD0ZGAtS8wpTQW6QwChzq80Nym1qG3NVFnuKQ+6mUBGggwrYWBMrAAAlwt+ug0BAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZtGzFW8C37GYgcwsKOdgYGB+yQAkgM4WBJqdqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQHcIINT5leYmpRa1rZkqyz3lQTcTyMgGoGklDIyJxYUMdQzMQA4jkJcE4dUDvQPkJVcAALTkaEMpAQAA");
     }
 
     private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,

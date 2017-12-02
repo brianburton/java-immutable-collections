@@ -39,9 +39,11 @@ import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -54,10 +56,12 @@ import java.util.stream.Collector;
  */
 @Immutable
 public class JImmutableInsertOrderSet<T>
-        extends AbstractJImmutableSet<T>
+    extends AbstractJImmutableSet<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderSet EMPTY = new JImmutableInsertOrderSet(JImmutableInsertOrderMap.of());
+    private static final long serialVersionUID = -121805;
 
     private JImmutableInsertOrderSet(JImmutableMap<T, Boolean> map)
     {
@@ -94,5 +98,10 @@ public class JImmutableInsertOrderSet<T>
     protected Set<T> emptyMutableSet()
     {
         return new LinkedHashSet<>();
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableInsertOrderSetProxy(this);
     }
 }

@@ -47,9 +47,11 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.iterators.TransformIterator;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
@@ -66,9 +68,11 @@ import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_OR
 @Immutable
 public class JImmutableInsertOrderMap<K, V>
     extends AbstractJImmutableMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTrieArray.of(), JImmutableHashMap.of(), Integer.MIN_VALUE);
+    private static final long serialVersionUID = -121805;
 
     private final JImmutableTrieArray<Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
@@ -193,6 +197,11 @@ public class JImmutableInsertOrderMap<K, V>
     public void checkInvariants()
     {
         //TODO: fix empty checkInvariants()
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableInsertOrderMapProxy(this);
     }
 
     /**

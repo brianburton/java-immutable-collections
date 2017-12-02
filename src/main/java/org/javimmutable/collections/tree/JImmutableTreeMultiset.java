@@ -37,9 +37,11 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.serialization.JImmutableTreeMultisetProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,6 +49,7 @@ import java.util.TreeMap;
 @Immutable
 public class JImmutableTreeMultiset<T>
     extends AbstractJImmutableMultiset<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeMultiset EMPTY = new JImmutableTreeMultiset(new ComparableComparator());
@@ -100,5 +103,10 @@ public class JImmutableTreeMultiset<T>
     protected Map<T, Integer> emptyMutableMap()
     {
         return new TreeMap<>(comparator);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTreeMultisetProxy(this);
     }
 }

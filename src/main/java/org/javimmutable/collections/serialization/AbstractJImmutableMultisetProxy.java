@@ -35,25 +35,66 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-@SuppressWarnings("unchecked")
-public class JImmutableHashMultisetProxy
-    extends AbstractJImmutableMultisetProxy
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Iterator;
+
+public class AbstractJImmutableMultisetProxy
+    implements Externalizable
 {
-    private static final long serialVersionUID = -121805;
+    private static final int MULTISET_VERSION = 1001;
+    protected JImmutableMultiset set;
 
-    public JImmutableHashMultisetProxy()
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
     {
-        this.set = JImmutableHashMultiset.of();
+        out.writeInt(MULTISET_VERSION);
+        writeSet(out);
+        out.writeInt(set.size());
+        final Iterator<JImmutableMap.Entry> iterator = set.entries().iterator();
+        while (iterator.hasNext()) {
+            JImmutableMap.Entry e = iterator.next();
+            out.writeObject(e.getKey());
+            out.writeInt((Integer)e.getValue());
+        }
     }
 
-    public JImmutableHashMultisetProxy(JImmutableMultiset list)
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
     {
-        this.set = list;
+        final int version = in.readInt();
+        if (version != MULTISET_VERSION) {
+            throw new IOException("unexpected version number: expected " + MULTISET_VERSION + " found " + version);
+        }
+        set = readSet(in);
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            final Object key = in.readObject();
+            final int count = in.readInt();
+            set = set.insert(key, count);
+        }
+    }
+
+    protected Object readResolve()
+    {
+        return set;
+    }
+
+    protected JImmutableMultiset readSet(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        return set;
+    }
+
+    protected void writeSet(ObjectOutput out)
+        throws IOException
+    {
     }
 }

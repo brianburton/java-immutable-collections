@@ -35,25 +35,42 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.hash.JImmutableHashMultiset;
+import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.tree.JImmutableTreeSet;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-@SuppressWarnings("unchecked")
-public class JImmutableHashMultisetProxy
-    extends AbstractJImmutableMultisetProxy
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Comparator;
+
+public class JImmutableTreeSetProxy
+    extends AbstractJImmutableSetProxy
 {
     private static final long serialVersionUID = -121805;
 
-    public JImmutableHashMultisetProxy()
+    public JImmutableTreeSetProxy()
     {
-        this.set = JImmutableHashMultiset.of();
+        this(JImmutableTreeSet.of());
     }
 
-    public JImmutableHashMultisetProxy(JImmutableMultiset list)
+    public JImmutableTreeSetProxy(JImmutableSet set)
     {
-        this.set = list;
+        super(set);
+    }
+
+    @Override
+    protected JImmutableSet readSet(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        Comparator comparator = (Comparator)in.readObject();
+        return JImmutableTreeSet.of(comparator);
+    }
+
+    @Override
+    protected void writeSet(ObjectOutput out)
+        throws IOException
+    {
+        JImmutableTreeSet treeSet = (JImmutableTreeSet)set;
+        out.writeObject(treeSet.getComparator());
     }
 }

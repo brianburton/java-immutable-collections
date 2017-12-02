@@ -38,18 +38,22 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.serialization.JImmutableHashSetProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Immutable
 public class JImmutableHashSet<T>
-        extends AbstractJImmutableSet<T>
+    extends AbstractJImmutableSet<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableHashSet EMPTY = new JImmutableHashSet(JImmutableHashMap.of());
+    private static final long serialVersionUID = -121805;
 
     private JImmutableHashSet(JImmutableMap<T, Boolean> map)
     {
@@ -79,5 +83,10 @@ public class JImmutableHashSet<T>
     protected Set<T> emptyMutableSet()
     {
         return new HashSet<>();
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableHashSetProxy(this);
     }
 }

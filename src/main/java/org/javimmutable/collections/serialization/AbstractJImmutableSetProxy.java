@@ -35,25 +35,64 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.hash.JImmutableHashMultiset;
+import org.javimmutable.collections.JImmutableSet;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-@SuppressWarnings("unchecked")
-public class JImmutableHashMultisetProxy
-    extends AbstractJImmutableMultisetProxy
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+public class AbstractJImmutableSetProxy
+    implements Externalizable
 {
-    private static final long serialVersionUID = -121805;
+    private static final int SET_VERSION = 1001;
+    protected JImmutableSet set;
 
-    public JImmutableHashMultisetProxy()
+    public AbstractJImmutableSetProxy(JImmutableSet set)
     {
-        this.set = JImmutableHashMultiset.of();
+        this.set = set;
     }
 
-    public JImmutableHashMultisetProxy(JImmutableMultiset list)
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
     {
-        this.set = list;
+        out.writeInt(SET_VERSION);
+        writeSet(out);
+        out.writeInt(set.size());
+        for (Object obj : set) {
+            out.writeObject(obj);
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        final int version = in.readInt();
+        if (version != SET_VERSION) {
+            throw new IOException("unexpected version number: expected " + SET_VERSION + " found " + version);
+        }
+        set = readSet(in);
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            set = set.insert(in.readObject());
+        }
+    }
+
+    protected Object readResolve()
+    {
+        return set;
+    }
+
+    protected JImmutableSet readSet(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        return set;
+    }
+
+    protected void writeSet(ObjectOutput out)
+        throws IOException
+    {
     }
 }

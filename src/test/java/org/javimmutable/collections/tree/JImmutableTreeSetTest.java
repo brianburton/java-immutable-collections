@@ -36,9 +36,11 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -177,20 +180,20 @@ public class JImmutableTreeSetTest
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
                 switch (command) {
-                case 0:
-                case 1:
-                    set = set.insert(value);
-                    expected.add(value);
-                    assertEquals(true, set.contains(value));
-                    break;
-                case 2:
-                    assertEquals(expected.contains(value), set.contains(value));
-                    break;
-                case 3:
-                    set = set.delete(value);
-                    expected.remove(value);
-                    assertEquals(false, set.contains(value));
-                    break;
+                    case 0:
+                    case 1:
+                        set = set.insert(value);
+                        expected.add(value);
+                        assertEquals(true, set.contains(value));
+                        break;
+                    case 2:
+                        assertEquals(expected.contains(value), set.contains(value));
+                        break;
+                    case 3:
+                        set = set.delete(value);
+                        expected.remove(value);
+                        assertEquals(false, set.contains(value));
+                        break;
                 }
                 assertEquals(expected.size(), set.size());
             }
@@ -298,7 +301,28 @@ public class JImmutableTreeSetTest
         JImmutableSet<Integer> mset = JImmutableTreeSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
     }
-    
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
+        JImmutableSet<String> empty = JImmutableTreeSet.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwww4A0ALg+sxX+AAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwwwxgYSxgYEysAGJ8UWAIBAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "B", "c", "D")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwwwxhYShgYnYDYBYgTgTi5AgDGz3WQDgEAAA==");
+
+        empty = JImmutableTreeSet.of(String.CASE_INSENSITIVE_ORDER);
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt2qBTQ3US8nMS9dL7ikKDMvXcU5sTjVM684Na84sySzLNU5P7cgsSixJL+onDmmNibg6TkmmAFAGgDL2hDB8gAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAJXOPQrCQBAF4PGv0mOkstjGE0iwiIIEYplmDENY2eyG2dFE0SN4E8/iLSwsvIKaFMHa1z14fLzbC0aeYe44Vzs86KLYC24NqcwZQ5loZ73yxBqNPmFb1TLqRhsmSkhidvXx0+YdzCYANcPiD2++9cKYyc/tzOvn7Fa4HrdmWQ0BBs/m67RxURm0uUqEtc2DED1F1pP1WvSBQleUyCiOq0F6SePHvd8B0BPoYf0F8RHhi/YAAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "B", "c", "D")),
+                                                     "H4sIAAAAAAAAAJXOOwrCQBCA4dFopcdIZbGNJ/BVqCCBWNqMYQgrm12ZHTWKHsGbeBZvYWHhFdRNEawd+IuB4WNuL2h7hoHjXG1wr4tiJ7g2pDJnDGWinfXKE2s0+oTVqmbT+mjJRClJwq48fqp5x/0uQMkw+cMbrL0wZvJza/P6Obs5LjqVuT20AKJn+LUXXFQGba5SYW3zeISeptaT9Vr0nkau2CKjOD5Eq8sqedybNQAtgQaGhqEsNC6/LewnkAIBAAA=");
+    }
+
     private List<String> iterToList(Iterable<String> source)
     {
         List<String> answer = new ArrayList<>();

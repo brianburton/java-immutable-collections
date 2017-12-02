@@ -38,9 +38,11 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,6 +50,7 @@ import java.util.TreeSet;
 @Immutable
 public class JImmutableTreeSet<T>
     extends AbstractJImmutableSet<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeSet EMPTY = new JImmutableTreeSet(new ComparableComparator());
@@ -99,5 +102,10 @@ public class JImmutableTreeSet<T>
     protected Set<T> emptyMutableSet()
     {
         return new TreeSet<>(comparator);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTreeSetProxy(this);
     }
 }
