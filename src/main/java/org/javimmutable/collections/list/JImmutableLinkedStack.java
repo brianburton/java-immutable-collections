@@ -41,15 +41,13 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SequenceIterator;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.serialization.JImmutableStackProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,19 +58,34 @@ import java.util.List;
  * instead, but this class is significantly faster when its limitations are acceptable.
  */
 @Immutable
-public abstract class JImmutableLinkedStack
+public class JImmutableLinkedStack<V>
+    implements JImmutableStack<V>,
+               Serializable
 {
-    private static final EmptySequence EMPTY = new EmptySequence();
+    @SuppressWarnings("unchecked")
+    private static final JImmutableLinkedStack EMPTY = new JImmutableLinkedStack(null, null);
+    private static final long serialVersionUID = -121805;
+
+    private final V value;
+    private final JImmutableLinkedStack<V> next;
+
+    private JImmutableLinkedStack(V value,
+                                  JImmutableLinkedStack<V> next)
+    {
+        this.value = value;
+        this.next = next;
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> JImmutableStack<T> of()
     {
-        return (JImmutableStack<T>)EMPTY;
+        return EMPTY;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> JImmutableStack<T> of(T value)
     {
-        return new Single<>(value);
+        return new JImmutableLinkedStack<>(value, EMPTY);
     }
 
     public static <T> JImmutableStack<T> of(List<T> values)
@@ -84,6 +97,7 @@ public abstract class JImmutableLinkedStack
         return list;
     }
 
+    @SafeVarargs
     public static <T> JImmutableStack<T> of(T... values)
     {
         JImmutableStack<T> list = of();
@@ -93,220 +107,109 @@ public abstract class JImmutableLinkedStack
         return list;
     }
 
-    private static abstract class Base<V>
-        implements JImmutableStack<V>
+    public boolean isEmpty()
     {
-        @Nonnull
-        public abstract JImmutableStack<V> insert(@Nullable V value);
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> getInsertableSelf()
-        {
-            return this;
-        }
-
-        @Nonnull
-        public abstract JImmutableStack<V> getTail();
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> remove()
-        {
-            return getTail();
-        }
-
-        @Override
-        public int getSpliteratorCharacteristics()
-        {
-            return StreamConstants.SPLITERATOR_ORDERED;
-        }
-
-        public List<V> makeList()
-        {
-            final List<V> answer = new ArrayList<>();
-            JImmutableStack<V> next = this;
-            while (!next.isEmpty()) {
-                answer.add(next.getHead());
-                next = next.getTail();
-            }
-            return answer;
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Cursors.computeHashCode(cursor());
-        }
-
-        @Override
-        public String toString()
-        {
-            return Cursors.makeString(cursor());
-        }
+        return next == null;
     }
 
-    private static class EmptySequence<V>
-        extends Base<V>
+    public V getHead()
     {
-        public boolean isEmpty()
-        {
-            return true;
-        }
-
-        public V getHead()
-        {
+        if (next == null) {
             throw new UnsupportedOperationException();
         }
+        return value;
+    }
 
-        @Nonnull
-        @Override
-        public JImmutableStack<V> getTail()
-        {
+    @Nonnull
+    @Override
+    public JImmutableStack<V> getTail()
+    {
+        if (next == null) {
             return this;
-        }
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> insert(@Nullable V value)
-        {
-            return new Single<>(value);
-        }
-
-        @Nonnull
-        public Cursor<V> cursor()
-        {
-            return StandardCursor.of();
-        }
-
-        @Nonnull
-        @Override
-        public SplitableIterator<V> iterator()
-        {
-            return EmptyIterator.of();
-        }
-
-        @Override
-        public void checkInvariants()
-        {
-            //no invariants
-        }
-    }
-
-    private static class Single<V>
-        extends Base<V>
-    {
-        private final V value;
-
-        private Single(V value)
-        {
-            this.value = value;
-        }
-
-        public boolean isEmpty()
-        {
-            return false;
-        }
-
-        public V getHead()
-        {
-            return value;
-        }
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> getTail()
-        {
-            return of();
-        }
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> insert(@Nullable V value)
-        {
-            return new Chain<>(value, this);
-        }
-
-        @Nonnull
-        public Cursor<V> cursor()
-        {
-            return SingleValueCursor.of(value);
-        }
-
-        @Nonnull
-        @Override
-        public SplitableIterator<V> iterator()
-        {
-            return SingleValueIterator.of(value);
-        }
-
-        @Override
-        public void checkInvariants()
-        {
-            //no invariants
-        }
-    }
-
-    private static class Chain<V>
-        extends Base<V>
-    {
-        private final V value;
-        private final JImmutableStack<V> next;
-
-        private Chain(V value,
-                      JImmutableStack<V> next)
-        {
-            this.value = value;
-            this.next = next;
-        }
-
-        public boolean isEmpty()
-        {
-            return false;
-        }
-
-        public V getHead()
-        {
-            return value;
-        }
-
-        @Nonnull
-        @Override
-        public JImmutableStack<V> getTail()
-        {
+        } else {
             return next;
         }
+    }
 
-        @Override
-        @Nonnull
-        public JImmutableStack<V> insert(@Nullable V value)
-        {
-            return new Chain<>(value, this);
-        }
+    @Nonnull
+    @Override
+    public JImmutableStack<V> insert(@Nullable V value)
+    {
+        return new JImmutableLinkedStack<>(value, this);
+    }
 
-        @Override
-        @Nonnull
-        public Cursor<V> cursor()
-        {
-            return SequenceCursor.of(this);
-        }
+    @Nonnull
+    @Override
+    public JImmutableStack<V> remove()
+    {
+        return getTail();
+    }
 
-        @Nonnull
-        public SplitableIterator<V> iterator()
-        {
-            return SequenceIterator.iterator(this);
-        }
+    @Override
+    public int getSpliteratorCharacteristics()
+    {
+        return StreamConstants.SPLITERATOR_ORDERED;
+    }
 
-        @Override
-        public void checkInvariants()
-        {
-            //no invariants
+    public List<V> makeList()
+    {
+        final List<V> answer = new ArrayList<>();
+        JImmutableStack<V> next = this;
+        while (!next.isEmpty()) {
+            answer.add(next.getHead());
+            next = next.getTail();
         }
+        return answer;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Cursors.computeHashCode(cursor());
+    }
+
+    @Override
+    public String toString()
+    {
+        return Cursors.makeString(cursor());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableStack<V> getInsertableSelf()
+    {
+        return this;
+    }
+
+    @Nonnull
+    public Cursor<V> cursor()
+    {
+        return SequenceCursor.of(this);
+    }
+
+    @Nonnull
+    @Override
+    public SplitableIterator<V> iterator()
+    {
+        return SequenceIterator.iterator(this);
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if ((next == null) && !(this == EMPTY)) {
+            throw new IllegalStateException();
+        }
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableStackProxy(this);
     }
 }

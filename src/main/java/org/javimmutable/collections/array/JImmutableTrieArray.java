@@ -45,10 +45,13 @@ import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,9 +59,11 @@ import java.util.List;
 @Immutable
 public class JImmutableTrieArray<T>
     extends AbstractJImmutableArray<T>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of(), 0);
+    private static final long serialVersionUID = -121805;
 
     private final TrieNode<T> root;
     private final int size;
@@ -210,6 +215,29 @@ public class JImmutableTrieArray<T>
     public void checkInvariants()
     {
         root.checkInvariants();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o == this) || ((o instanceof JImmutableArray) && Cursors.areEqual(cursor(), ((JImmutableArray)o).cursor()));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Cursors.computeHashCode(cursor());
+    }
+
+    @Override
+    public String toString()
+    {
+        return Cursors.makeString(cursor());
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableArrayProxy(this);
     }
 
     public static class Builder<T>

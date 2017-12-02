@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -327,6 +328,15 @@ public class JImmutableHashMapTest
         assertEquals(asList(), hashMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), hashMap.assign(1, 10).values().stream().collect(Collectors.toList()));
         assertEquals(asList(10, 40), hashMap.assign(1, 10).assign(4, 40).values().stream().collect(Collectors.toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableMap<Integer, String> empty = JImmutableHashMap.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of(1, "a")));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))));
     }
 
     private static class ManualHashKey

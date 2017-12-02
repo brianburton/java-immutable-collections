@@ -43,6 +43,7 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -878,58 +879,58 @@ public class JImmutableBtreeListTest
 
             for (int loops = 1; loops <= 200; ++loops) {
                 switch (random.nextInt(5)) {
-                case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
-                    expected.addAll(0, values);
-                    break;
-                }
-                case 1: { //insertAllFirst(Collection)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
-                    expected.addAll(0, values);
-                    break;
-                }
-                case 2: { //insertAllLast(Cursorable)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(getCursor(values));
-                    expected.addAll(values);
-                    break;
-                }
-                case 3: {//insertAllLast(Collection)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
-                    expected.addAll(values);
-                    break;
-                }
-                case 4: { //deleteFirst
-                    if (list.size() > 0) {
-                        list = list.deleteFirst();
-                        expected.remove(0);
-                    } else {
-                        try {
+                    case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 1: { //insertAllFirst(Collection)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 2: { //insertAllLast(Cursorable)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(getCursor(values));
+                        expected.addAll(values);
+                        break;
+                    }
+                    case 3: {//insertAllLast(Collection)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                        expected.addAll(values);
+                        break;
+                    }
+                    case 4: { //deleteFirst
+                        if (list.size() > 0) {
                             list = list.deleteFirst();
-                            fail();
-                        } catch (IndexOutOfBoundsException ignore) {
-                            //expected
+                            expected.remove(0);
+                        } else {
+                            try {
+                                list = list.deleteFirst();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
-                case 5: { //deleteLast
-                    if (list.size() > 0) {
-                        list = list.deleteLast();
-                        expected.remove(expected.size() - 1);
-                    } else {
-                        try {
+                    case 5: { //deleteLast
+                        if (list.size() > 0) {
                             list = list.deleteLast();
-                            fail();
-                        } catch (IndexOutOfBoundsException ignore) {
-                            //expected
+                            expected.remove(expected.size() - 1);
+                        } else {
+                            try {
+                                list = list.deleteLast();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
                 }
                 assertEquals(expected.size(), list.size());
             }
@@ -1040,18 +1041,18 @@ public class JImmutableBtreeListTest
                 expected.addAll(index, values);
                 int parameter = random.nextInt(4);
                 switch (parameter) {
-                case 0:  //insertAll(Cursorable)
-                    list = list.insertAll(index, plainIterable(values));
-                    break;
-                case 1: //insertAll(Collection)
-                    list = list.insertAll(index, values);
-                    break;
-                case 2: //insertAll(Cursor)
-                    list = list.insertAll(index, getCursor(values));
-                    break;
-                case 3: //insertAll(Iterator)
-                    list = list.insertAll(index, values.iterator());
-                    break;
+                    case 0:  //insertAll(Cursorable)
+                        list = list.insertAll(index, plainIterable(values));
+                        break;
+                    case 1: //insertAll(Collection)
+                        list = list.insertAll(index, values);
+                        break;
+                    case 2: //insertAll(Cursor)
+                        list = list.insertAll(index, getCursor(values));
+                        break;
+                    case 3: //insertAll(Iterator)
+                        list = list.insertAll(index, values.iterator());
+                        break;
                 }
                 assertEquals(expected.size(), list.size());
             }
@@ -1265,6 +1266,15 @@ public class JImmutableBtreeListTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableRandomAccessList<String> empty = JImmutableBtreeList.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert("a"));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
     }
 
     private JImmutableRandomAccessList<Integer> ralist(Integer... values)

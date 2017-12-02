@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
 
@@ -54,6 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+
+import static java.util.Arrays.asList;
 
 public class JImmutableTrieArrayTest
     extends TestCase
@@ -293,6 +296,15 @@ public class JImmutableTrieArrayTest
                 }
             }
         }
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableArray<String> empty = JImmutableTrieArray.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of(1, "a")));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))));
     }
 
     public void testBuilder()

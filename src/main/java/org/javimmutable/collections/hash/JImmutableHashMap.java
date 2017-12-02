@@ -48,13 +48,16 @@ import org.javimmutable.collections.hash.collision_map.ListCollisionMap;
 import org.javimmutable.collections.hash.collision_map.TreeCollisionMap;
 import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hash.hamt.HamtNode;
+import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 @Immutable
 public class JImmutableHashMap<T, K, V>
     extends AbstractJImmutableMap<K, V>
+    implements Serializable
 {
     // we only need one instance of the transformations object
     static final ListCollisionMap LIST_COLLISION_MAP = new ListCollisionMap();
@@ -69,6 +72,8 @@ public class JImmutableHashMap<T, K, V>
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
     static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), 0, TREE_COLLISION_MAP);
+
+    private static final long serialVersionUID = -121805;
 
     private final HamtNode<T, K, V> root;
     private final int size;
@@ -231,5 +236,10 @@ public class JImmutableHashMap<T, K, V>
     CollisionMap getCollisionMap()
     {
         return collisionMap;
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableHashMapProxy(this);
     }
 }

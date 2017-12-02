@@ -33,20 +33,71 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.serialization;
 
-import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-public class BranchNodeTest
-    extends TestCase
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+/**
+ * Serialization proxy class to safely serialize immutable collection.
+ */
+@SuppressWarnings("unchecked")
+public class JImmutableStackProxy
+    implements Externalizable
 {
-    public void testDelete()
+    private static final long serialVersionUID = -121805;
+    private static final int STACK_VERSION = 1001;
+
+    private JImmutableStack list;
+
+    public JImmutableStackProxy()
     {
-        LeafNode<Integer, String> a = new LeafNode<>(1, "a");
-        LeafNode<Integer, String> b = new LeafNode<>(2, "b");
-        BranchNode<Integer, String> branch = new BranchNode<>(a, b);
-        final ComparableComparator<Integer> comparator = ComparableComparator.of();
-        Node<Integer, String> d1 = branch.delete(comparator, 1);
-        Node<Integer, String> d2 = d1.delete(comparator, 2);
+        this.list = JImmutableLinkedStack.of();
+    }
+
+    public JImmutableStackProxy(JImmutableStack list)
+    {
+        this.list = list;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
+    {
+        out.writeInt(STACK_VERSION);
+        JImmutableStack seq = list;
+        while (!seq.isEmpty()) {
+            out.writeBoolean(true);
+            out.writeObject(seq.getHead());
+            seq = seq.getTail();
+        }
+        out.writeBoolean(false);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        final int version = in.readInt();
+        if (version != STACK_VERSION) {
+            throw new IOException("unexpected version number: expected " + STACK_VERSION + " found " + version);
+        }
+        JImmutableStack seq = this.list;
+        while (in.readBoolean()) {
+            seq = seq.insert(in.readObject());
+        }
+        for (Object obj : seq) {
+            list = list.insert(obj);
+        }
+    }
+
+    private Object readResolve()
+    {
+        return list;
     }
 }

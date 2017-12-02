@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
@@ -438,58 +439,58 @@ public class JImmutableArrayListTest
 
             for (int loops = 0; loops < (4 * size); ++loops) {
                 switch (random.nextInt(5)) {
-                case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
-                    expected.addAll(0, values);
-                    break;
-                }
-                case 1: { //insertAllFirst(Collection)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
-                    expected.addAll(0, values);
-                    break;
-                }
-                case 2: { //insertAllLast(Cursorable)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(getCursor(values));
-                    expected.addAll(values);
-                    break;
-                }
-                case 3: {//insertAllLast(Collection)
-                    List<Integer> values = makeValues(random, size);
-                    list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
-                    expected.addAll(values);
-                    break;
-                }
-                case 4: { //deleteFirst
-                    if (list.size() > 0) {
-                        list = list.deleteFirst();
-                        expected.remove(0);
-                    } else {
-                        try {
+                    case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 1: { //insertAllFirst(Collection)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 2: { //insertAllLast(Cursorable)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(getCursor(values));
+                        expected.addAll(values);
+                        break;
+                    }
+                    case 3: {//insertAllLast(Collection)
+                        List<Integer> values = makeValues(random, size);
+                        list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                        expected.addAll(values);
+                        break;
+                    }
+                    case 4: { //deleteFirst
+                        if (list.size() > 0) {
                             list = list.deleteFirst();
-                            fail();
-                        } catch (IndexOutOfBoundsException ignore) {
-                            //expected
+                            expected.remove(0);
+                        } else {
+                            try {
+                                list = list.deleteFirst();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
-                case 5: { //deleteLast
-                    if (list.size() > 0) {
-                        list = list.deleteLast();
-                        expected.remove(expected.size() - 1);
-                    } else {
-                        try {
+                    case 5: { //deleteLast
+                        if (list.size() > 0) {
                             list = list.deleteLast();
-                            fail();
-                        } catch (IndexOutOfBoundsException ignore) {
-                            //expected
+                            expected.remove(expected.size() - 1);
+                        } else {
+                            try {
+                                list = list.deleteLast();
+                                fail();
+                            } catch (IndexOutOfBoundsException ignore) {
+                                //expected
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
                 }
                 assertEquals(expected.size(), list.size());
             }
@@ -691,6 +692,15 @@ public class JImmutableArrayListTest
         final JImmutableList<Integer> original = JImmutableArrayList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
         assertEquals(original, original.stream().parallel().collect(JImmutableArrayList.of().listCollector()));
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableList<String> empty = JImmutableArrayList.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert("a"));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
     }
 
     private JImmutableList<Integer> mklist(Integer... values)

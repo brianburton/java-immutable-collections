@@ -46,9 +46,11 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.sequence.EmptySequenceNode;
+import org.javimmutable.collections.serialization.JImmutableListProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,10 +59,12 @@ import java.util.List;
  * only allow values to be inserted or deleted from the head or tail of the list.
  */
 public class JImmutableArrayList<T>
-    implements JImmutableList<T>
+    implements JImmutableList<T>,
+               Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableArrayList EMPTY = new JImmutableArrayList(EmptyNode.of());
+    private static final long serialVersionUID = -121805;
 
     private final Node<T> root;
 
@@ -321,6 +325,11 @@ public class JImmutableArrayList<T>
     public String toString()
     {
         return Cursors.makeString(cursor());
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableListProxy(this);
     }
 
     public static class Builder<T>

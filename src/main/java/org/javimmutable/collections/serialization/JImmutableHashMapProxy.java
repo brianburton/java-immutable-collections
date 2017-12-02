@@ -33,20 +33,68 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree;
+package org.javimmutable.collections.serialization;
 
-import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
 
-public class BranchNodeTest
-    extends TestCase
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+/**
+ * Serialization proxy class to safely serialize immutable collection.
+ */
+@SuppressWarnings("unchecked")
+public class JImmutableHashMapProxy
+    implements Externalizable
 {
-    public void testDelete()
+    private static final long serialVersionUID = -121805;
+    private static final int MAP_VERSION = 1001;
+
+    private JImmutableMap map;
+
+    public JImmutableHashMapProxy()
     {
-        LeafNode<Integer, String> a = new LeafNode<>(1, "a");
-        LeafNode<Integer, String> b = new LeafNode<>(2, "b");
-        BranchNode<Integer, String> branch = new BranchNode<>(a, b);
-        final ComparableComparator<Integer> comparator = ComparableComparator.of();
-        Node<Integer, String> d1 = branch.delete(comparator, 1);
-        Node<Integer, String> d2 = d1.delete(comparator, 2);
+        this.map = JImmutableHashMap.of();
+    }
+
+    public JImmutableHashMapProxy(JImmutableMap map)
+    {
+        this.map = map;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
+    {
+        out.writeInt(MAP_VERSION);
+        out.writeInt(map.size());
+        for (JImmutableMap.Entry entry : (Iterable<JImmutableMap.Entry>)map) {
+            out.writeObject(entry.getKey());
+            out.writeObject(entry.getValue());
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        final int version = in.readInt();
+        if (version != MAP_VERSION) {
+            throw new IOException("unexpected version number: expected " + MAP_VERSION + " found " + version);
+        }
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            final Object key = in.readObject();
+            final Object value = in.readObject();
+            map = map.assign(key, value);
+        }
+    }
+
+    private Object readResolve()
+    {
+        return map;
     }
 }

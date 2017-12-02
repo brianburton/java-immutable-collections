@@ -44,10 +44,12 @@ import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.serialization.JImmutableRandomAccessListProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,10 +59,12 @@ import java.util.List;
  */
 @Immutable
 public class JImmutableBtreeList<T>
-    implements JImmutableRandomAccessList<T>
+    implements JImmutableRandomAccessList<T>,
+               Serializable
 {
     private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<>(BtreeEmptyNode.of());
     private static final int BUILDER_CHILDREN_PER_NODE = Math.max(BtreeNode.MIN_CHILDREN, BtreeNode.MAX_CHILDREN - 2);
+    private static final long serialVersionUID = -121805;
 
     private final BtreeNode<T> root;
 
@@ -419,6 +423,11 @@ public class JImmutableBtreeList<T>
     public String toString()
     {
         return Cursors.makeString(cursor());
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableRandomAccessListProxy(this);
     }
 
     public static class Builder<T>

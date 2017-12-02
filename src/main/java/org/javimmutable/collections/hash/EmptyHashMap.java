@@ -44,9 +44,11 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Singleton implementation of JImmutableMap that contains no elements.
@@ -56,8 +58,11 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class EmptyHashMap<K, V>
     extends AbstractJImmutableMap<K, V>
+    implements Serializable
 {
     static final EmptyHashMap INSTANCE = new EmptyHashMap();
+
+    private static final long serialVersionUID = -121805;
 
     private EmptyHashMap()
     {
@@ -136,5 +141,10 @@ public class EmptyHashMap<K, V>
     public void checkInvariants()
     {
         //TODO: fix empty checkInvariants()
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableHashMapProxy(this);
     }
 }

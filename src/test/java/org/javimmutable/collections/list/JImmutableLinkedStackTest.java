@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
@@ -110,5 +111,14 @@ public class JImmutableLinkedStackTest
         final JImmutableStack<Integer> original = JImmutableLinkedStack.of(StandardCursor.makeList(StandardCursor.forRange(1, 10000)));
         final List<Integer> collected = original.stream().parallel().collect(toList());
         assertEquals(StandardCursor.makeList(original.cursor()), collected);
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableStack<String> empty = JImmutableLinkedStack.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert("a"));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
     }
 }
