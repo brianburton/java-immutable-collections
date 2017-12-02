@@ -22,6 +22,7 @@ public class StandardSerializableTests
         try (ObjectInputStream inp = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
             dest = inp.readObject();
         }
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
     }
 }

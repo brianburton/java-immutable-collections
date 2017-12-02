@@ -33,62 +33,72 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash;
+package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
-import org.javimmutable.collections.serialization.JImmutableHashMultisetProxy;
+import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Iterator;
 
-@Immutable
-public class JImmutableHashMultiset<T>
-    extends AbstractJImmutableMultiset<T>
-    implements Serializable
+/**
+ * Serialization proxy class to safely serialize immutable collection.
+ */
+@SuppressWarnings("unchecked")
+public class JImmutableHashMultisetProxy
+    implements Externalizable
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
     private static final long serialVersionUID = -121805;
+    private static final int MULTISET_VERSION = 1001;
 
-    private JImmutableHashMultiset(JImmutableMap<T, Integer> map,
-                                   int occurrences)
+    private JImmutableMultiset list;
+
+    public JImmutableHashMultisetProxy()
     {
-        super(map, occurrences);
+        this.list = JImmutableHashMultiset.of();
+    }
+
+    public JImmutableHashMultisetProxy(JImmutableMultiset list)
+    {
+        this.list = list;
     }
 
     @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                           int occurrences)
+    public void writeExternal(ObjectOutput out)
+        throws IOException
     {
-        return new JImmutableHashMultiset<>(map, occurrences);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> JImmutableHashMultiset<T> of()
-    {
-        return (JImmutableHashMultiset<T>)EMPTY;
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableMultiset<T> deleteAll()
-    {
-        return of();
+        out.writeInt(MULTISET_VERSION);
+        out.writeInt(list.size());
+        final Iterator<JImmutableMap.Entry> iterator = list.entries().iterator();
+        while (iterator.hasNext()) {
+            JImmutableMap.Entry e = iterator.next();
+            out.writeObject(e.getKey());
+            out.writeInt((Integer)e.getValue());
+        }
     }
 
     @Override
-    protected Map<T, Integer> emptyMutableMap()
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
     {
-        return new HashMap<>();
+        final int version = in.readInt();
+        if (version != MULTISET_VERSION) {
+            throw new IOException("unexpected version number: expected " + MULTISET_VERSION + " found " + version);
+        }
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            final Object key = in.readObject();
+            final int count = in.readInt();
+            list = list.insert(key, count);
+        }
     }
 
-    private Object writeReplace()
+    private Object readResolve()
     {
-        return new JImmutableHashMultisetProxy(this);
+        return list;
     }
 }

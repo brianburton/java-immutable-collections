@@ -41,6 +41,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -203,6 +204,15 @@ public class JImmutableHashMultisetTest
     {
         JImmutableMultiset<Integer> mset = JImmutableHashMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final JImmutableMultiset<String> empty = JImmutableHashMultiset.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert("a"));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c", "b")));
     }
 
     private Set<String> asSet(String... args)
