@@ -36,28 +36,78 @@
 package org.javimmutable.collections.common;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class StandardSerializableTests
     extends TestCase
 {
-    public static void verifySerializable(Object source)
-        throws IOException, ClassNotFoundException
+    public static void verifySerializable(Func1<Object, Iterator> iteratorFactory,
+                                          Object source,
+                                          String oldSerializedBase64)
+        throws Exception
     {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
-            out.writeObject(source);
-        }
-        Object dest;
-        try (ObjectInputStream inp = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
-            dest = inp.readObject();
+        byte[] bytes = serialize(source);
+        Object dest = deserialize(bytes);
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
+        assertEquals(source, dest);
+        verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
+        try {
+            dest = deserialize(decode(oldSerializedBase64));
+        } catch (Exception ex) {
+            fail(encode(bytes));
         }
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
+        verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
+    }
+
+    private static byte[] serialize(Object source)
+        throws Exception
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (ObjectOutputStream out = new ObjectOutputStream(new GZIPOutputStream(bytes))) {
+            out.writeObject(source);
+        }
+        return bytes.toByteArray();
+    }
+
+    private static Object deserialize(byte[] source)
+        throws Exception
+    {
+        try (ObjectInputStream inp = new ObjectInputStream(new GZIPInputStream(new ByteArrayInputStream(source)))) {
+            return inp.readObject();
+        }
+    }
+
+    private static void verifyIterator(Iterator expected,
+                                       Iterator actual)
+    {
+        while (expected.hasNext()) {
+            assertEquals(expected.hasNext(), actual.hasNext());
+            assertEquals(expected.next(), actual.next());
+        }
+        assertEquals(expected.hasNext(), actual.hasNext());
+    }
+
+    private static String encode(byte[] bytes)
+        throws NoSuchAlgorithmException
+    {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    private static byte[] decode(String base64)
+        throws Exception
+    {
+        return Base64.getDecoder().decode(base64);
     }
 }

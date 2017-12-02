@@ -38,6 +38,7 @@ package org.javimmutable.collections.hash;
 
 import com.google.common.collect.TreeMultiset;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
@@ -46,6 +47,7 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -209,10 +211,14 @@ public class JImmutableHashMultisetTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
         final JImmutableMultiset<String> empty = JImmutableHashMultiset.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert("a"));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c", "b")));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvAtzSnJLE4tCSjKr6j8DwL/VIx5GBgqCso5GBiYXzIAQQUAGOieRGYAAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvAtzSnJLE4tCSjKr6j8DwL/VIx5GBgqCso5GBiYXzIwMDCWMDAmlrOAWBUAAnNNs3AAAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c", "b")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvAtzSnJLE4tCSjKr6j8DwL/VIx5GBgqCso5GBiYXzIAiRIGxsRyFiCLEchKArOYgKxkiFgFABv7ITOEAAAA");
     }
 
     private Set<String> asSet(String... args)

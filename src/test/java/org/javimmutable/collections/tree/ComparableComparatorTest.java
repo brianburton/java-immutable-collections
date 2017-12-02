@@ -37,14 +37,13 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.StandardSerializableTests;
-
-import java.io.IOException;
+import org.javimmutable.collections.iterators.SingleValueIterator;
 
 public class ComparableComparatorTest
-        extends TestCase
+    extends TestCase
 {
     public void test()
-        throws IOException, ClassNotFoundException
+        throws Exception
     {
         ComparableComparator<String> comp = new ComparableComparator<String>();
         assertEquals(-1, comp.compare(null, "a"));
@@ -53,6 +52,7 @@ public class ComparableComparatorTest
         assertEquals(-1, comp.compare("a", "b"));
         assertEquals(0, comp.compare("a", "a"));
         assertEquals(1, comp.compare("b", "a"));
-        StandardSerializableTests.verifySerializable(comp);
+        StandardSerializableTests.verifySerializable(c -> SingleValueIterator.of(c), comp,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivpCg1Vc85P7cgsQgkB2WV5Bf9B4F/KsZMDAwVBQBVztHTSwAAAA==");
     }
 }

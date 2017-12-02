@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -697,10 +698,14 @@ public class JImmutableArrayListTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableList)a).iterator();
         final JImmutableList<String> empty = JImmutableArrayList.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert("a"));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbkEi6E9wskvDr/9+QlkaEE5BwMD80sGIKgAALO1c6GzAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbkEi6E9wskvDr/9+QlkaEE5BwMD80sGBgbGEgbGxAoAo0yDZbcAAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbkEi6E9wskvDr/9+QlkaEE5BwMD80sGIFHCwJgIxElAnFwBAE7BMvK/AAAA");
     }
 
     private JImmutableList<Integer> mklist(Integer... values)

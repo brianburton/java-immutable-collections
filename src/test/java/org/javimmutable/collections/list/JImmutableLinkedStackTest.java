@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -44,6 +45,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -116,9 +118,13 @@ public class JImmutableLinkedStackTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableStack)a).iterator();
         final JImmutableStack<String> empty = JImmutableLinkedStack.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert("a"));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMlQAAGBF3jRcAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMpYwMCaWMzJUAADCIe2GYwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMpYwMCaXM4KoJAiVWM7IUAEAZv4PknEAAAA=");
     }
 }

@@ -37,6 +37,7 @@ package org.javimmutable.collections.array;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
@@ -51,6 +52,7 @@ import org.javimmutable.collections.indexed.IndexedList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -301,10 +303,14 @@ public class JImmutableTrieArrayTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableArray)a).iterator();
         final JImmutableArray<String> empty = JImmutableTrieArray.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of(1, "a")));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgBBBQBbOGFFXwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of(1, "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyoEk80sGBgZGEC5hYEysAACKUbzuZwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyoEk80sGINEAJEoYGBPLWYAMRiArqZylHqgSyEquAABirp0EewAAAA==");
     }
 
     public void testBuilder()

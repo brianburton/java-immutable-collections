@@ -38,6 +38,7 @@ package org.javimmutable.collections.btree_list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
@@ -1271,10 +1272,14 @@ public class JImmutableBtreeListTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableRandomAccessList)a).iterator();
         final JImmutableRandomAccessList<String> empty = JImmutableBtreeList.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert("a"));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList("a", "b", "c")));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQHc0B7h5BeH3/78BDK0oJyDgYH5JQMQVAAA93asIr8AAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQHc0B7h5BeH3/78BDK0oJyDgYH5JQMDA2MJA2NiBQCaoA2QwwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQHc0B7h5BeH3/78BDK0oJyDgYH5JQOQKGFgTATiJCBOrgAA/u/eCMsAAAA=");
     }
 
     private JImmutableRandomAccessList<Integer> ralist(Integer... values)

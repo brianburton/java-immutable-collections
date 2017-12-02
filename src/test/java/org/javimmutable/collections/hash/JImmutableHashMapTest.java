@@ -36,6 +36,7 @@
 package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
@@ -44,6 +45,7 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -333,10 +335,14 @@ public class JImmutableHashMapTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
         final JImmutableMap<Integer, String> empty = JImmutableHashMap.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of(1, "a")));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7BwMD8kgEIKgDDFzMktQAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of(1, "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7BwMD8koGBgRHoXkGg2Yl6OYl56XqeeSWp6alFQo8WLPne2G7BxMDoycBalphTmgp0hwBCnV9pblJqUduaqbLcUx50M4GMBBlWwsCYWAEAV1/lAgYBAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7BwMD8kgFIAN0rCDQ7US8nMS9dzzOvJDU9tUjo0YIl3xvbLZgYGD0ZWMsSc0pTge4QQKjzK81NSi1qWzNVlnvKg24mkJENQNNKGBgTiwsZ6hiYgRxGIC8JwqsHegfIS64AAPzejl8iAQAA");
     }
 
     private static class ManualHashKey

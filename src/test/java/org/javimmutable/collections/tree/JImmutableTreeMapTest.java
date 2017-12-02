@@ -36,6 +36,7 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
@@ -45,6 +46,7 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -309,15 +311,22 @@ public class JImmutableTreeMapTest
     public void testSerialization()
         throws Exception
     {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
         JImmutableMap<String, String> empty = JImmutableTreeMap.of();
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of("A", "a")));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7CwMD8EuhWM7xmlwDdpOecn1uQWASSg7JK8otgDmSCGQakAVM2bmX+AAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7CwMD8EuhWM7xmlwDdpOecn1uQWASSg7JK8otgDmSCGcbAWMLA6AjEiRUAtOg5UgYBAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7CwMD8EuhWM7xmlwDdpOecn1uQWASSg7JK8otgDmSCGcbAXMLA6AjEiUDsDsRJQBwFxMkVAAIItvIWAQAA");
 
         empty = JImmutableTreeMap.of(String.CASE_INSENSITIVE_ORDER);
-        StandardSerializableTests.verifySerializable(empty);
-        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of("A", "a")));
-        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))));
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzKJnK94EvmMxA5lZUM7CwMD8EuhWLaC5iXo5iXnpesElRZl56SrOicWpnnnFqXnFmSWZZanO+bkFiUWJJflF5cwxtTEBT88xwQwA0gAeQaSA8gAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+                                                     "H4sIAAAAAAAAAJXOMQrCQBAF0ImJncewsthGsA9ioSBEtEwzCUNY2eyG2TWJgvex8CzeQkFQj6AmRbB24BcfPo85P6FvGULDmdhiKfN85zBRJFKjFKVOGm2FJZao5AHbKhbzbrRhoiUWEZt6/2nvPRwPAGqG2R9emFjHmLqf25l8Oz1Wr2DSmkUVAPj35tdR46JQqDOxdix1Npyipbm2pK10sqSpyQtkdIYrPz7G0fXS6wDwHHhhE6y/UKQpmfoAAAA=");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+                                                     "H4sIAAAAAAAAAJXOsQrCMBCA4dPq5mN0csgiuJcioiAoOonLNYQSSZNyiW0VfB8Hn8W3UBDUR1DToTh78A8Hx8edn9C1BJGhlG2xkFm2c5gowbhRSnAnjbbMCpKo5AHrlU0nzdGKhJhhPidT7T/1vMNBD6AiGP3hRYl1hNz93Mak2+mxeHWGtZmXHYDg7n/texeZQp2ypSOp0zBGKybaCm2lk4WITZYjoTNUBpvjZn69tBsAAgetyIe+sS/xrX28+gIcwalQCgEAAA==");
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
