@@ -35,15 +35,17 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Set;
+
+import static java.util.Arrays.asList;
 
 public class JImmutableInsertOrderSetMapTest
     extends AbstractJImmutableSetMapTestCase
@@ -51,16 +53,16 @@ public class JImmutableInsertOrderSetMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.<Integer, Integer>of(), Ordering.HASH);
-        verifyRandom(JImmutableInsertOrderSetMap.<Integer, Integer>of(), new LinkedHashMap<Integer, Set<Integer>>());
+        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.of(), Ordering.HASH);
+        verifyRandom(JImmutableInsertOrderSetMap.of(), new LinkedHashMap<>());
         StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                              MapEntry.of(3, map.getSet(3)),
-                                                                                                              MapEntry.of(2, map.getSet(2))),
+        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                        MapEntry.of(3, map.getSet(3)),
+                                                        MapEntry.of(2, map.getSet(2))),
                                           map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.<JImmutableMap.Entry<Integer, JImmutableSet<Integer>>>asList(MapEntry.of(1, map.getSet(1)),
-                                                                                                                 MapEntry.of(3, map.getSet(3)),
-                                                                                                                 MapEntry.of(2, map.getSet(2))),
+        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                          MapEntry.of(3, map.getSet(3)),
+                                                          MapEntry.of(2, map.getSet(2))),
                                             map.iterator());
     }
 
@@ -81,5 +83,18 @@ public class JImmutableInsertOrderSetMapTest
         b = b.insert(1, 12);
         assertEquals(a, b);
         assertEquals(b, a);
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderSetMap)a).iterator();
+        JImmutableSetMap<String, String> empty = JImmutableInsertOrderSetMap.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZgKACADzR7fLCAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZGBgYSxgYHctZoKzECgAGGrCE0AAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZgEQJA6NjOQuQxQhkJRYy1DGwwLlJQBwF5yVXAAA7ognH7QAAAA==");
     }
 }

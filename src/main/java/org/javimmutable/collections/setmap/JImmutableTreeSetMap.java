@@ -38,9 +38,11 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.serialization.JImmutableTreeSetMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -50,13 +52,24 @@ import java.util.Comparator;
 @Immutable
 public class JImmutableTreeSetMap<K, V>
     extends AbstractJImmutableSetMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings({"unchecked"})
     private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.of());
+    private static final long serialVersionUID = -121805;
 
-    private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
+    private final Comparator<K> comparator;
+
+    private JImmutableTreeSetMap(JImmutableTreeMap<K, JImmutableSet<V>> contents)
+    {
+        this(contents, contents.getComparator());
+    }
+
+    private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
+                                 Comparator<K> comparator)
     {
         super(contents);
+        this.comparator = comparator;
     }
 
     /**
@@ -79,6 +92,11 @@ public class JImmutableTreeSetMap<K, V>
         return new JImmutableTreeSetMap<>(JImmutableTreeMap.of(comparator));
     }
 
+    public Comparator<K> getComparator()
+    {
+        return comparator;
+    }
+
     @Override
     public void checkInvariants()
     {
@@ -88,6 +106,11 @@ public class JImmutableTreeSetMap<K, V>
     @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
-        return new JImmutableTreeSetMap<>(map);
+        return new JImmutableTreeSetMap<>(map, comparator);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTreeSetMapProxy(this);
     }
 }

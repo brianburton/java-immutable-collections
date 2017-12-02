@@ -39,22 +39,23 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderSetMapProxy;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in the same order as they
  * were inserted into the collection
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class JImmutableInsertOrderSetMap<K, V>
-        extends AbstractJImmutableSetMap<K, V>
+    extends AbstractJImmutableSetMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderSetMap EMPTY = new JImmutableInsertOrderSetMap(JImmutableInsertOrderMap.of());
+    private static final long serialVersionUID = -121805;
 
     private JImmutableInsertOrderSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
     {
@@ -77,5 +78,10 @@ public class JImmutableInsertOrderSetMap<K, V>
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
         return new JImmutableInsertOrderSetMap<K, V>(map);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableInsertOrderSetMapProxy(this);
     }
 }

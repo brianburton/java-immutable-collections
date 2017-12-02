@@ -33,56 +33,26 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.setmap;
+package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.serialization.JImmutableHashSetMapProxy;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
+import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 
 /**
- * JImmutableSetMap using a hash map for fast lookup.
+ * Serialization proxy class to safely serialize immutable collection.
  */
-@Immutable
-public class JImmutableHashSetMap<K, V>
-    extends AbstractJImmutableSetMap<K, V>
-    implements Serializable
+@SuppressWarnings("unchecked")
+public class JImmutableHashSetMapProxy
+    extends AbstractJImmutableSetMapProxy
 {
-    @SuppressWarnings("unchecked")
-    private static final JImmutableHashSetMap EMPTY = new JImmutableHashSetMap(JImmutableHashMap.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableHashSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
+    public JImmutableHashSetMapProxy()
     {
-        super(contents);
+        super(JImmutableHashSetMap.of());
     }
 
-    @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableHashSetMap<K, V> of()
+    public JImmutableHashSetMapProxy(JImmutableHashSetMap map)
     {
-        return (JImmutableHashSetMap<K, V>)EMPTY;
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        checkSetMapInvariants();
-        //TODO: fix generalized checkInvariants()
-    }
-
-    @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
-    {
-        return new JImmutableHashSetMap<K, V>(map);
-    }
-
-    private Object writeReplace()
-    {
-        return new JImmutableHashSetMapProxy(this);
+        super(map);
     }
 }
