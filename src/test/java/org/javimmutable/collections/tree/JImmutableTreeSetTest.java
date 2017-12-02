@@ -308,19 +308,19 @@ public class JImmutableTreeSetTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
         JImmutableSet<String> empty = JImmutableTreeSet.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwww4A0ALg+sxX+AAAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhQBoA7OhIo/4AAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwwwxgYSxgYEysAGJ8UWAIBAAA=");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDIwlDIyJFQCgYDVAAgEAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "B", "c", "D")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt1qhtfsEqCb9JzzcwsSi0ByUFZJfhHMgUwwwxhYShgYnYDYBYgTgTi5AgDGz3WQDgEAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDCwlDIxOQOwCxIlAnFwBAPH7K08OAQAA");
 
         empty = JImmutableTreeSet.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS7MzN7/NfneiX7cIDMLylkYGJhfAt2qBTQ3US8nMS9dL7ikKDMvXcU5sTjVM684Na84sySzLNU5P7cgsSixJL+onDmmNibg6TkmmAFAGgDL2hDB8gAAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLQkoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3aoFNDdRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAUAaAEGTXHXyAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAJXOPQrCQBAF4PGv0mOkstjGE0iwiIIEYplmDENY2eyG2dFE0SN4E8/iLSwsvIKaFMHa1z14fLzbC0aeYe44Vzs86KLYC24NqcwZQ5loZ73yxBqNPmFb1TLqRhsmSkhidvXx0+YdzCYANcPiD2++9cKYyc/tzOvn7Fa4HrdmWQ0BBs/m67RxURm0uUqEtc2DED1F1pP1WvSBQleUyCiOq0F6SePHvd8B0BPoYf0F8RHhi/YAAAA=");
+                                                     "H4sIAAAAAAAAAJXOMQ6CQBAF0EG08xhUFtt4AkIstCLBkmYgE7Jm2SWzI6CJN/Is3sLCwiuoUBAbG3/3k5+Xf33CwjPEjit1wFbX9VGwMKRKZwyVop31yhNrNPqMY1W77TTaM1FGkrLrT+8xr2i9BOgZNn94ceGFsZSv+8tsujlA+Bi+rgYXlUFbqUxY2ypK0NPWerJei24pcXWDjOK4C/NLnt5vswmAQCDA/gN9ho7m9gAAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "B", "c", "D")),
-                                                     "H4sIAAAAAAAAAJXOOwrCQBCA4dFopcdIZbGNJ/BVqCCBWNqMYQgrm12ZHTWKHsGbeBZvYWHhFdRNEawd+IuB4WNuL2h7hoHjXG1wr4tiJ7g2pDJnDGWinfXKE2s0+oTVqmbT+mjJRClJwq48fqp5x/0uQMkw+cMbrL0wZvJza/P6Obs5LjqVuT20AKJn+LUXXFQGba5SYW3zeISeptaT9Vr0nkau2CKjOD5Eq8sqedybNQAtgQaGhqEsNC6/LewnkAIBAAA=");
+                                                     "H4sIAAAAAAAAAJXOOw7CMAyAYUPLxjE6MWThBLyGMlWCsYuprCooTSrHlILEjTgLt2Bg4ApAOlQsLFj6B0vWJ1+fMPIMM8el2mOjq+oguDOkCmcMFaKd9coTazT6jN2q1ml/tGWiDUnGrj29u3kl0zFAy7D6w5vtvDAW8nV/mfUxBoge4ddJcFEZtKXaCGtbJgv0lFpP1mvRDS1cVSOjOD5G+SXP7rdhD0AsMMDQPFSElu0HlRMGiAIBAAA=");
     }
 
     private List<String> iterToList(Iterable<String> source)

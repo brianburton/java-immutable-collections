@@ -281,19 +281,19 @@ public class JImmutableTreeMultisetTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
         JImmutableMultiset<String> empty = JImmutableTreeMultiset.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGJAGACI03kMIAQAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGFAGgAiIJUFCAEAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGANjCQNjIoRVAQC9L5XSEgEAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGEMjCUMjIkQVgUAOKKVcBIBAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKvN8FpQAnSdnnN+bkFiEUgOyirJL4K5kglmGANLCQOjE5jFCGS5wFmJcFYyhFUBANrTLOQwAQAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGEMLCUMjE5gFiOQ5QJnJcJZyRBWBQDaY1yQMAEAAA==");
 
         empty = JImmutableTreeMultiset.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKu1gIYn6uUk5qXrBZcUZealqzgnFqd65hWn5hVnlmSWpTrn5xYkFiWW5BeVM8fUxgQ8PccEMwBIAwDamNY4/AAAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdrQU0PFEvJzEvXS+4pCgzL13FObE41TOvODWvOLMksyzVOT+3ILEosSS/qJw5pjYm4Ok5JpgBQBoAHgvJTvwAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOIrBcd8vbrxo91oCZHBBOQsDA/NLoKu1gIYn6uUk5qXrBZcUZealqzgnFqd65hWn5hVnlmSWpTrn5xYkFiWW5BeVM8fUxgQ8PccEM4CBsYSBMRHCqgAATA0U7gYBAAA=");
+                                                     "H4sIAAAAAAAAAJXOOwrCQBAG4ImPzmOkstjGE0hASEAIaGkzCUNY2eyG2clDwRt5Fm9hYeEVfAQJVhZO9f/w8zHnO0w9w8pxofbY6LKsBTNDKnfGUC7aWa88sUajj9hXlcTDaMtE69qI9iQpu+7w7O8RLmYAHUPyB7rMvDDm8sV/wlU7ARjf3l/P3zgqg7ZQG2FtizBCT7H1ZL0W3VDkygoZxXE73p126fUyGgAIBAL8pO4F+ht7RgYBAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
-                                                     "H4sIAAAAAAAAAJXOzQpBURDA8fG18wAewMribOyVjxSlFEupcZtuR+eeozmDS3kjGy+iPISFZG2HewlZmtV/avo12wsUPEPbcaimuNBRNBecGFKBM4YC0c565Yk1Gr3GdFXdzvtoyES9uRHtSfrs4tU9nVu5WgSIGbp/oPWJF8ZAvvgPPL4edofauZTCs2UeIHdKvq4kOCqDNlQDYW3DchM9dawn67XoBTVdNENGcbzMjTaj/nGffQOQF8jgszJJNT4VfKr1qvgB3x3n5CQBAAA=");
+                                                     "H4sIAAAAAAAAAJXOOwrCQBCA4dHEzmNYWWzjCXwgJCAEtLQZwxBWNrsyO3koeCPP4i0sLLyCGhW1snCqf2D4mMMFOp5h6jhTayx1nheCK0MqdcZQKtpZrzyxRqN3+FhVHL2PFkw0K4xoT5Kwq7e3x1x7gy5AzRD/gQ5XXhhT+eI/4U0VAgTn5ut+g6MyaDM1F9Y2643RU2Q9Wa9FlzR2+QYZxXEVLPfL5HRsvwEIBVr4rFZTo0+ln5q8qr4D942AaCQBAAA=");
     }
 
     private Set<String> asSet(String... args)

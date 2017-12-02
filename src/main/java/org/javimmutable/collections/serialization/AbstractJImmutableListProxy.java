@@ -47,7 +47,8 @@ abstract class AbstractJImmutableListProxy
     implements Externalizable
 {
     private static final int LIST_VERSION = 1001;
-
+    private static final long serialVersionUID = -121805;
+         
     protected JImmutableList list;
 
     protected AbstractJImmutableListProxy(JImmutableList list)

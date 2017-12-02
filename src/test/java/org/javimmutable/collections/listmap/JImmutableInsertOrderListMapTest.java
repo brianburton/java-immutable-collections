@@ -104,10 +104,10 @@ public class JImmutableInsertOrderListMapTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderListMap)a).iterator();
         JImmutableListMap<String, String> empty = JImmutableInsertOrderListMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMQFABALG7LGzEAAAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGYCgAgCgsGMpxAAAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMDAyMJQyMjuUsUFZiBQDqd/XE0gAAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGRgYGEsYGB3LWaCsxAoAf4hpPdIAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMQKKEgdGxnAXIYgSyEgsZ6hhY4NwkII6C85IrACnjMUvvAAAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGYBECQOjYzkLkMUIZCUWMtQxsMC5SUAcBeclVwAAS4EY5e8AAAA=");
     }
 }

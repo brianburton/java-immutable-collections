@@ -266,11 +266,11 @@ public class JImmutableInsertOrderSetTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
         final JImmutableSet<String> empty = JImmutableInsertOrderSet.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGYCgAgAReV7EvAAAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgKACACVhgIq8AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGRgYGEsYGBMrADE9pgfAAAAA");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZGBgYSxgYEysACSQF5MAAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c", "b")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB5mZu//mnzvRD9ukJkF5RwMDMwvGYBECQNjIhAnAXFyBQD1GRthyAAAAA==");
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgEQJA2MiECcBcXIFAG9WiTXIAAAA");
     }
 
     private List<String> iterToList(Iterable<String> source)

@@ -49,6 +49,8 @@ class AbstractJImmutableMultisetProxy
     implements Externalizable
 {
     private static final int MULTISET_VERSION = 1001;
+    private static final long serialVersionUID = -121805;
+
     protected JImmutableMultiset set;
 
     @Override

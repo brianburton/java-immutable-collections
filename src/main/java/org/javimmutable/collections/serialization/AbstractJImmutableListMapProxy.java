@@ -50,7 +50,8 @@ abstract class AbstractJImmutableListMapProxy
     implements Externalizable
 {
     private static final int MAP_VERSION = 1001;
-
+    private static final long serialVersionUID = -121805;
+    
     protected JImmutableListMap map;
 
     protected AbstractJImmutableListMapProxy(JImmutableListMap map)

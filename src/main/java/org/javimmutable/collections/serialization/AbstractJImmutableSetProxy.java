@@ -47,6 +47,8 @@ class AbstractJImmutableSetProxy
     implements Externalizable
 {
     private static final int SET_VERSION = 1001;
+    private static final long serialVersionUID = -121805;
+
     protected JImmutableSet set;
 
     public AbstractJImmutableSetProxy(JImmutableSet set)
