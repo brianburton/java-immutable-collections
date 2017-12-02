@@ -38,9 +38,11 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.serialization.JImmutableTreeListMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -50,13 +52,24 @@ import java.util.Comparator;
 @Immutable
 public class JImmutableTreeListMap<K, V>
     extends AbstractJImmutableListMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings({"unchecked"})
     private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of());
+    private static final long serialVersionUID = -121805;
 
-    private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents)
+    private final Comparator<K> comparator;
+
+    private JImmutableTreeListMap(JImmutableTreeMap<K, JImmutableList<V>> contents)
+    {
+        this(contents, contents.getComparator());
+    }
+
+    private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents,
+                                  Comparator<K> comparator)
     {
         super(contents);
+        this.comparator = comparator;
     }
 
     /**
@@ -79,16 +92,25 @@ public class JImmutableTreeListMap<K, V>
         return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator));
     }
 
+    public Comparator<K> getComparator()
+    {
+        return comparator;
+    }
+
     @Override
     public void checkInvariants()
     {
         checkListMapInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableTreeListMap<>(map);
+        return new JImmutableTreeListMap<>(map, comparator);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTreeListMapProxy(this);
     }
 }

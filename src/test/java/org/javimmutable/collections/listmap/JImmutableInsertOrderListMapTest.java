@@ -35,11 +35,14 @@
 
 package org.javimmutable.collections.listmap;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -93,5 +96,18 @@ public class JImmutableInsertOrderListMapTest
             .insert(4, 50);
         assertEquals(asList(4, 2, 3, 1), listMap.stream().map(e -> e.getKey()).collect(toList()));
         assertEquals(asList(3, 2, 1, 1), listMap.stream().map(e -> e.getValue().size()).collect(toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderListMap)a).iterator();
+        JImmutableListMap<String, String> empty = JImmutableInsertOrderListMap.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMQFABALG7LGzEAAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMDAyMJQyMjuUsUFZiBQDqd/XE0gAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrAC2dxPky7em8C1+BTI3IJyDgYG5pcMQKKEgdGxnAXIYgSyEgsZ6hhY4NwkII6C85IrACnjMUvvAAAA");
     }
 }

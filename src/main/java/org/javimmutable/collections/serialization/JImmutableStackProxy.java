@@ -60,7 +60,7 @@ public class JImmutableStackProxy
         this.list = JImmutableLinkedStack.of();
     }
 
-    public JImmutableStackProxy(JImmutableStack list)
+    public JImmutableStackProxy(JImmutableLinkedStack list)
     {
         this.list = list;
     }

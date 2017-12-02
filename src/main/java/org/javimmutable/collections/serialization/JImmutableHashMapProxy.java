@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.hash.EmptyHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 
 /**
@@ -52,7 +52,12 @@ public class JImmutableHashMapProxy
         super(JImmutableHashMap.of());
     }
 
-    public JImmutableHashMapProxy(JImmutableMap map)
+    public JImmutableHashMapProxy(JImmutableHashMap map)
+    {
+        super(map);
+    }
+
+    public JImmutableHashMapProxy(EmptyHashMap map)
     {
         super(map);
     }

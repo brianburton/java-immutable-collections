@@ -57,7 +57,7 @@ public class JImmutableTreeMultisetProxy
         this.set = JImmutableTreeMultiset.of();
     }
 
-    public JImmutableTreeMultisetProxy(JImmutableMultiset list)
+    public JImmutableTreeMultisetProxy(JImmutableTreeMultiset list)
     {
         this.set = list;
     }

@@ -35,11 +35,14 @@
 
 package org.javimmutable.collections.listmap;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -100,5 +103,18 @@ public class JImmutableHashListMapTest
         assertEquals(asList(20, 20), listMap.values(2).stream().collect(toList()));
         assertEquals(asList(30), listMap.values(3).stream().collect(toList()));
         assertEquals(asList(40, 45, 50), listMap.values(4).stream().collect(toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableHashListMap)a).iterator();
+        JImmutableListMap<String, String> empty = JImmutableHashListMap.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvDJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2srmfJl28N4Fr8SmQuQXlHAwMzC8ZgKACAPmQ++i9AAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvDJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2srmfJl28N4Fr8SmQuQXlHAwMzC8ZGBgYSxgYHctZoKzECgAF8L4NywAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvDJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2srmfJl28N4Fr8SmQuQXlHAwMzC8ZgEQJA6NjOQuQxQhkJRYy1DGwwLlJQBwF5yVXAACEedFz6AAAAA==");
     }
 }

@@ -39,21 +39,22 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.serialization.JImmutableHashListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableListMap using a hash map for fast lookup.
- *
- * @param <K>
- * @param <V>
  */
 @Immutable
 public class JImmutableHashListMap<K, V>
-        extends AbstractJImmutableListMap<K, V>
+    extends AbstractJImmutableListMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of());
+    private static final long serialVersionUID = -121805;
 
     private JImmutableHashListMap(JImmutableMap<K, JImmutableList<V>> contents)
     {
@@ -77,5 +78,10 @@ public class JImmutableHashListMap<K, V>
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
         return new JImmutableHashListMap<>(map);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableHashListMapProxy(this);
     }
 }

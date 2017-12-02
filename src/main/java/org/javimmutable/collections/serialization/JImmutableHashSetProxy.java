@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 
 public class JImmutableHashSetProxy
@@ -48,7 +47,7 @@ public class JImmutableHashSetProxy
         this(JImmutableHashSet.of());
     }
 
-    public JImmutableHashSetProxy(JImmutableSet set)
+    public JImmutableHashSetProxy(JImmutableHashSet set)
     {
         super(set);
     }

@@ -53,7 +53,7 @@ public class JImmutableTreeSetProxy
         this(JImmutableTreeSet.of());
     }
 
-    public JImmutableTreeSetProxy(JImmutableSet set)
+    public JImmutableTreeSetProxy(JImmutableTreeSet set)
     {
         super(set);
     }

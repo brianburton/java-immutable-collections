@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 
 public class JImmutableInsertOrderSetProxy
@@ -48,7 +47,7 @@ public class JImmutableInsertOrderSetProxy
         this(JImmutableInsertOrderSet.of());
     }
 
-    public JImmutableInsertOrderSetProxy(JImmutableSet set)
+    public JImmutableInsertOrderSetProxy(JImmutableInsertOrderSet set)
     {
         super(set);
     }

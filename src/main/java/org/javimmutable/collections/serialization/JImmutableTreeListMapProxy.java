@@ -35,24 +35,46 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.JImmutableListMap;
+import org.javimmutable.collections.listmap.JImmutableTreeListMap;
+
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Comparator;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
-public class JImmutableInsertOrderMapProxy
-    extends AbstractJImmutableMapProxy
+public class JImmutableTreeListMapProxy
+    extends AbstractJImmutableListMapProxy
 {
     private static final long serialVersionUID = -121805;
 
-    public JImmutableInsertOrderMapProxy()
+    public JImmutableTreeListMapProxy()
     {
-        super(JImmutableInsertOrderMap.of());
+        super(JImmutableTreeListMap.of());
     }
 
-    public JImmutableInsertOrderMapProxy(JImmutableInsertOrderMap map)
+    public JImmutableTreeListMapProxy(JImmutableTreeListMap map)
     {
         super(map);
+    }
+
+    @Override
+    protected JImmutableListMap readMap(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        Comparator comparator = (Comparator)in.readObject();
+        return JImmutableTreeListMap.of(comparator);
+    }
+
+    @Override
+    protected void writeMap(ObjectOutput out)
+        throws IOException
+    {
+        JImmutableTreeListMap treeMap = (JImmutableTreeListMap)map;
+        out.writeObject(treeMap.getComparator());
     }
 }

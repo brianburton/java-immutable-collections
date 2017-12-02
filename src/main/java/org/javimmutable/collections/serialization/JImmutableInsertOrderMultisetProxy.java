@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 
 /**
@@ -52,7 +51,7 @@ public class JImmutableInsertOrderMultisetProxy
         this.set = JImmutableInsertOrderMultiset.of();
     }
 
-    public JImmutableInsertOrderMultisetProxy(JImmutableMultiset list)
+    public JImmutableInsertOrderMultisetProxy(JImmutableInsertOrderMultiset list)
     {
         this.set = list;
     }

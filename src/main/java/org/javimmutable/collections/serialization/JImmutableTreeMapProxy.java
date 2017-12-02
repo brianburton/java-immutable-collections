@@ -57,7 +57,7 @@ public class JImmutableTreeMapProxy
         super(JImmutableTreeMap.of());
     }
 
-    public JImmutableTreeMapProxy(JImmutableMap map)
+    public JImmutableTreeMapProxy(JImmutableTreeMap map)
     {
         super(map);
     }

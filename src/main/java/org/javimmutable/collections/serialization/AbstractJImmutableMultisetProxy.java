@@ -44,7 +44,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
 
-public class AbstractJImmutableMultisetProxy
+@SuppressWarnings("unchecked")
+class AbstractJImmutableMultisetProxy
     implements Externalizable
 {
     private static final int MULTISET_VERSION = 1001;

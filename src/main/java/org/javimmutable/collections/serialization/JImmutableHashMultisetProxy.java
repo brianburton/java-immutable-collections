@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 
 /**
@@ -52,7 +51,7 @@ public class JImmutableHashMultisetProxy
         this.set = JImmutableHashMultiset.of();
     }
 
-    public JImmutableHashMultisetProxy(JImmutableMultiset list)
+    public JImmutableHashMultisetProxy(JImmutableHashMultiset list)
     {
         this.set = list;
     }

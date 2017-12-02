@@ -39,8 +39,10 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableListMap implementation that allows keys to be traversed in the same order as they
@@ -49,10 +51,12 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class JImmutableInsertOrderListMap<K, V>
     extends AbstractJImmutableListMap<K, V>
+    implements Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of());
-
+    private static final long serialVersionUID = -121805;
+    
     private JImmutableInsertOrderListMap(JImmutableMap<K, JImmutableList<V>> contents)
     {
         super(contents);
@@ -75,5 +79,10 @@ public class JImmutableInsertOrderListMap<K, V>
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
         return new JImmutableInsertOrderListMap<>(map);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableInsertOrderListMapProxy(this);
     }
 }

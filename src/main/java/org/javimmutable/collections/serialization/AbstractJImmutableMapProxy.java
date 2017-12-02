@@ -43,6 +43,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
 
+@SuppressWarnings("unchecked")
 abstract class AbstractJImmutableMapProxy
     implements Externalizable
 {

@@ -42,7 +42,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-public class AbstractJImmutableSetProxy
+@SuppressWarnings("unchecked")
+class AbstractJImmutableSetProxy
     implements Externalizable
 {
     private static final int SET_VERSION = 1001;
