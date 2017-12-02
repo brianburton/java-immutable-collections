@@ -45,13 +45,18 @@ import java.io.ObjectOutput;
 import java.util.Iterator;
 
 @SuppressWarnings("unchecked")
-class AbstractJImmutableMultisetProxy
+abstract class AbstractJImmutableMultisetProxy
     implements Externalizable
 {
     private static final int MULTISET_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected JImmutableMultiset set;
+
+    protected AbstractJImmutableMultisetProxy(JImmutableMultiset set)
+    {
+        this.set = set;
+    }
 
     @Override
     public void writeExternal(ObjectOutput out)

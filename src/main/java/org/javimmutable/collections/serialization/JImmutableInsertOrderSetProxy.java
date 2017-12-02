@@ -44,7 +44,7 @@ public class JImmutableInsertOrderSetProxy
 
     public JImmutableInsertOrderSetProxy()
     {
-        this(JImmutableInsertOrderSet.of());
+        super(JImmutableInsertOrderSet.of());
     }
 
     public JImmutableInsertOrderSetProxy(JImmutableInsertOrderSet set)

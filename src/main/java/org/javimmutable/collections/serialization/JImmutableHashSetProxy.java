@@ -44,7 +44,7 @@ public class JImmutableHashSetProxy
 
     public JImmutableHashSetProxy()
     {
-        this(JImmutableHashSet.of());
+        super(JImmutableHashSet.of());
     }
 
     public JImmutableHashSetProxy(JImmutableHashSet set)

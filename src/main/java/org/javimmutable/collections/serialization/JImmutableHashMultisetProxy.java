@@ -48,11 +48,11 @@ public class JImmutableHashMultisetProxy
 
     public JImmutableHashMultisetProxy()
     {
-        this.set = JImmutableHashMultiset.of();
+        super(JImmutableHashMultiset.of());
     }
 
-    public JImmutableHashMultisetProxy(JImmutableHashMultiset list)
+    public JImmutableHashMultisetProxy(JImmutableHashMultiset set)
     {
-        this.set = list;
+        super(set);
     }
 }

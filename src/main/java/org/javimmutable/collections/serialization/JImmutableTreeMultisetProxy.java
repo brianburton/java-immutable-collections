@@ -54,12 +54,12 @@ public class JImmutableTreeMultisetProxy
 
     public JImmutableTreeMultisetProxy()
     {
-        this.set = JImmutableTreeMultiset.of();
+        super(JImmutableTreeMultiset.of());
     }
 
-    public JImmutableTreeMultisetProxy(JImmutableTreeMultiset list)
+    public JImmutableTreeMultisetProxy(JImmutableTreeMultiset set)
     {
-        this.set = list;
+        super(set);
     }
 
     @Override

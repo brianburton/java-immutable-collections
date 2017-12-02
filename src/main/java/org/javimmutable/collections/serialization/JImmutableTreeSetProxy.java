@@ -43,6 +43,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
 
+@SuppressWarnings("unchecked")
 public class JImmutableTreeSetProxy
     extends AbstractJImmutableSetProxy
 {
@@ -50,7 +51,7 @@ public class JImmutableTreeSetProxy
 
     public JImmutableTreeSetProxy()
     {
-        this(JImmutableTreeSet.of());
+        super(JImmutableTreeSet.of());
     }
 
     public JImmutableTreeSetProxy(JImmutableTreeSet set)

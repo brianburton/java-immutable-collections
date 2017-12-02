@@ -48,11 +48,11 @@ public class JImmutableInsertOrderMultisetProxy
 
     public JImmutableInsertOrderMultisetProxy()
     {
-        this.set = JImmutableInsertOrderMultiset.of();
+        super(JImmutableInsertOrderMultiset.of());
     }
 
-    public JImmutableInsertOrderMultisetProxy(JImmutableInsertOrderMultiset list)
+    public JImmutableInsertOrderMultisetProxy(JImmutableInsertOrderMultiset set)
     {
-        this.set = list;
+        super(set);
     }
 }
