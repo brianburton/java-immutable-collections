@@ -36,30 +36,28 @@
 package org.javimmutable.collections.tree;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Comparator that uses the associated type's own compareTo() method.
  * Places null values before non-null values in its ordering.
- *
- * @param <V>
  */
 @Immutable
 public final class ComparableComparator<V extends Comparable<V>>
-        implements Comparator<V>
+    implements Comparator<V>,
+               Serializable
 {
     private static final ComparableComparator INSTANCE = new ComparableComparator();
+    private static final long serialVersionUID = -121805;
 
     /**
      * Creates a type appropriate reference to the singleton instance of this class.
-     *
-     * @param <T>
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<T>> ComparableComparator<T> of()
     {
-        return (ComparableComparator<T>)INSTANCE;
+        return INSTANCE;
     }
 
     @Override
@@ -85,5 +83,10 @@ public final class ComparableComparator<V extends Comparable<V>>
     public boolean equals(Object o)
     {
         return (o == this) || (o.getClass() == this.getClass());
+    }
+
+    private Object readResolve()
+    {
+        return INSTANCE;
     }
 }

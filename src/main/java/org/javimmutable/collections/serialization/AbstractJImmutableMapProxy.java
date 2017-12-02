@@ -36,24 +36,70 @@
 package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-@SuppressWarnings("unchecked")
-public class JImmutableHashMapProxy
-    extends AbstractJImmutableMapProxy
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Iterator;
+
+abstract class AbstractJImmutableMapProxy
+    implements Externalizable
 {
-    private static final long serialVersionUID = -121805;
+    private static final int MAP_VERSION = 1001;
 
-    public JImmutableHashMapProxy()
+    protected JImmutableMap map;
+
+    protected AbstractJImmutableMapProxy(JImmutableMap map)
     {
-        super(JImmutableHashMap.of());
+        this.map = map;
     }
 
-    public JImmutableHashMapProxy(JImmutableMap map)
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
     {
-        super(map);
+        out.writeInt(MAP_VERSION);
+        writeMap(out);
+        out.writeInt(map.size());
+        final Iterator<JImmutableMap.Entry> iterator = map.iterator();
+        while (iterator.hasNext()) {
+            final JImmutableMap.Entry entry = iterator.next();
+            out.writeObject(entry.getKey());
+            out.writeObject(entry.getValue());
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        final int version = in.readInt();
+        if (version != MAP_VERSION) {
+            throw new IOException("unexpected version number: expected " + MAP_VERSION + " found " + version);
+        }
+        map = readMap(in);
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            final Object key = in.readObject();
+            final Object value = in.readObject();
+            map = map.assign(key, value);
+        }
+    }
+
+    protected Object readResolve()
+    {
+        return map;
+    }
+
+    protected JImmutableMap readMap(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        return map;
+    }
+
+    protected void writeMap(ObjectOutput out)
+        throws IOException
+    {
     }
 }

@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.ArrayList;
@@ -149,49 +150,49 @@ public class JImmutableTreeMapTest
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(5);
                 switch (command) {
-                case 0:
-                case 1:
-                    Integer key = random.nextInt(maxKey);
-                    Integer value = random.nextInt(1000000);
-                    expected.put(key, value);
-                    map = add(map, key, value);
-                    assertEquals(expected.get(key), map.get(key));
-                    assertEquals(expected.get(key), map.getValueOr(key, -99));
-                    assertEquals(expected.get(key), map.find(key).getValue());
-                    break;
-                case 2:
-                    JImmutableTreeMap<Integer, Integer> col = JImmutableTreeMap.of();
-                    int times = random.nextInt(3);
-
-                    for (int rep = 0; rep < times; rep++) {
-                        key = random.nextInt(maxKey);
-                        value = random.nextInt(1000000);
-                        col.assign(key, value);
-                    }
-                    expected.putAll(col.getMap());
-                    map = (random.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
-                    break;
-                case 3:
-                    key = random.nextInt(maxKey);
-                    expected.remove(key);
-                    map = remove(map, key);
-                    assertEquals(null, map.get(key));
-                    assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
-                    assertEquals(true, map.find(key).isEmpty());
-                    break;
-                case 4:
-                    key = random.nextInt(maxKey);
-                    if (expected.containsKey(key)) {
+                    case 0:
+                    case 1:
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        expected.put(key, value);
+                        map = add(map, key, value);
                         assertEquals(expected.get(key), map.get(key));
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
                         assertEquals(expected.get(key), map.find(key).getValue());
-                        assertEquals(MapEntry.of(key, expected.get(key)), map.findEntry(key).getValue());
-                    } else {
+                        break;
+                    case 2:
+                        JImmutableTreeMap<Integer, Integer> col = JImmutableTreeMap.of();
+                        int times = random.nextInt(3);
+
+                        for (int rep = 0; rep < times; rep++) {
+                            key = random.nextInt(maxKey);
+                            value = random.nextInt(1000000);
+                            col.assign(key, value);
+                        }
+                        expected.putAll(col.getMap());
+                        map = (random.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
+                        break;
+                    case 3:
+                        key = random.nextInt(maxKey);
+                        expected.remove(key);
+                        map = remove(map, key);
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                         assertEquals(true, map.find(key).isEmpty());
-                        assertEquals(true, map.findEntry(key).isEmpty());
-                    }
+                        break;
+                    case 4:
+                        key = random.nextInt(maxKey);
+                        if (expected.containsKey(key)) {
+                            assertEquals(expected.get(key), map.get(key));
+                            assertEquals(expected.get(key), map.getValueOr(key, -99));
+                            assertEquals(expected.get(key), map.find(key).getValue());
+                            assertEquals(MapEntry.of(key, expected.get(key)), map.findEntry(key).getValue());
+                        } else {
+                            assertEquals(null, map.get(key));
+                            assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
+                            assertEquals(true, map.find(key).isEmpty());
+                            assertEquals(true, map.findEntry(key).isEmpty());
+                        }
 
                 }
                 assertEquals(expected.size(), map.size());
@@ -292,7 +293,7 @@ public class JImmutableTreeMapTest
         assertEquals(asList(), treeMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), treeMap.assign(1, 10).values().stream().collect(Collectors.toList()));
         assertEquals(asList(10, 40), treeMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
-        
+
         List<Integer> keys = new ArrayList<>();
         JImmutableMap<Integer, Integer> map = treeMap;
         Random r = new Random();
@@ -303,6 +304,20 @@ public class JImmutableTreeMapTest
         }
         Collections.sort(keys);
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        JImmutableMap<String, String> empty = JImmutableTreeMap.of();
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of("A", "a")));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))));
+
+        empty = JImmutableTreeMap.of(String.CASE_INSENSITIVE_ORDER);
+        StandardSerializableTests.verifySerializable(empty);
+        StandardSerializableTests.verifySerializable(empty.insert(MapEntry.of("A", "a")));
+        StandardSerializableTests.verifySerializable(empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))));
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

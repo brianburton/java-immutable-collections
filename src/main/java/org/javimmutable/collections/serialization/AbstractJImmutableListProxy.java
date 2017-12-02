@@ -35,25 +35,52 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.JImmutableList;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-@SuppressWarnings("unchecked")
-public class JImmutableHashMapProxy
-    extends AbstractJImmutableMapProxy
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+abstract class AbstractJImmutableListProxy
+    implements Externalizable
 {
-    private static final long serialVersionUID = -121805;
+    private static final int LIST_VERSION = 1001;
 
-    public JImmutableHashMapProxy()
+    protected JImmutableList list;
+
+    protected AbstractJImmutableListProxy(JImmutableList list)
     {
-        super(JImmutableHashMap.of());
+        this.list = list;
     }
 
-    public JImmutableHashMapProxy(JImmutableMap map)
+    @Override
+    public void writeExternal(ObjectOutput out)
+        throws IOException
     {
-        super(map);
+        out.writeInt(LIST_VERSION);
+        out.writeInt(list.size());
+        for (Object obj : list) {
+            out.writeObject(obj);
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        final int version = in.readInt();
+        if (version != LIST_VERSION) {
+            throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
+        }
+        final int size = in.readInt();
+        for (int i = 0; i < size; ++i) {
+            list = list.insertLast(in.readObject());
+        }
+    }
+
+    protected Object readResolve()
+    {
+        return list;
     }
 }

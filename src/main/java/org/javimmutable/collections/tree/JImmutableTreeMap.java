@@ -41,9 +41,11 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -53,10 +55,13 @@ import java.util.Map;
 @Immutable
 public class JImmutableTreeMap<K, V>
     extends AbstractJImmutableMap<K, V>
+    implements Serializable
 {
     private static final Comparator EMPTY_COMPARATOR = ComparableComparator.of();
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(EMPTY_COMPARATOR, EmptyNode.of(), 0);
+
+    private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
     private final Node<K, V> root;
@@ -131,14 +136,14 @@ public class JImmutableTreeMap<K, V>
         Conditions.stopNull(key);
         final UpdateResult<K, V> result = root.assign(comparator, key, value);
         switch (result.type) {
-        case UNCHANGED:
-            return this;
-        case INPLACE:
-            return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
-        case SPLIT:
-            return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
-        default:
-            throw new IllegalStateException("unknown UpdateResult.Type value");
+            case UNCHANGED:
+                return this;
+            case INPLACE:
+                return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
+            case SPLIT:
+                return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
         }
     }
 
@@ -210,5 +215,10 @@ public class JImmutableTreeMap<K, V>
             keys.add(entry.getKey());
         }
         return Collections.unmodifiableList(keys);
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTreeMapProxy(this);
     }
 }
