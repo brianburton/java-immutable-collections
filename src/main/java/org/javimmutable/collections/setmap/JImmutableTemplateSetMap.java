@@ -38,8 +38,10 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.serialization.JImmutableTemplateSetMapProxy;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 
 /**
  * JImmutableSetMap implementation that uses arbitrary Map and Set templates.
@@ -47,7 +49,10 @@ import javax.annotation.Nonnull;
  */
 public class JImmutableTemplateSetMap<K, V>
     extends AbstractJImmutableSetMap<K, V>
+    implements Serializable
 {
+    private static final long serialVersionUID = -121805;
+
     private final JImmutableMap<K, JImmutableSet<V>> emptyMap;
     private final JImmutableSet<V> emptySet;
 
@@ -81,6 +86,16 @@ public class JImmutableTemplateSetMap<K, V>
     {
     }
 
+    public JImmutableMap<K, JImmutableSet<V>> getEmptyMap()
+    {
+        return emptyMap;
+    }
+
+    public JImmutableSet<V> getEmptySet()
+    {
+        return emptySet;
+    }
+
     @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
@@ -92,5 +107,10 @@ public class JImmutableTemplateSetMap<K, V>
     protected JImmutableSet<V> emptySet()
     {
         return emptySet;
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableTemplateSetMapProxy(this);
     }
 }
