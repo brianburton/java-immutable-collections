@@ -59,6 +59,11 @@ public class StandardSerializableTests
         Object dest = deserialize(bytes);
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
+
+        dest = deserialize(serialize(dest));
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
+        assertEquals(source, dest);
+                     
         try {
             dest = deserialize(decode(oldSerializedBase64));
         } catch (Exception ex) {
@@ -78,6 +83,12 @@ public class StandardSerializableTests
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
+
+        dest = deserialize(serialize(dest));
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
+        assertEquals(source, dest);
+        verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
+                     
         try {
             dest = deserialize(decode(oldSerializedBase64));
         } catch (Exception ex) {
