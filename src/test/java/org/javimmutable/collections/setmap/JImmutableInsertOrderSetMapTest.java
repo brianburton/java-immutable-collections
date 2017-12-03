@@ -90,11 +90,11 @@ public class JImmutableInsertOrderSetMapTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderSetMap)a).iterator();
         JImmutableSetMap<String, String> empty = JImmutableInsertOrderSetMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZgKACADzR7fLCAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZGBgYSxgYHctZoKzECgAGGrCE0AAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZgEQJA6NjOQuQxQhkJRYy1DGwwLlJQBwF5yVXAAA7ognH7QAAAA==");
     }
 }

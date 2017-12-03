@@ -109,6 +109,11 @@ public class JImmutableTreeListMap<K, V>
         return new JImmutableTreeListMap<>(map, comparator);
     }
 
+    JImmutableMap<K, JImmutableList<V>> getMap()
+    {
+        return contents;
+    }
+    
     private Object writeReplace()
     {
         return new JImmutableTreeListMapProxy(this);

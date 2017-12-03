@@ -120,11 +120,11 @@ public class JImmutableLinkedStackTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableStack)a).iterator();
         final JImmutableStack<String> empty = JImmutableLinkedStack.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMlQAAGBF3jRcAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMpYwMCaWMzJUAADCIe2GYwAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMpYwMCaXM4KoJAiVWM7IUAEAZv4PknEAAAA=");
     }
 }

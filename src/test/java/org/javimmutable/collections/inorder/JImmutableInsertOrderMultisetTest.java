@@ -264,11 +264,11 @@ public class JImmutableInsertOrderMultisetTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
         final JImmutableMultiset<String> empty = JImmutableInsertOrderMultiset.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA6fBBeUcDAzMLxmAoAIAeQvVccYAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA6fBBeUcDAzMLxkYGBhLGBgTy1lArAoALPV/ANAAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("c", "b", "a", "b")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(Arrays.asList("c", "b", "a", "b")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA6fBBeUcDAzMLxmARAkDY3I5C5DFCGQlgVlMQFYiRKwCADN6c9DkAAAA");
     }
 

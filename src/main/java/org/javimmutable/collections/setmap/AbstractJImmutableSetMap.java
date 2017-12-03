@@ -58,7 +58,7 @@ import java.util.Set;
 public abstract class AbstractJImmutableSetMap<K, V>
     implements JImmutableSetMap<K, V>
 {
-    private final JImmutableMap<K, JImmutableSet<V>> contents;
+    protected final JImmutableMap<K, JImmutableSet<V>> contents;
 
     protected AbstractJImmutableSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
     {

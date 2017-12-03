@@ -55,7 +55,7 @@ import javax.annotation.concurrent.Immutable;
 public abstract class AbstractJImmutableListMap<K, V>
     implements JImmutableListMap<K, V>
 {
-    private final JImmutableMap<K, JImmutableList<V>> contents;
+    protected final JImmutableMap<K, JImmutableList<V>> contents;
 
     protected AbstractJImmutableListMap(JImmutableMap<K, JImmutableList<V>> contents)
     {

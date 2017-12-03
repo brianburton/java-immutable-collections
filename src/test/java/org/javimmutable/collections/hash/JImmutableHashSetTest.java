@@ -213,11 +213,11 @@ public class JImmutableHashSetTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
         final JImmutableSet<String> empty = JImmutableHashSet.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFADwPF+xhAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yMDAwljAwJlYAAIYCjBFlAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList("a", "b", "c", "b")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAIkSBsZEIE4C4uQKAIJXlKptAAAA");
     }
 

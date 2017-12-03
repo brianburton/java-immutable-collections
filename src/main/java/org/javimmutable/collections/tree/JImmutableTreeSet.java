@@ -104,6 +104,11 @@ public class JImmutableTreeSet<T>
         return new TreeSet<>(comparator);
     }
 
+    JImmutableMap getMap()
+    {
+        return map;
+    }
+    
     private Object writeReplace()
     {
         return new JImmutableTreeSetProxy(this);

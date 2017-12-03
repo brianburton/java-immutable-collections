@@ -38,6 +38,8 @@ package org.javimmutable.collections.common;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -45,6 +47,7 @@ import java.io.ObjectOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -63,7 +66,7 @@ public class StandardSerializableTests
         dest = deserialize(serialize(dest));
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
-                     
+
         try {
             dest = deserialize(decode(oldSerializedBase64));
         } catch (Exception ex) {
@@ -73,22 +76,25 @@ public class StandardSerializableTests
         assertEquals(source, dest);
     }
 
-    public static void verifySerializable(Func1<Object, Iterator> iteratorFactory,
-                                          Object source,
-                                          String oldSerializedBase64)
+    public static void verifySerializable(@Nonnull Func1<Object, Iterator> iteratorFactory,
+                                          @Nullable BiConsumer extraChecks,
+                                          @Nonnull Object source,
+                                          @Nonnull String oldSerializedBase64)
         throws Exception
     {
         byte[] bytes = serialize(source);
         Object dest = deserialize(bytes);
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
+        performExtraChecks(extraChecks, source, dest);
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
 
         dest = deserialize(serialize(dest));
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
+        performExtraChecks(extraChecks, source, dest);
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
-                     
+
         try {
             dest = deserialize(decode(oldSerializedBase64));
         } catch (Exception ex) {
@@ -96,7 +102,18 @@ public class StandardSerializableTests
         }
         assertEquals(source.getClass().getName(), dest.getClass().getName());
         assertEquals(source, dest);
+        performExtraChecks(extraChecks, source, dest);
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void performExtraChecks(@Nullable BiConsumer extraChecks,
+                                           @Nonnull Object source,
+                                           @Nonnull Object dest)
+    {
+        if (extraChecks != null) {
+            extraChecks.accept(source, dest);
+        }
     }
 
     private static byte[] serialize(Object source)

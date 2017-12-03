@@ -109,6 +109,11 @@ public class JImmutableTreeSetMap<K, V>
         return new JImmutableTreeSetMap<>(map, comparator);
     }
 
+    JImmutableMap<K, JImmutableSet<V>> getMap()
+    {
+        return contents;
+    }
+    
     private Object writeReplace()
     {
         return new JImmutableTreeSetMapProxy(this);

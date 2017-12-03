@@ -40,6 +40,7 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -119,19 +120,28 @@ public class JImmutableTreeListMapTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableTreeListMap)a).iterator();
         JImmutableListMap<String, String> empty = JImmutableTreeListMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt1shtf8EqDb9JzzcwsSi0ByUFZJfhHMMCaYYUAaAGoIkSAGAQAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt1shtf8EqDb9JzzcwsSi0ByUFZJfhHMMCaYYQyMJQyMjnBWYgUArB9/AxQBAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt1shtf8EqDb9JzzcwsSi0ByUFZJfhHMMCaYYQzMJQyMjmAWI5CVCMRRcF5yIUMdAxucm1QBANqG5HMxAQAA");
 
         empty = JImmutableTreeListMap.of(String.CASE_INSENSITIVE_ORDER);
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt2sBTQ7US8nMS9dL7ikKDMvXcU5sTjVM684Na84sySzLNU5P7cgsSixJL+onDmmNibg6TkmmAFAGgAG1XVw+gAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt2sBTQ7US8nMS9dL7ikKDMvXcU5sTjVM684Na84sySzLNU5P7cgsSixJL+onDmmNibg6TkmmAEMjCUMjI5wVmIFAAOWtngIAQAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAJWOMQrCQBBFx2g6j2FlsY0nkGARURC0kjSTsISVzW6cHTUKeiLP4i0sLLyCulGClYUDH/7/DI9/vkPoCEaWcrHCrSqKDWOqpcis1jJjZY0TTpJCrQ5YRzGOm6cFSTlRjqdYzshW+2d9j96gC1ARxH8wh6ljwoy/7F/cctcBaN/85r5no9BocjFnUibvRehkbJw0TrHaysgWJRKypV07OSaz6yVoABAwtPDj1nCC0MfUa/muWt5l1Qs2SrO7GwEAAA==");
+    }
+
+    public static void extraSerializationChecks(Object a,
+                                                Object b)
+    {
+        JImmutableTreeListMap mapA = (JImmutableTreeListMap)a;
+        JImmutableTreeListMap mapB = (JImmutableTreeListMap)b;
+        assertEquals(mapA.getComparator(), mapB.getComparator());
+        JImmutableTreeMapTest.extraSerializationChecks(mapA.getMap(), mapB.getMap());
     }
 }

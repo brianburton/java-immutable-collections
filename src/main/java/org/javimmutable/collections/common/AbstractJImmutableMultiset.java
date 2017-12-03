@@ -59,8 +59,8 @@ import java.util.Set;
 public abstract class AbstractJImmutableMultiset<T>
     implements JImmutableMultiset<T>
 {
-    private final JImmutableMap<T, Integer> map;
-    private final int occurrences;
+    protected final JImmutableMap<T, Integer> map;
+    protected final int occurrences;
 
     protected AbstractJImmutableMultiset(JImmutableMap<T, Integer> map,
                                          int occurrences)

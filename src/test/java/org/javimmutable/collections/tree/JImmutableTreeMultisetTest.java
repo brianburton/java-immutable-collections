@@ -280,20 +280,29 @@ public class JImmutableTreeMultisetTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
         JImmutableMultiset<String> empty = JImmutableTreeMultiset.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGFAGgAiIJUFCAEAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty.insert("a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGEMjCUMjIkQVgUAOKKVcBIBAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGEMLCUMjE5gFiOQ5QJnJcJZyRBWBQDaY1yQMAEAAA==");
 
         empty = JImmutableTreeMultiset.of(String.CASE_INSENSITIVE_ORDER);
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdrQU0PFEvJzEvXS+4pCgzL13FObE41TOvODWvOLMksyzVOT+3ILEosSS/qJw5pjYm4Ok5JpgBQBoAHgvJTvwAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert("a"),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty.insert("a"),
                                                      "H4sIAAAAAAAAAJXOOwrCQBAG4ImPzmOkstjGE0hASEAIaGkzCUNY2eyG2clDwRt5Fm9hYeEVfAQJVhZO9f/w8zHnO0w9w8pxofbY6LKsBTNDKnfGUC7aWa88sUajj9hXlcTDaMtE69qI9iQpu+7w7O8RLmYAHUPyB7rMvDDm8sV/wlU7ARjf3l/P3zgqg7ZQG2FtizBCT7H1ZL0W3VDkygoZxXE73p126fUyGgAIBAL8pO4F+ht7RgYBAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty.insertAll(Arrays.asList("a", "B", "c", "D")),
                                                      "H4sIAAAAAAAAAJXOOwrCQBCA4dHEzmNYWWzjCXwgJCAEtLQZwxBWNrsyO3koeCPP4i0sLLyCGhW1snCqf2D4mMMFOp5h6jhTayx1nheCK0MqdcZQKtpZrzyxRqN3+FhVHL2PFkw0K4xoT5Kwq7e3x1x7gy5AzRD/gQ5XXhhT+eI/4U0VAgTn5ut+g6MyaDM1F9Y2643RU2Q9Wa9FlzR2+QYZxXEVLPfL5HRsvwEIBVr4rFZTo0+ln5q8qr4D942AaCQBAAA=");
+    }
+
+    public static void extraSerializationChecks(Object a,
+                                                Object b)
+    {
+        JImmutableTreeMultiset setA = (JImmutableTreeMultiset)a;
+        JImmutableTreeMultiset setB = (JImmutableTreeMultiset)b;
+        assertEquals(setA.getComparator(), setB.getComparator());
+        JImmutableTreeMapTest.extraSerializationChecks(setA.getMap(), setB.getMap());
     }
 
     private Set<String> asSet(String... args)

@@ -52,7 +52,7 @@ public class ComparableComparatorTest
         assertEquals(-1, comp.compare("a", "b"));
         assertEquals(0, comp.compare("a", "a"));
         assertEquals(1, comp.compare("b", "a"));
-        StandardSerializableTests.verifySerializable(c -> SingleValueIterator.of(c), comp,
+        StandardSerializableTests.verifySerializable(c -> SingleValueIterator.of(c), null, comp,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivpCg1Vc85P7cgsQgkB2WV5Bf9B4F/KsZMDAwVBQBVztHTSwAAAA==");
     }
 }

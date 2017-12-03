@@ -313,20 +313,28 @@ public class JImmutableTreeMapTest
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
         JImmutableMap<String, String> empty = JImmutableTreeMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhQBoAwRi6T/4AAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDIwlDIyOQJxYAQBlcMCiBgEAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDMwlDIyOQJwIxO5AnATEUUCcXAEABOXC0BYBAAA=");
 
         empty = JImmutableTreeMap.of(String.CASE_INSENSITIVE_ORDER);
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty,
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3aoFNDdRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAUAaAOY74tryAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3aoFNDdRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAQyMJQyMjkCcWAEA0RodVvoAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAJXOMQrCQBBA0dFo5zFSWWzjCUIQiSAEtJI0kzCElc1umF2TKHgjz+ItLCy8gropgo2NA78YGB5zfcLUMkSGS3HARlbV0WGuSBRGKSqcNNoKSyxRyTP2q1gnw9GOiTZYp2y607ufV7iYAXQMyz+8KLeOsXBf95dZtxOA4OF/nXsXhUJdiq1jqcswRkuJtqStdLKh2FQ1MjrDbZBdsvR+Gw8ABA5GkQ99K1/u2/uK7gNAXoJFCgEAAA==");
+    }
+
+    public static void extraSerializationChecks(Object a,
+                                                Object b)
+    {
+        JImmutableTreeMap mapA = (JImmutableTreeMap)a;
+        JImmutableTreeMap mapB = (JImmutableTreeMap)b;
+        assertEquals(mapA.getComparator(), mapB.getComparator());
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

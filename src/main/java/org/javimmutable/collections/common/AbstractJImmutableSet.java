@@ -52,7 +52,7 @@ import java.util.Set;
 public abstract class AbstractJImmutableSet<T>
     implements JImmutableSet<T>
 {
-    private final JImmutableMap<T, Boolean> map;
+    protected final JImmutableMap<T, Boolean> map;
 
     protected AbstractJImmutableSet(JImmutableMap<T, Boolean> map)
     {
