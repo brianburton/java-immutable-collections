@@ -36,13 +36,17 @@
 package org.javimmutable.collections;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Immutable container for 2 values.
  */
 @Immutable
 public class Tuple2<A, B>
+    implements Serializable
 {
+    private static final long serialVersionUID = -121805;
+
     private final A first;
     private final B second;
 

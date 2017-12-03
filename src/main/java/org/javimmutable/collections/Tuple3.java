@@ -36,13 +36,17 @@
 package org.javimmutable.collections;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Immutable container for 3 values.
  */
 @Immutable
 public class Tuple3<A, B, C>
+    implements Serializable
 {
+    private static final long serialVersionUID = -121805;
+
     private final A first;
     private final B second;
     private final C third;
@@ -60,7 +64,7 @@ public class Tuple3<A, B, C>
                                                B second,
                                                C third)
     {
-        return new Tuple3<A, B, C>(first, second, third);
+        return new Tuple3<>(first, second, third);
     }
 
     public A getFirst()

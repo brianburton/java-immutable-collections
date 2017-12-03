@@ -51,6 +51,23 @@ import java.util.zip.GZIPOutputStream;
 public class StandardSerializableTests
     extends TestCase
 {
+    public static void verifySerializable(Object source,
+                                          String oldSerializedBase64)
+        throws Exception
+    {
+        byte[] bytes = serialize(source);
+        Object dest = deserialize(bytes);
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
+        assertEquals(source, dest);
+        try {
+            dest = deserialize(decode(oldSerializedBase64));
+        } catch (Exception ex) {
+            fail(encode(bytes));
+        }
+        assertEquals(source.getClass().getName(), dest.getClass().getName());
+        assertEquals(source, dest);
+    }
+
     public static void verifySerializable(Func1<Object, Iterator> iteratorFactory,
                                           Object source,
                                           String oldSerializedBase64)
