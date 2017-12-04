@@ -46,6 +46,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+
 /**
  * Test program for implementations of JImmutableStack. Divided into three
  * sections: growing (adds values to the stack), shrinking (removes values),
@@ -135,5 +137,6 @@ public class JImmutableStackStressTester
             throw new RuntimeException("makeList() method call failed\n");
         }
         stack.checkInvariants();
+        verifySerializable(null, stack);
     }
 }

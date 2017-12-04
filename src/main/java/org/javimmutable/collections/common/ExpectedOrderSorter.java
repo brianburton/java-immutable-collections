@@ -79,6 +79,20 @@ public class ExpectedOrderSorter<T>
         return sorted;
     }
 
+    /**
+     * Creates a new List containing all of the elements of collection sorted based on the Iterator.
+     */
+    public <U> Iterator<U> sort(@Nonnull Iterator<U> iterator,
+                                @Nonnull Function<U, T> mapper)
+    {
+        List<U> sorted = new ArrayList<>();
+        while (iterator.hasNext()) {
+            sorted.add(iterator.next());
+        }
+        sorted.sort(comparator(mapper));
+        return sorted.iterator();
+    }
+
     private <U> Comparator<U> comparator(@Nonnull Function<U, T> mapper)
     {
         return new Comparator<U>()

@@ -51,6 +51,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+
 /**
  * Test program for all implementations of JImmutableArray. Divided into four sections: growing
  * (adds new values at random indices), updating (changes the value at existing indices), shrinking
@@ -59,7 +61,7 @@ import java.util.TreeMap;
  */
 @SuppressWarnings("Duplicates")
 public class JImmutableArrayStressTester
-        extends AbstractStressTestable
+    extends AbstractStressTestable
 {
     private final JImmutableArray<String> array;
     private final ArrayIndexRange indexRange;
@@ -95,19 +97,19 @@ public class JImmutableArrayStressTester
                 indexList = indexList.insert(index);
                 String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
-                case 0: {//assign(int, T)
-                    array = array.assign(index, value);
-                    expected.put(index, value);
-                    break;
-                }
-                case 1: { //insert(Entry<Integer, T>)
-                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
-                    array = (JImmutableArray<String>)array.insert(entry);
-                    expected.put(index, value);
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: {//assign(int, T)
+                        array = array.assign(index, value);
+                        expected.put(index, value);
+                        break;
+                    }
+                    case 1: { //insert(Entry<Integer, T>)
+                        JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
+                        array = (JImmutableArray<String>)array.insert(entry);
+                        expected.put(index, value);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(array, expected);
@@ -118,19 +120,19 @@ public class JImmutableArrayStressTester
                 int index = indexList.get(random.nextInt(indexList.size()));
                 String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
-                case 0: { //assign(int, T)
-                    array = array.assign(index, value);
-                    expected.put(index, value);
-                    break;
-                }
-                case 1: { //insert(Entry<Integer, T>)
-                    JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
-                    array = (JImmutableArray<String>)array.insert(entry);
-                    expected.put(index, value);
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: { //assign(int, T)
+                        array = array.assign(index, value);
+                        expected.put(index, value);
+                        break;
+                    }
+                    case 1: { //insert(Entry<Integer, T>)
+                        JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
+                        array = (JImmutableArray<String>)array.insert(entry);
+                        expected.put(index, value);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(array, expected);
@@ -159,43 +161,43 @@ public class JImmutableArrayStressTester
             for (int i = 0; i < size / 12; ++i) {
                 int index = (random.nextBoolean()) ? indexRange.randomIndex(random) : indexList.get(random.nextInt(indexList.size()));
                 switch (random.nextInt(4)) {
-                case 0: { //get(int)
-                    String value = array.get(index);
-                    String expectedValue = expected.getOrDefault(index, null);
-                    if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
-                        throw new RuntimeException(String.format("get(index) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
-                    }
-                    break;
+                    case 0: { //get(int)
+                        String value = array.get(index);
+                        String expectedValue = expected.getOrDefault(index, null);
+                        if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
+                            throw new RuntimeException(String.format("get(index) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
+                        }
+                        break;
 
-                }
-                case 1: { //getValueOr(int, T)
-                    String value = array.getValueOr(index, "");
-                    String expectedValue = expected.getOrDefault(index, "");
-                    assert value != null;
-                    if (!value.equals(expectedValue)) {
-                        throw new RuntimeException(String.format("getValueOr(index, default) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
                     }
-                    break;
+                    case 1: { //getValueOr(int, T)
+                        String value = array.getValueOr(index, "");
+                        String expectedValue = expected.getOrDefault(index, "");
+                        assert value != null;
+                        if (!value.equals(expectedValue)) {
+                            throw new RuntimeException(String.format("getValueOr(index, default) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
+                        }
+                        break;
 
-                }
-                case 2: { //find(int)
-                    Holder<String> holder = array.find(index);
-                    Holder<String> expectedHolder = (expected.containsKey(index)) ? Holders.of(expected.get(index)) : Holders.of();
-                    if (!equivalentHolder(holder, expectedHolder)) {
-                        throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                     }
-                    break;
-                }
-                case 3: { //findEntry(int)
-                    Holder<JImmutableMap.Entry<Integer, String>> holder = array.findEntry(index);
-                    Holder<JImmutableMap.Entry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
-                    if (!equivalentHolder(holder, expectedHolder)) {
-                        throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
+                    case 2: { //find(int)
+                        Holder<String> holder = array.find(index);
+                        Holder<String> expectedHolder = (expected.containsKey(index)) ? Holders.of(expected.get(index)) : Holders.of();
+                        if (!equivalentHolder(holder, expectedHolder)) {
+                            throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
+                        }
+                        break;
                     }
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 3: { //findEntry(int)
+                        Holder<JImmutableMap.Entry<Integer, String>> holder = array.findEntry(index);
+                        Holder<JImmutableMap.Entry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
+                        if (!equivalentHolder(holder, expectedHolder)) {
+                            throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
+                        }
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyCursor(array, expected);
@@ -244,6 +246,7 @@ public class JImmutableArrayStressTester
             throw new RuntimeException("method call failed - getMap()\n");
         }
         array.checkInvariants();
+        verifySerializable(null, array);
     }
 
     private void verifyCursor(JImmutableArray<String> array,

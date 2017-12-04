@@ -44,6 +44,8 @@ import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 import static org.javimmutable.collections.stress_test.KeyFactory.*;
 
 /**
@@ -135,37 +138,37 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             System.out.printf("growing %d%n", map.size());
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(4)) {
-                case 0: { //assign(K, V)
-                    K key = unusedKey(tokens, random, expected);
-                    keysList.add(key);
-                    map = map.assign(key, key.getValue());
-                    expected.put(key, key.getValue());
-                    break;
-                }
-                case 1: { //insert(Entry<K, V>)
-                    K key = unusedKey(tokens, random, expected);
-                    JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, key.getValue());
-                    keysList.add(key);
-                    map = map.insert(entry);
-                    expected.put(key, key.getValue());
-                    break;
-                }
-                case 2: { //assignAll(JImmutableMap)
-                    JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
-                    keysList.addAll(values.getMap().keySet());
-                    map = map.assignAll(values);
-                    expected.putAll(values.getMap());
-                    break;
-                }
-                case 3: { //assignAll(Map)
-                    JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
-                    keysList.addAll(values.getMap().keySet());
-                    map = map.assignAll(values.getMap());
-                    expected.putAll(values.getMap());
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: { //assign(K, V)
+                        K key = unusedKey(tokens, random, expected);
+                        keysList.add(key);
+                        map = map.assign(key, key.getValue());
+                        expected.put(key, key.getValue());
+                        break;
+                    }
+                    case 1: { //insert(Entry<K, V>)
+                        K key = unusedKey(tokens, random, expected);
+                        JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, key.getValue());
+                        keysList.add(key);
+                        map = map.insert(entry);
+                        expected.put(key, key.getValue());
+                        break;
+                    }
+                    case 2: { //assignAll(JImmutableMap)
+                        JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
+                        keysList.addAll(values.getMap().keySet());
+                        map = map.assignAll(values);
+                        expected.putAll(values.getMap());
+                        break;
+                    }
+                    case 3: { //assignAll(Map)
+                        JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
+                        keysList.addAll(values.getMap().keySet());
+                        map = map.assignAll(values.getMap());
+                        expected.putAll(values.getMap());
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(map, expected);
@@ -174,35 +177,35 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             System.out.printf("updating %d%n", map.size());
             for (int i = 0; i < map.size(); ++i) {
                 switch (random.nextInt(4)) {
-                case 0: { //assign(K, V)
-                    K key = keysList.get(random.nextInt(keysList.size()));
-                    String value = RandomKeyManager.makeValue(tokens, random);
-                    map = map.assign(key, value);
-                    expected.put(key, value);
-                    break;
-                }
-                case 1: { //insert(Entry<K, V>)
-                    K key = keysList.get(random.nextInt(keysList.size()));
-                    String value = RandomKeyManager.makeValue(tokens, random);
-                    JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, value);
-                    map = map.insert(entry);
-                    expected.put(key, value);
-                    break;
-                }
-                case 2: { //assignAll(JImmutableMap)
-                    JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
-                    map = map.assignAll(values);
-                    expected.putAll(values.getMap());
-                    break;
-                }
-                case 3: { //assignAll(Map)
-                    JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
-                    map = map.assignAll(values.getMap());
-                    expected.putAll(values.getMap());
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: { //assign(K, V)
+                        K key = keysList.get(random.nextInt(keysList.size()));
+                        String value = RandomKeyManager.makeValue(tokens, random);
+                        map = map.assign(key, value);
+                        expected.put(key, value);
+                        break;
+                    }
+                    case 1: { //insert(Entry<K, V>)
+                        K key = keysList.get(random.nextInt(keysList.size()));
+                        String value = RandomKeyManager.makeValue(tokens, random);
+                        JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, value);
+                        map = map.insert(entry);
+                        expected.put(key, value);
+                        break;
+                    }
+                    case 2: { //assignAll(JImmutableMap)
+                        JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
+                        map = map.assignAll(values);
+                        expected.putAll(values.getMap());
+                        break;
+                    }
+                    case 3: { //assignAll(Map)
+                        JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
+                        map = map.assignAll(values.getMap());
+                        expected.putAll(values.getMap());
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(map, expected);
@@ -222,40 +225,40 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             for (int i = 0; i < size / 12; ++i) {
                 K key = (random.nextBoolean()) ? keysList.get(random.nextInt(keysList.size())) : unusedKey(tokens, random, expected);
                 switch (random.nextInt(4)) {
-                case 0: { //get(K)
-                    String value = map.get(key);
-                    String expectedValue = expected.getOrDefault(key, null);
-                    if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
-                        throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedValue, value));
+                    case 0: { //get(K)
+                        String value = map.get(key);
+                        String expectedValue = expected.getOrDefault(key, null);
+                        if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
+                            throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedValue, value));
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 1: { //getValueOr(K, V)
-                    String value = map.getValueOr(key, "");
-                    String expectedValue = expected.getOrDefault(key, "");
-                    if (!value.equals(expectedValue)) {
-                        throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - found %s expected %s%n", key, expectedValue, value));
+                    case 1: { //getValueOr(K, V)
+                        String value = map.getValueOr(key, "");
+                        String expectedValue = expected.getOrDefault(key, "");
+                        if (!value.equals(expectedValue)) {
+                            throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - found %s expected %s%n", key, expectedValue, value));
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 2: { //find(K)
-                    Holder<String> holder = map.find(key);
-                    Holder<String> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.of();
-                    if (!equivalentHolder(holder, expectedHolder)) {
-                        throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
+                    case 2: { //find(K)
+                        Holder<String> holder = map.find(key);
+                        Holder<String> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.of();
+                        if (!equivalentHolder(holder, expectedHolder)) {
+                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 3: { //findEntry(K)
-                    Holder<JImmutableMap.Entry<K, String>> holder = map.findEntry(key);
-                    Holder<JImmutableMap.Entry<K, String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(new MapEntry<>(key, expected.get(key))) : Holders.of();
-                    if (!equivalentEntryHolder(holder, expectedHolder)) {
-                        throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, holder, holder));
+                    case 3: { //findEntry(K)
+                        Holder<JImmutableMap.Entry<K, String>> holder = map.findEntry(key);
+                        Holder<JImmutableMap.Entry<K, String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(new MapEntry<>(key, expected.get(key))) : Holders.of();
+                        if (!equivalentEntryHolder(holder, expectedHolder)) {
+                            throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, holder, holder));
+                        }
+                        break;
                     }
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyCursor(map, expected);
@@ -309,7 +312,11 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             throw new RuntimeException("method call failed - getMap()\n");
         }
 
+        System.out.printf("checking invariants with size %d%n", map.size());
         map.checkInvariants();
+        System.out.printf("checking serializable with size %d%n", map.size());
+        verifySerializable(this::extraSerializationChecks, map);
+        System.out.printf("done checking contents with size %d%n", map.size());
     }
 
     private void verifyCursor(JImmutableMap<K, String> map,
@@ -403,6 +410,14 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     {
         if (keysList.size() != expected.size()) {
             throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
+        }
+    }
+
+    private void extraSerializationChecks(Object a,
+                                          Object b)
+    {
+        if (a instanceof JImmutableTreeMap) {
+            JImmutableTreeMapTest.extraSerializationChecks(a, b);
         }
     }
 }

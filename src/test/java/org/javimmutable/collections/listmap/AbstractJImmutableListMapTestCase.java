@@ -169,23 +169,23 @@ public abstract class AbstractJImmutableListMapTestCase
     {
         List<JImmutableMap.Entry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> MapEntry.of(i, -i)).collect(Collectors.toList());
         switch (ordering) {
-        case HASH: {
-            Set<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
-            Set<JImmutableMap.Entry<Integer, Integer>> expected = new HashSet<>(values);
-            assertEquals(expected, entries);
-            break;
-        }
-        case INORDER: {
-            List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
-            assertEquals(values, entries);
-            break;
-        }
-        case REVERSED: {
-            List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
-            Collections.reverse(entries);
-            assertEquals(values, entries);
-            break;
-        }
+            case HASH: {
+                Set<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
+                Set<JImmutableMap.Entry<Integer, Integer>> expected = new HashSet<>(values);
+                assertEquals(expected, entries);
+                break;
+            }
+            case INORDER: {
+                List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                assertEquals(values, entries);
+                break;
+            }
+            case REVERSED: {
+                List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                Collections.reverse(entries);
+                assertEquals(values, entries);
+                break;
+            }
         }
 
         JImmutableListMap<Integer, Integer> expected = template.insertAll(values);

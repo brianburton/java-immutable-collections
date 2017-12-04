@@ -54,8 +54,17 @@ import java.util.zip.GZIPOutputStream;
 public class StandardSerializableTests
     extends TestCase
 {
-    public static void verifySerializable(Object source,
-                                          String oldSerializedBase64)
+    /**
+     * Iterator factory for Iterable objects that just calls iterator() method.
+     */
+    public static final Func1<Object, Iterator> standardIteratorFactory = o -> ((Iterable)o).iterator();
+
+    /**
+     * Intended for unit tests of non-iterable objects.  Just performs normal test and
+     * backwards compatibility test.
+     */
+    public static void verifySerializable(@Nonnull Object source,
+                                          @Nonnull String oldSerializedBase64)
         throws Exception
     {
         byte[] bytes = serialize(source);
@@ -76,6 +85,9 @@ public class StandardSerializableTests
         assertEquals(source, dest);
     }
 
+    /**
+     * Intended for unit tests.  Performs iterator and extra tests as well as backwards compatibility test.
+     */
     public static void verifySerializable(@Nonnull Func1<Object, Iterator> iteratorFactory,
                                           @Nullable BiConsumer extraChecks,
                                           @Nonnull Object source,
@@ -106,6 +118,28 @@ public class StandardSerializableTests
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
     }
 
+    /**
+     * Intended for use by stress tester.  Performs extra checks but not a backwards compatibility check.
+     */
+    public static void verifySerializable(@Nullable BiConsumer extraChecks,
+                                          @Nonnull Object source)
+    {
+        try {
+            byte[] bytes = serialize(source);
+            Object dest = deserialize(bytes);
+            assertEquals(source.getClass().getName(), dest.getClass().getName());
+            assertEquals(source, dest);
+            performExtraChecks(extraChecks, source, dest);
+
+            dest = deserialize(serialize(dest));
+            assertEquals(source.getClass().getName(), dest.getClass().getName());
+            assertEquals(source, dest);
+            performExtraChecks(extraChecks, source, dest);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static void performExtraChecks(@Nullable BiConsumer extraChecks,
                                            @Nonnull Object source,
@@ -132,6 +166,20 @@ public class StandardSerializableTests
         try (ObjectInputStream inp = new ObjectInputStream(new GZIPInputStream(new ByteArrayInputStream(source)))) {
             return inp.readObject();
         }
+    }
+
+    private static void verifyUnorderedIterator(@Nonnull Func1<Object, Iterator> iteratorFactory,
+                                                Object source,
+                                                Object dest)
+    {
+        ExpectedOrderSorter<Object> sorter = new ExpectedOrderSorter(iteratorFactory.apply(source));
+        Iterator expected = iteratorFactory.apply(source);
+        Iterator actual = sorter.sort(iteratorFactory.apply(dest), i -> i);
+        while (expected.hasNext()) {
+            assertEquals(expected.hasNext(), actual.hasNext());
+            assertEquals(expected.next(), actual.next());
+        }
+        assertEquals(expected.hasNext(), actual.hasNext());
     }
 
     private static void verifyIterator(Iterator expected,

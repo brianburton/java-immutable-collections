@@ -35,9 +35,13 @@
 
 package org.javimmutable.collections.stress_test;
 
+import com.google.common.base.MoreObjects;
+
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 
 public abstract class KeyWrapper<T>
+    implements Serializable
 {
     protected final T value;
 
@@ -56,7 +60,8 @@ public abstract class KeyWrapper<T>
     }
 
     static class RegularKey<T>
-            extends KeyWrapper<T>
+        extends KeyWrapper<T>
+        implements Serializable
     {
         public RegularKey(T value)
         {
@@ -77,8 +82,9 @@ public abstract class KeyWrapper<T>
     }
 
     static class ComparableRegularKey<T extends Comparable<T>>
-            extends RegularKey<T>
-            implements Comparable<ComparableRegularKey<T>>
+        extends RegularKey<T>
+        implements Comparable<ComparableRegularKey<T>>,
+                   Serializable
     {
         public ComparableRegularKey(T value)
         {
@@ -93,7 +99,8 @@ public abstract class KeyWrapper<T>
     }
 
     static class BadHashKey<T>
-            extends KeyWrapper<T>
+        extends KeyWrapper<T>
+        implements Serializable
     {
         public BadHashKey(T value)
         {
@@ -114,8 +121,9 @@ public abstract class KeyWrapper<T>
     }
 
     static class ComparableBadHashKey<T extends Comparable<T>>
-            extends BadHashKey<T>
-            implements Comparable<ComparableBadHashKey<T>>
+        extends BadHashKey<T>
+        implements Comparable<ComparableBadHashKey<T>>,
+                   Serializable
     {
         public ComparableBadHashKey(T value)
         {
@@ -127,5 +135,13 @@ public abstract class KeyWrapper<T>
         {
             return getValue().compareTo(other.getValue());
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return MoreObjects.toStringHelper(this)
+            .add("value", value)
+            .toString();
     }
 }

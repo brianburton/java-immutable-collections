@@ -42,6 +42,8 @@ import org.javimmutable.collections.cursors.StandardCursorTest;
 
 import java.util.List;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+
 public abstract class AbstractListStressTestable
         extends AbstractStressTestable
 {
@@ -68,6 +70,7 @@ public abstract class AbstractListStressTestable
             throw new RuntimeException("method call failed - getList()\n");
         }
         list.checkInvariants();
+        verifySerializable(null, list);
     }
 
     protected void verifyCursor(JImmutableList<String> list,

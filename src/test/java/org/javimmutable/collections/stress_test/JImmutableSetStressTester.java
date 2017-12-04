@@ -40,6 +40,8 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree.JImmutableTreeSetTest;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.HashSet;
@@ -47,6 +49,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
@@ -95,43 +99,43 @@ public class JImmutableSetStressTester
             System.out.printf("growing %d%n", set.size());
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(5)) {
-                case 0: { //insert(T)
-                    String value = keys.randomKey();
-                    set = set.insert(value);
-                    expected.add(value);
-                    keys.allocate(value);
-                    break;
-                }
-                case 1: { //insertAll(Cursorable)
-                    JImmutableList<String> values = keys.randomInsertJList();
-                    set = set.insertAll(values);
-                    expected.addAll(values.getList());
-                    keys.allocate(values);
-                    break;
-                }
-                case 2: { //insertAll(Collection)
-                    JImmutableList<String> values = keys.randomInsertJList();
-                    set = set.insertAll(values.getList());
-                    expected.addAll(values.getList());
-                    keys.allocate(values);
-                    break;
-                }
-                case 3: { //union(Cursorable)
-                    JImmutableList<String> values = keys.randomInsertJList();
-                    set = set.union(values);
-                    expected.addAll(values.getList());
-                    keys.allocate(values);
-                    break;
-                }
-                case 4: { //union(Collection)
-                    JImmutableList<String> values = keys.randomInsertJList();
-                    set = set.union(values.getList());
-                    expected.addAll(values.getList());
-                    keys.allocate(values);
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: { //insert(T)
+                        String value = keys.randomKey();
+                        set = set.insert(value);
+                        expected.add(value);
+                        keys.allocate(value);
+                        break;
+                    }
+                    case 1: { //insertAll(Cursorable)
+                        JImmutableList<String> values = keys.randomInsertJList();
+                        set = set.insertAll(values);
+                        expected.addAll(values.getList());
+                        keys.allocate(values);
+                        break;
+                    }
+                    case 2: { //insertAll(Collection)
+                        JImmutableList<String> values = keys.randomInsertJList();
+                        set = set.insertAll(values.getList());
+                        expected.addAll(values.getList());
+                        keys.allocate(values);
+                        break;
+                    }
+                    case 3: { //union(Cursorable)
+                        JImmutableList<String> values = keys.randomInsertJList();
+                        set = set.union(values);
+                        expected.addAll(values.getList());
+                        keys.allocate(values);
+                        break;
+                    }
+                    case 4: { //union(Collection)
+                        JImmutableList<String> values = keys.randomInsertJList();
+                        set = set.union(values.getList());
+                        expected.addAll(values.getList());
+                        keys.allocate(values);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(set, expected);
@@ -140,29 +144,29 @@ public class JImmutableSetStressTester
             System.out.printf("shrinking %d%n", set.size());
             while (expected.size() > step.shrinkSize()) {
                 switch (random.nextInt(3)) {
-                case 0: { //delete(T)
-                    String value = keys.randomKey();
-                    set = set.delete(value);
-                    expected.remove(value);
-                    keys.unallocate(value);
-                    break;
-                }
-                case 1: { //deleteAll(Cursorable)
-                    JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
-                    set = set.deleteAll(values);
-                    expected.removeAll(values.getList());
-                    keys.unallocate(values);
-                    break;
-                }
-                case 2: { //deleteAll(Collection)
-                    JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
-                    set = set.deleteAll(values.getList());
-                    expected.removeAll(values.getList());
-                    keys.unallocate(values);
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    case 0: { //delete(T)
+                        String value = keys.randomKey();
+                        set = set.delete(value);
+                        expected.remove(value);
+                        keys.unallocate(value);
+                        break;
+                    }
+                    case 1: { //deleteAll(Cursorable)
+                        JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
+                        set = set.deleteAll(values);
+                        expected.removeAll(values.getList());
+                        keys.unallocate(values);
+                        break;
+                    }
+                    case 2: { //deleteAll(Collection)
+                        JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
+                        set = set.deleteAll(values.getList());
+                        expected.removeAll(values.getList());
+                        keys.unallocate(values);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(set, expected);
@@ -171,36 +175,36 @@ public class JImmutableSetStressTester
             System.out.printf("contains %d%n", set.size());
             for (int i = 0; i < size / 12; ++i) {
                 switch (random.nextInt(5)) {
-                case 0: { //contains(T)
-                    String value = keys.randomKey();
-                    if (set.contains(value) != expected.contains(value)) {
-                        throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n",
-                                                                 value, expected.contains(value), set.contains(value)));
+                    case 0: { //contains(T)
+                        String value = keys.randomKey();
+                        if (set.contains(value) != expected.contains(value)) {
+                            throw new RuntimeException(String.format("contains(value) method call failed for %s - expected %b found %b%n",
+                                                                     value, expected.contains(value), set.contains(value)));
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 1:
-                case 2: { //containsAll(Iterable)
-                    JImmutableList<String> values = keys.randomContainsJList(5);
-                    if (set.containsAll(values.getList()) != expected.containsAll(values.getList())) {
-                        throw new RuntimeException(String.format("containsAll(Iterable) method call failed for %s - expected %b found %b%n",
-                                                                 values, set.containsAll(values),
-                                                                 expected.containsAll(values.getList())));
+                    case 1:
+                    case 2: { //containsAll(Iterable)
+                        JImmutableList<String> values = keys.randomContainsJList(5);
+                        if (set.containsAll(values.getList()) != expected.containsAll(values.getList())) {
+                            throw new RuntimeException(String.format("containsAll(Iterable) method call failed for %s - expected %b found %b%n",
+                                                                     values, set.containsAll(values),
+                                                                     expected.containsAll(values.getList())));
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 3:
-                case 4: { //containsAny(Iterable)
-                    JImmutableList<String> values = keys.randomContainsJList(5);
-                    if (set.containsAny(values.getList()) != containsAny(expected, values.getList())) {
-                        throw new RuntimeException(String.format("containsAny(Iterable) method call failed for %s - expected %b found %b%n",
-                                                                 values, set.containsAny(values),
-                                                                 expected.containsAll(values.getList())));
+                    case 3:
+                    case 4: { //containsAny(Iterable)
+                        JImmutableList<String> values = keys.randomContainsJList(5);
+                        if (set.containsAny(values.getList()) != containsAny(expected, values.getList())) {
+                            throw new RuntimeException(String.format("containsAny(Iterable) method call failed for %s - expected %b found %b%n",
+                                                                     values, set.containsAny(values),
+                                                                     expected.containsAll(values.getList())));
+                        }
+                        break;
                     }
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyCursor(set, expected);
@@ -217,36 +221,36 @@ public class JImmutableSetStressTester
             final int command = random.nextInt(4);
             System.out.printf("command %d removing %d%n", command, numberToRemove);
             switch (command) {
-            case 0: {//intersection(Cursorable)
-                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
-                set = set.intersection(intersectionValues);
-                expected.retainAll(new HashSet<>(intersectionValues.getList()));
-                keys.retainAll(intersectionValues);
-                break;
-            }
-            case 1: { //intersection(Collection)
-                JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
-                set = set.intersection(intersectionValues.getList());
-                expected.retainAll(new HashSet<>(intersectionValues.getList()));
-                keys.retainAll(intersectionValues);
-                break;
-            }
-            case 2: { //intersection(JSet)
-                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
-                final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
-                set = set.intersection(JImmutables.set(intersectionValues));
-                expected.retainAll(intersectionValues);
-                keys.retainAll(intersectionValues);
-                break;
-            }
-            default: { //intersection(Set)
-                final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
-                final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
-                set = set.intersection(intersectionValues);
-                expected.retainAll(intersectionValues);
-                keys.retainAll(intersectionValues);
-                break;
-            }
+                case 0: {//intersection(Cursorable)
+                    JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
+                    set = set.intersection(intersectionValues);
+                    expected.retainAll(new HashSet<>(intersectionValues.getList()));
+                    keys.retainAll(intersectionValues);
+                    break;
+                }
+                case 1: { //intersection(Collection)
+                    JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
+                    set = set.intersection(intersectionValues.getList());
+                    expected.retainAll(new HashSet<>(intersectionValues.getList()));
+                    keys.retainAll(intersectionValues);
+                    break;
+                }
+                case 2: { //intersection(JSet)
+                    final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
+                    final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
+                    set = set.intersection(JImmutables.set(intersectionValues));
+                    expected.retainAll(intersectionValues);
+                    keys.retainAll(intersectionValues);
+                    break;
+                }
+                default: { //intersection(Set)
+                    final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
+                    final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
+                    set = set.intersection(intersectionValues);
+                    expected.retainAll(intersectionValues);
+                    keys.retainAll(intersectionValues);
+                    break;
+                }
             }
             if (intersects % 3 == 0) {
                 verifyContents(set, expected);
@@ -307,6 +311,7 @@ public class JImmutableSetStressTester
             throw new RuntimeException("method call failed - getSet()\n");
         }
         set.checkInvariants();
+        verifySerializable(this::extraSerializationChecks, set);
     }
 
     private void verifyCursor(final JImmutableSet<String> set,
@@ -342,5 +347,13 @@ public class JImmutableSetStressTester
             }
         }
         return false;
+    }
+
+    private void extraSerializationChecks(Object a,
+                                          Object b)
+    {
+        if (a instanceof JImmutableTreeSet) {
+            JImmutableTreeSetTest.extraSerializationChecks(a, b);
+        }
     }
 }
