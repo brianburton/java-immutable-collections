@@ -107,7 +107,7 @@ public class JImmutableSetMapStressTester
             while (expected.size() < step.growthSize()) {
                 String key = keys.randomUnallocatedKey();
                 keys.allocate(key);
-                switch (random.nextInt(4) + 7) {
+                switch (random.nextInt(11)) {
                     case 0: { //assign(K, JSet)
                         JImmutableSet<String> values = makeGrowingSet(tokens, random);
                         setmap = setmap.assign(key, values);

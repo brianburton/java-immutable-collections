@@ -111,7 +111,9 @@ public class JImmutableTreeSetMapTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXWyG1/gSoMv0nPNzCxKLQHJQVkl+EcwwJphhDIwlDIyOcFZiBQDScJPFEgEAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeSetMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXWyG1/gSoMv0nPNzCxKLQHJQVkl+EcwwJphhDMwlDIyOYBYjkJUIxFFwXnIhQx0DG5ybVAEAraHYsi8BAAA=");
-
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXWyG1/gSoMv0nPNzCxKLQHJQVkl+EcwwJphhDEwlDIyOYBYDkJUEZjECWU4VANgmCJwcAQAA");
+                        
         empty = JImmutableTreeSetMap.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXawFNDpRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAUAaAHaXI874AAAA");
@@ -119,6 +121,8 @@ public class JImmutableTreeSetMapTest
                                                      "H4sIAAAAAAAAAJXOMQrCQBAF0InRzmOkstjGEwQtjCAEtEwzCUNY2eyG2TFGwRt5Fm9hYeEV1FhEKwun+h8+jznfYeQZ5o5LtcVGV9VOMDekCmcMFaKd9coTazT6iO+qlkk/2jDRmmSFdcquPTzf94imY4CWYfEHGedeGAv50j/Yej8ECG/dx5OORmXQlmotrG0ZzdBTYj1Zr0U3NHNVjYzieB9mpyy9XgY9AIFAEH8Sti/Pq7ORBgEAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeSetMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAJWOPQrCQBCFJ/50HsPKYhtPIFoYQRC0kjSTMISVzW6cHTUKeiLP4i0sLLyCuipiZeHAg/cew8c7XqHpGQaOc7XAtS6KlWBqSGXOGMpEO+uVJ9Zo9A6fUY3iz9OMiaYkYywn7Krt/Xm3drcFUDEM/0D2Ui+MmXzRP7DlpgFQv4TFnYBGZdDmaiqsbd7uo6fYerJei15T3xUlMorjTT3ZJ5PzqfYBQE0gwrdbwgGaIaZB81cVBZdVD8vHREAZAQAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
+                                                     "H4sIAAAAAAAAAJXOMQrCUAyA4Wh18xidHN7iCbQOVhAKOrqkJZQnr++VvNhWwRt5Fm/h4OAV1CoUJwcz/YHwkfMdhp5h7jhXO6x0UewFU0Mqc8ZQJtpZrzyxRqOP+F7VMu6ONky0JllhmbBrDs/3PMLJCKBhWPxBTlMvjJl86R9sWQ8Aglv78bilURm0uVoLa5uHEXqKrSfrteiKIleUyCiO62B72ibXS78DoC/Qm34K2ko/1Wtr1rwAllzm9hABAAA=");
     }
 
     public static void extraSerializationChecks(Object a,

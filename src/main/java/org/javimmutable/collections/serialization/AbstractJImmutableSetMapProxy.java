@@ -90,14 +90,12 @@ abstract class AbstractJImmutableSetMapProxy
         final int size = in.readInt();
         for (int i = 0; i < size; ++i) {
             final Object key = in.readObject();
+            JImmutableSet values = map.getSet(key);
             final int listSize = in.readInt();
-            if (listSize > 0) {
-                JImmutableSet values = map.getSet(key);
-                for (int k = 0; k < listSize; ++k) {
-                    values = values.insert(in.readObject());
-                }
-                map = map.assign(key, values);
+            for (int k = 0; k < listSize; ++k) {
+                values = values.insert(in.readObject());
             }
+            map = map.assign(key, values);
         }
     }
 

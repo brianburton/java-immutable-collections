@@ -51,7 +51,7 @@ abstract class AbstractJImmutableListMapProxy
 {
     private static final int MAP_VERSION = 1001;
     private static final long serialVersionUID = -121805;
-    
+
     protected JImmutableListMap map;
 
     protected AbstractJImmutableListMapProxy(JImmutableListMap map)
@@ -91,13 +91,11 @@ abstract class AbstractJImmutableListMapProxy
         for (int i = 0; i < size; ++i) {
             final Object key = in.readObject();
             final int listSize = in.readInt();
-            if (listSize > 0) {
-                JImmutableList values = map.getList(key);
-                for (int k = 0; k < listSize; ++k) {
-                    values = values.insertLast(in.readObject());
-                }
-                map = map.assign(key, values);
+            JImmutableList values = map.getList(key);
+            for (int k = 0; k < listSize; ++k) {
+                values = values.insertLast(in.readObject());
             }
+            map = map.assign(key, values);
         }
     }
 
