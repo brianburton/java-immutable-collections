@@ -326,6 +326,7 @@ public class HamtBranchNodeTest
                 node = node.assign(transforms, key, key, key, size);
                 assertEquals(node.getValueOr(transforms, key, key, -1), node.find(transforms, key, key).getValueOr(-1));
             }
+            node.checkInvariants();
             verifyIntContents(transforms, node, domain);
 
             final MutableDelta zero = new MutableDelta();
@@ -336,6 +337,7 @@ public class HamtBranchNodeTest
                 assertEquals(null, node.getValueOr(transforms, key, key, null));
                 assertEquals(null, node.find(transforms, key, key).getValueOr(null));
             }
+            node.checkInvariants();
             assertSame(HamtEmptyNode.of(), node);
             assertEquals(0, size.getValue());
             assertEquals(0, zero.getValue());

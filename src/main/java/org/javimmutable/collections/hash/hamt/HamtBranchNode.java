@@ -340,6 +340,9 @@ public class HamtBranchNode<T, K, V>
                 throw new IllegalStateException();
             }
         }
+        for (HamtNode<T, K, V> child : children) {
+            child.checkInvariants();
+        }
     }
 
     private Indexed<SplitableIterable<T>> indexedForIterator()

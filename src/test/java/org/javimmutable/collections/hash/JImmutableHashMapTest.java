@@ -125,8 +125,8 @@ public class JImmutableHashMapTest
                 case 4:
                     key = random.nextInt(maxKey);
                     assertEquals(expected.get(key), map.find(key).getValueOrNull());
-
                     assertEquals(expected.size(), map.size());
+                    map.checkInvariants();
                 }
             }
 
