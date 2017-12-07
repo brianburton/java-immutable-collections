@@ -131,7 +131,6 @@ public class LeafTrieNode<T>
             sizeDelta.subtract(1);
             return of();
         } else {
-            assert shift > 0;
             return this;
         }
     }

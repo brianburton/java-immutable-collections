@@ -175,6 +175,7 @@ public class SingleBranchTrieNode<T>
         if (branchIndex < 0 || branchIndex >= 32) {
             throw new IllegalStateException("illegal branchIndex value: " + branchIndex);
         }
+        child.checkInvariants();
     }
 
     // for tests

@@ -164,6 +164,9 @@ public class FullBranchTrieNode<T>
         if (entries.length != 32) {
             throw new IllegalStateException("unexpected entries size: expected=32 actual=" + entries.length);
         }
+        for (TrieNode<T> entry : entries) {
+            entry.checkInvariants();
+        }
     }
 
     private TrieNode<T> createUpdatedEntries(int shift,

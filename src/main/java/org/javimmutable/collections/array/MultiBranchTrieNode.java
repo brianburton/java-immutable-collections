@@ -253,6 +253,9 @@ public class MultiBranchTrieNode<T>
         if (entries.length != Integer.bitCount(bitmask)) {
             throw new IllegalStateException("unexpected entries size: expected=" + Integer.bitCount(bitmask) + " actual=" + entries.length);
         }
+        for (TrieNode<T> entry : entries) {
+            entry.checkInvariants();
+        }
     }
 
     // for use by unit tests

@@ -88,8 +88,21 @@ public class JImmutableTrieArrayTest
         for (int loop = 1; loop <= 20000; ++loop) {
             int index = r.nextInt(2000) - 1000;
             int value = r.nextInt();
-            array = array.assign(index, value);
-            expected.put(index, value);
+            switch (r.nextInt(4)) {
+                case 0:
+                case 1:
+                    array = array.assign(index, value);
+                    expected.put(index, value);
+                    break;
+                case 2:
+                    array = array.delete(index);
+                    expected.remove(index);
+                    break;
+                case 3:
+                    assertEquals(array.find(index).getValueOrNull(), array.get(index));
+                    array.checkInvariants();
+                    break;
+            }
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
