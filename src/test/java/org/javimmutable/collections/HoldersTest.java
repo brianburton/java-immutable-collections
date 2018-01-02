@@ -37,8 +37,12 @@ package org.javimmutable.collections;
 
 import junit.framework.TestCase;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.javimmutable.collections.Holders.areEqual;
+
 public class HoldersTest
-        extends TestCase
+    extends TestCase
 {
     public void testEmpty()
     {
@@ -57,6 +61,19 @@ public class HoldersTest
         assertEquals(null, e1.getValueOrNull());
         assertEquals("default", e1.getValueOr("default"));
         assertEquals(-1, e1.hashCode());
+
+        final AtomicReference<String> called = new AtomicReference<>();
+        e1.ifPresent(x -> called.set(x));
+        assertEquals(null, called.get());
+        assertEquals(Holders.of(), e1.map(String::hashCode));
+        assertEquals("ZZZ", e1.orElse("ZZZ"));
+        assertEquals("ZZZ", e1.orElseGet(() -> "ZZZ"));
+        try {
+            e1.orElseThrow(() -> new RuntimeException("threw"));
+            fail();
+        } catch (RuntimeException ex) {
+            assertEquals("threw", ex.getMessage());
+        }
     }
 
     public void testFilled()
@@ -108,5 +125,37 @@ public class HoldersTest
         assertEquals("ABC", filled4.getValueOrNull());
         assertEquals("ABC", filled4.getValueOr("ZZZ"));
         assertEquals(64578, filled4.hashCode());
+
+        final AtomicReference<String> called = new AtomicReference<>();
+        filled4.ifPresent(x -> called.set(x));
+        assertEquals("ABC", called.get());
+        assertEquals(Holders.of("ABC".hashCode()), filled4.map(String::hashCode));
+        assertEquals("ABC", filled4.orElse("ZZZ"));
+        assertEquals("ABC", filled4.orElseGet(() -> "ZZZ"));
+        assertEquals("ABC", filled4.orElseThrow(() -> new RuntimeException("threw")));
+    }
+
+    public void testAreEquals()
+    {
+        final Holder<String> n1 = Holders.of(null);
+        final Holder<String> n2 = Holders.of(null);
+
+        final Holder<String> a1 = Holders.of("a");
+        final Holder<String> a2 = Holders.of("a");
+
+        final Holder<String> b = Holders.of("b");
+
+        final Holder<String> e = Holders.of();
+
+        assertEquals(true, areEqual(null, null));
+        assertEquals(false, areEqual(b, null));
+        assertEquals(false, areEqual(null, b));
+
+        assertEquals(true, areEqual(n1, n2));
+        assertEquals(true, areEqual(a1, a2));
+        assertEquals(false, areEqual(a1, b));
+        assertEquals(true, areEqual(e, e));
+        assertEquals(false, areEqual(e, b));
+        assertEquals(false, areEqual(b, e));
     }
 }

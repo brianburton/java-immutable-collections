@@ -51,7 +51,7 @@ import javax.annotation.concurrent.Immutable;
 public class LeafTrieNode<T>
     extends TrieNode<T>
     implements JImmutableMap.Entry<Integer, T>,
-               Holder<T>
+               Holders.Filled<T>
 {
     private final int index;
     private final T value;
@@ -83,6 +83,12 @@ public class LeafTrieNode<T>
     public Integer getKey()
     {
         return index;
+    }
+
+    @Override
+    public T getValue()
+    {
+        return value;
     }
 
     @Override
@@ -169,31 +175,6 @@ public class LeafTrieNode<T>
     public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
     {
         return SingleValueCursor.of(this);
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    @Nonnull
-    @Override
-    public T getValue()
-    {
-        return value;
-    }
-
-    @Override
-    public T getValueOrNull()
-    {
-        return value;
-    }
-
-    @Override
-    public T getValueOr(T defaultValue)
-    {
-        return value;
     }
 
     @Override

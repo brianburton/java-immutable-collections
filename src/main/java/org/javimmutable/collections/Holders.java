@@ -37,14 +37,14 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Provides static utility methods for constructing Holder instances.
- *
- * @param <V>
  */
-public abstract class Holders<V>
-        implements Holder<V>
+public class Holders<V>
 {
     private static final Empty EMPTY = new Empty();
 
@@ -52,38 +52,57 @@ public abstract class Holders<V>
      * Creates an empty Holder for the specified type.
      * Shares a single instance for all empty Holders to save memory.
      *
-     * @param <V>
      * @return the Holder
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <V> Holders<V> of()
+    public static <V> Holder<V> of()
     {
-        return (Holders<V>)EMPTY;
+        return EMPTY;
     }
 
     /**
      * Creates a filled Holder for the specified type and (possibly null) value.
-     *
-     * @param value
-     * @param <V>
-     * @return the Holder
      */
     @Nonnull
-    public static <V> Holders<V> of(@Nullable V value)
+    public static <V> Holder<V> of(@Nullable V value)
     {
-        return new Filled<V>(value);
+        return new Filled<V>()
+        {
+            @Override
+            public V getValue()
+            {
+                return value;
+            }
+
+            @Override
+            public int hashCode()
+            {
+                return Holders.hashCode(this);
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public boolean equals(Object o)
+            {
+                return (o instanceof Holder) && Holders.areEqual(this, (Holder<V>)o);
+            }
+
+            @Override
+            public String toString()
+            {
+                return String.format("[%s]", value);
+            }
+        };
     }
 
     /**
      * Creates an empty Holder if value is null or a filled Holder if value is non-null.
      *
-     * @param value
-     * @param <V>
      * @return the Holder
      */
     @Nonnull
-    public static <V> Holders<V> fromNullable(@Nullable V value)
+    public static <V> Holder<V> fromNullable(@Nullable V value)
     {
         if (value == null) {
             return of();
@@ -97,23 +116,9 @@ public abstract class Holders<V>
         // prevent unrelated derived classes
     }
 
-    @Override
-    public int hashCode()
-    {
-        return Holders.hashCode(this);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean equals(Object o)
-    {
-        return (o instanceof Holder) && Holders.areEqual(this, (Holder<V>)o);
-    }
-
     private static class Empty<V>
-            extends Holders<V>
+        implements Holder<V>
     {
-
         public boolean isEmpty()
         {
             return true;
@@ -142,53 +147,109 @@ public abstract class Holders<V>
         }
 
         @Override
+        public void ifPresent(@Nonnull Consumer<? super V> consumer)
+        {
+        }
+
+        @Override
+        public <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
+        {
+            return of();
+        }
+
+        @Override
+        public V orElse(V defaultValue)
+        {
+            return defaultValue;
+        }
+
+        @Override
+        public V orElseGet(@Nonnull Supplier<? extends V> supplier)
+        {
+            return supplier.get();
+        }
+
+        @Override
+        public <X extends Throwable> V orElseThrow(@Nonnull Supplier<? extends X> supplier)
+            throws X
+        {
+            throw supplier.get();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Holders.hashCode(this);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean equals(Object o)
+        {
+            return (o instanceof Holder) && Holders.areEqual(this, (Holder<V>)o);
+        }
+
+        @Override
         public String toString()
         {
             return "[]";
         }
     }
 
-    private static class Filled<V>
-            extends Holders<V>
+    public interface Filled<V>
+        extends Holder<V>
     {
-        private final V value;
-
-        private Filled(V value)
-        {
-            this.value = value;
-        }
-
-        public boolean isEmpty()
+        default boolean isEmpty()
         {
             return false;
         }
 
-        public boolean isFilled()
+        default boolean isFilled()
         {
             return true;
         }
 
-        public V getValue()
+        @Override
+        default V getValueOrNull()
         {
-            return value;
+            return getValue();
         }
 
         @Override
-        public V getValueOrNull()
+        default V getValueOr(V defaultValue)
         {
-            return value;
+            return getValue();
         }
 
         @Override
-        public V getValueOr(V defaultValue)
+        default void ifPresent(@Nonnull Consumer<? super V> consumer)
         {
-            return value;
+            consumer.accept(getValue());
         }
 
         @Override
-        public String toString()
+        default <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
         {
-            return String.format("[%s]", value);
+            return of(transforminator.apply(getValue()));
+        }
+
+        @Override
+        default V orElse(V defaultValue)
+        {
+            return getValue();
+        }
+
+        @Override
+        default V orElseGet(@Nonnull Supplier<? extends V> supplier)
+        {
+            return getValue();
+        }
+
+        @Override
+        default <X extends Throwable> V orElseThrow(@Nonnull Supplier<? extends X> supplier)
+            throws X
+        {
+            return getValue();
         }
     }
 

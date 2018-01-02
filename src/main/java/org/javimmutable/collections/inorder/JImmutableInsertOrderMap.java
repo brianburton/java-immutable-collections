@@ -210,7 +210,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Immutable
     private static class Node<K, V>
         extends MapEntry<K, V>
-        implements Holder<V>
+        implements Holders.Filled<V>
     {
         private final int index;
 
@@ -220,30 +220,6 @@ public class JImmutableInsertOrderMap<K, V>
         {
             super(key, value);
             this.index = index;
-        }
-
-        @Override
-        public boolean isEmpty()
-        {
-            return false;
-        }
-
-        @Override
-        public boolean isFilled()
-        {
-            return true;
-        }
-
-        @Override
-        public V getValueOrNull()
-        {
-            return value;
-        }
-
-        @Override
-        public V getValueOr(V defaultValue)
-        {
-            return value;
         }
 
         private Node<K, V> withValue(V value)

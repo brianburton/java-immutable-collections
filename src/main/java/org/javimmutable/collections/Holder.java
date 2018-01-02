@@ -35,15 +35,17 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Instances are immutable containers for at most a single object.  A Holder is either empty or filled
  * and always remain in the same state once created, i.e. value returned by isEmpty() and isFilled()
  * and getValue() must not change over time for a single instance.  null is a legitimate value for a
  * Holder and a filled Holder could return null from getValue().
- *
- * @param <T>
  */
 @Immutable
 public interface Holder<T>
@@ -80,4 +82,52 @@ public interface Holder<T>
      * @return value or defaultValue
      */
     T getValueOr(T defaultValue);
+
+    /**
+     * Call consumer with my value if I am filled.  Otherwise do nothing.
+     */
+    default void ifPresent(@Nonnull Consumer<? super T> consumer)
+    {
+        if (isFilled()) {
+            consumer.accept(getValue());
+        }
+    }
+
+    /**
+     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
+     * If I am empty return an empty Holder.
+     */
+    default <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> transforminator)
+    {
+        return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
+    }
+
+    /**
+     * Return my value if I am filled.  Otherwise return defaultValue.
+     */
+    default T orElse(T defaultValue)
+    {
+        return getValueOr(defaultValue);
+    }
+
+    /**
+     * Return my value if I am filled.  Otherwise call supplier and return its result.
+     */
+    default T orElseGet(@Nonnull Supplier<? extends T> supplier)
+    {
+        return isFilled() ? getValue() : supplier.get();
+    }
+
+    /**
+     * Return my value if I am filled.  Otherwise call supplier and throw its result.
+     */
+    default <X extends Throwable> T orElseThrow(@Nonnull Supplier<? extends X> supplier)
+        throws X
+    {
+        if (isFilled()) {
+            return getValue();
+        } else {
+            throw supplier.get();
+        }
+    }
 }

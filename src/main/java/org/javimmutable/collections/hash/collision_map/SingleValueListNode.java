@@ -45,14 +45,13 @@ import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class SingleValueListNode<K, V>
     implements ListNode<K, V>,
                JImmutableMap.Entry<K, V>,
-               Holder<V>
+               Holders.Filled<V>
 {
     private final K key;
     private final V value;
@@ -123,30 +122,6 @@ public class SingleValueListNode<K, V>
 
     @Override
     public V getValue()
-    {
-        return value;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    @Override
-    public V getValueOrNull()
-    {
-        return value;
-    }
-
-    @Override
-    public V getValueOr(@Nullable V defaultValue)
     {
         return value;
     }

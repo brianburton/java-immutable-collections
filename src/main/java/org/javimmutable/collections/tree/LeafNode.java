@@ -53,7 +53,7 @@ import java.util.Objects;
 public class LeafNode<K, V>
     implements Node<K, V>,
                JImmutableMap.Entry<K, V>,
-               Holder<V>
+               Holders.Filled<V>
 {
     private final K key;
     private final V value;
@@ -194,24 +194,6 @@ public class LeafNode<K, V>
     public boolean isEmpty()
     {
         return false;
-    }
-
-    @Override
-    public boolean isFilled()
-    {
-        return true;
-    }
-
-    @Override
-    public V getValueOrNull()
-    {
-        return value;
-    }
-
-    @Override
-    public V getValueOr(V defaultValue)
-    {
-        return value;
     }
 
     @Override
