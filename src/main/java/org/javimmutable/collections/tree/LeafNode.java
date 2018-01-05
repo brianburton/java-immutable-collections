@@ -36,6 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -118,6 +120,24 @@ public class LeafNode<K, V>
         if (diff == 0) {
             return (this.value == value) ? UpdateResult.createUnchanged() : UpdateResult.createInPlace(newLeaf, 0);
         } else {
+            return (diff < 0) ? UpdateResult.createSplit(this, newLeaf, 1) : UpdateResult.createSplit(newLeaf, this, 1);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
+                                     @Nonnull K key,
+                                     @Nonnull Func0<V> creator,
+                                     @Nonnull Func1<V, V> updater)
+    {
+        final int diff = comparator.compare(this.key, key);
+        if (diff == 0) {
+            final V value = updater.apply(this.value);
+            final LeafNode<K, V> newLeaf = new LeafNode<>(key, value);
+            return (this.value == value) ? UpdateResult.createUnchanged() : UpdateResult.createInPlace(newLeaf, 0);
+        } else {
+            final LeafNode<K, V> newLeaf = new LeafNode<>(key, creator.apply());
             return (diff < 0) ? UpdateResult.createSplit(this, newLeaf, 1) : UpdateResult.createSplit(newLeaf, this, 1);
         }
     }

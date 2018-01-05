@@ -36,6 +36,8 @@
 package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -124,6 +126,41 @@ public class HamtLeafNode<T, K, V>
             // our path is shorter so expand using our hashcode then add new value to tree
             final HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(thisHashCode, thisValue);
             return expanded.assign(collisionMap, hashCode, hashKey, value, sizeDelta);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull Func0<V> creator,
+                                    @Nonnull Func1<V, V> updater,
+                                    @Nonnull MutableDelta sizeDelta)
+    {
+        final int thisHashCode = this.hashCode;
+        final T thisValue = this.value;
+        if (hashCode == thisHashCode) {
+            final T newValue = collisionMap.update(thisValue, hashKey, creator, updater, sizeDelta);
+            if (newValue == thisValue) {
+                return this;
+            } else {
+                return new HamtLeafNode<>(hashCode, newValue);
+            }
+        } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
+            // our path is longer so expand using new value then add our values to tree
+            final MutableDelta ignored = new MutableDelta();
+            final Iterator<JImmutableMap.Entry<K, V>> entries = collisionMap.iterator(thisValue);
+            HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(hashCode, collisionMap.update(null, hashKey, creator, updater, sizeDelta));
+            while (entries.hasNext()) {
+                JImmutableMap.Entry<K, V> entry = entries.next();
+                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue(), ignored);
+            }
+            return expanded;
+        } else {
+            // our path is shorter so expand using our hashcode then add new value to tree
+            final HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(thisHashCode, thisValue);
+            return expanded.update(collisionMap, hashCode, hashKey, creator, updater, sizeDelta);
         }
     }
 

@@ -36,6 +36,8 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
@@ -47,6 +49,7 @@ import org.javimmutable.collections.tree.Node;
 import org.javimmutable.collections.tree.UpdateResult;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
@@ -72,19 +75,23 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
             delta.add(1);
             return new LeafNode<>(key, value);
         } else {
-            final UpdateResult<K, V> result = leaf.assign(comparator, key, value);
-            switch (result.type) {
-            case UNCHANGED:
-                return leaf;
-            case INPLACE:
-                delta.add(result.sizeDelta);
-                return result.newNode;
-            case SPLIT:
-                delta.add(result.sizeDelta);
-                return new BranchNode<>(result.newNode, result.extraNode);
-            default:
-                throw new IllegalStateException("unknown UpdateResult.Type value");
-            }
+            return resultForUpdate(leaf, delta, leaf.assign(comparator, key, value));
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Node<K, V> update(@Nullable Node<K, V> leaf,
+                             @Nonnull K key,
+                             @Nonnull Func0<V> creator,
+                             @Nonnull Func1<V, V> updater,
+                             @Nonnull MutableDelta delta)
+    {
+        if (leaf == null) {
+            delta.add(1);
+            return new LeafNode<>(key, creator.apply());
+        } else {
+            return resultForUpdate(leaf, delta, leaf.update(comparator, key, creator, updater));
         }
     }
 
@@ -134,5 +141,23 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
     public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node<K, V> leaf)
     {
         return leaf.iterator();
+    }
+
+    private Node<K, V> resultForUpdate(Node<K, V> leaf,
+                                       @Nonnull MutableDelta delta,
+                                       UpdateResult<K, V> result)
+    {
+        switch (result.type) {
+            case UNCHANGED:
+                return leaf;
+            case INPLACE:
+                delta.add(result.sizeDelta);
+                return result.newNode;
+            case SPLIT:
+                delta.add(result.sizeDelta);
+                return new BranchNode<>(result.newNode, result.extraNode);
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
+        }
     }
 }

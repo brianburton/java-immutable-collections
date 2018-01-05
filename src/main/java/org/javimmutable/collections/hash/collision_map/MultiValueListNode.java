@@ -36,6 +36,8 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -125,6 +127,26 @@ public class MultiValueListNode<K, V>
             return this;
         } else {
             return new MultiValueListNode<>(removeKeyFromList(key), SingleValueListNode.of(key, value));
+        }
+    }
+
+    @Override
+    public ListNode<K, V> setValueForKey(K key,
+                                         Func0<V> creator,
+                                         Func1<V, V> updater,
+                                         MutableDelta sizeDelta)
+    {
+        SingleValueListNode<K, V> entry = getEntryForKeyImpl(key);
+        if (entry == null) {
+            sizeDelta.add(1);
+            return new MultiValueListNode<>(this, SingleValueListNode.of(key, creator.apply()));
+        } else {
+            final V value = updater.apply(entry.getValue());
+            if (entry.getValue() == value) {
+                return this;
+            } else {
+                return new MultiValueListNode<>(removeKeyFromList(key), SingleValueListNode.of(key, value));
+            }
         }
     }
 

@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
@@ -62,6 +63,11 @@ import static org.javimmutable.collections.cursors.StandardCursorTest.emptyCurso
 public class JImmutableTreeMapTest
     extends TestCase
 {
+    public void test()
+    {
+        StandardJImmutableMapTests.verifyMiscellaneous(JImmutableTreeMap.of());
+    }
+
     @SuppressWarnings("unchecked")
     public void testInsert()
     {

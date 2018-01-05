@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 
@@ -46,11 +47,32 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 import static org.javimmutable.collections.common.StandardIterableStreamableTests.*;
 
 public class StandardJImmutableMapTests
 {
+    public static void verifyMiscellaneous(@Nonnull JImmutableMap<Integer, Integer> map)
+    {
+        final Func1<Integer, Integer> updater = x -> 10 * x + 1;
+
+        JImmutableMap<Integer, Integer> x = map.deleteAll();
+
+        x = x.update(1, 3, updater);
+        assertEquals(Integer.valueOf(3), x.get(1));
+        assertSame(x, x.update(1, 8, v -> v));
+
+        x = x.update(1, 4, updater);
+        assertEquals(Integer.valueOf(31), x.get(1));
+
+        x = x.update(2, () -> 7, updater);
+        assertEquals(Integer.valueOf(7), x.get(2));
+        assertSame(x, x.update(2, 8, v -> v));
+
+        x = x.update(2, 4, updater);
+        assertEquals(Integer.valueOf(71), x.get(2));
+    }
+
     public static <K, V> void verifyEmptyEnumeration(@Nonnull JImmutableMap<K, V> map)
     {
         verifyOrderedUsingCollection(Collections.emptyList(), map);

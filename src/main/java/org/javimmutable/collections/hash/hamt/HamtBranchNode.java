@@ -37,6 +37,8 @@ package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
@@ -177,6 +179,46 @@ public class HamtBranchNode<T, K, V>
         } else {
             final HamtNode<T, K, V> child = children[childIndex];
             final HamtNode<T, K, V> newChild = child.assign(collisionMap, remainder, hashKey, value, sizeDelta);
+            if (newChild == child) {
+                return this;
+            } else {
+                final HamtNode<T, K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
+                return new HamtBranchNode<>(bitmask, thisValue, newChildren);
+            }
+        }
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull Func0<V> creator,
+                                    @Nonnull Func1<V, V> updater,
+                                    @Nonnull MutableDelta sizeDelta)
+    {
+        final HamtNode<T, K, V>[] children = this.children;
+        final int bitmask = this.bitmask;
+        final T thisValue = this.value;
+        if (hashCode == 0) {
+            final T newValue = collisionMap.update(thisValue, hashKey, creator, updater, sizeDelta);
+            if (thisValue == newValue) {
+                return this;
+            } else {
+                return new HamtBranchNode<>(bitmask, newValue, children);
+            }
+        }
+        final int index = hashCode & MASK;
+        final int remainder = hashCode >>> SHIFT;
+        final int bit = 1 << index;
+        final int childIndex = realIndex(bitmask, bit);
+        if ((bitmask & bit) == 0) {
+            final HamtNode<T, K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(null, hashKey, creator, updater, sizeDelta));
+            final HamtNode<T, K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
+            return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren);
+        } else {
+            final HamtNode<T, K, V> child = children[childIndex];
+            final HamtNode<T, K, V> newChild = child.update(collisionMap, remainder, hashKey, creator, updater, sizeDelta);
             if (newChild == child) {
                 return this;
             } else {

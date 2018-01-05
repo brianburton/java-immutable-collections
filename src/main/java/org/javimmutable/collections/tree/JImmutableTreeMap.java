@@ -36,7 +36,10 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
@@ -135,16 +138,18 @@ public class JImmutableTreeMap<K, V>
     {
         Conditions.stopNull(key);
         final UpdateResult<K, V> result = root.assign(comparator, key, value);
-        switch (result.type) {
-            case UNCHANGED:
-                return this;
-            case INPLACE:
-                return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
-            case SPLIT:
-                return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
-            default:
-                throw new IllegalStateException("unknown UpdateResult.Type value");
-        }
+        return resultForAssign(result);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableMap<K, V> update(@Nonnull K key,
+                                      @Nonnull Func0<V> creator,
+                                      @Nonnull Func1<V, V> updater)
+    {
+        Conditions.stopNull(key);
+        final UpdateResult<K, V> result = root.update(comparator, key, creator, updater);
+        return resultForAssign(result);
     }
 
     @Nonnull
@@ -215,6 +220,21 @@ public class JImmutableTreeMap<K, V>
             keys.add(entry.getKey());
         }
         return Collections.unmodifiableList(keys);
+    }
+
+    @Nonnull
+    private JImmutableTreeMap<K, V> resultForAssign(UpdateResult<K, V> result)
+    {
+        switch (result.type) {
+            case UNCHANGED:
+                return this;
+            case INPLACE:
+                return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
+            case SPLIT:
+                return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
+        }
     }
 
     private Object writeReplace()

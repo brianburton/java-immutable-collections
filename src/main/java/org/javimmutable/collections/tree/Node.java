@@ -36,6 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
@@ -83,6 +85,12 @@ public interface Node<K, V>
                               V value);
 
     @Nonnull
+    UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
+                              @Nonnull K key,
+                              @Nonnull Func0<V> creator,
+                              @Nonnull Func1<V, V> updater);
+
+    @Nonnull
     Node<K, V> delete(@Nonnull Comparator<K> comparator,
                       @Nonnull K key);
 
@@ -94,7 +102,7 @@ public interface Node<K, V>
 
     @Nonnull
     Node<K, V> compress();
-    
+
     int depth();
 
     default boolean isEmpty()

@@ -36,6 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -141,32 +143,21 @@ public class BranchNode<K, V>
         final Node<K, V>[] children = this.children;
         final int index = findChildIndex(comparator, key, children, 0);
         final UpdateResult<K, V> childResult = children[index].assign(comparator, key, value);
-        switch (childResult.type) {
-        case UNCHANGED:
-            return childResult;
-
-        case INPLACE: {
-            final Node<K, V>[] newChildren = ArrayHelper.assign(children, index, childResult.newNode);
-            return UpdateResult.createInPlace(new BranchNode<>(newChildren), childResult.sizeDelta);
-        }
-
-        case SPLIT: {
-            final Node<K, V>[] newChildren = ArrayHelper.assignInsert(this, children, index, childResult.newNode, childResult.extraNode);
-            final int newChildCount = newChildren.length;
-            if (newChildCount <= MAX_CHILDREN) {
-                return UpdateResult.createInPlace(new BranchNode<>(newChildren), childResult.sizeDelta);
-            } else {
-                final Node<K, V> newChild1 = new BranchNode<>(ArrayHelper.subArray(this, newChildren, 0, MIN_CHILDREN));
-                final Node<K, V> newChild2 = new BranchNode<>(ArrayHelper.subArray(this, newChildren, MIN_CHILDREN, newChildCount));
-                return UpdateResult.createSplit(newChild1, newChild2, childResult.sizeDelta);
-            }
-        }
-
-        default:
-            throw new IllegalStateException("unknown UpdateResult.Type value");
-        }
+        return resultForAssign(children, index, childResult);
     }
 
+    @Nonnull
+    @Override
+    public UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
+                                     @Nonnull K key,
+                                     @Nonnull Func0<V> creator,
+                                     @Nonnull Func1<V, V> updater)
+    {
+        final Node<K, V>[] children = this.children;
+        final int index = findChildIndex(comparator, key, children, 0);
+        final UpdateResult<K, V> childResult = children[index].update(comparator, key, creator, updater);
+        return resultForAssign(children, index, childResult);
+    }
 
     @Nonnull
     @Override
@@ -315,6 +306,37 @@ public class BranchNode<K, V>
     public int hashCode()
     {
         return Objects.hash(children, baseKey, childCount);
+    }
+
+    @Nonnull
+    private UpdateResult<K, V> resultForAssign(Node<K, V>[] children,
+                                               int index,
+                                               UpdateResult<K, V> childResult)
+    {
+        switch (childResult.type) {
+            case UNCHANGED:
+                return childResult;
+
+            case INPLACE: {
+                final Node<K, V>[] newChildren = ArrayHelper.assign(children, index, childResult.newNode);
+                return UpdateResult.createInPlace(new BranchNode<>(newChildren), childResult.sizeDelta);
+            }
+
+            case SPLIT: {
+                final Node<K, V>[] newChildren = ArrayHelper.assignInsert(this, children, index, childResult.newNode, childResult.extraNode);
+                final int newChildCount = newChildren.length;
+                if (newChildCount <= MAX_CHILDREN) {
+                    return UpdateResult.createInPlace(new BranchNode<>(newChildren), childResult.sizeDelta);
+                } else {
+                    final Node<K, V> newChild1 = new BranchNode<>(ArrayHelper.subArray(this, newChildren, 0, MIN_CHILDREN));
+                    final Node<K, V> newChild2 = new BranchNode<>(ArrayHelper.subArray(this, newChildren, MIN_CHILDREN, newChildCount));
+                    return UpdateResult.createSplit(newChild1, newChild2, childResult.sizeDelta);
+                }
+            }
+
+            default:
+                throw new IllegalStateException("unknown UpdateResult.Type value");
+        }
     }
 
     static <K, V> int findChildIndex(@Nonnull Comparator<K> comparator,

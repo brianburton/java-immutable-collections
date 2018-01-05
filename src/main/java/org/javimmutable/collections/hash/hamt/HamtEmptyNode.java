@@ -36,6 +36,8 @@
 package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -86,6 +88,18 @@ public class HamtEmptyNode<T, K, V>
                                     @Nonnull MutableDelta sizeDelta)
     {
         return new HamtLeafNode<>(hashCode, collisionMap.update(null, hashKey, value, sizeDelta));
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
+                                    int hashCode,
+                                    @Nonnull K hashKey,
+                                    @Nonnull Func0<V> creator,
+                                    @Nonnull Func1<V, V> updater,
+                                    @Nonnull MutableDelta sizeDelta)
+    {
+        return new HamtLeafNode<>(hashCode, collisionMap.update(null, hashKey, creator, updater, sizeDelta));
     }
 
     @Nonnull

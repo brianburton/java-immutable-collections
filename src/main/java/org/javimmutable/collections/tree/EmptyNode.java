@@ -36,6 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -112,6 +114,16 @@ public class EmptyNode<K, V>
                                      V value)
     {
         return UpdateResult.createInPlace(new LeafNode<>(key, value), 1);
+    }
+
+    @Nonnull
+    @Override
+    public UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
+                                     @Nonnull K key,
+                                     @Nonnull Func0<V> creator,
+                                     @Nonnull Func1<V, V> updater)
+    {
+        return UpdateResult.createInPlace(new LeafNode<>(key, creator.apply()), 1);
     }
 
     @Nonnull

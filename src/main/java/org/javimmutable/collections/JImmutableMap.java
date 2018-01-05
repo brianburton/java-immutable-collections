@@ -199,4 +199,43 @@ public interface JImmutableMap<K, V>
     {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
+
+    /**
+     * Update the value at the key.  If the key is not currently bound the specified value is stored at the key.
+     * If the key is bound the current value is passed to the specified function and the result
+     * of the function is stored in the map at the key.
+     *
+     * @param key     non-null key
+     * @param value   value to store if key is not currently bound
+     * @param updater function to call with current value to create value if key is already bound
+     * @return new map with changes applied
+     */
+    @Nonnull
+    default JImmutableMap<K, V> update(@Nonnull K key,
+                                       V value,
+                                       @Nonnull Func1<V, V> updater)
+    {
+        return update(key, () -> value, updater);
+    }
+
+    /**
+     * Update the value at the key.  If the key is not currently bound the specified creator function
+     * is called and the result of the function is stored at the key.
+     * If the key is bound the current value is passed to the specified updater function and the result
+     * of the function is stored in the map at the key.
+     *
+     * @param key     non-null key
+     * @param creator function to call to create value to store if key is not currently bound
+     * @param updater function to call with current value to create new value if key is already bound
+     * @return new map with changes applied
+     */
+    @Nonnull
+    default JImmutableMap<K, V> update(@Nonnull K key,
+                                       @Nonnull Func0<V> creator,
+                                       @Nonnull Func1<V, V> updater)
+    {
+        final Holder<V> current = find(key);
+        final V newValue = current.isEmpty() ? creator.apply() : updater.apply(current.getValue());
+        return assign(key, newValue);
+    }
 }

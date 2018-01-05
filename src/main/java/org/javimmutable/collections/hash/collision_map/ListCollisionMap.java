@@ -36,6 +36,8 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -43,6 +45,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -61,6 +64,22 @@ public class ListCollisionMap<K, V>
             return SingleValueListNode.of(key, value);
         } else {
             return leaf.setValueForKey(key, value, delta);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public ListNode<K, V> update(@Nullable ListNode<K, V> leaf,
+                                 @Nonnull K key,
+                                 @Nonnull Func0<V> creator,
+                                 @Nonnull Func1<V, V> updater,
+                                 @Nonnull MutableDelta delta)
+    {
+        if (leaf == null) {
+            delta.add(1);
+            return SingleValueListNode.of(key, creator.apply());
+        } else {
+            return leaf.setValueForKey(key, creator, updater, delta);
         }
     }
 

@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 
 import java.util.ArrayList;
@@ -74,6 +75,9 @@ public class JImmutableHashMapTest
         map = map.delete(10);
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
+
+        StandardJImmutableMapTests.verifyMiscellaneous(JImmutableHashMap.usingList());
+        StandardJImmutableMapTests.verifyMiscellaneous(JImmutableHashMap.usingTree());
     }
 
     public void testValueIdentity()
@@ -94,39 +98,52 @@ public class JImmutableHashMapTest
         Random random = new Random(100L);
         for (int loop = 0; loop < 1000; ++loop) {
             HashMap<Integer, Integer> expected = new HashMap<>();
-            JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingTree();
+            JImmutableMap<Integer, Integer> map = (loop % 2 == 0) ? JImmutableHashMap.usingTree() : JImmutableHashMap.usingList();
             final int size = 250 + random.nextInt(250);
             for (int i = 1; i <= size; ++i) {
-                int command = random.nextInt(5);
+                int command = random.nextInt(6);
                 switch (command) {
-                case 0:
-                case 1:
-                    Integer key = random.nextInt(maxKey);
-                    Integer value = random.nextInt(1000000);
-                    expected.put(key, value);
-                    map = map.assign(key, value);
-                    break;
-                case 2:
-                    JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
-                    int times = random.nextInt(3);
-                    for (int rep = 0; rep < times; rep++) {
+                    case 0:
+                    case 1:
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        expected.put(key, value);
+                        map = map.assign(key, value);
+                        break;
+                    case 2:
+                        JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
+                        int times = random.nextInt(3);
+                        for (int rep = 0; rep < times; rep++) {
+                            key = random.nextInt(maxKey);
+                            value = random.nextInt(1000000);
+                            col = col.assign(key, value);
+                        }
+                        expected.putAll(col.getMap());
+                        map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
+                        break;
+                    case 3:
+                        key = random.nextInt(maxKey);
+                        expected.remove(key);
+                        map = map.delete(key);
+                        break;
+                    case 4:
+                        key = random.nextInt(maxKey);
+                        assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                        assertEquals(expected.size(), map.size());
+                        map.checkInvariants();
+                        break;
+                    case 5:
                         key = random.nextInt(maxKey);
                         value = random.nextInt(1000000);
-                        col = col.assign(key, value);
-                    }
-                    expected.putAll(col.getMap());
-                    map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
-                    break;
-                case 3:
-                    key = random.nextInt(maxKey);
-                    expected.remove(key);
-                    map = map.delete(key);
-                    break;
-                case 4:
-                    key = random.nextInt(maxKey);
-                    assertEquals(expected.get(key), map.find(key).getValueOrNull());
-                    assertEquals(expected.size(), map.size());
-                    map.checkInvariants();
+                        Integer currentValue = map.get(key);
+                        if (currentValue == null) {
+                            map = map.update(key, value, x -> -x);
+                        } else {
+                            Integer newValue = value;
+                            map = map.update(key, -newValue, x -> newValue);
+                        }
+                        expected.put(key, value);
+                        break;
                 }
             }
 
