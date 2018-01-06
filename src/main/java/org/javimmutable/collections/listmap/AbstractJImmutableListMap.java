@@ -85,7 +85,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     public JImmutableListMap<K, V> insert(@Nonnull K key,
                                           @Nullable V value)
     {
-        return create(contents.assign(key, insertInList(getList(key), value)));
+        return create(contents.update(key, () -> emptyList().insertLast(value), list -> list.insertLast(value)));
     }
 
     @Nonnull
@@ -251,16 +251,5 @@ public abstract class AbstractJImmutableListMap<K, V>
     protected JImmutableList<V> emptyList()
     {
         return JImmutableArrayList.of();
-    }
-
-    /**
-     * Overridable by derived classes to insert a value into a list in some way.
-     * Default implementation appends to end of the list.
-     */
-    @Nonnull
-    protected JImmutableList<V> insertInList(JImmutableList<V> list,
-                                             V value)
-    {
-        return list.insertLast(value);
     }
 }
