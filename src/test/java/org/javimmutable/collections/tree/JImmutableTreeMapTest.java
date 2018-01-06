@@ -158,8 +158,21 @@ public class JImmutableTreeMapTest
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(5);
                 switch (command) {
-                    case 0:
-                    case 1:
+                    case 0: {
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        Integer merged = value;
+                        if (expected.get(key) != null) {
+                            merged = expected.get(key) ^ value;
+                        }
+                        map = update(map, key, value, merged);
+                        expected.put(key, merged);
+                        assertEquals(expected.get(key), map.get(key));
+                        assertEquals(expected.get(key), map.getValueOr(key, -99));
+                        assertEquals(expected.get(key), map.find(key).getValue());
+                        break;
+                    }
+                    case 1: {
                         Integer key = random.nextInt(maxKey);
                         Integer value = random.nextInt(1000000);
                         expected.put(key, value);
@@ -168,28 +181,31 @@ public class JImmutableTreeMapTest
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
                         assertEquals(expected.get(key), map.find(key).getValue());
                         break;
-                    case 2:
+                    }
+                    case 2: {
                         JImmutableTreeMap<Integer, Integer> col = JImmutableTreeMap.of();
                         int times = random.nextInt(3);
 
                         for (int rep = 0; rep < times; rep++) {
-                            key = random.nextInt(maxKey);
-                            value = random.nextInt(1000000);
+                            Integer key = random.nextInt(maxKey);
+                            Integer value = random.nextInt(1000000);
                             col.assign(key, value);
                         }
                         expected.putAll(col.getMap());
                         map = (random.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
                         break;
-                    case 3:
-                        key = random.nextInt(maxKey);
+                    }
+                    case 3: {
+                        Integer key = random.nextInt(maxKey);
                         expected.remove(key);
                         map = remove(map, key);
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                         assertEquals(true, map.find(key).isEmpty());
                         break;
-                    case 4:
-                        key = random.nextInt(maxKey);
+                    }
+                    case 4: {
+                        Integer key = random.nextInt(maxKey);
                         if (expected.containsKey(key)) {
                             assertEquals(expected.get(key), map.get(key));
                             assertEquals(expected.get(key), map.getValueOr(key, -99));
@@ -201,7 +217,7 @@ public class JImmutableTreeMapTest
                             assertEquals(true, map.find(key).isEmpty());
                             assertEquals(true, map.findEntry(key).isEmpty());
                         }
-
+                    }
                 }
                 assertEquals(expected.size(), map.size());
             }
@@ -347,6 +363,19 @@ public class JImmutableTreeMapTest
                                                     Integer value)
     {
         return add(map, value, value);
+    }
+
+    private JImmutableTreeMap<Integer, Integer> update(JImmutableMap<Integer, Integer> map,
+                                                       Integer key,
+                                                       Integer value,
+                                                       Integer merged)
+    {
+        JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
+        treeMap = treeMap.update(key, () -> value, old -> old ^ value);
+        treeMap.checkInvariants();
+        assertEquals(true, treeMap.find(key).isFilled());
+        assertEquals(merged, treeMap.find(key).getValue());
+        return treeMap;
     }
 
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,

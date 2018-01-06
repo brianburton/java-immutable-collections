@@ -103,47 +103,61 @@ public class JImmutableHashMapTest
             for (int i = 1; i <= size; ++i) {
                 int command = random.nextInt(6);
                 switch (command) {
-                    case 0:
-                    case 1:
+                    case 0: {
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
+                        int merged = value;
+                        map = map.update(key, () -> value, old -> old ^ value);
+                        if (expected.get(key) != null) {
+                            merged = expected.get(key) ^ value;
+                        }
+                        expected.put(key, merged);
+                        break;
+                    }
+                    case 1: {
                         Integer key = random.nextInt(maxKey);
                         Integer value = random.nextInt(1000000);
                         expected.put(key, value);
                         map = map.assign(key, value);
                         break;
-                    case 2:
+                    }
+                    case 2: {
                         JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
                         int times = random.nextInt(3);
                         for (int rep = 0; rep < times; rep++) {
-                            key = random.nextInt(maxKey);
-                            value = random.nextInt(1000000);
+                            Integer key = random.nextInt(maxKey);
+                            Integer value = random.nextInt(1000000);
                             col = col.assign(key, value);
                         }
                         expected.putAll(col.getMap());
                         map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
                         break;
-                    case 3:
-                        key = random.nextInt(maxKey);
+                    }
+                    case 3: {
+                        Integer key = random.nextInt(maxKey);
                         expected.remove(key);
                         map = map.delete(key);
                         break;
-                    case 4:
-                        key = random.nextInt(maxKey);
+                    }
+                    case 4: {
+                        Integer key = random.nextInt(maxKey);
                         assertEquals(expected.get(key), map.find(key).getValueOrNull());
                         assertEquals(expected.size(), map.size());
                         map.checkInvariants();
                         break;
-                    case 5:
-                        key = random.nextInt(maxKey);
-                        value = random.nextInt(1000000);
+                    }
+                    case 5: {
+                        Integer key = random.nextInt(maxKey);
+                        Integer value = random.nextInt(1000000);
                         Integer currentValue = map.get(key);
                         if (currentValue == null) {
                             map = map.update(key, value, x -> -x);
                         } else {
-                            Integer newValue = value;
-                            map = map.update(key, -newValue, x -> newValue);
+                            map = map.update(key, -value, x -> value);
                         }
                         expected.put(key, value);
                         break;
+                    }
                 }
             }
 

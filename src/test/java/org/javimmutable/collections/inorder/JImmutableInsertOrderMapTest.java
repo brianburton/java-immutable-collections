@@ -133,8 +133,24 @@ public class JImmutableInsertOrderMapTest
             for (int i = 0; i < 2500; ++i) {
                 int command = r.nextInt(3);
                 switch (command) {
-                    case 0:
-                    case 1:
+                    case 0: {
+                        int key = r.nextInt(500);
+                        int value = r.nextInt(500);
+                        int merged = value;
+                        map = map.update(key, () -> value, old -> old ^ value);
+                        if (expected.get(key) != null) {
+                            merged = expected.get(key) ^ value;
+                        }
+                        expected.put(key, merged);
+                        //noinspection ConstantConditions
+                        assertEquals(merged, (int)map.get(key));
+                        assertEquals(merged, (int)map.getValueOr(key, value - 1000));
+                        assertEquals(merged, (int)map.find(key).getValueOrNull());
+                        assertEquals(Holders.of(merged), map.find(key));
+                        assertEquals(MapEntry.of(key, merged), map.findEntry(key).getValue());
+                        break;
+                    }
+                    case 1: {
                         int key = r.nextInt(500);
                         int value = r.nextInt(500);
                         map = map.assign(key, value);
@@ -146,18 +162,20 @@ public class JImmutableInsertOrderMapTest
                         assertEquals(Holders.of(value), map.find(key));
                         assertEquals(MapEntry.of(key, value), map.findEntry(key).getValue());
                         break;
-                    case 2:
+                    }
+                    case 2: {
                         JImmutableInsertOrderMap<Integer, Integer> col = JImmutableInsertOrderMap.of();
                         int times = r.nextInt(3);
 
                         for (int rep = 0; rep < times; rep++) {
-                            key = r.nextInt(500);
-                            value = r.nextInt(500);
+                            int key = r.nextInt(500);
+                            int value = r.nextInt(500);
                             col = col.assign(key, value);
                         }
                         expected.putAll(col.getMap());
                         map = (r.nextInt(2) == 0) ? addAll(map, col) : addAll(map, col.getMap());
                         break;
+                    }
                 }
 
             }
