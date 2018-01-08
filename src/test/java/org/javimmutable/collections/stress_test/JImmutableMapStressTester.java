@@ -137,7 +137,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
             System.out.printf("growing %d%n", map.size());
             while (expected.size() < step.growthSize()) {
-                switch (random.nextInt(4)) {
+                switch (random.nextInt(5)) {
                     case 0: { //assign(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
@@ -145,7 +145,14 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, key.getValue());
                         break;
                     }
-                    case 1: { //insert(Entry<K, V>)
+                    case 1: { //update(K, V)
+                        K key = unusedKey(tokens, random, expected);
+                        keysList.add(key);
+                        map = map.update(key, () -> key.getValue(), current -> current + "," + key.getValue());
+                        expected.put(key, key.getValue());
+                        break;
+                    }
+                    case 2: { //insert(Entry<K, V>)
                         K key = unusedKey(tokens, random, expected);
                         JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, key.getValue());
                         keysList.add(key);
@@ -153,14 +160,14 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, key.getValue());
                         break;
                     }
-                    case 2: { //assignAll(JImmutableMap)
+                    case 3: { //assignAll(JImmutableMap)
                         JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
-                    case 3: { //assignAll(Map)
+                    case 4: { //assignAll(Map)
                         JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values.getMap());
@@ -176,7 +183,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
 
             System.out.printf("updating %d%n", map.size());
             for (int i = 0; i < map.size(); ++i) {
-                switch (random.nextInt(4)) {
+                switch (random.nextInt(5)) {
                     case 0: { //assign(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
@@ -184,7 +191,14 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, value);
                         break;
                     }
-                    case 1: { //insert(Entry<K, V>)
+                    case 1: { //update(K, V)
+                        K key = keysList.get(random.nextInt(keysList.size()));
+                        String value = RandomKeyManager.makeValue(tokens, random);
+                        map = map.update(key, () -> value, current -> current + "," + value);
+                        expected.put(key, expected.get(key) + "," + value);
+                        break;
+                    }
+                    case 2: { //insert(Entry<K, V>)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
                         JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, value);
@@ -192,13 +206,13 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, value);
                         break;
                     }
-                    case 2: { //assignAll(JImmutableMap)
+                    case 3: { //assignAll(JImmutableMap)
                         JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
-                    case 3: { //assignAll(Map)
+                    case 4: { //assignAll(Map)
                         JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values.getMap());
                         expected.putAll(values.getMap());
