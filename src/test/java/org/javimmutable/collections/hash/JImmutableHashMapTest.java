@@ -43,6 +43,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,117 +95,127 @@ public class JImmutableHashMapTest
 
     public void testRandom1()
     {
-        final int maxKey = 999999999;
         Random random = new Random(100L);
-        for (int loop = 0; loop < 1000; ++loop) {
-            HashMap<Integer, Integer> expected = new HashMap<>();
-            JImmutableMap<Integer, Integer> map = (loop % 2 == 0) ? JImmutableHashMap.usingTree() : JImmutableHashMap.usingList();
-            final int size = 250 + random.nextInt(250);
-            for (int i = 1; i <= size; ++i) {
-                int command = random.nextInt(6);
-                switch (command) {
-                    case 0: {
-                        Integer key = random.nextInt(maxKey);
-                        Integer value = random.nextInt(1000000);
-                        int merged = value;
-                        map = map.update(key, () -> value, old -> old ^ value);
-                        if (expected.get(key) != null) {
-                            merged = expected.get(key) ^ value;
-                        }
-                        expected.put(key, merged);
-                        break;
-                    }
-                    case 1: {
-                        Integer key = random.nextInt(maxKey);
-                        Integer value = random.nextInt(1000000);
-                        expected.put(key, value);
-                        map = map.assign(key, value);
-                        break;
-                    }
-                    case 2: {
-                        JImmutableMap<Integer, Integer> col = JImmutableHashMap.usingTree();
-                        int times = random.nextInt(3);
-                        for (int rep = 0; rep < times; rep++) {
-                            Integer key = random.nextInt(maxKey);
+        for (int maxKeyLoop = 0; maxKeyLoop < 2; ++maxKeyLoop) {
+            final int maxKey = (maxKeyLoop == 0) ? 10000 : 99999999;
+            for (int loop = 0; loop < 1000; ++loop) {
+                HashMap<ManualHashKey, Integer> expected = new HashMap<>();
+                JImmutableMap<ManualHashKey, Integer> map = (loop % 2 == 0) ? JImmutableHashMap.usingTree() : JImmutableHashMap.usingList();
+                final int size = 250 + random.nextInt(250);
+                for (int i = 1; i <= size; ++i) {
+                    int command = random.nextInt(6);
+                    switch (command) {
+                        case 0: {
+                            ManualHashKey key = createManualHashKey(maxKey, random);
                             Integer value = random.nextInt(1000000);
-                            col = col.assign(key, value);
+                            int merged = value;
+                            map = map.update(key, () -> value, old -> old ^ value);
+                            if (expected.get(key) != null) {
+                                merged = expected.get(key) ^ value;
+                            }
+                            expected.put(key, merged);
+                            break;
                         }
-                        expected.putAll(col.getMap());
-                        map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
-                        break;
-                    }
-                    case 3: {
-                        Integer key = random.nextInt(maxKey);
-                        expected.remove(key);
-                        map = map.delete(key);
-                        break;
-                    }
-                    case 4: {
-                        Integer key = random.nextInt(maxKey);
-                        assertEquals(expected.get(key), map.find(key).getValueOrNull());
-                        assertEquals(expected.size(), map.size());
-                        map.checkInvariants();
-                        break;
-                    }
-                    case 5: {
-                        Integer key = random.nextInt(maxKey);
-                        Integer value = random.nextInt(1000000);
-                        Integer currentValue = map.get(key);
-                        if (currentValue == null) {
-                            map = map.update(key, value, x -> -x);
-                        } else {
-                            map = map.update(key, -value, x -> value);
+                        case 1: {
+                            ManualHashKey key = createManualHashKey(maxKey, random);
+                            Integer value = random.nextInt(1000000);
+                            expected.put(key, value);
+                            map = map.assign(key, value);
+                            break;
                         }
-                        expected.put(key, value);
-                        break;
+                        case 2: {
+                            JImmutableMap<ManualHashKey, Integer> col = JImmutableHashMap.usingTree();
+                            int times = random.nextInt(3);
+                            for (int rep = 0; rep < times; rep++) {
+                                ManualHashKey key = createManualHashKey(maxKey, random);
+                                Integer value = random.nextInt(1000000);
+                                col = col.assign(key, value);
+                            }
+                            expected.putAll(col.getMap());
+                            map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
+                            break;
+                        }
+                        case 3: {
+                            ManualHashKey key = createManualHashKey(maxKey, random);
+                            expected.remove(key);
+                            map = map.delete(key);
+                            break;
+                        }
+                        case 4: {
+                            ManualHashKey key = createManualHashKey(maxKey, random);
+                            assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                            assertEquals(expected.size(), map.size());
+                            map.checkInvariants();
+                            break;
+                        }
+                        case 5: {
+                            ManualHashKey key = createManualHashKey(maxKey, random);
+                            Integer value = random.nextInt(1000000);
+                            Integer currentValue = map.get(key);
+                            if (currentValue == null) {
+                                map = map.update(key, value, x -> -x);
+                            } else {
+                                map = map.update(key, -value, x -> value);
+                            }
+                            expected.put(key, value);
+                            break;
+                        }
                     }
                 }
+
+                map.checkInvariants();
+                verifyEnumeration(expected, map);
+
+                for (Map.Entry<ManualHashKey, Integer> entry : expected.entrySet()) {
+                    Holder<Integer> mapValue = map.find(entry.getKey());
+                    assertEquals(true, mapValue.isFilled());
+                    assertEquals(entry.getValue(), mapValue.getValue());
+                }
+
+                // verify the cursor worked properly
+                final List<JImmutableMap.Entry<ManualHashKey, Integer>> entries = new ArrayList<>();
+                Map<ManualHashKey, Integer> fromCursor = new HashMap<>();
+                for (JImmutableMap.Entry<ManualHashKey, Integer> entry : map) {
+                    entries.add(entry);
+                    fromCursor.put(entry.getKey(), entry.getValue());
+                }
+                assertEquals(expected, fromCursor);
+                listCursorTest(entries, map.cursor());
+                cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
+                cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
+                listIteratorTest(entries, map.iterator());
+                iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
+                iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
+
+                // verify the Map adaptor worked properly
+                assertEquals(expected, map.getMap());
+                assertEquals(expected.keySet(), map.getMap().keySet());
+                assertEquals(expected.entrySet(), map.getMap().entrySet());
+                ArrayList<Integer> jvalues = new ArrayList<>(expected.values());
+                ArrayList<Integer> pvalues = new ArrayList<>(map.getMap().values());
+                Collections.sort(jvalues);
+                Collections.sort(pvalues);
+                assertEquals(jvalues, pvalues);
+
+                // verify the map can remove all keys
+                ArrayList<ManualHashKey> keys = new ArrayList<>(expected.keySet());
+                Collections.shuffle(keys, random);
+                for (ManualHashKey key : keys) {
+                    assertEquals(false, map.find(key).isEmpty());
+                    map = map.delete(key);
+                    assertEquals(true, map.find(key).isEmpty());
+                }
+                assertEquals(0, map.size());
             }
-
-            map.checkInvariants();
-            verifyEnumeration(expected, map);
-
-            for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-                Holder<Integer> mapValue = map.find(entry.getKey());
-                assertEquals(true, mapValue.isFilled());
-                assertEquals(entry.getValue(), mapValue.getValue());
-            }
-
-            // verify the cursor worked properly
-            final List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
-            Map<Integer, Integer> fromCursor = new HashMap<>();
-            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
-                entries.add(entry);
-                fromCursor.put(entry.getKey(), entry.getValue());
-            }
-            assertEquals(expected, fromCursor);
-            listCursorTest(entries, map.cursor());
-            cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
-            cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
-            listIteratorTest(entries, map.iterator());
-            iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
-            iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
-
-            // verify the Map adaptor worked properly
-            assertEquals(expected, map.getMap());
-            assertEquals(expected.keySet(), map.getMap().keySet());
-            assertEquals(expected.entrySet(), map.getMap().entrySet());
-            ArrayList<Integer> jvalues = new ArrayList<>(expected.values());
-            ArrayList<Integer> pvalues = new ArrayList<>(map.getMap().values());
-            Collections.sort(jvalues);
-            Collections.sort(pvalues);
-            assertEquals(jvalues, pvalues);
-
-            // verify the map can remove all keys
-            ArrayList<Integer> keys = new ArrayList<>(expected.keySet());
-            Collections.shuffle(keys, random);
-            for (Integer key : keys) {
-                assertEquals(false, map.find(key).isEmpty());
-                map = map.delete(key);
-                assertEquals(true, map.find(key).isEmpty());
-            }
-            assertEquals(0, map.size());
         }
+    }
+
+    @Nonnull
+    private ManualHashKey createManualHashKey(int maxKey,
+                                              Random random)
+    {
+        int keyValue = random.nextInt(maxKey);
+        return new ManualHashKey(keyValue % 100, String.valueOf(keyValue));
     }
 
     public void testEquals()
@@ -377,6 +388,7 @@ public class JImmutableHashMapTest
     }
 
     private static class ManualHashKey
+        implements Comparable<ManualHashKey>
     {
         private final int hash;
         private final String value;
@@ -402,6 +414,12 @@ public class JImmutableHashMapTest
             }
             ManualHashKey other = (ManualHashKey)o;
             return (other.hash == hash) && other.value.equals(value);
+        }
+
+        @Override
+        public int compareTo(@Nonnull ManualHashKey o)
+        {
+            return value.compareTo(o.value);
         }
     }
 }
