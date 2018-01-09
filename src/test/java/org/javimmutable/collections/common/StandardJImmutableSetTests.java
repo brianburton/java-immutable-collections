@@ -68,6 +68,7 @@ public final class StandardJImmutableSetTests
         testWithMultiset(template);
         testRandom(template);
         testCollector(template.insert(-1).insert(-2));
+        testTransform(template);
         verifyIntersectionOrder(template);
 
         assertEquals(0, template.size());
@@ -391,32 +392,31 @@ public final class StandardJImmutableSetTests
                 int command = random.nextInt(5);
                 int value = random.nextInt(size);
                 switch (command) {
-                case 0:
-                case 1:
-                    set = set.insert(value);
-                    expected.add(value);
-                    assertEquals(true, set.contains(value));
-                    break;
-                case 2:
-                    assertEquals(expected.contains(value), set.contains(value));
-                    break;
-                case 3:
-                    set = set.delete(value);
-                    expected.remove(value);
-                    assertEquals(false, set.contains(value));
-                    break;
-                case 4:
-                    JImmutableSet<Integer> values = template;
-                    int times = random.nextInt(4);
-                    for (int rep = 0; rep < times; ++rep) {
-                        int num = random.nextInt(size);
-                        expected.add(num);
-                        values = values.insert(num);
-                    }
-                    set = set.insertAll(values);
-                    assertEquals(true, set.containsAll(values));
-                    break;
-
+                    case 0:
+                    case 1:
+                        set = set.insert(value);
+                        expected.add(value);
+                        assertEquals(true, set.contains(value));
+                        break;
+                    case 2:
+                        assertEquals(expected.contains(value), set.contains(value));
+                        break;
+                    case 3:
+                        set = set.delete(value);
+                        expected.remove(value);
+                        assertEquals(false, set.contains(value));
+                        break;
+                    case 4:
+                        JImmutableSet<Integer> values = template;
+                        int times = random.nextInt(4);
+                        for (int rep = 0; rep < times; ++rep) {
+                            int num = random.nextInt(size);
+                            expected.add(num);
+                            values = values.insert(num);
+                        }
+                        set = set.insertAll(values);
+                        assertEquals(true, set.containsAll(values));
+                        break;
                 }
                 assertEquals(expected.size(), set.size());
             }
@@ -434,18 +434,33 @@ public final class StandardJImmutableSetTests
         }
     }
 
+    private static void testTransform(JImmutableSet<Integer> template)
+    {
+        JImmutableSet<Integer> ints = template;
+        JImmutableSet<String> strings = template.transform(String::valueOf);
+        List<String> expected = new ArrayList<>();
+        verifyContents(strings, expected);
+        for (int i = 1; i <= 100; ++i) {
+            ints = ints.insert(i);
+            strings = ints.transform(String::valueOf);
+            assertEquals(ints.getClass(), strings.getClass());
+            expected.add(String.valueOf(i));
+            verifyContents(strings, expected);
+        }
+    }
+
     // forces java type system to use Iterable version of method
     private static <T> Iterable<T> iterable(Iterable<T> collection)
     {
         return collection;
     }
 
-    private static void verifyContents(JImmutableSet<Integer> jet,
-                                       List<Integer> expected)
+    private static <T> void verifyContents(JImmutableSet<T> jet,
+                                           List<T> expected)
     {
         assertEquals(expected.isEmpty(), jet.isEmpty());
         assertEquals(expected.size(), jet.size());
-        for (Integer value : expected) {
+        for (T value : expected) {
             assertEquals(true, jet.contains(value));
         }
         assertEquals(true, jet.containsAll(expected));
@@ -457,7 +472,7 @@ public final class StandardJImmutableSetTests
         assertEquals(!expected.isEmpty(), jet.containsAny(expected.iterator()));
 
         if (!expected.isEmpty()) {
-            List<Integer> subset = Arrays.asList(expected.get(0));
+            List<T> subset = Arrays.asList(expected.get(0));
             assertEquals(true, jet.containsAll(subset));
             assertEquals(true, jet.containsAll(IterableCursor.of(subset)));
             assertEquals(true, jet.containsAll(subset.iterator()));

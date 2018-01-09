@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableListTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -114,6 +115,11 @@ public class JImmutableArrayListTest
         assertEquals(true, list.isEmpty());
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+    }
+
+    public void testStandard()
+    {
+        StandardJImmutableListTests.verifyList(JImmutableArrayList.of());
     }
 
     public void testInsertIterable()
@@ -287,8 +293,6 @@ public class JImmutableArrayListTest
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
         checkIterator.checkInvariants();
-
-
     }
 
     private Iterable<Integer> plainIterable(List<Integer> values)

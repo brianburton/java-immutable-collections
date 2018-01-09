@@ -43,6 +43,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableListTests;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
@@ -146,6 +147,11 @@ public class JImmutableBtreeListTest
         list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+    }
+
+    public void testStandard()
+    {
+        StandardJImmutableListTests.verifyList(JImmutableBtreeList.of());
     }
 
     public void testInsertIterable()

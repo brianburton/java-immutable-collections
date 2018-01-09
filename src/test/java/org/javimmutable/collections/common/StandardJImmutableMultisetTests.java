@@ -73,6 +73,7 @@ public class StandardJImmutableMultisetTests
         testVarious(empty);
         testEquals(empty);
         testCollector(empty.insert(1).insert(1));
+        testTransform(empty);
 
         verifyContents(empty, HashMultiset.create());
 
@@ -445,6 +446,21 @@ public class StandardJImmutableMultisetTests
         verifyContents(jmet.insertAll(asJMSet(values)), expected);
     }
 
+    private static void testTransform(JImmutableMultiset<Integer> template)
+    {
+        JImmutableMultiset<Integer> ints = template;
+        JImmutableMultiset<Integer> strings = template.transform(x -> x * 100);
+        Multiset<Integer> expected = HashMultiset.create();
+        verifyContents(strings, expected);
+        for (int i = 1; i <= 100; ++i) {
+            ints = ints.insert(i);
+            strings = ints.transform(x -> x * 100);
+            assertEquals(ints.getClass(), strings.getClass());
+            expected.add(100 * i);
+            verifyContents(strings, expected);
+        }
+    }
+
     private static Iterable<Integer> plainIterable(List<Integer> values)
     {
         return () -> values.iterator();
@@ -701,40 +717,40 @@ public class StandardJImmutableMultisetTests
                 Integer value = random.nextInt(size);
                 int count = random.nextInt(3) + 1;
                 switch (command) {
-                case 0:
-                    jmet = jmet.insert(value);
-                    expected.add(value);
-                    assertEquals(true, jmet.contains(value));
-                case 1:
-                    assertEquals(expected.contains(value), jmet.contains(value));
-                    assertEquals(expected.count(value) >= count, jmet.containsAtLeast(value, count));
-                    break;
-                case 2:
-                    jmet = jmet.deleteOccurrence(value, count);
-                    expected.remove(value, count);
-                    break;
-                case 3:
-                    jmet = jmet.delete(value);
-                    int expectedCount = expected.count(value);
-                    for (int n = 0; n < expectedCount; ++n) {
+                    case 0:
+                        jmet = jmet.insert(value);
+                        expected.add(value);
+                        assertEquals(true, jmet.contains(value));
+                    case 1:
+                        assertEquals(expected.contains(value), jmet.contains(value));
+                        assertEquals(expected.count(value) >= count, jmet.containsAtLeast(value, count));
+                        break;
+                    case 2:
+                        jmet = jmet.deleteOccurrence(value, count);
+                        expected.remove(value, count);
+                        break;
+                    case 3:
+                        jmet = jmet.delete(value);
+                        int expectedCount = expected.count(value);
+                        for (int n = 0; n < expectedCount; ++n) {
+                            expected.remove(value);
+                        }
+                        assertEquals(expected.contains(value), jmet.contains(value));
+                        break;
+                    case 4:
+                        jmet = jmet.deleteOccurrence(value);
                         expected.remove(value);
-                    }
-                    assertEquals(expected.contains(value), jmet.contains(value));
-                    break;
-                case 4:
-                    jmet = jmet.deleteOccurrence(value);
-                    expected.remove(value);
-                    assertEquals(expected.count(value), jmet.count(value));
-                    break;
-                case 5:
-                    jmet = jmet.setCount(value, count);
-                    expected.setCount(value, count);
-                    break;
-                default:
-                    jmet = jmet.insert(value, count);
-                    expected.add(value, count);
-                    assertEquals(true, jmet.containsAtLeast(value, count));
-                    break;
+                        assertEquals(expected.count(value), jmet.count(value));
+                        break;
+                    case 5:
+                        jmet = jmet.setCount(value, count);
+                        expected.setCount(value, count);
+                        break;
+                    default:
+                        jmet = jmet.insert(value, count);
+                        expected.add(value, count);
+                        assertEquals(true, jmet.containsAtLeast(value, count));
+                        break;
                 }
                 assertEquals(expected.size(), jmet.occurrenceCount());
             }

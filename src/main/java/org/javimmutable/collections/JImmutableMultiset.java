@@ -344,6 +344,18 @@ public interface JImmutableMultiset<T>
     @Nonnull
     JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values);
 
+    /**
+     * Apply the transform function to all elements in iterator order and add each transformed
+     * value to build a new collection the same type as this.
+     *
+     * @param transform transformation applied to each element
+     * @return the new collection after all elements have been processed
+     */
+    @SuppressWarnings("unchecked")
+    default <A> JImmutableMultiset<A> transform(@Nonnull Func1<T, A> transform)
+    {
+        return transform((JImmutableMultiset)deleteAll(), transform);
+    }
 
     /**
      * Combines all occurrences from other and the multiset. If only the multiset or
