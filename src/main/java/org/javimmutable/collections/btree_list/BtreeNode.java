@@ -36,15 +36,13 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Tuple2;
 
 import javax.annotation.Nonnull;
 
 interface BtreeNode<T>
-    extends InvariantCheckable,
-            Cursorable<T>,
+    extends Cursorable<T>,
             SplitableIterable<T>
 {
     int MIN_CHILDREN = 9;
@@ -99,4 +97,6 @@ interface BtreeNode<T>
     boolean containsIndex(int index);
 
     int depth();
+
+    void checkInvariants(boolean isRoot);
 }

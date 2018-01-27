@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.btree_list;
 
+import org.javimmutable.collections.Tuple2;
+
 class BtreeInsertResult<T>
 {
     enum Type
@@ -65,6 +67,11 @@ class BtreeInsertResult<T>
                                                 BtreeNode<T> extraNode)
     {
         return new BtreeInsertResult<>(Type.SPLIT, newNode, extraNode);
+    }
+
+    static <T> BtreeInsertResult<T> createSplit(Tuple2<BtreeNode<T>, BtreeNode<T>> nodes)
+    {
+        return createSplit(nodes.getFirst(), nodes.getSecond());
     }
 
     @Override

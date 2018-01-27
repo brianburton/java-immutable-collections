@@ -63,7 +63,6 @@ public class JImmutableBtreeList<T>
                Serializable
 {
     private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<>(BtreeEmptyNode.of());
-    private static final int BUILDER_CHILDREN_PER_NODE = Math.max(BtreeNode.MIN_CHILDREN, BtreeNode.MAX_CHILDREN - 2);
     private static final long serialVersionUID = -121805;
 
     private final BtreeNode<T> root;
@@ -101,9 +100,9 @@ public class JImmutableBtreeList<T>
                 remaining = 0;
                 offset = nodeCount;
             } else {
-                node = BtreeLeafNode.of(values, offset, offset + BUILDER_CHILDREN_PER_NODE);
-                remaining -= BUILDER_CHILDREN_PER_NODE;
-                offset += BUILDER_CHILDREN_PER_NODE;
+                node = BtreeLeafNode.of(values, offset, offset + BtreeNode.MIN_CHILDREN);
+                remaining -= BtreeNode.MIN_CHILDREN;
+                offset += BtreeNode.MIN_CHILDREN;
             }
             nodes.add(node);
         }
@@ -121,9 +120,9 @@ public class JImmutableBtreeList<T>
                     remaining = 0;
                     offset = nodeCount;
                 } else {
-                    node = BtreeBranchNode.of(indexed, offset, offset + BUILDER_CHILDREN_PER_NODE);
-                    remaining -= BUILDER_CHILDREN_PER_NODE;
-                    offset += BUILDER_CHILDREN_PER_NODE;
+                    node = BtreeBranchNode.of(indexed, offset, offset + BtreeNode.MIN_CHILDREN);
+                    remaining -= BtreeNode.MIN_CHILDREN;
+                    offset += BtreeNode.MIN_CHILDREN;
                 }
                 nodes.set(branchCount, node);
                 branchCount += 1;
@@ -323,9 +322,11 @@ public class JImmutableBtreeList<T>
         } else if (rightDepth == 1) {
             return left.insertAll(left.size(), right.iterator());
         } else if (leftDepth < rightDepth) {
-            return create(rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot));
+            final BtreeInsertResult<T> insertResult = rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot);
+            return create(insertResult);
         } else {
-            return create(leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot));
+            final BtreeInsertResult<T> insertResult = leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot);
+            return create(insertResult);
         }
     }
 
@@ -431,7 +432,7 @@ public class JImmutableBtreeList<T>
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants();
+        root.checkInvariants(true);
     }
 
     @Override

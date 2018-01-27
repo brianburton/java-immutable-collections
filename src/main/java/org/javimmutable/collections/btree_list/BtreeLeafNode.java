@@ -144,9 +144,12 @@ class BtreeLeafNode<T>
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(boolean isRoot)
     {
         if (values.length > MAX_CHILDREN) {
+            throw new IllegalStateException();
+        }
+        if (values.length < MIN_CHILDREN && !isRoot) {
             throw new IllegalStateException();
         }
     }

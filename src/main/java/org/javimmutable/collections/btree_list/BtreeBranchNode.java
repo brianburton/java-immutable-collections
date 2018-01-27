@@ -45,6 +45,7 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 class BtreeBranchNode<T>
     implements BtreeNode<T>,
@@ -104,6 +105,13 @@ class BtreeBranchNode<T>
     {
         assert children.length <= MAX_CHILDREN;
         return new BtreeBranchNode<>(children.clone());
+    }
+
+    @Nonnull
+    static <T> BtreeBranchNode<T> forTesting(List<BtreeNode<T>> childrenList)
+    {
+        BtreeNode<T>[] children = allocateNodes(childrenList.size());
+        return new BtreeBranchNode<>(childrenList.toArray(children));
     }
 
     @SuppressWarnings("unchecked")
@@ -168,9 +176,21 @@ class BtreeBranchNode<T>
         if (addWhenZero == 0) {
             final int totalChildren = childCount() + node.childCount();
             if (totalChildren <= BtreeNode.MAX_CHILDREN) {
-                return BtreeInsertResult.createInPlace(mergeChildren(node));
+                final BtreeNode<T> newNode;
+                if (atEnd) {
+                    newNode = mergeChildren(node);
+                } else {
+                    newNode = node.mergeChildren(this);
+                }
+                return BtreeInsertResult.createInPlace(newNode);
             } else {
-                return BtreeInsertResult.createSplit(this, node);
+                final Tuple2<BtreeNode<T>, BtreeNode<T>> newNodes;
+                if (atEnd) {
+                    newNodes = distributeChildren(node);
+                } else {
+                    newNodes = node.distributeChildren(this);
+                }
+                return BtreeInsertResult.createSplit(newNodes);
             }
         } else {
             final int childIndex = atEnd ? children.length - 1 : 0;
@@ -247,8 +267,10 @@ class BtreeBranchNode<T>
         final BtreeBranchNode<T> branch = (BtreeBranchNode<T>)sibling;
         assert (branch.children.length + children.length) >= MAX_CHILDREN;
         assert (branch.children.length + children.length) <= (2 * MAX_CHILDREN);
-        return Tuple2.of(new BtreeBranchNode<>(ArrayHelper.subArray(this, children, branch.children, 0, MIN_CHILDREN)),
-                         new BtreeBranchNode<>(ArrayHelper.subArray(this, children, branch.children, MIN_CHILDREN, children.length + branch.children.length)));
+        final int totalLength = children.length + branch.children.length;
+        final int breakIndex = totalLength / 2;
+        return Tuple2.of(new BtreeBranchNode<>(ArrayHelper.subArray(this, children, branch.children, 0, breakIndex)),
+                         new BtreeBranchNode<>(ArrayHelper.subArray(this, children, branch.children, breakIndex, totalLength)));
     }
 
     @Nonnull
@@ -266,9 +288,12 @@ class BtreeBranchNode<T>
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(boolean isRoot)
     {
         if (children.length > MAX_CHILDREN) {
+            throw new IllegalStateException();
+        }
+        if (children.length < MIN_CHILDREN && !isRoot) {
             throw new IllegalStateException();
         }
         if (valueCount != countValues(children)) {
@@ -279,7 +304,7 @@ class BtreeBranchNode<T>
             if (child.depth() != depth) {
                 throw new IllegalStateException();
             }
-            child.checkInvariants();
+            child.checkInvariants(false);
         }
     }
 

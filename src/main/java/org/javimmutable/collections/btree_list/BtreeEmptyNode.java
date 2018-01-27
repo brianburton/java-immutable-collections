@@ -146,7 +146,7 @@ class BtreeEmptyNode<T>
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(boolean atRoot)
     {
     }
 

@@ -43,6 +43,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableListTests;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
@@ -64,10 +65,10 @@ import static java.util.stream.Collectors.toList;
 public class JImmutableBtreeListTest
     extends TestCase
 {
-//    public void testStandard()
-//    {
-//        StandardJImmutableListTests.standardTests(JImmutableBtreeList.of());
-//    }
+    public void testStandard()
+    {
+        StandardJImmutableListTests.standardTests(JImmutableBtreeList.of());
+    }
 
     public void test()
     {
@@ -1288,6 +1289,17 @@ public class JImmutableBtreeListTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+    }
+
+    public void testStaticBuilderMethod()
+    {
+        List<Integer> source = new ArrayList<>();
+        for (int i = 0; i <= 11842; ++i) {
+            source.add(i);
+            JImmutableBtreeList<Integer> list = JImmutableBtreeList.of(IndexedList.retained(source));
+            assertEquals(source, list.getList());
+            list.checkInvariants();
+        }
     }
 
     public void testSerialization()
