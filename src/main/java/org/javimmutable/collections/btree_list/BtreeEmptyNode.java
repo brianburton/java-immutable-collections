@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class BtreeEmptyNode<T>
-        implements BtreeNode<T>
+    implements BtreeNode<T>
 {
     private static final BtreeEmptyNode EMPTY = new BtreeEmptyNode();
 
@@ -100,6 +100,15 @@ class BtreeEmptyNode<T>
     public BtreeInsertResult<T> append(T value)
     {
         return BtreeInsertResult.createInPlace(new BtreeLeafNode<>(value));
+    }
+
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> insertNode(int addWhenZero,
+                                           boolean atEnd,
+                                           @Nonnull BtreeNode<T> node)
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Nonnull

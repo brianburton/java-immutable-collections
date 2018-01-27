@@ -58,13 +58,13 @@ class BtreeInsertResult<T>
 
     static <T> BtreeInsertResult<T> createInPlace(BtreeNode<T> newNode)
     {
-        return new BtreeInsertResult<T>(Type.INPLACE, newNode, null);
+        return new BtreeInsertResult<>(Type.INPLACE, newNode, null);
     }
 
     static <T> BtreeInsertResult<T> createSplit(BtreeNode<T> newNode,
                                                 BtreeNode<T> extraNode)
     {
-        return new BtreeInsertResult<T>(Type.SPLIT, newNode, extraNode);
+        return new BtreeInsertResult<>(Type.SPLIT, newNode, extraNode);
     }
 
     @Override

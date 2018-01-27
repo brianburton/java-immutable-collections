@@ -148,23 +148,8 @@ class BtreeBranchNode<T>
                                          T value)
     {
         final Location<T> loc = findIndexForInsertAppend(index);
-        final BtreeInsertResult<T> result = loc.child.insertAt(loc.logicalIndex, value);
-        final BtreeNode<T>[] children = this.children;
-        if (result.type == BtreeInsertResult.Type.INPLACE) {
-            final BtreeNode<T>[] newChildren = ArrayHelper.assign(children, loc.childIndex, result.newNode);
-            return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + 1));
-        } else {
-            assert result.type == BtreeInsertResult.Type.SPLIT;
-            final BtreeNode<T>[] newChildren = ArrayHelper.assignInsert(this, children, loc.childIndex, result.newNode, result.extraNode);
-            final int newLength = newChildren.length;
-            if (newLength <= MAX_CHILDREN) {
-                return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + 1));
-            } else {
-                final int breakPoint = (index < valueCount) ? MIN_CHILDREN : newLength - MIN_CHILDREN;
-                return BtreeInsertResult.createSplit(new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, 0, breakPoint)),
-                                                     new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, breakPoint, newLength)));
-            }
-        }
+        final BtreeInsertResult<T> childResult = loc.child.insertAt(loc.logicalIndex, value);
+        return resultForInsert(index < valueCount, loc.childIndex, 1, childResult);
     }
 
     @Nonnull
@@ -172,6 +157,26 @@ class BtreeBranchNode<T>
     public BtreeInsertResult<T> append(T value)
     {
         return insertAt(valueCount, value);
+    }
+
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> insertNode(int addWhenZero,
+                                           boolean atEnd,
+                                           @Nonnull BtreeNode<T> node)
+    {
+        if (addWhenZero == 0) {
+            final int totalChildren = childCount() + node.childCount();
+            if (totalChildren <= BtreeNode.MAX_CHILDREN) {
+                return BtreeInsertResult.createInPlace(mergeChildren(node));
+            } else {
+                return BtreeInsertResult.createSplit(this, node);
+            }
+        } else {
+            final int childIndex = atEnd ? children.length - 1 : 0;
+            final BtreeInsertResult<T> childResult = children[childIndex].insertNode(addWhenZero - 1, atEnd, node);
+            return resultForInsert(!atEnd, childIndex, node.valueCount(), childResult);
+        }
     }
 
     @Override
@@ -304,6 +309,30 @@ class BtreeBranchNode<T>
     public BtreeNode<T>[] allocate(int size)
     {
         return (BtreeNode<T>[])new BtreeNode[size];
+    }
+
+    @Nonnull
+    private BtreeInsertResult<T> resultForInsert(boolean breakLeft,
+                                                 int childIndex,
+                                                 int sizeDelta,
+                                                 BtreeInsertResult<T> result)
+    {
+        final BtreeNode<T>[] children = this.children;
+        if (result.type == BtreeInsertResult.Type.INPLACE) {
+            final BtreeNode<T>[] newChildren = ArrayHelper.assign(children, childIndex, result.newNode);
+            return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + sizeDelta));
+        } else {
+            assert result.type == BtreeInsertResult.Type.SPLIT;
+            final BtreeNode<T>[] newChildren = ArrayHelper.assignInsert(this, children, childIndex, result.newNode, result.extraNode);
+            final int newLength = newChildren.length;
+            if (newLength <= MAX_CHILDREN) {
+                return BtreeInsertResult.createInPlace(new BtreeBranchNode<>(newChildren, valueCount + sizeDelta));
+            } else {
+                final int breakPoint = breakLeft ? MIN_CHILDREN : newLength - MIN_CHILDREN;
+                return BtreeInsertResult.createSplit(new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, 0, breakPoint)),
+                                                     new BtreeBranchNode<>(ArrayHelper.subArray(this, newChildren, breakPoint, newLength)));
+            }
+        }
     }
 
     private Location<T> findIndexForGetAssign(int index)

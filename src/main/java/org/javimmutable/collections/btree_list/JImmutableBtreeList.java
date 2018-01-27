@@ -139,7 +139,7 @@ public class JImmutableBtreeList<T>
         this.root = root;
     }
 
-    private JImmutableBtreeList<T> create(BtreeInsertResult<T> insertResult)
+    private static <T> JImmutableBtreeList<T> create(BtreeInsertResult<T> insertResult)
     {
         if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
             return new JImmutableBtreeList<>(insertResult.newNode);
@@ -272,18 +272,23 @@ public class JImmutableBtreeList<T>
         return new JImmutableBtreeList<>(newRoot);
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
-        return insertAll(0, values);
+        if (values instanceof JImmutableBtreeList) {
+            return combine((JImmutableBtreeList<T>)values, this);
+        } else {
+            return insertAll(0, values.iterator());
+        }
     }
 
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(0, values);
+        return insertAll(0, values.iterator());
 
     }
 
@@ -294,13 +299,35 @@ public class JImmutableBtreeList<T>
         return insertAll(0, values);
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        return insertAll(size(), values);
+        if (values instanceof JImmutableBtreeList) {
+            return combine(this, (JImmutableBtreeList<T>)values);
+        } else {
+            return insertAll(size(), values.iterator());
+        }
     }
 
+    private static <T> JImmutableBtreeList<T> combine(JImmutableBtreeList<T> left,
+                                                      JImmutableBtreeList<T> right)
+    {
+        final BtreeNode<T> leftRoot = left.root;
+        final BtreeNode<T> rightRoot = right.root;
+        final int leftDepth = leftRoot.depth();
+        final int rightDepth = rightRoot.depth();
+        if (leftDepth == 1) {
+            return right.insertAll(0, left.iterator());
+        } else if (rightDepth == 1) {
+            return left.insertAll(left.size(), right.iterator());
+        } else if (leftDepth < rightDepth) {
+            return create(rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot));
+        } else {
+            return create(leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot));
+        }
+    }
 
     @Nonnull
     @Override

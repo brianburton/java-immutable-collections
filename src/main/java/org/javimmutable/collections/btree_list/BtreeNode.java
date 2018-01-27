@@ -74,6 +74,11 @@ interface BtreeNode<T>
     BtreeInsertResult<T> append(T value);
 
     @Nonnull
+    BtreeInsertResult<T> insertNode(int addWhenZero,
+                                    boolean atEnd,
+                                    @Nonnull BtreeNode<T> node);
+    
+    @Nonnull
     BtreeNode<T> delete(int index);
 
     @Nonnull

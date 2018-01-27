@@ -64,6 +64,11 @@ import static java.util.stream.Collectors.toList;
 public class JImmutableBtreeListTest
     extends TestCase
 {
+//    public void testStandard()
+//    {
+//        StandardJImmutableListTests.standardTests(JImmutableBtreeList.of());
+//    }
+
     public void test()
     {
         JImmutableBtreeList<Integer> list = JImmutableBtreeList.of();
@@ -542,10 +547,12 @@ public class JImmutableBtreeListTest
         JImmutableBtreeList<Integer> checkCollection = list.insertAllFirst(Collections.emptyList());
         JImmutableBtreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
         JImmutableBtreeList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
+        JImmutableBtreeList<Integer> checkBtree = list.insertAllFirst(btree());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
+        assertEquals(expected, checkBtree);
 
         //values into empty
         expected = list.insert(4).insert(5);
@@ -553,10 +560,12 @@ public class JImmutableBtreeListTest
         checkCollection = list.insertAllFirst(Arrays.asList(4, 5));
         checkCursor = list.insertAllFirst(getCursor(Arrays.asList(4, 5)));
         checkIterator = list.insertAllFirst(Arrays.asList(4, 5).iterator());
+        checkBtree = list.insertAllFirst(btree(4, 5));
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
+        assertEquals(expected, checkBtree);
 
         //empty into values
         list = list.insert(4).insert(5);
@@ -565,10 +574,12 @@ public class JImmutableBtreeListTest
         checkCollection = list.insertAllFirst(Collections.emptyList());
         checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
         checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
+        checkBtree = list.insertAllFirst(btree());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
+        assertEquals(expected, checkBtree);
 
         //values into values
         expected = JImmutableBtreeList.of();
@@ -577,10 +588,18 @@ public class JImmutableBtreeListTest
         checkCollection = list.insertAllFirst(Arrays.asList(0, 1, 2, 3));
         checkCursor = list.insertAllFirst(getCursor(Arrays.asList(0, 1, 2, 3)));
         checkIterator = list.insertAllFirst(Arrays.asList(0, 1, 2, 3).iterator());
+        checkBtree = list.insertAllFirst(btree(0, 1, 2, 3));
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
         assertEquals(expected, checkIterator);
+        assertEquals(expected, checkBtree);
+    }
+
+    @SafeVarargs
+    private final <T> JImmutableBtreeList<T> btree(T... values)
+    {
+        return JImmutableBtreeList.of(IndexedArray.retained(values));
     }
 
     public void testInsertAllLast()
@@ -1242,7 +1261,9 @@ public class JImmutableBtreeListTest
     public void testParallelStreams()
     {
         final JImmutableRandomAccessList<Integer> original = JImmutableBtreeList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
-        assertEquals(original, original.stream().parallel().collect(JImmutableBtreeList.of().ralistCollector()));
+        final JImmutableRandomAccessList<Object> collected = original.stream().parallel().collect(JImmutableBtreeList.of().ralistCollector());
+        collected.checkInvariants();
+        assertEquals(original, collected);
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
     }
 

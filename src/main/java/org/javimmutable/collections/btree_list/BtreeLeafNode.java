@@ -128,6 +128,15 @@ class BtreeLeafNode<T>
         return insertAt(values.length, value);
     }
 
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> insertNode(int addWhenZero,
+                                           boolean atEnd,
+                                           @Nonnull BtreeNode<T> node)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public boolean containsIndex(int index)
     {
