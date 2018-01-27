@@ -433,13 +433,13 @@ public class JImmutableBtreeList<T>
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
-        private final List<T> values = new ArrayList<>();
+        private final BtreeNodeBuilder<T> nodeBuilder = new BtreeNodeBuilder<>();
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            values.add(value);
+            nodeBuilder.add(value);
             return this;
         }
 
@@ -447,7 +447,7 @@ public class JImmutableBtreeList<T>
         @Override
         public JImmutableBtreeList<T> build()
         {
-            return of(IndexedList.retained(values));
+            return new JImmutableBtreeList<>(nodeBuilder.build());
         }
 
         @Nonnull
