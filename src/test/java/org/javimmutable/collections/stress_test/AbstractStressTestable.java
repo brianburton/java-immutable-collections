@@ -130,6 +130,16 @@ public abstract class AbstractStressTestable
         }
     }
 
+    protected <T> Iterable<T> listIterable(JImmutableList<T> template,
+                                           Iterable<T> values)
+    {
+        JImmutableList<T> answer = template.deleteAll();
+        for (T value : values) {
+            answer = answer.insert(value);
+        }
+        return answer;
+    }
+
     protected <T> Iterable<T> plainIterable(Iterable<T> values)
     {
         return () -> values.iterator();
