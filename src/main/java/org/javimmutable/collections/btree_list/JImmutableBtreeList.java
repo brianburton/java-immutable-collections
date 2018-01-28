@@ -310,31 +310,11 @@ public class JImmutableBtreeList<T>
         }
     }
 
-    private static <T> JImmutableBtreeList<T> combine(JImmutableBtreeList<T> left,
-                                                      JImmutableBtreeList<T> right)
-    {
-        final BtreeNode<T> leftRoot = left.root;
-        final BtreeNode<T> rightRoot = right.root;
-        final int leftDepth = leftRoot.depth();
-        final int rightDepth = rightRoot.depth();
-        if (leftDepth == 1) {
-            return right.insertAll(0, left.iterator());
-        } else if (rightDepth == 1) {
-            return left.insertAll(left.size(), right.iterator());
-        } else if (leftDepth < rightDepth) {
-            final BtreeInsertResult<T> insertResult = rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot);
-            return create(insertResult);
-        } else {
-            final BtreeInsertResult<T> insertResult = leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot);
-            return create(insertResult);
-        }
-    }
-
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(size(), values);
+        return insertAll(size(), values.iterator());
     }
 
     @Nonnull
@@ -343,7 +323,6 @@ public class JImmutableBtreeList<T>
     {
         return insertAll(size(), values);
     }
-
 
     @Nonnull
     @Override
@@ -389,11 +368,7 @@ public class JImmutableBtreeList<T>
     @Override
     public JImmutableBtreeList<T> insert(@Nonnull Iterable<? extends T> values)
     {
-        JImmutableBtreeList<T> answer = this;
-        for (T value : values) {
-            answer = answer.insertLast(value);
-        }
-        return answer;
+        return insertAllLast(values);
     }
 
     @Override
@@ -456,6 +431,26 @@ public class JImmutableBtreeList<T>
     private Object writeReplace()
     {
         return new JImmutableRandomAccessListProxy(this);
+    }
+
+    private static <T> JImmutableBtreeList<T> combine(JImmutableBtreeList<T> left,
+                                                      JImmutableBtreeList<T> right)
+    {
+        final BtreeNode<T> leftRoot = left.root;
+        final BtreeNode<T> rightRoot = right.root;
+        final int leftDepth = leftRoot.depth();
+        final int rightDepth = rightRoot.depth();
+        if (leftDepth == 1) {
+            return right.insertAll(0, left.iterator());
+        } else if (rightDepth == 1) {
+            return left.insertAll(left.size(), right.iterator());
+        } else if (leftDepth < rightDepth) {
+            final BtreeInsertResult<T> insertResult = rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot);
+            return create(insertResult);
+        } else {
+            final BtreeInsertResult<T> insertResult = leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot);
+            return create(insertResult);
+        }
     }
 
     public static class Builder<T>
