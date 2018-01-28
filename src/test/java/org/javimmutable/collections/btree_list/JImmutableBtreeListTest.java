@@ -597,10 +597,30 @@ public class JImmutableBtreeListTest
         assertEquals(expected, checkBtree);
     }
 
+    public void testAppend()
+    {
+        assertEquals(range(1, 50), range(1, 15).insertAllLast(range(16, 50)));
+        assertEquals(range(1, 50), range(36, 50).insertAllFirst(range(1, 35)));
+
+        assertEquals(range(1, 600), range(1, 500).insertAllLast(range(501, 600)));
+        assertEquals(range(1, 600), range(501, 600).insertAllFirst(range(1, 500)));
+
+        assertEquals(range(1, 600), range(1, 100).insertAllLast(range(101, 600)));
+        assertEquals(range(1, 600), range(101, 600).insertAllFirst(range(1, 100)));
+    }
+
     @SafeVarargs
     private final <T> JImmutableBtreeList<T> btree(T... values)
     {
         return JImmutableBtreeList.of(IndexedArray.retained(values));
+    }
+
+    private JImmutableBtreeList<Integer> range(int first,
+                                               int last)
+    {
+        return JImmutableBtreeList.<Integer>builder()
+            .add(StandardCursor.forRange(first, last))
+            .build();
     }
 
     public void testInsertAllLast()
