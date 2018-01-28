@@ -82,8 +82,15 @@ public abstract class AbstractStressTestable
     protected List<String> makeInsertList(JImmutableList<String> tokens,
                                           Random random)
     {
-        List<String> list = new ArrayList<String>();
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+        return makeInsertList(tokens, random, 3);
+    }
+
+    protected List<String> makeInsertList(JImmutableList<String> tokens,
+                                          Random random,
+                                          int maxToAdd)
+    {
+        List<String> list = new ArrayList<>();
+        for (int i = 0, limit = random.nextInt(maxToAdd); i < limit; ++i) {
             list.add(RandomKeyManager.makeValue(tokens, random));
         }
         return list;

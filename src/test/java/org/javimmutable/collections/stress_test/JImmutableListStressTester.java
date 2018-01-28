@@ -105,7 +105,7 @@ public class JImmutableListStressTester
                         break;
                     }
                     case 4: { //insert(jlist)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insert(listIterable(list, values));
                         expected.addAll(values);
                         break;
@@ -117,7 +117,7 @@ public class JImmutableListStressTester
                         break;
                     }
                     case 6: { //insertAll(jlist)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAll(listIterable(list, values));
                         expected.addAll(values);
                         break;
@@ -135,7 +135,7 @@ public class JImmutableListStressTester
                         break;
                     }
                     case 9: { //insertAllLast(jlist)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAllLast(listIterable(list, values));
                         expected.addAll(values);
                         break;
@@ -153,7 +153,7 @@ public class JImmutableListStressTester
                         break;
                     }
                     case 12: { //insertAllFirst(jlist)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAllFirst(listIterable(list, values));
                         expected.addAll(0, values);
                         break;
