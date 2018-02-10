@@ -199,13 +199,6 @@ class BtreeLeafNode<T>
                          new BtreeLeafNode<>(ArrayHelper.subArray(this, values, leaf.values, MIN_CHILDREN, values.length + leaf.values.length)));
     }
 
-    @Nonnull
-    @Override
-    public BtreeNode<T> firstChild()
-    {
-        return this;
-    }
-
     @Override
     public int depth()
     {

@@ -152,14 +152,7 @@ public class JImmutableBtreeList<T>
         if (newRoot.valueCount() == 0) {
             return of();
         }
-        while (newRoot.childCount() == 1) {
-            BtreeNode<T> child = newRoot.firstChild();
-            if (child == newRoot) {
-                break;
-            }
-            newRoot = child;
-        }
-        return new JImmutableBtreeList<>(newRoot);
+        return new JImmutableBtreeList<>(newRoot.compress());
     }
 
     @Nonnull

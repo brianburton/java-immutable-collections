@@ -86,9 +86,6 @@ interface BtreeNode<T>
     Tuple2<BtreeNode<T>, BtreeNode<T>> distributeChildren(BtreeNode<T> sibling);
 
     @Nonnull
-    BtreeNode<T> firstChild();
-
-    @Nonnull
     default BtreeNode<T> compress()
     {
         return this;

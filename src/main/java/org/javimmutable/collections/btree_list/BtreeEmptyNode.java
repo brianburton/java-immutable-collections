@@ -132,13 +132,6 @@ class BtreeEmptyNode<T>
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
-    @Override
-    public BtreeNode<T> firstChild()
-    {
-        return this;
-    }
-
     @Override
     public boolean containsIndex(int index)
     {

@@ -275,13 +275,6 @@ class BtreeBranchNode<T>
 
     @Nonnull
     @Override
-    public BtreeNode<T> firstChild()
-    {
-        return children[0];
-    }
-
-    @Nonnull
-    @Override
     public BtreeNode<T> compress()
     {
         return children.length == 1 ? children[0].compress() : this;

@@ -167,7 +167,7 @@ class BtreeNodeBuilder<T>
                     return BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count);
                 }
             } else {
-                assert count > 0;
+                assert count >= BtreeNode.MIN_CHILDREN;
                 push(count);
                 return parent.build();
             }
