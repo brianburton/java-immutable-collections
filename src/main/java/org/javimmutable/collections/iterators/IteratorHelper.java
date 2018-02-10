@@ -33,69 +33,53 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
-
-import org.javimmutable.collections.Indexed;
+package org.javimmutable.collections.iterators;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
 
-final class ListHelper
+public class IteratorHelper
 {
-    private static final Object[] EMPTY_VALUES = new Object[0];
-    private static final Node[] EMPTY_NODES = new Node[0];
-
-    @SuppressWarnings("unchecked")
-    static <T> Node<T>[] allocateNodes(int size)
+    public static boolean iteratorEquals(@Nonnull Iterator<?> a,
+                                         @Nonnull Iterator<?> b)
     {
-        return (Node<T>[])((size == 0) ? EMPTY_NODES : new Node[size]);
-    }
-
-    static <T> Node<T>[] allocateNodes(@Nonnull Indexed<Node<T>> source,
-                                       int offset,
-                                       int limit)
-    {
-        assert source.size() >= (limit - offset);
-
-        final int size = limit - offset;
-        final Node<T>[] nodes = allocateNodes(size);
-        for (int i = 0; i < size; ++i) {
-            nodes[i] = source.get(offset + i);
-        }
-        return nodes;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T> T[] allocateValues(int size)
-    {
-        return (T[])((size == 0) ? EMPTY_VALUES : new Object[size]);
-    }
-
-    static <T> Node<T>[] allocateSingleNode(Node<T> node)
-    {
-        Node<T>[] answer = allocateNodes(1);
-        answer[0] = node;
-        return answer;
-    }
-
-    static int sizeForDepth(int depth)
-    {
-        return 1 << (5 * depth);
-    }
-
-    static <T> boolean allNodesFull(int depth,
-                                    @Nonnull Indexed<Node<T>> nodes,
-                                    int offset,
-                                    int limit)
-    {
-        for (int i = offset; i < limit; ++i) {
-            Node<T> node = nodes.get(i);
-            if (node.getDepth() != depth - 1) {
-                return false;
-            }
-            if (!node.isFull()) {
+        while (a.hasNext() && b.hasNext()) {
+            final Object av = a.next();
+            final Object bv = b.next();
+            if ((av != bv) && (av == null || !av.equals(bv))) {
                 return false;
             }
         }
-        return true;
+        return a.hasNext() == b.hasNext();
+    }
+
+    public static int iteratorHashCode(@Nonnull Iterator<?> a)
+    {
+        int hashCode = 0;
+        while (a.hasNext()) {
+            final Object value = a.next();
+            final int valueHashCode = (value == null) ? 0 : value.hashCode();
+            hashCode = 31 * hashCode + valueHashCode;
+        }
+        return hashCode;
+    }
+
+    public static String iteratorToString(Iterator<?> iterator)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        while (iterator.hasNext()) {
+            if (sb.length() > 1) {
+                sb.append(",");
+            }
+            Object value = iterator.next();
+            if (value == null) {
+                sb.append("null");
+            } else {
+                sb.append(value);
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

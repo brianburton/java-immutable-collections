@@ -38,19 +38,13 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
@@ -106,6 +100,20 @@ class BranchNode<T>
              ListHelper.allocateSingleNode(node),
              new LeafNode<>(suffixValue));
         assert node.isFull();
+    }
+
+    static <T> Node<T> forNodeBuilder(int depth,
+                                      int size,
+                                      Node<T> prefix,
+                                      Indexed<Node<T>> sourceNodes,
+                                      int offset,
+                                      int limit,
+                                      Node<T> suffix)
+    {
+        assert limit > offset;
+        assert ListHelper.allNodesFull(depth, sourceNodes, offset, limit);
+        final Node<T>[] nodes = ListHelper.allocateNodes(sourceNodes, offset, limit);
+        return new BranchNode<>(depth, size, prefix, nodes, suffix);
     }
 
     static <T> Node<T> of(Indexed<? extends T> leaves)
@@ -165,11 +173,6 @@ class BranchNode<T>
         }
         assert nodeCount == 1;
         return nodes[0];
-    }
-
-    static <T> Builder<T> builder()
-    {
-        return new Builder<>();
     }
 
     static <T> BranchNode<T> forTesting(Node<T> prefix,
@@ -457,81 +460,5 @@ class BranchNode<T>
             node.checkInvariants();
         }
         suffix.checkInvariants();
-    }
-
-    static class Builder<T>
-        implements MutableBuilder<T, Node<T>>
-    {
-        private final List<T> leaves = new ArrayList<>();
-
-        @Nonnull
-        @Override
-        public Builder<T> add(T value)
-        {
-            leaves.add(value);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Node<T> build()
-        {
-            return of(IndexedList.retained(leaves));
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Cursor<? extends T> source)
-        {
-            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-                leaves.add(cursor.getValue());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterator<? extends T> source)
-        {
-            while (source.hasNext()) {
-                leaves.add(source.next());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterable<? extends T> source)
-        {
-            return add(source.iterator());
-        }
-
-        @SafeVarargs
-        @Nonnull
-        @Override
-        public final <K extends T> Builder<T> add(K... source)
-        {
-            leaves.addAll(Arrays.asList(source));
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source)
-        {
-            return add(source, 0, source.size());
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source,
-                              int offset,
-                              int limit)
-        {
-            for (int i = offset; i < limit; ++i) {
-                leaves.add(source.get(i));
-            }
-            return this;
-        }
     }
 }

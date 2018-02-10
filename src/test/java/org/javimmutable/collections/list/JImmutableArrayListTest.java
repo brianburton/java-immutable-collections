@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -639,7 +640,7 @@ public class JImmutableArrayListTest
     public void testBuilder()
     {
         List<Integer> expected = new ArrayList<>();
-        assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
+        assertSame(JImmutableArrayList.of(), JImmutableArrayList.<Integer>builder().build());
 
         for (int size = 1; size <= 1500; ++size) {
             expected.add(size);
@@ -647,6 +648,8 @@ public class JImmutableArrayListTest
             list.checkInvariants();
             assertEquals(expected, list.getList());
         }
+
+        StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
     }
 
     public void testIndexedConstructor()
