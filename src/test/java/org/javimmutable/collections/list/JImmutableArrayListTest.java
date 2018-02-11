@@ -440,7 +440,7 @@ public class JImmutableArrayListTest
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
 
             for (int loops = 0; loops < (4 * size); ++loops) {
-                switch (random.nextInt(5)) {
+                switch (random.nextInt(7)) {
                     case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
                         List<Integer> values = makeValues(random, size);
                         list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
@@ -490,6 +490,15 @@ public class JImmutableArrayListTest
                             } catch (IndexOutOfBoundsException ignore) {
                                 //expected
                             }
+                        }
+                        break;
+                    }
+                    case 6: { // assign
+                        if (list.size() > 1) {
+                            final int index = random.nextInt(list.size() - 1);
+                            final int value = random.nextInt(size);
+                            list = list.assign(index, value);
+                            expected.set(index, value);
                         }
                         break;
                     }
