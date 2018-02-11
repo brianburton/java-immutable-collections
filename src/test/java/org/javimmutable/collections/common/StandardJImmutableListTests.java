@@ -36,6 +36,7 @@
 package org.javimmutable.collections.common;
 
 import junit.framework.Assert;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 
 public class StandardJImmutableListTests
@@ -44,6 +45,7 @@ public class StandardJImmutableListTests
     {
         verifyInsertAllFirst(empty);
         verifyInsertAllLast(empty);
+        verifyTransform(empty);
     }
 
     public static void verifyInsertAllFirst(JImmutableList<Integer> empty)
@@ -72,6 +74,18 @@ public class StandardJImmutableListTests
             expected = appendAll(expected, first, last);
             Assert.assertEquals(expected, actual);
         }
+    }
+
+    public static void verifyTransform(JImmutableList<Integer> empty)
+    {
+        JImmutableList<Integer> orig = appendAll(empty, 1, 20);
+        JImmutableList<Integer> transformed = orig.transform(i -> i + 10);
+        Assert.assertSame(orig.getClass(), transformed.getClass());
+        Assert.assertEquals(appendAll(empty, 11, 30), transformed);
+
+        transformed = orig.transformSome(i -> i < 11 ? Holders.of(i) : Holders.of());
+        Assert.assertSame(orig.getClass(), transformed.getClass());
+        Assert.assertEquals(appendAll(empty, 1, 10), transformed);
     }
 
     private static JImmutableList<Integer> appendAll(JImmutableList<Integer> answer,

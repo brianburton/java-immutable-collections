@@ -36,6 +36,8 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
@@ -368,6 +370,29 @@ public class JImmutableBtreeList<T>
     public boolean isEmpty()
     {
         return root.valueCount() == 0;
+    }
+
+    @Override
+    public <A> JImmutableRandomAccessList<A> transform(@Nonnull Func1<T, A> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            builder.add(transform.apply(t));
+        }
+        return builder.build();
+    }
+
+    @Override
+    public <A> JImmutableRandomAccessList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            final Holder<A> ha = transform.apply(t);
+            if (ha.isFilled()) {
+                builder.add(ha.getValue());
+            }
+        }
+        return builder.build();
     }
 
     @Nonnull

@@ -40,6 +40,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableListTests;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
@@ -60,6 +61,11 @@ import static java.util.stream.Collectors.toList;
 public class JImmutableArrayListTest
     extends TestCase
 {
+    public void testStandard()
+    {
+        StandardJImmutableListTests.standardTests(JImmutableArrayList.of());
+    }
+
     public void test()
     {
         JImmutableArrayList<Integer> list = JImmutableArrayList.of();

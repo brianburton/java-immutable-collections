@@ -36,6 +36,8 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableList;
@@ -295,6 +297,29 @@ public class JImmutableArrayList<T>
     public SplitableIterator<T> iterator()
     {
         return root.iterator();
+    }
+
+    @Override
+    public <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            builder.add(transform.apply(t));
+        }
+        return builder.build();
+    }
+
+    @Override
+    public <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            final Holder<A> ha = transform.apply(t);
+            if (ha.isFilled()) {
+                builder.add(ha.getValue());
+            }
+        }
+        return builder.build();
     }
 
     @Override

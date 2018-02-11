@@ -269,4 +269,22 @@ public interface JImmutableList<T>
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add each transformed
+     * value to a new collection of this type.
+     *
+     * @param transform transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform);
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to a new collection of this type.
+     *
+     * @param transform transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
 }
