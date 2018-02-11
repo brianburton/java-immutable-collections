@@ -36,7 +36,6 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -150,12 +149,11 @@ public class BranchNode<K, V>
     @Override
     public UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
                                      @Nonnull K key,
-                                     @Nonnull Func0<V> creator,
-                                     @Nonnull Func1<V, V> updater)
+                                     @Nonnull Func1<Holder<V>, V> generator)
     {
         final Node<K, V>[] children = this.children;
         final int index = findChildIndex(comparator, key, children, 0);
-        final UpdateResult<K, V> childResult = children[index].update(comparator, key, creator, updater);
+        final UpdateResult<K, V> childResult = children[index].update(comparator, key, generator);
         return resultForAssign(children, index, childResult);
     }
 

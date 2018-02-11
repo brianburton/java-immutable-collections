@@ -36,7 +36,6 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -59,8 +58,7 @@ public interface ListNode<K, V>
                                   MutableDelta sizeDelta);
 
     ListNode<K, V> setValueForKey(K key,
-                                  Func0<V> creator,
-                                  Func1<V, V> updater,
+                                  Func1<Holder<V>, V> generator,
                                   MutableDelta sizeDelta);
 
     ListNode<K, V> deleteValueForKey(K key,

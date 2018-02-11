@@ -109,7 +109,7 @@ public class JImmutableHashMapTest
                             ManualHashKey key = createManualHashKey(maxKey, random);
                             Integer value = random.nextInt(1000000);
                             int merged = value;
-                            map = map.update(key, () -> value, old -> old ^ value);
+                            map = map.update(key, h -> h.isEmpty() ? value : h.getValue() ^ value);
                             if (expected.get(key) != null) {
                                 merged = expected.get(key) ^ value;
                             }
@@ -153,9 +153,9 @@ public class JImmutableHashMapTest
                             Integer value = random.nextInt(1000000);
                             Integer currentValue = map.get(key);
                             if (currentValue == null) {
-                                map = map.update(key, value, x -> -x);
+                                map = map.update(key, h -> h.isEmpty() ? value : -h.getValue());
                             } else {
-                                map = map.update(key, -value, x -> value);
+                                map = map.update(key, h -> h.isEmpty() ? -value : value);
                             }
                             expected.put(key, value);
                             break;

@@ -201,41 +201,19 @@ public interface JImmutableMap<K, V>
     }
 
     /**
-     * Update the value at the key.  If the key is not currently bound the specified value is stored at the key.
-     * If the key is bound the current value is passed to the specified function and the result
-     * of the function is stored in the map at the key.
+     * Update the value at the key.  A Holder containing the value currently stored at the key,
+     * or an empty Holder if the key is not currently bound, is passed to the generator function.
      *
-     * @param key     non-null key
-     * @param value   value to store if key is not currently bound
-     * @param updater function to call with current value to create value if key is already bound
+     * @param key       non-null key
+     * @param generator function to call with current value to create value if key is already bound
      * @return new map with changes applied
      */
     @Nonnull
     default JImmutableMap<K, V> update(@Nonnull K key,
-                                       V value,
-                                       @Nonnull Func1<V, V> updater)
-    {
-        return update(key, () -> value, updater);
-    }
-
-    /**
-     * Update the value at the key.  If the key is not currently bound the specified creator function
-     * is called and the result of the function is stored at the key.
-     * If the key is bound the current value is passed to the specified updater function and the result
-     * of the function is stored in the map at the key.
-     *
-     * @param key     non-null key
-     * @param creator function to call to create value to store if key is not currently bound
-     * @param updater function to call with current value to create new value if key is already bound
-     * @return new map with changes applied
-     */
-    @Nonnull
-    default JImmutableMap<K, V> update(@Nonnull K key,
-                                       @Nonnull Func0<V> creator,
-                                       @Nonnull Func1<V, V> updater)
+                                       @Nonnull Func1<Holder<V>, V> generator)
     {
         final Holder<V> current = find(key);
-        final V newValue = current.isEmpty() ? creator.apply() : updater.apply(current.getValue());
+        final V newValue = generator.apply(current);
         return assign(key, newValue);
     }
 }

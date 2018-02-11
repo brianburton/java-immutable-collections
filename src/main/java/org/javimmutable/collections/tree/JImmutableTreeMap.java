@@ -36,7 +36,6 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.SplitableIterator;
@@ -143,11 +142,10 @@ public class JImmutableTreeMap<K, V>
     @Nonnull
     @Override
     public JImmutableTreeMap<K, V> update(@Nonnull K key,
-                                          @Nonnull Func0<V> creator,
-                                          @Nonnull Func1<V, V> updater)
+                                          @Nonnull Func1<Holder<V>, V> generator)
     {
         Conditions.stopNull(key);
-        final UpdateResult<K, V> result = root.update(comparator, key, creator, updater);
+        final UpdateResult<K, V> result = root.update(comparator, key, generator);
         return resultForAssign(result);
     }
 

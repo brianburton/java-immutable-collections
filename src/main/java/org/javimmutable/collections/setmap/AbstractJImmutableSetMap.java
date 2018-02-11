@@ -45,7 +45,6 @@ import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.iterators.EntryIterableStreamable;
 
 import javax.annotation.Nonnull;
@@ -58,10 +57,13 @@ import java.util.Set;
 public abstract class AbstractJImmutableSetMap<K, V>
     implements JImmutableSetMap<K, V>
 {
+    protected final JImmutableSet<V> emptySet;
     protected final JImmutableMap<K, JImmutableSet<V>> contents;
 
-    protected AbstractJImmutableSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
+    protected AbstractJImmutableSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
+                                       JImmutableSet<V> emptySet)
     {
+        this.emptySet = emptySet;
         this.contents = contents;
     }
 
@@ -70,7 +72,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSet<V> getSet(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        return contents.getValueOr(key, emptySet());
+        return contents.getValueOr(key, emptySet);
     }
 
     @Nonnull
@@ -87,7 +89,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> insert(@Nonnull K key,
                                          @Nonnull V value)
     {
-        return create(contents.update(key, () -> emptySet().insert(value), set -> set.insert(value)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).insert(value)));
     }
 
     @Nonnull
@@ -111,7 +113,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
                                             @Nonnull Iterator<? extends V> values)
     {
-        return create(contents.update(key, () -> emptySet().insertAll(values), set -> set.insertAll(values)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).insertAll(values)));
     }
 
     @Nonnull
@@ -240,7 +242,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> union(@Nonnull K key,
                                         @Nonnull Iterator<? extends V> other)
     {
-        return create(contents.update(key, () -> emptySet().union(other), set -> set.union(other)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).union(other)));
     }
 
 
@@ -265,7 +267,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                                @Nonnull Iterator<? extends V> other)
     {
-        return create(contents.update(key, () -> emptySet(), set -> set.intersection(other)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
     }
 
     @Nonnull
@@ -273,7 +275,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                                @Nonnull JImmutableSet<? extends V> other)
     {
-        return create(contents.update(key, () -> emptySet(), set -> set.intersection(other)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
     }
 
     @Nonnull
@@ -281,7 +283,7 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                                @Nonnull Set<? extends V> other)
     {
-        return create(contents.update(key, () -> emptySet(), set -> set.intersection(other)));
+        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
     }
 
     @Override
@@ -416,13 +418,4 @@ public abstract class AbstractJImmutableSetMap<K, V>
      * Implemented by derived classes to create a new instance of the appropriate class.
      */
     protected abstract JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map);
-
-    /**
-     * Overridable by derived classes to create a new empty set.
-     */
-    @Nonnull
-    protected JImmutableSet<V> emptySet()
-    {
-        return JImmutableHashSet.of();
-    }
 }

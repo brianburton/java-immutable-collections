@@ -148,7 +148,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
-                        map = map.update(key, () -> key.getValue(), current -> current + "," + key.getValue());
+                        map = map.update(key, h -> h.isEmpty() ? key.getValue() : h.getValue() + "," + key.getValue());
                         expected.put(key, key.getValue());
                         break;
                     }
@@ -194,7 +194,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        map = map.update(key, () -> value, current -> current + "," + value);
+                        map = map.update(key, h -> h.isEmpty() ? value : h.getValue() + "," + value);
                         expected.put(key, expected.get(key) + "," + value);
                         break;
                     }

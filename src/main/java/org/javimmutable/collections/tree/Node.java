@@ -36,7 +36,6 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -87,8 +86,7 @@ public interface Node<K, V>
     @Nonnull
     UpdateResult<K, V> update(@Nonnull Comparator<K> comparator,
                               @Nonnull K key,
-                              @Nonnull Func0<V> creator,
-                              @Nonnull Func1<V, V> updater);
+                              @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
     Node<K, V> delete(@Nonnull Comparator<K> comparator,

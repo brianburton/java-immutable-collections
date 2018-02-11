@@ -39,6 +39,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.serialization.JImmutableHashListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
@@ -53,12 +54,13 @@ public class JImmutableHashListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of());
+    private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of(), JImmutableArrayList.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableHashListMap(JImmutableMap<K, JImmutableList<V>> contents)
+    private JImmutableHashListMap(JImmutableMap<K, JImmutableList<V>> contents,
+                                  JImmutableList<V> emptyList)
     {
-        super(contents);
+        super(contents, emptyList);
     }
 
     @SuppressWarnings("unchecked")
@@ -71,13 +73,12 @@ public class JImmutableHashListMap<K, V>
     public void checkInvariants()
     {
         checkListMapInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableHashListMap<>(map);
+        return new JImmutableHashListMap<>(map, emptyList);
     }
 
     private Object writeReplace()

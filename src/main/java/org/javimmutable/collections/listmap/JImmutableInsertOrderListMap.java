@@ -39,6 +39,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
@@ -54,12 +55,13 @@ public class JImmutableInsertOrderListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of());
+    private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of(), JImmutableArrayList.of());
     private static final long serialVersionUID = -121805;
-    
-    private JImmutableInsertOrderListMap(JImmutableMap<K, JImmutableList<V>> contents)
+
+    private JImmutableInsertOrderListMap(JImmutableMap<K, JImmutableList<V>> contents,
+                                         JImmutableList<V> emptyList)
     {
-        super(contents);
+        super(contents, emptyList);
     }
 
     @SuppressWarnings("unchecked")
@@ -72,13 +74,12 @@ public class JImmutableInsertOrderListMap<K, V>
     public void checkInvariants()
     {
         checkListMapInvariants();
-        //TODO: fix generalized checkInvariants()
     }
 
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableInsertOrderListMap<>(map);
+        return new JImmutableInsertOrderListMap<>(map, emptyList);
     }
 
     private Object writeReplace()

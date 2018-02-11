@@ -38,6 +38,7 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetMapProxy;
 
@@ -54,12 +55,13 @@ public class JImmutableInsertOrderSetMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderSetMap EMPTY = new JImmutableInsertOrderSetMap(JImmutableInsertOrderMap.of());
+    private static final JImmutableInsertOrderSetMap EMPTY = new JImmutableInsertOrderSetMap(JImmutableInsertOrderMap.of(), JImmutableHashSet.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableInsertOrderSetMap(JImmutableMap<K, JImmutableSet<V>> contents)
+    private JImmutableInsertOrderSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
+                                        JImmutableSet<V> emptySet)
     {
-        super(contents);
+        super(contents, emptySet);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,7 +79,7 @@ public class JImmutableInsertOrderSetMap<K, V>
     @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
-        return new JImmutableInsertOrderSetMap<K, V>(map);
+        return new JImmutableInsertOrderSetMap<K, V>(map, emptySet);
     }
 
     private Object writeReplace()

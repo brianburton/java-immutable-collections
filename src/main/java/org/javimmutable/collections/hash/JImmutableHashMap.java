@@ -36,7 +36,6 @@
 package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -189,11 +188,10 @@ public class JImmutableHashMap<T, K, V>
     @Nonnull
     @Override
     public JImmutableMap<K, V> update(@Nonnull K key,
-                                      @Nonnull Func0<V> creator,
-                                      @Nonnull Func1<V, V> updater)
+                                      @Nonnull Func1<Holder<V>, V> generator)
     {
         MutableDelta sizeDelta = new MutableDelta();
-        HamtNode<T, K, V> newRoot = root.update(collisionMap, key.hashCode(), key, creator, updater, sizeDelta);
+        HamtNode<T, K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator, sizeDelta);
         if (newRoot == root) {
             return this;
         } else {

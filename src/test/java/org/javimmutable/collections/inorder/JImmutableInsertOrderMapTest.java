@@ -137,7 +137,7 @@ public class JImmutableInsertOrderMapTest
                         int key = r.nextInt(500);
                         int value = r.nextInt(500);
                         int merged = value;
-                        map = map.update(key, () -> value, old -> old ^ value);
+                        map = map.update(key, h -> h.isEmpty() ? value : h.getValue() ^ value);
                         if (expected.get(key) != null) {
                             merged = expected.get(key) ^ value;
                         }

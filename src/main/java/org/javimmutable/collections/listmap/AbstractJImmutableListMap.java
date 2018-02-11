@@ -45,7 +45,6 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EntryIterableStreamable;
-import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,10 +54,13 @@ import javax.annotation.concurrent.Immutable;
 public abstract class AbstractJImmutableListMap<K, V>
     implements JImmutableListMap<K, V>
 {
+    protected final JImmutableList<V> emptyList;
     protected final JImmutableMap<K, JImmutableList<V>> contents;
 
-    protected AbstractJImmutableListMap(JImmutableMap<K, JImmutableList<V>> contents)
+    protected AbstractJImmutableListMap(JImmutableMap<K, JImmutableList<V>> contents,
+                                        JImmutableList<V> emptyList)
     {
+        this.emptyList = emptyList;
         this.contents = contents;
     }
 
@@ -68,7 +70,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     {
         Conditions.stopNull(key);
         Holder<JImmutableList<V>> current = contents.find(key);
-        return current.isFilled() ? current.getValue() : emptyList();
+        return current.isFilled() ? current.getValue() : emptyList;
     }
 
     @Nonnull
@@ -85,7 +87,7 @@ public abstract class AbstractJImmutableListMap<K, V>
     public JImmutableListMap<K, V> insert(@Nonnull K key,
                                           @Nullable V value)
     {
-        return create(contents.update(key, () -> emptyList().insertLast(value), list -> list.insertLast(value)));
+        return create(contents.update(key, h -> h.getValueOr(emptyList).insertLast(value)));
     }
 
     @Nonnull
@@ -242,14 +244,5 @@ public abstract class AbstractJImmutableListMap<K, V>
     protected JImmutableList<V> copyList(JImmutableList<V> original)
     {
         return original;
-    }
-
-    /**
-     * Overridable by derived classes to create a new empty list
-     */
-    @Nonnull
-    protected JImmutableList<V> emptyList()
-    {
-        return JImmutableArrayList.of();
     }
 }

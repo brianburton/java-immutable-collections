@@ -38,6 +38,7 @@ package org.javimmutable.collections.setmap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.serialization.JImmutableTreeSetMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -55,20 +56,22 @@ public class JImmutableTreeSetMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked"})
-    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.of());
+    private static final JImmutableTreeSetMap EMPTY = new JImmutableTreeSetMap(JImmutableTreeMap.of(), JImmutableHashSet.of());
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
 
-    private JImmutableTreeSetMap(JImmutableTreeMap<K, JImmutableSet<V>> contents)
+    private JImmutableTreeSetMap(JImmutableTreeMap<K, JImmutableSet<V>> contents,
+                                 JImmutableSet<V> emptySet)
     {
-        this(contents, contents.getComparator());
+        this(contents, contents.getComparator(), emptySet);
     }
 
     private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
-                                 Comparator<K> comparator)
+                                 Comparator<K> comparator,
+                                 JImmutableSet<V> emptySet)
     {
-        super(contents);
+        super(contents, emptySet);
         this.comparator = comparator;
     }
 
@@ -89,7 +92,7 @@ public class JImmutableTreeSetMap<K, V>
      */
     public static <K, V> JImmutableTreeSetMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeSetMap<>(JImmutableTreeMap.of(comparator));
+        return new JImmutableTreeSetMap<>(JImmutableTreeMap.of(comparator), JImmutableHashSet.of());
     }
 
     public Comparator<K> getComparator()
@@ -106,14 +109,14 @@ public class JImmutableTreeSetMap<K, V>
     @Override
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
-        return new JImmutableTreeSetMap<>(map, comparator);
+        return new JImmutableTreeSetMap<>(map, comparator, emptySet);
     }
 
     JImmutableMap<K, JImmutableSet<V>> getMap()
     {
         return contents;
     }
-    
+
     private Object writeReplace()
     {
         return new JImmutableTreeSetMapProxy(this);

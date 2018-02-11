@@ -36,7 +36,6 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -71,15 +70,14 @@ public class ListCollisionMap<K, V>
     @Override
     public ListNode<K, V> update(@Nullable ListNode<K, V> leaf,
                                  @Nonnull K key,
-                                 @Nonnull Func0<V> creator,
-                                 @Nonnull Func1<V, V> updater,
+                                 @Nonnull Func1<Holder<V>, V> generator,
                                  @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return SingleValueListNode.of(key, creator.apply());
+            return SingleValueListNode.of(key, generator.apply(Holders.of()));
         } else {
-            return leaf.setValueForKey(key, creator, updater, delta);
+            return leaf.setValueForKey(key, generator, delta);
         }
     }
 

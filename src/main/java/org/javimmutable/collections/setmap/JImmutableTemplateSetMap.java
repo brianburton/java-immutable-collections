@@ -54,15 +54,13 @@ public class JImmutableTemplateSetMap<K, V>
     private static final long serialVersionUID = -121805;
 
     private final JImmutableMap<K, JImmutableSet<V>> emptyMap;
-    private final JImmutableSet<V> emptySet;
 
     private JImmutableTemplateSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
                                      JImmutableMap<K, JImmutableSet<V>> emptyMap,
                                      JImmutableSet<V> emptySet)
     {
-        super(contents);
+        super(contents, emptySet);
         this.emptyMap = emptyMap;
-        this.emptySet = emptySet;
     }
 
     private JImmutableTemplateSetMap(JImmutableMap<K, JImmutableSet<V>> emptyMap,
@@ -100,13 +98,6 @@ public class JImmutableTemplateSetMap<K, V>
     protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
     {
         return new JImmutableTemplateSetMap<>(map, emptyMap, emptySet);
-    }
-
-    @Nonnull
-    @Override
-    protected JImmutableSet<V> emptySet()
-    {
-        return emptySet;
     }
 
     private Object writeReplace()

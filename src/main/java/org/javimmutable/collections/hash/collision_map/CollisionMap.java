@@ -36,7 +36,6 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -72,8 +71,7 @@ public interface CollisionMap<T, K, V>
     @Nonnull
     T update(@Nullable T leaf,
              @Nonnull K key,
-             @Nonnull Func0<V> creator,
-             @Nonnull Func1<V, V> updater,
+             @Nonnull Func1<Holder<V>, V> generator,
              @Nonnull MutableDelta delta);
 
     /**

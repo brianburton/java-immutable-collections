@@ -38,6 +38,7 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.serialization.JImmutableTreeListMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -55,20 +56,22 @@ public class JImmutableTreeListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked"})
-    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of());
+    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of(), JImmutableArrayList.of());
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
 
-    private JImmutableTreeListMap(JImmutableTreeMap<K, JImmutableList<V>> contents)
+    private JImmutableTreeListMap(JImmutableTreeMap<K, JImmutableList<V>> contents,
+                                  JImmutableList<V> emptyList)
     {
-        this(contents, contents.getComparator());
+        this(contents, contents.getComparator(), emptyList);
     }
 
     private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents,
-                                  Comparator<K> comparator)
+                                  Comparator<K> comparator,
+                                  JImmutableList<V> emptyList)
     {
-        super(contents);
+        super(contents, emptyList);
         this.comparator = comparator;
     }
 
@@ -89,7 +92,7 @@ public class JImmutableTreeListMap<K, V>
      */
     public static <K, V> JImmutableTreeListMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator));
+        return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator), JImmutableArrayList.of());
     }
 
     public Comparator<K> getComparator()
@@ -106,14 +109,14 @@ public class JImmutableTreeListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableTreeListMap<>(map, comparator);
+        return new JImmutableTreeListMap<>(map, comparator, emptyList);
     }
 
     JImmutableMap<K, JImmutableList<V>> getMap()
     {
         return contents;
     }
-    
+
     private Object writeReplace()
     {
         return new JImmutableTreeListMapProxy(this);

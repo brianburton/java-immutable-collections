@@ -36,9 +36,9 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
@@ -83,15 +83,14 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
     @Override
     public Node<K, V> update(@Nullable Node<K, V> leaf,
                              @Nonnull K key,
-                             @Nonnull Func0<V> creator,
-                             @Nonnull Func1<V, V> updater,
+                             @Nonnull Func1<Holder<V>, V> generator,
                              @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return new LeafNode<>(key, creator.apply());
+            return new LeafNode<>(key, generator.apply(Holders.of()));
         } else {
-            return resultForUpdate(leaf, delta, leaf.update(comparator, key, creator, updater));
+            return resultForUpdate(leaf, delta, leaf.update(comparator, key, generator));
         }
     }
 

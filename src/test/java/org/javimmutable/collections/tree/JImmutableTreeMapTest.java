@@ -371,7 +371,7 @@ public class JImmutableTreeMapTest
                                                        Integer merged)
     {
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
-        treeMap = treeMap.update(key, () -> value, old -> old ^ value);
+        treeMap = treeMap.update(key, h -> h.isEmpty() ? value : h.getValue() ^ value);
         treeMap.checkInvariants();
         assertEquals(true, treeMap.find(key).isFilled());
         assertEquals(merged, treeMap.find(key).getValue());

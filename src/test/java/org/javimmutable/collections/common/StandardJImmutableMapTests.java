@@ -36,6 +36,7 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 
@@ -54,22 +55,20 @@ public class StandardJImmutableMapTests
 {
     public static void verifyMiscellaneous(@Nonnull JImmutableMap<Integer, Integer> map)
     {
-        final Func1<Integer, Integer> updater = x -> 10 * x + 1;
-
         JImmutableMap<Integer, Integer> x = map.deleteAll();
 
-        x = x.update(1, 3, updater);
+        x = x.update(1, generator(3));
         assertEquals(Integer.valueOf(3), x.get(1));
-        assertSame(x, x.update(1, 8, v -> v));
+        assertSame(x, x.update(1, h -> h.getValueOr(8)));
 
-        x = x.update(1, 4, updater);
+        x = x.update(1, generator(4));
         assertEquals(Integer.valueOf(31), x.get(1));
 
-        x = x.update(2, () -> 7, updater);
+        x = x.update(2, generator(7));
         assertEquals(Integer.valueOf(7), x.get(2));
-        assertSame(x, x.update(2, 8, v -> v));
+        assertSame(x, x.update(2, h -> h.getValueOr(8)));
 
-        x = x.update(2, 4, updater);
+        x = x.update(2, generator(4));
         assertEquals(Integer.valueOf(71), x.get(2));
     }
 
@@ -117,6 +116,11 @@ public class StandardJImmutableMapTests
         verifyUnorderedUsingCollection(expectedMap.keySet(), proxy.keySet());
         verifyUnorderedUsingCollection(expectedMap.values(), proxy.values());
         testCollector(map.assignAll(expectedMap), map);
+    }
+
+    private static Func1<Holder<Integer>, Integer> generator(int newValue)
+    {
+        return h -> h.isEmpty() ? newValue : h.getValue() * 10 + 1;
     }
 
     private static <K, V> void testCollector(JImmutableMap<K, V> values,
