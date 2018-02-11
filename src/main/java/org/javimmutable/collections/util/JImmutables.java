@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -205,7 +205,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(@Nonnull JImmutableSet<? extends T> source)
     {
-        return list(source.cursor());
+        return list(source.iterator());
     }
 
     /**

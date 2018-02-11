@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -82,8 +82,15 @@ public abstract class AbstractStressTestable
     protected List<String> makeInsertList(JImmutableList<String> tokens,
                                           Random random)
     {
-        List<String> list = new ArrayList<String>();
-        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+        return makeInsertList(tokens, random, 3);
+    }
+
+    protected List<String> makeInsertList(JImmutableList<String> tokens,
+                                          Random random,
+                                          int maxToAdd)
+    {
+        List<String> list = new ArrayList<>();
+        for (int i = 0, limit = random.nextInt(maxToAdd); i < limit; ++i) {
             list.add(RandomKeyManager.makeValue(tokens, random));
         }
         return list;
@@ -128,6 +135,16 @@ public abstract class AbstractStressTestable
         if ((expected - actual) > 5) {
             throw new RuntimeException(String.format("final size is %d but expected approx %d%n", actual, expected));
         }
+    }
+
+    protected <T> Iterable<T> listIterable(JImmutableList<T> template,
+                                           Iterable<T> values)
+    {
+        JImmutableList<T> answer = template.deleteAll();
+        for (T value : values) {
+            answer = answer.insert(value);
+        }
+        return answer;
     }
 
     protected <T> Iterable<T> plainIterable(Iterable<T> values)

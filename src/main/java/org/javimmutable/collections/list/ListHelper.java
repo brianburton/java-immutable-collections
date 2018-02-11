@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,10 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+
 final class ListHelper
 {
     private static final Object[] EMPTY_VALUES = new Object[0];
@@ -44,6 +48,20 @@ final class ListHelper
     static <T> Node<T>[] allocateNodes(int size)
     {
         return (Node<T>[])((size == 0) ? EMPTY_NODES : new Node[size]);
+    }
+
+    static <T> Node<T>[] allocateNodes(@Nonnull Indexed<Node<T>> source,
+                                       int offset,
+                                       int limit)
+    {
+        assert source.size() >= (limit - offset);
+
+        final int size = limit - offset;
+        final Node<T>[] nodes = allocateNodes(size);
+        for (int i = 0; i < size; ++i) {
+            nodes[i] = source.get(offset + i);
+        }
+        return nodes;
     }
 
     @SuppressWarnings("unchecked")
@@ -62,5 +80,22 @@ final class ListHelper
     static int sizeForDepth(int depth)
     {
         return 1 << (5 * depth);
+    }
+
+    static <T> boolean allNodesFull(int depth,
+                                    @Nonnull Indexed<Node<T>> nodes,
+                                    int offset,
+                                    int limit)
+    {
+        for (int i = offset; i < limit; ++i) {
+            Node<T> node = nodes.get(i);
+            if (node.getDepth() != depth - 1) {
+                return false;
+            }
+            if (!node.isFull()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

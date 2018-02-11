@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
@@ -63,7 +65,6 @@ public class JImmutableBtreeList<T>
                Serializable
 {
     private static final JImmutableBtreeList<Object> EMPTY = new JImmutableBtreeList<>(BtreeEmptyNode.of());
-    private static final int BUILDER_CHILDREN_PER_NODE = Math.max(BtreeNode.MIN_CHILDREN, BtreeNode.MAX_CHILDREN - 2);
     private static final long serialVersionUID = -121805;
 
     private final BtreeNode<T> root;
@@ -101,9 +102,9 @@ public class JImmutableBtreeList<T>
                 remaining = 0;
                 offset = nodeCount;
             } else {
-                node = BtreeLeafNode.of(values, offset, offset + BUILDER_CHILDREN_PER_NODE);
-                remaining -= BUILDER_CHILDREN_PER_NODE;
-                offset += BUILDER_CHILDREN_PER_NODE;
+                node = BtreeLeafNode.of(values, offset, offset + BtreeNode.MIN_CHILDREN);
+                remaining -= BtreeNode.MIN_CHILDREN;
+                offset += BtreeNode.MIN_CHILDREN;
             }
             nodes.add(node);
         }
@@ -121,9 +122,9 @@ public class JImmutableBtreeList<T>
                     remaining = 0;
                     offset = nodeCount;
                 } else {
-                    node = BtreeBranchNode.of(indexed, offset, offset + BUILDER_CHILDREN_PER_NODE);
-                    remaining -= BUILDER_CHILDREN_PER_NODE;
-                    offset += BUILDER_CHILDREN_PER_NODE;
+                    node = BtreeBranchNode.of(indexed, offset, offset + BtreeNode.MIN_CHILDREN);
+                    remaining -= BtreeNode.MIN_CHILDREN;
+                    offset += BtreeNode.MIN_CHILDREN;
                 }
                 nodes.set(branchCount, node);
                 branchCount += 1;
@@ -139,7 +140,7 @@ public class JImmutableBtreeList<T>
         this.root = root;
     }
 
-    private JImmutableBtreeList<T> create(BtreeInsertResult<T> insertResult)
+    private static <T> JImmutableBtreeList<T> create(BtreeInsertResult<T> insertResult)
     {
         if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
             return new JImmutableBtreeList<>(insertResult.newNode);
@@ -153,14 +154,7 @@ public class JImmutableBtreeList<T>
         if (newRoot.valueCount() == 0) {
             return of();
         }
-        while (newRoot.childCount() == 1) {
-            BtreeNode<T> child = newRoot.firstChild();
-            if (child == newRoot) {
-                break;
-            }
-            newRoot = child;
-        }
-        return new JImmutableBtreeList<>(newRoot);
+        return new JImmutableBtreeList<>(newRoot.compress());
     }
 
     @Nonnull
@@ -272,18 +266,23 @@ public class JImmutableBtreeList<T>
         return new JImmutableBtreeList<>(newRoot);
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
-        return insertAll(0, values);
+        if (values instanceof JImmutableBtreeList) {
+            return combine((JImmutableBtreeList<T>)values, this);
+        } else {
+            return insertAll(0, values.iterator());
+        }
     }
 
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(0, values);
+        return insertAll(0, values.iterator());
 
     }
 
@@ -294,19 +293,23 @@ public class JImmutableBtreeList<T>
         return insertAll(0, values);
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        return insertAll(size(), values);
+        if (values instanceof JImmutableBtreeList) {
+            return combine(this, (JImmutableBtreeList<T>)values);
+        } else {
+            return insertAll(size(), values.iterator());
+        }
     }
-
 
     @Nonnull
     @Override
     public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(size(), values);
+        return insertAll(size(), values.iterator());
     }
 
     @Nonnull
@@ -315,7 +318,6 @@ public class JImmutableBtreeList<T>
     {
         return insertAll(size(), values);
     }
-
 
     @Nonnull
     @Override
@@ -361,17 +363,36 @@ public class JImmutableBtreeList<T>
     @Override
     public JImmutableBtreeList<T> insert(@Nonnull Iterable<? extends T> values)
     {
-        JImmutableBtreeList<T> answer = this;
-        for (T value : values) {
-            answer = answer.insertLast(value);
-        }
-        return answer;
+        return insertAllLast(values);
     }
 
     @Override
     public boolean isEmpty()
     {
         return root.valueCount() == 0;
+    }
+
+    @Override
+    public <A> JImmutableRandomAccessList<A> transform(@Nonnull Func1<T, A> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            builder.add(transform.apply(t));
+        }
+        return builder.build();
+    }
+
+    @Override
+    public <A> JImmutableRandomAccessList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            final Holder<A> ha = transform.apply(t);
+            if (ha.isFilled()) {
+                builder.add(ha.getValue());
+            }
+        }
+        return builder.build();
     }
 
     @Nonnull
@@ -404,7 +425,7 @@ public class JImmutableBtreeList<T>
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants();
+        root.checkInvariants(true);
     }
 
     @Override
@@ -430,16 +451,36 @@ public class JImmutableBtreeList<T>
         return new JImmutableRandomAccessListProxy(this);
     }
 
+    private static <T> JImmutableBtreeList<T> combine(JImmutableBtreeList<T> left,
+                                                      JImmutableBtreeList<T> right)
+    {
+        final BtreeNode<T> leftRoot = left.root;
+        final BtreeNode<T> rightRoot = right.root;
+        final int leftDepth = leftRoot.depth();
+        final int rightDepth = rightRoot.depth();
+        if (leftDepth == 1) {
+            return right.insertAll(0, left.iterator());
+        } else if (rightDepth == 1) {
+            return left.insertAll(left.size(), right.iterator());
+        } else if (leftDepth < rightDepth) {
+            final BtreeInsertResult<T> insertResult = rightRoot.insertNode(rightDepth - leftDepth, false, leftRoot);
+            return create(insertResult);
+        } else {
+            final BtreeInsertResult<T> insertResult = leftRoot.insertNode(leftDepth - rightDepth, true, rightRoot);
+            return create(insertResult);
+        }
+    }
+
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
-        private final List<T> values = new ArrayList<>();
+        private final BtreeNodeBuilder<T> nodeBuilder = new BtreeNodeBuilder<>();
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            values.add(value);
+            nodeBuilder.add(value);
             return this;
         }
 
@@ -447,7 +488,7 @@ public class JImmutableBtreeList<T>
         @Override
         public JImmutableBtreeList<T> build()
         {
-            return of(IndexedList.retained(values));
+            return new JImmutableBtreeList<>(nodeBuilder.build());
         }
 
         @Nonnull

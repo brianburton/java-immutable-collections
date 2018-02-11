@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,15 +36,13 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Tuple2;
 
 import javax.annotation.Nonnull;
 
 interface BtreeNode<T>
-    extends InvariantCheckable,
-            Cursorable<T>,
+    extends Cursorable<T>,
             SplitableIterable<T>
 {
     int MIN_CHILDREN = 9;
@@ -74,6 +72,11 @@ interface BtreeNode<T>
     BtreeInsertResult<T> append(T value);
 
     @Nonnull
+    BtreeInsertResult<T> insertNode(int addWhenZero,
+                                    boolean atEnd,
+                                    @Nonnull BtreeNode<T> node);
+    
+    @Nonnull
     BtreeNode<T> delete(int index);
 
     @Nonnull
@@ -81,9 +84,6 @@ interface BtreeNode<T>
 
     @Nonnull
     Tuple2<BtreeNode<T>, BtreeNode<T>> distributeChildren(BtreeNode<T> sibling);
-
-    @Nonnull
-    BtreeNode<T> firstChild();
 
     @Nonnull
     default BtreeNode<T> compress()
@@ -94,4 +94,6 @@ interface BtreeNode<T>
     boolean containsIndex(int index);
 
     int depth();
+
+    void checkInvariants(boolean isRoot);
 }

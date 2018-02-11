@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,7 @@ import org.javimmutable.collections.Func3;
 import org.javimmutable.collections.Func4;
 import org.javimmutable.collections.JImmutableList;
 
-import static org.javimmutable.collections.util.ReflectionFunctions.method;
-import static org.javimmutable.collections.util.ReflectionFunctions.staticMethod;
+import static org.javimmutable.collections.util.ReflectionFunctions.*;
 
 public class ReflectionFunctionsTest
         extends TestCase

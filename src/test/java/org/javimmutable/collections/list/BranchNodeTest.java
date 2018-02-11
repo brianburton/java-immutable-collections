@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,15 +36,11 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.indexed.IndexedArray;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class BranchNodeTest
     extends TestCase
@@ -424,42 +420,6 @@ public class BranchNodeTest
         assertSame(EmptyNode.of(), node);
         assertEquals(1, node.getDepth());
         assertEquals(0, node.size());
-    }
-
-    public void testBuilder()
-    {
-        List<Integer> expected = new ArrayList<Integer>();
-        assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
-
-        BranchNode.Builder<Integer> b = BranchNode.builder();
-        b.add(1);
-        b.add(2, 3);
-        b.add(Arrays.asList(4, 5));
-        b.add(StandardCursor.forRange(6, 7));
-        b.add(IndexedArray.retained(new Integer[]{8, 9}));
-        Node<Integer> n = b.build();
-        for (int i = 1; i <= 9; ++i) {
-            assertEquals((Integer)i, n.get(i - 1));
-        }
-
-        for (int size = 1; size <= 33000; ++size) {
-            expected.add(size);
-            Node<Integer> node = BranchNode.<Integer>builder().add(expected).build();
-            node.checkInvariants();
-            for (int i = 0; i < expected.size(); ++i) {
-                assertEquals(expected.get(i), node.get(i));
-            }
-        }
-
-        Random r = new Random(10L);
-        for (int loop = 1; loop <= 100; ++loop) {
-            expected = values(1, 32768 + r.nextInt(1500000));
-            Node<Integer> node = BranchNode.<Integer>builder().add(expected).build();
-            node.checkInvariants();
-            for (int i = 0; i < expected.size(); ++i) {
-                assertEquals(expected.get(i), node.get(i));
-            }
-        }
     }
 
     static Node<Integer>[] nodesArray(int length,

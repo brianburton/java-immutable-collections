@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
+import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.cursors.IterableCursorable;
 import org.javimmutable.collections.cursors.StandardCursor;
@@ -60,6 +61,11 @@ import static java.util.stream.Collectors.toList;
 public class JImmutableArrayListTest
     extends TestCase
 {
+    public void testStandard()
+    {
+        StandardJImmutableListTests.standardTests(JImmutableArrayList.of());
+    }
+
     public void test()
     {
         JImmutableArrayList<Integer> list = JImmutableArrayList.of();
@@ -115,11 +121,6 @@ public class JImmutableArrayListTest
         assertEquals(true, list.isEmpty());
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
-    }
-
-    public void testStandard()
-    {
-        StandardJImmutableListTests.verifyList(JImmutableArrayList.of());
     }
 
     public void testInsertIterable()
@@ -443,7 +444,7 @@ public class JImmutableArrayListTest
             JImmutableArrayList<Integer> list = JImmutableArrayList.of();
 
             for (int loops = 0; loops < (4 * size); ++loops) {
-                switch (random.nextInt(5)) {
+                switch (random.nextInt(7)) {
                     case 0: { //insertAllFirst(Cursorable), insertAllFirst(Cursor)
                         List<Integer> values = makeValues(random, size);
                         list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(getCursor(values));
@@ -493,6 +494,15 @@ public class JImmutableArrayListTest
                             } catch (IndexOutOfBoundsException ignore) {
                                 //expected
                             }
+                        }
+                        break;
+                    }
+                    case 6: { // assign
+                        if (list.size() > 1) {
+                            final int index = random.nextInt(list.size() - 1);
+                            final int value = random.nextInt(size);
+                            list = list.assign(index, value);
+                            expected.set(index, value);
                         }
                         break;
                     }
@@ -643,7 +653,7 @@ public class JImmutableArrayListTest
     public void testBuilder()
     {
         List<Integer> expected = new ArrayList<>();
-        assertSame(EmptyNode.of(), BranchNode.<Integer>builder().build());
+        assertSame(JImmutableArrayList.of(), JImmutableArrayList.<Integer>builder().build());
 
         for (int size = 1; size <= 1500; ++size) {
             expected.add(size);
@@ -651,6 +661,8 @@ public class JImmutableArrayListTest
             list.checkInvariants();
             assertEquals(expected, list.getList());
         }
+
+        StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
     }
 
     public void testIndexedConstructor()

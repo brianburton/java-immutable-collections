@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -264,19 +264,6 @@ public interface JImmutableRandomAccessList<T>
     JImmutableRandomAccessList<T> deleteAll();
 
     /**
-     * Apply the transform function to all elements in iterator order and add each transformed
-     * value to build a new collection the same type as this.
-     *
-     * @param transform transformation applied to each element
-     * @return the new collection after all elements have been processed
-     */
-    @SuppressWarnings("unchecked")
-    default <A> JImmutableRandomAccessList<A> transform(@Nonnull Func1<T, A> transform)
-    {
-        return transform((JImmutableRandomAccessList)deleteAll(), transform);
-    }
-    
-    /**
      * Returns a list of the same type as this containing only those elements for which
      * predicate returns true.  Implementations are optimized assuming predicate will
      * return false more often than true.
@@ -331,4 +318,24 @@ public interface JImmutableRandomAccessList<T>
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
+
+    /**
+     * Apply the transform function to all elements in iterator order and add each transformed
+     * value to a new collection of this type.
+     *
+     * @param transform transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    @Override
+    <A> JImmutableRandomAccessList<A> transform(@Nonnull Func1<T, A> transform);
+
+    /**
+     * Apply the transform function to all elements in iterator order and add the contents of
+     * non-empty Holders to a new collection of this type.
+     *
+     * @param transform transformation applied to each element
+     * @return the collection after all elements have been processed
+     */
+    @Override
+    <A> JImmutableRandomAccessList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
 }

@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,11 +38,16 @@ package org.javimmutable.collections.btree_list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.javimmutable.collections.btree_list.BtreeBranchNode.forTesting;
+import static org.javimmutable.collections.btree_list.BtreeNode.*;
+import static org.javimmutable.collections.cursors.StandardCursor.*;
+
 public class BtreeBranchNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testAppend()
     {
@@ -60,8 +65,8 @@ public class BtreeBranchNodeTest
             node = result.newNode;
             assertEquals(Integer.valueOf(nextValue), node.get(node.valueCount() - 1));
         }
-        assertEquals(BtreeNode.MAX_CHILDREN, node.childCount());
-        assertEquals(((BtreeNode.MAX_CHILDREN - 1) * (BtreeNode.MIN_CHILDREN + 1)) + BtreeNode.MAX_CHILDREN, node.valueCount());
+        assertEquals(MAX_CHILDREN, node.childCount());
+        assertEquals(((MAX_CHILDREN - 1) * (MIN_CHILDREN + 1)) + MAX_CHILDREN, node.valueCount());
         StandardCursorTest.listCursorTest(expected, node.cursor());
     }
 
@@ -81,15 +86,15 @@ public class BtreeBranchNodeTest
             node = result.newNode;
             assertEquals(Integer.valueOf(nextValue), node.get(0));
         }
-        assertEquals(BtreeNode.MAX_CHILDREN, node.childCount());
-        assertEquals(((BtreeNode.MAX_CHILDREN - 1) * (BtreeNode.MIN_CHILDREN + 1)) + BtreeNode.MAX_CHILDREN, node.valueCount());
+        assertEquals(MAX_CHILDREN, node.childCount());
+        assertEquals(((MAX_CHILDREN - 1) * (MIN_CHILDREN + 1)) + MAX_CHILDREN, node.valueCount());
         StandardCursorTest.listCursorTest(expected, node.cursor());
     }
 
     public void testDeleteAt()
     {
         final BtreeNode<Integer> fullNode = filledNode();
-        final List<Integer> fullExpected = createExpected(fullNode.valueCount());
+        final List<Integer> fullExpected = list(fullNode.valueCount());
         verifyNodeContents(fullExpected, fullNode);
 
         for (int i = 0; i < fullNode.valueCount(); ++i) {
@@ -107,7 +112,7 @@ public class BtreeBranchNodeTest
     public void testAssign()
     {
         BtreeNode<Integer> node = filledNode();
-        List<Integer> expected = createExpected(node.valueCount());
+        List<Integer> expected = list(node.valueCount());
         while (node.valueCount() > 0) {
             verifyNodeContents(expected, node);
             for (int i = 0; i < expected.size(); ++i) {
@@ -121,21 +126,125 @@ public class BtreeBranchNodeTest
         }
     }
 
+    public void testInsertNode()
+    {
+        BtreeNode<Integer> left = node(1, MIN_CHILDREN);
+        BtreeNode<Integer> right = node(MIN_CHILDREN + 1, MAX_CHILDREN);
+        verifyInplaceResult(1, MAX_CHILDREN, left.insertNode(0, true, right));
+        verifyInplaceResult(1, MAX_CHILDREN, right.insertNode(0, false, left));
+
+        left = node(1, MAX_CHILDREN);
+        right = node(MAX_CHILDREN + 1, 2 * MAX_CHILDREN);
+        verifySplitResult(1, MAX_CHILDREN + 1, 2 * MAX_CHILDREN, left.insertNode(0, true, right));
+        verifySplitResult(1, MAX_CHILDREN + 1, 2 * MAX_CHILDREN, right.insertNode(0, false, left));
+
+        left = node(1, MAX_CHILDREN);
+        right = node(MAX_CHILDREN + 1, MAX_CHILDREN + 2);
+        verifySplitResult(1, MIN_CHILDREN + 2, MAX_CHILDREN + 2, left.insertNode(0, true, right));
+        verifySplitResult(1, MIN_CHILDREN + 2, MAX_CHILDREN + 2, right.insertNode(0, false, left));
+    }
+
+    public void testInsertNodeAtChild()
+    {
+        BtreeNode<Integer> left = node(1, MIN_CHILDREN);
+        BtreeNode<Integer> right = node(MIN_CHILDREN + 1, MAX_CHILDREN);
+        BtreeNode<Integer> leftParent = leftParent(-3, 0, left);
+        BtreeNode<Integer> rightParent = rightParent(right, MAX_CHILDREN + 1, MAX_CHILDREN + 4);
+        verifyInplaceResult(-3, MAX_CHILDREN, leftParent.insertNode(1, true, right));
+        verifyInplaceResult(1, MAX_CHILDREN + 4, rightParent.insertNode(1, false, left));
+
+        left = node(1, MAX_CHILDREN);
+        right = node(MAX_CHILDREN + 1, 2 * MAX_CHILDREN);
+        leftParent = leftParent(-MAX_CHILDREN + 2, 0, left);
+        rightParent = rightParent(right, 2 * MAX_CHILDREN + 1, 3 * MAX_CHILDREN - 1);
+        verifySplitResult(-MAX_CHILDREN + 2, MAX_CHILDREN + 1, 2 * MAX_CHILDREN, leftParent.insertNode(0, true, right));
+        verifySplitResult(1, MAX_CHILDREN + 1, 3 * MAX_CHILDREN - 1, rightParent.insertNode(0, false, left));
+    }
+
+    private void verifySplitResult(int first,
+                                   int middle,
+                                   int last,
+                                   BtreeInsertResult<Integer> result)
+    {
+        verifySplitResult(list(first, middle - 1),
+                          list(middle, last),
+                          result);
+    }
+
+    private void verifySplitResult(List<Integer> expected1,
+                                   List<Integer> expected2,
+                                   BtreeInsertResult<Integer> result)
+    {
+        assertEquals(BtreeInsertResult.Type.SPLIT, result.type);
+        verifyNodeContents(expected1, result.newNode);
+        verifyNodeContents(expected2, result.extraNode);
+    }
+
+    private void verifyInplaceResult(int first,
+                                     int last,
+                                     BtreeInsertResult<Integer> result)
+    {
+        verifyInplaceResult(makeList(forRange(first, last)), result);
+    }
+
+    private void verifyInplaceResult(List<Integer> expected,
+                                     BtreeInsertResult<Integer> result)
+    {
+        assertEquals(BtreeInsertResult.Type.INPLACE, result.type);
+        verifyNodeContents(expected, result.newNode);
+        assertNull(result.extraNode);
+    }
+
     private void verifyNodeContents(List<Integer> expected,
                                     BtreeNode<Integer> node)
     {
-        for (int i = 0; i < expected.size(); ++i) {
-            assertEquals(expected.get(i), node.get(i));
-        }
+        assertEquals(expected, makeList(node.iterator()));
     }
 
-    private List<Integer> createExpected(int length)
+    private List<Integer> list(int length)
     {
-        List<Integer> answer = new ArrayList<Integer>(length);
-        for (int i = 0; i < length; ++i) {
-            answer.add(i);
+        return list(0, length - 1);
+    }
+
+    private List<Integer> list(int first,
+                               int last)
+    {
+        return makeList(forRange(first, last));
+    }
+
+    private BtreeNode<Integer> node(int first,
+                                    int last)
+    {
+        return forTesting(leaves(first, last));
+    }
+
+    private BtreeNode<Integer> leftParent(int first,
+                                          int last,
+                                          BtreeNode<Integer> child)
+    {
+        List<BtreeNode<Integer>> siblings = leaves(first, last);
+        siblings.add(child);
+        return forTesting(siblings);
+    }
+
+    private BtreeNode<Integer> rightParent(BtreeNode<Integer> child,
+                                           int first,
+                                           int last)
+    {
+        List<BtreeNode<Integer>> siblings = leaves(first, last);
+        siblings.add(0, child);
+        return forTesting(siblings);
+    }
+
+    @Nonnull
+    private List<BtreeNode<Integer>> leaves(int first,
+                                            int last)
+    {
+        List<BtreeNode<Integer>> leaves = new ArrayList<>();
+        for (int value = first; value <= last; ++value) {
+            leaves.add(new BtreeLeafNode<>(value));
         }
-        return answer;
+        return leaves;
     }
 
     private BtreeNode<Integer> filledNode()
@@ -155,6 +264,6 @@ public class BtreeBranchNodeTest
     @SuppressWarnings("unchecked")
     private BtreeBranchNode<Integer> emptyNode()
     {
-        return BtreeBranchNode.forTesting(BtreeEmptyNode.<Integer>of());
+        return forTesting(BtreeEmptyNode.<Integer>of());
     }
 }

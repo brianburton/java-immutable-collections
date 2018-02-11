@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.btree_list;
 
+import org.javimmutable.collections.Tuple2;
+
 class BtreeInsertResult<T>
 {
     enum Type
@@ -58,13 +60,18 @@ class BtreeInsertResult<T>
 
     static <T> BtreeInsertResult<T> createInPlace(BtreeNode<T> newNode)
     {
-        return new BtreeInsertResult<T>(Type.INPLACE, newNode, null);
+        return new BtreeInsertResult<>(Type.INPLACE, newNode, null);
     }
 
     static <T> BtreeInsertResult<T> createSplit(BtreeNode<T> newNode,
                                                 BtreeNode<T> extraNode)
     {
-        return new BtreeInsertResult<T>(Type.SPLIT, newNode, extraNode);
+        return new BtreeInsertResult<>(Type.SPLIT, newNode, extraNode);
+    }
+
+    static <T> BtreeInsertResult<T> createSplit(Tuple2<BtreeNode<T>, BtreeNode<T>> nodes)
+    {
+        return createSplit(nodes.getFirst(), nodes.getSecond());
     }
 
     @Override

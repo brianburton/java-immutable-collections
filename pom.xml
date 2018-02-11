@@ -219,6 +219,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
+                        <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
                     </arguments>
                 </configuration>

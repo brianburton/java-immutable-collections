@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -128,6 +128,15 @@ class BtreeLeafNode<T>
         return insertAt(values.length, value);
     }
 
+    @Nonnull
+    @Override
+    public BtreeInsertResult<T> insertNode(int addWhenZero,
+                                           boolean atEnd,
+                                           @Nonnull BtreeNode<T> node)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public boolean containsIndex(int index)
     {
@@ -135,9 +144,12 @@ class BtreeLeafNode<T>
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(boolean isRoot)
     {
         if (values.length > MAX_CHILDREN) {
+            throw new IllegalStateException();
+        }
+        if (values.length < MIN_CHILDREN && !isRoot) {
             throw new IllegalStateException();
         }
     }
@@ -185,13 +197,6 @@ class BtreeLeafNode<T>
         assert (leaf.values.length + values.length) <= (2 * MAX_CHILDREN);
         return Tuple2.of(new BtreeLeafNode<>(ArrayHelper.subArray(this, values, leaf.values, 0, MIN_CHILDREN)),
                          new BtreeLeafNode<>(ArrayHelper.subArray(this, values, leaf.values, MIN_CHILDREN, values.length + leaf.values.length)));
-    }
-
-    @Nonnull
-    @Override
-    public BtreeNode<T> firstChild()
-    {
-        return this;
     }
 
     @Override

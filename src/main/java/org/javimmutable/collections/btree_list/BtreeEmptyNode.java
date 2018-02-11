@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class BtreeEmptyNode<T>
-        implements BtreeNode<T>
+    implements BtreeNode<T>
 {
     private static final BtreeEmptyNode EMPTY = new BtreeEmptyNode();
 
@@ -104,6 +104,15 @@ class BtreeEmptyNode<T>
 
     @Nonnull
     @Override
+    public BtreeInsertResult<T> insertNode(int addWhenZero,
+                                           boolean atEnd,
+                                           @Nonnull BtreeNode<T> node)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
     public BtreeNode<T> delete(int index)
     {
         throw new IndexOutOfBoundsException();
@@ -123,13 +132,6 @@ class BtreeEmptyNode<T>
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
-    @Override
-    public BtreeNode<T> firstChild()
-    {
-        return this;
-    }
-
     @Override
     public boolean containsIndex(int index)
     {
@@ -137,7 +139,7 @@ class BtreeEmptyNode<T>
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(boolean atRoot)
     {
     }
 

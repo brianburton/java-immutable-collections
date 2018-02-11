@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableList;
@@ -44,7 +46,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
-import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.sequence.EmptySequenceNode;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
 
@@ -298,6 +300,29 @@ public class JImmutableArrayList<T>
     }
 
     @Override
+    public <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            builder.add(transform.apply(t));
+        }
+        return builder.build();
+    }
+
+    @Override
+    public <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    {
+        final Builder<A> builder = builder();
+        for (T t : this) {
+            final Holder<A> ha = transform.apply(t);
+            if (ha.isFilled()) {
+                builder.add(ha.getValue());
+            }
+        }
+        return builder.build();
+    }
+
+    @Override
     public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_ORDERED;
@@ -312,19 +337,19 @@ public class JImmutableArrayList<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || ((o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
+        return (o == this) || ((o instanceof JImmutableList) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableList)o).iterator()));
     }
 
     @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(cursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
     public String toString()
     {
-        return Cursors.makeString(cursor());
+        return IteratorHelper.iteratorToString(iterator());
     }
 
     private Object writeReplace()
@@ -335,18 +360,13 @@ public class JImmutableArrayList<T>
     public static class Builder<T>
         implements JImmutableList.Builder<T>
     {
-        private final BranchNode.Builder<T> builder;
-
-        public Builder()
-        {
-            this.builder = BranchNode.builder();
-        }
+        private final TreeBuilder<T> treeBuilder = new TreeBuilder<>(true);
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            builder.add(value);
+            treeBuilder.add(value);
             return this;
         }
 
@@ -354,15 +374,17 @@ public class JImmutableArrayList<T>
         @Override
         public JImmutableArrayList<T> build()
         {
-            final Node<T> node = builder.build();
-            return node.isEmpty() ? JImmutableArrayList.of() : new JImmutableArrayList<>(node);
+            final Node<T> root = treeBuilder.build();
+            return root.isEmpty() ? JImmutableArrayList.of() : new JImmutableArrayList<>(root);
         }
 
         @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)
         {
-            builder.add(source);
+            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
+                treeBuilder.add(cursor.getValue());
+            }
             return this;
         }
 
@@ -370,7 +392,9 @@ public class JImmutableArrayList<T>
         @Override
         public Builder<T> add(Iterator<? extends T> source)
         {
-            builder.add(source);
+            while (source.hasNext()) {
+                treeBuilder.add(source.next());
+            }
             return this;
         }
 
@@ -378,15 +402,16 @@ public class JImmutableArrayList<T>
         @Override
         public Builder<T> add(Iterable<? extends T> source)
         {
-            builder.add(source);
-            return this;
+            return add(source.iterator());
         }
 
         @Nonnull
         @Override
         public <K extends T> Builder<T> add(K... source)
         {
-            builder.add(source);
+            for (K value : source) {
+                treeBuilder.add(value);
+            }
             return this;
         }
 
@@ -394,8 +419,7 @@ public class JImmutableArrayList<T>
         @Override
         public Builder<T> add(Indexed<? extends T> source)
         {
-            builder.add(source);
-            return this;
+            return add(source, 0, source.size());
         }
 
         @Nonnull
@@ -404,7 +428,9 @@ public class JImmutableArrayList<T>
                               int offset,
                               int limit)
         {
-            builder.add(source, offset, limit);
+            for (int i = offset; i < limit; ++i) {
+                treeBuilder.add(source.get(i));
+            }
             return this;
         }
     }

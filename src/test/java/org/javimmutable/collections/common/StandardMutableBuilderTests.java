@@ -3,7 +3,7 @@
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2017, Burton Computer Corporation
+// Copyright (c) 2018, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -54,12 +55,6 @@ public final class StandardMutableBuilderTests
 
     /**
      * Tests all of the standard MutableBuilder add methods using the specified build and comparison functions.
-     *
-     * @param values
-     * @param builderFactory
-     * @param comparator
-     * @param <T>
-     * @param <C>
      */
     public static <T, C> void verifyBuilder(List<T> values,
                                             Func0<? extends MutableBuilder<T, C>> builderFactory,
@@ -95,5 +90,21 @@ public final class StandardMutableBuilderTests
         // add via indexed range
         builderFactory.apply().add(indexed, 0, indexed.size()).build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
+
+        // verify safe to call build() multiple times
+        final MutableBuilder<T, C> multi = builderFactory.apply();
+        final int multiStep = Math.max(1, indexed.size() / 8);
+        final List<T> sublist = new ArrayList<>();
+        int multiOffset = 0;
+        while (multiOffset < indexed.size()) {
+            final int nextOffset = Math.min(indexed.size(), multiOffset + multiStep);
+            for (int i = multiOffset; i < nextOffset; ++i) {
+                multi.add(values.get(i));
+                sublist.add(values.get(i));
+            }
+            assertEquals(Boolean.TRUE, comparator.apply(sublist, multi.build()));
+            multiOffset = nextOffset;
+        }
+        assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
     }
 }
