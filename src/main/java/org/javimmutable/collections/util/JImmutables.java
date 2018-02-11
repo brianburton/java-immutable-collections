@@ -205,7 +205,7 @@ public final class JImmutables
      */
     public static <T> JImmutableList<T> list(@Nonnull JImmutableSet<? extends T> source)
     {
-        return list(source.cursor());
+        return list(source.iterator());
     }
 
     /**
