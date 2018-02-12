@@ -61,12 +61,12 @@ class BtreeNodeBuilder<T>
 
     BtreeNode<T> build()
     {
-        return leafBuilder.snapshot().build();
+        return leafBuilder.build().compress();
     }
 
     private static class BranchBuilder<T>
     {
-        private BtreeNode<T>[] buffer;
+        private final BtreeNode<T>[] buffer;
         private int count;
         private BranchBuilder<T> parent;
 
@@ -87,26 +87,23 @@ class BtreeNodeBuilder<T>
 
         private void add(@Nonnull BtreeNode<T> node)
         {
+            assert count < BtreeNode.MAX_CHILDREN;
+            buffer[count] = node;
+            count += 1;
             if (count == BtreeNode.MAX_CHILDREN) {
                 push(BtreeNode.MIN_CHILDREN);
             }
-            buffer[count] = node;
-            count += 1;
         }
 
-        private BranchBuilder<T> snapshot()
+        private BtreeNode<T> build(@Nonnull BtreeNode<T> extraNode)
         {
-            return new BranchBuilder<>(buffer.clone(), count, (parent == null) ? null : parent.snapshot());
-        }
-
-        private BtreeNode<T> build()
-        {
-            assert count > 1;
+            assert count < BtreeNode.MAX_CHILDREN;
+            buffer[count] = extraNode;
+            final BtreeNode<T> node = BtreeBranchNode.of(IndexedArray.retained(buffer), 0, count + 1);
             if (parent == null) {
-                return BtreeBranchNode.of(IndexedArray.retained(buffer), 0, count);
+                return node;
             } else {
-                push(count);
-                return parent.build();
+                return parent.build(node);
             }
         }
 
@@ -125,7 +122,7 @@ class BtreeNodeBuilder<T>
 
     private static class LeafBuilder<T>
     {
-        private T[] buffer;
+        private final T[] buffer;
         private int count;
         private BranchBuilder<T> parent;
 
@@ -146,16 +143,12 @@ class BtreeNodeBuilder<T>
 
         private void add(@Nonnull T value)
         {
+            assert count < BtreeNode.MAX_CHILDREN;
+            buffer[count] = value;
+            count += 1;
             if (count == BtreeNode.MAX_CHILDREN) {
                 push(BtreeNode.MIN_CHILDREN);
             }
-            buffer[count] = value;
-            count += 1;
-        }
-
-        private LeafBuilder<T> snapshot()
-        {
-            return new LeafBuilder<>(buffer.clone(), count, (parent == null) ? null : parent.snapshot());
         }
 
         private BtreeNode<T> build()
@@ -168,8 +161,7 @@ class BtreeNodeBuilder<T>
                 }
             } else {
                 assert count >= BtreeNode.MIN_CHILDREN;
-                push(count);
-                return parent.build();
+                return parent.build(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count));
             }
         }
 
