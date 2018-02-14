@@ -55,18 +55,18 @@ class TreeBuilder<T>
         this.leafBuilder = leafBuilder;
     }
 
-    void add(T value)
+    synchronized void add(T value)
     {
         leafBuilder.add(value);
     }
 
-    int size()
+    synchronized int size()
     {
         return leafBuilder.size;
     }
 
     @Nonnull
-    Node<T> build()
+    synchronized Node<T> build()
     {
         return leafBuilder.build();
     }

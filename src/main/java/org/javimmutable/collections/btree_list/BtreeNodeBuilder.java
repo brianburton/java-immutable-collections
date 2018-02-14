@@ -47,19 +47,14 @@ import javax.annotation.Nonnull;
  */
 class BtreeNodeBuilder<T>
 {
-    private final LeafBuilder<T> leafBuilder;
+    private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();
 
-    BtreeNodeBuilder()
-    {
-        leafBuilder = new LeafBuilder<>();
-    }
-
-    void add(T value)
+    synchronized void add(T value)
     {
         leafBuilder.add(value);
     }
 
-    BtreeNode<T> build()
+    synchronized BtreeNode<T> build()
     {
         return leafBuilder.build().compress();
     }
