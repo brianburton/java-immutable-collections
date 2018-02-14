@@ -38,9 +38,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.indexed.IndexedArray;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
 
-@NotThreadSafe
 class TreeBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder;
@@ -71,7 +69,6 @@ class TreeBuilder<T>
         return leafBuilder.build();
     }
 
-    @NotThreadSafe
     private static class LeafBuilder<T>
     {
         private final boolean forwardOrder;
@@ -128,7 +125,6 @@ class TreeBuilder<T>
         }
     }
 
-    @NotThreadSafe
     private static class BranchBuilder<T>
     {
         private final int depth;
