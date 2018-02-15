@@ -53,6 +53,7 @@ public interface JImmutableRandomAccessList<T>
     interface Builder<T>
         extends MutableBuilder<T, JImmutableRandomAccessList<T>>
     {
+        int size();
     }
 
     /**

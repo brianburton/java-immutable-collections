@@ -378,6 +378,12 @@ public class JImmutableArrayList<T>
             return root.isEmpty() ? JImmutableArrayList.of() : new JImmutableArrayList<>(root);
         }
 
+        @Override
+        public int size()
+        {
+            return treeBuilder.size();
+        }
+
         @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)

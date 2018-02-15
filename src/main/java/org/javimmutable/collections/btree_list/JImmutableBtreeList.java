@@ -491,6 +491,12 @@ public class JImmutableBtreeList<T>
             return new JImmutableBtreeList<>(nodeBuilder.build());
         }
 
+        @Override
+        public int size()
+        {
+            return nodeBuilder.size();
+        }
+
         @Nonnull
         @Override
         public Builder<T> add(Cursor<? extends T> source)

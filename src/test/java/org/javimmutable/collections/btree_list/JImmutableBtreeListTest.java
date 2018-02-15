@@ -1294,7 +1294,10 @@ public class JImmutableBtreeListTest
         List<Integer> source = new ArrayList<>();
         for (int i = 0; i <= 11842; ++i) {
             source.add(i);
-            JImmutableBtreeList<Integer> list = JImmutableBtreeList.<Integer>builder().add(source).build();
+            final JImmutableRandomAccessList.Builder<Integer> builder = JImmutableBtreeList.builder();
+            builder.add(source);
+            assertEquals(i + 1, builder.size());
+            JImmutableRandomAccessList<Integer> list = builder.build();
             assertEquals(source, list.getList());
             list.checkInvariants();
         }

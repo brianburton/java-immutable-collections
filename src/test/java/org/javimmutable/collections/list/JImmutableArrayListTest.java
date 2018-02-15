@@ -658,7 +658,10 @@ public class JImmutableArrayListTest
 
         for (int size = 1; size <= 1500; ++size) {
             expected.add(size);
-            JImmutableArrayList<Integer> list = JImmutableArrayList.<Integer>builder().add(expected).build();
+            final JImmutableArrayList.Builder<Integer> builder = JImmutableArrayList.builder();
+            builder.add(expected);
+            assertEquals(size, builder.size());
+            JImmutableArrayList<Integer> list = builder.build();
             list.checkInvariants();
             assertEquals(expected, list.getList());
         }

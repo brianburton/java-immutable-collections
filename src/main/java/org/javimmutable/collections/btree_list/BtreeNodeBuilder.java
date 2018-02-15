@@ -48,15 +48,22 @@ import javax.annotation.Nonnull;
 class BtreeNodeBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();
+    private int size;
 
     synchronized void add(T value)
     {
         leafBuilder.add(value);
+        size += 1;
     }
 
     synchronized BtreeNode<T> build()
     {
         return leafBuilder.build().compress();
+    }
+
+    synchronized int size()
+    {
+        return size;
     }
 
     private static class BranchBuilder<T>

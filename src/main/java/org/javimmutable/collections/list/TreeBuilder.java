@@ -42,25 +42,22 @@ import javax.annotation.Nonnull;
 class TreeBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder;
+    private int size;
 
     TreeBuilder(boolean forwardOrder)
     {
-        this(new LeafBuilder<>(forwardOrder));
-    }
-
-    private TreeBuilder(LeafBuilder<T> leafBuilder)
-    {
-        this.leafBuilder = leafBuilder;
+        leafBuilder = new LeafBuilder<>(forwardOrder);
     }
 
     synchronized void add(T value)
     {
         leafBuilder.add(value);
+        size += 1;
     }
 
     synchronized int size()
     {
-        return leafBuilder.size;
+        return size;
     }
 
     @Nonnull
