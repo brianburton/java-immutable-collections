@@ -53,6 +53,7 @@ public class TreeBuilderTest
             expected = expected.insertLast(i);
         }
         assertEquals(expected, builder.build());
+        builder.build().checkInvariants();
     }
 
     public void testReverseSimple()
@@ -65,6 +66,7 @@ public class TreeBuilderTest
             expected = expected.insertFirst(i);
         }
         assertEquals(expected, builder.build());
+        builder.build().checkInvariants();
     }
 
     private void assertEquals(Node<Integer> expected,

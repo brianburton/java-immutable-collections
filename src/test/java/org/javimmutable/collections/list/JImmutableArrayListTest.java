@@ -651,6 +651,7 @@ public class JImmutableArrayListTest
     }
 
     public void testBuilder()
+        throws InterruptedException
     {
         List<Integer> expected = new ArrayList<>();
         assertSame(JImmutableArrayList.of(), JImmutableArrayList.<Integer>builder().build());
@@ -663,6 +664,7 @@ public class JImmutableArrayListTest
         }
 
         StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
+        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableArrayList.builder());
     }
 
     public void testIndexedConstructor()

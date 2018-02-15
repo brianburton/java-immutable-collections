@@ -1289,6 +1289,7 @@ public class JImmutableBtreeListTest
     }
 
     public void testBuilder()
+        throws InterruptedException
     {
         List<Integer> source = new ArrayList<>();
         for (int i = 0; i <= 11842; ++i) {
@@ -1309,6 +1310,7 @@ public class JImmutableBtreeListTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableBtreeList.builder());
     }
 
     public void testStaticBuilderMethod()

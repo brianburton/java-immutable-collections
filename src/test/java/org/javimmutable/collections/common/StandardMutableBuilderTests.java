@@ -38,12 +38,19 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -92,6 +99,14 @@ public final class StandardMutableBuilderTests
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // verify safe to call build() multiple times
+        verifyMultipleCallOk(values, builderFactory, comparator, indexed);
+    }
+
+    private static <T, C> void verifyMultipleCallOk(List<T> values,
+                                                    Func0<? extends MutableBuilder<T, C>> builderFactory,
+                                                    Func2<List<T>, C, Boolean> comparator,
+                                                    Indexed<T> indexed)
+    {
         final MutableBuilder<T, C> multi = builderFactory.apply();
         final int multiStep = Math.max(1, indexed.size() / 8);
         final List<T> sublist = new ArrayList<>();
@@ -106,5 +121,42 @@ public final class StandardMutableBuilderTests
             multiOffset = nextOffset;
         }
         assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
+    }
+
+    public static void verifyThreadSafety(Func0<MutableBuilder<Integer, ? extends JImmutableList<Integer>>> builderFactory)
+        throws InterruptedException
+    {
+        final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
+        final int numThreads = 32;
+        final int perThread = (expected.size() + numThreads - 1) / numThreads;
+        for (int loop = 1; loop <= 100; ++loop) {
+            final MutableBuilder<Integer, ? extends JImmutableList<Integer>> builder = builderFactory.apply();
+            final ExecutorService es = Executors.newFixedThreadPool(numThreads);
+            try {
+                int offset = 0;
+                while (offset < expected.size()) {
+                    int start = offset;
+                    int limit = start + perThread;
+                    es.submit(() -> addValues(builder, expected, start, limit));
+                    offset += perThread;
+                }
+            } finally {
+                es.shutdown();
+                es.awaitTermination(10, TimeUnit.SECONDS);
+            }
+            List<Integer> sorted = new ArrayList<>(builder.build().getList());
+            sorted.sort(ComparableComparator.of());
+            assertEquals(expected, sorted);
+        }
+    }
+
+    private static <T, C> void addValues(MutableBuilder<Integer, ? extends JImmutableList<Integer>> builder,
+                                         List<Integer> indexed,
+                                         int first,
+                                         int limit)
+    {
+        for (int i = first; i < limit; ++i) {
+            builder.add(indexed.get(i));
+        }
     }
 }
