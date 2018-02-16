@@ -512,6 +512,11 @@ public class JImmutableBtreeList<T>
             return builder.size() == 0 ? of() : new JImmutableBtreeList<>(builder.build());
         }
 
+        void checkInvariants()
+        {
+            builder.checkInvariants();
+        }
+        
         @Nonnull
         private Iterator<T> iterator()
         {

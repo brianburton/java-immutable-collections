@@ -54,7 +54,7 @@ class BtreeNodeBuilder<T>
     {
         return size;
     }
-      
+
     synchronized void add(T value)
     {
         leafBuilder.add(value);
@@ -64,6 +64,14 @@ class BtreeNodeBuilder<T>
     synchronized BtreeNode<T> build()
     {
         return leafBuilder.build().compress();
+    }
+
+    synchronized void checkInvariants()
+    {
+        if (size != leafBuilder.computeSize()) {
+            throw new IllegalStateException("size mismatch");
+        }
+        leafBuilder.checkInvariants();
     }
 
     private static class BranchBuilder<T>
@@ -119,6 +127,23 @@ class BtreeNodeBuilder<T>
             parent.add(BtreeBranchNode.of(IndexedArray.retained(buffer), 0, howMany));
             System.arraycopy(buffer, howMany, buffer, 0, count - howMany);
             count -= howMany;
+        }
+
+        private int computeSize()
+        {
+            int answer = 0;
+            for (int i = 0; i < count; ++i) {
+                answer += buffer[i].valueCount();
+            }
+            if (parent != null) {
+                answer += parent.computeSize();
+            }
+            return answer;
+        }
+
+        private void checkInvariants()
+        {
+            checkBuilderInvariants(count, parent);
         }
     }
 
@@ -177,6 +202,40 @@ class BtreeNodeBuilder<T>
             parent.add(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, howMany));
             System.arraycopy(buffer, howMany, buffer, 0, count - howMany);
             count -= howMany;
+        }
+
+        private int computeSize()
+        {
+            int answer = count;
+            if (parent != null) {
+                answer += parent.computeSize();
+            }
+            return answer;
+        }
+
+        private void checkInvariants()
+        {
+            checkBuilderInvariants(count, parent);
+        }
+    }
+
+    private static <T> void checkBuilderInvariants(int count,
+                                                   BranchBuilder<T> parent)
+    {
+        if (parent == null) {
+            if (count < 1) {
+                throw new IllegalStateException("count < 1");
+            }
+        } else {
+            if (count < BtreeNode.MIN_CHILDREN) {
+                throw new IllegalStateException("count < MIN_CHILDREN");
+            }
+        }
+        if (count >= BtreeNode.MAX_CHILDREN) {
+            throw new IllegalStateException("count >= MAX_CHILDREN");
+        }
+        if (parent != null) {
+            parent.checkInvariants();
         }
     }
 }

@@ -1293,7 +1293,7 @@ public class JImmutableBtreeListTest
     {
         assertSame(JImmutableBtreeList.of(), JImmutableBtreeList.builder().build());
 
-        final JImmutableRandomAccessList.Builder<Integer> builder = JImmutableBtreeList.builder();
+        final JImmutableBtreeList.Builder<Integer> builder = JImmutableBtreeList.builder();
         final List<Integer> expected = new ArrayList<>();
         JImmutableRandomAccessList<Integer> manual = JImmutableBtreeList.of();
         for (int i = 0; i <= 11842; ++i) {
@@ -1304,6 +1304,7 @@ public class JImmutableBtreeListTest
             JImmutableRandomAccessList<Integer> list = builder.build();
             assertEquals(expected, list.getList());
             list.checkInvariants();
+            builder.checkInvariants();
         }
         assertEquals(manual, builder.build());
 
