@@ -36,6 +36,7 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
@@ -44,6 +45,7 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.tree.ComparableComparator;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -123,14 +125,15 @@ public final class StandardMutableBuilderTests
         assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
     }
 
-    public static void verifyThreadSafety(Func0<MutableBuilder<Integer, ? extends JImmutableList<Integer>>> builderFactory)
+    public static <C> void verifyThreadSafety(@Nonnull Func0<MutableBuilder<Integer, C>> builderFactory,
+                                              @Nonnull Func1<C, Iterable<Integer>> transform)
         throws InterruptedException
     {
         final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
         final int numThreads = 32;
         final int perThread = (expected.size() + numThreads - 1) / numThreads;
         for (int loop = 1; loop <= 100; ++loop) {
-            final MutableBuilder<Integer, ? extends JImmutableList<Integer>> builder = builderFactory.apply();
+            final MutableBuilder<Integer, C> builder = builderFactory.apply();
             final ExecutorService es = Executors.newFixedThreadPool(numThreads);
             try {
                 int offset = 0;
@@ -144,13 +147,22 @@ public final class StandardMutableBuilderTests
                 es.shutdown();
                 es.awaitTermination(10, TimeUnit.SECONDS);
             }
-            List<Integer> sorted = new ArrayList<>(builder.build().getList());
+            List<Integer> sorted = new ArrayList<>();
+            for (Integer value : transform.apply(builder.build())) {
+                sorted.add(value);
+            }
             sorted.sort(ComparableComparator.of());
             assertEquals(expected, sorted);
         }
     }
 
-    private static <T, C> void addValues(MutableBuilder<Integer, ? extends JImmutableList<Integer>> builder,
+    public static <C extends JImmutableList<Integer>> void verifyThreadSafety(Func0<MutableBuilder<Integer, C>> builderFactory)
+        throws InterruptedException
+    {
+        verifyThreadSafety(builderFactory, list -> list);
+    }
+
+    private static <T, C> void addValues(MutableBuilder<Integer, C> builder,
                                          List<Integer> indexed,
                                          int first,
                                          int limit)

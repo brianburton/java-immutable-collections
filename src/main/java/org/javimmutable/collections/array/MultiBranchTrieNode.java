@@ -101,6 +101,16 @@ public class MultiBranchTrieNode<T>
         return new MultiBranchTrieNode<>(shift, bitmask, entries.clone());
     }
 
+    static <T> MultiBranchTrieNode<T> forEntries(int shift,
+                                                 @Nonnull TrieNode<T>[] entries,
+                                                 int length)
+    {
+        final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
+        final TrieNode<T>[] ourEntries = allocate(length);
+        System.arraycopy(entries, 0, ourEntries, 0, length);
+        return new MultiBranchTrieNode<>(shift, bitmask, ourEntries);
+    }
+
     static <T> MultiBranchTrieNode<T> forSource(int index,
                                                 int size,
                                                 @Nonnull Indexed<? extends T> source,

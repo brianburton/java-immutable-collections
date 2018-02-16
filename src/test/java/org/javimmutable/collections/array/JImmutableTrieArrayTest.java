@@ -327,14 +327,16 @@ public class JImmutableTrieArrayTest
     }
 
     public void testBuilder()
+        throws Exception
     {
+        assertSame(JImmutableTrieArray.of(), JImmutableTrieArray.builder().build());
+
+        JImmutableArray<Integer> stdarray = JImmutableTrieArray.of();
         List<Integer> source = new ArrayList<>();
         for (int length = 1; length <= 1024; ++length) {
             source.add(length);
-            JImmutableTrieArray.Builder<Integer> builder = JImmutableTrieArray.builder();
-            builder.add(source);
-            JImmutableArray<Integer> array = builder.build();
-            JImmutableArray<Integer> stdarray = JImmutableTrieArray.oldof(IndexedList.retained(source), 0, source.size());
+            stdarray = stdarray.assign(length - 1, length);
+            JImmutableArray<Integer> array = JImmutableTrieArray.<Integer>builder().add(source).build();
             assertEquals(array.getMap(), stdarray.getMap());
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
@@ -343,6 +345,7 @@ public class JImmutableTrieArrayTest
         }
         for (int length = 1025; length <= 10000; ++length) {
             source.add(length);
+            stdarray = stdarray.assign(length - 1, length);
             JImmutableArray<Integer> array = JImmutableTrieArray.<Integer>builder().add(source).build();
             assertEquals(length, array.size());
             for (int i = 0; i < source.size(); ++i) {
@@ -360,6 +363,7 @@ public class JImmutableTrieArrayTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTrieArray.builder(), a -> a.values());
     }
 
     @SuppressWarnings("NumericOverflow")

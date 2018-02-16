@@ -52,9 +52,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 @Immutable
 public class JImmutableTrieArray<T>
@@ -100,41 +98,6 @@ public class JImmutableTrieArray<T>
                                             int limit)
     {
         return JImmutableTrieArray.<T>builder().add(source, offset, limit).build();
-    }
-
-    // made obsolete by Builder but retained for use in unit test
-    @SuppressWarnings("SameParameterValue")
-    static <T> JImmutableArray<T> oldof(Indexed<? extends T> source,
-                                        int offset,
-                                        int limit)
-    {
-        final int size = limit - offset;
-        if (size == 0) {
-            return of();
-        }
-
-        // small lists can be directly constructed from a single leaf array
-        if (size <= 32) {
-            return new JImmutableTrieArray<>(TrieNode.fromSource(0, source, offset, limit), size);
-        }
-
-        // first construct an array containing a single level of arrays of leaves
-        final int numBranches = Math.min(32, ((limit - offset) + 31) / 32);
-        @SuppressWarnings("unchecked") final TrieNode<T>[] branchArray = (TrieNode<T>[])new TrieNode[numBranches];
-        int index = 0;
-        for (int b = 0; b < numBranches; ++b) {
-            int branchSize = Math.min(32, limit - offset);
-            branchArray[b] = TrieNode.fromSource(index, source, offset, limit);
-            offset += branchSize;
-            index += branchSize;
-        }
-
-        // then add any extras left over above that size
-        JImmutableArray<T> array = new JImmutableTrieArray<>(MultiBranchTrieNode.forEntries(5, branchArray), index);
-        while (offset < limit) {
-            array = array.assign(index++, source.get(offset++));
-        }
-        return array;
     }
 
     @Override
@@ -243,14 +206,13 @@ public class JImmutableTrieArray<T>
     public static class Builder<T>
         implements MutableBuilder<T, JImmutableTrieArray<T>>
     {
-        private final List<TrieNode<T>> leaves = new ArrayList<>();
+        private final TrieArrayBuilder<T> builder = new TrieArrayBuilder<>();
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            final TrieNode<T> leaf = LeafTrieNode.of(leaves.size(), value);
-            leaves.add(leaf);
+            builder.add(value);
             return this;
         }
 
@@ -258,47 +220,11 @@ public class JImmutableTrieArray<T>
         @Override
         public JImmutableTrieArray<T> build()
         {
-            int nodeCount = leaves.size();
-            if (nodeCount == 0) {
+            if (builder.size() == 0) {
                 return of();
+            } else {
+                return new JImmutableTrieArray<>(builder.build(), builder.size());
             }
-
-            if (nodeCount == 1) {
-                return new JImmutableTrieArray<>(leaves.get(0), 1);
-            }
-
-            List<TrieNode<T>> dst = new ArrayList<>(1 + (leaves.size() / 32));
-            List<TrieNode<T>> src = leaves;
-            int shift = 0;
-            while (nodeCount > 1) {
-                int dstOffset = 0;
-                int srcOffset = 0;
-                while (srcOffset < nodeCount) {
-                    final int count = Math.min(32, nodeCount - srcOffset);
-                    final TrieNode<T>[] nodes = allocate(count);
-                    for (int i = 0; i < count; ++i) {
-                        nodes[i] = src.get(srcOffset++);
-                    }
-                    TrieNode<T> branch;
-                    switch (count) {
-                        case 1:
-                            branch = SingleBranchTrieNode.forBranchIndex(shift, 0, nodes[0]);
-                            break;
-                        case 32:
-                            branch = new FullBranchTrieNode<>(shift, nodes);
-                            break;
-                        default:
-                            branch = MultiBranchTrieNode.forEntries(shift, nodes);
-                            break;
-                    }
-                    set(dst, dstOffset++, branch);
-                }
-                shift += 5;
-                src = dst;
-                nodeCount = dstOffset;
-            }
-            assert nodeCount == 1;
-            return new JImmutableTrieArray<>(dst.get(0), leaves.size());
         }
 
         @Nonnull
@@ -357,24 +283,6 @@ public class JImmutableTrieArray<T>
                 add(source.get(i));
             }
             return this;
-        }
-
-        private void set(List<TrieNode<T>> dst,
-                         int index,
-                         TrieNode<T> node)
-        {
-            if (index < dst.size()) {
-                dst.set(index, node);
-            } else {
-                assert index == dst.size();
-                dst.add(node);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        private TrieNode<T>[] allocate(int size)
-        {
-            return new TrieNode[size];
         }
     }
 }
