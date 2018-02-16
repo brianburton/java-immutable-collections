@@ -66,12 +66,95 @@ class BtreeNodeBuilder<T>
         return leafBuilder.build().compress();
     }
 
+    synchronized void clear()
+    {
+        leafBuilder.clear();
+    }
+    
     synchronized void checkInvariants()
     {
         if (size != leafBuilder.computeSize()) {
             throw new IllegalStateException("size mismatch");
         }
         leafBuilder.checkInvariants();
+    }
+
+    private static class LeafBuilder<T>
+    {
+        private final T[] buffer;
+        private int count;
+        private BranchBuilder<T> parent;
+
+        @SuppressWarnings("unchecked")
+        private LeafBuilder()
+        {
+            this((T[])new Object[BtreeNode.MAX_CHILDREN], 0, null);
+        }
+
+        private LeafBuilder(T[] buffer,
+                            int count,
+                            BranchBuilder<T> parent)
+        {
+            this.buffer = buffer;
+            this.count = count;
+            this.parent = parent;
+        }
+
+        private void add(@Nonnull T value)
+        {
+            assert count < BtreeNode.MAX_CHILDREN;
+            buffer[count] = value;
+            count += 1;
+            if (count == BtreeNode.MAX_CHILDREN) {
+                push(BtreeNode.MIN_CHILDREN);
+            }
+        }
+
+        private BtreeNode<T> build()
+        {
+            if (parent == null) {
+                if (count == 0) {
+                    return BtreeEmptyNode.of();
+                } else {
+                    return BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count);
+                }
+            } else {
+                assert count >= BtreeNode.MIN_CHILDREN;
+                return parent.build(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count));
+            }
+        }
+
+        private void clear()
+        {
+            count = 0;
+            parent = null;
+        }
+        
+        private void push(int howMany)
+        {
+            assert howMany <= count;
+            assert howMany >= BtreeNode.MIN_CHILDREN;
+            if (parent == null) {
+                parent = new BranchBuilder<>();
+            }
+            parent.add(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, howMany));
+            System.arraycopy(buffer, howMany, buffer, 0, count - howMany);
+            count -= howMany;
+        }
+
+        private int computeSize()
+        {
+            int answer = count;
+            if (parent != null) {
+                answer += parent.computeSize();
+            }
+            return answer;
+        }
+
+        private void checkInvariants()
+        {
+            checkBuilderInvariants(count, parent);
+        }
     }
 
     private static class BranchBuilder<T>
@@ -146,79 +229,7 @@ class BtreeNodeBuilder<T>
             checkBuilderInvariants(count, parent);
         }
     }
-
-    private static class LeafBuilder<T>
-    {
-        private final T[] buffer;
-        private int count;
-        private BranchBuilder<T> parent;
-
-        @SuppressWarnings("unchecked")
-        private LeafBuilder()
-        {
-            this((T[])new Object[BtreeNode.MAX_CHILDREN], 0, null);
-        }
-
-        private LeafBuilder(T[] buffer,
-                            int count,
-                            BranchBuilder<T> parent)
-        {
-            this.buffer = buffer;
-            this.count = count;
-            this.parent = parent;
-        }
-
-        private void add(@Nonnull T value)
-        {
-            assert count < BtreeNode.MAX_CHILDREN;
-            buffer[count] = value;
-            count += 1;
-            if (count == BtreeNode.MAX_CHILDREN) {
-                push(BtreeNode.MIN_CHILDREN);
-            }
-        }
-
-        private BtreeNode<T> build()
-        {
-            if (parent == null) {
-                if (count == 0) {
-                    return BtreeEmptyNode.of();
-                } else {
-                    return BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count);
-                }
-            } else {
-                assert count >= BtreeNode.MIN_CHILDREN;
-                return parent.build(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, count));
-            }
-        }
-
-        private void push(int howMany)
-        {
-            assert howMany <= count;
-            assert howMany >= BtreeNode.MIN_CHILDREN;
-            if (parent == null) {
-                parent = new BranchBuilder<>();
-            }
-            parent.add(BtreeLeafNode.of(IndexedArray.retained(buffer), 0, howMany));
-            System.arraycopy(buffer, howMany, buffer, 0, count - howMany);
-            count -= howMany;
-        }
-
-        private int computeSize()
-        {
-            int answer = count;
-            if (parent != null) {
-                answer += parent.computeSize();
-            }
-            return answer;
-        }
-
-        private void checkInvariants()
-        {
-            checkBuilderInvariants(count, parent);
-        }
-    }
-
+ 
     private static <T> void checkBuilderInvariants(int count,
                                                    BranchBuilder<T> parent)
     {
