@@ -653,6 +653,8 @@ public class JImmutableArrayListTest
     public void testBuilder()
         throws InterruptedException
     {
+        assertSame(JImmutableArrayList.of(), JImmutableArrayList.builder().build());
+
         List<Integer> expected = new ArrayList<>();
         assertSame(JImmutableArrayList.of(), JImmutableArrayList.<Integer>builder().build());
 

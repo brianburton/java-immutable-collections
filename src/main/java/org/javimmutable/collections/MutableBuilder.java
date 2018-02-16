@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -75,7 +76,13 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Cursor<? extends T> source);
+    default MutableBuilder<T, C> add(Cursor<? extends T> source)
+    {
+        for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
+            add(cursor.getValue());
+        }
+        return this;
+    }
 
     /**
      * Adds all values in the Iterator to the values included in the collection when build() is called.
@@ -84,8 +91,14 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Iterator<? extends T> source);
-
+    default MutableBuilder<T, C> add(Iterator<? extends T> source)
+    {
+        while (source.hasNext()) {
+            add(source.next());
+        }
+        return this;
+    }
+                         
     /**
      * Adds all values in the Collection to the values included in the collection when build() is called.
      *
@@ -93,7 +106,10 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Iterable<? extends T> source);
+    default MutableBuilder<T, C> add(Iterable<? extends T> source)
+    {
+        return add(source.iterator());
+    }
 
     /**
      * Adds all values in the array to the values included in the collection when build() is called.
@@ -102,7 +118,10 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    <K extends T> MutableBuilder<T, C> add(K... source);
+    default <K extends T> MutableBuilder<T, C> add(K... source)
+    {
+        return add(Arrays.asList(source));
+    }
 
     /**
      * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
@@ -111,9 +130,15 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Indexed<? extends T> source,
-                             int offset,
-                             int limit);
+    default MutableBuilder<T, C> add(Indexed<? extends T> source,
+                                     int offset,
+                                     int limit)
+    {
+        for (int i = offset; i < limit; ++i) {
+            add(source.get(i));
+        }
+        return this;
+    }     
 
     /**
      * Adds all values in the Indexed to the values included in the collection when build() is called.
@@ -122,5 +147,8 @@ public interface MutableBuilder<T, C>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    MutableBuilder<T, C> add(Indexed<? extends T> source);
+    default MutableBuilder<T, C> add(Indexed<? extends T> source)
+    {
+        return add(source, 0, source.size());
+    }
 }

@@ -362,6 +362,12 @@ public class JImmutableArrayList<T>
     {
         private final TreeBuilder<T> treeBuilder = new TreeBuilder<>(true);
 
+        @Override
+        public int size()
+        {
+            return treeBuilder.size();
+        }
+
         @Nonnull
         @Override
         public Builder<T> add(T value)
@@ -374,70 +380,7 @@ public class JImmutableArrayList<T>
         @Override
         public JImmutableArrayList<T> build()
         {
-            final Node<T> root = treeBuilder.build();
-            return root.isEmpty() ? JImmutableArrayList.of() : new JImmutableArrayList<>(root);
-        }
-
-        @Override
-        public int size()
-        {
-            return treeBuilder.size();
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Cursor<? extends T> source)
-        {
-            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-                treeBuilder.add(cursor.getValue());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterator<? extends T> source)
-        {
-            while (source.hasNext()) {
-                treeBuilder.add(source.next());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterable<? extends T> source)
-        {
-            return add(source.iterator());
-        }
-
-        @Nonnull
-        @Override
-        public <K extends T> Builder<T> add(K... source)
-        {
-            for (K value : source) {
-                treeBuilder.add(value);
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source)
-        {
-            return add(source, 0, source.size());
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source,
-                              int offset,
-                              int limit)
-        {
-            for (int i = offset; i < limit; ++i) {
-                treeBuilder.add(source.get(i));
-            }
-            return this;
+            return treeBuilder.size() == 0 ? of() : new JImmutableArrayList<>(treeBuilder.build());
         }
     }
 }

@@ -3,18 +3,18 @@ package org.javimmutable.collections.array;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TrieArrayBuilder<T>
+class TrieArrayBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();
-
-    synchronized void add(T value)
-    {
-        leafBuilder.add(value);
-    }
 
     synchronized int size()
     {
         return leafBuilder.index;
+    }
+
+    synchronized void add(T value)
+    {
+        leafBuilder.add(value);
     }
 
     @Nonnull

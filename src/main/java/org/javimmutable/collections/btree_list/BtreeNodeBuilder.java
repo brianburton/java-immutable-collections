@@ -50,6 +50,11 @@ class BtreeNodeBuilder<T>
     private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();
     private int size;
 
+    synchronized int size()
+    {
+        return size;
+    }
+      
     synchronized void add(T value)
     {
         leafBuilder.add(value);
@@ -59,11 +64,6 @@ class BtreeNodeBuilder<T>
     synchronized BtreeNode<T> build()
     {
         return leafBuilder.build().compress();
-    }
-
-    synchronized int size()
-    {
-        return size;
     }
 
     private static class BranchBuilder<T>

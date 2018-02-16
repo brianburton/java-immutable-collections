@@ -476,6 +476,12 @@ public class JImmutableBtreeList<T>
     {
         private final BtreeNodeBuilder<T> nodeBuilder = new BtreeNodeBuilder<>();
 
+        @Override
+        public int size()
+        {
+            return nodeBuilder.size();
+        }
+
         @Nonnull
         @Override
         public Builder<T> add(T value)
@@ -488,71 +494,7 @@ public class JImmutableBtreeList<T>
         @Override
         public JImmutableBtreeList<T> build()
         {
-            return new JImmutableBtreeList<>(nodeBuilder.build());
-        }
-
-        @Override
-        public int size()
-        {
-            return nodeBuilder.size();
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Cursor<? extends T> source)
-        {
-            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-                add(cursor.getValue());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterator<? extends T> source)
-        {
-            while (source.hasNext()) {
-                add(source.next());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterable<? extends T> source)
-        {
-            add(source.iterator());
-            return this;
-        }
-
-        @SafeVarargs
-        @Nonnull
-        @Override
-        public final <K extends T> Builder<T> add(K... source)
-        {
-            for (T value : source) {
-                add(value);
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source)
-        {
-            return add(source, 0, source.size());
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source,
-                              int offset,
-                              int limit)
-        {
-            for (int i = offset; i < limit; ++i) {
-                add(source.get(i));
-            }
-            return this;
+            return nodeBuilder.size() == 0 ? of() : new JImmutableBtreeList<>(nodeBuilder.build());
         }
     }
 }

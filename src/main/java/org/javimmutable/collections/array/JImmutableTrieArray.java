@@ -52,7 +52,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
-import java.util.Iterator;
 
 @Immutable
 public class JImmutableTrieArray<T>
@@ -226,69 +225,7 @@ public class JImmutableTrieArray<T>
         @Override
         public JImmutableTrieArray<T> build()
         {
-            if (builder.size() == 0) {
-                return of();
-            } else {
-                return new JImmutableTrieArray<>(builder.build(), builder.size());
-            }
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Cursor<? extends T> source)
-        {
-            for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-                add(cursor.getValue());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterator<? extends T> source)
-        {
-            while (source.hasNext()) {
-                add(source.next());
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterable<? extends T> source)
-        {
-            add(source.iterator());
-            return this;
-        }
-
-        @SafeVarargs
-        @Nonnull
-        @Override
-        public final <K extends T> Builder<T> add(K... source)
-        {
-            for (T value : source) {
-                add(value);
-            }
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source)
-        {
-            return add(source, 0, source.size());
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source,
-                              int offset,
-                              int limit)
-        {
-            for (int i = offset; i < limit; ++i) {
-                add(source.get(i));
-            }
-            return this;
+            return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build(), builder.size());
         }
     }
 }

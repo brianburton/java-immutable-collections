@@ -615,8 +615,8 @@ public class JImmutableBtreeListTest
         return JImmutableBtreeList.of(IndexedArray.retained(values));
     }
 
-    private JImmutableBtreeList<Integer> range(int first,
-                                               int last)
+    private JImmutableRandomAccessList<Integer> range(int first,
+                                                      int last)
     {
         return JImmutableBtreeList.<Integer>builder()
             .add(StandardCursor.forRange(first, last))
@@ -1291,6 +1291,8 @@ public class JImmutableBtreeListTest
     public void testBuilder()
         throws InterruptedException
     {
+        assertSame(JImmutableBtreeList.of(), JImmutableBtreeList.builder().build());
+        
         List<Integer> source = new ArrayList<>();
         for (int i = 0; i <= 11842; ++i) {
             source.add(i);
