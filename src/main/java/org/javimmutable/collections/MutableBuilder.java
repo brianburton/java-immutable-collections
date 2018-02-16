@@ -46,6 +46,11 @@ import java.util.Iterator;
 public interface MutableBuilder<T, C>
 {
     /**
+     * Determines how many values will be in the collection if build() is called now.
+     */
+    int size();
+
+    /**
      * Adds the specified value to the values included in the collection when build() is called.
      *
      * @return the builder (convenience for chaining multiple calls)

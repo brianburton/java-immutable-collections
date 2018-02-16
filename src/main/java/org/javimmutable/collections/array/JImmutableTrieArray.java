@@ -208,6 +208,12 @@ public class JImmutableTrieArray<T>
     {
         private final TrieArrayBuilder<T> builder = new TrieArrayBuilder<>();
 
+        @Override
+        public int size()
+        {
+            return builder.size();
+        }
+
         @Nonnull
         @Override
         public Builder<T> add(T value)

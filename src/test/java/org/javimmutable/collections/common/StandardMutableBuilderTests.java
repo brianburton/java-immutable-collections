@@ -119,6 +119,7 @@ public final class StandardMutableBuilderTests
                 multi.add(values.get(i));
                 sublist.add(values.get(i));
             }
+            assertEquals(sublist.size(), multi.size());
             assertEquals(Boolean.TRUE, comparator.apply(sublist, multi.build()));
             multiOffset = nextOffset;
         }

@@ -60,7 +60,6 @@ public interface JImmutableList<T>
     interface Builder<T>
         extends MutableBuilder<T, JImmutableList<T>>
     {
-        int size();
     }
 
     /**
