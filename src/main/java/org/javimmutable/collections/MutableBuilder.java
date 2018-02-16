@@ -98,7 +98,7 @@ public interface MutableBuilder<T, C>
         }
         return this;
     }
-                         
+
     /**
      * Adds all values in the Collection to the values included in the collection when build() is called.
      *
@@ -138,7 +138,7 @@ public interface MutableBuilder<T, C>
             add(source.get(i));
         }
         return this;
-    }     
+    }
 
     /**
      * Adds all values in the Indexed to the values included in the collection when build() is called.

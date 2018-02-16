@@ -55,6 +55,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collector;
 
 /**
  * Implementation of JImmutableRandomAccessList that uses a B-Tree for its implementation.
@@ -78,6 +79,15 @@ public class JImmutableBtreeList<T>
     public static <T> Builder<T> builder()
     {
         return new Builder<>();
+    }
+
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> collector()
+    {
+        return Collector.<T, Builder<T>, JImmutableRandomAccessList<T>>of(() -> new Builder<>(),
+                                                                          (b, v) -> b.add(v),
+                                                                          (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                                          b -> b.build());
     }
 
     @Nonnull
@@ -474,19 +484,24 @@ public class JImmutableBtreeList<T>
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
-        private final BtreeNodeBuilder<T> nodeBuilder = new BtreeNodeBuilder<>();
+        private final BtreeNodeBuilder<T> builder;
+
+        private Builder()
+        {
+            builder = new BtreeNodeBuilder<>();
+        }
 
         @Override
         public int size()
         {
-            return nodeBuilder.size();
+            return builder.size();
         }
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            nodeBuilder.add(value);
+            builder.add(value);
             return this;
         }
 
@@ -494,7 +509,13 @@ public class JImmutableBtreeList<T>
         @Override
         public JImmutableBtreeList<T> build()
         {
-            return nodeBuilder.size() == 0 ? of() : new JImmutableBtreeList<>(nodeBuilder.build());
+            return builder.size() == 0 ? of() : new JImmutableBtreeList<>(builder.build());
+        }
+
+        @Nonnull
+        private Iterator<T> iterator()
+        {
+            return builder.build().iterator();
         }
     }
 }

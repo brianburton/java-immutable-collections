@@ -55,6 +55,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collector;
 
 /**
  * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
@@ -102,6 +103,15 @@ public class JImmutableArrayList<T>
     public static <T> Builder<T> builder()
     {
         return new Builder<>();
+    }
+
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableList<T>> collector()
+    {
+        return Collector.<T, Builder<T>, JImmutableList<T>>of(() -> new Builder<>(),
+                                                              (b, v) -> b.add(v),
+                                                              (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                              b -> b.build());
     }
 
     @Override
@@ -360,19 +370,24 @@ public class JImmutableArrayList<T>
     public static class Builder<T>
         implements JImmutableList.Builder<T>
     {
-        private final TreeBuilder<T> treeBuilder = new TreeBuilder<>(true);
+        private final TreeBuilder<T> builder;
+
+        private Builder()
+        {
+            builder = new TreeBuilder<>(true);
+        }
 
         @Override
         public int size()
         {
-            return treeBuilder.size();
+            return builder.size();
         }
 
         @Nonnull
         @Override
         public Builder<T> add(T value)
         {
-            treeBuilder.add(value);
+            builder.add(value);
             return this;
         }
 
@@ -380,7 +395,13 @@ public class JImmutableArrayList<T>
         @Override
         public JImmutableArrayList<T> build()
         {
-            return treeBuilder.size() == 0 ? of() : new JImmutableArrayList<>(treeBuilder.build());
+            return builder.size() == 0 ? of() : new JImmutableArrayList<>(builder.build());
+        }
+
+        @Nonnull
+        private Iterator<T> iterator()
+        {
+            return builder.build().iterator();
         }
     }
 }

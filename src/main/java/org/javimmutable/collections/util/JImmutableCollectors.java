@@ -36,10 +36,14 @@
 package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.GenericCollector;
+import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.array.JImmutableTrieArray;
+import org.javimmutable.collections.btree_list.JImmutableBtreeList;
+import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -58,27 +62,33 @@ public final class JImmutableCollectors
     /**
      * Collects values into a JImmutableList.
      */
-    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> toList()
     {
-        return JImmutables.<T>list().listCollector();
+        return JImmutableArrayList.collector();
     }
 
     /**
      * Collects values into a JImmutableRandomAccessList.
      */
-    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> toRalist()
     {
-        return JImmutables.<T>ralist().ralistCollector();
+        return JImmutableBtreeList.collector();
+    }
+
+    /**
+     * Collects values into a JImmutableArray.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableArray<T>> toArray()
+    {
+        return JImmutableTrieArray.collector();
     }
 
     /**
      * Collects values into a hashed JImmutableSet.
      */
-    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSet()
     {
@@ -88,7 +98,6 @@ public final class JImmutableCollectors
     /**
      * Collects values into a sorted JImmutableSet using natural sort order of elements.
      */
-    @Deprecated
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> toSortedSet()
     {
@@ -98,7 +107,6 @@ public final class JImmutableCollectors
     /**
      * Collects values into a sorted JImmutableSet using specified Comparator.
      */
-    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {

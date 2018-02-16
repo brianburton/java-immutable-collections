@@ -358,9 +358,9 @@ public class JImmutableTrieArrayTest
         }
         assertEquals(manual, builder.build());
 
-        Func0<MutableBuilder<Integer, JImmutableTrieArray<Integer>>> factory = () -> JImmutableTrieArray.builder();
+        Func0<MutableBuilder<Integer, JImmutableArray<Integer>>> factory = () -> JImmutableTrieArray.builder();
 
-        Func2<List<Integer>, JImmutableTrieArray<Integer>, Boolean> comparator = (list, tree) -> {
+        Func2<List<Integer>, JImmutableArray<Integer>, Boolean> comparator = (list, tree) -> {
             for (int i = 0; i < list.size(); ++i) {
                 assertEquals(list.get(i), tree.get(i));
             }

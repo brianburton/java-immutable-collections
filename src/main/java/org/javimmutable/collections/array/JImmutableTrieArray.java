@@ -46,12 +46,15 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.stream.Collector;
 
 @Immutable
 public class JImmutableTrieArray<T>
@@ -75,6 +78,15 @@ public class JImmutableTrieArray<T>
     public static <T> Builder<T> builder()
     {
         return new Builder<>();
+    }
+
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableArray<T>> collector()
+    {
+        return Collector.<T, Builder<T>, JImmutableArray<T>>of(() -> new Builder<>(),
+                                                               (b, v) -> b.add(v),
+                                                               (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                               b -> b.build());
     }
 
     @SuppressWarnings("unchecked")
@@ -203,9 +215,14 @@ public class JImmutableTrieArray<T>
     }
 
     public static class Builder<T>
-        implements MutableBuilder<T, JImmutableTrieArray<T>>
+        implements MutableBuilder<T, JImmutableArray<T>>
     {
-        private final TrieArrayBuilder<T> builder = new TrieArrayBuilder<>();
+        private final TrieArrayBuilder<T> builder;
+
+        private Builder()
+        {
+            builder = new TrieArrayBuilder<>();
+        }
 
         @Override
         public int size()
@@ -226,6 +243,12 @@ public class JImmutableTrieArray<T>
         public JImmutableTrieArray<T> build()
         {
             return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build(), builder.size());
+        }
+
+        @Nonnull
+        private Iterator<T> iterator()
+        {
+            return TransformIterator.of(builder.build().iterator(), e -> e.getValue());
         }
     }
 }
