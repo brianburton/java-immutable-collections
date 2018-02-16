@@ -331,27 +331,32 @@ public class JImmutableTrieArrayTest
     {
         assertSame(JImmutableTrieArray.of(), JImmutableTrieArray.builder().build());
 
-        JImmutableArray<Integer> stdarray = JImmutableTrieArray.of();
-        List<Integer> source = new ArrayList<>();
+        final List<Integer> expected = new ArrayList<>();
+        final JImmutableTrieArray.Builder<Integer> builder = JImmutableTrieArray.builder();
+        JImmutableArray<Integer> manual = JImmutableTrieArray.of();
         for (int length = 1; length <= 1024; ++length) {
-            source.add(length);
-            stdarray = stdarray.assign(length - 1, length);
-            JImmutableArray<Integer> array = JImmutableTrieArray.<Integer>builder().add(source).build();
-            assertEquals(array.getMap(), stdarray.getMap());
+            expected.add(length);
+            manual = manual.assign(length - 1, length);
+            JImmutableArray<Integer> array = builder.add(length).build();
+            assertEquals(array.getMap(), manual.getMap());
             assertEquals(length, array.size());
-            for (int i = 0; i < source.size(); ++i) {
-                assertEquals(source.get(i), array.get(i));
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), array.get(i));
             }
+            array.checkInvariants();
         }
+        assertEquals(manual, builder.build());
         for (int length = 1025; length <= 10000; ++length) {
-            source.add(length);
-            stdarray = stdarray.assign(length - 1, length);
-            JImmutableArray<Integer> array = JImmutableTrieArray.<Integer>builder().add(source).build();
+            expected.add(length);
+            manual = manual.assign(length - 1, length);
+            JImmutableArray<Integer> array = builder.add(length).build();
             assertEquals(length, array.size());
-            for (int i = 0; i < source.size(); ++i) {
-                assertEquals(source.get(i), array.get(i));
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), array.get(i));
             }
+            array.checkInvariants();
         }
+        assertEquals(manual, builder.build());
 
         Func0<MutableBuilder<Integer, JImmutableTrieArray<Integer>>> factory = () -> JImmutableTrieArray.builder();
 
@@ -362,7 +367,7 @@ public class JImmutableTrieArrayTest
             return true;
         };
 
-        StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+        StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
         StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTrieArray.builder(), a -> a.values());
     }
 

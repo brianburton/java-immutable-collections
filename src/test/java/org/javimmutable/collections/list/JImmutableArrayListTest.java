@@ -655,18 +655,19 @@ public class JImmutableArrayListTest
     {
         assertSame(JImmutableArrayList.of(), JImmutableArrayList.builder().build());
 
-        List<Integer> expected = new ArrayList<>();
-        assertSame(JImmutableArrayList.of(), JImmutableArrayList.<Integer>builder().build());
-
-        for (int size = 1; size <= 1500; ++size) {
+        final JImmutableArrayList.Builder<Integer> builder = JImmutableArrayList.builder();
+        final List<Integer> expected = new ArrayList<>();
+        JImmutableList<Integer> manual = JImmutableArrayList.of();
+        for (int size = 1; size <= 33000; ++size) {
             expected.add(size);
-            final JImmutableArrayList.Builder<Integer> builder = JImmutableArrayList.builder();
-            builder.add(expected);
+            builder.add(size);
+            manual = manual.insertLast(size);
             assertEquals(size, builder.size());
             JImmutableArrayList<Integer> list = builder.build();
-            list.checkInvariants();
             assertEquals(expected, list.getList());
+            list.checkInvariants();
         }
+        assertEquals(manual, builder.build());
 
         StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
         StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableArrayList.builder());

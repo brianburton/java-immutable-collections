@@ -1292,17 +1292,20 @@ public class JImmutableBtreeListTest
         throws InterruptedException
     {
         assertSame(JImmutableBtreeList.of(), JImmutableBtreeList.builder().build());
-        
-        List<Integer> source = new ArrayList<>();
+
+        final JImmutableRandomAccessList.Builder<Integer> builder = JImmutableBtreeList.builder();
+        final List<Integer> expected = new ArrayList<>();
+        JImmutableRandomAccessList<Integer> manual = JImmutableBtreeList.of();
         for (int i = 0; i <= 11842; ++i) {
-            source.add(i);
-            final JImmutableRandomAccessList.Builder<Integer> builder = JImmutableBtreeList.builder();
-            builder.add(source);
+            expected.add(i);
+            builder.add(i);
+            manual = manual.insertLast(i);
             assertEquals(i + 1, builder.size());
             JImmutableRandomAccessList<Integer> list = builder.build();
-            assertEquals(source, list.getList());
+            assertEquals(expected, list.getList());
             list.checkInvariants();
         }
+        assertEquals(manual, builder.build());
 
         Func0<? extends MutableBuilder<Integer, JImmutableRandomAccessList<Integer>>> factory = (Func0<JImmutableBtreeList.Builder<Integer>>)() -> JImmutableBtreeList.builder();
 
@@ -1314,7 +1317,7 @@ public class JImmutableBtreeListTest
             return true;
         };
 
-        StandardMutableBuilderTests.verifyBuilder(source, factory, comparator);
+        StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
         StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableBtreeList.builder());
     }
 
