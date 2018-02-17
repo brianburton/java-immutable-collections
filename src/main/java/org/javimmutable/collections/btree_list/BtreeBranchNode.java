@@ -42,10 +42,14 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 class BtreeBranchNode<T>
     implements BtreeNode<T>,
@@ -315,6 +319,13 @@ class BtreeBranchNode<T>
         return LazyMultiIterator.iterator(IndexedArray.retained(children));
     }
 
+    @Nonnull
+    @Override
+    public Iterator<BtreeNode<T>> childIterator()
+    {
+        return IndexedIterator.iterator(IndexedArray.retained(children));
+    }
+
     @Override
     public int depth()
     {
@@ -327,6 +338,26 @@ class BtreeBranchNode<T>
     public BtreeNode<T>[] allocate(int size)
     {
         return (BtreeNode<T>[])new BtreeNode[size];
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BtreeBranchNode<?> that = (BtreeBranchNode<?>)o;
+        return valueCount == that.valueCount &&
+               Arrays.equals(children, that.children);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(children, valueCount);
     }
 
     @Nonnull

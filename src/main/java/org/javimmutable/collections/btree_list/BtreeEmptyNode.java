@@ -43,6 +43,7 @@ import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
 
 @Immutable
 class BtreeEmptyNode<T>
@@ -161,5 +162,12 @@ class BtreeEmptyNode<T>
     public int depth()
     {
         return 1;
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<BtreeNode<T>> childIterator()
+    {
+        return EmptyIterator.of();
     }
 }

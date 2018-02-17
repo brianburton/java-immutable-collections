@@ -86,7 +86,7 @@ public class JImmutableBtreeList<T>
     {
         return Collector.<T, Builder<T>, JImmutableRandomAccessList<T>>of(() -> new Builder<>(),
                                                                           (b, v) -> b.add(v),
-                                                                          (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                                          (b1, b2) -> b1.combineWith(b2),
                                                                           b -> b.build());
     }
 
@@ -481,6 +481,11 @@ public class JImmutableBtreeList<T>
         }
     }
 
+    BtreeNode<T> root()
+    {
+        return root;
+    }
+    
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
@@ -512,15 +517,19 @@ public class JImmutableBtreeList<T>
             return builder.size() == 0 ? of() : new JImmutableBtreeList<>(builder.build());
         }
 
+        @Nonnull
+        public Builder<T> combineWith(@Nonnull Builder<T> other)
+        {
+            final JImmutableBtreeList<T> a = build();
+            final JImmutableBtreeList<T> b = other.build();
+            final JImmutableBtreeList<T> ab = combine(a, b);
+            builder.rebuild(ab.root);
+            return this;
+        }
+
         void checkInvariants()
         {
             builder.checkInvariants();
-        }
-        
-        @Nonnull
-        private Iterator<T> iterator()
-        {
-            return builder.build().iterator();
         }
     }
 }

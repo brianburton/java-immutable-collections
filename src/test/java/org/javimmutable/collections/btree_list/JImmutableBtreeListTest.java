@@ -1276,7 +1276,9 @@ public class JImmutableBtreeListTest
         }
         list = JImmutableBtreeList.of(IndexedList.retained(expected));
         assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
+        assertEquals(list, list.stream().collect(JImmutableBtreeList.collector()));
         assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
+        assertEquals(list, list.parallelStream().collect(JImmutableBtreeList.collector()));
     }
 
     public void testParallelStreams()
@@ -1286,6 +1288,7 @@ public class JImmutableBtreeListTest
         collected.checkInvariants();
         assertEquals(original, collected);
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
+        assertEquals(original, original.stream().parallel().collect(JImmutableBtreeList.collector()));
     }
 
     public void testBuilder()
@@ -1322,6 +1325,27 @@ public class JImmutableBtreeListTest
         StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableBtreeList.builder());
     }
 
+    public void testCombineBuilders()
+    {
+        final int totalSize = 11842;
+        for (int size = 0; size <= totalSize; ++size) {
+            final JImmutableBtreeList.Builder<Integer> a = JImmutableBtreeList.builder();
+            final JImmutableBtreeList.Builder<Integer> b = JImmutableBtreeList.builder();
+            for (int i = 0; i < size; ++i) {
+                a.add(i);
+            }
+            assertEquals(size, a.size());
+            for (int i = size; i < totalSize; ++i) {
+                b.add(i);
+            }
+            assertEquals(totalSize - size, b.size());
+            JImmutableBtreeList<Integer> manual = a.build().insertAllLast(b.build());
+            JImmutableBtreeList<Integer> combined = a.combineWith(b).build();
+            assertEquals(totalSize, combined.size());
+            assertEquals(manual, combined);
+        }
+    }
+    
     public void testStaticBuilderMethod()
     {
         List<Integer> source = new ArrayList<>();

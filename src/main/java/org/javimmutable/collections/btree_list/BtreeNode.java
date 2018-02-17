@@ -40,6 +40,7 @@ import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Tuple2;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
 
 interface BtreeNode<T>
     extends Cursorable<T>,
@@ -96,4 +97,7 @@ interface BtreeNode<T>
     int depth();
 
     void checkInvariants(boolean isRoot);
+
+    @Nonnull
+    Iterator<BtreeNode<T>> childIterator();
 }
