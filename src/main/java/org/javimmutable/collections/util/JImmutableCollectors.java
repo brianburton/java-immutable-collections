@@ -41,9 +41,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.array.JImmutableTrieArray;
-import org.javimmutable.collections.btree_list.JImmutableBtreeList;
-import org.javimmutable.collections.list.JImmutableArrayList;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -62,28 +59,31 @@ public final class JImmutableCollectors
     /**
      * Collects values into a JImmutableList.
      */
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> toList()
     {
-        return JImmutableArrayList.collector();
+        return JImmutables.listCollector();
     }
 
     /**
      * Collects values into a JImmutableRandomAccessList.
      */
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> toRalist()
     {
-        return JImmutableBtreeList.collector();
+        return JImmutables.ralistCollector();
     }
 
     /**
      * Collects values into a JImmutableArray.
      */
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableArray<T>> toArray()
     {
-        return JImmutableTrieArray.collector();
+        return JImmutables.arrayCollector();
     }
 
     /**

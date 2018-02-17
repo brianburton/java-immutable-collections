@@ -58,6 +58,11 @@ public interface JImmutableArray<T>
             Cursorable<JImmutableMap.Entry<Integer, T>>,
             InvariantCheckable
 {
+    interface Builder<T>
+        extends MutableBuilder<T, JImmutableArray<T>>
+    {
+    }
+
     /**
      * Return the value associated with index or null if no value is associated.
      * Note that if null is an acceptable value to the container then this method

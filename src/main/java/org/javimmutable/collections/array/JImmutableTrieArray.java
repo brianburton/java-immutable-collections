@@ -41,7 +41,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
@@ -215,7 +214,7 @@ public class JImmutableTrieArray<T>
     }
 
     public static class Builder<T>
-        implements MutableBuilder<T, JImmutableArray<T>>
+        implements JImmutableArray.Builder<T>
     {
         private final TrieArrayBuilder<T> builder;
 
