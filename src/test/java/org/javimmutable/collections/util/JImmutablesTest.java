@@ -93,6 +93,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.util.JImmutables.*;
@@ -129,22 +130,28 @@ public class JImmutablesTest
     {
         verifyOrdered(isArray,
                       Arrays.asList(),
-                      () -> JImmutables.array());
+                      () -> array());
         verifyOrdered(isArray,
                       asList(entry(-20, "a"), entry(-7, "c"), entry(17, "d"), entry(100, "a")),
-                      () -> JImmutables.array(cursor(entry(-7, "c"), entry(-20, "a"), entry(17, "d"), entry(100, "a"))));
+                      () -> array(cursor(entry(-7, "c"), entry(-20, "a"), entry(17, "d"), entry(100, "a"))));
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
-                      () -> JImmutables.array("c", "a", "d", "a"));
+                      () -> array("c", "a", "d", "a"));
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
-                      () -> JImmutables.array(indexed("c", "a", "d", "a")));
+                      () -> array(indexed("c", "a", "d", "a")));
         verifyOrdered(isArray,
                       asList(entry(0, "d")),
-                      () -> JImmutables.array(indexed("c", "a", "d", "a"), 2, 3));
+                      () -> array(indexed("c", "a", "d", "a"), 2, 3));
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
-                      () -> JImmutables.array(asList("c", "a", "d", "a")));
+                      () -> array(asList("c", "a", "d", "a")));
+        verifyOrdered(isArray,
+                      asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
+                      () -> arrayBuilder().add(asList("c", "a", "d", "a")).build());
+        verifyOrdered(isArray,
+                      asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
+                      () -> Stream.of("c", "a", "d", "a").collect(arrayCollector()));
     }
 
     public void testStack()
@@ -188,10 +195,12 @@ public class JImmutablesTest
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(cursor("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c", "d", "e"), () -> list(indexed("a", "b", "c", "d", "e")));
         verifyOrdered(isList, asList("b", "c", "d"), () -> list(indexed("a", "b", "c", "d", "e"), 1, 4));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> list(JImmutables.insertOrderSet("a", "b", "c")));
+        verifyOrdered(isList, asList("a", "b", "c"), () -> list(insertOrderSet("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(iterator("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(list("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> list(asList("a", "b", "c")));
+        verifyOrdered(isList, asList("a", "b", "c"), () -> listBuilder().add("a", "b", "c").build());
+        verifyOrdered(isList, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(listCollector()));
     }
 
     public void testLargeList()
@@ -208,20 +217,22 @@ public class JImmutablesTest
     {
         List<Integer> input = asList(1, 2, 3);
 
-        JImmutableRandomAccessList<Integer> list = JImmutables.ralist(input);
+        JImmutableRandomAccessList<Integer> list = ralist(input);
         assertEquals(input, list.getList());
-        assertEquals(list, JImmutables.ralist(input.iterator()));
-        assertEquals(list, JImmutables.ralist(list));
-        assertEquals(list, JImmutables.ralist(list.cursor()));
-        assertEquals(list, JImmutables.ralist(1, 2, 3));
+        assertEquals(list, ralist(input.iterator()));
+        assertEquals(list, ralist(list));
+        assertEquals(list, ralist(list.cursor()));
+        assertEquals(list, ralist(1, 2, 3));
         assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
 
-        verifyOrdered(isRalist, asList(), () -> JImmutables.ralist());
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist("a", "b", "c"));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(cursor("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c", "d", "e"), () -> JImmutables.ralist(iterable("a", "b", "c", "d", "e")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(iterator("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> JImmutables.ralist(asList("a", "b", "c")));
+        verifyOrdered(isRalist, asList(), () -> ralist());
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist("a", "b", "c"));
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist(cursor("a", "b", "c")));
+        verifyOrdered(isRalist, asList("a", "b", "c", "d", "e"), () -> ralist(iterable("a", "b", "c", "d", "e")));
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist(iterator("a", "b", "c")));
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist(asList("a", "b", "c")));
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralistBuilder().add("a", "b", "c").build());
+        verifyOrdered(isRalist, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(ralistCollector()));
     }
 
     @SuppressWarnings("AssertEqualsBetweenInconvertibleTypes")
@@ -231,12 +242,12 @@ public class JImmutablesTest
         for (int i = 0; i < 2000; ++i) {
             input.add(i);
         }
-        JImmutableRandomAccessList<Integer> list = JImmutables.ralist(input);
+        JImmutableRandomAccessList<Integer> list = ralist(input);
         assertEquals(input, list.getList());
-        assertEquals(list, JImmutables.ralist(input.iterator()));
-        assertEquals(list, JImmutables.ralist(list));
-        assertEquals(list, JImmutables.ralist(list.cursor()));
-        assertEquals(list, JImmutables.ralist(input.toArray()));
+        assertEquals(list, ralist(input.iterator()));
+        assertEquals(list, ralist(list));
+        assertEquals(list, ralist(list.cursor()));
+        assertEquals(list, ralist(input.toArray()));
         assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
     }
 
@@ -375,10 +386,10 @@ public class JImmutablesTest
         final List<String> entries = asList("x", "w", "z", "y");
 
         verifyOrdered(isInsertOrderSet, asList(), () -> JImmutables.<String>insertOrderSet());
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet("x", "w", "z", "y"));
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(cursor("x", "w", "z", "y")));
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(iterable("x", "w", "z", "y")));
-        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.insertOrderSet(iterator("x", "w", "z", "y")));
+        verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet("x", "w", "z", "y"));
+        verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet(cursor("x", "w", "z", "y")));
+        verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet(iterable("x", "w", "z", "y")));
+        verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet(iterator("x", "w", "z", "y")));
     }
 
     public void testMultiset()
@@ -514,7 +525,7 @@ public class JImmutablesTest
         assertEquals(asList(10, 20, 30), list.getList());
         assertEquals(asList(10, 20, 45), changed.getList());
 
-        JImmutableRandomAccessList<Integer> ralist = JImmutables.ralist();
+        JImmutableRandomAccessList<Integer> ralist = ralist();
         ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
         assertEquals(10, ralist.get(0));
         assertEquals(20, ralist.get(1));
