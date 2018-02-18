@@ -89,6 +89,7 @@ public final class JImmutableCollectors
     /**
      * Collects values into a hashed JImmutableSet.
      */
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSet()
     {
@@ -98,6 +99,7 @@ public final class JImmutableCollectors
     /**
      * Collects values into a sorted JImmutableSet using natural sort order of elements.
      */
+    @Deprecated
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> toSortedSet()
     {
@@ -107,6 +109,7 @@ public final class JImmutableCollectors
     /**
      * Collects values into a sorted JImmutableSet using specified Comparator.
      */
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {

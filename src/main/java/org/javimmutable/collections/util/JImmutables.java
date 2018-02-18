@@ -179,7 +179,7 @@ public final class JImmutables
     {
         return JImmutableArrayList.collector();
     }
-    
+
     /**
      * Produces a JImmutableList containing all of the specified values built atop a 32-way tree.
      */
@@ -631,6 +631,15 @@ public final class JImmutables
     }
 
     /**
+     * Collects into an unsorted set to the set.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableSet<T>> setCollector()
+    {
+        return JImmutables.<T>set().setCollector();
+    }
+
+    /**
      * Constructs an empty set that sorts values in their natural sort order (using ComparableComparator).
      */
     @Nonnull
@@ -751,6 +760,24 @@ public final class JImmutables
     }
 
     /**
+     * Collects values into a sorted JImmutableSet using natural sort order of elements.
+     */
+    @Nonnull
+    public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> sortedSetCollector()
+    {
+        return JImmutables.<T>sortedSet().setCollector();
+    }
+
+    /**
+     * Collects values into a sorted JImmutableSet using specified Comparator.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableSet<T>> sortedSetCollector(@Nonnull Comparator<T> comparator)
+    {
+        return JImmutables.sortedSet(comparator).setCollector();
+    }
+
+    /**
      * Constructs an empty set that sorts values based on the order they were originally added to the set.
      */
     @Nonnull
@@ -798,6 +825,15 @@ public final class JImmutables
     public static <T> JImmutableSet<T> insertOrderSet(@Nonnull Iterator<? extends T> source)
     {
         return JImmutableInsertOrderSet.<T>of().insertAll(source);
+    }
+
+    /**
+     * Collects into a set that sorts values based on the order they were originally added to the set.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableSet<T>> insertOrderSetCollector()
+    {
+        return JImmutables.<T>insertOrderSet().setCollector();
     }
 
     /**
@@ -874,6 +910,15 @@ public final class JImmutables
     public static <T> JImmutableMultiset<T> multiset(@Nonnull Iterator<? extends T> source)
     {
         return JImmutableHashMultiset.<T>of().insertAll(source);
+    }
+
+    /**
+     * Collects into a multiset that sorts values based on the order they were originally added to the set.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
+    {
+        return JImmutables.<T>multiset().multisetCollector();
     }
 
     /**
@@ -997,6 +1042,24 @@ public final class JImmutables
     }
 
     /**
+     * Collects values into a sorted JImmutableMultiset using natural sort order of elements.
+     */
+    @Nonnull
+    public static <T extends Comparable<T>> Collector<T, ?, JImmutableMultiset<T>> sortedMultisetCollector()
+    {
+        return JImmutables.<T>sortedMultiset().multisetCollector();
+    }
+
+    /**
+     * Collects values into a sorted JImmutableMultiset using specified Comparator.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableMultiset<T>> sortedMultisetCollector(@Nonnull Comparator<T> comparator)
+    {
+        return JImmutables.sortedMultiset(comparator).multisetCollector();
+    }
+
+    /**
      * Constructs a multiset containing all of the values in source that sorts values based on
      * the order they were originally added to the multiset.
      */
@@ -1045,6 +1108,15 @@ public final class JImmutables
     public static <T> JImmutableMultiset<T> insertOrderMultiset(@Nonnull Iterator<? extends T> source)
     {
         return JImmutableInsertOrderMultiset.<T>of().insertAll(source);
+    }
+
+    /**
+     * Collects into a multiset that sorts values based on the order they were originally added to the set.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableMultiset<T>> insertOrderMultisetCollector()
+    {
+        return JImmutables.<T>insertOrderMultiset().multisetCollector();
     }
 
     /**
