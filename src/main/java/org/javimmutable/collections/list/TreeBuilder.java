@@ -42,7 +42,6 @@ import javax.annotation.Nonnull;
 class TreeBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder;
-    private int size;
 
     TreeBuilder(boolean forwardOrder)
     {
@@ -52,12 +51,11 @@ class TreeBuilder<T>
     synchronized void add(T value)
     {
         leafBuilder.add(value);
-        size += 1;
     }
 
     synchronized int size()
     {
-        return size;
+        return leafBuilder.size;
     }
 
     @Nonnull
@@ -86,7 +84,6 @@ class TreeBuilder<T>
         private void add(T value)
         {
             assert remaining >= 1;
-            assert size < 32;
 
             if (forwardOrder) {
                 values[offset++] = value;
@@ -100,11 +97,10 @@ class TreeBuilder<T>
                 next.add(createNodeForNext());
                 offset = forwardOrder ? 0 : 32;
                 remaining = 32;
-                size = 0;
             } else {
                 remaining -= 1;
-                size += 1;
             }
+            size += 1;
         }
 
         @Nonnull
@@ -160,7 +156,7 @@ class TreeBuilder<T>
             size += node.size();
             if (remaining == 1) {
                 if (next == null) {
-                    next = new BranchBuilder<T>(depth + 1, forwardOrder);
+                    next = new BranchBuilder<>(depth + 1, forwardOrder);
                 }
                 next.add(createNodeForNext(EmptyNode.of()));
                 offset = forwardOrder ? 0 : 32;
