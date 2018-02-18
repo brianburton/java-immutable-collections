@@ -162,7 +162,7 @@ class TreeBuilder<T>
                 if (next == null) {
                     next = new BranchBuilder<T>(depth + 1, forwardOrder);
                 }
-                next.add(createNodeForNext());
+                next.add(createNodeForNext(EmptyNode.of()));
                 offset = forwardOrder ? 0 : 32;
                 remaining = 32;
                 size = 0;
@@ -186,12 +186,6 @@ class TreeBuilder<T>
                 node = next.build(node);
             }
             return node;
-        }
-
-        @Nonnull
-        private Node<T> createNodeForNext()
-        {
-            return createNodeForNext(EmptyNode.of());
         }
 
         @Nonnull
