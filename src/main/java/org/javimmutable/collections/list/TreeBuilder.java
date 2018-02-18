@@ -85,6 +85,9 @@ class TreeBuilder<T>
 
         private void add(T value)
         {
+            assert remaining >= 1;
+            assert size < 32;
+
             if (forwardOrder) {
                 values[offset++] = value;
             } else {
@@ -195,6 +198,7 @@ class TreeBuilder<T>
         private Node<T> createNodeForNext(@Nonnull Node<T> extra)
         {
             final int nodeSize = size + extra.size();
+            assert nodeSize <= ListHelper.sizeForDepth(depth + 1);
             if (forwardOrder) {
                 return BranchNode.forNodeBuilder(depth + 1, nodeSize, EmptyNode.of(), IndexedArray.retained(nodes), 0, offset, extra);
             } else {
