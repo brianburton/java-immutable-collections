@@ -46,16 +46,28 @@ import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 public class IndexedIteratorTest
     extends TestCase
 {
-    public void test()
+    public void testForward()
     {
-        verifyOrderedIterable(asList(), () -> IndexedIterator.iterator(IndexedHelper.empty()));
-        verifyOrderedIterable(asList(1), () -> IndexedIterator.iterator(IndexedHelper.indexed(1)));
-        verifyOrderedIterable(asList(1, 2), () -> IndexedIterator.iterator(IndexedHelper.indexed(1, 2)));
+        verifyOrderedIterable(asList(), IndexedIterator.fwd(IndexedHelper.empty()));
+        verifyOrderedIterable(asList(1), IndexedIterator.fwd(IndexedHelper.indexed(1)));
+        verifyOrderedIterable(asList(1, 2), IndexedIterator.fwd(IndexedHelper.indexed(1, 2)));
         verifyOrderedSplit(false, asList(), asList(), IndexedIterator.iterator(IndexedHelper.empty()));
         verifyOrderedSplit(false, asList(), asList(), IndexedIterator.iterator(IndexedHelper.indexed(1)));
         verifyOrderedSplit(true, asList(1), asList(2), IndexedIterator.iterator(IndexedHelper.indexed(1, 2)));
         verifyOrderedSplit(true, asList(1), asList(2, 3), IndexedIterator.iterator(IndexedHelper.indexed(1, 2, 3)));
         verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), IndexedIterator.forRange(1, 5));
+    }
+
+    public void testReverse()
+    {
+        verifyOrderedIterable(asList(), IndexedIterator.rev(IndexedHelper.empty()));
+        verifyOrderedIterable(asList(1), IndexedIterator.rev(IndexedHelper.indexed(1)));
+        verifyOrderedIterable(asList(2, 1), IndexedIterator.rev(IndexedHelper.indexed(1, 2)));
+        verifyOrderedSplit(false, asList(), asList(), IndexedIterator.reverse(IndexedHelper.empty()));
+        verifyOrderedSplit(false, asList(), asList(), IndexedIterator.reverse(IndexedHelper.indexed(1)));
+        verifyOrderedSplit(true, asList(2), asList(1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2)));
+        verifyOrderedSplit(true, asList(3), asList(2, 1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2, 3)));
+        verifyOrderedSplit(true, asList(5, 4), asList(3, 2, 1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2, 3, 4, 5)));
     }
 
     public void testReduce()

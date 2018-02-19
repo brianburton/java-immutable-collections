@@ -35,9 +35,11 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
 
 class TreeBuilder<T>
 {
@@ -64,6 +66,47 @@ class TreeBuilder<T>
         return leafBuilder.build();
     }
 
+    static <T> Node<T> fillBranch2Node(Node<T> nodeToFill,
+                                       int maxSize,
+                                       boolean forwardOrder,
+                                       Iterator<T> values)
+    {
+        assert nodeToFill instanceof BranchNode;
+        assert nodeToFill.getDepth() == 2;
+        assert maxSize > 0;
+        assert maxSize <= ListHelper.sizeForDepth(nodeToFill.getDepth());
+        final BranchNode<T> branch = (BranchNode<T>)nodeToFill;
+        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder, branch.filledNodes());
+        if (forwardOrder) {
+            assert branch.suffix().isEmpty() || (branch.suffix() instanceof LeafNode);
+            for (T t : branch.suffix()) {
+                builder.add(t);
+            }
+        } else {
+            assert branch.prefix().isEmpty() || (branch.prefix() instanceof LeafNode);
+            final LeafNode<T> prefix = (LeafNode<T>)branch.prefix();
+            for (int i = prefix.size() - 1; i >= 0; --i) {
+                builder.add(prefix.get(i));
+            }
+        }
+        while (values.hasNext() && (builder.size < maxSize)) {
+            builder.add(values.next());
+        }
+        return builder.build();
+    }
+
+    static <T> Node<T> fillNode(Node<T> nodeToFill,
+                                       int maxSize,
+                                       boolean forwardOrder,
+                                       Iterator<T> values)
+    {
+        assert nodeToFill instanceof BranchNode;
+        assert nodeToFill.getDepth() > 2;
+        assert maxSize > 0;
+        assert maxSize <= ListHelper.sizeForDepth(nodeToFill.getDepth());
+             return null;
+    }
+    
     private static class LeafBuilder<T>
     {
         private final boolean forwardOrder;
@@ -79,6 +122,13 @@ class TreeBuilder<T>
             values = ListHelper.allocateValues(32);
             offset = forwardOrder ? 0 : 32;
             remaining = 32;
+        }
+
+        private LeafBuilder(boolean forwardOrder,
+                            @Nonnull Indexed<Node<T>> startNodes)
+        {
+            this(forwardOrder);
+            next = new BranchBuilder<T>(1, forwardOrder, startNodes);
         }
 
         private void add(T value)
@@ -141,6 +191,33 @@ class TreeBuilder<T>
             offset = forwardOrder ? 0 : 32;
             remaining = 32;
             size = 0;
+        }
+
+        private BranchBuilder(int depth,
+                              boolean forwardOrder,
+                              @Nonnull Indexed<Node<T>> startNodes)
+        {
+            this(depth, forwardOrder);
+            assert startNodes.size() > 0;
+            if (startNodes.get(0).getDepth() == depth) {
+                final int nodeCount = startNodes.size();
+                if (forwardOrder) {
+                    for (int i = 0; i < nodeCount; ++i) {
+                        final Node<T> node = startNodes.get(i);
+                        size += node.size();
+                        nodes[offset++] = node;
+                    }
+                } else {
+                    for (int i = nodeCount - 1; i >= 0; ++i) {
+                        final Node<T> node = startNodes.get(i);
+                        size += node.size();
+                        nodes[--offset] = node;
+                    }
+                }
+                remaining -= startNodes.size();
+            } else {
+                next = new BranchBuilder<T>(depth + 1, forwardOrder, startNodes);
+            }
         }
 
         private void add(@Nonnull Node<T> node)

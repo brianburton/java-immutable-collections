@@ -84,10 +84,10 @@ public class IndexedHelper
             public T get(int index)
             {
                 switch (index) {
-                case 0:
-                    return a;
-                default:
-                    throw new ArrayIndexOutOfBoundsException();
+                    case 0:
+                        return a;
+                    default:
+                        throw new ArrayIndexOutOfBoundsException();
                 }
             }
 
@@ -113,12 +113,12 @@ public class IndexedHelper
             public T get(int index)
             {
                 switch (index) {
-                case 0:
-                    return a;
-                case 1:
-                    return b;
-                default:
-                    throw new ArrayIndexOutOfBoundsException();
+                    case 0:
+                        return a;
+                    case 1:
+                        return b;
+                    default:
+                        throw new ArrayIndexOutOfBoundsException();
                 }
             }
 
@@ -145,14 +145,14 @@ public class IndexedHelper
             public T get(int index)
             {
                 switch (index) {
-                case 0:
-                    return a;
-                case 1:
-                    return b;
-                case 2:
-                    return c;
-                default:
-                    throw new ArrayIndexOutOfBoundsException();
+                    case 0:
+                        return a;
+                    case 1:
+                        return b;
+                    case 2:
+                        return c;
+                    default:
+                        throw new ArrayIndexOutOfBoundsException();
                 }
             }
 
@@ -160,6 +160,42 @@ public class IndexedHelper
             public int size()
             {
                 return 3;
+            }
+        };
+    }
+
+    /**
+     * Returns an Indexed containing three values.
+     * Note that the type of the Indexed may be a subclass of the type of the value.
+     */
+    @Nonnull
+    public static <T, V extends T> Indexed<T> indexed(V a,
+                                                      V b,
+                                                      V c,
+                                                      V... others)
+    {
+        final int length = 3 + others.length;
+        return new Indexed<T>()
+        {
+            @Override
+            public T get(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return a;
+                    case 1:
+                        return b;
+                    case 2:
+                        return c;
+                    default:
+                        return others[index - 3];
+                }
+            }
+
+            @Override
+            public int size()
+            {
+                return length;
             }
         };
     }

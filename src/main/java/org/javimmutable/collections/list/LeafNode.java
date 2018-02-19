@@ -206,4 +206,9 @@ class LeafNode<T>
         }
         //TODO: review checkInvariants()
     }
+    
+    Indexed<T> values()
+    {
+        return IndexedArray.retained(values);
+    }
 }
