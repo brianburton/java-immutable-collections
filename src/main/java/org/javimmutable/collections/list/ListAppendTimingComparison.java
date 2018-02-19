@@ -28,9 +28,9 @@ public class ListAppendTimingComparison
             for (int length = 1; length <= 250; ++length) {
                 extras.add(length);
                 if (mode == Mode.OLD) {
-                    list = list.insertAllLast(extras.iterator());
+                    list = list.insertAllFirst(extras.iterator());
                 } else {
-                    list = list.insertAllLast(extras);
+                    list = list.insertAllFirst(extras);
                 }
             }
         }

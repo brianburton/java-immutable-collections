@@ -230,7 +230,7 @@ class TreeBuilder<T>
                         nodes[offset++] = node;
                     }
                 } else {
-                    for (int i = nodeCount - 1; i >= 0; ++i) {
+                    for (int i = nodeCount - 1; i >= 0; --i) {
                         final Node<T> node = startNodes.get(i);
                         size += node.size();
                         nodes[--offset] = node;

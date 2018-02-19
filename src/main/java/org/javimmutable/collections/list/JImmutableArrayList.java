@@ -46,7 +46,10 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
+import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
+import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.sequence.EmptySequenceNode;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
 
@@ -198,7 +201,22 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
-        return insertAllFirst(values.iterator());
+        final Node<T> newRoot;
+        if (values instanceof Indexed) {
+            final Indexed<T> indexed = (Indexed<T>)values;
+            newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(indexed));
+        } else if (values instanceof List) {
+            final Indexed<T> indexed = IndexedList.retained((List<T>)values);
+            newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(indexed));
+        } else {
+            final Iterator<? extends T> iterator = values.iterator();
+            InsertableSequence<T> seq = EmptySequenceNode.of();
+            while (iterator.hasNext()) {
+                seq = seq.insert(iterator.next());
+            }
+            newRoot = root.insertAll(Integer.MAX_VALUE, false, SequenceIterator.iterator(seq));
+        }
+        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
     }
 
     @Nonnull
@@ -226,16 +244,15 @@ public class JImmutableArrayList<T>
             newRoot = newRoot.insertFirst(seq.getHead());
             seq = seq.getTail();
         }
-        return new JImmutableArrayList<>(newRoot);
+        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
     }
 
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values.iterator());
-        newRoot.checkInvariants();
-        return new JImmutableArrayList<>(newRoot);
+        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values.iterator());
+        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
     }
 
     @Nonnull
