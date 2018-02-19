@@ -45,6 +45,7 @@ import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -182,6 +183,14 @@ class LeafNode<T>
         T[] newValues = values.clone();
         newValues[index] = value;
         return new LeafNode<T>(newValues);
+    }
+
+    @Override
+    public Node<T> insertAll(int maxSize,
+                             boolean forwardOrder,
+                             @Nonnull Iterator<? extends T> values)
+    {
+        return TreeBuilder.expandLeafNode(maxSize, forwardOrder, this, values);
     }
 
     @Nonnull

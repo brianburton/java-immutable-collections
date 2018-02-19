@@ -46,6 +46,7 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
 
 /**
  * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
@@ -87,6 +88,16 @@ class BranchNode<T>
         this(node.getDepth() + 1,
              node.size() + 1,
              new LeafNode<>(prefixValue),
+             ListHelper.allocateSingleNode(node),
+             EmptyNode.of());
+        assert node.isFull();
+    }
+
+    BranchNode(Node<T> node)
+    {
+        this(node.getDepth() + 1,
+             node.size() + 1,
+             EmptyNode.of(),
              ListHelper.allocateSingleNode(node),
              EmptyNode.of());
         assert node.isFull();
@@ -364,6 +375,59 @@ class BranchNode<T>
         throw new IndexOutOfBoundsException();
     }
 
+    /**
+     * Efficiently add values from an Iterator to those contained in this BranchNode
+     * to create a new BranchNode of a given maximum size.  This is done in two stages.
+     * First the appropriate (based on insertion order) prefix/suffix is expanded until
+     * it is full.  Then a builder is created from the full nodes of this branch and any
+     * remaining values from the iterator are added to the builder.  Finally the original
+     * prefix/suffix from the unexpanded side is added to the final result.
+     */
+    @Override
+    public Node<T> insertAll(int maxSize,
+                             boolean forwardOrder,
+                             @Nonnull Iterator<? extends T> values)
+    {
+        assert maxSize >= size;
+        assert ListHelper.sizeForDepth(depth) >= size;
+        if (size >= maxSize || !values.hasNext()) {
+            return this;
+        }
+        final int growthAllowed = Math.min(ListHelper.sizeForDepth(depth), maxSize) - size;
+        BranchNode<T> newNode;
+        if (forwardOrder) {
+            if (suffix.isEmpty()) {
+                newNode = this;
+            } else {
+                final int maxSuffixSize = Math.min(ListHelper.sizeForDepth(depth - 1), suffix.size() + growthAllowed);
+                final Node<T> newSuffix = suffix.insertAll(maxSuffixSize, true, values);
+                newNode = withSuffix(newSuffix);
+            }
+            assert newNode.isFull() || newNode.size == maxSize || newNode.suffix.isEmpty() || !values.hasNext();
+        } else {
+            if (prefix.isEmpty()) {
+                newNode = this;
+            } else {
+                final int maxPrefixSize = Math.min(ListHelper.sizeForDepth(depth - 1), prefix.size() + growthAllowed);
+                final Node<T> newPrefix = prefix.insertAll(maxPrefixSize, false, values);
+                newNode = withPrefix(newPrefix);
+            }
+            assert newNode.isFull() || newNode.size == maxSize || newNode.prefix.isEmpty() || !values.hasNext();
+        }
+        if (newNode.size() < maxSize && values.hasNext()) {
+            if (newNode.isFull()) {
+                // since we are already full we need to create a parent and expand that
+                newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, new BranchNode<>(newNode), values);
+            } else {
+                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
+                newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, newNode, values);
+                newNode = forwardOrder ? newNode.withPrefix(prefix) : newNode.withSuffix(suffix);
+            }
+        }
+        assert newNode.size() == maxSize || !values.hasNext();
+        return newNode;
+    }
+
     @Nonnull
     @Override
     public Cursor<T> cursor()
@@ -462,19 +526,47 @@ class BranchNode<T>
         }
         suffix.checkInvariants();
     }
-    
+
     Node<T> prefix()
     {
         return prefix;
     }
-    
+
     Indexed<Node<T>> filledNodes()
     {
         return IndexedArray.retained(nodes);
     }
-    
+
     Node<T> suffix()
     {
         return suffix;
+    }
+
+    private BranchNode<T> withPrefix(@Nonnull Node<T> newPrefix)
+    {
+        assert newPrefix.getDepth() < depth;
+        final int baseSize = size - prefix.size();
+        if (newPrefix.size() == ListHelper.sizeForDepth(depth - 1)) {
+            final Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
+            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
+            newNodes[0] = newPrefix;
+            return new BranchNode<T>(depth, baseSize + newPrefix.size(), EmptyNode.of(), newNodes, suffix);
+        } else {
+            return new BranchNode<T>(depth, baseSize + newPrefix.size(), newPrefix, nodes, suffix);
+        }
+    }
+
+    private BranchNode<T> withSuffix(@Nonnull Node<T> newSuffix)
+    {
+        assert newSuffix.getDepth() < depth;
+        final int baseSize = size - suffix.size();
+        if (newSuffix.size() == ListHelper.sizeForDepth(depth - 1)) {
+            final Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
+            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
+            newNodes[nodes.length] = newSuffix;
+            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, newNodes, EmptyNode.of());
+        } else {
+            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, nodes, newSuffix);
+        }
     }
 }

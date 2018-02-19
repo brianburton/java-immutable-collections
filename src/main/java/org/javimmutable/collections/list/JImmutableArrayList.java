@@ -233,7 +233,9 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        return insertAllLast(values.iterator());
+        Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values.iterator());
+        newRoot.checkInvariants();
+        return new JImmutableArrayList<>(newRoot);
     }
 
     @Nonnull

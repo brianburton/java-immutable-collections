@@ -39,6 +39,9 @@ import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 
+import javax.annotation.Nonnull;
+import java.util.Iterator;
+
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
  * to the head and tail of the list but allow updates at any index within the list.
@@ -70,4 +73,8 @@ interface Node<T>
 
     Node<T> assign(int index,
                    T value);
+
+    Node<T> insertAll(int maxSize,
+                      boolean forwardOrder,
+                      @Nonnull Iterator<? extends T> values);
 }

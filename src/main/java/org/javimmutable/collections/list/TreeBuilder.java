@@ -37,6 +37,7 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -66,28 +67,36 @@ class TreeBuilder<T>
         return leafBuilder.build();
     }
 
-    static <T> Node<T> fillBranch2Node(Node<T> nodeToFill,
-                                       int maxSize,
-                                       boolean forwardOrder,
-                                       Iterator<T> values)
+    @Nonnull
+    static <T> Node<T> createFromIterator(int maxSize,
+                                          boolean forwardOrder,
+                                          @Nonnull Iterator<? extends T> values)
     {
-        assert nodeToFill instanceof BranchNode;
-        assert nodeToFill.getDepth() == 2;
-        assert maxSize > 0;
-        assert maxSize <= ListHelper.sizeForDepth(nodeToFill.getDepth());
-        final BranchNode<T> branch = (BranchNode<T>)nodeToFill;
-        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder, branch.filledNodes());
-        if (forwardOrder) {
-            assert branch.suffix().isEmpty() || (branch.suffix() instanceof LeafNode);
-            for (T t : branch.suffix()) {
-                builder.add(t);
-            }
-        } else {
-            assert branch.prefix().isEmpty() || (branch.prefix() instanceof LeafNode);
-            final LeafNode<T> prefix = (LeafNode<T>)branch.prefix();
-            for (int i = prefix.size() - 1; i >= 0; --i) {
-                builder.add(prefix.get(i));
-            }
+        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder);
+        while (values.hasNext() && (builder.size < maxSize)) {
+            builder.add(values.next());
+        }
+        return builder.build();
+    }
+
+    /**
+     * Takes a single LeafNode and returns a new Node of size maxSize containing all of the values
+     * from the LeafNode plus values from Iterator.  If Iterator contains insufficient values to
+     * reach maxSize than a smaller than requested Node containing all of the values in the Iterator
+     * is returned.
+     */
+    @Nonnull
+    static <T> Node<T> expandLeafNode(int maxSize,
+                                      boolean forwardOrder,
+                                      @Nonnull LeafNode<T> nodeToFill,
+                                      @Nonnull Iterator<? extends T> values)
+    {
+        assert maxSize >= nodeToFill.size();
+        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder);
+        final Indexed<T> nodeValues = nodeToFill.values();
+        final Iterable<T> prefill = forwardOrder ? IndexedIterator.fwd(nodeValues) : IndexedIterator.rev(nodeValues);
+        for (T t : prefill) {
+            builder.add(t);
         }
         while (values.hasNext() && (builder.size < maxSize)) {
             builder.add(values.next());
@@ -95,18 +104,28 @@ class TreeBuilder<T>
         return builder.build();
     }
 
-    static <T> Node<T> fillNode(Node<T> nodeToFill,
-                                       int maxSize,
-                                       boolean forwardOrder,
-                                       Iterator<T> values)
+    /**
+     * Takes a single BranchNode which has an empty prefix/suffix and builds a new BranchNode
+     * containing all of the filled nodes from nodeToFill as a starting point plus sufficient
+     * values added to from the Iterator to bring the total size of the new node to maxSize.
+     * If the Iterator contains insufficient values to produce a node of maxSize then a smaller
+     * than requested node containing all values in the Iterator is returned.
+     */
+    @Nonnull
+    static <T> BranchNode<T> expandBranchNode(int maxSize,
+                                              boolean forwardOrder,
+                                              @Nonnull BranchNode<T> nodeToFill,
+                                              @Nonnull Iterator<? extends T> values)
     {
-        assert nodeToFill instanceof BranchNode;
-        assert nodeToFill.getDepth() > 2;
-        assert maxSize > 0;
-        assert maxSize <= ListHelper.sizeForDepth(nodeToFill.getDepth());
-             return null;
+        assert maxSize >= nodeToFill.size();
+        assert (forwardOrder ? nodeToFill.suffix() : nodeToFill.prefix()).isEmpty();
+        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder, nodeToFill.filledNodes());
+        while (values.hasNext() && (builder.size < maxSize)) {
+            builder.add(values.next());
+        }
+        return (BranchNode<T>)builder.build();
     }
-    
+
     private static class LeafBuilder<T>
     {
         private final boolean forwardOrder;
@@ -129,6 +148,9 @@ class TreeBuilder<T>
         {
             this(forwardOrder);
             next = new BranchBuilder<T>(1, forwardOrder, startNodes);
+            for (Node<T> node : IndexedIterator.fwd(startNodes)) {
+                size += node.size();
+            }
         }
 
         private void add(T value)
