@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 
@@ -49,13 +50,12 @@ import java.util.Iterator;
 interface Node<T>
     extends Cursorable<T>,
             SplitableIterable<T>,
+            Indexed<T>,
             InvariantCheckable
 {
     boolean isEmpty();
 
     boolean isFull();
-
-    int size();
 
     int getDepth();
 
@@ -68,8 +68,6 @@ interface Node<T>
     Node<T> insertLast(T value);
 
     boolean containsIndex(int index);
-
-    T get(int index);
 
     Node<T> assign(int index,
                    T value);

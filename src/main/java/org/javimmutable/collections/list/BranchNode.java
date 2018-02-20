@@ -393,9 +393,12 @@ class BranchNode<T>
         if (size >= maxSize || !values.hasNext()) {
             return this;
         }
-        final int growthAllowed = Math.min(ListHelper.sizeForDepth(depth), maxSize) - size;
+        final int fullSize = Math.min(ListHelper.sizeForDepth(depth), maxSize);
+        final int growthAllowed = fullSize - size;
         BranchNode<T> newNode;
-        if (forwardOrder) {
+        if (isFull()) {
+            newNode = this;
+        } else if (forwardOrder) {
             if (suffix.isEmpty()) {
                 newNode = this;
             } else {
@@ -403,7 +406,11 @@ class BranchNode<T>
                 final Node<T> newSuffix = suffix.insertAll(maxSuffixSize, true, values);
                 newNode = withSuffix(newSuffix);
             }
-            assert newNode.isFull() || newNode.size == maxSize || newNode.suffix.isEmpty() || !values.hasNext();
+            if (values.hasNext() && !newNode.isFull()) {
+                assert newNode.suffix.isEmpty();
+                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
+                newNode = TreeBuilder.expandBranchNode(fullSize - prefix.size(), true, newNode, values).withPrefix(prefix);
+            }
         } else {
             if (prefix.isEmpty()) {
                 newNode = this;
@@ -412,17 +419,16 @@ class BranchNode<T>
                 final Node<T> newPrefix = prefix.insertAll(maxPrefixSize, false, values);
                 newNode = withPrefix(newPrefix);
             }
-            assert newNode.isFull() || newNode.size == maxSize || newNode.prefix.isEmpty() || !values.hasNext();
-        }
-        if (newNode.size() < maxSize && values.hasNext()) {
-            if (newNode.isFull()) {
-                // since we are already full we need to create a parent and expand that
-                newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, new BranchNode<>(newNode), values);
-            } else {
+            if (values.hasNext() && !newNode.isFull()) {
+                assert newNode.prefix.isEmpty();
                 // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
-                newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, newNode, values);
-                newNode = forwardOrder ? newNode.withPrefix(prefix) : newNode.withSuffix(suffix);
+                newNode = TreeBuilder.expandBranchNode(fullSize - suffix.size(), false, newNode, values).withSuffix(suffix);
             }
+        }
+        assert newNode.isFull() || newNode.size == maxSize || !values.hasNext();
+        if (newNode.size() < maxSize && values.hasNext()) {
+            // since we are already full we need to create a parent and expand that
+            newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, new BranchNode<>(newNode), values);
         }
         assert newNode.size() == maxSize || !values.hasNext();
         return newNode;

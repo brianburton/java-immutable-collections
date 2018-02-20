@@ -201,7 +201,14 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
         final Node<T> newRoot;
-        if (values instanceof Indexed) {
+        if (values instanceof JImmutableArrayList) {
+            final Node<T> other = ((JImmutableArrayList<T>)values).root;
+            if (other.size() > root.size()) {
+                newRoot = other.insertAll(Integer.MAX_VALUE, true, root.iterator());
+            } else {
+                newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(other));
+            }
+        } else if (values instanceof Indexed) {
             final Indexed<T> indexed = (Indexed<T>)values;
             newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(indexed));
         } else if (values instanceof List) {
@@ -241,6 +248,13 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
+        if (values instanceof JImmutableArrayList) {
+            final Node<T> other = ((JImmutableArrayList<T>)values).root;
+            if (other.size() > root.size()) {
+                final Node<T> newRoot = other.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(root));
+                return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
+            }
+        }
         return insertAllLast(values.iterator());
     }
 

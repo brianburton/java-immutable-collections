@@ -117,9 +117,9 @@ class TreeBuilder<T>
                                               @Nonnull BranchNode<T> nodeToFill,
                                               @Nonnull Iterator<? extends T> values)
     {
-        assert maxSize >= nodeToFill.size();
         assert (forwardOrder ? nodeToFill.suffix() : nodeToFill.prefix()).isEmpty();
         final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder, nodeToFill.filledNodes());
+        assert maxSize >= builder.size;
         while (values.hasNext() && (builder.size < maxSize)) {
             builder.add(values.next());
         }
