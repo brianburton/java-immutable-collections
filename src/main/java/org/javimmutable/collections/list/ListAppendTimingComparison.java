@@ -7,7 +7,7 @@ public class ListAppendTimingComparison
 {
     public static void main(String[] argv)
     {
-        Mode mode = (argv.length == 0) ? Mode.OLD : Mode.valueOf(argv[0]);
+        Mode mode = (argv.length == 0) ? Mode.OLD_LAST : Mode.valueOf(argv[0].replace("-", "_").toUpperCase());
         final long startMillis = System.currentTimeMillis();
         runTest(mode);
         final long elapsedMillis = System.currentTimeMillis() - startMillis;
@@ -16,8 +16,10 @@ public class ListAppendTimingComparison
 
     private enum Mode
     {
-        OLD,
-        NEW
+        OLD_FIRST,
+        OLD_LAST,
+        NEW_FIRST,
+        NEW_LAST
     }
 
     private static void runTest(Mode mode)
@@ -27,10 +29,20 @@ public class ListAppendTimingComparison
             List<Integer> extras = new ArrayList<>();
             for (int length = 1; length <= 250; ++length) {
                 extras.add(length);
-                if (mode == Mode.OLD) {
-                    list = list.insertAllFirst(extras.iterator());
-                } else {
-                    list = list.insertAllFirst(extras);
+                switch (mode) {
+
+                    case OLD_FIRST:
+                        list = list.insertAllFirstOldWay(extras.iterator());
+                        break;
+                    case OLD_LAST:
+                        list = list.insertAllLastOldWay(extras.iterator());
+                        break;
+                    case NEW_FIRST:
+                        list = list.insertAllFirst(extras);
+                        break;
+                    case NEW_LAST:
+                        list = list.insertAllLast(extras);
+                        break;
                 }
             }
         }

@@ -41,7 +41,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -234,16 +233,7 @@ public class JImmutableArrayList<T>
         while (values.hasNext()) {
             seq = seq.insert(values.next());
         }
-        return insertAllFirstImpl(seq);
-    }
-
-    private JImmutableArrayList<T> insertAllFirstImpl(Sequence<T> seq)
-    {
-        Node<T> newRoot = root;
-        while (!seq.isEmpty()) {
-            newRoot = newRoot.insertFirst(seq.getHead());
-            seq = seq.getTail();
-        }
+        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, false, SequenceIterator.iterator(seq));
         return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
     }
 
@@ -251,8 +241,7 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values.iterator());
-        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
+        return insertAllLast(values.iterator());
     }
 
     @Nonnull
@@ -266,13 +255,34 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
+        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values);
+        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
+    }
+
+    @Nonnull
+    JImmutableArrayList<T> insertAllFirstOldWay(@Nonnull Iterator<? extends T> values)
+    {
+        InsertableSequence<T> seq = EmptySequenceNode.of();
+        while (values.hasNext()) {
+            seq = seq.insert(values.next());
+        }
+        Node<T> newRoot = root;
+        while (!seq.isEmpty()) {
+            newRoot = newRoot.insertFirst(seq.getHead());
+            seq = seq.getTail();
+        }
+        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
+    }
+
+    @Nonnull
+    JImmutableArrayList<T> insertAllLastOldWay(@Nonnull Iterator<? extends T> values)
+    {
         Node<T> newRoot = root;
         while (values.hasNext()) {
             newRoot = newRoot.insertLast(values.next());
         }
         return new JImmutableArrayList<>(newRoot);
     }
-
 
     @Nonnull
     @Override
