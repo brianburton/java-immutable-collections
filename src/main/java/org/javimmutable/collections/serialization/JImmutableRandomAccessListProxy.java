@@ -52,11 +52,11 @@ public class JImmutableRandomAccessListProxy
 
     public JImmutableRandomAccessListProxy()
     {
-        super(JImmutableBtreeList.of(), BUILDER_FACTORY);
+        super(BUILDER_FACTORY, JImmutableBtreeList.of());
     }
 
     public JImmutableRandomAccessListProxy(JImmutableBtreeList list)
     {
-        super(list, BUILDER_FACTORY);
+        super(BUILDER_FACTORY, list);
     }
 }

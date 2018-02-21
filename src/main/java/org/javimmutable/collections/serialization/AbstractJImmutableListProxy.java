@@ -50,15 +50,15 @@ abstract class AbstractJImmutableListProxy
 {
     private static final int LIST_VERSION = 1001;
     private static final long serialVersionUID = -121805;
-         
-    protected JImmutableList list;
-    protected Supplier<MutableBuilder> builderFactory;
 
-    protected AbstractJImmutableListProxy(JImmutableList list,
-                                          Supplier<MutableBuilder> builderFactory)
+    protected final Supplier<MutableBuilder> builderFactory;
+    protected JImmutableList list;
+
+    protected AbstractJImmutableListProxy(Supplier<MutableBuilder> builderFactory,
+                                          JImmutableList list)
     {
-        this.list = list;
         this.builderFactory = builderFactory;
+        this.list = list;
     }
 
     @Override
@@ -80,8 +80,8 @@ abstract class AbstractJImmutableListProxy
         if (version != LIST_VERSION) {
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
+        final MutableBuilder builder = builderFactory.get();
         final int size = in.readInt();
-        MutableBuilder builder = builderFactory.get();
         for (int i = 0; i < size; ++i) {
             builder.add(in.readObject());
         }

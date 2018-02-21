@@ -52,11 +52,11 @@ public class JImmutableListProxy
 
     public JImmutableListProxy()
     {
-        super(JImmutableArrayList.of(), BUILDER_FACTORY);
+        super(BUILDER_FACTORY, JImmutableArrayList.of());
     }
 
     public JImmutableListProxy(JImmutableArrayList list)
     {
-        super(list, BUILDER_FACTORY);
+        super(BUILDER_FACTORY, list);
     }
 }
