@@ -262,18 +262,34 @@ public class JImmutableBtreeList<T>
         if ((index < 0) || (index > size())) {
             throw new IndexOutOfBoundsException();
         }
-        int i = index;
-        BtreeNode<T> newRoot = root;
-        while (values.hasNext()) {
-            BtreeInsertResult<T> insertResult = newRoot.insertAt(i, values.next());
-            if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
-                newRoot = insertResult.newNode;
+        BtreeNode<T> newRoot;
+        if (index == size()) {
+            final BtreeNodeBuilder<T> builder = new BtreeNodeBuilder<>();
+            if (root.depth() == 1) {
+                for (T t : root) {
+                    builder.add(t);
+                }
             } else {
-                newRoot = new BtreeBranchNode<>(insertResult.newNode, insertResult.extraNode);
+                builder.rebuild(root);
             }
-            i++;
+            while (values.hasNext()) {
+                builder.add(values.next());
+            }
+            newRoot = builder.build();
+        } else {
+            int i = index;
+            newRoot = root;
+            while (values.hasNext()) {
+                BtreeInsertResult<T> insertResult = newRoot.insertAt(i, values.next());
+                if (insertResult.type == BtreeInsertResult.Type.INPLACE) {
+                    newRoot = insertResult.newNode;
+                } else {
+                    newRoot = new BtreeBranchNode<>(insertResult.newNode, insertResult.extraNode);
+                }
+                i++;
+            }
         }
-        return new JImmutableBtreeList<>(newRoot);
+        return (root == newRoot) ? this : new JImmutableBtreeList<>(newRoot);
     }
 
     @SuppressWarnings("unchecked")
@@ -485,7 +501,7 @@ public class JImmutableBtreeList<T>
     {
         return root;
     }
-    
+
     public static class Builder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {

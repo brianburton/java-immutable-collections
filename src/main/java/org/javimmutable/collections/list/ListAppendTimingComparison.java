@@ -65,7 +65,6 @@ public class ListAppendTimingComparison
             for (int length = 1; length <= 250; ++length) {
                 extras.add(length);
                 switch (mode) {
-
                     case OLD_FIRST:
                         list = list.insertAllFirstOldWay(extras.iterator());
                         break;
