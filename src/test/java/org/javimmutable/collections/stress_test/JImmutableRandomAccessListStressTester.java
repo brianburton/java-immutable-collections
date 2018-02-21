@@ -84,7 +84,7 @@ public class JImmutableRandomAccessListStressTester
             System.out.printf("growing %d%n", ralist.size());
 
             while (expected.size() < step.growthSize()) {
-                int index = random.nextInt(ralist.size());
+                int index = random.nextInt(Math.max(1, ralist.size()));
                 switch (random.nextInt(4)) {
                     case 0: { //insert(int, T)
                         String value = RandomKeyManager.makeValue(tokens, random);
@@ -105,8 +105,10 @@ public class JImmutableRandomAccessListStressTester
                         break;
                     }
                     case 3: { //delete(int)
-                        ralist = ralist.delete(index);
-                        expected.remove(index);
+                        if (expected.size() > 0) {
+                            ralist = ralist.delete(index);
+                            expected.remove(index);
+                        }
                         break;
                     }
                     default:
