@@ -77,6 +77,7 @@ public class JImmutableListStressTester
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
         for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+            assert expected.size() == list.size();
             System.out.printf("growing %d%n", list.size());
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(14)) {

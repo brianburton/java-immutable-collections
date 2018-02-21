@@ -406,7 +406,7 @@ class BranchNode<T>
                 final Node<T> newSuffix = suffix.insertAll(maxSuffixSize, true, values);
                 newNode = withSuffix(newSuffix);
             }
-            if (values.hasNext() && !newNode.isFull()) {
+            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
                 assert newNode.suffix.isEmpty();
                 // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
                 newNode = TreeBuilder.expandBranchNode(fullSize - prefix.size(), true, newNode, values).withPrefix(prefix);
@@ -419,7 +419,7 @@ class BranchNode<T>
                 final Node<T> newPrefix = prefix.insertAll(maxPrefixSize, false, values);
                 newNode = withPrefix(newPrefix);
             }
-            if (values.hasNext() && !newNode.isFull()) {
+            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
                 assert newNode.prefix.isEmpty();
                 // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
                 newNode = TreeBuilder.expandBranchNode(fullSize - suffix.size(), false, newNode, values).withSuffix(suffix);
