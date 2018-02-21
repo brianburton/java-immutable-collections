@@ -72,7 +72,7 @@ class TreeBuilder<T>
                                           boolean forwardOrder,
                                           @Nonnull Iterator<? extends T> values)
     {
-        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder);
+        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder);
         while (values.hasNext() && (builder.size < maxSize)) {
             builder.add(values.next());
         }
@@ -92,7 +92,7 @@ class TreeBuilder<T>
                                       @Nonnull Iterator<? extends T> values)
     {
         assert maxSize >= nodeToFill.size();
-        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder);
+        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder);
         final Indexed<T> nodeValues = nodeToFill.values();
         final Iterable<T> prefill = forwardOrder ? IndexedIterator.fwd(nodeValues) : IndexedIterator.rev(nodeValues);
         for (T t : prefill) {
@@ -118,7 +118,7 @@ class TreeBuilder<T>
                                               @Nonnull Iterator<? extends T> values)
     {
         assert (forwardOrder ? nodeToFill.suffix() : nodeToFill.prefix()).isEmpty();
-        final LeafBuilder<T> builder = new LeafBuilder<T>(forwardOrder, nodeToFill.filledNodes());
+        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder, nodeToFill.filledNodes());
         assert maxSize >= builder.size;
         while (values.hasNext() && (builder.size < maxSize)) {
             builder.add(values.next());
@@ -147,7 +147,7 @@ class TreeBuilder<T>
                             @Nonnull Indexed<Node<T>> startNodes)
         {
             this(forwardOrder);
-            next = new BranchBuilder<T>(1, forwardOrder, startNodes);
+            next = new BranchBuilder<>(1, forwardOrder, startNodes);
             for (Node<T> node : IndexedIterator.fwd(startNodes)) {
                 size += node.size();
             }
@@ -238,7 +238,7 @@ class TreeBuilder<T>
                 }
                 remaining -= startNodes.size();
             } else {
-                next = new BranchBuilder<T>(depth + 1, forwardOrder, startNodes);
+                next = new BranchBuilder<>(depth + 1, forwardOrder, startNodes);
             }
         }
 
