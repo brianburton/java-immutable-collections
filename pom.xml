@@ -221,6 +221,8 @@
                         <classpath />
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
+                        <!--<argument>&#45;&#45;list</argument>-->
+                        <!--<argument>arraylist</argument>-->
                     </arguments>
                 </configuration>
             </plugin>

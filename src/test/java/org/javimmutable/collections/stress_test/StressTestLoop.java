@@ -74,8 +74,8 @@ public class StressTestLoop
         throws Exception
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
-            .insert(new JImmutableListStressTester(JImmutables.list()))
-            .insert(new JImmutableListStressTester(JImmutables.ralist()))
+            .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
+            .insert(new JImmutableListStressTester(JImmutables.ralist(), JImmutables.ralistCollector()))
 
             .insert(new JImmutableRandomAccessListStressTester(JImmutables.ralist()))
 

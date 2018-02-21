@@ -50,7 +50,7 @@ import java.util.Random;
  * (empties the ralist of all values).
  */
 public class JImmutableRandomAccessListStressTester
-        extends AbstractListStressTestable
+    extends AbstractListStressTestable
 {
     private final JImmutableRandomAccessList<String> ralist;
 
@@ -85,27 +85,32 @@ public class JImmutableRandomAccessListStressTester
 
             while (expected.size() < step.growthSize()) {
                 int index = random.nextInt(ralist.size());
-                switch (random.nextInt(2)) {
-                case 0: { //insert(int, T)
-                    String value = RandomKeyManager.makeValue(tokens, random);
-                    ralist = ralist.insert(index, value);
-                    expected.add(index, value);
-                    break;
-                }
-                case 1: { //insertAll(int, Cursorable);
-                    List<String> values = makeInsertList(tokens, random);
-                    ralist = ralist.insertAll(index, plainIterable(values));
-                    expected.addAll(index, values);
-                    break;
-                }
-                case 2: { //insertAll(int, Collection)
-                    List<String> values = makeInsertList(tokens, random);
-                    ralist = ralist.insertAll(index, values);
-                    expected.addAll(index, values);
-                    break;
-                }
-                default:
-                    throw new RuntimeException();
+                switch (random.nextInt(4)) {
+                    case 0: { //insert(int, T)
+                        String value = RandomKeyManager.makeValue(tokens, random);
+                        ralist = ralist.insert(index, value);
+                        expected.add(index, value);
+                        break;
+                    }
+                    case 1: { //insertAll(int, Cursorable);
+                        List<String> values = makeInsertList(tokens, random);
+                        ralist = ralist.insertAll(index, plainIterable(values));
+                        expected.addAll(index, values);
+                        break;
+                    }
+                    case 2: { //insertAll(int, Collection)
+                        List<String> values = makeInsertList(tokens, random);
+                        ralist = ralist.insertAll(index, values);
+                        expected.addAll(index, values);
+                        break;
+                    }
+                    case 3: { //delete(int)
+                        ralist = ralist.delete(index);
+                        expected.remove(index);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException();
                 }
             }
             verifyContents(ralist, expected);

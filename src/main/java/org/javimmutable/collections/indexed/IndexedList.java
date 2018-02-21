@@ -37,13 +37,16 @@ package org.javimmutable.collections.indexed;
 
 import org.javimmutable.collections.Indexed;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Immutable
 public class IndexedList<T>
-    implements Indexed<T>
+    implements Indexed<T>,
+               Iterable<T>
 {
     private final List<? extends T> values;
 
@@ -83,5 +86,26 @@ public class IndexedList<T>
     public int size()
     {
         return values.size();
+    }
+
+    @Override
+    @Nonnull
+    public Iterator<T> iterator()
+    {
+        final Iterator<? extends T> i = values.iterator();
+        return new Iterator<T>()
+        {
+            @Override
+            public boolean hasNext()
+            {
+                return i.hasNext();
+            }
+
+            @Override
+            public T next()
+            {
+                return i.next();
+            }
+        };
     }
 }

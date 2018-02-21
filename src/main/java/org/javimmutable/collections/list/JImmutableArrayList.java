@@ -154,11 +154,7 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> insert(@Nonnull Iterable<? extends T> values)
     {
-        Node<T> newRoot = root;
-        for (T value : values) {
-            newRoot = newRoot.insertLast(value);
-        }
-        return new JImmutableArrayList<>(newRoot);
+        return insertAllLast(values);
     }
 
     @Nonnull
@@ -356,7 +352,7 @@ public class JImmutableArrayList<T>
     public <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform)
     {
         final Builder<A> builder = builder();
-        for (T t : this) {
+        for (T t : root) {
             builder.add(transform.apply(t));
         }
         return builder.build();
@@ -366,7 +362,7 @@ public class JImmutableArrayList<T>
     public <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
         final Builder<A> builder = builder();
-        for (T t : this) {
+        for (T t : root) {
             final Holder<A> ha = transform.apply(t);
             if (ha.isFilled()) {
                 builder.add(ha.getValue());
