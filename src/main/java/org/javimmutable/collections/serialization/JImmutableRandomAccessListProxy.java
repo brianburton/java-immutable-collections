@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.btree_list.JImmutableBtreeList;
+
+import java.util.function.Supplier;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -44,15 +47,16 @@ import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 public class JImmutableRandomAccessListProxy
     extends AbstractJImmutableListProxy
 {
+    private static final Supplier<MutableBuilder> BUILDER_FACTORY = () -> JImmutableBtreeList.builder();
     private static final long serialVersionUID = -121805;
 
     public JImmutableRandomAccessListProxy()
     {
-        super(JImmutableBtreeList.of());
+        super(JImmutableBtreeList.of(), BUILDER_FACTORY);
     }
 
     public JImmutableRandomAccessListProxy(JImmutableBtreeList list)
     {
-        super(list);
+        super(list, BUILDER_FACTORY);
     }
 }

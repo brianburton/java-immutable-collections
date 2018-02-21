@@ -36,11 +36,13 @@
 package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.MutableBuilder;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableListProxy
@@ -50,10 +52,13 @@ abstract class AbstractJImmutableListProxy
     private static final long serialVersionUID = -121805;
          
     protected JImmutableList list;
+    protected Supplier<MutableBuilder> builderFactory;
 
-    protected AbstractJImmutableListProxy(JImmutableList list)
+    protected AbstractJImmutableListProxy(JImmutableList list,
+                                          Supplier<MutableBuilder> builderFactory)
     {
         this.list = list;
+        this.builderFactory = builderFactory;
     }
 
     @Override
@@ -76,9 +81,11 @@ abstract class AbstractJImmutableListProxy
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
         final int size = in.readInt();
+        MutableBuilder builder = builderFactory.get();
         for (int i = 0; i < size; ++i) {
-            list = list.insertLast(in.readObject());
+            builder.add(in.readObject());
         }
+        list = (JImmutableList)builder.build();
     }
 
     protected Object readResolve()

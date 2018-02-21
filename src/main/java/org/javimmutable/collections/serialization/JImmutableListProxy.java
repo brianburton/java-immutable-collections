@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.list.JImmutableArrayList;
+
+import java.util.function.Supplier;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -44,15 +47,16 @@ import org.javimmutable.collections.list.JImmutableArrayList;
 public class JImmutableListProxy
     extends AbstractJImmutableListProxy
 {
+    private static final Supplier<MutableBuilder> BUILDER_FACTORY = () -> JImmutableArrayList.builder();
     private static final long serialVersionUID = -121805;
 
     public JImmutableListProxy()
     {
-        super(JImmutableArrayList.of());
+        super(JImmutableArrayList.of(), BUILDER_FACTORY);
     }
 
     public JImmutableListProxy(JImmutableArrayList list)
     {
-        super(list);
+        super(list, BUILDER_FACTORY);
     }
 }
