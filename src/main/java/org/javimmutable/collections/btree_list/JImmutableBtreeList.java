@@ -44,8 +44,8 @@ import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableRandomAccessListProxy;
 
 import javax.annotation.Nonnull;
@@ -457,19 +457,19 @@ public class JImmutableBtreeList<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || ((o instanceof JImmutableList) && Cursors.areEqual(cursor(), ((JImmutableList)o).cursor()));
+        return (o == this) || ((o instanceof JImmutableList) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableList)o).iterator()));
     }
 
     @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(cursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
     public String toString()
     {
-        return Cursors.makeString(cursor());
+        return IteratorHelper.iteratorToString(iterator());
     }
 
     private Object writeReplace()

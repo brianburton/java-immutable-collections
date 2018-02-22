@@ -91,6 +91,8 @@ public class JImmutableBtreeListTest
         list.checkInvariants();
         StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
+        assertEquals("[100,200]", list.toString());
+        assertEquals(3300, list.hashCode());
 
         JImmutableBtreeList<Integer> saved = list;
 
