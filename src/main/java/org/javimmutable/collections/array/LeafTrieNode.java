@@ -39,6 +39,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.SingleValueCursor;
@@ -218,6 +219,12 @@ public class LeafTrieNode<T>
         result = 31 * result + value.hashCode();
         result = 31 * result + shift;
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return MapEntry.makeToString(this);
     }
 
     private TrieNode<T> withValue(T newValue)

@@ -44,7 +44,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
@@ -193,19 +193,19 @@ public class JImmutableTrieArray<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || ((o instanceof JImmutableArray) && Cursors.areEqual(cursor(), ((JImmutableArray)o).cursor()));
+        return (o == this) || ((o instanceof JImmutableArray) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableArray)o).iterator()));
     }
 
     @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(cursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
     public String toString()
     {
-        return Cursors.makeString(cursor());
+        return IteratorHelper.iteratorToString(iterator());
     }
 
     private Object writeReplace()

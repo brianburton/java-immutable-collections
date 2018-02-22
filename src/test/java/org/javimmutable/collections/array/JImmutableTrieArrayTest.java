@@ -73,11 +73,15 @@ public class JImmutableTrieArrayTest
         array = array.assign(33, 33);
         array = array.assign(65, 65);
         array = array.assign(97, 97);
+        assertEquals("[0=0,33=33,65=65,97=97]", array.toString());
+        assertEquals(33559365, array.hashCode());
         array = array.delete(-1);
         array = array.delete(33);
         array = array.delete(97);
         array = array.delete(65);
         array = array.delete(0);
+        assertEquals("[]", array.toString());
+        assertEquals(0, array.hashCode());
     }
 
     public void testRandom()
@@ -109,6 +113,21 @@ public class JImmutableTrieArrayTest
             assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
         }
         array.checkInvariants();
+    }
+
+    public void testCollector()
+    {
+        Random r = new Random(20L);
+        JImmutableArray<Integer> array = JImmutableTrieArray.of();
+        int size = 0;
+        while (size < 50_000) {
+            size += r.nextInt(250);
+            while (array.size() < size) {
+                final int value = r.nextInt();
+                array = array.assign(array.size(), value);
+            }
+            assertEquals(array, array.values().parallelStream().collect(JImmutableTrieArray.collector()));
+        }
     }
 
     public void testSequential()
