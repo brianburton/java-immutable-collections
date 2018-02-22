@@ -37,7 +37,6 @@ package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
@@ -94,31 +93,6 @@ public abstract class TrieNode<T>
     public static <T> TrieNode<T> of()
     {
         return EmptyTrieNode.instance();
-    }
-
-    public static <T> TrieNode<T> fromSource(int index,
-                                             Indexed<? extends T> source,
-                                             int offset,
-                                             int limit)
-    {
-        final int size = Math.min(32, limit - offset);
-        if (size < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (size) {
-            case 0:
-                return of();
-
-            case 1:
-                return LeafTrieNode.of(index, source.get(offset));
-
-            case 32:
-                return FullBranchTrieNode.fromSource(index, source, offset);
-
-            default:
-                return MultiBranchTrieNode.forSource(index, size, source, offset);
-        }
     }
 
     public static int shiftForIndex(int index)
