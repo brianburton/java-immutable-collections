@@ -418,6 +418,7 @@ public class JImmutableArrayListTest
                 assertEquals(expected.size(), list.size());
             }
             assertEquals(expected, list.getList());
+            assertEquals(list, expected.parallelStream().collect(JImmutableArrayList.collector()));
             list.checkInvariants();
 
             Cursor<Integer> cursor = list.cursor().next();
