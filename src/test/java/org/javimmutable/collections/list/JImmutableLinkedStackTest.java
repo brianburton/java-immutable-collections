@@ -85,6 +85,8 @@ public class JImmutableLinkedStackTest
         assertEquals(Collections.<Integer>emptyList(), list.makeList());
         assertEquals(Arrays.asList(10), list2.makeList());
         assertEquals(Arrays.asList(30, 10), list3.makeList());
+        assertEquals("[30,10]", list3.toString());
+        assertEquals(940, list3.hashCode());
 
         assertEquals(list, JImmutableLinkedStack.of(Collections.<Integer>emptyList()));
         assertEquals(list2, JImmutableLinkedStack.of(Arrays.asList(10)));

@@ -39,8 +39,8 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.cursors.Cursors;
 import org.javimmutable.collections.cursors.SequenceCursor;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.serialization.JImmutableStackProxy;
 
@@ -165,19 +165,19 @@ public class JImmutableLinkedStack<V>
     @Override
     public boolean equals(Object o)
     {
-        return (o instanceof JImmutableStack) && Cursors.areEqual(cursor(), ((JImmutableStack)o).cursor());
+        return (o instanceof JImmutableStack) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableStack)o).iterator());
     }
 
     @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(cursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
     public String toString()
     {
-        return Cursors.makeString(cursor());
+        return IteratorHelper.iteratorToString(iterator());
     }
 
     @Nonnull
