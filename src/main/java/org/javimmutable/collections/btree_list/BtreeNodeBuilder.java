@@ -36,6 +36,7 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -73,7 +74,7 @@ class BtreeNodeBuilder<T>
     {
         leafBuilder.clear();
         size = 0;
-        Iterator<BtreeNode<T>> nodes = root.childIterator();
+        Iterator<BtreeNode<T>> nodes = root.depth() > 1 ? root.childIterator() : SingleValueIterator.of(root);
         while (nodes.hasNext()) {
             final BtreeNode<T> node = nodes.next();
             if (nodes.hasNext()) {
@@ -88,6 +89,7 @@ class BtreeNodeBuilder<T>
                 size += node.valueCount();
             }
         }
+        assert size == root.valueCount();
     }
 
     synchronized BtreeNode<T> build()
