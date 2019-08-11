@@ -78,6 +78,7 @@ import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.tree_list.JImmutableTreeRAList;
 
 import javax.annotation.Nonnull;
@@ -104,7 +105,7 @@ public class JImmutablesTest
 {
     private final Predicate<JImmutableArray> isArray = x -> x instanceof JImmutableArray;
     private final Predicate<JImmutableStack> isStack = x -> x instanceof JImmutableStack;
-    private final Predicate<JImmutableList> isList = x -> x instanceof JImmutableArrayList;
+    private final Predicate<JImmutableList> isList = x -> x instanceof JImmutableTreeList;
     private final Predicate<JImmutableList> isRalist = x -> x instanceof JImmutableTreeRAList;
     private final Predicate<JImmutableMap> isEmptyMap = x -> x instanceof EmptyHashMap;
     private final Predicate<JImmutableMap> isMap = x -> x instanceof JImmutableHashMap;

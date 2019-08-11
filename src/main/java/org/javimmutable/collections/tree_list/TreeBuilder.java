@@ -60,6 +60,14 @@ class TreeBuilder<T>
         }
     }
 
+    synchronized void combineWith(@Nonnull TreeBuilder<T> other)
+    {
+        final AbstractNode<T> a = build();
+        final AbstractNode<T> b = other.build();
+        final AbstractNode<T> ab = a.append(b);
+        rebuild(ab);
+    }
+
     synchronized void checkInvariants()
     {
         if (size != computeSize()) {
@@ -108,7 +116,7 @@ class TreeBuilder<T>
                                     int offset,
                                     int limit)
     {
-        for (int i = 0; i < limit; ++i) {
+        for (int i = offset; i < limit; ++i) {
             add(source.get(i));
         }
         return this;

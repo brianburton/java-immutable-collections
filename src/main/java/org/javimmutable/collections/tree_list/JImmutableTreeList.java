@@ -107,113 +107,113 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> assign(int index,
-                                    @Nullable T value)
+    public JImmutableTreeList<T> assign(int index,
+                                        @Nullable T value)
     {
         return create(root.set(index, value));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insert(@Nullable T value)
+    public JImmutableTreeList<T> insert(@Nullable T value)
     {
         return create(root.append(value));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insert(@Nonnull Iterable<? extends T> values)
+    public JImmutableTreeList<T> insert(@Nonnull Iterable<? extends T> values)
     {
         return create(root.append(nodeFromIterable(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertFirst(@Nullable T value)
+    public JImmutableTreeList<T> insertFirst(@Nullable T value)
     {
         return create(root.prepend(value));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertLast(@Nullable T value)
+    public JImmutableTreeList<T> insertLast(@Nullable T value)
     {
         return create(root.append(value));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(@Nonnull Iterable<? extends T> values)
+    public JImmutableTreeList<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return create(root.append(nodeFromIterable(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values)
+    public JImmutableTreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
         return create(root.append(nodeFromCursor(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values)
+    public JImmutableTreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return create(root.append(nodeFromIterator(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
         return create(root.prepend(nodeFromIterable(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
     {
         return create(root.prepend(nodeFromCursor(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
+    public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
         return create(root.prepend(nodeFromIterator(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
         return create(root.append(nodeFromIterable(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
     {
         return create(root.append(nodeFromCursor(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
+    public JImmutableTreeList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
         return create(root.append(nodeFromIterator(values)));
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> deleteFirst()
+    public JImmutableTreeList<T> deleteFirst()
     {
         return create(root.deleteFirst());
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> deleteLast()
+    public JImmutableTreeList<T> deleteLast()
     {
         return create(root.deleteLast());
     }
@@ -226,7 +226,7 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> deleteAll()
+    public JImmutableTreeList<T> deleteAll()
     {
         return of();
     }
@@ -241,13 +241,24 @@ public class JImmutableTreeList<T>
     @Override
     public <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform)
     {
-        return null;
+        final Builder<A> builder = builder();
+        for (T t : root) {
+            builder.add(transform.apply(t));
+        }
+        return builder.build();
     }
 
     @Override
     public <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
-        return null;
+        final Builder<A> builder = builder();
+        for (T t : root) {
+            final Holder<A> ha = transform.apply(t);
+            if (ha.isFilled()) {
+                builder.add(ha.getValue());
+            }
+        }
+        return builder.build();
     }
 
     @Nonnull
@@ -259,7 +270,7 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> getInsertableSelf()
+    public JImmutableTreeList<T> getInsertableSelf()
     {
         return this;
     }
@@ -327,10 +338,7 @@ public class JImmutableTreeList<T>
         @Nonnull
         public Builder<T> combineWith(@Nonnull Builder<T> other)
         {
-            final AbstractNode<T> a = builder.build();
-            final AbstractNode<T> b = other.builder.build();
-            final AbstractNode<T> ab = a.append(b);
-            builder.rebuild(ab);
+            builder.combineWith(other.builder);
             return this;
         }
 
@@ -393,7 +401,7 @@ public class JImmutableTreeList<T>
                               int offset,
                               int limit)
         {
-            builder.add(source);
+            builder.add(source, offset, limit);
             return this;
         }
 

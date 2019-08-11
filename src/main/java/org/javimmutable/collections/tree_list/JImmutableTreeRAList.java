@@ -30,7 +30,7 @@ public class JImmutableTreeRAList<T>
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeRAList EMPTY = new JImmutableTreeRAList(EmptyNode.instance());
     private static final long serialVersionUID = -121805;
-                   
+
     private final AbstractNode<T> root;
 
     private JImmutableTreeRAList(@Nonnull AbstractNode<T> root)
@@ -408,10 +408,7 @@ public class JImmutableTreeRAList<T>
         @Nonnull
         public Builder<T> combineWith(@Nonnull Builder<T> other)
         {
-            final AbstractNode<T> a = builder.build();
-            final AbstractNode<T> b = other.builder.build();
-            final AbstractNode<T> ab = a.append(b);
-            builder.rebuild(ab);
+            builder.combineWith(other.builder);
             return this;
         }
 
