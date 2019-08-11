@@ -8,7 +8,9 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 class LeafNode<T>
     extends AbstractNode<T>
     implements ArrayHelper.Allocator<T>

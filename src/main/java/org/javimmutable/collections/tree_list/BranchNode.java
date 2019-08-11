@@ -7,7 +7,9 @@ import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 class BranchNode<T>
     extends AbstractNode<T>
 {

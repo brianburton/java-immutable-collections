@@ -6,7 +6,9 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class EmptyNode<T>
     extends AbstractNode<T>
 {

@@ -10,17 +10,22 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.IteratorHelper;
+import org.javimmutable.collections.serialization.JImmutableRandomAccessListProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.tree_list.JImmutableTreeListBuilder.*;
 
+@Immutable
 public class JImmutableTreeList<T>
-    implements JImmutableRandomAccessList<T>
+    implements JImmutableRandomAccessList<T>,
+               Serializable
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTreeList EMPTY = new JImmutableTreeList(EmptyNode.instance());
@@ -356,6 +361,11 @@ public class JImmutableTreeList<T>
     public String toString()
     {
         return IteratorHelper.iteratorToString(iterator());
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableRandomAccessListProxy(this);
     }
 
     @SuppressWarnings("unchecked")

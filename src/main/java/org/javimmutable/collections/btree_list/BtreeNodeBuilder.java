@@ -47,6 +47,7 @@ import java.util.Iterator;
  * build() method can be called multiple times safely, for example to build
  * multiple root nodes successively.
  */
+@Deprecated
 class BtreeNodeBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();

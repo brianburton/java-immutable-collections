@@ -46,7 +46,6 @@ import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
-import org.javimmutable.collections.serialization.JImmutableRandomAccessListProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +59,7 @@ import java.util.stream.Collector;
 /**
  * Implementation of JImmutableRandomAccessList that uses a B-Tree for its implementation.
  */
+@Deprecated
 @Immutable
 public class JImmutableBtreeList<T>
     implements JImmutableRandomAccessList<T>,
@@ -71,16 +71,19 @@ public class JImmutableBtreeList<T>
     private final BtreeNode<T> root;
 
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static <T> JImmutableBtreeList<T> of()
     {
         return (JImmutableBtreeList<T>)EMPTY;
     }
 
+    @Deprecated
     public static <T> Builder<T> builder()
     {
         return new Builder<>();
     }
 
+    @Deprecated
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> collector()
     {
@@ -472,11 +475,11 @@ public class JImmutableBtreeList<T>
         return IteratorHelper.iteratorToString(iterator());
     }
 
-    private Object writeReplace()
-    {
-        return new JImmutableRandomAccessListProxy(this);
-    }
-
+    //    private Object writeReplace()
+//    {
+//        return new JImmutableRandomAccessListProxy(this);
+//    }
+//
     private static <T> JImmutableBtreeList<T> combine(JImmutableBtreeList<T> left,
                                                       JImmutableBtreeList<T> right)
     {

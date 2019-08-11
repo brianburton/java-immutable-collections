@@ -36,6 +36,7 @@
 package org.javimmutable.collections.btree_list;
 
 import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -133,8 +134,8 @@ public final class RAListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-//            JImmutableRandomAccessList<Integer> list = JImmutableTreeList.of();
-            JImmutableRandomAccessList<Integer> list = JImmutableBtreeList.of();
+            JImmutableRandomAccessList<Integer> list = JImmutableTreeList.of();
+//            JImmutableRandomAccessList<Integer> list = JImmutableBtreeList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {

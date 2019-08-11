@@ -48,7 +48,6 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.array.JImmutableTrieArray;
-import org.javimmutable.collections.btree_list.JImmutableBtreeList;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -72,6 +71,7 @@ import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -266,7 +266,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist()
     {
-        return JImmutableBtreeList.of();
+        return JImmutableTreeList.of();
     }
 
     /**
@@ -278,7 +278,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
     {
-        return JImmutableBtreeList.builder();
+        return JImmutableTreeList.builder();
     }
 
     /**
@@ -287,7 +287,7 @@ public final class JImmutables
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> ralistCollector()
     {
-        return JImmutableBtreeList.collector();
+        return JImmutableTreeList.collector();
     }
 
     /**
@@ -300,7 +300,7 @@ public final class JImmutables
     @SafeVarargs
     public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
-        return JImmutableBtreeList.of(IndexedArray.retained(source));
+        return JImmutableTreeList.of(IndexedArray.retained(source));
     }
 
     /**
@@ -312,7 +312,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Cursor<? extends T> source)
     {
-        return JImmutableBtreeList.<T>builder().add(source).build();
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -324,7 +324,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableBtreeList.<T>builder().add(source.iterator()).build();
+        return JImmutableTreeList.<T>builder().add(source.iterator()).build();
     }
 
     /**
@@ -336,7 +336,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableBtreeList.<T>builder().add(source).build();
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -348,7 +348,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull List<? extends T> source)
     {
-        return JImmutableBtreeList.of(IndexedList.retained(source));
+        return JImmutableTreeList.of(IndexedList.retained(source));
     }
 
     /**
