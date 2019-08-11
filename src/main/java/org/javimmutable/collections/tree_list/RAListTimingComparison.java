@@ -33,10 +33,9 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.btree_list;
+package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.JImmutableRandomAccessList;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
