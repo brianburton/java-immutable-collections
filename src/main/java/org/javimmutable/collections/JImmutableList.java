@@ -100,6 +100,15 @@ public interface JImmutableList<T>
     JImmutableList<T> insert(@Nonnull Iterable<? extends T> values);
 
     /**
+     * Insert value at index (which must be within 0 to size).
+     * Shifts all values at and after index one position to the right and adds 1
+     * to size of the list.
+     */
+    @Nonnull
+    JImmutableList<T> insert(int index,
+                             @Nullable T value);
+
+    /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
      */
@@ -139,6 +148,42 @@ public interface JImmutableList<T>
     @Nonnull
     @Override
     JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
+
+    /**
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(int index,
+                                @Nonnull Iterable<? extends T> values);
+
+    /**
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(int index,
+                                @Nonnull Cursor<? extends T> values);
+
+    /**
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(int index,
+                                @Nonnull Iterator<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -213,6 +258,14 @@ public interface JImmutableList<T>
      * @return true only if list contains no values
      */
     boolean isEmpty();
+
+    /**
+     * Delete value at index (which must be within the current bounds of the list).
+     * Shifts all values at and after index one position to the left and subtracts 1
+     * from size of the list.
+     */
+    @Nonnull
+    JImmutableList<T> delete(int index);
 
     /**
      * @return an equivalent collection with no values

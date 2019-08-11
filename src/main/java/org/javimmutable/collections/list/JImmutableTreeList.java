@@ -129,6 +129,15 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
+    public JImmutableTreeList<T> insert(int index,
+                                        @Nullable T value)
+    {
+        insertBoundsCheck(index);
+        return create(root.insert(index, value));
+    }
+
+    @Nonnull
+    @Override
     public JImmutableTreeList<T> insertFirst(@Nullable T value)
     {
         return create(root.prepend(value));
@@ -160,6 +169,40 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return create(root.append(nodeFromIterator(values)));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Iterable<? extends T> values)
+    {
+        return insertAll(index, nodeFromIterable(values));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Cursor<? extends T> values)
+    {
+        return insertAll(index, nodeFromCursor(values));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insertAll(int index,
+                                           @Nonnull Iterator<? extends T> values)
+    {
+        return insertAll(index, nodeFromIterator(values));
+    }
+
+    @Nonnull
+    private JImmutableTreeList<T> insertAll(int index,
+                                            @Nonnull AbstractNode<T> other)
+    {
+        insertBoundsCheck(index);
+        final AbstractNode<T> head = root.head(index);
+        final AbstractNode<T> tail = root.tail(index);
+        return create(head.append(other).append(tail));
     }
 
     @Nonnull
@@ -216,6 +259,13 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> deleteLast()
     {
         return create(root.deleteLast());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> delete(int index)
+    {
+        return create(root.delete(index));
     }
 
     @Override
@@ -328,6 +378,16 @@ public class JImmutableTreeList<T>
             otherRoot = nodeFromIterator(values.iterator());
         }
         return otherRoot;
+    }
+
+    private void insertBoundsCheck(int index)
+    {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index > root.size()) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     public static class Builder<T>

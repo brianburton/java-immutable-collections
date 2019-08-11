@@ -397,6 +397,45 @@ public class JImmutableArrayList<T>
         return IteratorHelper.iteratorToString(iterator());
     }
 
+    @Nonnull
+    @Override
+    public JImmutableList<T> insert(int index,
+                                    @Nullable T value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> insertAll(int index,
+                                       @Nonnull Iterable<? extends T> values)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> insertAll(int index,
+                                       @Nonnull Cursor<? extends T> values)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> insertAll(int index,
+                                       @Nonnull Iterator<? extends T> values)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> delete(int index)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public static class Builder<T>
         implements JImmutableList.Builder<T>
     {

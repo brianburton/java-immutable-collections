@@ -80,12 +80,8 @@ public interface JImmutableRandomAccessList<T>
         return insertAll(values);
     }
 
-    /**
-     * Insert value at index (which must be within 0 to size).
-     * Shifts all values at and after index one position to the right and adds 1
-     * to size of the list.
-     */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insert(int index,
                                          @Nullable T value);
 
@@ -135,39 +131,18 @@ public interface JImmutableRandomAccessList<T>
     @Override
     JImmutableRandomAccessList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
-    /**
-     * Inserts all elements at index (which must be within 0 to size) in the same
-     * order they appear in the Iterable.
-     * Shifts all values at and after index x positions to the right and adds x
-     * to size of the list, where x is the number of elements being inserted.
-     *
-     * @return instance of list containing the collection
-     */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAll(int index,
                                             @Nonnull Iterable<? extends T> values);
 
-    /**
-     * Inserts all elements at index (which must be within 0 to size) in the same
-     * order they appear in the Iterable.
-     * Shifts all values at and after index x positions to the right and adds x
-     * to size of the list, where x is the number of elements being inserted.
-     *
-     * @return instance of list containing the collection
-     */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAll(int index,
                                             @Nonnull Cursor<? extends T> values);
 
-    /**
-     * Inserts all elements at index (which must be within 0 to size) in the same
-     * order they appear in the Iterable.
-     * Shifts all values at and after index x positions to the right and adds x
-     * to size of the list, where x is the number of elements being inserted.
-     *
-     * @return instance of list containing the collection
-     */
     @Nonnull
+    @Override
     JImmutableRandomAccessList<T> insertAll(int index,
                                             @Nonnull Iterator<? extends T> values);
 
@@ -228,6 +203,10 @@ public interface JImmutableRandomAccessList<T>
     @Override
     JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
+    @Nonnull
+    @Override
+    JImmutableRandomAccessList<T> delete(int index);
+
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
      *
@@ -247,14 +226,6 @@ public interface JImmutableRandomAccessList<T>
     @Nonnull
     @Override
     JImmutableRandomAccessList<T> deleteLast();
-
-    /**
-     * Delete value at index (which must be within the current bounds of the list).
-     * Shifts all values at and after index one position to the left and subtracts 1
-     * from size of the list.
-     */
-    @Nonnull
-    JImmutableRandomAccessList<T> delete(int index);
 
     /**
      * @return an equivalent collection with no values
