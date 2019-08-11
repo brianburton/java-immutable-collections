@@ -1,15 +1,14 @@
 package org.javimmutable.collections.tree_list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.JImmutableRandomAccessList;
+import org.javimmutable.collections.Indexed;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Iterator;
 
 @ThreadSafe
-public class JImmutableTreeListBuilder<T>
-    implements JImmutableRandomAccessList.Builder<T>
+public class TreeBuilder<T>
 {
     private final T[] buffer;
     private int count;
@@ -17,20 +16,18 @@ public class JImmutableTreeListBuilder<T>
     private BranchBuilder<T> parent;
 
     @SuppressWarnings("unchecked")
-    public JImmutableTreeListBuilder()
+    public TreeBuilder()
     {
         buffer = (T[])new Object[LeafNode.MAX_SIZE];
     }
 
-    @Override
     public synchronized int size()
     {
         return size;
     }
 
     @Nonnull
-    @Override
-    public synchronized JImmutableTreeListBuilder<T> add(T value)
+    public synchronized TreeBuilder<T> add(T value)
     {
         if (count == LeafNode.MAX_SIZE) {
             final AbstractNode<T> leaf = new LeafNode<>(buffer, count);
@@ -50,14 +47,7 @@ public class JImmutableTreeListBuilder<T>
     }
 
     @Nonnull
-    @Override
-    public synchronized JImmutableTreeList<T> build()
-    {
-        return JImmutableTreeList.create(buildRoot());
-    }
-
-    @Nonnull
-    public synchronized AbstractNode<T> buildRoot()
+    public synchronized AbstractNode<T> build()
     {
         if (count == 0) {
             return EmptyNode.instance();
@@ -80,6 +70,56 @@ public class JImmutableTreeListBuilder<T>
         }
     }
 
+    @Nonnull
+    public synchronized TreeBuilder<T> add(Cursor<? extends T> source)
+    {
+        for (source = source.start(); source.hasValue(); source = source.next()) {
+            add(source.getValue());
+        }
+        return this;
+    }
+
+    @Nonnull
+    public synchronized TreeBuilder<T> add(Iterator<? extends T> source)
+    {
+        while (source.hasNext()) {
+            add(source.next());
+        }
+        return this;
+    }
+
+    @Nonnull
+    public synchronized TreeBuilder<T> add(Iterable<? extends T> source)
+    {
+        return add(source.iterator());
+    }
+
+    @Nonnull
+    public synchronized <K extends T> TreeBuilder<T> add(K... source)
+    {
+        for (K k : source) {
+            add(k);
+        }
+        return this;
+    }
+
+    @Nonnull
+    public synchronized TreeBuilder<T> add(Indexed<? extends T> source,
+                                           int offset,
+                                           int limit)
+    {
+        for (int i = 0; i < limit; ++i) {
+            add(source.get(i));
+        }
+        return this;
+    }
+
+    @Nonnull
+    public synchronized TreeBuilder<T> add(Indexed<? extends T> source)
+    {
+        return add(source, 0, source.size());
+    }
+
     /**
      * Clears any existing data in this builder and then populates the builder with
      * nodes from the provided tree.  At each level of the tree it creates a parent
@@ -100,29 +140,21 @@ public class JImmutableTreeListBuilder<T>
     }
 
     @Nonnull
+    public static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> values)
+    {
+        return new TreeBuilder<T>().add(values).build();
+    }
+
+    @Nonnull
     public static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
     {
-        final JImmutableTreeListBuilder<T> builder = new JImmutableTreeListBuilder<>();
-        builder.add(values);
-        return builder.buildRoot();
+        return new TreeBuilder<T>().add(values).build();
     }
 
     @Nonnull
     public static <T> AbstractNode<T> nodeFromCursor(@Nonnull Cursor<? extends T> values)
     {
-        final JImmutableTreeListBuilder<T> builder = new JImmutableTreeListBuilder<>();
-        builder.add(values);
-        return builder.buildRoot();
-    }
-
-    @Nonnull
-    public JImmutableTreeListBuilder<T> combineWith(@Nonnull JImmutableTreeListBuilder<T> other)
-    {
-        final AbstractNode<T> a = buildRoot();
-        final AbstractNode<T> b = other.buildRoot();
-        final AbstractNode<T> ab = a.append(b);
-        rebuild(ab);
-        return this;
+        return new TreeBuilder<T>().add(values).build();
     }
 
     private int computeSize()

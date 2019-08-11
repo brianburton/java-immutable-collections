@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collector;
 
-import static org.javimmutable.collections.tree_list.JImmutableTreeListBuilder.*;
+import static org.javimmutable.collections.tree_list.TreeBuilder.*;
 
 @Immutable
 public class JImmutableTreeList<T>
@@ -47,9 +47,7 @@ public class JImmutableTreeList<T>
     @Nonnull
     public static <T> JImmutableTreeList<T> of(@Nonnull Indexed<T> values)
     {
-        final JImmutableTreeListBuilder<T> builder = builder();
-        builder.add(values);
-        return builder.build();
+        return create(nodeFromIndexed(values));
     }
 
     @Nonnull
@@ -65,18 +63,18 @@ public class JImmutableTreeList<T>
     }
 
     @Nonnull
-    public static <T> JImmutableTreeListBuilder<T> builder()
+    public static <T> Builder<T> builder()
     {
-        return new JImmutableTreeListBuilder<>();
+        return new Builder<>();
     }
 
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> collector()
     {
-        return Collector.<T, JImmutableTreeListBuilder<T>, JImmutableRandomAccessList<T>>of(() -> new JImmutableTreeListBuilder<>(),
-                                                                                            (b, v) -> b.add(v),
-                                                                                            (b1, b2) -> b1.combineWith(b2),
-                                                                                            b -> b.build());
+        return Collector.<T, Builder<T>, JImmutableRandomAccessList<T>>of(() -> new Builder<>(),
+                                                                          (b, v) -> b.add(v),
+                                                                          (b1, b2) -> b1.combineWith(b2),
+                                                                          b -> b.build());
     }
 
     @Nonnull
@@ -267,7 +265,7 @@ public class JImmutableTreeList<T>
     @Override
     public <A> JImmutableTreeList<A> transform(@Nonnull Func1<T, A> transform)
     {
-        final JImmutableTreeListBuilder<A> builder = new JImmutableTreeListBuilder<>();
+        final Builder<A> builder = new Builder<>();
         for (T t : this) {
             builder.add(transform.apply(t));
         }
@@ -277,7 +275,7 @@ public class JImmutableTreeList<T>
     @Override
     public <A> JImmutableTreeList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
-        final JImmutableTreeListBuilder<A> builder = new JImmutableTreeListBuilder<>();
+        final Builder<A> builder = new Builder<>();
         for (T t : this) {
             final Holder<A> ha = transform.apply(t);
             if (ha.isFilled()) {
@@ -398,6 +396,98 @@ public class JImmutableTreeList<T>
         }
         if (index > root.size()) {
             throw new IndexOutOfBoundsException();
+        }
+    }
+
+    public static class Builder<T>
+        implements JImmutableRandomAccessList.Builder<T>
+    {
+        private final TreeBuilder<T> builder = new TreeBuilder<>();
+
+        @Nonnull
+        public Builder<T> combineWith(@Nonnull Builder<T> other)
+        {
+            final AbstractNode<T> a = builder.build();
+            final AbstractNode<T> b = other.builder.build();
+            final AbstractNode<T> ab = a.append(b);
+            builder.rebuild(ab);
+            return this;
+        }
+
+        @Override
+        public int size()
+        {
+            return builder.size();
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(T value)
+        {
+            builder.add(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public JImmutableTreeList<T> build()
+        {
+            return create(builder.build());
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Cursor<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Iterable<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <K extends T> Builder<T> add(K... source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source)
+        {
+            builder.add(source);
+            return this;
+        }
+
+        public void checkInvariants()
+        {
+            builder.checkInvariants();
         }
     }
 }

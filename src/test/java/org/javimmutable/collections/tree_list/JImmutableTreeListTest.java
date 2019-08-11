@@ -1263,7 +1263,7 @@ public class JImmutableTreeListTest
     {
         assertSame(JImmutableTreeList.of(), JImmutableTreeList.builder().build());
 
-        final JImmutableTreeListBuilder<Integer> builder = JImmutableTreeList.builder();
+        final JImmutableTreeList.Builder<Integer> builder = JImmutableTreeList.builder();
         final List<Integer> expected = new ArrayList<>();
         JImmutableRandomAccessList<Integer> manual = JImmutableTreeList.of();
         for (int i = 0; i <= 2049; ++i) {
@@ -1290,20 +1290,6 @@ public class JImmutableTreeListTest
 
         StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
         StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTreeList.builder());
-    }
-
-    public void testBuilderRebuild()
-    {
-        for (int size = 0; size < 1024; ++size) {
-            JImmutableTreeListBuilder<Integer> builder = new JImmutableTreeListBuilder<>();
-            for (int i = 1; i <= size; ++i) {
-                builder.add(i);
-            }
-            JImmutableTreeList<Integer> before = builder.build();
-            builder.rebuild(builder.buildRoot());
-            JImmutableTreeList<Integer> after = builder.build();
-            assertEquals(after, before);
-        }
     }
 
     public void testStaticBuilderMethod()
