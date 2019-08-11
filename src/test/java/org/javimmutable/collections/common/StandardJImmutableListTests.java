@@ -46,6 +46,7 @@ public class StandardJImmutableListTests
         verifyInsertAllFirst(empty);
         verifyInsertAllLast(empty);
         verifyTransform(empty);
+        verifyAssign(empty);
     }
 
     public static void verifyInsertAllFirst(JImmutableList<Integer> empty)
@@ -72,6 +73,18 @@ public class StandardJImmutableListTests
             final int last = actual.size() + addSize;
             actual = actual.insertAllLast(appendAll(empty, first, last));
             expected = appendAll(expected, first, last);
+            Assert.assertEquals(expected, actual);
+        }
+    }
+
+    public static void verifyAssign(JImmutableList<Integer> empty)
+    {
+        for (int size = 0; size < 4096; ++size) {
+            JImmutableList<Integer> expected = appendAll(empty, 1, size);
+            JImmutableList<Integer> actual = appendAll(empty, 101, 100 + size);
+            for (int i = 0; i < size; i++) {
+                actual = actual.assign(i, 1 + i);
+            }
             Assert.assertEquals(expected, actual);
         }
     }

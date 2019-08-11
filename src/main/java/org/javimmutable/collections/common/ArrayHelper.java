@@ -68,7 +68,7 @@ public final class ArrayHelper
     }
 
     /**
-     * Allocate an array containing values from a logical formed by concatenating the two input arrays.
+     * Allocate an array containing values from a logical array formed by concatenating the two input arrays.
      * Functionally equivalent to calling append(a,b) and then calling subArray() with the result
      *
      * @param allocator used to allocate the resulting array
@@ -286,5 +286,13 @@ public final class ArrayHelper
                 return (T[])(Array.newInstance(klass, size));
             }
         };
+    }
+
+    public static <T> void checkBounds(T[] values,
+                                       int index)
+    {
+        if (index < 0 || index >= values.length) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
     }
 }
