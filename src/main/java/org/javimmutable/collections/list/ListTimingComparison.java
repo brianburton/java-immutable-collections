@@ -36,7 +36,6 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.tree_list.JImmutableTreeRAList;
 
 import java.util.ArrayList;
 import java.util.Iterator;

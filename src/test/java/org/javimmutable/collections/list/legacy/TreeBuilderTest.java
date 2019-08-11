@@ -33,69 +33,51 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.list.legacy;
 
-import org.javimmutable.collections.Indexed;
+import junit.framework.TestCase;
 
-import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
-final class ListHelper
+public class TreeBuilderTest
+    extends TestCase
 {
-    private static final Object[] EMPTY_VALUES = new Object[0];
-    private static final Node[] EMPTY_NODES = new Node[0];
-
-    @SuppressWarnings("unchecked")
-    static <T> Node<T>[] allocateNodes(int size)
+    public void testForwardSimple()
     {
-        return (Node<T>[])((size == 0) ? EMPTY_NODES : new Node[size]);
-    }
-
-    static <T> Node<T>[] allocateNodes(@Nonnull Indexed<Node<T>> source,
-                                       int offset,
-                                       int limit)
-    {
-        assert source.size() >= (limit - offset);
-
-        final int size = limit - offset;
-        final Node<T>[] nodes = allocateNodes(size);
-        for (int i = 0; i < size; ++i) {
-            nodes[i] = source.get(offset + i);
+        TreeBuilder<Integer> builder = new TreeBuilder<>(true);
+        Node<Integer> expected = EmptyNode.of();
+        for (int i = 1; i <= 1025; ++i) {
+            assertEquals(expected, builder.build());
+            builder.add(i);
+            expected = expected.insertLast(i);
         }
-        return nodes;
+        assertEquals(expected, builder.build());
+        builder.build().checkInvariants();
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> T[] allocateValues(int size)
+    public void testReverseSimple()
     {
-        return (T[])((size == 0) ? EMPTY_VALUES : new Object[size]);
-    }
-
-    static <T> Node<T>[] allocateSingleNode(Node<T> node)
-    {
-        Node<T>[] answer = allocateNodes(1);
-        answer[0] = node;
-        return answer;
-    }
-
-    static int sizeForDepth(int depth)
-    {
-        return 1 << (5 * depth);
-    }
-
-    static <T> boolean allNodesFull(int depth,
-                                    @Nonnull Indexed<Node<T>> nodes,
-                                    int offset,
-                                    int limit)
-    {
-        for (int i = offset; i < limit; ++i) {
-            Node<T> node = nodes.get(i);
-            if (node.getDepth() != depth - 1) {
-                return false;
-            }
-            if (!node.isFull()) {
-                return false;
-            }
+        TreeBuilder<Integer> builder = new TreeBuilder<>(false);
+        Node<Integer> expected = EmptyNode.of();
+        for (int i = 1; i <= 1025; ++i) {
+            assertEquals(expected, builder.build());
+            builder.add(i);
+            expected = expected.insertFirst(i);
         }
-        return true;
+        assertEquals(expected, builder.build());
+        builder.build().checkInvariants();
+    }
+
+    private void assertEquals(Node<Integer> expected,
+                              Node<Integer> actual)
+    {
+        List<Integer> expectedList = new ArrayList<>(expected.size());
+        expected.iterator().forEachRemaining(value -> expectedList.add(value));
+
+        List<Integer> actualList = new ArrayList<>(actual.size());
+        actual.iterator().forEachRemaining(value -> actualList.add(value));
+
+        assertEquals(expectedList, actualList);
     }
 }

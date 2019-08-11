@@ -33,46 +33,69 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.list.legacy;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.InvariantCheckable;
-import org.javimmutable.collections.SplitableIterable;
 
 import javax.annotation.Nonnull;
-import java.util.Iterator;
 
-/**
- * Interface for classes used to implement 32-way trees that restrict inserts and deletions
- * to the head and tail of the list but allow updates at any index within the list.
- */
-interface Node<T>
-    extends Cursorable<T>,
-            SplitableIterable<T>,
-            Indexed<T>,
-            InvariantCheckable
+final class ListHelper
 {
-    boolean isEmpty();
+    private static final Object[] EMPTY_VALUES = new Object[0];
+    private static final Node[] EMPTY_NODES = new Node[0];
 
-    boolean isFull();
+    @SuppressWarnings("unchecked")
+    static <T> Node<T>[] allocateNodes(int size)
+    {
+        return (Node<T>[])((size == 0) ? EMPTY_NODES : new Node[size]);
+    }
 
-    int getDepth();
+    static <T> Node<T>[] allocateNodes(@Nonnull Indexed<Node<T>> source,
+                                       int offset,
+                                       int limit)
+    {
+        assert source.size() >= (limit - offset);
 
-    Node<T> deleteFirst();
+        final int size = limit - offset;
+        final Node<T>[] nodes = allocateNodes(size);
+        for (int i = 0; i < size; ++i) {
+            nodes[i] = source.get(offset + i);
+        }
+        return nodes;
+    }
 
-    Node<T> deleteLast();
+    @SuppressWarnings("unchecked")
+    static <T> T[] allocateValues(int size)
+    {
+        return (T[])((size == 0) ? EMPTY_VALUES : new Object[size]);
+    }
 
-    Node<T> insertFirst(T value);
+    static <T> Node<T>[] allocateSingleNode(Node<T> node)
+    {
+        Node<T>[] answer = allocateNodes(1);
+        answer[0] = node;
+        return answer;
+    }
 
-    Node<T> insertLast(T value);
+    static int sizeForDepth(int depth)
+    {
+        return 1 << (5 * depth);
+    }
 
-    boolean containsIndex(int index);
-
-    Node<T> assign(int index,
-                   T value);
-
-    Node<T> insertAll(int maxSize,
-                      boolean forwardOrder,
-                      @Nonnull Iterator<? extends T> values);
+    static <T> boolean allNodesFull(int depth,
+                                    @Nonnull Indexed<Node<T>> nodes,
+                                    int offset,
+                                    int limit)
+    {
+        for (int i = offset; i < limit; ++i) {
+            Node<T> node = nodes.get(i);
+            if (node.getDepth() != depth - 1) {
+                return false;
+            }
+            if (!node.isFull()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -57,6 +57,8 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.list.JImmutableTreeList;
+import org.javimmutable.collections.list.JImmutableTreeRAList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
@@ -70,8 +72,6 @@ import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
-import org.javimmutable.collections.tree_list.JImmutableTreeRAList;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;

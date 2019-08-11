@@ -36,7 +36,7 @@
 package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.MutableBuilder;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 
 import java.util.function.Supplier;
 

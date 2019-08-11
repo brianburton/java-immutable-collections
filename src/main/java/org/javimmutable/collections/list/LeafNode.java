@@ -1,196 +1,234 @@
-///###////////////////////////////////////////////////////////////////////////
-//
-// Burton Computer Corporation
-// http://www.burton-computer.com
-//
-// Copyright (c) 2018, Burton Computer Corporation
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-//     Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     Neither the name of the Burton Computer Corporation nor the names
-//     of its contributors may be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-import java.util.List;
 
-/**
- * Node that forms the bottom of the 32-way tree and contains up to 32 values.
- */
 @Immutable
 class LeafNode<T>
-    implements Node<T>
+    extends AbstractNode<T>
+    implements ArrayHelper.Allocator<T>
 {
-    @Nonnull
-    private final T[] values;
+    static final int MAX_SIZE = 48;
 
-    private LeafNode(@Nonnull T[] values)
-    {
-        assert values.length > 0;
-        assert values.length <= 32;
-        this.values = values;
-    }
+    private final T[] values;
 
     LeafNode(T value)
     {
-        values = ListHelper.allocateValues(1);
+        values = allocate(1);
         values[0] = value;
     }
 
-    static <T> LeafNode<T> fromList(List<T> values,
-                                    int offset,
-                                    int limit)
+    LeafNode(T[] values,
+             int count)
     {
-        return fromList(IndexedList.retained(values), offset, limit);
+        assert count > 0;
+        this.values = allocate(count);
+        System.arraycopy(values, 0, this.values, 0, count);
     }
 
-    static <T> LeafNode<T> fromList(Indexed<? extends T> values,
-                                    int offset,
-                                    int limit)
+    private LeafNode(T[] values)
     {
-        T[] array = ListHelper.allocateValues(limit - offset);
-        for (int i = offset; i < limit; ++i) {
-            array[i - offset] = values.get(i);
-        }
-        return new LeafNode<T>(array);
-    }
-
-    static <T> LeafNode<T> forTesting(T[] values)
-    {
-        return new LeafNode<T>(values.clone());
+        assert values.length > 0;
+        this.values = values;
     }
 
     @Override
-    public boolean isEmpty()
+    boolean isEmpty()
     {
-        return values.length == 0;
+        return false;
     }
 
     @Override
-    public boolean isFull()
-    {
-        return values.length == 32;
-    }
-
-    @Override
-    public int size()
+    int size()
     {
         return values.length;
     }
 
     @Override
-    public int getDepth()
+    int depth()
     {
-        return 1;
+        return 0;
     }
 
     @Override
-    public Node<T> deleteFirst()
-    {
-        if (values.length == 1) {
-            return EmptyNode.of();
-        }
-        T[] newValues = ListHelper.allocateValues(values.length - 1);
-        System.arraycopy(values, 1, newValues, 0, newValues.length);
-        return new LeafNode<T>(newValues);
-    }
-
-    @Override
-    public Node<T> deleteLast()
-    {
-        if (values.length == 1) {
-            return EmptyNode.of();
-        }
-        T[] newValues = ListHelper.allocateValues(values.length - 1);
-        System.arraycopy(values, 0, newValues, 0, newValues.length);
-        return new LeafNode<T>(newValues);
-    }
-
-    @Override
-    public Node<T> insertFirst(T value)
-    {
-        if (isFull()) {
-            return new BranchNode<T>(value, this);
-        }
-        T[] newValues = ListHelper.allocateValues(values.length + 1);
-        System.arraycopy(values, 0, newValues, 1, values.length);
-        newValues[0] = value;
-        return new LeafNode<T>(newValues);
-    }
-
-    @Override
-    public Node<T> insertLast(T value)
-    {
-        if (isFull()) {
-            return new BranchNode<T>(this, value);
-        }
-        T[] newValues = ListHelper.allocateValues(values.length + 1);
-        System.arraycopy(values, 0, newValues, 0, values.length);
-        newValues[values.length] = value;
-        return new LeafNode<T>(newValues);
-    }
-
-    @Override
-    public boolean containsIndex(int index)
-    {
-        return (index >= 0) && (index < values.length);
-    }
-
-    @Override
-    public T get(int index)
+    T get(int index)
     {
         return values[index];
     }
 
     @Override
-    public Node<T> assign(int index,
-                          T value)
+    T first()
     {
-        T[] newValues = values.clone();
-        newValues[index] = value;
-        return new LeafNode<T>(newValues);
+        return values[0];
     }
 
     @Override
-    public Node<T> insertAll(int maxSize,
-                             boolean forwardOrder,
-                             @Nonnull Iterator<? extends T> values)
+    T last()
     {
-        return TreeBuilder.expandLeafNode(maxSize, forwardOrder, this, values);
+        return values[values.length - 1];
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> append(T value)
+    {
+        final int size = values.length;
+        if (size < MAX_SIZE) {
+            return new LeafNode<>(ArrayHelper.append(this, values, value));
+        } else {
+            final T[] right = allocate(1);
+            right[0] = value;
+            return new BranchNode<>(this, new LeafNode<>(right));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> append(@Nonnull AbstractNode<T> node)
+    {
+        if (node.isEmpty()) {
+            return this;
+        } else if (node.depth() > 0) {
+            return node.prepend(this);
+        } else {
+            final LeafNode<T> other = (LeafNode<T>)node;
+            final int combinedSize = size() + other.size();
+            if (combinedSize < MAX_SIZE) {
+                return new LeafNode<>(ArrayHelper.concat(this, values, other.values));
+            }
+            return new BranchNode<>(this, node);
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> prepend(T value)
+    {
+        final int size = values.length;
+        if (size < MAX_SIZE) {
+            return new LeafNode<>(ArrayHelper.insert(this, values, 0, value));
+        } else {
+            final T[] left = allocate(1);
+            left[0] = value;
+            return new BranchNode<>(new LeafNode<>(left), this);
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node)
+    {
+        if (node.isEmpty()) {
+            return this;
+        } else if (node.depth() > 0) {
+            return node.append(this);
+        } else {
+            final LeafNode<T> other = (LeafNode<T>)node;
+            final int combinedSize = size() + other.size();
+            if (combinedSize < MAX_SIZE) {
+                return new LeafNode<>(ArrayHelper.concat(this, other.values, values));
+            }
+            return new BranchNode<>(node, this);
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> set(int index,
+                        T value)
+    {
+        return new LeafNode<>(ArrayHelper.assign(values, index, value));
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> insert(int index,
+                           T value)
+    {
+        final int size = values.length;
+        if (index == 0) {
+            return prepend(value);
+        } else if (index == size) {
+            return append(value);
+        } else if (size < MAX_SIZE) {
+            return new LeafNode<>(ArrayHelper.insert(this, values, index, value));
+        } else {
+            T[] left = ArrayHelper.subArray(this, values, 0, index);
+            T[] right = allocate(size - index + 1);
+            right[0] = value;
+            System.arraycopy(values, index, right, 1, size - index);
+            return new BranchNode<>(new LeafNode<>(left), new LeafNode<>(right));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> delete(int index)
+    {
+        if (values.length == 1) {
+            ArrayHelper.checkBounds(values, index);
+            return EmptyNode.instance();
+        } else {
+            return new LeafNode<>(ArrayHelper.delete(this, values, index));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> deleteFirst()
+    {
+        return delete(0);
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> deleteLast()
+    {
+        return delete(values.length - 1);
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> head(int limit)
+    {
+        if (limit == 0) {
+            return EmptyNode.instance();
+        } else if (limit == values.length) {
+            return this;
+        } else {
+            return new LeafNode<>(ArrayHelper.subArray(this, values, 0, limit));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> tail(int offset)
+    {
+        if (offset == 0) {
+            return this;
+        } else if (offset == values.length) {
+            return EmptyNode.instance();
+        } else {
+            return new LeafNode<>(ArrayHelper.subArray(this, values, offset, values.length));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    @Override
+    public T[] allocate(int size)
+    {
+        if (size < 1) {
+            throw new IllegalArgumentException();
+        }
+        return (T[])new Object[size];
     }
 
     @Nonnull
@@ -205,19 +243,5 @@ class LeafNode<T>
     public SplitableIterator<T> iterator()
     {
         return IndexedIterator.iterator(IndexedArray.retained(values));
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        if ((values.length == 0) || (values.length > 32)) {
-            throw new IllegalStateException();
-        }
-        //TODO: review checkInvariants()
-    }
-    
-    Indexed<T> values()
-    {
-        return IndexedArray.retained(values);
     }
 }

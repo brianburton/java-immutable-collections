@@ -1,4 +1,4 @@
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;

@@ -39,7 +39,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
 
 import javax.annotation.concurrent.Immutable;

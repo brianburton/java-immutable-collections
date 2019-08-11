@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.list.legacy;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Cursor;
@@ -56,17 +56,17 @@ import java.util.Random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
-public class JImmutableTreeListTest
+public class JImmutableArrayListTest
     extends TestCase
 {
     public void testStandard()
     {
-        StandardJImmutableListTests.standardTests(JImmutableTreeList.of());
+        StandardJImmutableListTests.standardTests(JImmutableArrayList.of());
     }
 
     public void test()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
@@ -123,7 +123,7 @@ public class JImmutableTreeListTest
 
     public void testInsertIterable()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         StandardCursorTest.emptyCursorTest(list.cursor());
 
         list = list.insert(asList(1, 2, 3));
@@ -138,12 +138,12 @@ public class JImmutableTreeListTest
     public void testInsertAllFirst()
     {
         //empty into empty
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
-        JImmutableTreeList<Integer> expected = list;
-        JImmutableTreeList<Integer> checkCursorable = list.insertAllFirst(plainIterable(Collections.emptyList()));
-        JImmutableTreeList<Integer> checkCollection = list.insertAllFirst(Collections.emptyList());
-        JImmutableTreeList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
-        JImmutableTreeList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
+        JImmutableArrayList<Integer> expected = list;
+        JImmutableArrayList<Integer> checkCursorable = list.insertAllFirst(plainIterable(Collections.emptyList()));
+        JImmutableArrayList<Integer> checkCollection = list.insertAllFirst(Collections.emptyList());
+        JImmutableArrayList<Integer> checkCursor = list.insertAllFirst(getCursor(Collections.emptyList()));
+        JImmutableArrayList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
@@ -176,7 +176,7 @@ public class JImmutableTreeListTest
         checkIterator.checkInvariants();
 
         //values into values
-        expected = JImmutableTreeList.of();
+        expected = JImmutableArrayList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
         checkCursorable = list.insertAllFirst(plainIterable(asList(0, 1, 2, 3)));
         checkCollection = list.insertAllFirst(asList(0, 1, 2, 3));
@@ -193,12 +193,12 @@ public class JImmutableTreeListTest
     {
         //test insertAll
         //empty into empty
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
-        JImmutableTreeList<Integer> expected = list;
-        JImmutableTreeList<Integer> checkCursorable = list.insertAll(plainIterable(Collections.emptyList()));
-        JImmutableTreeList<Integer> checkCollection = list.insertAll(Collections.emptyList());
-        JImmutableTreeList<Integer> checkCursor = list.insertAll(getCursor(Collections.emptyList()));
-        JImmutableTreeList<Integer> checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
+        JImmutableArrayList<Integer> expected = list;
+        JImmutableArrayList<Integer> checkCursorable = list.insertAll(plainIterable(Collections.emptyList()));
+        JImmutableArrayList<Integer> checkCollection = list.insertAll(Collections.emptyList());
+        JImmutableArrayList<Integer> checkCursor = list.insertAll(getCursor(Collections.emptyList()));
+        JImmutableArrayList<Integer> checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkCursorable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkCursor);
@@ -244,7 +244,7 @@ public class JImmutableTreeListTest
 
         //test insertAllLast
         //empty into empty
-        list = JImmutableTreeList.of();
+        list = JImmutableArrayList.of();
         expected = list;
         checkCursorable = list.insertAllLast(plainIterable(Collections.emptyList()));
         checkCollection = list.insertAllLast(Collections.emptyList());
@@ -306,7 +306,7 @@ public class JImmutableTreeListTest
 
     public void testInsertDeleteFirst()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insertFirst(index);
             assertEquals(index + 1, list.size());
@@ -353,7 +353,7 @@ public class JImmutableTreeListTest
 
     public void testDeleteLast()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insert(index);
             assertEquals(index + 1, list.size());
@@ -402,7 +402,7 @@ public class JImmutableTreeListTest
         Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(4000);
-            JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+            JImmutableArrayList<Integer> list = JImmutableArrayList.of();
             List<Integer> expected = new ArrayList<>();
             for (int i = 0; i < size; ++i) {
                 int value = random.nextInt(10000000);
@@ -416,7 +416,7 @@ public class JImmutableTreeListTest
                 assertEquals(expected.size(), list.size());
             }
             assertEquals(expected, list.getList());
-            assertEquals(list, expected.parallelStream().collect(JImmutableTreeList.collector()));
+            assertEquals(list, expected.parallelStream().collect(JImmutableArrayList.collector()));
             list.checkInvariants();
 
             Cursor<Integer> cursor = list.cursor().next();
@@ -440,7 +440,7 @@ public class JImmutableTreeListTest
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
             List<Integer> expected = new ArrayList<>();
-            JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+            JImmutableArrayList<Integer> list = JImmutableArrayList.of();
 
             for (int loops = 0; loops < (4 * size); ++loops) {
                 switch (random.nextInt(7)) {
@@ -519,7 +519,7 @@ public class JImmutableTreeListTest
 
     public void testCursor()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         Cursor<Integer> cursor = list.cursor().next();
         assertEquals(false, cursor.hasValue());
 
@@ -535,7 +535,7 @@ public class JImmutableTreeListTest
             assertEquals(false, cursor.hasValue());
         }
 
-        list = JImmutableTreeList.of();
+        list = JImmutableArrayList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertFirst(size);
             cursor = list.cursor();
@@ -548,7 +548,7 @@ public class JImmutableTreeListTest
             assertEquals(false, cursor.hasValue());
         }
 
-        list = JImmutableTreeList.of();
+        list = JImmutableArrayList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertLast(size);
             cursor = list.cursor();
@@ -576,7 +576,7 @@ public class JImmutableTreeListTest
 
     public void testIterator()
     {
-        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        JImmutableArrayList<Integer> list = JImmutableArrayList.of();
         Iterator<Integer> iterator = list.iterator();
         assertEquals(false, iterator.hasNext());
 
@@ -590,7 +590,7 @@ public class JImmutableTreeListTest
             assertEquals(false, iterator.hasNext());
         }
 
-        list = JImmutableTreeList.of();
+        list = JImmutableArrayList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertFirst(size);
             iterator = list.iterator();
@@ -601,7 +601,7 @@ public class JImmutableTreeListTest
             assertEquals(false, iterator.hasNext());
         }
 
-        list = JImmutableTreeList.of();
+        list = JImmutableArrayList.of();
         for (int size = 1; size <= 10; ++size) {
             list = list.insertLast(size);
             iterator = list.iterator();
@@ -615,8 +615,8 @@ public class JImmutableTreeListTest
 
     public void testDeleteAll()
     {
-        JImmutableList<Integer> list = JImmutableTreeList.<Integer>of().insert(1).insert(2);
-        assertSame(JImmutableTreeList.of(), list.deleteAll());
+        JImmutableList<Integer> list = JImmutableArrayList.<Integer>of().insert(1).insert(2);
+        assertSame(JImmutableArrayList.of(), list.deleteAll());
     }
 
     public void testSelect()
@@ -652,24 +652,24 @@ public class JImmutableTreeListTest
     public void testBuilder()
         throws InterruptedException
     {
-        assertSame(JImmutableTreeList.of(), JImmutableTreeList.builder().build());
+        assertSame(JImmutableArrayList.of(), JImmutableArrayList.builder().build());
 
-        final JImmutableTreeList.Builder<Integer> builder = JImmutableTreeList.builder();
+        final JImmutableArrayList.Builder<Integer> builder = JImmutableArrayList.builder();
         final List<Integer> expected = new ArrayList<>();
-        JImmutableList<Integer> manual = JImmutableTreeList.of();
+        JImmutableList<Integer> manual = JImmutableArrayList.of();
         for (int size = 1; size <= 33000; ++size) {
             expected.add(size);
             builder.add(size);
             manual = manual.insertLast(size);
             assertEquals(size, builder.size());
-            JImmutableTreeList<Integer> list = builder.build();
+            JImmutableArrayList<Integer> list = builder.build();
             assertEquals(expected, list.getList());
             list.checkInvariants();
         }
         assertEquals(manual, builder.build());
 
-        StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableTreeList.builder(), (l, j) -> l.equals(j.getList()));
-        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTreeList.builder());
+        StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
+        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableArrayList.builder());
     }
 
     public void testIndexedConstructor()
@@ -682,9 +682,9 @@ public class JImmutableTreeListTest
         for (int offset = 0; offset < values.length; ++offset) {
             for (int limit = offset; limit <= values.length; ++limit) {
                 final int size = limit - offset;
-                JImmutableTreeList<Integer> list = JImmutableTreeList.of(source, offset, limit);
+                JImmutableArrayList<Integer> list = JImmutableArrayList.of(source, offset, limit);
                 if (size == 0) {
-                    assertSame(JImmutableTreeList.<Integer>of(), list);
+                    assertSame(JImmutableArrayList.<Integer>of(), list);
                 }
                 for (int i = 0; i < size; ++i) {
                     final Integer value = list.get(i);
@@ -693,12 +693,12 @@ public class JImmutableTreeListTest
             }
         }
 
-        assertSame(JImmutableTreeList.<Integer>of(), JImmutableTreeList.of(JImmutableTreeList.<Integer>of()));
+        assertSame(JImmutableArrayList.<Integer>of(), JImmutableArrayList.of(JImmutableArrayList.<Integer>of()));
     }
 
     public void testStreams()
     {
-        JImmutableList<Integer> list = JImmutableTreeList.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
+        JImmutableList<Integer> list = JImmutableArrayList.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 
@@ -706,15 +706,15 @@ public class JImmutableTreeListTest
         for (int i = 1; i <= 2048; ++i) {
             expected.add(i);
         }
-        list = JImmutableTreeList.of(IndexedList.retained(expected));
+        list = JImmutableArrayList.of(IndexedList.retained(expected));
         assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
         assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
     }
 
     public void testParallelStreams()
     {
-        final JImmutableList<Integer> original = JImmutableTreeList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
-        assertEquals(original, original.stream().parallel().collect(JImmutableTreeList.of().listCollector()));
+        final JImmutableList<Integer> original = JImmutableArrayList.of(IndexedList.retained(StandardCursor.makeList(StandardCursor.forRange(1, 10000))));
+        assertEquals(original, original.stream().parallel().collect(JImmutableArrayList.of().listCollector()));
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
     }
 
@@ -722,7 +722,7 @@ public class JImmutableTreeListTest
 //        throws Exception
 //    {
 //        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableList)a).iterator();
-//        final JImmutableList<String> empty = JImmutableTreeList.of();
+//        final JImmutableList<String> empty = JImmutableArrayList.of();
 //        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
 //                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGYCgAgAFkzNDswAAAA==");
 //        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
@@ -733,7 +733,7 @@ public class JImmutableTreeListTest
 
     private JImmutableList<Integer> mklist(Integer... values)
     {
-        return JImmutableTreeList.of(IndexedArray.retained(values));
+        return JImmutableArrayList.of(IndexedArray.retained(values));
     }
 
     private List<Integer> makeValues(Random random,

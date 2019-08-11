@@ -44,7 +44,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 
 import java.util.Arrays;
 import java.util.Collections;

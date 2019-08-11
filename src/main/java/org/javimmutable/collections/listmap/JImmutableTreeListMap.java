@@ -38,7 +38,7 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 import org.javimmutable.collections.serialization.JImmutableTreeListMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 

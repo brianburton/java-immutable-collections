@@ -1,4 +1,4 @@
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collector;
 
-import static org.javimmutable.collections.tree_list.TreeBuilder.*;
+import static org.javimmutable.collections.list.TreeBuilder.*;
 
 public class JImmutableTreeList<T>
     implements JImmutableList<T>,

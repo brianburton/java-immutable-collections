@@ -1,4 +1,4 @@
-package org.javimmutable.collections.tree_list;
+package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.SplitableIterable;

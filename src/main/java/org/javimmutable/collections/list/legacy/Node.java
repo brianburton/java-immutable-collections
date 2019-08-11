@@ -33,55 +33,46 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.list.legacy;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
+import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InvariantCheckable;
+import org.javimmutable.collections.SplitableIterable;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nonnull;
+import java.util.Iterator;
 
-public class ListAppendTimingComparison
+/**
+ * Interface for classes used to implement 32-way trees that restrict inserts and deletions
+ * to the head and tail of the list but allow updates at any index within the list.
+ */
+interface Node<T>
+    extends Cursorable<T>,
+            SplitableIterable<T>,
+            Indexed<T>,
+            InvariantCheckable
 {
-    public static void main(String[] argv)
-    {
-        Mode mode = (argv.length == 0) ? Mode.OLD_LAST : Mode.valueOf(argv[0].replace("-", "_").toUpperCase());
-        final long startMillis = System.currentTimeMillis();
-        runTest(mode);
-        final long elapsedMillis = System.currentTimeMillis() - startMillis;
-        System.out.printf("%s  %d%n", mode, elapsedMillis);
-    }
+    boolean isEmpty();
 
-    private enum Mode
-    {
-        OLD_FIRST,
-        OLD_LAST,
-        NEW_FIRST,
-        NEW_LAST
-    }
+    boolean isFull();
 
-    private static void runTest(Mode mode)
-    {
-        for (int loop = 1; loop <= 10_000; ++loop) {
-            JImmutableList<Integer> list = JImmutableArrayList.of();
-            List<Integer> extras = new ArrayList<>();
-            for (int length = 1; length <= 250; ++length) {
-                extras.add(length);
-                switch (mode) {
-                    case OLD_FIRST:
-//                        list = list.insertAllFirstOldWay(extras.iterator());
-                        break;
-                    case OLD_LAST:
-//                        list = list.insertAllLastOldWay(extras.iterator());
-                        break;
-                    case NEW_FIRST:
-                        list = list.insertAllFirst(extras);
-                        break;
-                    case NEW_LAST:
-                        list = list.insertAllLast(extras);
-                        break;
-                }
-            }
-        }
-    }
+    int getDepth();
+
+    Node<T> deleteFirst();
+
+    Node<T> deleteLast();
+
+    Node<T> insertFirst(T value);
+
+    Node<T> insertLast(T value);
+
+    boolean containsIndex(int index);
+
+    Node<T> assign(int index,
+                   T value);
+
+    Node<T> insertAll(int maxSize,
+                      boolean forwardOrder,
+                      @Nonnull Iterator<? extends T> values);
 }
