@@ -1,9 +1,11 @@
 package org.javimmutable.collections.tree_list;
 
+import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Iterator;
 
 @ThreadSafe
 public class JImmutableTreeListBuilder<T>
@@ -95,6 +97,22 @@ public class JImmutableTreeListBuilder<T>
         for (T t : node) {
             buffer[count++] = t;
         }
+    }
+
+    @Nonnull
+    public static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
+    {
+        final JImmutableTreeListBuilder<T> builder = new JImmutableTreeListBuilder<>();
+        builder.add(values);
+        return builder.buildRoot();
+    }
+
+    @Nonnull
+    public static <T> AbstractNode<T> nodeFromCursor(@Nonnull Cursor<? extends T> values)
+    {
+        final JImmutableTreeListBuilder<T> builder = new JImmutableTreeListBuilder<>();
+        builder.add(values);
+        return builder.buildRoot();
     }
 
     @Nonnull

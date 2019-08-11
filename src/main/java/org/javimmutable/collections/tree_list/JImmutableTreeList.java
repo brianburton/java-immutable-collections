@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collector;
 
+import static org.javimmutable.collections.tree_list.JImmutableTreeListBuilder.*;
+
 public class JImmutableTreeList<T>
     implements JImmutableRandomAccessList<T>
 {
@@ -48,17 +50,13 @@ public class JImmutableTreeList<T>
     @Nonnull
     public static <T> JImmutableTreeList<T> of(@Nonnull Iterator<T> values)
     {
-        final JImmutableTreeListBuilder<T> builder = builder();
-        builder.add(values);
-        return builder.build();
+        return create(nodeFromIterator(values));
     }
 
     @Nonnull
     public static <T> JImmutableTreeList<T> of(@Nonnull Cursor<T> values)
     {
-        final JImmutableTreeListBuilder<T> builder = builder();
-        builder.add(values);
-        return builder.build();
+        return create(nodeFromCursor(values));
     }
 
     @Nonnull
@@ -125,46 +123,33 @@ public class JImmutableTreeList<T>
         return create(root.append(value));
     }
 
-    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
-        if (values instanceof JImmutableTreeList) {
-            final JImmutableTreeList<T> other = (JImmutableTreeList<T>)values;
-            return create(root.append(other.root));
-        } else {
-            return insertAll(values.iterator());
-        }
+        return insertAllLast(nodeFromIterable(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(of(values));
+        return insertAllLast(nodeFromCursor(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
-        return insertAll(of(values));
+        return insertAllLast(nodeFromIterator(values));
     }
 
-    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAll(int index,
                                            @Nonnull Iterable<? extends T> values)
     {
-        insertBoundsCheck(index);
-        if (values instanceof JImmutableTreeList) {
-            final JImmutableTreeList<T> other = (JImmutableTreeList<T>)values;
-            return create(root.head(index).append(other.root).append(root.tail(index)));
-        } else {
-            return insertAll(index, values.iterator());
-        }
+        return insertAll(index, nodeFromIterable(values));
     }
 
     @Nonnull
@@ -172,8 +157,7 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insertAll(int index,
                                            @Nonnull Cursor<? extends T> values)
     {
-        insertBoundsCheck(index);
-        return insertAll(index, of(values));
+        return insertAll(index, nodeFromCursor(values));
     }
 
     @Nonnull
@@ -181,56 +165,69 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insertAll(int index,
                                            @Nonnull Iterator<? extends T> values)
     {
-        insertBoundsCheck(index);
-        return insertAll(index, of(values));
+        return insertAll(index, nodeFromIterator(values));
     }
 
-    @SuppressWarnings("unchecked")
+    @Nonnull
+    private JImmutableTreeList<T> insertAll(int index,
+                                            @Nonnull AbstractNode<T> other)
+    {
+        insertBoundsCheck(index);
+        return create(root.head(index).append(other).append(root.tail(index)));
+    }
+
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
     {
-        if (values instanceof JImmutableTreeList) {
-            final JImmutableTreeList<T> other = (JImmutableTreeList<T>)values;
-            return create(root.prepend(other.root));
-        } else {
-            return insertAllFirst(values.iterator());
-        }
+        return insertAllFirst(nodeFromIterable(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
     {
-        return insertAllFirst(new JImmutableTreeListBuilder<T>().add(values).build());
+        return insertAllFirst(nodeFromCursor(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
-        return insertAllFirst(new JImmutableTreeListBuilder<T>().add(values).build());
+        return insertAllFirst(nodeFromIterator(values));
+    }
+
+    @Nonnull
+    private JImmutableTreeList<T> insertAllFirst(@Nonnull AbstractNode<T> other)
+    {
+        return create(root.prepend(other));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        return insertAll(values);
+        return insertAllLast(nodeFromIterable(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
     {
-        return insertAll(values);
+        return insertAllLast(nodeFromCursor(values));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
-        return insertAll(values);
+        return insertAllLast(nodeFromIterator(values));
+    }
+
+    @Nonnull
+    private JImmutableTreeList<T> insertAllLast(@Nonnull AbstractNode<T> other)
+    {
+        return create(root.append(other));
     }
 
     @Nonnull
@@ -359,6 +356,19 @@ public class JImmutableTreeList<T>
     public String toString()
     {
         return IteratorHelper.iteratorToString(iterator());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    private AbstractNode<T> nodeFromIterable(@Nonnull Iterable<? extends T> values)
+    {
+        AbstractNode<T> otherRoot;
+        if (values instanceof JImmutableTreeList) {
+            otherRoot = ((JImmutableTreeList<T>)values).root;
+        } else {
+            otherRoot = nodeFromIterator(values.iterator());
+        }
+        return otherRoot;
     }
 
     private void assignBoundsCheck(int index)

@@ -13,7 +13,7 @@ class LeafNode<T>
     extends AbstractNode<T>
     implements ArrayHelper.Allocator<T>
 {
-    static final int MAX_SIZE = 32;
+    static final int MAX_SIZE = 48;
 
     private final T[] values;
 
