@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.tree_list.JImmutableTreeList;
+import org.javimmutable.collections.tree_list.JImmutableTreeRAList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -124,7 +124,7 @@ public final class ListTimingComparison
             long startPer = System.currentTimeMillis();
 //            JImmutableList<Integer> list = JImmutableArrayList.of();
 //            JImmutableList<Integer> list = JImmutableBtreeList.of();
-            JImmutableList<Integer> list = JImmutableTreeList.of();
+            JImmutableList<Integer> list = JImmutableTreeRAList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {

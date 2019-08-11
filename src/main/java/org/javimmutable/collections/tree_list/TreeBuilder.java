@@ -8,7 +8,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Iterator;
 
 @ThreadSafe
-public class TreeBuilder<T>
+class TreeBuilder<T>
 {
     private final T[] buffer;
     private int count;
@@ -16,18 +16,18 @@ public class TreeBuilder<T>
     private BranchBuilder<T> parent;
 
     @SuppressWarnings("unchecked")
-    public TreeBuilder()
+    TreeBuilder()
     {
         buffer = (T[])new Object[LeafNode.MAX_SIZE];
     }
 
-    public synchronized int size()
+    synchronized int size()
     {
         return size;
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(T value)
+    synchronized TreeBuilder<T> add(T value)
     {
         if (count == LeafNode.MAX_SIZE) {
             final AbstractNode<T> leaf = new LeafNode<>(buffer, count);
@@ -47,7 +47,7 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized AbstractNode<T> build()
+    synchronized AbstractNode<T> build()
     {
         if (count == 0) {
             return EmptyNode.instance();
@@ -60,7 +60,7 @@ public class TreeBuilder<T>
         }
     }
 
-    public synchronized void checkInvariants()
+    synchronized void checkInvariants()
     {
         if (size != computeSize()) {
             throw new IllegalStateException("size mismatch");
@@ -71,7 +71,7 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(Cursor<? extends T> source)
+    synchronized TreeBuilder<T> add(Cursor<? extends T> source)
     {
         for (source = source.start(); source.hasValue(); source = source.next()) {
             add(source.getValue());
@@ -80,7 +80,7 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(Iterator<? extends T> source)
+    synchronized TreeBuilder<T> add(Iterator<? extends T> source)
     {
         while (source.hasNext()) {
             add(source.next());
@@ -89,13 +89,13 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(Iterable<? extends T> source)
+    synchronized TreeBuilder<T> add(Iterable<? extends T> source)
     {
         return add(source.iterator());
     }
 
     @Nonnull
-    public synchronized <K extends T> TreeBuilder<T> add(K... source)
+    synchronized <K extends T> TreeBuilder<T> add(K... source)
     {
         for (K k : source) {
             add(k);
@@ -104,9 +104,9 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(Indexed<? extends T> source,
-                                           int offset,
-                                           int limit)
+    synchronized TreeBuilder<T> add(Indexed<? extends T> source,
+                                    int offset,
+                                    int limit)
     {
         for (int i = 0; i < limit; ++i) {
             add(source.get(i));
@@ -115,7 +115,7 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public synchronized TreeBuilder<T> add(Indexed<? extends T> source)
+    synchronized TreeBuilder<T> add(Indexed<? extends T> source)
     {
         return add(source, 0, source.size());
     }
@@ -126,7 +126,7 @@ public class TreeBuilder<T>
      * branch using the left node and proceeds further using the right node.
      * At the leaf all values are copied into the buffer.
      */
-    public synchronized void rebuild(@Nonnull AbstractNode<T> node)
+    synchronized void rebuild(@Nonnull AbstractNode<T> node)
     {
         count = 0;
         parent = null;
@@ -140,19 +140,19 @@ public class TreeBuilder<T>
     }
 
     @Nonnull
-    public static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> values)
+    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> values)
     {
         return new TreeBuilder<T>().add(values).build();
     }
 
     @Nonnull
-    public static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
+    static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
     {
         return new TreeBuilder<T>().add(values).build();
     }
 
     @Nonnull
-    public static <T> AbstractNode<T> nodeFromCursor(@Nonnull Cursor<? extends T> values)
+    static <T> AbstractNode<T> nodeFromCursor(@Nonnull Cursor<? extends T> values)
     {
         return new TreeBuilder<T>().add(values).build();
     }
