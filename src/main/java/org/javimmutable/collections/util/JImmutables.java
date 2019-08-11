@@ -56,7 +56,6 @@ import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
-import org.javimmutable.collections.list.JImmutableArrayList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
@@ -71,6 +70,7 @@ import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree_list.JImmutableTreeList;
 import org.javimmutable.collections.tree_list.JImmutableTreeRAList;
 
 import javax.annotation.Nonnull;
@@ -159,7 +159,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list()
     {
-        return JImmutableArrayList.of();
+        return JImmutableTreeList.of();
     }
 
     /**
@@ -168,7 +168,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList.Builder<T> listBuilder()
     {
-        return JImmutableArrayList.builder();
+        return JImmutableTreeList.builder();
     }
 
     /**
@@ -177,7 +177,7 @@ public final class JImmutables
     @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> listCollector()
     {
-        return JImmutableArrayList.collector();
+        return JImmutableTreeList.collector();
     }
 
     /**
@@ -187,7 +187,7 @@ public final class JImmutables
     @SafeVarargs
     public static <T> JImmutableList<T> list(T... values)
     {
-        return JImmutableArrayList.of(IndexedArray.retained(values));
+        return JImmutableTreeList.of(IndexedArray.retained(values));
     }
 
     /**
@@ -196,7 +196,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Cursor<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -205,7 +205,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Indexed<? extends T> source)
     {
-        return JImmutableArrayList.of(source);
+        return JImmutableTreeList.of(source);
     }
 
     /**
@@ -218,7 +218,7 @@ public final class JImmutables
                                              int offset,
                                              int limit)
     {
-        return JImmutableArrayList.of(source, offset, limit);
+        return JImmutableTreeList.of(source, offset, limit);
     }
 
     /**
@@ -236,7 +236,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source).build();
+        return JImmutableTreeList.<T>builder().add(source).build();
     }
 
     /**
@@ -245,7 +245,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull JImmutableList<? extends T> source)
     {
-        return JImmutableArrayList.of(source);
+        return JImmutableTreeList.of(source);
     }
 
     /**
@@ -254,7 +254,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableArrayList.<T>builder().add(source.iterator()).build();
+        return JImmutableTreeList.<T>builder().add(source.iterator()).build();
     }
 
     /**
