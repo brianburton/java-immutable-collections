@@ -75,10 +75,7 @@ public interface JImmutableRandomAccessList<T>
 
     @Nonnull
     @Override
-    default JImmutableRandomAccessList<T> insert(@Nonnull Iterable<? extends T> values)
-    {
-        return insertAll(values);
-    }
+    JImmutableRandomAccessList<T> insert(@Nonnull Iterable<? extends T> values);
 
     @Nonnull
     @Override
@@ -244,16 +241,7 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     @Override
-    default JImmutableRandomAccessList<T> select(@Nonnull Predicate<T> predicate)
-    {
-        JImmutableRandomAccessList<T> answer = deleteAll();
-        for (T value : this) {
-            if (predicate.test(value)) {
-                answer = answer.insert(value);
-            }
-        }
-        return answer.size() == size() ? this : answer;
-    }
+    JImmutableRandomAccessList<T> select(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a list of the same type as this containing all those elements for which
@@ -265,20 +253,7 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     @Override
-    default JImmutableRandomAccessList<T> reject(@Nonnull Predicate<T> predicate)
-    {
-        JImmutableRandomAccessList<T> answer = this;
-        int index = 0;
-        for (T value : this) {
-            assert value == answer.get(index);
-            if (predicate.test(value)) {
-                answer = answer.delete(index);
-            } else {
-                index += 1;
-            }
-        }
-        return answer.size() == size() ? this : answer;
-    }
+    JImmutableRandomAccessList<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a Collector that creates a list of the same type as this containing all

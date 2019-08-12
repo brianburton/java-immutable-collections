@@ -55,6 +55,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 /**
@@ -137,6 +138,26 @@ public class JImmutableArrayList<T>
     public JImmutableArrayList<T> insert(@Nullable T value)
     {
         return new JImmutableArrayList<>(root.insertLast(value));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArrayList<T> select(@Nonnull Predicate<T> predicate)
+    {
+        final Builder<T> builder = builder();
+        for (T value : this) {
+            if (predicate.test(value)) {
+                builder.add(value);
+            }
+        }
+        return builder.size() == size() ? this : builder.build();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
+    {
+        return select(predicate.negate());
     }
 
     @Nonnull

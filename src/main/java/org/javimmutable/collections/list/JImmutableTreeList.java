@@ -18,6 +18,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.list.TreeBuilder.*;
@@ -125,6 +126,13 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insert(@Nullable T value)
     {
         return create(root.append(value));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> insert(@Nonnull Iterable<? extends T> values)
+    {
+        return create(root.append(nodeFromIterable(values)));
     }
 
     @Nonnull
@@ -325,6 +333,36 @@ public class JImmutableTreeList<T>
     public boolean isEmpty()
     {
         return root.isEmpty();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> select(@Nonnull Predicate<T> predicate)
+    {
+        final ListBuilder<T> answer = listBuilder();
+        for (T value : this) {
+            if (predicate.test(value)) {
+                answer.add(value);
+            }
+        }
+        return answer.size() == size() ? this : answer.build();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> reject(@Nonnull Predicate<T> predicate)
+    {
+        JImmutableTreeList<T> answer = this;
+        int index = 0;
+        for (T value : this) {
+            assert value == answer.get(index);
+            if (predicate.test(value)) {
+                answer = answer.delete(index);
+            } else {
+                index += 1;
+            }
+        }
+        return answer.size() == size() ? this : answer;
     }
 
     @Nonnull

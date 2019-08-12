@@ -288,16 +288,7 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default JImmutableList<T> select(@Nonnull Predicate<T> predicate)
-    {
-        JImmutableList<T> answer = deleteAll();
-        for (T value : this) {
-            if (predicate.test(value)) {
-                answer = answer.insert(value);
-            }
-        }
-        return answer.size() == size() ? this : answer;
-    }
+    JImmutableList<T> select(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a list of the same type as this containing all those elements for which
@@ -308,10 +299,7 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
-    {
-        return select(predicate.negate());
-    }
+    JImmutableList<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a Collector that creates a list of the same type as this containing all
