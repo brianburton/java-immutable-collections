@@ -328,4 +328,35 @@ public interface JImmutableList<T>
      * @return the collection after all elements have been processed
      */
     <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
+
+    /**
+     * Return the (possibly empty) list containing the first limit values.
+     *
+     * @param limit last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> prefix(int limit);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items.
+     *
+     * @param offset first index (inclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> suffix(int offset);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items up to but excluding the value at index limit.
+     *
+     * @param offset first index (inclusive) of values to include
+     * @param limit  last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> middle(int offset,
+                             int limit);
 }

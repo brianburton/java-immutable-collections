@@ -452,6 +452,28 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
+    public JImmutableList<T> prefix(int limit)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> suffix(int offset)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> middle(int offset,
+                                    int limit)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
     public JImmutableList<T> delete(int index)
     {
         throw new UnsupportedOperationException();

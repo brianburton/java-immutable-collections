@@ -367,6 +367,28 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
+    public JImmutableTreeList<T> prefix(int limit)
+    {
+        return create(root.head(limit));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> suffix(int offset)
+    {
+        return create(root.tail(offset));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableTreeList<T> middle(int offset,
+                                        int limit)
+    {
+        return create(root.head(limit).tail(offset));
+    }
+
+    @Nonnull
+    @Override
     public List<T> getList()
     {
         return new ListAdaptor<>(this);
