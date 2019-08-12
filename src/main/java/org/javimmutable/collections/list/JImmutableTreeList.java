@@ -10,7 +10,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.IteratorHelper;
-import org.javimmutable.collections.serialization.JImmutableRandomAccessListProxy;
+import org.javimmutable.collections.serialization.JImmutableListProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -387,7 +387,7 @@ public class JImmutableTreeList<T>
 
     private Object writeReplace()
     {
-        return new JImmutableRandomAccessListProxy(this);
+        return new JImmutableListProxy(this);
     }
 
     @SuppressWarnings("unchecked")

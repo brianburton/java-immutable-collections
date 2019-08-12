@@ -5,6 +5,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -1303,7 +1304,20 @@ public class JImmutableTreeListTest
         }
     }
 
-    public void testSerialization()
+    public void testListSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableList)a).iterator();
+        final JImmutableList<String> empty = JImmutableTreeList.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGYCgAgAFkzNDswAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGRgYGEsYGBMrAOarJ9+3AAAA");
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
+                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGYBECQNjIhAnAXFyBQAT1rKNvwAAAA==");
+    }
+
+    public void testRAListSerialization()
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableRandomAccessList)a).iterator();
