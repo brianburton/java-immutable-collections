@@ -133,7 +133,7 @@ public final class RAListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-            JImmutableRandomAccessList<Integer> list = JImmutableTreeRAList.of();
+            JImmutableRandomAccessList<Integer> list = JImmutableTreeList.of();
 //            JImmutableRandomAccessList<Integer> list = JImmutableBtreeList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);

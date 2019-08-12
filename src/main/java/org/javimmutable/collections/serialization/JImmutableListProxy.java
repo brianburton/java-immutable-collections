@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 public class JImmutableListProxy
     extends AbstractJImmutableListProxy
 {
-    private static final Supplier<MutableBuilder> BUILDER_FACTORY = () -> JImmutableTreeList.builder();
+    private static final Supplier<MutableBuilder> BUILDER_FACTORY = () -> JImmutableTreeList.listBuilder();
     private static final long serialVersionUID = -121805;
 
     public JImmutableListProxy()

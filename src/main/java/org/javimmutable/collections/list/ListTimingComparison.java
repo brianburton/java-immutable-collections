@@ -123,7 +123,7 @@ public final class ListTimingComparison
             long startPer = System.currentTimeMillis();
 //            JImmutableList<Integer> list = JImmutableArrayList.of();
 //            JImmutableList<Integer> list = JImmutableBtreeList.of();
-            JImmutableList<Integer> list = JImmutableTreeRAList.of();
+            JImmutableList<Integer> list = JImmutableTreeList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {

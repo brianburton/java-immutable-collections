@@ -15,7 +15,7 @@ public class TreeBuilderTest
             AbstractNode<Integer> before = builder.build();
             builder.rebuild(builder.build());
             AbstractNode<Integer> after = builder.build();
-            assertEquals(JImmutableTreeRAList.create(after), JImmutableTreeRAList.create(before));
+            assertEquals(JImmutableTreeList.create(after), JImmutableTreeList.create(before));
         }
     }
 }

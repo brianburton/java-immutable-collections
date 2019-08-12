@@ -65,7 +65,6 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.list.JImmutableTreeList;
-import org.javimmutable.collections.list.JImmutableTreeRAList;
 import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
@@ -106,7 +105,7 @@ public class JImmutablesTest
     private final Predicate<JImmutableArray> isArray = x -> x instanceof JImmutableArray;
     private final Predicate<JImmutableStack> isStack = x -> x instanceof JImmutableStack;
     private final Predicate<JImmutableList> isList = x -> x instanceof JImmutableTreeList;
-    private final Predicate<JImmutableList> isRalist = x -> x instanceof JImmutableTreeRAList;
+    private final Predicate<JImmutableList> isRalist = x -> x instanceof JImmutableTreeList;
     private final Predicate<JImmutableMap> isEmptyMap = x -> x instanceof EmptyHashMap;
     private final Predicate<JImmutableMap> isMap = x -> x instanceof JImmutableHashMap;
     private final Predicate<JImmutableMap> isSortedMap = x -> x instanceof JImmutableTreeMap;
