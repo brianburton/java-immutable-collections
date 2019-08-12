@@ -155,14 +155,14 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
+    public JImmutableArrayList<T> reject(@Nonnull Predicate<T> predicate)
     {
         return select(predicate.negate());
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> getInsertableSelf()
+    public JImmutableArrayList<T> getInsertableSelf()
     {
         return this;
     }
@@ -366,7 +366,7 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    public <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform)
+    public <A> JImmutableArrayList<A> transform(@Nonnull Func1<T, A> transform)
     {
         final Builder<A> builder = builder();
         for (T t : root) {
@@ -376,7 +376,7 @@ public class JImmutableArrayList<T>
     }
 
     @Override
-    public <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    public <A> JImmutableArrayList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
         final Builder<A> builder = builder();
         for (T t : root) {
@@ -420,61 +420,61 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> insert(int index,
-                                    @Nullable T value)
+    public JImmutableArrayList<T> insert(int index,
+                                         @Nullable T value)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(int index,
-                                       @Nonnull Iterable<? extends T> values)
+    public JImmutableArrayList<T> insertAll(int index,
+                                            @Nonnull Iterable<? extends T> values)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(int index,
-                                       @Nonnull Cursor<? extends T> values)
+    public JImmutableArrayList<T> insertAll(int index,
+                                            @Nonnull Cursor<? extends T> values)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> insertAll(int index,
-                                       @Nonnull Iterator<? extends T> values)
+    public JImmutableArrayList<T> insertAll(int index,
+                                            @Nonnull Iterator<? extends T> values)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> prefix(int limit)
+    public JImmutableArrayList<T> prefix(int limit)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> suffix(int offset)
+    public JImmutableArrayList<T> suffix(int offset)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> middle(int offset,
-                                    int limit)
+    public JImmutableArrayList<T> middle(int offset,
+                                         int limit)
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public JImmutableList<T> delete(int index)
+    public JImmutableArrayList<T> delete(int index)
     {
         throw new UnsupportedOperationException();
     }
