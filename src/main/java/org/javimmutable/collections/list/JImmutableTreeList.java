@@ -404,7 +404,7 @@ public class JImmutableTreeList<T>
     @Override
     public void checkInvariants()
     {
-        //TODO
+        root.checkInvariants();
     }
 
     @Nonnull

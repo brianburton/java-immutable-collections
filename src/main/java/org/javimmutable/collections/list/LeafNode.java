@@ -244,4 +244,13 @@ class LeafNode<T>
     {
         return IndexedIterator.iterator(IndexedArray.retained(values));
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        int currentSize = values.length;
+        if (currentSize < 1 || currentSize > MAX_SIZE) {
+            throw new RuntimeException(String.format("incorrect size: currentSize=%d", currentSize));
+        }
+    }
 }

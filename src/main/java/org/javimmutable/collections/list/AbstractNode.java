@@ -1,13 +1,15 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Cursorable;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 
 import javax.annotation.Nonnull;
 
 abstract class AbstractNode<T>
     implements Cursorable<T>,
-               SplitableIterable<T>
+               SplitableIterable<T>,
+               InvariantCheckable
 {
     abstract boolean isEmpty();
 
@@ -55,6 +57,9 @@ abstract class AbstractNode<T>
 
     @Nonnull
     abstract AbstractNode<T> tail(int offset);
+
+    @Override
+    public abstract void checkInvariants();
 
     @Nonnull
     AbstractNode<T> left()

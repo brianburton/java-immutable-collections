@@ -280,4 +280,23 @@ class BranchNode<T>
     {
         return LazyMultiIterator.iterator(IndexedHelper.indexed(left, right));
     }
+
+    @Override
+    public void checkInvariants()
+    {
+        if (depth != Math.max(left.depth(), right.depth()) + 1) {
+            throw new RuntimeException(String.format("incorrect depth: depth=%d leftDepth=%d rightDepth=%d", depth, left.depth(), right.depth()));
+        }
+        if (Math.abs(left.depth() - right.depth()) > 1) {
+            throw new RuntimeException(String.format("invalid child depths: leftDepth=%d rightDepth=%d", left.depth(), right.depth()));
+        }
+        if (size != left.size() + right.size()) {
+            throw new RuntimeException(String.format("incorrect size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
+        }
+        if (left.isEmpty() || right.isEmpty()) {
+            throw new RuntimeException(String.format("branch node has an empty branch: leftSize=%d rightSize=%d", left.size(), right.size()));
+        }
+        left.checkInvariants();
+        right.checkInvariants();
+    }
 }
