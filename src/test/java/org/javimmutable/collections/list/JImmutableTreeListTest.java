@@ -1048,7 +1048,7 @@ public class JImmutableTreeListTest
                 List<Integer> values = makeValues(random, size);
                 int index = (list.size() == 0) ? 0 : random.nextInt(list.size());
                 expected.addAll(index, values);
-                int parameter = random.nextInt(4);
+                int parameter = random.nextInt(5);
                 switch (parameter) {
                     case 0:  //insertAll(Cursorable)
                         list = list.insertAll(index, plainIterable(values));
@@ -1062,8 +1062,32 @@ public class JImmutableTreeListTest
                     case 3: //insertAll(Iterator)
                         list = list.insertAll(index, values.iterator());
                         break;
+                    case 4: //insertAll(JImmutableTreeList)
+                        list = list.insertAll(index, JImmutableTreeList.of(values.iterator()));
+                        break;
                 }
-                assertEquals(expected.size(), list.size());
+                if (list.size() > 0) {
+                    assertEquals(expected.size(), list.size());
+                    int offset = random.nextInt(list.size());
+                    int limit = offset + random.nextInt(list.size() - offset);
+                    switch (random.nextInt(3)) {
+                        case 0: {
+                            JImmutableTreeList<Integer> a = list.prefix(offset);
+                            assertEquals(a.getList(), expected.subList(0, offset));
+                            break;
+                        }
+                        case 1: {
+                            JImmutableTreeList<Integer> b = list.middle(offset, limit);
+                            assertEquals(b.getList(), expected.subList(offset, limit));
+                            break;
+                        }
+                        case 2: {
+                            JImmutableTreeList<Integer> c = list.suffix(limit);
+                            assertEquals(c.getList(), expected.subList(limit, expected.size()));
+                            break;
+                        }
+                    }
+                }
             }
             assertEquals(expected, list.getList());
             StandardCursorTest.indexedCursorTest(list, list.size(), list.cursor());
