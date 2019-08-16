@@ -8,6 +8,7 @@ import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.StringJoiner;
 
 @Immutable
 class BranchNode<T>
@@ -317,5 +318,50 @@ class BranchNode<T>
         }
         left.checkInvariants();
         right.checkInvariants();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BranchNode<?> that = (BranchNode<?>)o;
+
+        if (size != that.size) {
+            return false;
+        }
+        if (depth != that.depth) {
+            return false;
+        }
+        if (!left.equals(that.left)) {
+            return false;
+        }
+        return right.equals(that.right);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = left.hashCode();
+        result = 31 * result + right.hashCode();
+        result = 31 * result + size;
+        result = 31 * result + depth;
+        return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new StringJoiner(", ", BranchNode.class.getSimpleName() + "[", "]")
+            .add("left=" + left)
+            .add("right=" + right)
+            .add("size=" + size)
+            .add("depth=" + depth)
+            .toString();
     }
 }

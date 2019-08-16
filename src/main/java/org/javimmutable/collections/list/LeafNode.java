@@ -9,6 +9,8 @@ import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.StringJoiner;
 
 @Immutable
 class LeafNode<T>
@@ -195,7 +197,9 @@ class LeafNode<T>
     @Override
     AbstractNode<T> prefix(int limit)
     {
-        if (limit == 0) {
+        if (limit < 0 || limit > values.length) {
+            throw new IndexOutOfBoundsException();
+        } else if (limit == 0) {
             return EmptyNode.instance();
         } else if (limit == values.length) {
             return this;
@@ -208,7 +212,9 @@ class LeafNode<T>
     @Override
     AbstractNode<T> suffix(int offset)
     {
-        if (offset == 0) {
+        if (offset < 0 || offset > values.length) {
+            throw new IndexOutOfBoundsException();
+        } else if (offset == 0) {
             return this;
         } else if (offset == values.length) {
             return EmptyNode.instance();
@@ -247,5 +253,35 @@ class LeafNode<T>
         if (currentSize < 1 || currentSize > MAX_SIZE) {
             throw new RuntimeException(String.format("incorrect size: currentSize=%d", currentSize));
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        LeafNode<?> leafNode = (LeafNode<?>)o;
+
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(values, leafNode.values);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.hashCode(values);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new StringJoiner(", ", LeafNode.class.getSimpleName() + "[", "]")
+            .add("values=" + Arrays.toString(values))
+            .toString();
     }
 }
