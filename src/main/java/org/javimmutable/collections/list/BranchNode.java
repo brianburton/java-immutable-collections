@@ -67,7 +67,7 @@ class BranchNode<T>
     @Override
     boolean isEmpty()
     {
-        return false;
+        return size == 0;
     }
 
     @Override
