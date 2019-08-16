@@ -19,10 +19,6 @@ abstract class AbstractNode<T>
 
     abstract T get(int index);
 
-    abstract T first();
-
-    abstract T last();
-
     @Nonnull
     abstract AbstractNode<T> append(T value);
 
@@ -36,8 +32,8 @@ abstract class AbstractNode<T>
     abstract AbstractNode<T> prepend(@Nonnull AbstractNode<T> node);
 
     @Nonnull
-    abstract AbstractNode<T> set(int index,
-                                 T value);
+    abstract AbstractNode<T> assign(int index,
+                                    T value);
 
     @Nonnull
     abstract AbstractNode<T> insert(int index,
@@ -53,10 +49,10 @@ abstract class AbstractNode<T>
     abstract AbstractNode<T> delete(int index);
 
     @Nonnull
-    abstract AbstractNode<T> head(int limit);
+    abstract AbstractNode<T> prefix(int limit);
 
     @Nonnull
-    abstract AbstractNode<T> tail(int offset);
+    abstract AbstractNode<T> suffix(int offset);
 
     @Override
     public abstract void checkInvariants();

@@ -24,9 +24,9 @@ class BranchNode<T>
         this(left, right, left.size() + right.size());
     }
 
-    private BranchNode(@Nonnull AbstractNode<T> left,
-                       @Nonnull AbstractNode<T> right,
-                       int size)
+    BranchNode(@Nonnull AbstractNode<T> left,
+               @Nonnull AbstractNode<T> right,
+               int size)
     {
         assert !left.isEmpty();
         assert !right.isEmpty();
@@ -93,18 +93,6 @@ class BranchNode<T>
         }
     }
 
-    @Override
-    T first()
-    {
-        return left.first();
-    }
-
-    @Override
-    T last()
-    {
-        return right.last();
-    }
-
     @Nonnull
     @Override
     AbstractNode<T> append(T value)
@@ -155,14 +143,14 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> set(int index,
-                        T value)
+    AbstractNode<T> assign(int index,
+                           T value)
     {
         final int leftSize = left.size();
         if (index < leftSize) {
-            return new BranchNode<>(left.set(index, value), right);
+            return new BranchNode<>(left.assign(index, value), right);
         } else {
-            return new BranchNode<>(left, right.set(index - leftSize, value));
+            return new BranchNode<>(left, right.assign(index - leftSize, value));
         }
     }
 
@@ -237,25 +225,25 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> head(int limit)
+    AbstractNode<T> prefix(int limit)
     {
         final int leftSize = left.size();
         if (limit < leftSize) {
-            return left.head(limit);
+            return left.prefix(limit);
         } else {
-            return left.append(right.head(limit - leftSize));
+            return left.append(right.prefix(limit - leftSize));
         }
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> tail(int offset)
+    AbstractNode<T> suffix(int offset)
     {
         final int leftSize = left.size();
         if (offset < leftSize) {
-            return left.tail(offset).append(right);
+            return left.suffix(offset).append(right);
         } else {
-            return right.tail(offset - leftSize);
+            return right.suffix(offset - leftSize);
         }
     }
 

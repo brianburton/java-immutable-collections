@@ -29,6 +29,8 @@ class LeafNode<T>
     LeafNode(T[] values,
              int count)
     {
+        assert count > 0;
+        assert count <= MAX_SIZE;
         this.values = allocate(count);
         System.arraycopy(values, 0, this.values, 0, count);
     }
@@ -37,6 +39,8 @@ class LeafNode<T>
              @Nonnull AbstractNode<T> right,
              int size)
     {
+        assert size > 0;
+        assert size <= MAX_SIZE;
         assert size == (left.size() + right.size());
         values = allocate(size);
         left.copyTo(values, 0);
@@ -74,18 +78,6 @@ class LeafNode<T>
         return values[index];
     }
 
-    @Override
-    T first()
-    {
-        return values[0];
-    }
-
-    @Override
-    T last()
-    {
-        return values[values.length - 1];
-    }
-
     @Nonnull
     @Override
     AbstractNode<T> append(T value)
@@ -106,8 +98,9 @@ class LeafNode<T>
             final int combinedSize = size() + other.size();
             if (combinedSize <= MAX_SIZE) {
                 return new LeafNode<>(ArrayHelper.concat(this, values, other.values));
+            } else {
+                return new BranchNode<>(this, node, combinedSize);
             }
-            return new BranchNode<>(this, node);
         }
     }
 
@@ -131,15 +124,16 @@ class LeafNode<T>
             final int combinedSize = size() + other.size();
             if (combinedSize <= MAX_SIZE) {
                 return new LeafNode<>(ArrayHelper.concat(this, other.values, values));
+            } else {
+                return new BranchNode<>(node, this, combinedSize);
             }
-            return new BranchNode<>(node, this);
         }
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> set(int index,
-                        T value)
+    AbstractNode<T> assign(int index,
+                           T value)
     {
         return new LeafNode<>(ArrayHelper.assign(values, index, value));
     }
@@ -149,7 +143,6 @@ class LeafNode<T>
     AbstractNode<T> insert(int index,
                            T value)
     {
-        assert values.length <= MAX_SIZE;
         if (values.length < MAX_SIZE) {
             return new LeafNode<>(ArrayHelper.insert(this, values, index, value));
         } else {
@@ -200,7 +193,7 @@ class LeafNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> head(int limit)
+    AbstractNode<T> prefix(int limit)
     {
         if (limit == 0) {
             return EmptyNode.instance();
@@ -213,7 +206,7 @@ class LeafNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> tail(int offset)
+    AbstractNode<T> suffix(int offset)
     {
         if (offset == 0) {
             return this;

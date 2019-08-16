@@ -118,7 +118,7 @@ public class JImmutableTreeList<T>
                                         @Nullable T value)
     {
         assignBoundsCheck(index);
-        return create(root.set(index, value));
+        return create(root.assign(index, value));
     }
 
     @Nonnull
@@ -208,7 +208,7 @@ public class JImmutableTreeList<T>
                                             @Nonnull AbstractNode<T> other)
     {
         insertBoundsCheck(index);
-        return create(root.head(index).append(other).append(root.tail(index)));
+        return create(root.prefix(index).append(other).append(root.suffix(index)));
     }
 
     @Nonnull
@@ -369,14 +369,14 @@ public class JImmutableTreeList<T>
     @Override
     public JImmutableTreeList<T> prefix(int limit)
     {
-        return create(root.head(limit));
+        return create(root.prefix(limit));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> suffix(int offset)
     {
-        return create(root.tail(offset));
+        return create(root.suffix(offset));
     }
 
     @Nonnull
@@ -384,7 +384,7 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> middle(int offset,
                                         int limit)
     {
-        return create(root.head(limit).tail(offset));
+        return create(root.prefix(limit).suffix(offset));
     }
 
     @Nonnull

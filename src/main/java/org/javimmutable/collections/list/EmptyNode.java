@@ -48,18 +48,6 @@ public class EmptyNode<T>
         throw new IndexOutOfBoundsException();
     }
 
-    @Override
-    T first()
-    {
-        throw new IndexOutOfBoundsException();
-    }
-
-    @Override
-    T last()
-    {
-        throw new IndexOutOfBoundsException();
-    }
-
     @Nonnull
     @Override
     AbstractNode<T> append(T value)
@@ -90,8 +78,8 @@ public class EmptyNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> set(int index,
-                        T value)
+    AbstractNode<T> assign(int index,
+                           T value)
     {
         throw new IndexOutOfBoundsException();
     }
@@ -131,7 +119,7 @@ public class EmptyNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> head(int limit)
+    AbstractNode<T> prefix(int limit)
     {
         if (limit == 0) {
             return this;
@@ -148,7 +136,7 @@ public class EmptyNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> tail(int offset)
+    AbstractNode<T> suffix(int offset)
     {
         if (offset == 0) {
             return this;
