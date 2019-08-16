@@ -100,7 +100,7 @@ class LeafNode<T>
         } else {
             final LeafNode<T> other = (LeafNode<T>)node;
             final int combinedSize = size() + other.size();
-            if (combinedSize < MAX_SIZE) {
+            if (combinedSize <= MAX_SIZE) {
                 return new LeafNode<>(ArrayHelper.concat(this, values, other.values));
             }
             return new BranchNode<>(this, node);
@@ -132,7 +132,7 @@ class LeafNode<T>
         } else {
             final LeafNode<T> other = (LeafNode<T>)node;
             final int combinedSize = size() + other.size();
-            if (combinedSize < MAX_SIZE) {
+            if (combinedSize <= MAX_SIZE) {
                 return new LeafNode<>(ArrayHelper.concat(this, other.values, values));
             }
             return new BranchNode<>(node, this);
