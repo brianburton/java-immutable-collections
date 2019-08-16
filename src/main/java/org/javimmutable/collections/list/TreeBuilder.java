@@ -195,6 +195,7 @@ class TreeBuilder<T>
 
         private void add(@Nonnull AbstractNode<T> node)
         {
+            assert node.size() == (1 << node.depth()) * LeafNode.MAX_SIZE;
             if (right == null) {
                 right = node;
             } else {

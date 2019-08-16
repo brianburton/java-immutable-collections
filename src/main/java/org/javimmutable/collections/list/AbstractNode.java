@@ -61,6 +61,9 @@ abstract class AbstractNode<T>
     @Override
     public abstract void checkInvariants();
 
+    abstract void copyTo(T[] array,
+                         int offset);
+
     @Nonnull
     AbstractNode<T> left()
     {

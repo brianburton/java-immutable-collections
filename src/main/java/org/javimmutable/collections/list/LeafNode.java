@@ -29,14 +29,24 @@ class LeafNode<T>
     LeafNode(T[] values,
              int count)
     {
-        assert count > 0;
         this.values = allocate(count);
         System.arraycopy(values, 0, this.values, 0, count);
+    }
+
+    LeafNode(@Nonnull AbstractNode<T> left,
+             @Nonnull AbstractNode<T> right,
+             int size)
+    {
+        assert size == (left.size() + right.size());
+        values = allocate(size);
+        left.copyTo(values, 0);
+        right.copyTo(values, left.size());
     }
 
     private LeafNode(T[] values)
     {
         assert values.length > 0;
+        assert values.length <= MAX_SIZE;
         this.values = values;
     }
 
@@ -179,6 +189,13 @@ class LeafNode<T>
     AbstractNode<T> deleteLast()
     {
         return delete(values.length - 1);
+    }
+
+    @Override
+    void copyTo(T[] array,
+                int offset)
+    {
+        System.arraycopy(values, 0, array, offset, values.length);
     }
 
     @Nonnull

@@ -21,13 +21,33 @@ class BranchNode<T>
     BranchNode(@Nonnull AbstractNode<T> left,
                @Nonnull AbstractNode<T> right)
     {
+        this(left, right, left.size() + right.size());
+    }
+
+    private BranchNode(@Nonnull AbstractNode<T> left,
+                       @Nonnull AbstractNode<T> right,
+                       int size)
+    {
         assert !left.isEmpty();
         assert !right.isEmpty();
 
         this.left = left;
         this.right = right;
-        this.size = left.size() + right.size();
+        this.size = size;
         this.depth = 1 + Math.max(left.depth(), right.depth());
+        assert size > LeafNode.MAX_SIZE;
+    }
+
+    @Nonnull
+    static <T> AbstractNode<T> join(@Nonnull AbstractNode<T> left,
+                                    @Nonnull AbstractNode<T> right)
+    {
+        final int size = left.size() + right.size();
+        if (size <= LeafNode.MAX_SIZE) {
+            return new LeafNode<>(left, right, size);
+        } else {
+            return new BranchNode<>(left, right, size);
+        }
     }
 
     @Nonnull
@@ -40,7 +60,7 @@ class BranchNode<T>
         } else if (diff < -1) {
             return right.rotateLeft(left);
         } else {
-            return new BranchNode<>(left, right);
+            return join(left, right);
         }
     }
 
@@ -166,21 +186,21 @@ class BranchNode<T>
     AbstractNode<T> delete(int index)
     {
         final int leftSize = left.size();
+        final AbstractNode<T> newLeft, newRight;
         if (index < leftSize) {
-            final AbstractNode<T> newLeft = left.delete(index);
+            newLeft = left.delete(index);
+            newRight = right;
             if (newLeft.isEmpty()) {
                 return right;
-            } else {
-                return balance(newLeft, right);
             }
         } else {
-            final AbstractNode<T> newRight = right.delete(index - leftSize);
+            newLeft = left;
+            newRight = right.delete(index - leftSize);
             if (newRight.isEmpty()) {
                 return left;
-            } else {
-                return balance(left, newRight);
             }
         }
+        return balance(newLeft, newRight);
     }
 
     @Nonnull
@@ -205,6 +225,14 @@ class BranchNode<T>
         } else {
             return balance(left, newRight);
         }
+    }
+
+    @Override
+    void copyTo(T[] array,
+                int offset)
+    {
+        left.copyTo(array, offset);
+        right.copyTo(array, offset + left.size());
     }
 
     @Nonnull
@@ -250,10 +278,9 @@ class BranchNode<T>
     AbstractNode<T> rotateRight(AbstractNode<T> parentRight)
     {
         if (left.depth() >= right.depth()) {
-            return new BranchNode<>(left, new BranchNode<>(right, parentRight));
+            return join(left, join(right, parentRight));
         } else {
-            return new BranchNode<>(new BranchNode<>(left, right.left()),
-                                    new BranchNode<>(right.right(), parentRight));
+            return join(join(left, right.left()), join(right.right(), parentRight));
         }
     }
 
@@ -262,10 +289,9 @@ class BranchNode<T>
     AbstractNode<T> rotateLeft(AbstractNode<T> parentLeft)
     {
         if (left.depth() > right.depth()) {
-            return new BranchNode<>(new BranchNode<>(parentLeft, left.left()),
-                                    new BranchNode<>(left.right(), right));
+            return join(join(parentLeft, left.left()), join(left.right(), right));
         } else {
-            return new BranchNode<>(new BranchNode<>(parentLeft, this.left), right);
+            return join(join(parentLeft, this.left), right);
         }
     }
 
@@ -294,6 +320,9 @@ class BranchNode<T>
         }
         if (size != left.size() + right.size()) {
             throw new RuntimeException(String.format("incorrect size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
+        }
+        if (size <= LeafNode.MAX_SIZE) {
+            throw new RuntimeException(String.format("invalid size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
         }
         if (left.isEmpty() || right.isEmpty()) {
             throw new RuntimeException(String.format("branch node has an empty branch: leftSize=%d rightSize=%d", left.size(), right.size()));

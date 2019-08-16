@@ -140,6 +140,12 @@ public class EmptyNode<T>
         }
     }
 
+    @Override
+    void copyTo(T[] array,
+                int offset)
+    {
+    }
+
     @Nonnull
     @Override
     AbstractNode<T> tail(int offset)
