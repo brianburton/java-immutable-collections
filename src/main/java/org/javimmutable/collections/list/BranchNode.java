@@ -154,6 +154,8 @@ class BranchNode<T>
         final int leftSize = left.size();
         if (index < leftSize) {
             return balance(left.insert(index, value), right);
+        } else if (index == leftSize && leftSize <= right.size()) {
+            return balance(left.insert(index, value), right);
         } else {
             return balance(left, right.insert(index - leftSize, value));
         }
