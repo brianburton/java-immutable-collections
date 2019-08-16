@@ -57,7 +57,7 @@ class LeafNode<T>
     @Override
     boolean isEmpty()
     {
-        return false;
+        return values.length == 0;
     }
 
     @Override
@@ -200,7 +200,7 @@ class LeafNode<T>
         } else if (limit == values.length) {
             return this;
         } else {
-            return new LeafNode<>(ArrayHelper.subArray(this, values, 0, limit));
+            return new LeafNode<>(ArrayHelper.prefix(this, values, limit));
         }
     }
 
@@ -213,7 +213,7 @@ class LeafNode<T>
         } else if (offset == values.length) {
             return EmptyNode.instance();
         } else {
-            return new LeafNode<>(ArrayHelper.subArray(this, values, offset, values.length));
+            return new LeafNode<>(ArrayHelper.suffix(this, values, offset));
         }
     }
 
@@ -222,9 +222,7 @@ class LeafNode<T>
     @Override
     public T[] allocate(int size)
     {
-        if (size < 1) {
-            throw new IllegalArgumentException();
-        }
+        assert size > 0;
         return (T[])new Object[size];
     }
 
