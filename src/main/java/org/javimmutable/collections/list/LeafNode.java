@@ -16,6 +16,7 @@ class LeafNode<T>
     implements ArrayHelper.Allocator<T>
 {
     static final int MAX_SIZE = 48;
+    static final int SPLIT_SIZE = MAX_SIZE / 2;
 
     private final T[] values;
 
@@ -79,14 +80,7 @@ class LeafNode<T>
     @Override
     AbstractNode<T> append(T value)
     {
-        final int size = values.length;
-        if (size < MAX_SIZE) {
-            return new LeafNode<>(ArrayHelper.append(this, values, value));
-        } else {
-            final T[] right = allocate(1);
-            right[0] = value;
-            return new BranchNode<>(this, new LeafNode<>(right));
-        }
+        return insert(values.length, value);
     }
 
     @Nonnull
@@ -111,14 +105,7 @@ class LeafNode<T>
     @Override
     AbstractNode<T> prepend(T value)
     {
-        final int size = values.length;
-        if (size < MAX_SIZE) {
-            return new LeafNode<>(ArrayHelper.insert(this, values, 0, value));
-        } else {
-            final T[] left = allocate(1);
-            left[0] = value;
-            return new BranchNode<>(new LeafNode<>(left), this);
-        }
+        return insert(0, value);
     }
 
     @Nonnull
@@ -152,18 +139,18 @@ class LeafNode<T>
     AbstractNode<T> insert(int index,
                            T value)
     {
-        final int size = values.length;
-        if (index == 0) {
-            return prepend(value);
-        } else if (index == size) {
-            return append(value);
-        } else if (size < MAX_SIZE) {
+        assert values.length <= MAX_SIZE;
+        if (values.length < MAX_SIZE) {
             return new LeafNode<>(ArrayHelper.insert(this, values, index, value));
         } else {
-            T[] left = ArrayHelper.subArray(this, values, 0, index);
-            T[] right = allocate(size - index + 1);
-            right[0] = value;
-            System.arraycopy(values, index, right, 1, size - index);
+            final T[] left, right;
+            if (index <= SPLIT_SIZE) {
+                left = ArrayHelper.prefixInsert(this, values, SPLIT_SIZE, index, value);
+                right = ArrayHelper.suffix(this, values, SPLIT_SIZE);
+            } else {
+                left = ArrayHelper.prefix(this, values, SPLIT_SIZE);
+                right = ArrayHelper.suffixInsert(this, values, SPLIT_SIZE, index, value);
+            }
             return new BranchNode<>(new LeafNode<>(left), new LeafNode<>(right));
         }
     }
