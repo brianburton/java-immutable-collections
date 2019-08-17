@@ -117,7 +117,6 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> assign(int index,
                                         @Nullable T value)
     {
-        assignBoundsCheck(index);
         return create(root.assign(index, value));
     }
 
@@ -140,7 +139,6 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insert(int index,
                                         @Nullable T value)
     {
-        insertBoundsCheck(index);
         return create(root.insert(index, value));
     }
 
@@ -207,7 +205,6 @@ public class JImmutableTreeList<T>
     private JImmutableTreeList<T> insertAll(int index,
                                             @Nonnull AbstractNode<T> other)
     {
-        insertBoundsCheck(index);
         return create(root.prefix(index).append(other).append(root.suffix(index)));
     }
 
@@ -283,7 +280,6 @@ public class JImmutableTreeList<T>
     @Override
     public JImmutableTreeList<T> delete(int index)
     {
-        assignBoundsCheck(index);
         return create(root.delete(index));
     }
 
@@ -461,26 +457,6 @@ public class JImmutableTreeList<T>
             otherRoot = nodeFromIterator(values.iterator());
         }
         return otherRoot;
-    }
-
-    private void assignBoundsCheck(int index)
-    {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (index >= root.size()) {
-            throw new IndexOutOfBoundsException();
-        }
-    }
-
-    private void insertBoundsCheck(int index)
-    {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (index > root.size()) {
-            throw new IndexOutOfBoundsException();
-        }
     }
 
     public static class ListBuilder<T>
