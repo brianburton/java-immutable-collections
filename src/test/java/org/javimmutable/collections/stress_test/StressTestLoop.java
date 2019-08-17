@@ -77,8 +77,6 @@ public class StressTestLoop
             .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
             .insert(new JImmutableListStressTester(JImmutables.ralist(), JImmutables.ralistCollector()))
 
-            .insert(new JImmutableRandomAccessListStressTester(JImmutables.ralist()))
-
             .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, CursorOrder.UNORDERED))
             .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, CursorOrder.INSERT_ORDER))
             .insert(new JImmutableSetStressTester(JImmutables.sortedSet(), TreeSet.class, CursorOrder.ORDERED))

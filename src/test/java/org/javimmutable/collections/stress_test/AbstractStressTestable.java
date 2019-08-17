@@ -76,7 +76,14 @@ public abstract class AbstractStressTestable
     protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
                                                      Random random)
     {
-        return JImmutables.list(makeInsertList(tokens, random));
+        return makeInsertJList(tokens, random, 3);
+    }
+
+    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
+                                                     Random random,
+                                                     int maxToAdd)
+    {
+        return JImmutables.list(makeInsertList(tokens, random, maxToAdd));
     }
 
     protected List<String> makeInsertList(JImmutableList<String> tokens,
