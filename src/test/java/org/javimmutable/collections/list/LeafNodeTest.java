@@ -44,6 +44,10 @@ public class LeafNodeTest
         assertThat(leaf(0, 5).deleteFirst()).isEqualTo(leaf(1, 5));
         assertThat(leaf(0, 5).deleteLast()).isEqualTo(leaf(0, 4));
 
+        assertThat(leaf(0, 1).delete(0)).isSameAs(EmptyNode.instance());
+        verifyOutOfBounds(() -> leaf(0, 1).delete(-1));
+        verifyOutOfBounds(() -> leaf(0, 1).delete(1));
+        
         assertThat(leaf(0, 5).delete(0)).isEqualTo(leaf(1, 5));
         assertThat(leaf(0, 5).delete(4)).isEqualTo(leaf(0, 4));
         verifyOutOfBounds(() -> leaf(0, 5).delete(-1));
