@@ -117,14 +117,14 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> assign(int index,
                                         @Nullable T value)
     {
-        return create(root.assign(index, value));
+        return new JImmutableTreeList<>(root.assign(index, value));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insert(@Nullable T value)
     {
-        return create(root.append(value));
+        return new JImmutableTreeList<>(root.append(value));
     }
 
     @Nonnull
@@ -139,21 +139,21 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insert(int index,
                                         @Nullable T value)
     {
-        return create(root.insert(index, value));
+        return new JImmutableTreeList<>(root.insert(index, value));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertFirst(@Nullable T value)
     {
-        return create(root.prepend(value));
+        return new JImmutableTreeList<>(root.prepend(value));
     }
 
     @Nonnull
     @Override
     public JImmutableTreeList<T> insertLast(@Nullable T value)
     {
-        return create(root.append(value));
+        return new JImmutableTreeList<>(root.append(value));
     }
 
     @Nonnull
