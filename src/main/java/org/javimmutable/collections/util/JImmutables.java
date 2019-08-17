@@ -153,7 +153,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableList built atop a 32-way tree.
+     * Produces an empty JImmutableList built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list()
@@ -162,7 +162,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a 32-way tree.
+     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList.Builder<T> listBuilder()
@@ -171,7 +171,7 @@ public final class JImmutables
     }
 
     /**
-     * Collects values into a JImmutableList.
+     * Efficiently collects values into a JImmutableList built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> listCollector()
@@ -180,7 +180,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the specified values built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the specified values built atop a balanced binary tree.
      */
     @Nonnull
     @SafeVarargs
@@ -190,7 +190,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Cursor<? extends T> source)
@@ -199,7 +199,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Indexed<? extends T> source)
@@ -208,8 +208,8 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in the specified range from source
-     * built atop a 32-way tree.  The values copied from source are those whose index are in the
+     * Efficiently produces a JImmutableList containing all of the values in the specified range from source
+     * built atop a balanced binary tree.  The values copied from source are those whose index are in the
      * range offset to (limit - 1).
      */
     @Nonnull
@@ -221,7 +221,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull JImmutableSet<? extends T> source)
@@ -230,7 +230,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Iterator<? extends T> source)
@@ -239,7 +239,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull JImmutableList<? extends T> source)
@@ -248,7 +248,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a JImmutableList containing all of the values in source built atop a 32-way tree.
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull Iterable<? extends T> source)
@@ -257,10 +257,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist()
@@ -269,10 +271,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a B-Tree.
+     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
@@ -282,6 +286,10 @@ public final class JImmutables
 
     /**
      * Collects values into a JImmutableRandomAccessList.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> ralistCollector()
@@ -290,10 +298,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     @SafeVarargs
@@ -303,10 +313,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Cursor<? extends T> source)
@@ -315,10 +327,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterable<? extends T> source)
@@ -327,10 +341,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterator<? extends T> source)
@@ -339,10 +355,12 @@ public final class JImmutables
     }
 
     /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a B-Tree.
+     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
      * <p>
-     * Implementation note: Using a B-Tree provides maximum flexibility and good performance
-     * for insertion and deletion anywhere in the list but is slower than the 32-way tree lists.
+     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
+     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
+     *
+     * @deprecated will be deleted on or after 2020-01-01
      */
     @Nonnull
     public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull List<? extends T> source)

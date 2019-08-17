@@ -43,9 +43,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 /**
- * Extension of JImmutableList that allows insertion and deletion at arbitrary
- * indexes within the list.
+ * In previous version this interface was an extension of JImmutableList that allowed insertion and deletion
+ * at arbitrary indexes within the list.  Current versions have rolled these methods into JImmutableList so
+ * this interface no longer serves any purpose.  It has been retained temporarily for backwards compatibility
+ * but will be removed in future version.
+ *
+ * @deprecated will be deleted on or after 2020-01-01
  */
+@Deprecated
 @Immutable
 public interface JImmutableRandomAccessList<T>
     extends JImmutableList<T>

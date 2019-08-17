@@ -23,6 +23,7 @@ import java.util.stream.Collector;
 
 import static org.javimmutable.collections.list.TreeBuilder.*;
 
+@SuppressWarnings("deprecation")
 @Immutable
 public class JImmutableTreeList<T>
     implements JImmutableRandomAccessList<T>,
