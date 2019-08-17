@@ -359,4 +359,21 @@ public interface JImmutableList<T>
     @Nonnull
     JImmutableList<T> middle(int offset,
                              int limit);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items up to but excluding the value at index limit.  Similar
+     * to middle() but accepts a more permissive set of values.  Negative values are interpreted
+     * relative to the end of the list and are inclusive when used as limit.  This (-5,-1) would
+     * return the last 5 elements of the list.  Bounds checking is removed and values past the
+     * end of the list are simply set to the end of the list.  So (0,10000) for a list with
+     * five elements would be equivalent to (0,5).
+     *
+     * @param offset first index (inclusive) of values to include
+     * @param limit  last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> slice(int offset,
+                            int limit);
 }

@@ -39,7 +39,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
@@ -55,7 +55,7 @@ public class JImmutableInsertOrderListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of(), JImmutableArrayList.of());
+    private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of(), JImmutableTreeList.of());
     private static final long serialVersionUID = -121805;
 
     private JImmutableInsertOrderListMap(JImmutableMap<K, JImmutableList<V>> contents,

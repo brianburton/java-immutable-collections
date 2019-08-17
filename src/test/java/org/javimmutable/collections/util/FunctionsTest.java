@@ -42,7 +42,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import java.util.Arrays;
@@ -129,10 +129,10 @@ public class FunctionsTest
 
     public void testInsertAll()
     {
-        final JImmutableList<Integer> expected = JImmutableArrayList.<Integer>of().insert(1).insert(2).insert(3);
-        assertEquals(expected, Functions.insertAll(JImmutableArrayList.of(), Arrays.asList(1, 2, 3).iterator()));
-        assertEquals(expected, Functions.insertAll(JImmutableArrayList.of(), expected.cursor()));
-        assertEquals(expected, Functions.insertAll(JImmutableArrayList.of(), new Integer[]{1, 2, 3}));
+        final JImmutableList<Integer> expected = JImmutableTreeList.<Integer>of().insert(1).insert(2).insert(3);
+        assertEquals(expected, Functions.insertAll(JImmutableTreeList.of(), Arrays.asList(1, 2, 3).iterator()));
+        assertEquals(expected, Functions.insertAll(JImmutableTreeList.of(), expected.cursor()));
+        assertEquals(expected, Functions.insertAll(JImmutableTreeList.of(), new Integer[]{1, 2, 3}));
     }
 
     public void testAssignAll()

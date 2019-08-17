@@ -65,7 +65,6 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.list.JImmutableTreeList;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
@@ -163,7 +162,7 @@ public class JImmutablesTest
         stack = stack.insert(1).insert(2).insert(3);
         assertEquals(expected, list(stack.cursor()).getList());
 
-        JImmutableList<Integer> inlist = JImmutableArrayList.of();
+        JImmutableList<Integer> inlist = JImmutableTreeList.of();
         inlist = inlist.insert(1).insert(2).insert(3);
         assertEquals(stack, JImmutables.stack(inlist));
         assertEquals(stack, JImmutables.stack((inlist.cursor())));

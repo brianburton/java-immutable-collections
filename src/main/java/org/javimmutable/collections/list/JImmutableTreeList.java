@@ -386,6 +386,31 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
+    public JImmutableList<T> slice(int offset,
+                                   int limit)
+    {
+        final int size = root.size();
+        if (offset < 0) {
+            offset = size + offset;
+        }
+        if (limit < 0) {
+            limit = size + limit + 1;
+        }
+        if (offset < 0) {
+            offset = 0;
+        } else if (offset > size) {
+            offset = size;
+        }
+        if (limit < offset) {
+            limit = offset;
+        } else if (limit > size) {
+            limit = size;
+        }
+        return middle(offset, limit);
+    }
+
+    @Nonnull
+    @Override
     public List<T> getList()
     {
         return new ListAdaptor<>(this);

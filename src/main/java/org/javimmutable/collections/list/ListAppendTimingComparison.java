@@ -36,7 +36,6 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +62,7 @@ public class ListAppendTimingComparison
     private static void runTest(Mode mode)
     {
         for (int loop = 1; loop <= 10_000; ++loop) {
-            JImmutableList<Integer> list = JImmutableArrayList.of();
+            JImmutableList<Integer> list = JImmutableTreeList.of();
             List<Integer> extras = new ArrayList<>();
             for (int length = 1; length <= 250; ++length) {
                 extras.add(length);

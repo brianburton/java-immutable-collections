@@ -59,9 +59,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 /**
- * JImmutableList implementation using 32-way trees.  The underlying trees, like the JImmutableList,
- * only allow values to be inserted or deleted from the head or tail of the list.
+ * JImmutableList implementation using 32-way trees.  The underlying trees
+ * only allow values to be inserted or deleted from the head or tail of the list
+ * so any methods attempting to do so inside the list throw UnsupportedOperationException.
+ * Replaced by JImmutableTreeList since direct element access (get) is less common than simple
+ * construction and iteration and this class is far less flexible in what it can do than the balanced
+ * binary tree implementation.
+ *
+ * Retained temporarily for extreme backwards compatibility but will definitely be removed in the future.
+ *
+ * @deprecated will be removed on or after 2020-01-01
  */
+@Deprecated
 public class JImmutableArrayList<T>
     implements JImmutableList<T>
 {
@@ -468,6 +477,14 @@ public class JImmutableArrayList<T>
     @Override
     public JImmutableArrayList<T> middle(int offset,
                                          int limit)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableList<T> slice(int offset,
+                                   int limit)
     {
         throw new UnsupportedOperationException();
     }

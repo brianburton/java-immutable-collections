@@ -44,7 +44,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.list.legacy.JImmutableArrayList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -100,7 +100,7 @@ public abstract class AbstractJImmutableListMapTestCase
         assertSame(map.getList(3), map.get(3));
 
         JImmutableListMap<Integer, Integer> preInsertMap = map;
-        map = map.assign(3, JImmutableArrayList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
+        map = map.assign(3, JImmutableTreeList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(100, 18, 87), map.getList(1).getList());
@@ -120,7 +120,7 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
         assertEquals(map.delete(1).delete(3), map.deleteAll(StandardCursor.of(IndexedList.retained(asList(3, 1)))));
 
-        final JImmutableList<Integer> defaultValue = JImmutableArrayList.<Integer>of().insert(17);
+        final JImmutableList<Integer> defaultValue = JImmutableTreeList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));

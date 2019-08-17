@@ -27,6 +27,7 @@ import java.util.Random;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.*;
 
 public class JImmutableTreeListTest
     extends TestCase
@@ -822,6 +823,24 @@ public class JImmutableTreeListTest
         StandardCursorTest.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
+    public void testSlice()
+    {
+        final JImmutableList<Integer> list = rangeList(1, 9);
+
+        assertThat(list.slice(0, 9)).isEqualTo(list);
+        assertThat(list.slice(0, -1)).isEqualTo(list);
+        assertThat(list.slice(-1000, 10000)).isEqualTo(list);
+
+        assertThat(list.slice(-5, -1)).isEqualTo(rangeList(5, 9));
+        assertThat(list.slice(-2, -2)).isEqualTo(rangeList(8, 8));
+        assertThat(list.slice(-10, -2)).isEqualTo(rangeList(1, 8));
+
+        assertThat(list.slice(0, Integer.MAX_VALUE)).isEqualTo(rangeList(1, 9));
+        assertThat(list.slice(-3, Integer.MAX_VALUE)).isEqualTo(rangeList(7, 9));
+        assertThat(list.slice(5, 4)).isEqualTo(JImmutableTreeList.of());
+        assertThat(list.slice(12, 9)).isEqualTo(JImmutableTreeList.of());
+    }
+
     public void testRandom()
     {
         Random random = new Random(100L);
@@ -1367,6 +1386,16 @@ public class JImmutableTreeListTest
             list.add(random.nextInt(size));
         }
         return list;
+    }
+
+    private JImmutableList<Integer> rangeList(int first,
+                                              int last)
+    {
+        JImmutableList.Builder<Integer> builder = JImmutableTreeList.listBuilder();
+        for (int i = first; i <= last; ++i) {
+            builder.add(i);
+        }
+        return builder.build();
     }
 
     private Iterable<Integer> plainIterable(List<Integer> values)
