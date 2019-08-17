@@ -39,9 +39,15 @@ class BranchNode<T>
         assert size > LeafNode.MAX_SIZE;
     }
 
+    /**
+     * Low level build a new node from the specified child nodes.
+     * Assumes that the two nodes are already in balance.  If the
+     * size of the resulting node is small enough a leaf is return.
+     * Otherwise a branch is returned.
+     */
     @Nonnull
-    static <T> AbstractNode<T> join(@Nonnull AbstractNode<T> left,
-                                    @Nonnull AbstractNode<T> right)
+    private static <T> AbstractNode<T> join(@Nonnull AbstractNode<T> left,
+                                            @Nonnull AbstractNode<T> right)
     {
         final int size = left.size() + right.size();
         if (size <= LeafNode.MAX_SIZE) {
@@ -51,6 +57,10 @@ class BranchNode<T>
         }
     }
 
+    /**
+     * Build a new node from the specified child nodes.  Performs rotations if necessary to ensure the tree
+     * remains in balance (depths of two child branches stay within 1 of each other).
+     */
     @Nonnull
     static <T> AbstractNode<T> balance(@Nonnull AbstractNode<T> left,
                                        @Nonnull AbstractNode<T> right)
@@ -234,7 +244,7 @@ class BranchNode<T>
             return EmptyNode.instance();
         } else {
             final int leftSize = left.size();
-            if (limit < leftSize) {
+            if (limit <= leftSize) {
                 return left.prefix(limit);
             } else {
                 return left.append(right.prefix(limit - leftSize));
