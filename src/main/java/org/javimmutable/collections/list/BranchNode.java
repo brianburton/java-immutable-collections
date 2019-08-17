@@ -228,11 +228,17 @@ class BranchNode<T>
     @Override
     AbstractNode<T> prefix(int limit)
     {
-        final int leftSize = left.size();
-        if (limit < leftSize) {
-            return left.prefix(limit);
+        if (limit == size) {
+            return this;
+        } else if (limit == 0) {
+            return EmptyNode.instance();
         } else {
-            return left.append(right.prefix(limit - leftSize));
+            final int leftSize = left.size();
+            if (limit < leftSize) {
+                return left.prefix(limit);
+            } else {
+                return left.append(right.prefix(limit - leftSize));
+            }
         }
     }
 
@@ -240,11 +246,17 @@ class BranchNode<T>
     @Override
     AbstractNode<T> suffix(int offset)
     {
-        final int leftSize = left.size();
-        if (offset < leftSize) {
-            return left.suffix(offset).append(right);
+        if (offset == 0) {
+            return this;
+        } else if (offset == size) {
+            return EmptyNode.instance();
         } else {
-            return right.suffix(offset - leftSize);
+            final int leftSize = left.size();
+            if (offset < leftSize) {
+                return left.suffix(offset).append(right);
+            } else {
+                return right.suffix(offset - leftSize);
+            }
         }
     }
 

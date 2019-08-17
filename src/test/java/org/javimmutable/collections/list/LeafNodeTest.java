@@ -73,8 +73,8 @@ public class LeafNodeTest
         verifyUnsupported(() -> self.rotateRight(self));
     }
 
-    private static LeafNode<Integer> leaf(int start,
-                                          int limit)
+    static LeafNode<Integer> leaf(int start,
+                                  int limit)
     {
         final int length = limit - start;
         Integer[] values = new Integer[length];
@@ -84,10 +84,10 @@ public class LeafNodeTest
         return new LeafNode<>(values, length);
     }
 
-    private static LeafNode<Integer> leaf(int start,
-                                          int limit,
-                                          int index,
-                                          int value)
+    static LeafNode<Integer> leaf(int start,
+                                  int limit,
+                                  int index,
+                                  int value)
     {
         final int length = limit - start;
         Integer[] values = new Integer[length];
