@@ -86,21 +86,21 @@ class TreeBuilder<T>
         size += 1;
     }
 
-    void add(Cursor<? extends T> source)
+    void add(@Nonnull Cursor<? extends T> source)
     {
         for (source = source.start(); source.hasValue(); source = source.next()) {
             add(source.getValue());
         }
     }
 
-    void add(Iterator<? extends T> source)
+    void add(@Nonnull Iterator<? extends T> source)
     {
         while (source.hasNext()) {
             add(source.next());
         }
     }
 
-    void add(Iterable<? extends T> source)
+    void add(@Nonnull Iterable<? extends T> source)
     {
         add(source.iterator());
     }
@@ -113,7 +113,7 @@ class TreeBuilder<T>
         }
     }
 
-    void add(Indexed<? extends T> source,
+    void add(@Nonnull Indexed<? extends T> source,
              int offset,
              int limit)
     {
@@ -122,7 +122,7 @@ class TreeBuilder<T>
         }
     }
 
-    void add(Indexed<? extends T> source)
+    void add(@Nonnull Indexed<? extends T> source)
     {
         add(source, 0, source.size());
     }
@@ -226,7 +226,6 @@ class TreeBuilder<T>
 
         private void add(@Nonnull AbstractNode<T> node)
         {
-//            assert node.size() == (1 << node.depth()) * LeafNode.MAX_SIZE;
             if (buffer == null) {
                 buffer = node;
             } else {
