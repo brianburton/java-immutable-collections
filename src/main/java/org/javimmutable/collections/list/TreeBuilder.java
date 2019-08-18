@@ -60,6 +60,7 @@ class TreeBuilder<T>
     void rebuild(@Nonnull AbstractNode<T> node)
     {
         count = 0;
+        size = node.size();
         parent = null;
         while (node.depth() > 0) {
             parent = new BranchBuilder<>(parent, node.left());

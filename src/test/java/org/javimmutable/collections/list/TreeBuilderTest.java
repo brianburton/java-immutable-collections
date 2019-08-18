@@ -2,6 +2,8 @@ package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 
+import static org.assertj.core.api.Assertions.*;
+
 public class TreeBuilderTest
     extends TestCase
 {
@@ -13,8 +15,10 @@ public class TreeBuilderTest
                 builder.add(i);
             }
             AbstractNode<Integer> before = builder.build();
-            builder.rebuild(builder.build());
-            AbstractNode<Integer> after = builder.build();
+            TreeBuilder<Integer> second = new TreeBuilder<>();
+            second.rebuild(before);
+            assertThat(second.size()).isEqualTo(before.size());
+            AbstractNode<Integer> after = second.build();
             assertEquals(JImmutableTreeList.create(after), JImmutableTreeList.create(before));
         }
     }
