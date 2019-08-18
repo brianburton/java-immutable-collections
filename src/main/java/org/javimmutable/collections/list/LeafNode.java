@@ -28,6 +28,23 @@ class LeafNode<T>
         values[0] = value;
     }
 
+    /**
+     * Builds a leaf node using the provided array directly (i.e. not copied).
+     *
+     * @param values array to retain and use for leaf node
+     */
+    private LeafNode(T[] values)
+    {
+        assert values.length > 0;
+        assert values.length <= MAX_SIZE;
+        this.values = values;
+    }
+
+    /**
+     * Builds a leaf node using a new array of specified size copied from the provided array.
+     *
+     * @param values array to copy for use in leaf node
+     */
     LeafNode(T[] values,
              int count)
     {
@@ -37,6 +54,10 @@ class LeafNode<T>
         System.arraycopy(values, 0, this.values, 0, count);
     }
 
+    /**
+     * Builds a leaf node using a new array populated by calling copyTo() on the two nodes.
+     * Total size of the two nodes must not exceed MAX_SIZE.
+     */
     LeafNode(@Nonnull AbstractNode<T> left,
              @Nonnull AbstractNode<T> right,
              int size)
@@ -47,13 +68,6 @@ class LeafNode<T>
         values = allocate(size);
         left.copyTo(values, 0);
         right.copyTo(values, left.size());
-    }
-
-    private LeafNode(T[] values)
-    {
-        assert values.length > 0;
-        assert values.length <= MAX_SIZE;
-        this.values = values;
     }
 
     @Override

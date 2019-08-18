@@ -15,6 +15,7 @@ import org.javimmutable.collections.serialization.JImmutableListProxy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +51,7 @@ public class JImmutableTreeList<T>
     @Nonnull
     public static <T> JImmutableTreeList<T> of(@Nonnull Indexed<? extends T> values)
     {
-        return create(nodeFromIndexed(values));
+        return create(nodeFromIndexed(values, 0, values.size()));
     }
 
     @Nonnull
@@ -58,7 +59,7 @@ public class JImmutableTreeList<T>
                                                int offset,
                                                int limit)
     {
-        return new RAListBuilder<T>().add(values, offset, limit).build();
+        return create(nodeFromIndexed(values, offset, limit));
     }
 
     @Nonnull
@@ -485,27 +486,35 @@ public class JImmutableTreeList<T>
         return otherRoot;
     }
 
+    @ThreadSafe
     public static class ListBuilder<T>
         implements JImmutableList.Builder<T>
     {
         private final TreeBuilder<T> builder = new TreeBuilder<>();
 
         @Nonnull
-        public ListBuilder<T> combineWith(@Nonnull ListBuilder<T> other)
+        @Override
+        public synchronized JImmutableTreeList<T> build()
+        {
+            return create(builder.build());
+        }
+
+        @Nonnull
+        public synchronized ListBuilder<T> combineWith(@Nonnull ListBuilder<T> other)
         {
             builder.combineWith(other.builder);
             return this;
         }
 
         @Override
-        public int size()
+        public synchronized int size()
         {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public ListBuilder<T> add(T value)
+        public synchronized ListBuilder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -513,14 +522,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public JImmutableTreeList<T> build()
-        {
-            return create(builder.build());
-        }
-
-        @Nonnull
-        @Override
-        public ListBuilder<T> add(Cursor<? extends T> source)
+        public synchronized ListBuilder<T> add(Cursor<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -528,7 +530,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public ListBuilder<T> add(Iterator<? extends T> source)
+        public synchronized ListBuilder<T> add(Iterator<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -536,7 +538,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public ListBuilder<T> add(Iterable<? extends T> source)
+        public synchronized ListBuilder<T> add(Iterable<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -544,7 +546,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public <K extends T> ListBuilder<T> add(K... source)
+        public synchronized <K extends T> ListBuilder<T> add(K... source)
         {
             builder.add(source);
             return this;
@@ -552,9 +554,9 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public ListBuilder<T> add(Indexed<? extends T> source,
-                                  int offset,
-                                  int limit)
+        public synchronized ListBuilder<T> add(Indexed<? extends T> source,
+                                               int offset,
+                                               int limit)
         {
             builder.add(source, offset, limit);
             return this;
@@ -562,39 +564,47 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public ListBuilder<T> add(Indexed<? extends T> source)
+        public synchronized ListBuilder<T> add(Indexed<? extends T> source)
         {
             builder.add(source);
             return this;
         }
 
-        public void checkInvariants()
+        public synchronized void checkInvariants()
         {
             builder.checkInvariants();
         }
     }
 
+    @ThreadSafe
     public static class RAListBuilder<T>
         implements JImmutableRandomAccessList.Builder<T>
     {
         private final TreeBuilder<T> builder = new TreeBuilder<>();
 
         @Nonnull
-        public RAListBuilder<T> combineWith(@Nonnull RAListBuilder<T> other)
+        @Override
+        public synchronized JImmutableTreeList<T> build()
+        {
+            return create(builder.build());
+        }
+
+        @Nonnull
+        public synchronized RAListBuilder<T> combineWith(@Nonnull RAListBuilder<T> other)
         {
             builder.combineWith(other.builder);
             return this;
         }
 
         @Override
-        public int size()
+        public synchronized int size()
         {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public RAListBuilder<T> add(T value)
+        public synchronized RAListBuilder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -602,14 +612,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public JImmutableTreeList<T> build()
-        {
-            return create(builder.build());
-        }
-
-        @Nonnull
-        @Override
-        public RAListBuilder<T> add(Cursor<? extends T> source)
+        public synchronized RAListBuilder<T> add(Cursor<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -617,7 +620,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public RAListBuilder<T> add(Iterator<? extends T> source)
+        public synchronized RAListBuilder<T> add(Iterator<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -625,7 +628,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public RAListBuilder<T> add(Iterable<? extends T> source)
+        public synchronized RAListBuilder<T> add(Iterable<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -633,7 +636,7 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public <K extends T> RAListBuilder<T> add(K... source)
+        public synchronized <K extends T> RAListBuilder<T> add(K... source)
         {
             builder.add(source);
             return this;
@@ -641,9 +644,9 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public RAListBuilder<T> add(Indexed<? extends T> source,
-                                    int offset,
-                                    int limit)
+        public synchronized RAListBuilder<T> add(Indexed<? extends T> source,
+                                                 int offset,
+                                                 int limit)
         {
             builder.add(source, offset, limit);
             return this;
@@ -651,13 +654,13 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public RAListBuilder<T> add(Indexed<? extends T> source)
+        public synchronized RAListBuilder<T> add(Indexed<? extends T> source)
         {
             builder.add(source);
             return this;
         }
 
-        public void checkInvariants()
+        public synchronized void checkInvariants()
         {
             builder.checkInvariants();
         }

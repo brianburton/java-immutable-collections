@@ -226,7 +226,16 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableList<T> list(@Nonnull JImmutableSet<? extends T> source)
     {
-        return list(source.iterator());
+        return JImmutableTreeList.of(source.iterator());
+    }
+
+    /**
+     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
+     */
+    @Nonnull
+    public static <T> JImmutableList<T> list(@Nonnull List<? extends T> source)
+    {
+        return JImmutableTreeList.of(IndexedList.retained(source));
     }
 
     /**

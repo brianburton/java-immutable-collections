@@ -28,6 +28,7 @@ import java.util.Random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.list.TreeBuilder.*;
 
 public class JImmutableTreeListTest
     extends TestCase
@@ -839,6 +840,39 @@ public class JImmutableTreeListTest
         assertThat(list.slice(-3, Integer.MAX_VALUE)).isEqualTo(rangeList(7, 9));
         assertThat(list.slice(5, 4)).isEqualTo(JImmutableTreeList.of());
         assertThat(list.slice(12, 9)).isEqualTo(JImmutableTreeList.of());
+    }
+
+    public void testIndexedBuild()
+    {
+        List<Integer> values = new ArrayList<>();
+        JImmutableList.Builder<Integer> builder = JImmutableTreeList.listBuilder();
+        for (int i = 1; i <= 4096; ++i) {
+            values.add(i);
+            builder.add(i);
+            final IndexedList<Integer> expected = IndexedList.retained(values);
+            final JImmutableTreeList<Integer> actual = JImmutableTreeList.create(nodeFromIndexed(expected));
+            assertThat(actual).isEqualTo(builder.build());
+            actual.checkInvariants();
+        }
+
+        for (int i = 4097; i <= 20480; ++i) {
+            values.add(i);
+        }
+
+        int size = 0;
+        long start = System.currentTimeMillis();
+        for (int i = 1; i <= 3000; ++i) {
+            size += JImmutableTreeList.create(nodeFromIndexed(IndexedList.retained(values))).size();
+        }
+        long ibTime = System.currentTimeMillis() - start;
+
+        start = System.currentTimeMillis();
+        for (int i = 1; i <= 3000; ++i) {
+            size -= JImmutableTreeList.create(nodeFromIterator(values.iterator())).size();
+        }
+        long ofTime = System.currentTimeMillis() - start;
+        System.out.printf("indexBuilder=%d  builder=%d\n", ibTime, ofTime);
+        assertEquals(0, size);
     }
 
     public void testRandom()
