@@ -59,9 +59,11 @@ public class GenericIterator<T>
             throw new NoSuchElementException();
         }
         final T answer = state.value();
-        state = state.advance();
-        if (state != null) {
-            offset += 1;
+        offset += 1;
+        if (offset < limit) {
+            state = state.advance();
+        } else {
+            state = null;
         }
         assert offset <= limit;
         return answer;
