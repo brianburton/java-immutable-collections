@@ -914,9 +914,18 @@ public class JImmutableTreeListTest
             StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
-                int index = random.nextInt(list.size());
-                list = list.delete(index);
-                expected.remove(index);
+                int op = random.nextInt(3);
+                if (op == 0) {
+                    int index = random.nextInt(list.size());
+                    list = list.delete(index);
+                    expected.remove(index);
+                } else if (op == 1) {
+                    list = list.deleteFirst();
+                    expected.remove(0);
+                } else {
+                    list = list.deleteLast();
+                    expected.remove(expected.size() - 1);
+                }
                 if ((list.size() % 100) == 0) {
                     assertEquals(expected, list.getList());
                 }
