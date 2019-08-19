@@ -62,6 +62,7 @@ public class BranchNode<K, V>
     private final Node<K, V>[] children;
     private final K baseKey;
     private final int childCount;
+    private final int valueCount;
 
     public BranchNode(@Nonnull Node<K, V> child1,
                       @Nonnull Node<K, V> child2)
@@ -71,6 +72,7 @@ public class BranchNode<K, V>
         children[1] = child2;
         baseKey = child1.baseKey();
         childCount = 2;
+        valueCount = child1.valueCount() + child2.valueCount();
     }
 
     private BranchNode(@Nonnull Node<K, V>[] children)
@@ -78,6 +80,11 @@ public class BranchNode<K, V>
         this.children = children;
         this.baseKey = children[0].baseKey();
         this.childCount = children.length;
+        int valueCount = 0;
+        for (Node<K, V> child : children) {
+            valueCount += child.valueCount();
+        }
+        this.valueCount = valueCount;
     }
 
     @Nullable
@@ -96,11 +103,7 @@ public class BranchNode<K, V>
     @Override
     public int valueCount()
     {
-        int answer = 0;
-        for (Node<K, V> child : children) {
-            answer += child.valueCount();
-        }
-        return answer;
+        return valueCount;
     }
 
     @Override
