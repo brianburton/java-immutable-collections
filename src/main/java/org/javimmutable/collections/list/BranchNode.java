@@ -4,6 +4,7 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedHelper;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -317,7 +318,7 @@ class BranchNode<T>
     @Override
     public SplitableIterator<T> iterator()
     {
-        return new NodeIterator<>(this, iterateOverRange(null, 0, size), 0, size);
+        return new GenericIterator<>(this, iterateOverRange(null, 0, size), 0, size);
     }
 
     @Override
@@ -389,9 +390,9 @@ class BranchNode<T>
 
     @Nullable
     @Override
-    NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
-                                           int offset,
-                                           int limit)
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
         if (offset < 0 || limit > size || offset > limit) {
             throw new IndexOutOfBoundsException();
@@ -408,12 +409,12 @@ class BranchNode<T>
 
     // state object to resume iteration down right branch from start to limit (limit relative to right branch)
     class IteratorState
-        extends NodeIterator.State<T>
+        implements GenericIterator.State<T>
     {
-        private final NodeIterator.State<T> parent;
+        private final GenericIterator.State<T> parent;
         private final int limit;
 
-        private IteratorState(@Nullable NodeIterator.State<T> parent,
+        private IteratorState(@Nullable GenericIterator.State<T> parent,
                               int limit)
         {
             this.parent = parent;
@@ -421,14 +422,14 @@ class BranchNode<T>
         }
 
         @Override
-        T value()
+        public T value()
         {
             throw new UnsupportedOperationException();
         }
 
         @Nullable
         @Override
-        NodeIterator.State<T> advance()
+        public GenericIterator.State<T> advance()
         {
             return right.iterateOverRange(parent, 0, limit);
         }

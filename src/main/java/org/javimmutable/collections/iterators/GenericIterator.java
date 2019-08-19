@@ -1,7 +1,6 @@
-package org.javimmutable.collections.list;
+package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.SplitIterator;
-import org.javimmutable.collections.iterators.AbstractSplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,20 +8,20 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.NoSuchElementException;
 
 @ThreadSafe
-class NodeIterator<T>
+public class GenericIterator<T>
     extends AbstractSplitableIterator<T>
 {
     static final int MIN_SIZE_FOR_SPLIT = 64;
 
-    private final AbstractNode<T> root;
+    private final Iterable<T> root;
     private final int limit;
     private int offset;
     private State<T> state;
 
-    NodeIterator(@Nonnull AbstractNode<T> root,
-                 @Nullable State<T> state,
-                 int offset,
-                 int limit)
+    public GenericIterator(@Nonnull Iterable<T> root,
+                           @Nullable State<T> state,
+                           int offset,
+                           int limit)
     {
         assert offset < limit || state == null;
         this.root = root;
@@ -31,11 +30,19 @@ class NodeIterator<T>
         this.state = state;
     }
 
-    static abstract class State<T>
+    public interface Iterable<T>
     {
-        abstract T value();
+        @Nullable
+        State<T> iterateOverRange(@Nullable State<T> parent,
+                                  int offset,
+                                  int limit);
+    }
 
-        abstract State<T> advance();
+    public interface State<T>
+    {
+        T value();
+
+        State<T> advance();
     }
 
     @Override
@@ -71,7 +78,7 @@ class NodeIterator<T>
     public synchronized SplitIterator<T> splitIterator()
     {
         final int splitIndex = offset + (limit - offset) / 2;
-        return new SplitIterator<T>(new NodeIterator<>(root, root.iterateOverRange(null, offset, splitIndex), offset, splitIndex),
-                                    new NodeIterator<>(root, root.iterateOverRange(null, splitIndex, limit), splitIndex, limit));
+        return new SplitIterator<T>(new GenericIterator<>(root, root.iterateOverRange(null, offset, splitIndex), offset, splitIndex),
+                                    new GenericIterator<>(root, root.iterateOverRange(null, splitIndex, limit), splitIndex, limit));
     }
 }
