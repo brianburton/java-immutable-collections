@@ -8,7 +8,9 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
@@ -297,5 +299,58 @@ class LeafNode<T>
         return new StringJoiner(", ", LeafNode.class.getSimpleName() + "[", "]")
             .add("values=" + Arrays.toString(values))
             .toString();
+    }
+
+    @Nullable
+    @Override
+    NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
+                                           int offset,
+                                           int limit)
+    {
+        if (limit > values.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (offset < 0 || offset >= limit) {
+            throw new IndexOutOfBoundsException();
+        }
+        return new IteratorState(parent, offset, limit);
+    }
+
+    @NotThreadSafe
+    class IteratorState
+        extends NodeIterator.State<T>
+    {
+        private final NodeIterator.State<T> parent;
+        private final int limit;
+        private int offset;
+
+        private IteratorState(@Nullable NodeIterator.State<T> parent,
+                              int offset,
+                              int limit)
+        {
+            this.parent = parent;
+            this.offset = offset;
+            this.limit = limit;
+        }
+
+        @Override
+        T value()
+        {
+            return values[offset];
+        }
+
+        @Nullable
+        @Override
+        NodeIterator.State<T> advance()
+        {
+            offset += 1;
+            if (offset < limit) {
+                return this;
+            } else if (parent != null) {
+                return parent.advance();
+            } else {
+                return null;
+            }
+        }
     }
 }

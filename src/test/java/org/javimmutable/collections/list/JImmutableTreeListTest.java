@@ -1248,7 +1248,7 @@ public class JImmutableTreeListTest
         Iterator<Integer> iterator = list.iterator();
         assertEquals(false, iterator.hasNext());
 
-        for (int size = 1; size <= 10; ++size) {
+        for (int size = 1; size <= 1024; ++size) {
             list = list.insert(size);
             iterator = list.iterator();
             for (int i = 0; i < size; ++i) {
@@ -1259,7 +1259,7 @@ public class JImmutableTreeListTest
         }
 
         list = JImmutableTreeList.of();
-        for (int size = 1; size <= 10; ++size) {
+        for (int size = 1; size <= 1024; ++size) {
             list = list.insertFirst(size);
             iterator = list.iterator();
             for (int i = 0; i < size; ++i) {
@@ -1270,7 +1270,7 @@ public class JImmutableTreeListTest
         }
 
         list = JImmutableTreeList.of();
-        for (int size = 1; size <= 10; ++size) {
+        for (int size = 1; size <= 1024; ++size) {
             list = list.insertLast(size);
             iterator = list.iterator();
             for (int i = 0; i < size; ++i) {

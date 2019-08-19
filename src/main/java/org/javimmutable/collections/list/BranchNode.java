@@ -4,9 +4,9 @@ import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedHelper;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.StringJoiner;
 
@@ -317,7 +317,7 @@ class BranchNode<T>
     @Override
     public SplitableIterator<T> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, right));
+        return new NodeIterator<>(this, iterateOverRange(null, 0, size), 0, size);
     }
 
     @Override
@@ -385,5 +385,52 @@ class BranchNode<T>
             .add("size=" + size)
             .add("depth=" + depth)
             .toString();
+    }
+
+    @Nullable
+    @Override
+    NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
+                                           int offset,
+                                           int limit)
+    {
+        if (offset < 0 || limit > size || offset > limit) {
+            throw new IndexOutOfBoundsException();
+        }
+        final int leftSize = left.size();
+        if (limit <= leftSize) {
+            return left.iterateOverRange(parent, offset, limit);
+        } else if (offset >= leftSize) {
+            return right.iterateOverRange(parent, offset - leftSize, limit - leftSize);
+        } else {
+            return left.iterateOverRange(new IteratorState(parent, limit - leftSize), offset, leftSize);
+        }
+    }
+
+    // state object to resume iteration down right branch from start to limit (limit relative to right branch)
+    class IteratorState
+        extends NodeIterator.State<T>
+    {
+        private final NodeIterator.State<T> parent;
+        private final int limit;
+
+        private IteratorState(@Nullable NodeIterator.State<T> parent,
+                              int limit)
+        {
+            this.parent = parent;
+            this.limit = limit;
+        }
+
+        @Override
+        T value()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Nullable
+        @Override
+        NodeIterator.State<T> advance()
+        {
+            return right.iterateOverRange(parent, 0, limit);
+        }
     }
 }

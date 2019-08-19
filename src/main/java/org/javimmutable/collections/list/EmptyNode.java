@@ -6,6 +6,7 @@ import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -157,6 +158,15 @@ public class EmptyNode<T>
     public SplitableIterator<T> iterator()
     {
         return EmptyIterator.of();
+    }
+
+    @Nullable
+    @Override
+    NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
+                                           int offset,
+                                           int limit)
+    {
+        return parent;
     }
 
     @Override

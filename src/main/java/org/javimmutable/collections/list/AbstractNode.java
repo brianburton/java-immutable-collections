@@ -5,6 +5,7 @@ import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 abstract class AbstractNode<T>
     implements Cursorable<T>,
@@ -83,4 +84,12 @@ abstract class AbstractNode<T>
     {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Creates a new iterator state if possible, otherwise returns null.
+     */
+    @Nullable
+    abstract NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
+                                                    int offset,
+                                                    int limit);
 }
