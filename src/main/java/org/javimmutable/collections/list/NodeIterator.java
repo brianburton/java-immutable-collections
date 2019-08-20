@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 class NodeIterator<T>
     extends AbstractSplitableIterator<T>
 {
-    static final int MIN_SIZE_FOR_SPLIT = 64;
+    static final int MIN_SIZE_FOR_SPLIT = 32;
 
     private final AbstractNode<T> root;
     private final int limit;
