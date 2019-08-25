@@ -102,9 +102,9 @@ class ValueNode<K, V>
         final Node<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
-            final V value = generator.apply(Holders.of(thisValue));
-            if (value != thisValue) {
-                return new ValueNode<>(key, value, left, right);
+            final V newValue = generator.apply(Holders.of(thisValue));
+            if (newValue != thisValue) {
+                return new ValueNode<>(key, newValue, left, right);
             }
         } else if (diff < 0) {
             final Node<K, V> newLeft = left.update(comp, key, generator);
@@ -136,10 +136,10 @@ class ValueNode<K, V>
             } else if (right.isEmpty()) {
                 return left;
             } else if (left.depth() > right.depth()) {
-                final DeleteResult<K, V> result = left.deleteGreatest();
+                final DeleteResult<K, V> result = left.deleteRightmost();
                 return balance(result.key, result.value, result.remainder, right);
             } else {
-                final DeleteResult<K, V> result = right.deleteLeast();
+                final DeleteResult<K, V> result = right.deleteLeftmost();
                 return balance(result.key, result.value, left, result.remainder);
             }
         } else if (diff < 0) {
@@ -158,24 +158,24 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteLeast()
+    DeleteResult<K, V> deleteLeftmost()
     {
         if (left.isEmpty()) {
             return new DeleteResult<>(key, value, right);
         } else {
-            final DeleteResult<K, V> result = left.deleteLeast();
+            final DeleteResult<K, V> result = left.deleteLeftmost();
             return result.withRemainder(balance(key, value, result.remainder, right));
         }
     }
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteGreatest()
+    DeleteResult<K, V> deleteRightmost()
     {
         if (right.isEmpty()) {
             return new DeleteResult<>(key, value, left);
         } else {
-            final DeleteResult<K, V> result = right.deleteGreatest();
+            final DeleteResult<K, V> result = right.deleteRightmost();
             return result.withRemainder(balance(key, value, left, result.remainder));
         }
     }
@@ -270,13 +270,6 @@ class ValueNode<K, V>
     public V getValue()
     {
         return value;
-    }
-
-    @Nonnull
-    @Override
-    Entry<K, V> entry()
-    {
-        return this;
     }
 
     @Nonnull

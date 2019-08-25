@@ -29,10 +29,10 @@ abstract class Node<K, V>
                                @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
-    abstract DeleteResult<K, V> deleteLeast();
+    abstract DeleteResult<K, V> deleteLeftmost();
 
     @Nonnull
-    abstract DeleteResult<K, V> deleteGreatest();
+    abstract DeleteResult<K, V> deleteRightmost();
 
     @Nullable
     abstract V get(@Nonnull Comparator<K> comp,
@@ -63,9 +63,6 @@ abstract class Node<K, V>
     abstract V getValue();
 
     @Nonnull
-    abstract Entry<K, V> entry();
-
-    @Nonnull
     abstract Node<K, V> left();
 
     @Nonnull
@@ -83,15 +80,16 @@ abstract class Node<K, V>
         final V value;
         final Node<K, V> remainder;
 
-        DeleteResult(K key,
+        DeleteResult(@Nonnull K key,
                      V value,
-                     Node<K, V> remainder)
+                     @Nonnull Node<K, V> remainder)
         {
             this.key = key;
             this.value = value;
             this.remainder = remainder;
         }
 
+        @Nonnull
         DeleteResult<K, V> withRemainder(@Nonnull Node<K, V> remainder)
         {
             return new DeleteResult<>(key, value, remainder);

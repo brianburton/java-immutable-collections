@@ -125,7 +125,7 @@ public final class TimingComparison
             }
         }
         long endPer = System.currentTimeMillis();
-        System.out.printf("2-3 adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endPer - startPer));
+        System.out.printf("tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endPer - startPer));
         map.checkInvariants();
 
         Iterator<Map.Entry<Integer, Integer>> expectedIter = expected.entrySet().iterator();

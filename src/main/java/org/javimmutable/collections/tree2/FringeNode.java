@@ -58,14 +58,14 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteLeast()
+    DeleteResult<K, V> deleteLeftmost()
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteGreatest()
+    DeleteResult<K, V> deleteRightmost()
     {
         throw new UnsupportedOperationException();
     }
@@ -130,13 +130,6 @@ class FringeNode<K, V>
     @Nullable
     @Override
     V getValue()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    Entry<K, V> entry()
     {
         throw new UnsupportedOperationException();
     }
