@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.NoSuchElementException;
+import java.util.function.ToIntFunction;
 
 @ThreadSafe
 public class GenericIterator<T>
@@ -82,5 +83,115 @@ public class GenericIterator<T>
         final int splitIndex = offset + (limit - offset) / 2;
         return new SplitIterator<T>(new GenericIterator<>(root, root.iterateOverRange(null, offset, splitIndex), offset, splitIndex),
                                     new GenericIterator<>(root, root.iterateOverRange(null, splitIndex, limit), splitIndex, limit));
+    }
+
+    private static class SingleValueState<T>
+        implements State<T>
+    {
+        private final State<T> parent;
+        private final T value;
+
+        private SingleValueState(State<T> parent,
+                                 T value)
+        {
+            this.parent = parent;
+            this.value = value;
+        }
+
+        @Override
+        public T value()
+        {
+            return value;
+        }
+
+        @Override
+        public State<T> advance()
+        {
+            return parent.advance();
+        }
+    }
+
+    public static <T, C extends Iterable<T>> State<T> valueState(State<T> parent,
+                                                                 C[] children,
+                                                                 ToIntFunction<C> sizer,
+                                                                 int offset,
+                                                                 int limit)
+    {
+        int childIndex = 0;
+        int childSize = sizer.applyAsInt(children[childIndex]);
+        int childLimit = childSize;
+        while (offset >= childLimit) {
+            childIndex += 1;
+            childSize = sizer.applyAsInt(children[childIndex]);
+            childLimit += childSize;
+        }
+        final int childOffset = childLimit - childSize;
+        final int remaining = limit - childOffset;
+
+        final State<T> answerParent;
+        if (remaining > childSize) {
+            answerParent = new ArrayState<>(parent, children, sizer, childIndex + 1, childLimit, limit);
+            childLimit = childSize;
+        } else {
+            answerParent = parent;
+            childLimit = remaining;
+        }
+
+        return children[childIndex].iterateOverRange(answerParent, offset - childOffset, childLimit);
+    }
+
+    private static class ArrayState<T, C extends Iterable<T>>
+        implements State<T>
+    {
+        private final State<T> parent;
+        private final C[] children;
+        private final ToIntFunction<C> sizer;
+        private final int limit;
+        private int childIndex;
+        private int childOffset;
+
+        public ArrayState(State<T> parent,
+                          C[] children,
+                          ToIntFunction<C> sizer,
+                          int childIndex,
+                          int childOffset,
+                          int limit)
+        {
+            assert childIndex < children.length;
+            assert childOffset < limit;
+            this.parent = parent;
+            this.children = children;
+            this.sizer = sizer;
+            this.limit = limit;
+            this.childIndex = childIndex;
+            this.childOffset = childOffset;
+        }
+
+        @Override
+        public T value()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public State<T> advance()
+        {
+            final int childSize = sizer.applyAsInt(children[childIndex]);
+            final int remaining = limit - childOffset;
+            final int childLimit;
+            final State<T> parent;
+            if (remaining > childSize) {
+                parent = this;
+                childLimit = childSize;
+            } else {
+                parent = this.parent;
+                childLimit = remaining;
+            }
+
+            final State<T> answer = children[childIndex].iterateOverRange(parent, 0, childLimit);
+            childIndex += 1;
+            childOffset += childSize;
+            return answer;
+        }
     }
 }
