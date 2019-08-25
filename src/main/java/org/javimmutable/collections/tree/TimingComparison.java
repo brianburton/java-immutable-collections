@@ -105,8 +105,8 @@ public final class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
+        JImmutableMap<Integer, Integer> map = org.javimmutable.collections.tree2.JImmutableTreeMap.of();
 //        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
-        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {

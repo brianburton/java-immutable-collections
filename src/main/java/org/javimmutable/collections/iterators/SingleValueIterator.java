@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.SplitableIterable;
+
 import java.util.NoSuchElementException;
 
 public class SingleValueIterator<T>
@@ -51,6 +53,11 @@ public class SingleValueIterator<T>
     public static <T> SingleValueIterator<T> of(T value)
     {
         return new SingleValueIterator<>(value);
+    }
+
+    public static <T> SplitableIterable<T> iterable(T value)
+    {
+        return () -> new SingleValueIterator<>(value);
     }
 
     @Override
