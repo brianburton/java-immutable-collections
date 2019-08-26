@@ -41,8 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.tree.BranchNode;
-import org.javimmutable.collections.tree.LeafNode;
+import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.Node;
 
 import java.util.ArrayList;
@@ -57,40 +56,40 @@ public class TreeCollisionMapTest
         MutableDelta delta = new MutableDelta();
         Node<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(new LeafNode<>(10, 100), value);
+        assertEquals(Node.single(10, 100), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 10, 1000, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new LeafNode<>(10, 1000), value);
+        assertEquals(Node.single(10, 1000), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 12, 60, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 60)), value);
+        assertEquals(branch(Node.single(10, 1000), Node.single(12, 60)), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 12, 90, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 90)), value);
+        assertEquals(branch(Node.single(10, 1000), Node.single(12, 90)), value);
 
         delta = new MutableDelta();
         Node<Integer, Integer> deleted = transforms.delete(value, 87, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(new BranchNode<>(new LeafNode<>(10, 1000), new LeafNode<>(12, 90)), deleted);
+        assertEquals(branch(Node.single(10, 1000), Node.single(12, 90)), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 10, delta);
         assertNotNull(deleted);
         assertEquals(-1, delta.getValue());
-        assertEquals(new LeafNode<>(12, 90), deleted);
+        assertEquals(Node.single(12, 90), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 40, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(new LeafNode<>(12, 90), deleted);
+        assertEquals(Node.single(12, 90), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 12, delta);
@@ -127,5 +126,11 @@ public class TreeCollisionMapTest
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
         StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
+    }
+
+    private Node<Integer, Integer> branch(Node<Integer, Integer> a,
+                                          Node<Integer, Integer> b)
+    {
+        return a.assign(ComparableComparator.of(), b.getKey(), b.getValue());
     }
 }

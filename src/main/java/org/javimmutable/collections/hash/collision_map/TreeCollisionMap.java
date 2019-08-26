@@ -42,11 +42,8 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.tree.BranchNode;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.LeafNode;
 import org.javimmutable.collections.tree.Node;
-import org.javimmutable.collections.tree.UpdateResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,7 +51,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
- * Transforms implementation that stores values in Node objects (b-trees trees).
+ * Transforms implementation that stores values in Node objects (balanced trees).
  * Usable with keys that implement Comparable.  Will fail with any other
  * type of key.
  */
@@ -73,7 +70,7 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
     {
         if (leaf == null) {
             delta.add(1);
-            return new LeafNode<>(key, value);
+            return Node.single(key, value);
         } else {
             return resultForUpdate(leaf, delta, leaf.assign(comparator, key, value));
         }
@@ -88,7 +85,7 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
     {
         if (leaf == null) {
             delta.add(1);
-            return new LeafNode<>(key, generator.apply(Holders.of()));
+            return Node.single(key, generator.apply(Holders.of()));
         } else {
             return resultForUpdate(leaf, delta, leaf.update(comparator, key, generator));
         }
@@ -104,7 +101,7 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
             return leaf;
         } else {
             delta.add(-1);
-            return newLeaf.isEmpty() ? null : newLeaf.compress();
+            return newLeaf.isEmpty() ? null : newLeaf;
         }
     }
 
@@ -113,7 +110,7 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
                         @Nonnull K key,
                         V defaultValue)
     {
-        return leaf.getValueOr(comparator, key, defaultValue);
+        return leaf.getOr(comparator, key, defaultValue);
     }
 
     @Override
@@ -144,19 +141,9 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
 
     private Node<K, V> resultForUpdate(Node<K, V> leaf,
                                        @Nonnull MutableDelta delta,
-                                       UpdateResult<K, V> result)
+                                       Node<K, V> result)
     {
-        switch (result.type) {
-            case UNCHANGED:
-                return leaf;
-            case INPLACE:
-                delta.add(result.sizeDelta);
-                return result.newNode;
-            case SPLIT:
-                delta.add(result.sizeDelta);
-                return new BranchNode<>(result.newNode, result.extraNode);
-            default:
-                throw new IllegalStateException("unknown UpdateResult.Type value");
-        }
+        delta.add(result.size() - leaf.size());
+        return result;
     }
 }

@@ -1,4 +1,4 @@
-package org.javimmutable.collections.tree2;
+package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
@@ -32,26 +32,26 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> assign(@Nonnull Comparator<K> comp,
-                      @Nonnull K key,
-                      @Nullable V value)
+    public Node<K, V> assign(@Nonnull Comparator<K> comp,
+                             @Nonnull K key,
+                             @Nullable V value)
     {
         return new ValueNode<>(key, value, this, this);
     }
 
     @Nonnull
     @Override
-    Node<K, V> update(@Nonnull Comparator<K> comp,
-                      @Nonnull K key,
-                      @Nonnull Func1<Holder<V>, V> generator)
+    public Node<K, V> update(@Nonnull Comparator<K> comp,
+                             @Nonnull K key,
+                             @Nonnull Func1<Holder<V>, V> generator)
     {
         return new ValueNode<>(key, generator.apply(Holders.of()), this, this);
     }
 
     @Nonnull
     @Override
-    Node<K, V> delete(@Nonnull Comparator<K> comp,
-                      @Nonnull K key)
+    public Node<K, V> delete(@Nonnull Comparator<K> comp,
+                             @Nonnull K key)
     {
         return this;
     }
@@ -78,32 +78,33 @@ class FringeNode<K, V>
         return null;
     }
 
+    @Nullable
     @Override
-    V getOr(@Nonnull Comparator<K> comp,
-            @Nonnull K key,
-            V defaultValue)
+    public V getOr(@Nonnull Comparator<K> comp,
+                   @Nonnull K key,
+                   V defaultValue)
     {
         return defaultValue;
     }
 
     @Nonnull
     @Override
-    Holder<V> find(@Nonnull Comparator<K> comp,
-                   @Nonnull K key)
+    public Holder<V> find(@Nonnull Comparator<K> comp,
+                          @Nonnull K key)
     {
         return Holders.of();
     }
 
     @Nonnull
     @Override
-    Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                  @Nonnull K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                         @Nonnull K key)
     {
         return Holders.of();
     }
 
     @Override
-    boolean isEmpty()
+    public boolean isEmpty()
     {
         return true;
     }
@@ -115,21 +116,21 @@ class FringeNode<K, V>
     }
 
     @Override
-    int size()
+    public int size()
     {
         return 0;
     }
 
     @Nonnull
     @Override
-    K getKey()
+    public K getKey()
     {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    V getValue()
+    public V getValue()
     {
         throw new UnsupportedOperationException();
     }

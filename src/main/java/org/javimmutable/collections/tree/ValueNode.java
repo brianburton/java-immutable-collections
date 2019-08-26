@@ -1,10 +1,13 @@
-package org.javimmutable.collections.tree2;
+package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.cursors.SingleValueCursor;
@@ -20,7 +23,6 @@ import java.util.Comparator;
 @Immutable
 class ValueNode<K, V>
     extends Node<K, V>
-    implements Entry<K, V>
 {
     private final K key;
     private final V value;
@@ -63,9 +65,9 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> assign(@Nonnull Comparator<K> comp,
-                      @Nonnull K key,
-                      @Nullable V value)
+    public Node<K, V> assign(@Nonnull Comparator<K> comp,
+                             @Nonnull K key,
+                             @Nullable V value)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
@@ -92,9 +94,9 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> update(@Nonnull Comparator<K> comp,
-                      @Nonnull K key,
-                      @Nonnull Func1<Holder<V>, V> generator)
+    public Node<K, V> update(@Nonnull Comparator<K> comp,
+                             @Nonnull K key,
+                             @Nonnull Func1<Holder<V>, V> generator)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
@@ -122,8 +124,8 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> delete(@Nonnull Comparator<K> comp,
-                      @Nonnull K key)
+    public Node<K, V> delete(@Nonnull Comparator<K> comp,
+                             @Nonnull K key)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
@@ -195,10 +197,11 @@ class ValueNode<K, V>
         }
     }
 
+    @Nullable
     @Override
-    V getOr(@Nonnull Comparator<K> comp,
-            @Nonnull K key,
-            V defaultValue)
+    public V getOr(@Nonnull Comparator<K> comp,
+                   @Nonnull K key,
+                   V defaultValue)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
@@ -212,8 +215,8 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Holder<V> find(@Nonnull Comparator<K> comp,
-                   @Nonnull K key)
+    public Holder<V> find(@Nonnull Comparator<K> comp,
+                          @Nonnull K key)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
@@ -227,12 +230,12 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                  @Nonnull K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                         @Nonnull K key)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Holders.of(this);
+            return Holders.of(entry());
         } else if (diff < 0) {
             return left.findEntry(comp, key);
         } else {
@@ -240,8 +243,13 @@ class ValueNode<K, V>
         }
     }
 
+    private Entry<K, V> entry()
+    {
+        return MapEntry.of(key, value);
+    }
+
     @Override
-    boolean isEmpty()
+    public boolean isEmpty()
     {
         return false;
     }
@@ -253,7 +261,7 @@ class ValueNode<K, V>
     }
 
     @Override
-    int size()
+    public int size()
     {
         return size;
     }
@@ -333,13 +341,15 @@ class ValueNode<K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, SingleValueIterator.iterable(this), right));
+        final SplitableIterable<Entry<K, V>> valueIterator = () -> SingleValueIterator.of(entry());
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, valueIterator, right));
     }
 
     @Nonnull
     @Override
     public Cursor<Entry<K, V>> cursor()
     {
-        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, SingleValueCursor.cursorable(this), right));
+        final Cursorable<Entry<K, V>> valueCursor = () -> SingleValueCursor.of(entry());
+        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, valueCursor, right));
     }
 }

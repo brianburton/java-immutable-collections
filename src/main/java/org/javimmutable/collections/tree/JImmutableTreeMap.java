@@ -58,23 +58,19 @@ public class JImmutableTreeMap<K, V>
     extends AbstractJImmutableMap<K, V>
     implements Serializable
 {
-    private static final Comparator EMPTY_COMPARATOR = ComparableComparator.of();
     @SuppressWarnings("unchecked")
-    private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(EMPTY_COMPARATOR, EmptyNode.of(), 0);
+    private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(ComparableComparator.of(), FringeNode.instance());
 
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
     private final Node<K, V> root;
-    private final int size;
 
     private JImmutableTreeMap(@Nonnull Comparator<K> comparator,
-                              @Nonnull Node<K, V> root,
-                              int size)
+                              @Nonnull Node<K, V> root)
     {
         this.comparator = comparator;
         this.root = root;
-        this.size = size;
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +83,7 @@ public class JImmutableTreeMap<K, V>
     @Nonnull
     public static <K, V> JImmutableTreeMap<K, V> of(@Nonnull Comparator<K> comparator)
     {
-        return new JImmutableTreeMap<>(comparator, EmptyNode.of(), 0);
+        return new JImmutableTreeMap<>(comparator, FringeNode.instance());
     }
 
     /**
@@ -95,14 +91,14 @@ public class JImmutableTreeMap<K, V>
      * to compare the keys.
      */
     @Nonnull
-    @Deprecated
-    public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(Map<K, V> map)
+    public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(@Nonnull Iterable<Map.Entry<K, V>> map)
     {
-        JImmutableTreeMap<K, V> answer = of();
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            answer = answer.assign(entry.getKey(), entry.getValue());
+        final Comparator<K> comp = ComparableComparator.of();
+        Node<K, V> root = FringeNode.instance();
+        for (Map.Entry<K, V> entry : map) {
+            root = root.assign(comp, entry.getKey(), entry.getValue());
         }
-        return answer;
+        return root.isEmpty() ? of() : new JImmutableTreeMap<>(comp, root);
     }
 
     @Override
@@ -110,7 +106,7 @@ public class JImmutableTreeMap<K, V>
                         V defaultValue)
     {
         Conditions.stopNull(key);
-        return root.getValueOr(comparator, key, defaultValue);
+        return root.getOr(comparator, key, defaultValue);
     }
 
     @Nonnull
@@ -135,8 +131,7 @@ public class JImmutableTreeMap<K, V>
                                           V value)
     {
         Conditions.stopNull(key);
-        final UpdateResult<K, V> result = root.assign(comparator, key, value);
-        return resultForAssign(result);
+        return create(root.assign(comparator, key, value));
     }
 
     @Nonnull
@@ -145,8 +140,7 @@ public class JImmutableTreeMap<K, V>
                                           @Nonnull Func1<Holder<V>, V> generator)
     {
         Conditions.stopNull(key);
-        final UpdateResult<K, V> result = root.update(comparator, key, generator);
-        return resultForAssign(result);
+        return create(root.update(comparator, key, generator));
     }
 
     @Nonnull
@@ -155,26 +149,25 @@ public class JImmutableTreeMap<K, V>
     {
         Conditions.stopNull(key);
         final Node<K, V> newRoot = root.delete(comparator, key);
-        if (newRoot == root) {
-            return this;
-        } else if (size == 1) {
+        if (newRoot.isEmpty()) {
             return deleteAll();
         } else {
-            return new JImmutableTreeMap<>(comparator, newRoot.compress(), size - 1);
+            return create(newRoot);
         }
     }
 
     @Override
     public int size()
     {
-        return size;
+        return root.size();
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableTreeMap<K, V> deleteAll()
     {
-        return (comparator == EMPTY_COMPARATOR) ? EMPTY : new JImmutableTreeMap<>(comparator, EmptyNode.of(), 0);
+        return (comparator == ComparableComparator.of()) ? EMPTY : new JImmutableTreeMap<>(comparator, FringeNode.instance());
     }
 
     @Nonnull
@@ -220,17 +213,12 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Nonnull
-    private JImmutableTreeMap<K, V> resultForAssign(UpdateResult<K, V> result)
+    private JImmutableTreeMap<K, V> create(Node<K, V> newRoot)
     {
-        switch (result.type) {
-            case UNCHANGED:
-                return this;
-            case INPLACE:
-                return new JImmutableTreeMap<>(comparator, result.newNode, size + result.sizeDelta);
-            case SPLIT:
-                return new JImmutableTreeMap<>(comparator, new BranchNode<>(result.newNode, result.extraNode), size + result.sizeDelta);
-            default:
-                throw new IllegalStateException("unknown UpdateResult.Type value");
+        if (newRoot == root) {
+            return this;
+        } else {
+            return new JImmutableTreeMap<>(comparator, newRoot);
         }
     }
 
