@@ -53,11 +53,11 @@ class ValueNode<K, V>
         if (diff < -1) {
             right = right.rightWeighted();
             final Node<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
-            return new ValueNode<>(right.getKey(), right.getValue(), newLeft, right.right());
+            return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
         } else if (diff > 1) {
             left = left.leftWeighted();
             final Node<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
-            return new ValueNode<>(left.getKey(), left.getValue(), left.left(), newRight);
+            return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
         } else {
             return new ValueNode<>(key, value, left, right);
         }
@@ -184,32 +184,17 @@ class ValueNode<K, V>
 
     @Nullable
     @Override
-    V get(@Nonnull Comparator<K> comp,
-          @Nonnull K key)
+    public V get(@Nonnull Comparator<K> comp,
+                 @Nonnull K key,
+                 V defaultValue)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
             return value;
         } else if (diff < 0) {
-            return left.get(comp, key);
+            return left.get(comp, key, defaultValue);
         } else {
-            return right.get(comp, key);
-        }
-    }
-
-    @Nullable
-    @Override
-    public V getOr(@Nonnull Comparator<K> comp,
-                   @Nonnull K key,
-                   V defaultValue)
-    {
-        final int diff = comp.compare(key, this.key);
-        if (diff == 0) {
-            return value;
-        } else if (diff < 0) {
-            return left.getOr(comp, key, defaultValue);
-        } else {
-            return right.getOr(comp, key, defaultValue);
+            return right.get(comp, key, defaultValue);
         }
     }
 
@@ -268,14 +253,14 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public K getKey()
+    K key()
     {
         return key;
     }
 
     @Nullable
     @Override
-    public V getValue()
+    V value()
     {
         return value;
     }
@@ -300,10 +285,10 @@ class ValueNode<K, V>
         if (key == null) {
             throw new IllegalStateException();
         }
-        if (left.size() > 0 && comp.compare(left.getKey(), key) >= 0) {
+        if (left.size() > 0 && comp.compare(left.key(), key) >= 0) {
             throw new IllegalStateException();
         }
-        if (right.size() > 0 && comp.compare(right.getKey(), key) <= 0) {
+        if (right.size() > 0 && comp.compare(right.key(), key) <= 0) {
             throw new IllegalStateException();
         }
         if (Math.abs(left.depth() - right.depth()) > 1) {
@@ -322,7 +307,7 @@ class ValueNode<K, V>
     {
         if (right.depth() > left.depth()) {
             final Node<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
-            return new ValueNode<>(right.getKey(), right.getValue(), newLeft, right.right());
+            return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
         }
         return this;
     }
@@ -332,7 +317,7 @@ class ValueNode<K, V>
     {
         if (left.depth() > right.depth()) {
             final Node<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
-            return new ValueNode<>(left.getKey(), left.getValue(), left.left(), newRight);
+            return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
         }
         return this;
     }

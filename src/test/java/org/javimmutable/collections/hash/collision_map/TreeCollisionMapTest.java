@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -66,18 +67,18 @@ public class TreeCollisionMapTest
         delta = new MutableDelta();
         value = transforms.update(value, 12, 60, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(branch(Node.single(10, 1000), Node.single(12, 60)), value);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 60)), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 12, 90, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(branch(Node.single(10, 1000), Node.single(12, 90)), value);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), value);
 
         delta = new MutableDelta();
         Node<Integer, Integer> deleted = transforms.delete(value, 87, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(branch(Node.single(10, 1000), Node.single(12, 90)), deleted);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 10, delta);
@@ -128,9 +129,9 @@ public class TreeCollisionMapTest
         StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
     }
 
-    private Node<Integer, Integer> branch(Node<Integer, Integer> a,
-                                          Node<Integer, Integer> b)
+    private Node<Integer, Integer> branch(Tuple2<Integer, Integer> a,
+                                          Tuple2<Integer, Integer> b)
     {
-        return a.assign(ComparableComparator.of(), b.getKey(), b.getValue());
+        return Node.single(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
     }
 }

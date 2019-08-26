@@ -72,17 +72,9 @@ class FringeNode<K, V>
 
     @Nullable
     @Override
-    V get(@Nonnull Comparator<K> comp,
-          @Nonnull K key)
-    {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public V getOr(@Nonnull Comparator<K> comp,
-                   @Nonnull K key,
-                   V defaultValue)
+    public V get(@Nonnull Comparator<K> comp,
+                 @Nonnull K key,
+                 V defaultValue)
     {
         return defaultValue;
     }
@@ -123,14 +115,14 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    public K getKey()
+    K key()
     {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    public V getValue()
+    V value()
     {
         throw new UnsupportedOperationException();
     }

@@ -106,7 +106,7 @@ public class JImmutableTreeMap<K, V>
                         V defaultValue)
     {
         Conditions.stopNull(key);
-        return root.getOr(comparator, key, defaultValue);
+        return root.get(comparator, key, defaultValue);
     }
 
     @Nonnull

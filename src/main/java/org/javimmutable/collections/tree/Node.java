@@ -46,13 +46,9 @@ public abstract class Node<K, V>
     @Nonnull
     abstract DeleteResult<K, V> deleteRightmost();
 
-    @Nullable
-    abstract V get(@Nonnull Comparator<K> comp,
-                   @Nonnull K key);
-
-    public abstract V getOr(@Nonnull Comparator<K> comp,
-                            @Nonnull K key,
-                            V defaultValue);
+    public abstract V get(@Nonnull Comparator<K> comp,
+                          @Nonnull K key,
+                          V defaultValue);
 
     @Nonnull
     public abstract Holder<V> find(@Nonnull Comparator<K> comp,
@@ -69,10 +65,10 @@ public abstract class Node<K, V>
     public abstract int size();
 
     @Nonnull
-    public abstract K getKey();
+    abstract K key();
 
     @Nullable
-    public abstract V getValue();
+    abstract V value();
 
     @Nonnull
     abstract Node<K, V> left();

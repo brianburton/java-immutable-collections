@@ -110,7 +110,7 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
                         @Nonnull K key,
                         V defaultValue)
     {
-        return leaf.getOr(comparator, key, defaultValue);
+        return leaf.get(comparator, key, defaultValue);
     }
 
     @Override
