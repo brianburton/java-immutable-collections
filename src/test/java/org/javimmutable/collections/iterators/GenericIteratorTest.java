@@ -20,6 +20,7 @@ public class GenericIteratorTest
 {
     public void test()
     {
+        eq(asList(), nr(1, 0));
         eq(asList(1), n(1));
         eq(asList(1, 2), n(n(1, 2)));
         eq(asList(1, 2, 3), n(n(1, 2, 3)));

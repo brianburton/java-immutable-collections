@@ -122,6 +122,9 @@ public class GenericIterator<T>
                                                                  int offset,
                                                                  int limit)
     {
+        if (children.length == 0) {
+            return null;
+        }
         int childIndex = 0;
         int childSize = sizer.applyAsInt(children[childIndex]);
         int childLimit = childSize;
