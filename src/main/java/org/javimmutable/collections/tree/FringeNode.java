@@ -16,7 +16,7 @@ import java.util.Comparator;
 
 @Immutable
 class FringeNode<K, V>
-    extends Node<K, V>
+    extends AbstractNode<K, V>
 {
     private static final FringeNode INSTANCE = new FringeNode();
 
@@ -25,33 +25,33 @@ class FringeNode<K, V>
     }
 
     @SuppressWarnings("unchecked")
-    static <K, V> Node<K, V> instance()
+    static <K, V> AbstractNode<K, V> instance()
     {
         return INSTANCE;
     }
 
     @Nonnull
     @Override
-    public Node<K, V> assign(@Nonnull Comparator<K> comp,
-                             @Nonnull K key,
-                             @Nullable V value)
+    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key,
+                                     @Nullable V value)
     {
         return new ValueNode<>(key, value, this, this);
     }
 
     @Nonnull
     @Override
-    public Node<K, V> update(@Nonnull Comparator<K> comp,
-                             @Nonnull K key,
-                             @Nonnull Func1<Holder<V>, V> generator)
+    public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key,
+                                     @Nonnull Func1<Holder<V>, V> generator)
     {
         return new ValueNode<>(key, generator.apply(Holders.of()), this, this);
     }
 
     @Nonnull
     @Override
-    public Node<K, V> delete(@Nonnull Comparator<K> comp,
-                             @Nonnull K key)
+    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key)
     {
         return this;
     }
@@ -129,26 +129,26 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> left()
+    AbstractNode<K, V> left()
     {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    Node<K, V> right()
+    AbstractNode<K, V> right()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    Node<K, V> leftWeighted()
+    AbstractNode<K, V> leftWeighted()
     {
         return this;
     }
 
     @Override
-    Node<K, V> rightWeighted()
+    AbstractNode<K, V> rightWeighted()
     {
         return this;
     }

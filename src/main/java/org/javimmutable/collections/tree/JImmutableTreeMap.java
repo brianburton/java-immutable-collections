@@ -64,10 +64,10 @@ public class JImmutableTreeMap<K, V>
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
-    private final Node<K, V> root;
+    private final AbstractNode<K, V> root;
 
     private JImmutableTreeMap(@Nonnull Comparator<K> comparator,
-                              @Nonnull Node<K, V> root)
+                              @Nonnull AbstractNode<K, V> root)
     {
         this.comparator = comparator;
         this.root = root;
@@ -94,7 +94,7 @@ public class JImmutableTreeMap<K, V>
     public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(@Nonnull Iterable<Map.Entry<K, V>> map)
     {
         final Comparator<K> comp = ComparableComparator.of();
-        Node<K, V> root = FringeNode.instance();
+        AbstractNode<K, V> root = FringeNode.instance();
         for (Map.Entry<K, V> entry : map) {
             root = root.assign(comp, entry.getKey(), entry.getValue());
         }
@@ -148,7 +148,7 @@ public class JImmutableTreeMap<K, V>
     public JImmutableTreeMap<K, V> delete(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        final Node<K, V> newRoot = root.delete(comparator, key);
+        final AbstractNode<K, V> newRoot = root.delete(comparator, key);
         if (newRoot.isEmpty()) {
             return deleteAll();
         } else {
@@ -213,7 +213,7 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Nonnull
-    private JImmutableTreeMap<K, V> create(Node<K, V> newRoot)
+    private JImmutableTreeMap<K, V> create(AbstractNode<K, V> newRoot)
     {
         if (newRoot == root) {
             return this;

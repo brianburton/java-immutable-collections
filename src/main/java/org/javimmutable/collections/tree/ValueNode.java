@@ -22,19 +22,19 @@ import java.util.Comparator;
 
 @Immutable
 class ValueNode<K, V>
-    extends Node<K, V>
+    extends AbstractNode<K, V>
 {
     private final K key;
     private final V value;
-    private final Node<K, V> left;
-    private final Node<K, V> right;
+    private final AbstractNode<K, V> left;
+    private final AbstractNode<K, V> right;
     private final int depth;
     private final int size;
 
     ValueNode(K key,
               V value,
-              Node<K, V> left,
-              Node<K, V> right)
+              AbstractNode<K, V> left,
+              AbstractNode<K, V> right)
     {
         this.key = key;
         this.value = value;
@@ -44,19 +44,19 @@ class ValueNode<K, V>
         size = 1 + left.size() + right.size();
     }
 
-    static <K, V> Node<K, V> balance(@Nonnull K key,
-                                     @Nullable V value,
-                                     @Nonnull Node<K, V> left,
-                                     @Nonnull Node<K, V> right)
+    private static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
+                                                     @Nullable V value,
+                                                     @Nonnull AbstractNode<K, V> left,
+                                                     @Nonnull AbstractNode<K, V> right)
     {
         final int diff = left.depth() - right.depth();
         if (diff < -1) {
             right = right.rightWeighted();
-            final Node<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
+            final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
             return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
         } else if (diff > 1) {
             left = left.leftWeighted();
-            final Node<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
+            final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
             return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
         } else {
             return new ValueNode<>(key, value, left, right);
@@ -65,26 +65,26 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Node<K, V> assign(@Nonnull Comparator<K> comp,
-                             @Nonnull K key,
-                             @Nullable V value)
+    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key,
+                                     @Nullable V value)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
-        final Node<K, V> left = this.left;
-        final Node<K, V> right = this.right;
+        final AbstractNode<K, V> left = this.left;
+        final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
             if (value != thisValue) {
                 return new ValueNode<>(key, value, left, right);
             }
         } else if (diff < 0) {
-            final Node<K, V> newLeft = left.assign(comp, key, value);
+            final AbstractNode<K, V> newLeft = left.assign(comp, key, value);
             if (newLeft != left) {
                 return balance(thisKey, thisValue, newLeft, right);
             }
         } else {
-            final Node<K, V> newRight = right.assign(comp, key, value);
+            final AbstractNode<K, V> newRight = right.assign(comp, key, value);
             if (newRight != right) {
                 return balance(thisKey, thisValue, left, newRight);
             }
@@ -94,14 +94,14 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Node<K, V> update(@Nonnull Comparator<K> comp,
-                             @Nonnull K key,
-                             @Nonnull Func1<Holder<V>, V> generator)
+    public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key,
+                                     @Nonnull Func1<Holder<V>, V> generator)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
-        final Node<K, V> left = this.left;
-        final Node<K, V> right = this.right;
+        final AbstractNode<K, V> left = this.left;
+        final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
             final V newValue = generator.apply(Holders.of(thisValue));
@@ -109,12 +109,12 @@ class ValueNode<K, V>
                 return new ValueNode<>(key, newValue, left, right);
             }
         } else if (diff < 0) {
-            final Node<K, V> newLeft = left.update(comp, key, generator);
+            final AbstractNode<K, V> newLeft = left.update(comp, key, generator);
             if (newLeft != left) {
                 return balance(thisKey, thisValue, newLeft, right);
             }
         } else {
-            final Node<K, V> newRight = right.update(comp, key, generator);
+            final AbstractNode<K, V> newRight = right.update(comp, key, generator);
             if (newRight != right) {
                 return balance(thisKey, thisValue, left, newRight);
             }
@@ -124,13 +124,13 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Node<K, V> delete(@Nonnull Comparator<K> comp,
-                             @Nonnull K key)
+    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
-        final Node<K, V> left = this.left;
-        final Node<K, V> right = this.right;
+        final AbstractNode<K, V> left = this.left;
+        final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
             if (left.isEmpty()) {
@@ -145,12 +145,12 @@ class ValueNode<K, V>
                 return balance(result.key, result.value, left, result.remainder);
             }
         } else if (diff < 0) {
-            final Node<K, V> newLeft = left.delete(comp, key);
+            final AbstractNode<K, V> newLeft = left.delete(comp, key);
             if (newLeft != left) {
                 return balance(thisKey, thisValue, newLeft, right);
             }
         } else {
-            final Node<K, V> newRight = right.delete(comp, key);
+            final AbstractNode<K, V> newRight = right.delete(comp, key);
             if (newRight != right) {
                 return balance(thisKey, thisValue, left, newRight);
             }
@@ -267,14 +267,14 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    Node<K, V> left()
+    AbstractNode<K, V> left()
     {
         return left;
     }
 
     @Nonnull
     @Override
-    Node<K, V> right()
+    AbstractNode<K, V> right()
     {
         return right;
     }
@@ -303,20 +303,20 @@ class ValueNode<K, V>
     }
 
     @Override
-    Node<K, V> leftWeighted()
+    AbstractNode<K, V> leftWeighted()
     {
         if (right.depth() > left.depth()) {
-            final Node<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
+            final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
             return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
         }
         return this;
     }
 
     @Override
-    Node<K, V> rightWeighted()
+    AbstractNode<K, V> rightWeighted()
     {
         if (left.depth() > right.depth()) {
-            final Node<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
+            final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
             return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
         }
         return this;
