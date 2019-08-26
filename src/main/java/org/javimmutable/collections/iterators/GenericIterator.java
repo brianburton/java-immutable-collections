@@ -20,15 +20,14 @@ public class GenericIterator<T>
     private State<T> state;
 
     public GenericIterator(@Nonnull Iterable<T> root,
-                           @Nullable State<T> state,
                            int offset,
                            int limit)
     {
-        assert offset < limit || state == null;
+        assert offset <= limit;
         this.root = root;
         this.limit = limit;
         this.offset = offset;
-        this.state = state;
+        this.state = root.iterateOverRange(null, offset, limit);
     }
 
     public interface Iterable<T>
@@ -81,8 +80,8 @@ public class GenericIterator<T>
     public synchronized SplitIterator<T> splitIterator()
     {
         final int splitIndex = offset + (limit - offset) / 2;
-        return new SplitIterator<T>(new GenericIterator<>(root, root.iterateOverRange(null, offset, splitIndex), offset, splitIndex),
-                                    new GenericIterator<>(root, root.iterateOverRange(null, splitIndex, limit), splitIndex, limit));
+        return new SplitIterator<T>(new GenericIterator<>(root, offset, splitIndex),
+                                    new GenericIterator<>(root, splitIndex, limit));
     }
 
     private static class SingleValueState<T>
@@ -111,7 +110,13 @@ public class GenericIterator<T>
         }
     }
 
-    public static <T, C extends Iterable<T>> State<T> valueState(State<T> parent,
+    public static <T> State<T> valueState(State<T> parent,
+                                          T value)
+    {
+        return new SingleValueState<>(parent, value);
+    }
+
+    public static <T, C extends Iterable<T>> State<T> arrayState(State<T> parent,
                                                                  C[] children,
                                                                  ToIntFunction<C> sizer,
                                                                  int offset,
@@ -174,7 +179,7 @@ public class GenericIterator<T>
         }
 
         @Override
-        public State<T> advance()
+        public synchronized State<T> advance()
         {
             final int childSize = sizer.applyAsInt(children[childIndex]);
             final int remaining = limit - childOffset;

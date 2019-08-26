@@ -318,7 +318,7 @@ class BranchNode<T>
     @Override
     public SplitableIterator<T> iterator()
     {
-        return new GenericIterator<>(this, iterateOverRange(null, 0, size), 0, size);
+        return new GenericIterator<>(this, 0, size);
     }
 
     @Override
