@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
 
-public class NodeIteratorTest
+public class IteratorTest
     extends TestCase
 {
     public void testVarious()

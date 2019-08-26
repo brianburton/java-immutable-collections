@@ -5,6 +5,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
@@ -303,9 +304,9 @@ class LeafNode<T>
 
     @Nullable
     @Override
-    NodeIterator.State<T> iterateOverRange(@Nullable NodeIterator.State<T> parent,
-                                           int offset,
-                                           int limit)
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
         if (limit > values.length) {
             throw new IndexOutOfBoundsException();
@@ -318,13 +319,13 @@ class LeafNode<T>
 
     @NotThreadSafe
     class IteratorState
-        extends NodeIterator.State<T>
+        implements GenericIterator.State<T>
     {
-        private final NodeIterator.State<T> parent;
+        private final GenericIterator.State<T> parent;
         private final int limit;
         private int offset;
 
-        private IteratorState(@Nullable NodeIterator.State<T> parent,
+        private IteratorState(@Nullable GenericIterator.State<T> parent,
                               int offset,
                               int limit)
         {
@@ -334,14 +335,14 @@ class LeafNode<T>
         }
 
         @Override
-        T value()
+        public T value()
         {
             return values[offset];
         }
 
         @Nullable
         @Override
-        NodeIterator.State<T> advance()
+        public GenericIterator.State<T> advance()
         {
             offset += 1;
             if (offset < limit) {
