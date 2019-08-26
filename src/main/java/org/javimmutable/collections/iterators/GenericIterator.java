@@ -80,8 +80,8 @@ public class GenericIterator<T>
     public synchronized SplitIterator<T> splitIterator()
     {
         final int splitIndex = offset + (limit - offset) / 2;
-        return new SplitIterator<T>(new GenericIterator<>(root, offset, splitIndex),
-                                    new GenericIterator<>(root, splitIndex, limit));
+        return new SplitIterator<>(new GenericIterator<>(root, offset, splitIndex),
+                                   new GenericIterator<>(root, splitIndex, limit));
     }
 
     private static class SingleValueState<T>

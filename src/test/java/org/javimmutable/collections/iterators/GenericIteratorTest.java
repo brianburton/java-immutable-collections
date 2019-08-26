@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class GenericIteratorTest
     extends TestCase
@@ -27,6 +29,26 @@ public class GenericIteratorTest
         assertEquals(expected, deep.stream().collect(Collectors.toList()));
         assertEquals(expected, deep.stream().parallel().collect(Collectors.toList()));
         assertEquals(expected, deep.parallelStream().collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), nr(1, limit(4)).stream().parallel().collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), nr(1, limit(4)).parallelStream().collect(Collectors.toList()));
+    }
+
+    public void testStandard()
+    {
+        verifyOrderedIterable(asList(1, 2), n(1, 2));
+        verifyOrderedIterable(lr(1, limit(4)), nr(1, limit(4)));
+        verifyOrderedSplit(false, asList(), asList(), nr(1, MIN_SIZE_FOR_SPLIT - 1).iterator());
+        verifyOrderedSplit(true, lr(1, limit(1)), lr(limit(1) + 1, limit(2)), nr(1, limit(2)).iterator());
+        final int len = MIN_SIZE_FOR_SPLIT + MIN_SIZE_FOR_SPLIT / 2 - 1;
+        final Node deep = n(nr(1, 10), n(nr(11, len / 2), n(nr(len / 2 + 1, len / 2 + 2)), nr(len / 2 + 3, len)));
+        eq(lr(1, len), deep);
+        verifyOrderedIterable(lr(1, len), deep);
+        verifyOrderedSplit(true, lr(1, len / 2), lr(len / 2 + 1, len), deep.iterator());
+    }
+
+    private int limit(int multiple)
+    {
+        return multiple * MIN_SIZE_FOR_SPLIT;
     }
 
     private void eq(List<Integer> expected,
@@ -56,6 +78,27 @@ public class GenericIteratorTest
     private static Node n(Node... nodes)
     {
         return new Branch(nodes);
+    }
+
+    private static Node nr(int first,
+                           int last)
+    {
+        Node[] nodes = new Node[last - first + 1];
+        int i = 0;
+        for (int value = first; value <= last; ++value) {
+            nodes[i++] = n(value);
+        }
+        return new Branch(nodes);
+    }
+
+    private static List<Integer> lr(int first,
+                                    int last)
+    {
+        List<Integer> list = new ArrayList<>(last - first + 1);
+        for (int i = first; i <= last; ++i) {
+            list.add(i);
+        }
+        return list;
     }
 
     private static abstract class Node
