@@ -1,8 +1,8 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -309,13 +309,6 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    public Cursor<T> cursor()
-    {
-        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, right));
-    }
-
-    @Nonnull
-    @Override
     public SplitableIterator<T> iterator()
     {
         return new GenericIterator<>(this, 0, size);
@@ -376,8 +369,6 @@ class BranchNode<T>
         result = 31 * result + depth;
         return result;
     }
-
-    @Override
     public String toString()
     {
         return new StringJoiner(", ", BranchNode.class.getSimpleName() + "[", "]")

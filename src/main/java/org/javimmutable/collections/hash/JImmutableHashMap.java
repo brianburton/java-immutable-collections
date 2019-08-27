@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -225,13 +224,6 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<Entry<K, V>> cursor()
-    {
-        return root.cursor(collisionMap);
     }
 
     @Nonnull

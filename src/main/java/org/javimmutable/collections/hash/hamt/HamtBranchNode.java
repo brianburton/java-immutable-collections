@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash.hamt;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -46,9 +44,6 @@ import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.hash.collision_map.CollisionMap;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
@@ -345,27 +340,6 @@ public class HamtBranchNode<T, K, V>
     }
 
     @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap)
-    {
-        return LazyMultiCursor.transformed(indexedForCursor(), node -> () -> cursorHelper(node.cursor(), collisionMap));
-    }
-
-    @Nonnull
-    private Cursor<JImmutableMap.Entry<K, V>> cursorHelper(Cursor<T> value,
-                                                           CollisionMap<T, K, V> collisionMap)
-    {
-        return LazyMultiCursor.transformed(value, t -> () -> collisionMap.cursor(t));
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return LazyMultiCursor.cursor(indexedForCursor());
-    }
-
-    @Override
     public String toString()
     {
         return "(" + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
@@ -397,32 +371,6 @@ public class HamtBranchNode<T, K, V>
                         return () -> SingleValueIterator.of(value);
                     } else {
                         return () -> EmptyIterator.of();
-                    }
-                } else {
-                    return children[index - 1];
-                }
-            }
-
-            @Override
-            public int size()
-            {
-                return children.length + 1;
-            }
-        };
-    }
-
-    private Indexed<Cursorable<T>> indexedForCursor()
-    {
-        return new Indexed<Cursorable<T>>()
-        {
-            @Override
-            public Cursorable<T> get(int index)
-            {
-                if (index == 0) {
-                    if (value != null) {
-                        return () -> SingleValueCursor.of(value);
-                    } else {
-                        return () -> StandardCursor.of();
                     }
                 } else {
                     return children[index - 1];

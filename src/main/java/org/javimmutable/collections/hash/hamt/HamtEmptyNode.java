@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.hash.hamt;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.hash.collision_map.CollisionMap;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
@@ -125,22 +123,8 @@ public class HamtEmptyNode<T, K, V>
 
     @Nonnull
     @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap)
-    {
-        return StandardCursor.of();
-    }
-
-    @Nonnull
-    @Override
     public SplitableIterator<T> iterator()
     {
         return EmptyIterator.of();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of();
     }
 }

@@ -1,9 +1,8 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IndexedIterator;
@@ -247,13 +246,6 @@ class LeafNode<T>
     {
         assert size > 0;
         return (T[])new Object[size];
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of(IndexedArray.retained(values));
     }
 
     @Nonnull

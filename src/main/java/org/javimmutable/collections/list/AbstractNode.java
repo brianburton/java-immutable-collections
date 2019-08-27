@@ -1,6 +1,5 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.iterators.GenericIterator;
@@ -9,8 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 abstract class AbstractNode<T>
-    implements Cursorable<T>,
-               SplitableIterable<T>,
+    implements SplitableIterable<T>,
                InvariantCheckable,
                GenericIterator.Iterable<T>
 {

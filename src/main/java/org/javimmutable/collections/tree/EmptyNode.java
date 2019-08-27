@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
@@ -163,13 +161,6 @@ public class EmptyNode<K, V>
     public boolean isEmpty()
     {
         return true;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor()
-    {
-        return StandardCursor.of();
     }
 
     @Nonnull

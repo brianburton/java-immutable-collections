@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
@@ -46,7 +45,7 @@ import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMapTest;
@@ -102,7 +101,7 @@ public class JImmutableSetMapStressTester
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
 
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", setmap.size());
             while (expected.size() < step.growthSize()) {
                 String key = keys.randomUnallocatedKey();
@@ -127,7 +126,7 @@ public class JImmutableSetMapStressTester
                         addAt(expected, key, value);
                         break;
                     }
-                    case 3: { //insertAll(K, Cusorable)
+                    case 3: { //insertAll(K, Iterable)
                         JImmutableList<String> values = makeGrowingList(tokens, random);
                         setmap = setmap.insertAll(key, values);
                         addAllAt(expected, key, values);
@@ -139,7 +138,7 @@ public class JImmutableSetMapStressTester
                         addAllAt(expected, key, values);
                         break;
                     }
-                    case 5: { //union(K, Cursorable)
+                    case 5: { //union(K, Iterable)
                         JImmutableList<String> values = makeGrowingList(tokens, random);
                         setmap = setmap.union(key, values);
                         unionAt(expected, key, values);
@@ -151,7 +150,7 @@ public class JImmutableSetMapStressTester
                         unionAt(expected, key, values);
                         break;
                     }
-                    case 7: { //intersection(K, Cursorable)
+                    case 7: { //intersection(K, Iterable)
                         JImmutableList<String> values = makeIntersectList(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values);
                         expected.put(key, JImmutables.set());
@@ -205,7 +204,7 @@ public class JImmutableSetMapStressTester
                         addAt(expected, key, value);
                         break;
                     }
-                    case 3: { //insertAll(K, Cursorable)
+                    case 3: { //insertAll(K, Iterable)
                         JImmutableList<String> values = makeUpdateList(tokens, random, key, expected);
                         setmap = setmap.insertAll(key, values);
                         addAllAt(expected, key, values);
@@ -217,7 +216,7 @@ public class JImmutableSetMapStressTester
                         addAllAt(expected, key, values);
                         break;
                     }
-                    case 5: { //union(K, Cursorable)
+                    case 5: { //union(K, Iterable)
                         JImmutableList<String> values = makeUpdateList(tokens, random, key, expected);
                         setmap = setmap.union(key, values);
                         unionAt(expected, key, values);
@@ -239,7 +238,7 @@ public class JImmutableSetMapStressTester
             System.out.printf("  shrinking sets%n");
             for (int i = 0; i < setmap.size(); ++i) {
                 switch (random.nextInt(7)) {
-                    case 0: { //deleteAll(K, Cursorable)
+                    case 0: { //deleteAll(K, Iterable)
                         String key = keys.randomKey();
                         JImmutableList<String> values = makeDeleteList(tokens, random, key, expected);
                         setmap = setmap.deleteAll(key, values);
@@ -260,7 +259,7 @@ public class JImmutableSetMapStressTester
                         removeAt(expected, key, value);
                         break;
                     }
-                    case 3: { //intersection(K, Cursorable)
+                    case 3: { //intersection(K, Iterable)
                         String key = keys.randomAllocatedKey();
                         JImmutableList<String> values = makeIntersectList(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values);
@@ -316,31 +315,31 @@ public class JImmutableSetMapStressTester
                         }
                         break;
                     }
-                    case 1: { //containsAll(K, Cursorable)
+                    case 1: { //containsAll(K, Iterable)
                         JImmutableList<String> values = makeContainsList(key, expected, random, tokens);
                         if (setmap.containsAll(key, values) != (expected.containsKey(key) && expected.get(key).containsAll(values))) {
-                            throw new RuntimeException(String.format("containsAll(key, Cursorable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAll(key, values), (expected.containsKey(key) && expected.get(key).containsAll(values))));
+                            throw new RuntimeException(String.format("containsAll(key, Iterable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAll(key, values), (expected.containsKey(key) && expected.get(key).containsAll(values))));
                         }
                         break;
                     }
                     case 2: { //containsAll(K, Collection)
                         JImmutableList<String> values = makeContainsList(key, expected, random, tokens);
                         if (setmap.containsAll(key, values.getList()) != (expected.containsKey(key) && expected.get(key).containsAll(values))) {
-                            throw new RuntimeException(String.format("containsAll(key, Cursorable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAll(key, values.getList()), (expected.containsKey(key) && expected.get(key).containsAll(values))));
+                            throw new RuntimeException(String.format("containsAll(key, Collection) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAll(key, values.getList()), (expected.containsKey(key) && expected.get(key).containsAll(values))));
                         }
                         break;
                     }
-                    case 3: { //containsAny(K, Cursorable)
+                    case 3: { //containsAny(K, Iterable)
                         JImmutableList<String> values = makeContainsList(key, expected, random, tokens);
                         if (setmap.containsAny(key, values) != (expected.containsKey(key) && expected.get(key).containsAny(values))) {
-                            throw new RuntimeException(String.format("containsAll(key, Cursorable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAny(key, values), (expected.containsKey(key) && expected.get(key).containsAny(values))));
+                            throw new RuntimeException(String.format("containsAll(key, Iterable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAny(key, values), (expected.containsKey(key) && expected.get(key).containsAny(values))));
                         }
                         break;
                     }
                     case 4: { //containsAny(K, Collection)
                         JImmutableList<String> values = makeContainsList(key, expected, random, tokens);
                         if (setmap.containsAny(key, values.getList()) != (expected.containsKey(key) && expected.get(key).containsAny(values))) {
-                            throw new RuntimeException(String.format("containsAll(key, Cursorable) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAny(key, values.getList()), (expected.containsKey(key) && expected.get(key).containsAny(values))));
+                            throw new RuntimeException(String.format("containsAll(key, Collection) method call failed for %s, %s - expected %b, found %b%n", key, values, setmap.containsAny(key, values.getList()), (expected.containsKey(key) && expected.get(key).containsAny(values))));
                         }
                         break;
                     }
@@ -373,7 +372,7 @@ public class JImmutableSetMapStressTester
                 }
             }
         }
-        verifyCursor(setmap, expected);
+        verifyIteration(setmap, expected);
         verifyFinalSize(size, setmap.size());
         //printStats(setmap);
         System.out.printf("cleanup %d%n", setmap.size());
@@ -424,10 +423,10 @@ public class JImmutableSetMapStressTester
         verifySerializable(this::extraSerializationChecks, setmap);
     }
 
-    private void verifyCursor(final JImmutableSetMap<String, String> setmap,
-                              final Map<String, JImmutableSet<String>> expected)
+    private void verifyIteration(final JImmutableSetMap<String, String> setmap,
+                                 final Map<String, JImmutableSet<String>> expected)
     {
-        System.out.printf("checking cursor with size %d%n", setmap.size());
+        System.out.printf("checking iterator with size %d%n", setmap.size());
 
         List<JImmutableMap.Entry<String, JImmutableSet<String>>> entries = makeEntriesList(expected);
         if (setmap instanceof JImmutableHashSetMap) {
@@ -436,15 +435,15 @@ public class JImmutableSetMapStressTester
         }
         List<String> keys = extractKeys(entries);
 
-        StandardCursorTest.listCursorTest(keys, setmap.keysCursor());
-        StandardCursorTest.listCursorTest(entries, setmap.cursor());
+        StandardIteratorTests.listIteratorTest(keys, setmap.keys().iterator());
+        StandardIteratorTests.listIteratorTest(entries, setmap.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, setmap.keys());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, setmap);
 
         for (Map.Entry<String, JImmutableSet<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
             List<String> values = asList(entry.getValue());
-            StandardCursorTest.listCursorTest(values, setmap.valuesCursor(key));
+            StandardIteratorTests.listIteratorTest(values, setmap.values(key).iterator());
             StandardIterableStreamableTests.verifyOrderedUsingCollection(values, setmap.values(key));
         }
     }
@@ -497,10 +496,10 @@ public class JImmutableSetMapStressTester
 
     private void addAllAt(Map<String, JImmutableSet<String>> expected,
                           String key,
-                          Cursorable<String> values)
+                          Iterable<String> values)
     {
         JImmutableSet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
-        expected.put(key, set.insertAll(values.cursor()));
+        expected.put(key, set.insertAll(values.iterator()));
     }
 
     private int randomGrowingSize(Random random)

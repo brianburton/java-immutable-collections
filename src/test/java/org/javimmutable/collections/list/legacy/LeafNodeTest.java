@@ -36,14 +36,14 @@
 package org.javimmutable.collections.list.legacy;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class LeafNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testFromList()
     {
@@ -52,7 +52,7 @@ public class LeafNodeTest
             expected.add(0, i);
             Node<Integer> node = LeafNode.fromList(expected, 0, expected.size());
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
 
         List<Integer> reduced = new ArrayList<Integer>(expected);
@@ -60,7 +60,7 @@ public class LeafNodeTest
             reduced.remove(0);
             Node<Integer> node = LeafNode.fromList(expected, i, expected.size());
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(reduced, node.cursor());
+            StandardIteratorTests.listIteratorTest(reduced, node.iterator());
         }
     }
 
@@ -81,7 +81,7 @@ public class LeafNodeTest
                 assertTrue(node instanceof LeafNode);
                 node.checkInvariants();
             }
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
     }
 
@@ -97,7 +97,7 @@ public class LeafNodeTest
                 assertTrue(node instanceof LeafNode);
                 node.checkInvariants();
             }
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
             for (int i = 1; i <= 32; ++i) {
                 if (r.nextBoolean()) {
                     expected.remove(0);
@@ -112,7 +112,7 @@ public class LeafNodeTest
                     assertTrue(node instanceof LeafNode);
                 }
                 node.checkInvariants();
-                StandardCursorTest.listCursorTest(expected, node.cursor());
+                StandardIteratorTests.listIteratorTest(expected, node.iterator());
             }
         }
     }
@@ -126,13 +126,13 @@ public class LeafNodeTest
             node = node.insertFirst(i);
             assertTrue(node instanceof LeafNode);
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
         expected.add(0, 33);
         node = node.insertFirst(33);
         assertTrue(node instanceof BranchNode);
         node.checkInvariants();
-        StandardCursorTest.listCursorTest(expected, node.cursor());
+        StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
     public void testInsertLastBranchCreation()
@@ -144,13 +144,13 @@ public class LeafNodeTest
             node = node.insertLast(i);
             assertTrue(node instanceof LeafNode);
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
         expected.add(33);
         node = node.insertLast(33);
         assertTrue(node instanceof BranchNode);
         node.checkInvariants();
-        StandardCursorTest.listCursorTest(expected, node.cursor());
+        StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
     public void testAssign()
@@ -162,14 +162,14 @@ public class LeafNodeTest
             node = node.insertLast(i);
             assertTrue(node instanceof LeafNode);
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
         for (int x = 0; x < 32; ++x) {
             expected.set(x, 1000 - x);
             node = node.assign(x, 1000 - x);
             assertTrue(node instanceof LeafNode);
             node.checkInvariants();
-            StandardCursorTest.listCursorTest(expected, node.cursor());
+            StandardIteratorTests.listIteratorTest(expected, node.iterator());
         }
     }
 }

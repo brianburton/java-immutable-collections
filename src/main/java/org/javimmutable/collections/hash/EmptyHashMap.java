@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 
@@ -108,13 +106,6 @@ public class EmptyHashMap<K, V>
     public JImmutableMap<K, V> deleteAll()
     {
         return this;
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<Entry<K, V>> cursor()
-    {
-        return StandardCursor.of();
     }
 
     @Nonnull

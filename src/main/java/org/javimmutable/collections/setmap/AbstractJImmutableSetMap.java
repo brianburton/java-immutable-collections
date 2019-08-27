@@ -36,7 +36,6 @@
 package org.javimmutable.collections.setmap;
 
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
@@ -103,14 +102,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                            @Nonnull Cursor<? extends V> values)
-    {
-        return insertAll(key, values.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> insertAll(@Nonnull K key,
                                             @Nonnull Iterator<? extends V> values)
     {
         return create(contents.update(key, h -> h.getValueOr(emptySet).insertAll(values)));
@@ -146,14 +137,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
 
     @Override
     public boolean containsAll(@Nonnull K key,
-                               @Nonnull Cursor<? extends V> values)
-    {
-        return containsAll(key, values.iterator());
-
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull K key,
                                @Nonnull Iterator<? extends V> values)
     {
         return contains(key) && getSet(key).containsAll(values);
@@ -162,13 +145,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Override
     public boolean containsAny(@Nonnull K key,
                                @Nonnull Iterable<? extends V> values)
-    {
-        return containsAny(key, values.iterator());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull K key,
-                               @Nonnull Cursor<? extends V> values)
     {
         return containsAny(key, values.iterator());
     }
@@ -207,14 +183,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                            @Nonnull Cursor<? extends V> other)
-    {
-        return deleteAll(key, other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
                                             @Nonnull Iterator<? extends V> other)
     {
         JImmutableSet<V> set = getSet(key);
@@ -232,14 +200,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Nonnull
     @Override
     public JImmutableSetMap<K, V> union(@Nonnull K key,
-                                        @Nonnull Cursor<? extends V> other)
-    {
-        return union(key, other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> union(@Nonnull K key,
                                         @Nonnull Iterator<? extends V> other)
     {
         return create(contents.update(key, h -> h.getValueOr(emptySet).union(other)));
@@ -250,14 +210,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     @Override
     public JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                                @Nonnull Iterable<? extends V> other)
-    {
-        return intersection(key, other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                               @Nonnull Cursor<? extends V> other)
     {
         return intersection(key, other.iterator());
     }
@@ -296,27 +248,6 @@ public abstract class AbstractJImmutableSetMap<K, V>
     public boolean isEmpty()
     {
         return contents.isEmpty();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<K> keysCursor()
-    {
-        return contents.keysCursor();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<V> valuesCursor(@Nonnull K key)
-    {
-        return getSet(key).cursor();
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<K, JImmutableSet<V>>> cursor()
-    {
-        return contents.cursor();
     }
 
     @Override

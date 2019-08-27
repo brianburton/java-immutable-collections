@@ -39,7 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -55,15 +55,11 @@ public class JImmutableInsertOrderSetMapTest
     {
         JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.of(), Ordering.HASH);
         verifyRandom(JImmutableInsertOrderSetMap.of(), new LinkedHashMap<>());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                        MapEntry.of(3, map.getSet(3)),
-                                                        MapEntry.of(2, map.getSet(2))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                          MapEntry.of(3, map.getSet(3)),
-                                                          MapEntry.of(2, map.getSet(2))),
-                                            map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                             MapEntry.of(3, map.getSet(3)),
+                                                             MapEntry.of(2, map.getSet(2))),
+                                               map.iterator());
     }
 
     public void testEquals()

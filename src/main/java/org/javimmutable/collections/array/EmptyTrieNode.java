@@ -35,13 +35,11 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
@@ -114,13 +112,6 @@ public class EmptyTrieNode<T>
     public TrieNode<T> paddedToMinimumDepthForShift(int shift)
     {
         return this;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return StandardCursor.of();
     }
 
     @Nonnull

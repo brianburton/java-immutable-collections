@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  * Immutable sparse array implementation using integers as keys.  Keys are traversed in signed integer
- * order by Cursors so negative values are visited before positive values.  Implementations
+ * order by Iterators so negative values are visited before positive values.  Implementations
  * are allowed to restrict the range of allowable indexes for performance or other reasons.
  * Implementations should throw IndexOutOfBounds exceptions if presented with an invalid index.
  * <p>
@@ -55,7 +55,6 @@ public interface JImmutableArray<T>
     extends Indexed<T>,
             Insertable<JImmutableMap.Entry<Integer, T>, JImmutableArray<T>>,
             IterableStreamable<JImmutableMap.Entry<Integer, T>>,
-            Cursorable<JImmutableMap.Entry<Integer, T>>,
             InvariantCheckable
 {
     interface Builder<T>
@@ -157,18 +156,6 @@ public interface JImmutableArray<T>
      */
     @Nonnull
     Map<Integer, T> getMap();
-
-    /**
-     * Creates a Cursor to access all of the array's keys.
-     */
-    @Nonnull
-    Cursor<Integer> keysCursor();
-
-    /**
-     * Creates a Cursor to access all of the array's values.
-     */
-    @Nonnull
-    Cursor<T> valuesCursor();
 
     /**
      * Creates a Streamable to access all of the array's keys.

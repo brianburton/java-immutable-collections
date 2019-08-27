@@ -42,7 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.common.StandardJImmutableMapTests.*;
-import static org.javimmutable.collections.cursors.StandardCursorTest.emptyCursorTest;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
 
 public class JImmutableTreeMapTest
     extends TestCase
@@ -68,14 +68,13 @@ public class JImmutableTreeMapTest
         StandardJImmutableMapTests.verifyMiscellaneous(JImmutableTreeMap.of());
     }
 
-    @SuppressWarnings("unchecked")
     public void testInsert()
     {
         JImmutableTreeMap<Integer, Integer> map = JImmutableTreeMap.of();
         verifyEmptyEnumeration(map);
-        emptyCursorTest(map.cursor());
-        emptyCursorTest(map.keysCursor());
-        emptyCursorTest(map.valuesCursor());
+        emptyIteratorTest(map.iterator());
+        emptyIteratorTest(map.keys().iterator());
+        emptyIteratorTest(map.values().iterator());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
         assertEquals(Collections.<Integer>emptyList(), map.getKeysList());
@@ -95,12 +94,9 @@ public class JImmutableTreeMapTest
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
         final List<JImmutableMap.Entry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));
-        StandardCursorTest.listCursorTest(expectedEntries, map.cursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(10, 20, 30), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(11, 19, 18), map.valuesCursor());
-        StandardCursorTest.listIteratorTest(expectedEntries, map.iterator());
-        StandardCursorTest.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
-        StandardCursorTest.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
+        StandardIteratorTests.listIteratorTest(expectedEntries, map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
 
         verifyEnumeration(expectedEntries, map);
     }
@@ -241,7 +237,7 @@ public class JImmutableTreeMapTest
         assertEquals(0, cleared.size());
         assertSame(map.getComparator(), cleared.getComparator());
         verifyEmptyEnumeration(cleared);
-        emptyCursorTest(cleared.cursor());
+        emptyIteratorTest(cleared.iterator());
 
         map = JImmutableTreeMap.of((a, b) -> -b.compareTo(a));
         map = map.assign(1, 2).assign(3, 4);
@@ -250,7 +246,7 @@ public class JImmutableTreeMapTest
         assertEquals(0, cleared.size());
         assertSame(map.getComparator(), cleared.getComparator());
         verifyEmptyEnumeration(cleared);
-        emptyCursorTest(cleared.cursor());
+        emptyIteratorTest(cleared.iterator());
     }
 
     public void testAssignAll()

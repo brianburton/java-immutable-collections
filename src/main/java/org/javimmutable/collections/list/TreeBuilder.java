@@ -1,6 +1,5 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 
 import javax.annotation.Nonnull;
@@ -86,13 +85,6 @@ class TreeBuilder<T>
         size += 1;
     }
 
-    void add(@Nonnull Cursor<? extends T> source)
-    {
-        for (source = source.start(); source.hasValue(); source = source.next()) {
-            add(source.getValue());
-        }
-    }
-
     void add(@Nonnull Iterator<? extends T> source)
     {
         while (source.hasNext()) {
@@ -174,14 +166,6 @@ class TreeBuilder<T>
 
     @Nonnull
     static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
-    {
-        TreeBuilder<T> builder = new TreeBuilder<>();
-        builder.add(values);
-        return builder.build();
-    }
-
-    @Nonnull
-    static <T> AbstractNode<T> nodeFromCursor(@Nonnull Cursor<? extends T> values)
     {
         TreeBuilder<T> builder = new TreeBuilder<>();
         builder.add(values);

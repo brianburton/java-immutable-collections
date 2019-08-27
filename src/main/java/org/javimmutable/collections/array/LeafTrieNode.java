@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
@@ -169,13 +167,6 @@ public class LeafTrieNode<T>
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return SingleValueIterator.of(this);
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return SingleValueCursor.of(this);
     }
 
     @Override

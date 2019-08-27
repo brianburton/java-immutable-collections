@@ -121,16 +121,6 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     @Override
-    JImmutableRandomAccessList<T> insertAll(@Nonnull Cursor<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAllLast()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    @Override
     JImmutableRandomAccessList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     @Nonnull
@@ -138,11 +128,14 @@ public interface JImmutableRandomAccessList<T>
     JImmutableRandomAccessList<T> insertAll(int index,
                                             @Nonnull Iterable<? extends T> values);
 
-    @Nonnull
-    @Override
-    JImmutableRandomAccessList<T> insertAll(int index,
-                                            @Nonnull Cursor<? extends T> values);
-
+    /**
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
+     *
+     * @return instance of list containing the collection
+     */
     @Nonnull
     @Override
     JImmutableRandomAccessList<T> insertAll(int index,
@@ -164,15 +157,6 @@ public interface JImmutableRandomAccessList<T>
      */
     @Nonnull
     @Override
-    JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
-
-    /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    @Override
     JImmutableRandomAccessList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -184,16 +168,6 @@ public interface JImmutableRandomAccessList<T>
     @Nonnull
     @Override
     JImmutableRandomAccessList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    @Override
-    JImmutableRandomAccessList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.

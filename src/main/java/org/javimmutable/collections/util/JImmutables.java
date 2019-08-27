@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableArray;
@@ -123,18 +122,6 @@ public final class JImmutables
      * be the first value retrieved from the stack).
      */
     @Nonnull
-    public static <T> JImmutableStack<T> stack(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableLinkedStack.<T>of().insertAll(source);
-    }
-
-    /**
-     * Produces a JImmutableStack containing all of the values in source.  Note that values
-     * are added to the stack in the order they appear in source which means they will be
-     * retrieved in the opposite order from the stack (i.e. the last value in source will
-     * be the first value retrieved from the stack).
-     */
-    @Nonnull
     public static <T> JImmutableStack<T> stack(@Nonnull Iterable<? extends T> source)
     {
         return JImmutableLinkedStack.<T>of().insertAll(source);
@@ -187,15 +174,6 @@ public final class JImmutables
     public static <T> JImmutableList<T> list(T... values)
     {
         return JImmutableTreeList.of(IndexedArray.retained(values));
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> JImmutableList<T> list(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeList.<T>listBuilder().add(source).build();
     }
 
     /**
@@ -319,20 +297,6 @@ public final class JImmutables
     public static <T> JImmutableRandomAccessList<T> ralist(T... source)
     {
         return JImmutableTreeList.of(IndexedArray.retained(source));
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeList.<T>raListBuilder().add(source).build();
     }
 
     /**
@@ -524,7 +488,7 @@ public final class JImmutables
     }
 
     /**
-     * Constructs an empty map whose cursors traverse elements in the same order that they
+     * Constructs an empty map whose iterators traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
      * <p>
      * The map will adopt a hash code collision strategy based on
@@ -540,7 +504,7 @@ public final class JImmutables
     }
 
     /**
-     * Constructs a map whose cursors traverse elements in the same order that they
+     * Constructs a map whose iterators traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
      * All key/value pairs from source are copied into the newly created map.
      * <p>
@@ -557,12 +521,12 @@ public final class JImmutables
     }
 
     /**
-     * Constructs a map whose cursors traverse elements in the same order that they
+     * Constructs a map whose iterators traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
      * If source is already an in order map it is returned directly, otherwise a new map
      * is created and all key/value pairs from source are copied into the newly created map.
      * In this case the iteration order for those entries would be based on the order of elements
-     * returned by source's cursor.
+     * returned by source's iterator.
      * <p>
      * The map will adopt a hash code collision strategy based on
      * the first key in source.  All keys in the map must either implement Comparable (and
@@ -593,21 +557,6 @@ public final class JImmutables
     public static <T> JImmutableSet<T> set()
     {
         return JImmutableHashSet.of();
-    }
-
-    /**
-     * Constructs an unsorted set containing the values from source.
-     * <p>
-     * Implementation note: The set will adopt a hash code collision strategy based on
-     * the first value in source.  All values in the map must either implement Comparable (and
-     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
-     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
-     * always safest to use homogeneous values in any set.
-     */
-    @Nonnull
-    public static <T> JImmutableSet<T> set(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableHashSet.<T>of().insertAll(source);
     }
 
     /**
@@ -690,16 +639,6 @@ public final class JImmutables
      * natural sort order (using ComparableComparator).
      */
     @Nonnull
-    public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeSet.<T>of().insertAll(source);
-    }
-
-    /**
-     * Constructs a set containing all of the values in source that sorts values in their
-     * natural sort order (using ComparableComparator).
-     */
-    @Nonnull
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(@Nonnull Iterable<? extends T> source)
     {
         return JImmutableTreeSet.<T>of().insertAll(source);
@@ -726,20 +665,6 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(@Nonnull Comparator<T> comparator)
     {
         return JImmutableTreeSet.of(comparator);
-    }
-
-    /**
-     * Constructs a set containing all of the values in source that sorts values using comparator.
-     * <p>
-     * Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     */
-    @Nonnull
-    public static <T> JImmutableSet<T> sortedSet(@Nonnull Comparator<T> comparator,
-                                                 @Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeSet.of(comparator).insertAll(source);
     }
 
     /**
@@ -817,16 +742,6 @@ public final class JImmutables
      * the order they were originally added to the set.
      */
     @Nonnull
-    public static <T> JImmutableSet<T> insertOrderSet(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableInsertOrderSet.<T>of().insertAll(source);
-    }
-
-    /**
-     * Constructs a set containing all of the values in source that sorts values based on
-     * the order they were originally added to the set.
-     */
-    @Nonnull
     @SafeVarargs
     public static <T> JImmutableSet<T> insertOrderSet(T... source)
     {
@@ -875,21 +790,6 @@ public final class JImmutables
     public static <T> JImmutableMultiset<T> multiset()
     {
         return JImmutableHashMultiset.of();
-    }
-
-    /**
-     * Constructs an unsorted multiset containing the values from source.
-     * <p>
-     * Implementation note: The multiset will adopt a hash code collision strategy based on
-     * the first value in source.  All values in the map must either implement Comparable (and
-     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
-     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
-     * always safest to use homogeneous values in any set.
-     */
-    @Nonnull
-    public static <T> JImmutableMultiset<T> multiset(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableHashMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -972,16 +872,6 @@ public final class JImmutables
      * natural sort order (using ComparableComparator).
      */
     @Nonnull
-    public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeMultiset.<T>of().insertAll(source);
-    }
-
-    /**
-     * Constructs a multiset containing all of the values in source that sorts values in their
-     * natural sort order (using ComparableComparator).
-     */
-    @Nonnull
     public static <T extends Comparable<T>> JImmutableMultiset<T> sortedMultiset(@Nonnull Iterable<? extends T> source)
     {
         return JImmutableTreeMultiset.<T>of().insertAll(source);
@@ -1008,20 +898,6 @@ public final class JImmutables
     public static <T> JImmutableMultiset<T> sortedMultiset(@Nonnull Comparator<T> comparator)
     {
         return JImmutableTreeMultiset.of(comparator);
-    }
-
-    /**
-     * Constructs a multiset containing all of the values in source that sorts values using comparator.
-     * <p>
-     * Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared so it is imperative that the Comparator be completely immutable.
-     */
-    @Nonnull
-    public static <T> JImmutableMultiset<T> sortedMultiset(@Nonnull Comparator<T> comparator,
-                                                           @Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableTreeMultiset.of(comparator).insertAll(source);
     }
 
     /**
@@ -1093,16 +969,6 @@ public final class JImmutables
     public static <T> JImmutableMultiset<T> insertOrderMultiset()
     {
         return JImmutableInsertOrderMultiset.of();
-    }
-
-    /**
-     * Constructs a multiset containing all of the values in source that sorts values based on
-     * the order they were originally added to the multiset.
-     */
-    @Nonnull
-    public static <T> JImmutableMultiset<T> insertOrderMultiset(@Nonnull Cursor<? extends T> source)
-    {
-        return JImmutableInsertOrderMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -1265,7 +1131,7 @@ public final class JImmutables
      * for storing the corresponding value.
      */
     @Nonnull
-    public static <T> JImmutableArray<T> array(@Nonnull Cursor<JImmutableMap.Entry<Integer, T>> source)
+    public static <T> JImmutableArray<T> array(@Nonnull Iterator<JImmutableMap.Entry<Integer, T>> source)
     {
         return JImmutableTrieArray.<T>of().insertAll(source);
     }

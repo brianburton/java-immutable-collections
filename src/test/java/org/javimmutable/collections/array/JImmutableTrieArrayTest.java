@@ -46,8 +46,8 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,39 +197,16 @@ public class JImmutableTrieArrayTest
         assertEquals(0x0ff0, (0xff00 >>> shift));
     }
 
-    public void testCursor()
-    {
-        JImmutableArray<Integer> array = JImmutableTrieArray.of();
-        array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
-
-        List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
-        StandardCursorTest.listCursorTest(indexes, array.keysCursor());
-
-        List<Integer> values = Arrays.asList(-5001, -101, -11, 0, 11, 101, 5001);
-        StandardCursorTest.listCursorTest(values, array.valuesCursor());
-
-        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
-        entries.add(MapEntry.of(-500, -5001));
-        entries.add(MapEntry.of(-10, -101));
-        entries.add(MapEntry.of(-1, -11));
-        entries.add(MapEntry.of(0, 0));
-        entries.add(MapEntry.of(1, 11));
-        entries.add(MapEntry.of(10, 101));
-        entries.add(MapEntry.of(500, 5001));
-        StandardCursorTest.listCursorTest(entries, array.cursor());
-        StandardCursorTest.listIteratorTest(entries, array.iterator());
-    }
-
     public void testIterator()
     {
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
         array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
 
         List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
-        StandardCursorTest.listIteratorTest(indexes, array.keys().iterator());
+        StandardIteratorTests.listIteratorTest(indexes, array.keys().iterator());
 
         List<Integer> values = Arrays.asList(-5001, -101, -11, 0, 11, 101, 5001);
-        StandardCursorTest.listIteratorTest(values, array.values().iterator());
+        StandardIteratorTests.listIteratorTest(values, array.values().iterator());
 
         List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
         entries.add(MapEntry.of(-500, -5001));
@@ -239,7 +216,7 @@ public class JImmutableTrieArrayTest
         entries.add(MapEntry.of(1, 11));
         entries.add(MapEntry.of(10, 101));
         entries.add(MapEntry.of(500, 5001));
-        StandardCursorTest.listIteratorTest(entries, array.iterator());
+        StandardIteratorTests.listIteratorTest(entries, array.iterator());
     }
 
     public void testSignedOrderIteration()
@@ -254,8 +231,7 @@ public class JImmutableTrieArrayTest
             array = array.assign(index, -index);
             index += increment;
         }
-        StandardCursorTest.listIteratorTest(expected, array.iterator());
-        StandardCursorTest.listCursorTest(expected, array.cursor());
+        StandardIteratorTests.listIteratorTest(expected, array.iterator());
     }
 
     public void testVarious()
@@ -276,10 +252,8 @@ public class JImmutableTrieArrayTest
             }
             array.checkInvariants();
             assertEquals(array.getMap(), map);
-            StandardCursorTest.listCursorTest(keys, array.keysCursor());
-            StandardCursorTest.listCursorTest(values, array.valuesCursor());
-            StandardCursorTest.listIteratorTest(keys, array.keys().iterator());
-            StandardCursorTest.listIteratorTest(values, array.values().iterator());
+            StandardIteratorTests.listIteratorTest(keys, array.keys().iterator());
+            StandardIteratorTests.listIteratorTest(values, array.values().iterator());
             for (int i = 0; i < length; ++i) {
                 final Integer index = indexes.get(i);
                 assertEquals(Integer.valueOf(i), array.get(index));

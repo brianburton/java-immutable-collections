@@ -35,11 +35,9 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
@@ -102,20 +100,6 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public Cursor<K> keysCursor()
-    {
-        return TransformCursor.ofKeys(cursor());
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<V> valuesCursor()
-    {
-        return TransformCursor.ofValues(cursor());
-    }
-
-    @Nonnull
-    @Override
     public Map<K, V> getMap()
     {
         return MapAdaptor.of(this);
@@ -158,11 +142,11 @@ public abstract class AbstractJImmutableMap<K, V>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (Cursor<Entry<K, V>> cursor = cursor().start(); cursor.hasValue(); cursor = cursor.next()) {
+        for (Entry<K, V> kvEntry : this) {
             if (sb.length() > 1) {
                 sb.append(", ");
             }
-            MapEntry.addToString(sb, cursor.getValue());
+            MapEntry.addToString(sb, kvEntry);
         }
         sb.append("}");
         return sb.toString();
@@ -178,9 +162,7 @@ public abstract class AbstractJImmutableMap<K, V>
     private <K1 extends K, V1 extends V> JImmutableMap<K, V> assignAllHelper(@Nonnull JImmutableMap<K1, V1> map)
     {
         JImmutableMap<K, V> answer = this;
-        Cursor<Entry<K1, V1>> c = map.cursor();
-        for (c = c.start(); c.hasValue(); c = c.next()) {
-            Entry<K1, V1> e = c.getValue();
+        for (Entry<K1, V1> e : map) {
             answer = answer.assign(e.getKey(), e.getValue());
         }
         return answer;

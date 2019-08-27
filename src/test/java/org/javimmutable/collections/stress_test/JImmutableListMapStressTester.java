@@ -43,7 +43,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMapTest;
@@ -99,7 +99,7 @@ public class JImmutableListMapStressTester
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
 
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", listmap.size());
             while (expected.size() < step.growthSize()) {
                 String key = keys.randomUnallocatedKey();
@@ -202,7 +202,7 @@ public class JImmutableListMapStressTester
                 }
             }
         }
-        verifyCursor(listmap, expected);
+        verifyIteration(listmap, expected);
         verifyFinalSize(size, listmap.size());
 //        printStats(listmap);
         System.out.printf("cleanup %d%n", listmap.size());
@@ -248,8 +248,8 @@ public class JImmutableListMapStressTester
         verifySerializable(this::extraSerializationChecks, listmap);
     }
 
-    private void verifyCursor(final JImmutableListMap<String, String> listmap,
-                              Map<String, JImmutableList<String>> expected)
+    private void verifyIteration(final JImmutableListMap<String, String> listmap,
+                                 Map<String, JImmutableList<String>> expected)
 
     {
         System.out.printf("checking cursor with size %d%n", listmap.size());
@@ -260,15 +260,15 @@ public class JImmutableListMapStressTester
         }
         List<String> keys = extractKeys(entries);
 
-        StandardCursorTest.listCursorTest(keys, listmap.keysCursor());
-        StandardCursorTest.listCursorTest(entries, listmap.cursor());
+        StandardIteratorTests.listIteratorTest(keys, listmap.keys().iterator());
+        StandardIteratorTests.listIteratorTest(entries, listmap.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, listmap.keys());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, listmap);
 
         for (Map.Entry<String, JImmutableList<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
             List<String> values = asList(entry.getValue());
-            StandardCursorTest.listCursorTest(values, listmap.valuesCursor(key));
+            StandardIteratorTests.listIteratorTest(values, listmap.values(key).iterator());
             StandardIterableStreamableTests.verifyOrderedUsingCollection(values, listmap.values(key));
         }
     }
@@ -333,7 +333,7 @@ public class JImmutableListMapStressTester
         double FiftyToHundred = 0;
         double OverHundred = 0;
 
-        for (String key : listmap.keysCursor()) {
+        for (String key : listmap.keys()) {
             JImmutableList<String> list = listmap.get(key);
             assert (list != null);
             if (list.size() == 0) {

@@ -1,8 +1,6 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -145,13 +143,6 @@ public class EmptyNode<T>
         } else {
             throw new IndexOutOfBoundsException();
         }
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of();
     }
 
     @Nonnull

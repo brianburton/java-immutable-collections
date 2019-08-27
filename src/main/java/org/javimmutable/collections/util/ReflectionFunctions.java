@@ -176,7 +176,7 @@ public final class ReflectionFunctions
     /**
      * Returns a Func1 instance that calls the specified non-static method on a java object
      * passed as the parameter of the function.  These functions are useful for invoking
-     * the same method on all objects returned by a Cursor.
+     * the same method on all objects returned by an iterator.
      *
      * @param name  name of the method to invoke
      * @param klass class of the instance object parameter
@@ -190,7 +190,7 @@ public final class ReflectionFunctions
     /**
      * Returns a Func2 instance that calls the specified non-static method on a java object
      * passed as the last parameter of the Func2.  These functions are useful for invoking
-     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * the same method with the same arguments on all objects returned by an iterator.  The instance
      * object is the last parameter to facilitate the use of Curry.of().
      *
      * @param name      name of the method to invoke
@@ -207,7 +207,7 @@ public final class ReflectionFunctions
     /**
      * Returns a Func3 instance that calls the specified non-static method on a java object
      * passed as the last parameter of the Func3.  These functions are useful for invoking
-     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * the same method with the same arguments on all objects returned by an iterator.  The instance
      * object is the last parameter to facilitate the use of Curry.of().
      *
      * @param name      name of the method to invoke
@@ -226,7 +226,7 @@ public final class ReflectionFunctions
     /**
      * Returns a Func4 instance that calls the specified non-static method on a java object
      * passed as the last parameter of the Func4.  These functions are useful for invoking
-     * the same method with the same arguments on all objects returned by a Cursor.  The instance
+     * the same method with the same arguments on all objects returned by an iterator.  The instance
      * object is the last parameter to facilitate the use of Curry.of().
      *
      * @param name      name of the method to invoke

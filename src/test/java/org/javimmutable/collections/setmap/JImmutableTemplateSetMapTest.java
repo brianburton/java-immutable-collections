@@ -40,7 +40,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMapTest;
@@ -71,15 +71,11 @@ public class JImmutableTemplateSetMapTest
         assertNull(empty.get(1));
         JImmutableSetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
         verifyRandom(JImmutableTreeSetMap.of(), new TreeMap<>());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                        MapEntry.of(2, map.getSet(2)),
-                                                        MapEntry.of(3, map.getSet(3))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                          MapEntry.of(2, map.getSet(2)),
-                                                          MapEntry.of(3, map.getSet(3))),
-                                            map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                             MapEntry.of(2, map.getSet(2)),
+                                                             MapEntry.of(3, map.getSet(3))),
+                                               map.iterator());
 
         map = empty
             .insert(10, 100)
@@ -130,7 +126,7 @@ public class JImmutableTemplateSetMapTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6mmEsYGB3BLEYgKxGIo+C8ZJBqXjg3qQIAfGkuEJ8CAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6mmEoYGB0hAkBWEpjFCGQ5VQAA9oB1u4wCAAA=");
-                   
+
         empty = JImmutableTemplateSetMap.of(JImmutableTreeMap.of(String.CASE_INSENSITIVE_ORDER), JImmutableTreeSet.of(String.CASE_INSENSITIVE_ORDER));
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTemplateSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerFtDcRL2cxLx0veCSosy8dBXnxOJUz7zi1LzizJLMslTn/NyCxKLEkvyicuaY2piAp+eYYAYAaYp8CwxIqvsWm5lQ3xYy1DGwQ90NpQAsnvP+ZwIAAA==");

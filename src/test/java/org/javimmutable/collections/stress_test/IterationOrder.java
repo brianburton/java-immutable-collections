@@ -33,20 +33,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.cursors;
+package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Cursor;
-
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-
-public abstract class AbstractCursor<T>
-    implements Cursor<T>
+public enum IterationOrder
 {
-    @Nonnull
-    @Override
-    public Iterator<T> iterator()
-    {
-        return IteratorAdaptor.of(this);
-    }
+    UNORDERED,
+    INSERT_ORDER,
+    ORDERED
 }

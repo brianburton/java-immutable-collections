@@ -35,11 +35,9 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.serialization.JImmutableStackProxy;
@@ -185,12 +183,6 @@ public class JImmutableLinkedStack<V>
     public JImmutableStack<V> getInsertableSelf()
     {
         return this;
-    }
-
-    @Nonnull
-    public Cursor<V> cursor()
-    {
-        return SequenceCursor.of(this);
     }
 
     @Nonnull

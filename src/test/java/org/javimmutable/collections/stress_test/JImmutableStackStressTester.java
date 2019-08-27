@@ -38,7 +38,7 @@ package org.javimmutable.collections.stress_test;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class JImmutableStackStressTester
         int size = 1 + random.nextInt(100000);
 
         System.out.printf("JImmutableStackStressTest on %s of size %d%n", "JImmutableStack", size);
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d%n", expected.size());
             while (expected.size() < step.growthSize()) {
                 String value = RandomKeyManager.makeValue(tokens, random);
@@ -94,7 +94,7 @@ public class JImmutableStackStressTester
                 expected.removeFirst();
             }
             verifyContents(stack, expected);
-            verifyCursor(stack, expected);
+            verifyIteration(stack, expected);
         }
         System.out.printf("cleanup %d%n", expected.size());
         for (String value : expected) {
@@ -109,12 +109,12 @@ public class JImmutableStackStressTester
         System.out.printf("JImmutableStackStressTest on %s completed without errors%n", "JImmutableStack");
     }
 
-    private void verifyCursor(JImmutableStack<String> stack,
-                              List<String> expected)
+    private void verifyIteration(JImmutableStack<String> stack,
+                                 List<String> expected)
     {
-        System.out.printf("checking cursor of size %d%n", expected.size());
+        System.out.printf("checking iterator of size %d%n", expected.size());
         ArrayList<String> list = new ArrayList<>(expected);   //ArrayList instead of LinkedList for speed
-        StandardCursorTest.listCursorTest(list, stack.cursor());
+        StandardIteratorTests.listIteratorTest(list, stack.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(list, stack);
     }
 

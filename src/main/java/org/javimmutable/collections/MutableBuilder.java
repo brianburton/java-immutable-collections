@@ -70,21 +70,6 @@ public interface MutableBuilder<T, C>
     C build();
 
     /**
-     * Adds all values in the Cursor to the values included in the collection when build() is called.
-     *
-     * @param source Cursor containing values to add
-     * @return the builder (convenience for chaining multiple calls)
-     */
-    @Nonnull
-    default MutableBuilder<T, C> add(Cursor<? extends T> source)
-    {
-        for (Cursor<? extends T> cursor = source.start(); cursor.hasValue(); cursor = cursor.next()) {
-            add(cursor.getValue());
-        }
-        return this;
-    }
-
-    /**
      * Adds all values in the Iterator to the values included in the collection when build() is called.
      *
      * @param source Iterator containing values to add

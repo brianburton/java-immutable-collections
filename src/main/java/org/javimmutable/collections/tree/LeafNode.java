@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.cursors.SingleValueCursor;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
@@ -174,13 +172,6 @@ public class LeafNode<K, V>
     public int depth()
     {
         return 0;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor()
-    {
-        return SingleValueCursor.of(this);
     }
 
     @Nonnull

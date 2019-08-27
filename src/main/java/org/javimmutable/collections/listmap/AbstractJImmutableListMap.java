@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableList;
@@ -118,20 +117,6 @@ public abstract class AbstractJImmutableListMap<K, V>
 
     @Nonnull
     @Override
-    public Cursor<K> keysCursor()
-    {
-        return contents.keysCursor();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<V> valuesCursor(@Nonnull K key)
-    {
-        return getList(key).cursor();
-    }
-
-    @Nonnull
-    @Override
     public IterableStreamable<K> keys()
     {
         return contents.keys();
@@ -149,13 +134,6 @@ public abstract class AbstractJImmutableListMap<K, V>
     public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
     {
         return new EntryIterableStreamable<>(this);
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<K, JImmutableList<V>>> cursor()
-    {
-        return contents.cursor();
     }
 
     @Override

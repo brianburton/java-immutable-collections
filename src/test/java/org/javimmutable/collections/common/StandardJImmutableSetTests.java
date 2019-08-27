@@ -38,10 +38,9 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.cursors.IterableCursor;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.ArrayList;
@@ -99,7 +98,6 @@ public final class StandardJImmutableSetTests
 
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
         verifyContents(jet.union(values), values);
-        verifyContents(jet.union(IterableCursor.of(values)), values);
         verifyContents(jet.union(values.iterator()), values);
 
         // intersect with larger set
@@ -108,7 +106,6 @@ public final class StandardJImmutableSetTests
         Set<Integer> intersectionSet = new HashSet<>(withExtra);
         JImmutableSet<Integer> intersectionJet = template.union(withExtra);
         verifyContents(jet.intersection(withExtra), values);
-        verifyContents(jet.intersection(IterableCursor.of(withExtra)), values);
         verifyContents(jet.intersection(withExtra.iterator()), values);
         verifyContents(jet.intersection(intersectionJet), values);
         verifyContents(jet.intersection(intersectionSet), values);
@@ -118,7 +115,6 @@ public final class StandardJImmutableSetTests
         intersectionSet = new HashSet<>(values);
         intersectionJet = template.union(values);
         verifyContents(jet.intersection(values), values);
-        verifyContents(jet.intersection(IterableCursor.of(values)), values);
         verifyContents(jet.intersection(values.iterator()), values);
         verifyContents(jet.intersection(intersectionJet), values);
         verifyContents(jet.intersection(intersectionSet), values);
@@ -126,7 +122,6 @@ public final class StandardJImmutableSetTests
         // empty set intersection with non-empty set
         final List<Integer> empty = Collections.emptyList();
         verifyContents(template.intersection(withExtra), empty);
-        verifyContents(template.intersection(IterableCursor.of(withExtra)), empty);
         verifyContents(template.intersection(withExtra.iterator()), empty);
         verifyContents(template.intersection(intersectionJet), empty);
         verifyContents(template.intersection(intersectionSet), empty);
@@ -135,7 +130,6 @@ public final class StandardJImmutableSetTests
         intersectionSet = new HashSet<>();
         intersectionJet = template;
         verifyContents(jet.intersection(empty), empty);
-        verifyContents(jet.intersection(IterableCursor.of(empty)), empty);
         verifyContents(jet.intersection(empty.iterator()), empty);
         verifyContents(jet.intersection(intersectionJet), empty);
         verifyContents(jet.intersection(intersectionSet), empty);
@@ -144,47 +138,40 @@ public final class StandardJImmutableSetTests
         final List<Integer> extra = Arrays.asList(0, 5);
         jet = template.union(withExtra);
         verifyContents(jet.deleteAll(values), extra);
-        verifyContents(jet.deleteAll(IterableCursor.of(values)), extra);
         verifyContents(jet.deleteAll(values.iterator()), extra);
 
         // deleteAll from larger set
         jet = template.union(values);
         verifyContents(jet.deleteAll(withExtra), empty);
-        verifyContents(jet.deleteAll(IterableCursor.of(withExtra)), empty);
         verifyContents(jet.deleteAll(withExtra.iterator()), empty);
 
         //insertAll
         //empty into empty
         assertSame(template, template.insertAll(plainIterable(template)));
         assertSame(template, template.insertAll(template));
-        assertSame(template, template.insertAll(IterableCursor.of(template)));
         assertSame(template, template.insertAll(template.iterator()));
 
         //values into empty
         verifyContents(template.insertAll(plainIterable(values)), values);
         verifyContents(template.insertAll(values), values);
-        verifyContents(template.insertAll(IterableCursor.of(values)), values);
         verifyContents(template.insertAll(values.iterator()), values);
 
         //empty into values
         jet = template.union(values);
         assertSame(jet, jet.insertAll(plainIterable(template)));
         assertSame(jet, jet.insertAll(template));
-        assertSame(jet, jet.insertAll(IterableCursor.of(template)));
         assertSame(jet, jet.insertAll(template.iterator()));
 
         // union with self should yield same set (no changes)
         if (!(template instanceof JImmutableMultiset)) {
             assertSame(jet, jet.insertAll(plainIterable(jet)));
             assertSame(jet, jet.insertAll(jet));
-            assertSame(jet, jet.insertAll(IterableCursor.of(jet)));
             assertSame(jet, jet.insertAll(jet.iterator()));
         }
 
         //values into values
         verifyContents(jet.insertAll(plainIterable(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra), withExtra);
-        verifyContents(jet.insertAll(IterableCursor.of(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra.iterator()), withExtra);
 
         final List<Integer> higher = Arrays.asList(4, 5, 6, 7);
@@ -192,7 +179,6 @@ public final class StandardJImmutableSetTests
         final List<Integer> combinedSet = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
         verifyContents(jet.insertAll(plainIterable(withExtra)), combinedSet);
         verifyContents(jet.insertAll(withExtra), combinedSet);
-        verifyContents(jet.insertAll(IterableCursor.of(withExtra)), combinedSet);
         verifyContents(jet.insertAll(withExtra.iterator()), combinedSet);
     }
 
@@ -328,22 +314,22 @@ public final class StandardJImmutableSetTests
         JImmutableSet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
         final List<Integer> expected = new ArrayList<>();
         expected.addAll(jet.getSet());
-        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        StandardIteratorTests.listIteratorTest(expected, jet.iterator());
 
         JImmutableSet<Integer> diffOrder = JImmutableInsertOrderSet.<Integer>of().insert(400).insert(0).insert(600)
             .insert(100).insert(50).insert(100);
         //Iterable
         jet = jet.intersection(iterable(diffOrder));
-        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        StandardIteratorTests.listIteratorTest(expected, jet.iterator());
         //Iterable
         jet = jet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100));
-        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        StandardIteratorTests.listIteratorTest(expected, jet.iterator());
         //Set
         jet = jet.intersection(diffOrder.getSet());
-        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        StandardIteratorTests.listIteratorTest(expected, jet.iterator());
         //JSet
         jet = jet.intersection(diffOrder);
-        StandardCursorTest.listCursorTest(expected, jet.cursor());
+        StandardIteratorTests.listIteratorTest(expected, jet.iterator());
     }
 
     private static void testWithMultiset(JImmutableSet<Integer> template)
@@ -464,21 +450,17 @@ public final class StandardJImmutableSetTests
             assertEquals(true, jet.contains(value));
         }
         assertEquals(true, jet.containsAll(expected));
-        assertEquals(true, jet.containsAll(IterableCursor.of(expected)));
         assertEquals(true, jet.containsAll(expected.iterator()));
 
         assertEquals(!expected.isEmpty(), jet.containsAny(expected));
-        assertEquals(!expected.isEmpty(), jet.containsAny(IterableCursor.of(expected)));
         assertEquals(!expected.isEmpty(), jet.containsAny(expected.iterator()));
 
         if (!expected.isEmpty()) {
             List<T> subset = Arrays.asList(expected.get(0));
             assertEquals(true, jet.containsAll(subset));
-            assertEquals(true, jet.containsAll(IterableCursor.of(subset)));
             assertEquals(true, jet.containsAll(subset.iterator()));
 
             assertEquals(true, jet.containsAny(subset));
-            assertEquals(true, jet.containsAny(IterableCursor.of(subset)));
             assertEquals(true, jet.containsAny(subset.iterator()));
         }
 

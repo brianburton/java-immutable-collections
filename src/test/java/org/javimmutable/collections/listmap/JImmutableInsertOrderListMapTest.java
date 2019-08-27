@@ -39,7 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -54,15 +54,11 @@ public class JImmutableInsertOrderListMapTest
     public void test()
     {
         JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of(), Ordering.INORDER);
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 3, 2), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
-                                                        MapEntry.of(3, map.getList(3)),
-                                                        MapEntry.of(2, map.getList(2))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
-                                                          MapEntry.of(3, map.getList(3)),
-                                                          MapEntry.of(2, map.getList(2))),
-                                            map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
+                                                             MapEntry.of(3, map.getList(3)),
+                                                             MapEntry.of(2, map.getList(2))),
+                                               map.iterator());
     }
 
     public void testEquals()

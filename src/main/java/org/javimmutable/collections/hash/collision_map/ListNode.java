@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash.collision_map;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -43,8 +42,7 @@ import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.MutableDelta;
 
 public interface ListNode<K, V>
-    extends Cursorable<JImmutableMap.Entry<K, V>>,
-            SplitableIterable<JImmutableMap.Entry<K, V>>
+    extends SplitableIterable<JImmutableMap.Entry<K, V>>
 {
     V getValueForKey(K key,
                      V defaultValue);

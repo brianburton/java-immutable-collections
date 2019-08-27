@@ -39,7 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 
 import java.util.Arrays;
@@ -56,29 +56,21 @@ public class JImmutableTreeSetMapTest
     {
         JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.of(), Ordering.HASH);
         verifyRandom(JImmutableTreeSetMap.of(), new TreeMap<>());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                        MapEntry.of(2, map.getSet(2)),
-                                                        MapEntry.of(3, map.getSet(3))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                          MapEntry.of(2, map.getSet(2)),
-                                                          MapEntry.of(3, map.getSet(3))),
-                                            map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
+                                                             MapEntry.of(2, map.getSet(2)),
+                                                             MapEntry.of(3, map.getSet(3))),
+                                               map.iterator());
     }
 
     public void testReverseOrder()
     {
         JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableTreeSetMap.of(Comparator.<Integer>reverseOrder()), Ordering.HASH);
-        StandardCursorTest.listCursorTest(Arrays.asList(3, 2, 1), map.keysCursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(MapEntry.of(3, map.getSet(3)),
-                                                        MapEntry.of(2, map.getSet(2)),
-                                                        MapEntry.of(1, map.getSet(1))),
-                                          map.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(MapEntry.of(3, map.getSet(3)),
-                                                          MapEntry.of(2, map.getSet(2)),
-                                                          MapEntry.of(1, map.getSet(1))),
-                                            map.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(3, 2, 1), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(3, map.getSet(3)),
+                                                             MapEntry.of(2, map.getSet(2)),
+                                                             MapEntry.of(1, map.getSet(1))),
+                                               map.iterator());
     }
 
     public void testEquals()
@@ -113,7 +105,7 @@ public class JImmutableTreeSetMapTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXWyG1/gSoMv0nPNzCxKLQHJQVkl+EcwwJphhDMwlDIyOYBYjkJUIxFFwXnIhQx0DG5ybVAEAraHYsi8BAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXWyG1/gSoMv0nPNzCxKLQHJQVkl+EcwwJphhDEwlDIyOYBYDkJUEZjECWU4VANgmCJwcAQAA");
-                        
+
         empty = JImmutableTreeSetMap.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKWRgYmF8CXawFNDpRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAUAaAHaXI874AAAA");

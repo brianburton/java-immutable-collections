@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 
 import javax.annotation.Nonnull;
@@ -44,7 +43,6 @@ import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -152,14 +150,13 @@ public abstract class MutableMapAdaptor<K, V>
         implements Iterator<Map.Entry<K, V>>
     {
         private JImmutableMap<K, V> startingMap;
-        private Cursor<JImmutableMap.Entry<K, V>> current;
-        private Cursor<JImmutableMap.Entry<K, V>> next;
+        private Iterator<JImmutableMap.Entry<K, V>> iter;
+        private K currentKey;
 
         private MutableEntryIterator()
         {
             startingMap = accessMap();
-            current = startingMap.cursor();
-            next = current.next();
+            iter = startingMap.iterator();
         }
 
         @Override
@@ -168,7 +165,7 @@ public abstract class MutableMapAdaptor<K, V>
             if (accessMap() != startingMap) {
                 throw new ConcurrentModificationException();
             }
-            return next.hasValue();
+            return iter.hasNext();
         }
 
         @Override
@@ -177,13 +174,9 @@ public abstract class MutableMapAdaptor<K, V>
             if (accessMap() != startingMap) {
                 throw new ConcurrentModificationException();
             }
-            try {
-                current = next;
-                next = next.next();
-                return new MutableMapEntry(current.getValue());
-            } catch (Cursor.NoValueException ignored) {
-                throw new NoSuchElementException();
-            }
+            final JImmutableMap.Entry<K, V> entry = iter.next();
+            currentKey = entry.getKey();
+            return new MutableMapEntry(entry);
         }
 
         @Override
@@ -192,8 +185,7 @@ public abstract class MutableMapAdaptor<K, V>
             if (accessMap() != startingMap) {
                 throw new ConcurrentModificationException();
             }
-            final K key = current.getValue().getKey();
-            replaceMap(accessMap().delete(key));
+            replaceMap(accessMap().delete(currentKey));
             startingMap = accessMap();
         }
 

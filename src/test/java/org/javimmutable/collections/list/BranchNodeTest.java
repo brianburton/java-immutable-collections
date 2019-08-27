@@ -1,6 +1,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
 

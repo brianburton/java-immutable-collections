@@ -40,7 +40,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.BranchNode;
 import org.javimmutable.collections.tree.LeafNode;
 import org.javimmutable.collections.tree.Node;
@@ -126,6 +126,6 @@ public class TreeCollisionMapTest
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
-        StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
+        StandardIteratorTests.listIteratorTest(expected, transforms.iterator(value));
     }
 }

@@ -35,13 +35,11 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
@@ -146,13 +144,6 @@ public class FullBranchTrieNode<T>
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return LazyMultiIterator.iterator(IndexedArray.retained(entries));
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return LazyMultiCursor.cursor(IndexedArray.retained(entries));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
@@ -66,12 +65,6 @@ public class JImmutableTreeList<T>
     public static <T> JImmutableTreeList<T> of(@Nonnull Iterator<? extends T> values)
     {
         return create(nodeFromIterator(values));
-    }
-
-    @Nonnull
-    public static <T> JImmutableTreeList<T> of(@Nonnull Cursor<? extends T> values)
-    {
-        return create(nodeFromCursor(values));
     }
 
     @Nonnull
@@ -167,13 +160,6 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableTreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllLast(nodeFromCursor(values));
-    }
-
-    @Nonnull
-    @Override
     public JImmutableTreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return insertAllLast(nodeFromIterator(values));
@@ -185,14 +171,6 @@ public class JImmutableTreeList<T>
                                            @Nonnull Iterable<? extends T> values)
     {
         return insertAll(index, nodeFromIterable(values));
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableTreeList<T> insertAll(int index,
-                                           @Nonnull Cursor<? extends T> values)
-    {
-        return insertAll(index, nodeFromCursor(values));
     }
 
     @Nonnull
@@ -219,13 +197,6 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableTreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllFirst(nodeFromCursor(values));
-    }
-
-    @Nonnull
-    @Override
     public JImmutableTreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
         return insertAllFirst(nodeFromIterator(values));
@@ -242,13 +213,6 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
         return insertAllLast(nodeFromIterable(values));
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableTreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllLast(nodeFromCursor(values));
     }
 
     @Nonnull
@@ -430,13 +394,6 @@ public class JImmutableTreeList<T>
         root.checkInvariants();
     }
 
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return root.cursor();
-    }
-
     @Override
     @Nonnull
     public SplitableIterator<T> iterator()
@@ -522,14 +479,6 @@ public class JImmutableTreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(Cursor<? extends T> source)
-        {
-            builder.add(source);
-            return this;
-        }
-
-        @Nonnull
-        @Override
         public synchronized ListBuilder<T> add(Iterator<? extends T> source)
         {
             builder.add(source);
@@ -607,14 +556,6 @@ public class JImmutableTreeList<T>
         public synchronized RAListBuilder<T> add(T value)
         {
             builder.add(value);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(Cursor<? extends T> source)
-        {
-            builder.add(source);
             return this;
         }
 
