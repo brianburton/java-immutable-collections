@@ -37,13 +37,14 @@ package org.javimmutable.collections.list.legacy;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
-import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.list.BuilderTestAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +55,7 @@ import java.util.Random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
+@SuppressWarnings("deprecation")
 public class JImmutableArrayListTest
     extends TestCase
 {
@@ -560,8 +562,13 @@ public class JImmutableArrayListTest
         }
         assertEquals(manual, builder.build());
 
-        StandardMutableBuilderTests.verifyBuilder(expected, () -> JImmutableArrayList.builder(), (l, j) -> l.equals(j.getList()));
-        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableArrayList.builder());
+        StandardBuilderTests.verifyBuilder(expected, this::builder, (l, j) -> l.equals(j.getList()));
+        StandardBuilderTests.verifyThreadSafety(this::builder);
+    }
+
+    private BuilderTestAdapter<Integer> builder()
+    {
+        return new BuilderTestAdapter<>(JImmutableArrayList.builder());
     }
 
     public void testIndexedConstructor()

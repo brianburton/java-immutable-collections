@@ -1,14 +1,12 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.MutableBuilder;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
-import org.javimmutable.collections.common.StandardMutableBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -1108,8 +1106,6 @@ public class JImmutableTreeListTest
         }
         assertEquals(manual, builder.build());
 
-        Func0<? extends MutableBuilder<Integer, JImmutableList<Integer>>> factory = (Func0<JImmutableTreeList.ListBuilder<Integer>>)() -> JImmutableTreeList.listBuilder();
-
         Func2<List<Integer>, JImmutableList<Integer>, Boolean> comparator = (list, tree) -> {
             tree.checkInvariants();
             for (int i = 0; i < list.size(); ++i) {
@@ -1118,8 +1114,13 @@ public class JImmutableTreeListTest
             return true;
         };
 
-        StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
-        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTreeList.listBuilder());
+        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator);
+        StandardBuilderTests.verifyThreadSafety(this::builder);
+    }
+
+    private BuilderTestAdapter<Integer> builder()
+    {
+        return new BuilderTestAdapter<>(JImmutableTreeList.listBuilder());
     }
 
     public void testStaticBuilderMethod()

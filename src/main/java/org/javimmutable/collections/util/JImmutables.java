@@ -148,7 +148,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder for efficiently constructing a JImmutableList built atop a balanced binary tree.
+     * Produces a Builder for efficiently constructing a JImmutableList built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> JImmutableList.Builder<T> listBuilder()
@@ -1077,7 +1077,7 @@ public final class JImmutables
     }
 
     /**
-     * Produces a MutableBuilder for efficiently constructing a JImmutableArray
+     * Produces a Builder for efficiently constructing a JImmutableArray
      * built atop a 32-way integer trie.  All values added by the builder are
      * assigned consecutive indices starting with zero.
      */

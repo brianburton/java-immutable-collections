@@ -469,6 +469,13 @@ public class JImmutableArrayList<T>
             builder = new TreeBuilder<>(true);
         }
 
+        @Nonnull
+        @Override
+        public JImmutableArrayList<T> build()
+        {
+            return builder.size() == 0 ? of() : new JImmutableArrayList<>(builder.build());
+        }
+
         @Override
         public int size()
         {
@@ -481,13 +488,6 @@ public class JImmutableArrayList<T>
         {
             builder.add(value);
             return this;
-        }
-
-        @Nonnull
-        @Override
-        public JImmutableArrayList<T> build()
-        {
-            return builder.size() == 0 ? of() : new JImmutableArrayList<>(builder.build());
         }
 
         @Nonnull

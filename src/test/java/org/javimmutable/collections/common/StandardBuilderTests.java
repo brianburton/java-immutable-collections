@@ -40,12 +40,12 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.tree.ComparableComparator;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,17 +55,38 @@ import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 
-public final class StandardMutableBuilderTests
+public final class StandardBuilderTests
 {
-    private StandardMutableBuilderTests()
+    private StandardBuilderTests()
     {
     }
 
+    public interface BuilderAdapter<T, C>
+    {
+        C build();
+
+        int size();
+
+        void add(T value);
+
+        void add(Iterator<? extends T> source);
+
+        void add(Iterable<? extends T> source);
+
+        <K extends T> void add(K... source);
+
+        void add(Indexed<? extends T> source,
+                 int offset,
+                 int limit);
+
+        void add(Indexed<? extends T> source);
+    }
+
     /**
-     * Tests all of the standard MutableBuilder add methods using the specified build and comparison functions.
+     * Tests all of the standard Builder add methods using the specified build and comparison functions.
      */
     public static <T, C> void verifyBuilder(List<T> values,
-                                            Func0<? extends MutableBuilder<T, C>> builderFactory,
+                                            Func0<? extends BuilderAdapter<T, C>> builderFactory,
                                             Func2<List<T>, C, Boolean> comparator)
     {
         @SuppressWarnings("TooBroadScope") C collection;
@@ -73,26 +94,36 @@ public final class StandardMutableBuilderTests
         Indexed<T> indexed = IndexedList.retained(values);
 
         // add via Iterator
-        collection = builderFactory.apply().add(values.iterator()).build();
+        BuilderAdapter<T, C> builder = builderFactory.apply();
+        builder.add(values.iterator());
+        collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via Collection
-        builderFactory.apply().add(values).build();
+        builder = builderFactory.apply();
+        builder.add(values);
+        collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via array
         //noinspection unchecked
         T[] array = (T[])values.toArray();
         //noinspection unchecked
-        collection = builderFactory.apply().add(array).build();
+        builder = builderFactory.apply();
+        builder.add(array);
+        collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via Indexed in its entirety
-        builderFactory.apply().add(indexed).build();
+        builder = builderFactory.apply();
+        builder.add(indexed);
+        collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via indexed range
-        builderFactory.apply().add(indexed, 0, indexed.size()).build();
+        builder = builderFactory.apply();
+        builder.add(indexed, 0, indexed.size());
+        collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // verify safe to call build() multiple times
@@ -100,11 +131,11 @@ public final class StandardMutableBuilderTests
     }
 
     private static <T, C> void verifyMultipleCallOk(List<T> values,
-                                                    Func0<? extends MutableBuilder<T, C>> builderFactory,
+                                                    Func0<? extends BuilderAdapter<T, C>> builderFactory,
                                                     Func2<List<T>, C, Boolean> comparator,
                                                     Indexed<T> indexed)
     {
-        final MutableBuilder<T, C> multi = builderFactory.apply();
+        final BuilderAdapter<T, C> multi = builderFactory.apply();
         final int multiStep = Math.max(1, indexed.size() / 8);
         final List<T> sublist = new ArrayList<>();
         int multiOffset = 0;
@@ -121,7 +152,7 @@ public final class StandardMutableBuilderTests
         assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
     }
 
-    public static <C> void verifyThreadSafety(@Nonnull Func0<MutableBuilder<Integer, C>> builderFactory,
+    public static <C> void verifyThreadSafety(@Nonnull Func0<BuilderAdapter<Integer, C>> builderFactory,
                                               @Nonnull Func1<C, Iterable<Integer>> transform)
         throws InterruptedException
     {
@@ -129,7 +160,7 @@ public final class StandardMutableBuilderTests
         final int numThreads = 32;
         final int perThread = (expected.size() + numThreads - 1) / numThreads;
         for (int loop = 1; loop <= 100; ++loop) {
-            final MutableBuilder<Integer, C> builder = builderFactory.apply();
+            final BuilderAdapter<Integer, C> builder = builderFactory.apply();
             final ExecutorService es = Executors.newFixedThreadPool(numThreads);
             try {
                 int offset = 0;
@@ -152,13 +183,13 @@ public final class StandardMutableBuilderTests
         }
     }
 
-    public static <C extends JImmutableList<Integer>> void verifyThreadSafety(Func0<MutableBuilder<Integer, C>> builderFactory)
+    public static <C extends JImmutableList<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
         throws InterruptedException
     {
         verifyThreadSafety(builderFactory, list -> list);
     }
 
-    private static <T, C> void addValues(MutableBuilder<Integer, C> builder,
+    private static <T, C> void addValues(BuilderAdapter<Integer, C> builder,
                                          List<Integer> indexed,
                                          int first,
                                          int limit)

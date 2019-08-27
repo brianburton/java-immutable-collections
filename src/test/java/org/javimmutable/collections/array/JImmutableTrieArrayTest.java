@@ -40,11 +40,11 @@ import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.MutableBuilder;
-import org.javimmutable.collections.common.StandardMutableBuilderTests;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -64,7 +64,6 @@ public class JImmutableTrieArrayTest
     extends TestCase
 {
     // this method is intended for use in debugger to watch the structural changes
-    @SuppressWarnings("UnusedAssignment")
     public void testTrimming()
     {
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
@@ -351,7 +350,7 @@ public class JImmutableTrieArrayTest
         }
         assertEquals(manual, builder.build());
 
-        Func0<MutableBuilder<Integer, JImmutableArray<Integer>>> factory = () -> JImmutableTrieArray.builder();
+        Func0<JImmutableArray.Builder<Integer>> factory = () -> JImmutableTrieArray.builder();
 
         Func2<List<Integer>, JImmutableArray<Integer>, Boolean> comparator = (list, tree) -> {
             for (int i = 0; i < list.size(); ++i) {
@@ -360,11 +359,10 @@ public class JImmutableTrieArrayTest
             return true;
         };
 
-        StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
-        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTrieArray.builder(), a -> a.values());
+        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator);
+        StandardBuilderTests.verifyThreadSafety(this::builder, a -> a.values());
     }
 
-    @SuppressWarnings("NumericOverflow")
     static List<Integer> createBranchIndexes()
     {
         List<Integer> answer = new ArrayList<>();
@@ -381,5 +379,71 @@ public class JImmutableTrieArrayTest
         }
         Collections.sort(answer);
         return answer;
+    }
+
+    private BuilderTestAdapter<Integer> builder()
+    {
+        return new BuilderTestAdapter<>(JImmutableTrieArray.builder());
+    }
+
+    private static class BuilderTestAdapter<T>
+        implements StandardBuilderTests.BuilderAdapter<T, JImmutableArray<T>>
+    {
+        private final JImmutableArray.Builder<T> builder;
+
+        public BuilderTestAdapter(JImmutableArray.Builder<T> builder)
+        {
+            this.builder = builder;
+        }
+
+        @Override
+        public JImmutableArray<T> build()
+        {
+            return builder.build();
+        }
+
+        @Override
+        public int size()
+        {
+            return builder.size();
+        }
+
+        @Override
+        public void add(T value)
+        {
+            builder.add(value);
+        }
+
+        @Override
+        public void add(Iterator<? extends T> source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public void add(Iterable<? extends T> source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public <K extends T> void add(K... source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public void add(Indexed<? extends T> source,
+                        int offset,
+                        int limit)
+        {
+            builder.add(source, offset, limit);
+        }
+
+        @Override
+        public void add(Indexed<? extends T> source)
+        {
+            builder.add(source);
+        }
     }
 }
