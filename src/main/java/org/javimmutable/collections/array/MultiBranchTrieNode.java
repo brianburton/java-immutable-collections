@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
@@ -230,17 +228,6 @@ public class MultiBranchTrieNode<T>
     public TrieNode<T> trimmedToMinimumDepth()
     {
         return (bitmask == 1) ? entries[0].trimmedToMinimumDepth() : this;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        if (shift != ROOT_SHIFT) {
-            return LazyMultiCursor.cursor(IndexedArray.retained(entries));
-        } else {
-            return LazyMultiCursor.cursor(IndexedArray.retained(entriesForSignedOrderIteration()));
-        }
     }
 
     @Nonnull

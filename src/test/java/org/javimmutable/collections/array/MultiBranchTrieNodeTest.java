@@ -40,8 +40,8 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -280,7 +280,7 @@ public class MultiBranchTrieNodeTest
         assertSame(leaf, node.trimmedToMinimumDepth());
     }
 
-    public void testNonRootCursors()
+    public void testNonRootIterators()
     {
         final int length = 32;
         final TrieNode<String>[] entriesArray = MultiBranchTrieNode.allocate(length);
@@ -294,11 +294,10 @@ public class MultiBranchTrieNodeTest
             values.add(node.getValueOr(20, shiftIndex(20, i), null));
             entries.add(MapEntry.of(shiftIndex(20, i), values.get(i)));
         }
-        StandardCursorTest.listCursorTest(entries, node.cursor());
-        StandardCursorTest.listIteratorTest(entries, node.iterator());
+        StandardIteratorTests.listIteratorTest(entries, node.iterator());
     }
 
-    public void testRootCursors()
+    public void testRootIterators()
     {
         final int length = 4;
         final TrieNode<String>[] entries = MultiBranchTrieNode.allocate(length);
@@ -313,8 +312,7 @@ public class MultiBranchTrieNodeTest
             signedOrderValues.add(value);
             signedOrderEntries.add(MapEntry.of(shiftIndex(TrieNode.ROOT_SHIFT, i), value));
         }
-        StandardCursorTest.listCursorTest(signedOrderEntries, node.cursor());
-        StandardCursorTest.listIteratorTest(signedOrderEntries, node.iterator());
+        StandardIteratorTests.listIteratorTest(signedOrderEntries, node.iterator());
     }
 
     private int shiftIndex(int shift,

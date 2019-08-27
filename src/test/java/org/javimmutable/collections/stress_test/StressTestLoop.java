@@ -79,12 +79,12 @@ public class StressTestLoop
 
             .insert(new JImmutableRandomAccessListStressTester(JImmutables.ralist()))
 
-            .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, CursorOrder.UNORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, CursorOrder.INSERT_ORDER))
-            .insert(new JImmutableSetStressTester(JImmutables.sortedSet(), TreeSet.class, CursorOrder.ORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.multiset(), HashSet.class, CursorOrder.UNORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.insertOrderMultiset(), LinkedHashSet.class, CursorOrder.INSERT_ORDER))
-            .insert(new JImmutableSetStressTester(JImmutables.sortedMultiset(), TreeSet.class, CursorOrder.ORDERED))
+            .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, IterationOrder.UNORDERED))
+            .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+            .insert(new JImmutableSetStressTester(JImmutables.sortedSet(), TreeSet.class, IterationOrder.ORDERED))
+            .insert(new JImmutableSetStressTester(JImmutables.multiset(), HashSet.class, IterationOrder.UNORDERED))
+            .insert(new JImmutableSetStressTester(JImmutables.insertOrderMultiset(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+            .insert(new JImmutableSetStressTester(JImmutables.sortedMultiset(), TreeSet.class, IterationOrder.ORDERED))
 
             .insert(new JImmutableMultisetStressTester(JImmutables.multiset()))
             .insert(new JImmutableMultisetStressTester(JImmutables.insertOrderMultiset()))

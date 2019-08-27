@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash.collision_map;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -44,7 +43,6 @@ import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.EmptySequence;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.SequenceCursor;
 import org.javimmutable.collections.iterators.SequenceIterator;
 
 import javax.annotation.Nonnull;
@@ -181,13 +179,6 @@ public class MultiValueListNode<K, V>
         } else {
             return next;
         }
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<K, V>> cursor()
-    {
-        return SequenceCursor.of(this);
     }
 
     @Nonnull

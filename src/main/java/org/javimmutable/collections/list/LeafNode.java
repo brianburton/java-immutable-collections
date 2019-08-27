@@ -35,10 +35,8 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
@@ -195,13 +193,6 @@ class LeafNode<T>
 
     @Nonnull
     @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of(IndexedArray.retained(values));
-    }
-
-    @Nonnull
-    @Override
     public SplitableIterator<T> iterator()
     {
         return IndexedIterator.iterator(IndexedArray.retained(values));
@@ -215,7 +206,7 @@ class LeafNode<T>
         }
         //TODO: review checkInvariants()
     }
-    
+
     Indexed<T> values()
     {
         return IndexedArray.retained(values);

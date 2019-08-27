@@ -41,7 +41,6 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MutableBuilder;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.tree.ComparableComparator;
 
@@ -72,10 +71,6 @@ public final class StandardMutableBuilderTests
         @SuppressWarnings("TooBroadScope") C collection;
 
         Indexed<T> indexed = IndexedList.retained(values);
-
-        // add via Cursor
-        collection = builderFactory.apply().add(StandardCursor.of(indexed)).build();
-        assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via Iterator
         collection = builderFactory.apply().add(values.iterator()).build();

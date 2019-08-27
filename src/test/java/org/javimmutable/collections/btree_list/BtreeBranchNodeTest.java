@@ -36,7 +36,7 @@
 package org.javimmutable.collections.btree_list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -44,7 +44,8 @@ import java.util.List;
 
 import static org.javimmutable.collections.btree_list.BtreeBranchNode.forTesting;
 import static org.javimmutable.collections.btree_list.BtreeNode.*;
-import static org.javimmutable.collections.cursors.StandardCursor.*;
+import static org.javimmutable.collections.iterators.IndexedIterator.forRange;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.makeList;
 
 public class BtreeBranchNodeTest
     extends TestCase
@@ -67,7 +68,7 @@ public class BtreeBranchNodeTest
         }
         assertEquals(MAX_CHILDREN, node.childCount());
         assertEquals(((MAX_CHILDREN - 1) * (MIN_CHILDREN + 1)) + MAX_CHILDREN, node.valueCount());
-        StandardCursorTest.listCursorTest(expected, node.cursor());
+        StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
     public void testInsertZero()
@@ -88,7 +89,7 @@ public class BtreeBranchNodeTest
         }
         assertEquals(MAX_CHILDREN, node.childCount());
         assertEquals(((MAX_CHILDREN - 1) * (MIN_CHILDREN + 1)) + MAX_CHILDREN, node.valueCount());
-        StandardCursorTest.listCursorTest(expected, node.cursor());
+        StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
     public void testDeleteAt()

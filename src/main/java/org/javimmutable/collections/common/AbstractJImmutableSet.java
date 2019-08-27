@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.Cursors;
+import org.javimmutable.collections.iterators.IteratorHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,13 +82,6 @@ public abstract class AbstractJImmutableSet<T>
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values)
-    {
-        return union(values.iterator());
-    }
-
-    @Override
-    @Nonnull
     public JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return union(values);
@@ -108,17 +100,6 @@ public abstract class AbstractJImmutableSet<T>
     }
 
     @Override
-    public boolean containsAll(@Nonnull Cursor<? extends T> values)
-    {
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            if (!contains(c.getValue())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
     public boolean containsAll(@Nonnull Iterator<? extends T> values)
     {
         while (values.hasNext()) {
@@ -133,17 +114,6 @@ public abstract class AbstractJImmutableSet<T>
     public boolean containsAny(@Nonnull Iterable<? extends T> values)
     {
         return containsAny(values.iterator());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull Cursor<? extends T> values)
-    {
-        for (Cursor<? extends T> c = values.start(); c.hasValue(); c = c.next()) {
-            if (contains(c.getValue())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -174,13 +144,6 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Cursor<? extends T> values)
-    {
-        return deleteAll(values.iterator());
-    }
-
-    @Nonnull
-    @Override
     public JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> values)
     {
         JImmutableMap<T, Boolean> newMap = map;
@@ -202,13 +165,6 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Cursor<? extends T> values)
-    {
-        return union(values.iterator());
-    }
-
-    @Nonnull
-    @Override
     public JImmutableSet<T> union(@Nonnull Iterator<? extends T> values)
     {
         JImmutableMap<T, Boolean> newMap = map;
@@ -226,13 +182,6 @@ public abstract class AbstractJImmutableSet<T>
     public JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return intersection(other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull Cursor<? extends T> values)
-    {
-        return intersection(values.iterator());
     }
 
     @Nonnull
@@ -282,7 +231,7 @@ public abstract class AbstractJImmutableSet<T>
             return deleteAll();
         } else {
             JImmutableMap<T, Boolean> newMap = map;
-            for (T value : map.keysCursor()) {
+            for (T value : map.keys()) {
                 if (!other.contains(value)) {
                     newMap = newMap.delete(value);
                 }
@@ -310,13 +259,6 @@ public abstract class AbstractJImmutableSet<T>
         return SetAdaptor.of(this);
     }
 
-    @Override
-    @Nonnull
-    public Cursor<T> cursor()
-    {
-        return map.keysCursor();
-    }
-
     @Nonnull
     @Override
     public SplitableIterator<T> iterator()
@@ -333,7 +275,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(cursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
@@ -355,7 +297,7 @@ public abstract class AbstractJImmutableSet<T>
     @Override
     public String toString()
     {
-        return Cursors.makeString(cursor());
+        return IteratorHelper.iteratorToString(iterator());
     }
 
     @Override
@@ -367,7 +309,7 @@ public abstract class AbstractJImmutableSet<T>
     protected void checkSetInvariants()
     {
         map.checkInvariants();
-        for (JImmutableMap.Entry<T, Boolean> entry : map.cursor()) {
+        for (JImmutableMap.Entry<T, Boolean> entry : map) {
             if (!entry.getValue()) {
                 throw new RuntimeException();
             }

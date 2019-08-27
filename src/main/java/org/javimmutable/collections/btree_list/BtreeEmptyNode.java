@@ -35,10 +35,8 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
@@ -142,13 +140,6 @@ class BtreeEmptyNode<T>
     @Override
     public void checkInvariants(boolean atRoot)
     {
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of();
     }
 
     @Nonnull

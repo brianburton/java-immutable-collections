@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -157,13 +156,6 @@ public class SingleBranchTrieNode<T>
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return child.iterator();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return child.cursor();
     }
 
     @Override

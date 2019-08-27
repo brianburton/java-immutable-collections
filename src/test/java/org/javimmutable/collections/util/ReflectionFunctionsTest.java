@@ -70,19 +70,19 @@ public class ReflectionFunctionsTest
     {
         JImmutableList<CallMe> objects = JImmutables.list(new CallMe("a"), new CallMe("bb"), new CallMe("ccc"));
         Func1<CallMe, String> f1 = ReflectionFunctions.method("method0", CallMe.class);
-        assertEquals(JImmutables.<String>list("a:method0", "bb:method0", "ccc:method0"), Functions.collectAll(objects.cursor(), JImmutables.<String>list(), f1));
+        assertEquals(JImmutables.list("a:method0", "bb:method0", "ccc:method0"), Functions.collectAll(objects.iterator(), JImmutables.list(), f1));
 
         Func2<Byte, CallMe, String> f2 = ReflectionFunctions.method("method1", byte.class, CallMe.class);
         Func1<CallMe, String> curried = Curry.of(f2, (byte)8);
-        assertEquals(JImmutables.<String>list("a:8", "bb:8", "ccc:8"), Functions.collectAll(objects.cursor(), JImmutables.<String>list(), curried));
+        assertEquals(JImmutables.list("a:8", "bb:8", "ccc:8"), Functions.collectAll(objects.iterator(), JImmutables.list(), curried));
 
         Func3<Byte, Short, CallMe, String> f3 = ReflectionFunctions.method("method2", byte.class, short.class, CallMe.class);
         curried = Curry.of(f3, (byte)8, (short)-40);
-        assertEquals(JImmutables.<String>list("a:8:-40", "bb:8:-40", "ccc:8:-40"), Functions.collectAll(objects.cursor(), JImmutables.<String>list(), curried));
+        assertEquals(JImmutables.list("a:8:-40", "bb:8:-40", "ccc:8:-40"), Functions.collectAll(objects.iterator(), JImmutables.list(), curried));
 
         Func4<Byte, Short, Integer, CallMe, String> f4 = ReflectionFunctions.method("method3", byte.class, short.class, int.class, CallMe.class);
         curried = Curry.of(f4, (byte)8, (short)-40, 876);
-        assertEquals(JImmutables.<String>list("a:8:-40:876", "bb:8:-40:876", "ccc:8:-40:876"), Functions.collectAll(objects.cursor(), JImmutables.<String>list(), curried));
+        assertEquals(JImmutables.list("a:8:-40:876", "bb:8:-40:876", "ccc:8:-40:876"), Functions.collectAll(objects.iterator(), JImmutables.list(), curried));
     }
 
     public void testStatic()
@@ -117,20 +117,20 @@ public class ReflectionFunctionsTest
 
         public String method1(byte b)
         {
-            return prefix + ":" + String.valueOf(b);
+            return prefix + ":" + b;
         }
 
         public String method2(byte b,
                               short s)
         {
-            return prefix + ":" + String.valueOf(b) + ":" + String.valueOf(s);
+            return prefix + ":" + b + ":" + s;
         }
 
         public String method3(byte b,
                               short s,
                               int i)
         {
-            return prefix + ":" + String.valueOf(b) + ":" + String.valueOf(s) + ":" + String.valueOf(i);
+            return prefix + ":" + b + ":" + s + ":" + i;
         }
 
         public String method4(byte b,
@@ -138,7 +138,7 @@ public class ReflectionFunctionsTest
                               int i,
                               long n)
         {
-            return prefix + ":" + String.valueOf(b) + ":" + String.valueOf(s) + ":" + String.valueOf(i) + ":" + String.valueOf(n);
+            return prefix + ":" + b + ":" + s + ":" + i + ":" + n;
         }
     }
 
@@ -155,14 +155,14 @@ public class ReflectionFunctionsTest
     public static String staticMethod2(byte b,
                                        short s)
     {
-        return String.valueOf(b) + ":" + String.valueOf(s);
+        return b + ":" + s;
     }
 
     public static String staticMethod3(byte b,
                                        short s,
                                        int i)
     {
-        return String.valueOf(b) + ":" + String.valueOf(s) + ":" + String.valueOf(i);
+        return b + ":" + s + ":" + i;
     }
 
     public static String staticMethod4(byte b,
@@ -170,6 +170,6 @@ public class ReflectionFunctionsTest
                                        int i,
                                        long n)
     {
-        return String.valueOf(b) + ":" + String.valueOf(s) + ":" + String.valueOf(i) + ":" + String.valueOf(n);
+        return b + ":" + s + ":" + i + ":" + n;
     }
 }

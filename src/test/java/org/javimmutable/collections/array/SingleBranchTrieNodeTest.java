@@ -39,7 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.Collections;
 
@@ -68,8 +68,7 @@ public class SingleBranchTrieNodeTest
         assertEquals("value", node.getValueOr(20, 30 << 20, null));
         assertEquals(Holders.<String>of(), node.find(20, 31 << 20));
         assertEquals(Holders.of("value"), node.find(20, 30 << 20));
-        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.cursor());
-        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.iterator());
+        StandardIteratorTests.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.iterator());
 
         MutableDelta delta = new MutableDelta();
         assertSame(node, node.assign(20, 30 << 20, "value", delta));

@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -44,7 +43,6 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
@@ -164,13 +162,6 @@ public class JImmutableInsertOrderMap<K, V>
     public JImmutableInsertOrderMap<K, V> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<Entry<K, V>> cursor()
-    {
-        return TransformCursor.of(sortedNodes.cursor(), e -> e.getValue());
     }
 
     @Nonnull

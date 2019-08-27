@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
@@ -168,13 +167,6 @@ public class JImmutableTrieArray<T>
     public JImmutableTrieArray<T> deleteAll()
     {
         return of();
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return root.cursor();
     }
 
     @Nonnull

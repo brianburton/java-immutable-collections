@@ -37,7 +37,6 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -85,11 +84,11 @@ public class JImmutableListStressTester
         int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             assert expected.size() == list.size();
             System.out.printf("growing %d%n", list.size());
             while (expected.size() < step.growthSize()) {
-                switch (random.nextInt(19)) {
+                switch (random.nextInt(17)) {
                     case 0: { //insert(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         list = list.insert(value);
@@ -126,79 +125,67 @@ public class JImmutableListStressTester
                         expected.addAll(values);
                         break;
                     }
-                    case 6: { //insertAll(Cursor)
-                        List<String> values = makeInsertList(tokens, random);
-                        list = list.insertAll(IterableCursor.of(values));
-                        expected.addAll(values);
-                        break;
-                    }
-                    case 7: { //insertAll(Iterator)
+                    case 6: { //insertAll(Iterator)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAll(values.iterator());
                         expected.addAll(values);
                         break;
                     }
-                    case 8: { //insertAll(jlist)
+                    case 7: { //insertAll(jlist)
                         List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAll(listIterable(list, values));
                         expected.addAll(values);
                         break;
                     }
-                    case 9: { //insertAll(Collection)
+                    case 8: { //insertAll(Collection)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAll(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 10: { //insertAllLast(Iterable)
+                    case 9: { //insertAllLast(Iterable)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllLast(plainIterable(values));
                         expected.addAll(values);
                         break;
                     }
-                    case 11: { //insertAllLast(jlist)
+                    case 10: { //insertAllLast(jlist)
                         List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAllLast(listIterable(list, values));
                         expected.addAll(values);
                         break;
                     }
-                    case 12: { //insertAllLast(Collection)
+                    case 11: { //insertAllLast(Collection)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllLast(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 13: { //insertAllFirst(Iterable)
+                    case 12: { //insertAllFirst(Iterable)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllFirst(plainIterable(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 14: { //insertAllFirst(Cursor)
-                        List<String> values = makeInsertList(tokens, random);
-                        list = list.insertAllFirst(IterableCursor.of(values));
-                        expected.addAll(0, values);
-                        break;
-                    }
-                    case 15: { //insertAllFirst(Iterator)
+                    case 13: { //insertAllFirst(Iterator)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllFirst(values.iterator());
                         expected.addAll(0, values);
                         break;
                     }
-                    case 16: { //insertAllFirst(Indexed and Iterable)
+                    case 14: { //insertAllFirst(Indexed and Iterable)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllFirst(IndexedList.retained(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 17: { //insertAllFirst(jlist)
+                    case 15: { //insertAllFirst(jlist)
                         List<String> values = makeInsertList(tokens, random, 64);
                         list = list.insertAllFirst(listIterable(list, values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 18: { //insertAllFirst(Collection)
+                    case 16: { //insertAllFirst(Collection)
                         List<String> values = makeInsertList(tokens, random);
                         list = list.insertAllFirst(values);
                         expected.addAll(0, values);
@@ -283,7 +270,7 @@ public class JImmutableListStressTester
                         throw new RuntimeException();
                 }
             }
-            verifyCursor(list, expected);
+            verifyIterator(list, expected);
         }
         verifyFinalSize(size, list.size());
         System.out.printf("cleanup %d%n", expected.size());

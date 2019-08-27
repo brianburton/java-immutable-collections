@@ -39,7 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,6 +134,6 @@ public class ListCollisionMapTest
         expected.add(single(10, 100));
         expected.add(single(18, 180));
         expected.add(single(-6, -60));
-        StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
+        StandardIteratorTests.listIteratorTest(expected, transforms.iterator(value));
     }
 }

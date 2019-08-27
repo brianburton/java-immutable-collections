@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -51,11 +50,11 @@ import java.util.TreeSet;
  * always the maxSize and the final growthSize is always somewhat larger.
  * Sizes are monotonically increasing.
  */
-public class SizeStepCursor
+public class SizeStepListFactory
 {
-    public static Cursor<Step> steps(int numSteps,
-                                     int maxSize,
-                                     Random r)
+    public static Iterable<Step> steps(int numSteps,
+                                       int maxSize,
+                                       Random r)
     {
         JImmutableList<Step> steps;
         if (maxSize == 1) {
@@ -73,7 +72,7 @@ public class SizeStepCursor
         } else {
             steps = randomSteps(numSteps, maxSize, r);
         }
-        return steps.cursor();
+        return steps;
     }
 
     private static JImmutableList<Step> randomSteps(int numSteps,
@@ -82,7 +81,7 @@ public class SizeStepCursor
     {
         final int extra = Math.max(1, maxSize / (numSteps * 3));
         final int numSizes = 2 * (numSteps - 1);
-        final Set<Integer> sizes = new TreeSet<Integer>();
+        final Set<Integer> sizes = new TreeSet<>();
         while (sizes.size() < numSizes) {
             sizes.add(1 + r.nextInt(maxSize - extra));
         }

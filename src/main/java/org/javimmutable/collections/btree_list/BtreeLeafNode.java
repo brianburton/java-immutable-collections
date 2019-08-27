@@ -35,12 +35,10 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.IndexedIterator;
@@ -154,13 +152,6 @@ class BtreeLeafNode<T>
         if (values.length < MIN_CHILDREN && !isRoot) {
             throw new IllegalStateException();
         }
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return StandardCursor.of(IndexedArray.retained(values));
     }
 
     @Nonnull

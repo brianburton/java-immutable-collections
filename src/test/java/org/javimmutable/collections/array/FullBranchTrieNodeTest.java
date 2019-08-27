@@ -39,8 +39,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,8 +116,6 @@ public class FullBranchTrieNodeTest
             list.add(String.valueOf(-i));
             entryList.add(MapEntry.of(i, String.valueOf(-i)));
         }
-        StandardCursorTest.listCursorTest(entryList, node.cursor());
-        StandardCursorTest.listIteratorTest(entryList, node.iterator());
+        StandardIteratorTests.listIteratorTest(entryList, node.iterator());
     }
-
 }

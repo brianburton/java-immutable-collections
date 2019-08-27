@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
@@ -48,8 +47,7 @@ import java.util.Iterator;
  * to the head and tail of the list but allow updates at any index within the list.
  */
 interface Node<T>
-    extends Cursorable<T>,
-            SplitableIterable<T>,
+    extends SplitableIterable<T>,
             Indexed<T>,
             InvariantCheckable
 {

@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -47,8 +46,7 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 
 public interface Node<K, V>
-    extends Cursorable<JImmutableMap.Entry<K, V>>,
-            SplitableIterable<JImmutableMap.Entry<K, V>>
+    extends SplitableIterable<JImmutableMap.Entry<K, V>>
 {
     int MIN_CHILDREN = 16;
     int MAX_CHILDREN = 2 * MIN_CHILDREN;

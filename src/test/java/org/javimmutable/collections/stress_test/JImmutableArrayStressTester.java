@@ -43,7 +43,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.util.JImmutables;
 
 import java.util.List;
@@ -90,7 +90,7 @@ public class JImmutableArrayStressTester
         JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d to %s%n", array.size(), step.growthSize());
             while (expected.size() < step.growthSize()) {
                 int index = unusedIndex(expected, random);
@@ -200,7 +200,7 @@ public class JImmutableArrayStressTester
                         throw new RuntimeException();
                 }
             }
-            verifyCursor(array, expected);
+            verifyIteration(array, expected);
         }
         verifyFinalSize(size, array.size());
         System.out.printf("cleanup %d%n", array.size());
@@ -249,17 +249,17 @@ public class JImmutableArrayStressTester
         verifySerializable(null, array);
     }
 
-    private void verifyCursor(JImmutableArray<String> array,
-                              Map<Integer, String> expected)
+    private void verifyIteration(JImmutableArray<String> array,
+                                 Map<Integer, String> expected)
     {
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
         final List<JImmutableMap.Entry<Integer, String>> entries = makeEntriesList(expected);
 
-        StandardCursorTest.listCursorTest(indices, array.keysCursor());
-        StandardCursorTest.listCursorTest(values, array.valuesCursor());
-        StandardCursorTest.listCursorTest(entries, array.cursor());
+        StandardIteratorTests.listIteratorTest(indices, array.keys().iterator());
+        StandardIteratorTests.listIteratorTest(values, array.values().iterator());
+        StandardIteratorTests.listIteratorTest(entries, array.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(indices, array.keys());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(values, array.values());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);

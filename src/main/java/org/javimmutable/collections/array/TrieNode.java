@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
@@ -46,8 +45,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public abstract class TrieNode<T>
-    implements Cursorable<JImmutableMap.Entry<Integer, T>>,
-               SplitableIterable<JImmutableMap.Entry<Integer, T>>,
+    implements SplitableIterable<JImmutableMap.Entry<Integer, T>>,
                InvariantCheckable
 {
     public static final int ROOT_SHIFT = 30;

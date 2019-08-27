@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Tuple2;
 
@@ -43,8 +42,7 @@ import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 interface BtreeNode<T>
-    extends Cursorable<T>,
-            SplitableIterable<T>
+    extends SplitableIterable<T>
 {
     int MIN_CHILDREN = 9;
     int MAX_CHILDREN = 2 * MIN_CHILDREN;
@@ -76,7 +74,7 @@ interface BtreeNode<T>
     BtreeInsertResult<T> insertNode(int addWhenZero,
                                     boolean atEnd,
                                     @Nonnull BtreeNode<T> node);
-    
+
     @Nonnull
     BtreeNode<T> delete(int index);
 

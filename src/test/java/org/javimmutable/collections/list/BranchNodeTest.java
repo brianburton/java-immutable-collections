@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,27 +54,27 @@ public class BranchNodeTest
         // deleting from prefix
         Node<Integer> changed = node.deleteFirst();
         assertEquals(35, changed.size());
-        StandardCursorTest.listCursorTest(values(2, 36), changed.cursor());
+        StandardIteratorTests.listIteratorTest(values(2, 36), changed.iterator());
 
         changed = changed.deleteFirst();
         assertEquals(34, changed.size());
-        StandardCursorTest.listCursorTest(values(3, 36), changed.cursor());
+        StandardIteratorTests.listIteratorTest(values(3, 36), changed.iterator());
 
         // deleting from body nodes
         for (int i = 1; i <= 32; ++i) {
             changed = changed.deleteFirst();
             assertEquals(34 - i, changed.size());
-            StandardCursorTest.listCursorTest(values(3 + i, 36), changed.cursor());
+            StandardIteratorTests.listIteratorTest(values(3 + i, 36), changed.iterator());
         }
 
         // deleting from suffix
         changed = changed.deleteFirst();
         assertEquals(1, changed.size());
-        StandardCursorTest.listCursorTest(Collections.singletonList(36), changed.cursor());
+        StandardIteratorTests.listIteratorTest(Collections.singletonList(36), changed.iterator());
 
         changed = changed.deleteFirst();
         assertEquals(0, changed.size());
-        StandardCursorTest.listCursorTest(Collections.emptyList(), changed.cursor());
+        StandardIteratorTests.listIteratorTest(Collections.emptyList(), changed.iterator());
 
         try {
             changed.deleteFirst();
@@ -93,31 +93,31 @@ public class BranchNodeTest
         // deleting from suffix
         Node<Integer> changed = node.deleteLast();
         assertEquals(35, changed.size());
-        StandardCursorTest.listCursorTest(values(1, 35), changed.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 35), changed.iterator());
         changed.checkInvariants();
 
         changed = changed.deleteLast();
         assertEquals(34, changed.size());
-        StandardCursorTest.listCursorTest(values(1, 34), changed.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 34), changed.iterator());
         changed.checkInvariants();
 
         // deleting from body nodes
         for (int i = 1; i <= 32; ++i) {
             changed = changed.deleteLast();
             assertEquals(34 - i, changed.size());
-            StandardCursorTest.listCursorTest(values(1, 34 - i), changed.cursor());
+            StandardIteratorTests.listIteratorTest(values(1, 34 - i), changed.iterator());
             changed.checkInvariants();
         }
 
         // deleting from prefix
         changed = changed.deleteLast();
         assertEquals(1, changed.size());
-        StandardCursorTest.listCursorTest(Collections.singletonList(1), changed.cursor());
+        StandardIteratorTests.listIteratorTest(Collections.singletonList(1), changed.iterator());
         changed.checkInvariants();
 
         changed = changed.deleteLast();
         assertEquals(0, changed.size());
-        StandardCursorTest.listCursorTest(Collections.emptyList(), changed.cursor());
+        StandardIteratorTests.listIteratorTest(Collections.emptyList(), changed.iterator());
         changed.checkInvariants();
 
         try {
@@ -140,14 +140,14 @@ public class BranchNodeTest
             assertEquals(i, node.size());
             assertEquals(2, node.getDepth());
         }
-        StandardCursorTest.listCursorTest(values(1024, 1), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1024, 1), node.iterator());
 
         // node is full so adding one more increases depth
         node = node.insertFirst(1025);
         node.checkInvariants();
         assertEquals(1025, node.size());
         assertEquals(3, node.getDepth());
-        StandardCursorTest.listCursorTest(values(1025, 1), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1025, 1), node.iterator());
 
         // fill up the node
         for (int i = 1026; i <= 32768; ++i) {
@@ -156,14 +156,14 @@ public class BranchNodeTest
             assertEquals(i, node.size());
             assertEquals(3, node.getDepth());
         }
-        StandardCursorTest.listCursorTest(values(32768, 1), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(32768, 1), node.iterator());
 
         // node is full so adding one more increases depth
         node = node.insertFirst(32769);
         node.checkInvariants();
         assertEquals(32769, node.size());
         assertEquals(4, node.getDepth());
-        StandardCursorTest.listCursorTest(values(32769, 1), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(32769, 1), node.iterator());
 
         // test get()
         for (int i = 1; i <= 32769; ++i) {
@@ -183,14 +183,14 @@ public class BranchNodeTest
             assertEquals(i, node.size());
             assertEquals(2, node.getDepth());
         }
-        StandardCursorTest.listCursorTest(values(1, 1024), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 1024), node.iterator());
 
         // node is full so adding one more increases depth
         node = node.insertLast(1025);
         node.checkInvariants();
         assertEquals(1025, node.size());
         assertEquals(3, node.getDepth());
-        StandardCursorTest.listCursorTest(values(1, 1025), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 1025), node.iterator());
 
         // fill up the node
         for (int i = 1026; i <= 32768; ++i) {
@@ -199,14 +199,14 @@ public class BranchNodeTest
             assertEquals(i, node.size());
             assertEquals(3, node.getDepth());
         }
-        StandardCursorTest.listCursorTest(values(1, 32768), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 32768), node.iterator());
 
         // node is full so adding one more increases depth
         node = node.insertLast(32769);
         node.checkInvariants();
         assertEquals(32769, node.size());
         assertEquals(4, node.getDepth());
-        StandardCursorTest.listCursorTest(values(1, 32769), node.cursor());
+        StandardIteratorTests.listIteratorTest(values(1, 32769), node.iterator());
 
         try {
             node.assign(-1, 0);

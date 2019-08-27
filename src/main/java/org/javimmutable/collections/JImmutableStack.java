@@ -48,7 +48,6 @@ import java.util.List;
 public interface JImmutableStack<T>
     extends Insertable<T, JImmutableStack<T>>,
             Sequence<T>,
-            Cursorable<T>,
             IterableStreamable<T>,
             InvariantCheckable
 {

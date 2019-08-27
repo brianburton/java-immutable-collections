@@ -41,9 +41,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.cursors.StandardCursorTest;
-import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableArrayList;
 
 import java.util.Arrays;
@@ -114,11 +112,9 @@ public abstract class AbstractJImmutableListMapTestCase
         final List<Integer> insertValuesList = asList(300, 7, 7, 14);
         assertEquals(map, preInsertMap.insertAll(3, insertValuesList));
         assertEquals(map, preInsertMap.insertAll(3, insertValuesList.iterator()));
-        assertEquals(map, preInsertMap.insertAll(3, StandardCursor.of(IndexedList.retained(insertValuesList))));
 
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1)));
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
-        assertEquals(map.delete(1).delete(3), map.deleteAll(StandardCursor.of(IndexedList.retained(asList(3, 1)))));
 
         final JImmutableList<Integer> defaultValue = JImmutableArrayList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
@@ -130,10 +126,10 @@ public abstract class AbstractJImmutableListMapTestCase
         assertTrue(map.deleteAll().isEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
-        StandardCursorTest.listCursorTest(Arrays.asList(100, 18, 87), map.valuesCursor(1));
-        StandardCursorTest.listCursorTest(Arrays.asList(87), map.valuesCursor(2));
-        StandardCursorTest.listCursorTest(Arrays.asList(300, 7, 7, 14), map.valuesCursor(3));
-        StandardCursorTest.listCursorTest(Collections.emptyList(), map.valuesCursor(4));
+        StandardIteratorTests.listIteratorTest(Arrays.asList(100, 18, 87), map.values(1).iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(300, 7, 7, 14), map.values(3).iterator());
+        StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
 
         verifyTransform(map);
         verifyCollector(map.insert(-10, -20).insert(-45, 90), ordering);

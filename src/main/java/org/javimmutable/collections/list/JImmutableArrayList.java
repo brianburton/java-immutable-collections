@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
@@ -180,13 +179,6 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableArrayList<T> insertAll(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllLast(values);
-    }
-
-    @Nonnull
-    @Override
     public JImmutableArrayList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return insertAllLast(values);
@@ -223,13 +215,6 @@ public class JImmutableArrayList<T>
 
     @Nonnull
     @Override
-    public JImmutableArrayList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllFirst(values.iterator());
-    }
-
-    @Nonnull
-    @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
         InsertableSequence<T> seq = EmptySequenceNode.of();
@@ -251,13 +236,6 @@ public class JImmutableArrayList<T>
                 return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
             }
         }
-        return insertAllLast(values.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableArrayList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
-    {
         return insertAllLast(values.iterator());
     }
 
@@ -332,13 +310,6 @@ public class JImmutableArrayList<T>
     public List<T> getList()
     {
         return ListAdaptor.of(this);
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return root.cursor();
     }
 
     @Override

@@ -80,7 +80,7 @@ public class JImmutableRandomAccessListStressTester
 
         System.out.printf("JImmutableRandomAccessListStressTest on %s of size %d%n", getName(ralist), size);
 
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d%n", ralist.size());
 
             while (expected.size() < step.growthSize()) {
@@ -92,7 +92,7 @@ public class JImmutableRandomAccessListStressTester
                         expected.add(index, value);
                         break;
                     }
-                    case 1: { //insertAll(int, Cursorable);
+                    case 1: { //insertAll(int, Iterable);
                         List<String> values = makeInsertList(tokens, random);
                         ralist = ralist.insertAll(index, plainIterable(values));
                         expected.addAll(index, values);
@@ -123,7 +123,7 @@ public class JImmutableRandomAccessListStressTester
                 expected.remove(index);
             }
             verifyContents(ralist, expected);
-            verifyCursor(ralist, expected);
+            verifyIterator(ralist, expected);
         }
         verifyFinalSize(size, ralist.size());
         System.out.printf("cleanup %d%n", expected.size());

@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.btree_list;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
@@ -226,13 +225,6 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableBtreeList<T> insertAll(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAllLast(values);
-    }
-
-    @Nonnull
-    @Override
     public JImmutableBtreeList<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return insertAllLast(values);
@@ -242,14 +234,6 @@ public class JImmutableBtreeList<T>
     @Override
     public JImmutableBtreeList<T> insertAll(int index,
                                             @Nonnull Iterable<? extends T> values)
-    {
-        return insertAll(index, values.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAll(int index,
-                                            @Nonnull Cursor<? extends T> values)
     {
         return insertAll(index, values.iterator());
     }
@@ -306,14 +290,6 @@ public class JImmutableBtreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableBtreeList<T> insertAllFirst(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAll(0, values.iterator());
-
-    }
-
-    @Nonnull
-    @Override
     public JImmutableBtreeList<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
         return insertAll(0, values);
@@ -329,13 +305,6 @@ public class JImmutableBtreeList<T>
         } else {
             return insertAll(size(), values.iterator());
         }
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableBtreeList<T> insertAllLast(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAll(size(), values.iterator());
     }
 
     @Nonnull
@@ -426,13 +395,6 @@ public class JImmutableBtreeList<T>
     public List<T> getList()
     {
         return new ListAdaptor<>(this);
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> cursor()
-    {
-        return root.cursor();
     }
 
     @Override
