@@ -1,9 +1,6 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -408,6 +405,7 @@ class BranchNode<T>
         private IteratorState(@Nullable GenericIterator.State<T> parent,
                               int limit)
         {
+            assert limit <= right.size();
             this.parent = parent;
             this.limit = limit;
         }

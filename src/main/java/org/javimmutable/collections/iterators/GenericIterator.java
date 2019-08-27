@@ -106,7 +106,11 @@ public class GenericIterator<T>
         @Override
         public State<T> advance()
         {
-            return parent.advance();
+            if (parent != null) {
+                return parent.advance();
+            } else {
+                return null;
+            }
         }
     }
 
