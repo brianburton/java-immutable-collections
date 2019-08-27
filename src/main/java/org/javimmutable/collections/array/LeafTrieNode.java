@@ -72,6 +72,12 @@ public class LeafTrieNode<T>
     }
 
     @Override
+    public int valueCount()
+    {
+        return 1;
+    }
+
+    @Override
     public boolean isEmpty()
     {
         return false;

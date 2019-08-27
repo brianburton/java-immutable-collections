@@ -51,13 +51,16 @@ public class FullBranchTrieNode<T>
     extends TrieNode<T>
 {
     private final int shift;
+    private final int valueCount;
     private final TrieNode<T>[] entries;
 
     FullBranchTrieNode(int shift,
+                       int valueCount,
                        TrieNode<T>[] entries)
     {
         assert shift != ROOT_SHIFT;
         this.shift = shift;
+        this.valueCount = valueCount;
         this.entries = entries;
     }
 
@@ -70,7 +73,13 @@ public class FullBranchTrieNode<T>
         for (int i = 0; i < 32; ++i) {
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
         }
-        return new FullBranchTrieNode<>(0, entries);
+        return new FullBranchTrieNode<>(0, computeValueCount(entries), entries);
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return valueCount;
     }
 
     @Override
@@ -155,6 +164,9 @@ public class FullBranchTrieNode<T>
         if (entries.length != 32) {
             throw new IllegalStateException("unexpected entries size: expected=32 actual=" + entries.length);
         }
+        if (valueCount != computeValueCount(entries)) {
+            throw new IllegalStateException("unexpected valueCount: expected=" + valueCount + " actual=" + computeValueCount(entries));
+        }
         for (TrieNode<T> entry : entries) {
             entry.checkInvariants();
         }
@@ -165,9 +177,10 @@ public class FullBranchTrieNode<T>
                                              TrieNode<T> newChild)
     {
         assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
+        final int newValueCount = valueCount - entries[childIndex].valueCount() + newChild.valueCount();
         TrieNode<T>[] newEntries = entries.clone();
         newEntries[childIndex] = newChild;
-        return new FullBranchTrieNode<>(shift, newEntries);
+        return new FullBranchTrieNode<>(shift, newValueCount, newEntries);
     }
 
     private TrieNode<T> createDeleteResultNode(int shift,
@@ -178,7 +191,8 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else if (newChild.isEmpty()) {
-            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
+            final int newValueCount = valueCount - child.valueCount() + newChild.valueCount();
+            return MultiBranchTrieNode.fullWithout(shift, newValueCount, entries, childIndex);
         } else {
             return createUpdatedEntries(shift, childIndex, newChild);
         }

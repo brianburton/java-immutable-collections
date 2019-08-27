@@ -50,6 +50,8 @@ public abstract class TrieNode<T>
 {
     public static final int ROOT_SHIFT = 30;
 
+    public abstract int valueCount();
+    
     public abstract boolean isEmpty();
 
     public abstract T getValueOr(int shift,
@@ -86,6 +88,15 @@ public abstract class TrieNode<T>
             node = SingleBranchTrieNode.forBranchIndex(nodeShift, 0, node);
         }
         return node;
+    }
+
+    public static int computeValueCount(TrieNode<?>[] nodes)
+    {
+        int answer = 0;
+        for (TrieNode<?> node : nodes) {
+            answer += node.valueCount();
+        }
+        return answer;
     }
 
     public static <T> TrieNode<T> of()

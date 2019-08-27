@@ -123,7 +123,8 @@ public class MultiBranchTrieNodeTest
                 }
             }
             final int bitmask = ~(1 << without);
-            final MultiBranchTrieNode<String> node = MultiBranchTrieNode.fullWithout(10, full, without);
+            final int valueCount = TrieNode.computeValueCount(full) - full[without].valueCount();
+            final MultiBranchTrieNode<String> node = MultiBranchTrieNode.fullWithout(10, valueCount, full, without);
             assertEquals(10, node.getShift());
             assertEquals(bitmask, node.getBitmask());
             assertTrue(Arrays.equals(entries, node.getEntries()));

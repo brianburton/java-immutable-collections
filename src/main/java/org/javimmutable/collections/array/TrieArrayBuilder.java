@@ -84,7 +84,7 @@ class TrieArrayBuilder<T>
         private void push()
         {
             assert offset == 32;
-            TrieNode<T> branch = new FullBranchTrieNode<>(0, leaves.clone());
+            TrieNode<T> branch = new FullBranchTrieNode<>(0, TrieNode.computeValueCount(leaves), leaves.clone());
             if (next == null) {
                 next = new BranchBuilder<>(5);
             }
@@ -126,7 +126,7 @@ class TrieArrayBuilder<T>
         private void push()
         {
             assert offset == 32;
-            TrieNode<T> branch = new FullBranchTrieNode<>(shift, nodes.clone());
+            TrieNode<T> branch = new FullBranchTrieNode<>(shift, TrieNode.computeValueCount(nodes), nodes.clone());
             if (next == null) {
                 next = new BranchBuilder<>(shift + 5);
             }
@@ -162,7 +162,7 @@ class TrieArrayBuilder<T>
                 branch = SingleBranchTrieNode.forBranchIndex(shift, 0, nodes[0]);
                 break;
             case 32:
-                branch = new FullBranchTrieNode<>(shift, nodes.clone());
+                branch = new FullBranchTrieNode<>(shift, TrieNode.computeValueCount(nodes), nodes.clone());
                 break;
             default:
                 branch = MultiBranchTrieNode.forEntries(shift, nodes, length);

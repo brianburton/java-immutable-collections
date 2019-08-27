@@ -58,6 +58,12 @@ public class EmptyTrieNode<T>
     }
 
     @Override
+    public int valueCount()
+    {
+        return 0;
+    }
+
+    @Override
     public boolean isEmpty()
     {
         return true;

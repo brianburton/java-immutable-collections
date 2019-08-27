@@ -78,6 +78,12 @@ public class SingleBranchTrieNode<T>
     }
 
     @Override
+    public int valueCount()
+    {
+        return child.valueCount();
+    }
+
+    @Override
     public boolean isEmpty()
     {
         return false;

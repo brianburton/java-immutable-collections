@@ -53,16 +53,19 @@ public class MultiBranchTrieNode<T>
 {
     private final int shift;
     private final int bitmask;
+    private final int valueCount;
     @Nonnull
     private final TrieNode<T>[] entries;
 
     private MultiBranchTrieNode(int shift,
                                 int bitmask,
+                                int valueCount,
                                 @Nonnull TrieNode<T>[] entries)
     {
         assert shift >= 0;
         this.shift = shift;
         this.bitmask = bitmask;
+        this.valueCount = valueCount;
         this.entries = entries;
     }
 
@@ -70,7 +73,7 @@ public class MultiBranchTrieNode<T>
     static <T> MultiBranchTrieNode<T> forTesting(int shift)
     {
         TrieNode<T>[] entries = allocate(0);
-        return new MultiBranchTrieNode<>(shift, 0, entries);
+        return new MultiBranchTrieNode<>(shift, 0, computeValueCount(entries), entries);
     }
 
     static <T> MultiBranchTrieNode<T> forIndex(int shift,
@@ -88,7 +91,7 @@ public class MultiBranchTrieNode<T>
         assert (branchIndex >= 0) && (branchIndex < 32);
         TrieNode<T>[] entries = allocate(1);
         entries[0] = child;
-        return new MultiBranchTrieNode<>(shift, 1 << branchIndex, entries);
+        return new MultiBranchTrieNode<>(shift, 1 << branchIndex, child.valueCount(), entries);
     }
 
     static <T> MultiBranchTrieNode<T> forEntries(int shift,
@@ -96,7 +99,7 @@ public class MultiBranchTrieNode<T>
     {
         final int length = entries.length;
         final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
-        return new MultiBranchTrieNode<>(shift, bitmask, entries.clone());
+        return new MultiBranchTrieNode<>(shift, bitmask, computeValueCount(entries), entries.clone());
     }
 
     static <T> MultiBranchTrieNode<T> forEntries(int shift,
@@ -106,7 +109,7 @@ public class MultiBranchTrieNode<T>
         final int bitmask = (length == 32) ? -1 : ((1 << length) - 1);
         final TrieNode<T>[] ourEntries = allocate(length);
         System.arraycopy(entries, 0, ourEntries, 0, length);
-        return new MultiBranchTrieNode<>(shift, bitmask, ourEntries);
+        return new MultiBranchTrieNode<>(shift, bitmask, computeValueCount(ourEntries), ourEntries);
     }
 
     static <T> MultiBranchTrieNode<T> forSource(int index,
@@ -119,10 +122,11 @@ public class MultiBranchTrieNode<T>
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
         }
         final int bitmask = (size == 32) ? -1 : ((1 << size) - 1);
-        return new MultiBranchTrieNode<>(0, bitmask, entries);
+        return new MultiBranchTrieNode<>(0, bitmask, computeValueCount(entries), entries);
     }
 
     static <T> MultiBranchTrieNode<T> fullWithout(int shift,
+                                                  int valueCount,
                                                   @Nonnull TrieNode<T>[] entries,
                                                   int withoutIndex)
     {
@@ -131,7 +135,13 @@ public class MultiBranchTrieNode<T>
         System.arraycopy(entries, 0, newEntries, 0, withoutIndex);
         System.arraycopy(entries, withoutIndex + 1, newEntries, withoutIndex, 31 - withoutIndex);
         final int newMask = ~(1 << withoutIndex);
-        return new MultiBranchTrieNode<>(shift, newMask, newEntries);
+        return new MultiBranchTrieNode<>(shift, newMask, valueCount, newEntries);
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return valueCount;
     }
 
     @Override
@@ -250,6 +260,9 @@ public class MultiBranchTrieNode<T>
         if (entries.length != Integer.bitCount(bitmask)) {
             throw new IllegalStateException("unexpected entries size: expected=" + Integer.bitCount(bitmask) + " actual=" + entries.length);
         }
+        if (valueCount != computeValueCount(entries)) {
+            throw new IllegalStateException("unexpected valueCount: expected=" + valueCount + " actual=" + computeValueCount(entries));
+        }
         for (TrieNode<T> entry : entries) {
             entry.checkInvariants();
         }
@@ -277,10 +290,11 @@ public class MultiBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else {
+            final int newValueCount = valueCount - child.valueCount() + newChild.valueCount();
             assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
             final TrieNode<T>[] newEntries = entries.clone();
             newEntries[childIndex] = newChild;
-            return new MultiBranchTrieNode<>(shift, bitmask, newEntries);
+            return new MultiBranchTrieNode<>(shift, bitmask, newValueCount, newEntries);
         }
     }
 
@@ -291,6 +305,7 @@ public class MultiBranchTrieNode<T>
                                                   TrieNode<T>[] entries,
                                                   TrieNode<T> newChild)
     {
+        final int newValueCount = valueCount + newChild.valueCount();
         final int oldLength = entries.length;
         final TrieNode<T>[] newEntries = allocate(oldLength + 1);
         if (bitmask != 0) {
@@ -299,9 +314,9 @@ public class MultiBranchTrieNode<T>
         }
         newEntries[childIndex] = newChild;
         if (newEntries.length == 32) {
-            return new FullBranchTrieNode<>(shift, newEntries);
+            return new FullBranchTrieNode<>(shift, newValueCount, newEntries);
         } else {
-            return new MultiBranchTrieNode<>(shift, bitmask | bit, newEntries);
+            return new MultiBranchTrieNode<>(shift, bitmask | bit, newValueCount, newEntries);
         }
     }
 
@@ -328,11 +343,12 @@ public class MultiBranchTrieNode<T>
                     }
                 }
                 default: {
+                    final int newValueCount = valueCount - child.valueCount();
                     final int newLength = entries.length - 1;
                     final TrieNode<T>[] newArray = allocate(newLength);
                     System.arraycopy(entries, 0, newArray, 0, childIndex);
                     System.arraycopy(entries, childIndex + 1, newArray, childIndex, newLength - childIndex);
-                    return new MultiBranchTrieNode<>(shift, bitmask & ~bit, newArray);
+                    return new MultiBranchTrieNode<>(shift, bitmask & ~bit, newValueCount, newArray);
                 }
             }
         } else {

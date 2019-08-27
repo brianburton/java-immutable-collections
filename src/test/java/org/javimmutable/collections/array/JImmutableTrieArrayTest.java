@@ -96,14 +96,15 @@ public class JImmutableTrieArrayTest
                 case 1:
                     array = array.assign(index, value);
                     expected.put(index, value);
+                    array.checkInvariants();
                     break;
                 case 2:
                     array = array.delete(index);
                     expected.remove(index);
+                    array.checkInvariants();
                     break;
                 case 3:
                     assertEquals(array.find(index).getValueOrNull(), array.get(index));
-                    array.checkInvariants();
                     break;
             }
         }
