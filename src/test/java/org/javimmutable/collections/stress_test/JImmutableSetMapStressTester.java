@@ -39,7 +39,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
@@ -591,7 +590,7 @@ public class JImmutableSetMapStressTester
                 value = RandomKeyManager.makeValue(tokens, random);
             }
         } else {
-            JImmutableRandomAccessList<String> list = JImmutables.ralist(expectedSet);
+            JImmutableList<String> list = JImmutables.list(expectedSet);
             value = list.get(random.nextInt(list.size()));
         }
         return value;
@@ -602,14 +601,14 @@ public class JImmutableSetMapStressTester
                                                      String key,
                                                      Map<String, JImmutableSet<String>> expected)
     {
-        JImmutableRandomAccessList<String> values;
+        JImmutableList<String> values;
         if (expected.containsKey(key)) {
-            values = JImmutables.ralist(expected.get(key));
+            values = JImmutables.list(expected.get(key));
             for (int i = 0, limit = random.nextInt(3); i < limit && values.size() >= 1; ++i) {
                 values = values.delete(random.nextInt(values.size()));
             }
         } else {
-            values = JImmutables.ralist();
+            values = JImmutables.list();
         }
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             values = values.insert(RandomKeyManager.makeValue(tokens, random));
@@ -625,7 +624,7 @@ public class JImmutableSetMapStressTester
         JImmutableSet<String> values;
         if (expected.containsKey(key)) {
             values = expected.get(key);
-            JImmutableRandomAccessList<String> list = JImmutables.ralist(values);
+            JImmutableList<String> list = JImmutables.list(values);
             for (int i = 0, limit = random.nextInt(3); i < limit && list.size() >= 1; ++i) {
                 int index = random.nextInt(list.size());
                 values = values.delete(list.get(index));

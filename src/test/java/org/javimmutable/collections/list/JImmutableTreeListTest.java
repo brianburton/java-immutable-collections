@@ -5,7 +5,6 @@ import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MutableBuilder;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
@@ -115,7 +114,7 @@ public class JImmutableTreeListTest
 
     public void testInsertIterable()
     {
-        JImmutableRandomAccessList<Integer> list = JImmutableTreeList.of();
+        JImmutableList<Integer> list = JImmutableTreeList.of();
         StandardIteratorTests.emptyIteratorTest(list.iterator());
 
         list = list.insert(Arrays.asList(1, 2, 3));
@@ -495,10 +494,10 @@ public class JImmutableTreeListTest
         return JImmutableTreeList.of(IndexedArray.retained(values));
     }
 
-    private JImmutableRandomAccessList<Integer> range(int first,
-                                                      int last)
+    private JImmutableList<Integer> range(int first,
+                                          int last)
     {
-        return JImmutableTreeList.<Integer>raListBuilder()
+        return JImmutableTreeList.<Integer>listBuilder()
             .add(IndexedIterator.forRange(first, last))
             .build();
     }
@@ -1034,37 +1033,37 @@ public class JImmutableTreeListTest
 
     public void testSelect()
     {
-        JImmutableRandomAccessList<Integer> list = ralist();
+        JImmutableList<Integer> list = list();
         assertSame(list, list.select(x -> false));
         assertSame(list, list.select(x -> true));
 
-        list = ralist(1);
+        list = list(1);
         assertEquals(true, list.select(x -> false).isEmpty());
         assertSame(list, list.select(x -> true));
 
-        list = ralist(1, 2, 3);
-        assertEquals(ralist(1, 3), list.select(x -> x % 2 == 1));
-        assertEquals(ralist(2), list.select(x -> x % 2 == 0));
+        list = list(1, 2, 3);
+        assertEquals(list(1, 3), list.select(x -> x % 2 == 1));
+        assertEquals(list(2), list.select(x -> x % 2 == 0));
     }
 
     public void testReject()
     {
-        JImmutableRandomAccessList<Integer> list = ralist();
+        JImmutableList<Integer> list = list();
         assertSame(list, list.reject(x -> false));
         assertSame(list, list.reject(x -> true));
 
-        list = ralist(1);
+        list = list(1);
         assertSame(list, list.reject(x -> false));
         assertEquals(true, list.reject(x -> true).isEmpty());
 
-        list = ralist(1, 2, 3);
-        assertEquals(ralist(2), list.reject(x -> x % 2 == 1));
-        assertEquals(ralist(1, 3), list.reject(x -> x % 2 == 0));
+        list = list(1, 2, 3);
+        assertEquals(list(2), list.reject(x -> x % 2 == 1));
+        assertEquals(list(1, 3), list.reject(x -> x % 2 == 0));
     }
 
     public void testStreams()
     {
-        JImmutableRandomAccessList<Integer> list = JImmutableTreeList.<Integer>raListBuilder().add(1, 2, 3, 4, 5, 6, 7).build();
+        JImmutableList<Integer> list = JImmutableTreeList.<Integer>listBuilder().add(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 
@@ -1074,44 +1073,44 @@ public class JImmutableTreeListTest
         }
         list = JImmutableTreeList.of(IndexedList.retained(expected));
         assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
-        assertEquals(list, list.stream().collect(JImmutableTreeList.createRAListCollector()));
+        assertEquals(list, list.stream().collect(JImmutableTreeList.createListCollector()));
         assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
-        assertEquals(list, list.parallelStream().collect(JImmutableTreeList.createRAListCollector()));
+        assertEquals(list, list.parallelStream().collect(JImmutableTreeList.createListCollector()));
     }
 
     public void testParallelStreams()
     {
-        final JImmutableRandomAccessList<Integer> original = JImmutableTreeList.of(IndexedList.retained(StandardIteratorTests.makeList(IndexedIterator.forRange(1, 10000))));
-        final JImmutableRandomAccessList<Object> collected = original.stream().parallel().collect(JImmutableTreeList.of().ralistCollector());
+        final JImmutableList<Integer> original = JImmutableTreeList.of(IndexedList.retained(StandardIteratorTests.makeList(IndexedIterator.forRange(1, 10000))));
+        final JImmutableList<Object> collected = original.stream().parallel().collect(JImmutableTreeList.of().listCollector());
         collected.checkInvariants();
         assertEquals(original, collected);
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
-        assertEquals(original, original.stream().parallel().collect(JImmutableTreeList.createRAListCollector()));
+        assertEquals(original, original.stream().parallel().collect(JImmutableTreeList.createListCollector()));
     }
 
     public void testBuilder()
         throws InterruptedException
     {
-        assertSame(JImmutableTreeList.of(), JImmutableTreeList.raListBuilder().build());
+        assertSame(JImmutableTreeList.of(), JImmutableTreeList.listBuilder().build());
 
-        final JImmutableTreeList.RAListBuilder<Integer> builder = JImmutableTreeList.raListBuilder();
+        final JImmutableTreeList.ListBuilder<Integer> builder = JImmutableTreeList.listBuilder();
         final List<Integer> expected = new ArrayList<>();
-        JImmutableRandomAccessList<Integer> manual = JImmutableTreeList.of();
+        JImmutableList<Integer> manual = JImmutableTreeList.of();
         for (int i = 0; i <= 2049; ++i) {
             expected.add(i);
             builder.add(i);
             manual = manual.insertLast(i);
             assertEquals(i + 1, builder.size());
-            JImmutableRandomAccessList<Integer> list = builder.build();
+            JImmutableList<Integer> list = builder.build();
             assertEquals(expected, list.getList());
             list.checkInvariants();
             builder.checkInvariants();
         }
         assertEquals(manual, builder.build());
 
-        Func0<? extends MutableBuilder<Integer, JImmutableRandomAccessList<Integer>>> factory = (Func0<JImmutableTreeList.RAListBuilder<Integer>>)() -> JImmutableTreeList.raListBuilder();
+        Func0<? extends MutableBuilder<Integer, JImmutableList<Integer>>> factory = (Func0<JImmutableTreeList.ListBuilder<Integer>>)() -> JImmutableTreeList.listBuilder();
 
-        Func2<List<Integer>, JImmutableRandomAccessList<Integer>, Boolean> comparator = (list, tree) -> {
+        Func2<List<Integer>, JImmutableList<Integer>, Boolean> comparator = (list, tree) -> {
             tree.checkInvariants();
             for (int i = 0; i < list.size(); ++i) {
                 assertEquals(list.get(i), tree.get(i));
@@ -1120,7 +1119,7 @@ public class JImmutableTreeListTest
         };
 
         StandardMutableBuilderTests.verifyBuilder(expected, factory, comparator);
-        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTreeList.raListBuilder());
+        StandardMutableBuilderTests.verifyThreadSafety(() -> JImmutableTreeList.listBuilder());
     }
 
     public void testStaticBuilderMethod()
@@ -1150,8 +1149,8 @@ public class JImmutableTreeListTest
     public void testRAListSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableRandomAccessList)a).iterator();
-        final JImmutableRandomAccessList<String> empty = JImmutableTreeList.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableList)a).iterator();
+        final JImmutableList<String> empty = JImmutableTreeList.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQFWQwvKORgYmF8yAEEFAEFQ7MC/AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
@@ -1160,7 +1159,7 @@ public class JImmutableTreeListTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQFWQwvKORgYmF8yAIkSBsZEIE4C4uQKAKP4XnfLAAAA");
     }
 
-    private JImmutableRandomAccessList<Integer> ralist(Integer... values)
+    private JImmutableList<Integer> list(Integer... values)
     {
         return JImmutableTreeList.of(IndexedArray.retained(values));
     }

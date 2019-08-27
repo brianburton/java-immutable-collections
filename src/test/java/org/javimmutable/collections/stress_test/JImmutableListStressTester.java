@@ -47,7 +47,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * Test program for all implementations of JImmutableList, including JImmutableRandomAccessList.
+ * Test program for all implementations of JImmutableList.
  * Divided into five sections: growing (adds new values to the beginning or end of the list),
  * updating (changes values at any index in the list), shrinking (removes values from either
  * end of the list), contains (tests methods that search for values in the list), and cleanup

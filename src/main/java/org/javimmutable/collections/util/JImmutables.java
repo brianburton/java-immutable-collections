@@ -42,7 +42,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
@@ -241,104 +240,6 @@ public final class JImmutables
     public static <T> JImmutableList<T> list(@Nonnull Iterable<? extends T> source)
     {
         return JImmutableTreeList.of(source.iterator());
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList<T> ralist()
-    {
-        return JImmutableTreeList.of();
-    }
-
-    /**
-     * Produces a MutableBuilder to efficiently construct a JImmutableRandomAccessList built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList.Builder<T> ralistBuilder()
-    {
-        return JImmutableTreeList.raListBuilder();
-    }
-
-    /**
-     * Collects values into a JImmutableRandomAccessList.
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> ralistCollector()
-    {
-        return JImmutableTreeList.createRAListCollector();
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    @SafeVarargs
-    public static <T> JImmutableRandomAccessList<T> ralist(T... source)
-    {
-        return JImmutableTreeList.of(IndexedArray.retained(source));
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterable<? extends T> source)
-    {
-        return JImmutableTreeList.<T>raListBuilder().add(source.iterator()).build();
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull Iterator<? extends T> source)
-    {
-        return JImmutableTreeList.<T>raListBuilder().add(source).build();
-    }
-
-    /**
-     * Produces an empty JImmutableRandomAccessList containing all of the values in source built atop a balanced binary tree.
-     * <p>
-     * Implementation note: JImmutableList and JImmutableRandomAccessList are implemented using a single class.
-     * There is no advantage to using one over the other.   JImmutableRandomAccessList is deprecated.
-     *
-     * @deprecated will be deleted on or after 2020-01-01
-     */
-    @Nonnull
-    public static <T> JImmutableRandomAccessList<T> ralist(@Nonnull List<? extends T> source)
-    {
-        return JImmutableTreeList.of(IndexedList.retained(source));
     }
 
     /**

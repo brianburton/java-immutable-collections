@@ -40,7 +40,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -87,7 +86,7 @@ public class JImmutableArrayStressTester
         final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
         final Map<Integer, String> expected = new TreeMap<>();
         JImmutableArray<String> array = this.array;
-        JImmutableRandomAccessList<Integer> indexList = JImmutables.ralist();
+        JImmutableList<Integer> indexList = JImmutables.list();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
@@ -265,7 +264,7 @@ public class JImmutableArrayStressTester
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
-    private void verifyIndexList(JImmutableRandomAccessList<Integer> indexList,
+    private void verifyIndexList(JImmutableList<Integer> indexList,
                                  Map<Integer, String> expected)
     {
         int indexListSize = indexList.size();

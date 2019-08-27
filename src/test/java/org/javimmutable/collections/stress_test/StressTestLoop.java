@@ -75,7 +75,6 @@ public class StressTestLoop
     {
         JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
             .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
-            .insert(new JImmutableListStressTester(JImmutables.ralist(), JImmutables.ralistCollector()))
 
             .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, IterationOrder.UNORDERED))
             .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))

@@ -46,7 +46,6 @@ import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
@@ -63,8 +62,8 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.SequenceIterator;
-import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
@@ -208,41 +207,6 @@ public class JImmutablesTest
         }
         JImmutableList<Integer> list = list(input);
         assertEquals(input, list.getList());
-    }
-
-    public void testRandomAccessList()
-    {
-        List<Integer> input = asList(1, 2, 3);
-
-        JImmutableRandomAccessList<Integer> list = ralist(input);
-        assertEquals(input, list.getList());
-        assertEquals(list, ralist(input.iterator()));
-        assertEquals(list, ralist(list));
-        assertEquals(list, ralist(list.iterator()));
-        assertEquals(list, ralist(1, 2, 3));
-        assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
-
-        verifyOrdered(isRalist, asList(), () -> ralist());
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist("a", "b", "c"));
-        verifyOrdered(isRalist, asList("a", "b", "c", "d", "e"), () -> ralist(iterable("a", "b", "c", "d", "e")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist(iterator("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralist(asList("a", "b", "c")));
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> ralistBuilder().add("a", "b", "c").build());
-        verifyOrdered(isRalist, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(ralistCollector()));
-    }
-
-    public void testLargeRandomAccessList()
-    {
-        List<Integer> input = new ArrayList<>();
-        for (int i = 0; i < 2000; ++i) {
-            input.add(i);
-        }
-        JImmutableRandomAccessList<Integer> list = ralist(input);
-        assertEquals(input, list.getList());
-        assertEquals(list, ralist(input.iterator()));
-        assertEquals(list, ralist(list));
-        assertEquals(list, ralist(input.toArray()));
-        assertEquals(list, JImmutables.<Integer>ralistBuilder().add(input).build());
     }
 
     public void testMap()
@@ -508,12 +472,12 @@ public class JImmutablesTest
         assertEquals(asList(10, 20, 30), list.getList());
         assertEquals(asList(10, 20, 45), changed.getList());
 
-        JImmutableRandomAccessList<Integer> ralist = ralist();
+        JImmutableList<Integer> ralist = list();
         ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
         assertEquals(10, ralist.get(0));
         assertEquals(20, ralist.get(1));
         assertEquals(30, ralist.get(2));
-        JImmutableRandomAccessList<Integer> ralist2 = ralist;
+        JImmutableList<Integer> ralist2 = ralist;
         ralist2 = ralist2.delete(1).insert(1, 87);
         assertEquals(10, ralist.get(0));
         assertEquals(20, ralist.get(1));

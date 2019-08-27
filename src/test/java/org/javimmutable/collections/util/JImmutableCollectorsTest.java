@@ -57,7 +57,6 @@ public class JImmutableCollectorsTest
         final Comparator<Integer> comparator = ComparableComparator.of();
         Collections.shuffle(source);
         verifyCollection(source, values -> JImmutables.list(values), () -> JImmutableCollectors.toList());
-        verifyCollection(source, values -> JImmutables.ralist(values), () -> JImmutableCollectors.toRalist());
         verifyCollection(source, values -> JImmutables.array(values), () -> JImmutableCollectors.toArray());
         verifyCollection(source, values -> JImmutables.set(values), () -> JImmutableCollectors.toSet());
         verifyCollection(source, values -> JImmutables.sortedSet(values), () -> JImmutableCollectors.toSortedSet());

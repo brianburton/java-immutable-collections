@@ -4,7 +4,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -23,10 +22,9 @@ import java.util.stream.Collector;
 
 import static org.javimmutable.collections.list.TreeBuilder.*;
 
-@SuppressWarnings("deprecation")
 @Immutable
 public class JImmutableTreeList<T>
-    implements JImmutableRandomAccessList<T>,
+    implements JImmutableList<T>,
                Serializable
 {
     @SuppressWarnings("unchecked")
@@ -74,27 +72,12 @@ public class JImmutableTreeList<T>
     }
 
     @Nonnull
-    public static <T> RAListBuilder<T> raListBuilder()
-    {
-        return new RAListBuilder<>();
-    }
-
-    @Nonnull
     public static <T> Collector<T, ?, JImmutableList<T>> createListCollector()
     {
         return Collector.<T, ListBuilder<T>, JImmutableList<T>>of(() -> new ListBuilder<>(),
                                                                   (b, v) -> b.add(v),
                                                                   (b1, b2) -> b1.combineWith(b2),
                                                                   b -> b.build());
-    }
-
-    @Nonnull
-    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> createRAListCollector()
-    {
-        return Collector.<T, ListBuilder<T>, JImmutableRandomAccessList<T>>of(() -> new ListBuilder<>(),
-                                                                              (b, v) -> b.add(v),
-                                                                              (b1, b2) -> b1.combineWith(b2),
-                                                                              b -> b.build());
     }
 
     @Nonnull
@@ -514,88 +497,6 @@ public class JImmutableTreeList<T>
         @Nonnull
         @Override
         public synchronized ListBuilder<T> add(Indexed<? extends T> source)
-        {
-            builder.add(source);
-            return this;
-        }
-
-        public synchronized void checkInvariants()
-        {
-            builder.checkInvariants();
-        }
-    }
-
-    @ThreadSafe
-    public static class RAListBuilder<T>
-        implements JImmutableRandomAccessList.Builder<T>
-    {
-        private final TreeBuilder<T> builder = new TreeBuilder<>();
-
-        @Nonnull
-        @Override
-        public synchronized JImmutableTreeList<T> build()
-        {
-            return create(builder.build());
-        }
-
-        @Nonnull
-        public synchronized RAListBuilder<T> combineWith(@Nonnull RAListBuilder<T> other)
-        {
-            builder.combineWith(other.builder);
-            return this;
-        }
-
-        @Override
-        public synchronized int size()
-        {
-            return builder.size();
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(T value)
-        {
-            builder.add(value);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(Iterator<? extends T> source)
-        {
-            builder.add(source);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(Iterable<? extends T> source)
-        {
-            builder.add(source);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized <K extends T> RAListBuilder<T> add(K... source)
-        {
-            builder.add(source);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(Indexed<? extends T> source,
-                                                 int offset,
-                                                 int limit)
-        {
-            builder.add(source, offset, limit);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public synchronized RAListBuilder<T> add(Indexed<? extends T> source)
         {
             builder.add(source);
             return this;
