@@ -40,7 +40,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
@@ -116,8 +115,7 @@ public class LeafTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert shift >= -5;
         if (this.index == index) {
@@ -128,18 +126,16 @@ public class LeafTrieNode<T>
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
+            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value);
         }
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert shift >= -5;
         if (this.index == index) {
-            sizeDelta.subtract(1);
             return of();
         } else {
             return this;

@@ -38,7 +38,6 @@ package org.javimmutable.collections.array;
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -79,6 +78,7 @@ public class FullBranchTrieNodeTest
             list.add(String.valueOf(i));
         }
         TrieNode<String> node = FullBranchTrieNode.fromSource(0, IndexedList.retained(list), 0);
+        assertEquals(32, node.valueCount());
         for (int i = 0; i < 32; ++i) {
             assertEquals(String.valueOf(i), node.getValueOr(0, i, null));
             assertEquals(String.valueOf(i), node.find(0, i).getValue());
@@ -86,19 +86,17 @@ public class FullBranchTrieNodeTest
             assertEquals(true, node.find(0, 32 + i).isEmpty());
         }
         for (int i = 31; i >= 0; --i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(0, i, String.format("%d", -i), delta);
+            node = node.assign(0, i, String.format("%d", -i));
             assertTrue(node instanceof FullBranchTrieNode);
-            assertEquals(0, delta.getValue());
+            assertEquals(32, node.valueCount());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(String.valueOf(-i), node.getValueOr(0, i, null));
             assertEquals(String.valueOf(-i), node.find(0, i).getValue());
         }
         for (int i = 0; i < 32; ++i) {
-            MutableDelta delta = new MutableDelta();
-            TrieNode<String> changed = node.delete(0, i, delta);
-            assertEquals(-1, delta.getValue());
+            TrieNode<String> changed = node.delete(0, i);
+            assertEquals(31, changed.valueCount());
             assertTrue(changed instanceof MultiBranchTrieNode);
             for (int k = 0; k < 32; ++k) {
                 if (k != i) {

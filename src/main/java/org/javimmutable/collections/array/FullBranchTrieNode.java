@@ -39,7 +39,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
@@ -110,13 +109,12 @@ public class FullBranchTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+        final TrieNode<T> newChild = child.assign(shift - 5, index, value);
         if (newChild == child) {
             return this;
         } else {
@@ -126,13 +124,12 @@ public class FullBranchTrieNode<T>
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+        final TrieNode<T> newChild = child.delete(shift - 5, index);
         return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 

@@ -36,7 +36,6 @@
 package org.javimmutable.collections.array;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.common.MutableDelta;
 
 public class TrieNodeTest
     extends TestCase
@@ -45,45 +44,39 @@ public class TrieNodeTest
     {
         TrieNode<Integer> root = EmptyTrieNode.instance();
         assertEquals((Integer)1, root.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
+        assertEquals(0, root.valueCount());
 
-        MutableDelta delta = new MutableDelta();
-        TrieNode<Integer> node = root.assign(TrieNode.ROOT_SHIFT, 87, 88, delta);
+        TrieNode<Integer> node = root.assign(TrieNode.ROOT_SHIFT, 87, 88);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
-        assertEquals(1, delta.getValue());
+        assertEquals(1, node.valueCount());
 
-        delta = new MutableDelta();
-        assertSame(node, node.assign(TrieNode.ROOT_SHIFT, 87, 88, delta));
-        assertEquals(0, delta.getValue());
+        assertSame(node, node.assign(TrieNode.ROOT_SHIFT, 87, 88));
+        assertEquals(1, node.valueCount());
 
-        delta = new MutableDelta();
-        node = node.assign(TrieNode.ROOT_SHIFT, -45, 46, delta);
+        node = node.assign(TrieNode.ROOT_SHIFT, -45, 46);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)46, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
-        assertEquals(1, delta.getValue());
+        assertEquals(2, node.valueCount());
 
-        delta = new MutableDelta();
-        node = node.assign(TrieNode.ROOT_SHIFT, -45, 47, delta);
+        node = node.assign(TrieNode.ROOT_SHIFT, -45, 47);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)47, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
-        assertEquals(0, delta.getValue());
+        assertEquals(2, node.valueCount());
 
-        delta = new MutableDelta();
-        node = node.delete(TrieNode.ROOT_SHIFT, -300, delta);
+        node = node.delete(TrieNode.ROOT_SHIFT, -300);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)47, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
-        assertEquals(0, delta.getValue());
+        assertEquals(2, node.valueCount());
 
-        delta = new MutableDelta();
-        node = node.delete(TrieNode.ROOT_SHIFT, -45, delta);
+        node = node.delete(TrieNode.ROOT_SHIFT, -45);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)1, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
-        assertEquals(-1, delta.getValue());
+        assertEquals(1, node.valueCount());
 
-        delta = new MutableDelta();
-        node = node.assign(TrieNode.ROOT_SHIFT, -45, 47, delta);
+        node = node.assign(TrieNode.ROOT_SHIFT, -45, 47);
         assertEquals((Integer)88, node.getValueOr(TrieNode.ROOT_SHIFT, 87, 1));
         assertEquals((Integer)47, node.getValueOr(TrieNode.ROOT_SHIFT, -45, 1));
-        assertEquals(1, delta.getValue());
+        assertEquals(2, node.valueCount());
 
         for (int i = 30; i < 32; ++i) {
             assertEquals(30, TrieNode.shiftForIndex(1 << i));

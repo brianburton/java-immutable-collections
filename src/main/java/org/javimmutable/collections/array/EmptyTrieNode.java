@@ -39,7 +39,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
@@ -87,17 +86,14 @@ public class EmptyTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
-        sizeDelta.add(1);
         return LeafTrieNode.of(index, value);
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         return this;
     }

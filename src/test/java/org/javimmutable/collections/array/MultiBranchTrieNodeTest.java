@@ -39,7 +39,6 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -217,19 +216,18 @@ public class MultiBranchTrieNodeTest
     {
         TrieNode<String> node = MultiBranchTrieNode.forTesting(20);
         for (int i = 0; i < 32; ++i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), "value" + i, delta);
-            assertEquals(1, delta.getValue());
+            node = node.assign(20, shiftIndex(20, i), "value" + i);
+            assertEquals(i + 1, node.valueCount());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
         }
-        node = node.delete(20, shiftIndex(20, 31), new MutableDelta());
+        node = node.delete(20, shiftIndex(20, 31));
+        assertEquals(31, node.valueCount());
         assertEquals(true, node instanceof MultiBranchTrieNode);
         for (int i = 30; i >= 0; --i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), "new_value" + i, delta);
-            assertEquals(0, delta.getValue());
+            node = node.assign(20, shiftIndex(20, i), "new_value" + i);
+            assertEquals(31, node.valueCount());
         }
         for (int i = 0; i < 31; ++i) {
             assertEquals(Holders.of("new_value" + i), node.find(20, shiftIndex(20, i)));
@@ -240,17 +238,15 @@ public class MultiBranchTrieNodeTest
     {
         TrieNode<String> node = MultiBranchTrieNode.forTesting(20);
         for (int i = 0; i < 32; ++i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.assign(20, shiftIndex(20, i), "value" + i, delta);
-            assertEquals(1, delta.getValue());
+            node = node.assign(20, shiftIndex(20, i), "value" + i);
+            assertEquals(i + 1, node.valueCount());
         }
         for (int i = 0; i < 32; ++i) {
             assertEquals(Holders.of("value" + i), node.find(20, shiftIndex(20, i)));
         }
         for (int i = 31; i >= 0; --i) {
-            MutableDelta delta = new MutableDelta();
-            node = node.delete(20, shiftIndex(20, i), delta);
-            assertEquals(-1, delta.getValue());
+            node = node.delete(20, shiftIndex(20, i));
+            assertEquals(i, node.valueCount());
             if (i > 1) {
                 assertTrue(node instanceof MultiBranchTrieNode);
             } else if (i == 1) {
@@ -265,7 +261,8 @@ public class MultiBranchTrieNodeTest
     {
         for (int i = 0; i < 32; ++i) {
             TrieNode<String> node = MultiBranchTrieNode.forTesting(20);
-            node = node.assign(20, shiftIndex(20, i), "testing", new MutableDelta());
+            node = node.assign(20, shiftIndex(20, i), "testing");
+            assertEquals(1, node.valueCount());
             if (i == 0) {
                 assertTrue(node.trimmedToMinimumDepth() instanceof LeafTrieNode);
             } else {

@@ -39,7 +39,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -51,7 +50,7 @@ public abstract class TrieNode<T>
     public static final int ROOT_SHIFT = 30;
 
     public abstract int valueCount();
-    
+
     public abstract boolean isEmpty();
 
     public abstract T getValueOr(int shift,
@@ -63,12 +62,10 @@ public abstract class TrieNode<T>
 
     public abstract TrieNode<T> assign(int shift,
                                        int index,
-                                       T value,
-                                       MutableDelta sizeDelta);
+                                       T value);
 
     public abstract TrieNode<T> delete(int shift,
-                                       int index,
-                                       MutableDelta sizeDelta);
+                                       int index);
 
     public abstract int getShift();
 

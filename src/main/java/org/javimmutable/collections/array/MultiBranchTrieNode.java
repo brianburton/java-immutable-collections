@@ -40,7 +40,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
@@ -184,8 +183,7 @@ public class MultiBranchTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert this.shift == shift;
         final int bit = 1 << ((index >>> shift) & 0x1f);
@@ -194,19 +192,17 @@ public class MultiBranchTrieNode<T>
         final TrieNode<T>[] entries = this.entries;
         if ((bitmask & bit) == 0) {
             final TrieNode<T> newChild = LeafTrieNode.of(index, value);
-            sizeDelta.add(1);
             return selectNodeForInsertResult(shift, bit, bitmask, childIndex, entries, newChild);
         } else {
             final TrieNode<T> child = entries[childIndex];
-            final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+            final TrieNode<T> newChild = child.assign(shift - 5, index, value);
             return selectNodeForUpdateResult(shift, bitmask, childIndex, entries, child, newChild);
         }
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert this.shift == shift;
         final int bit = 1 << ((index >>> shift) & 0x1f);
@@ -217,7 +213,7 @@ public class MultiBranchTrieNode<T>
         } else {
             final int childIndex = realIndex(bitmask, bit);
             final TrieNode<T> child = entries[childIndex];
-            final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+            final TrieNode<T> newChild = child.delete(shift - 5, index);
             return selectNodeForDeleteResult(shift, bit, bitmask, entries, childIndex, child, newChild);
         }
     }
