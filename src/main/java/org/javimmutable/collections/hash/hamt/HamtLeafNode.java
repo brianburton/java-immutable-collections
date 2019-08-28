@@ -25,11 +25,11 @@
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECINDIRECINCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// THEORY OF LIABILITY, WHETHER IN CONTRACSTRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
@@ -41,8 +41,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,40 +51,44 @@ import java.util.Iterator;
  * below this node replaces it with a normal node instead.  These exist to shorten the
  * height of the overall tree structure when hashCodes are dispersed.
  */
-public class HamtLeafNode<T, K, V>
-    implements HamtNode<T, K, V>
+public class HamtLeafNode<K, V>
+    implements HamtNode<K, V>
 {
     private final int hashCode;
     @Nonnull
-    private final T value;
+    private final CollisionMap<K, V> value;
 
     HamtLeafNode(int hashCode,
-                 @Nonnull T value)
+                 @Nonnull CollisionMap<K, V> value)
     {
         this.hashCode = hashCode;
         this.value = value;
     }
 
     @Override
-    public Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
-                          int hashCode,
+    public int size()
+    {
+        return value.size();
+    }
+
+    @Override
+    public Holder<V> find(int hashCode,
                           @Nonnull K hashKey)
     {
         if (hashCode == this.hashCode) {
-            return collisionMap.findValue(value, hashKey);
+            return value.findValue(hashKey);
         } else {
             return Holders.of();
         }
     }
 
     @Override
-    public V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
-                        int hashCode,
+    public V getValueOr(int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
         if (hashCode == this.hashCode) {
-            return collisionMap.getValueOr(value, hashKey, defaultValue);
+            return value.getValueOr(hashKey, defaultValue);
         } else {
             return defaultValue;
         }
@@ -94,16 +96,15 @@ public class HamtLeafNode<T, K, V>
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nullable V value,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey,
+                                 @Nullable V value)
     {
         final int thisHashCode = this.hashCode;
-        final T thisValue = this.value;
+        final CollisionMap<K, V> thisValue = this.value;
         if (hashCode == thisHashCode) {
-            final T newValue = collisionMap.update(thisValue, hashKey, value, sizeDelta);
+            final CollisionMap<K, V> newValue = thisValue.update(hashKey, value);
             if (newValue == thisValue) {
                 return this;
             } else {
@@ -111,33 +112,31 @@ public class HamtLeafNode<T, K, V>
             }
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
-            final MutableDelta ignored = new MutableDelta();
-            final Iterator<JImmutableMap.Entry<K, V>> entries = collisionMap.iterator(thisValue);
-            HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(hashCode, collisionMap.update(null, hashKey, value, sizeDelta));
+            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, value));
+            final Iterator<JImmutableMap.Entry<K, V>> entries = thisValue.iterator();
             while (entries.hasNext()) {
                 JImmutableMap.Entry<K, V> entry = entries.next();
-                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue(), ignored);
+                expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
         } else {
             // our path is shorter so expand using our hashcode then add new value to tree
-            final HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(thisHashCode, thisValue);
-            return expanded.assign(collisionMap, hashCode, hashKey, value, sizeDelta);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, thisHashCode, thisValue);
+            return expanded.assign(emptyMap, hashCode, hashKey, value);
         }
     }
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nonnull Func1<Holder<V>, V> generator,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey,
+                                 @Nonnull Func1<Holder<V>, V> generator)
     {
         final int thisHashCode = this.hashCode;
-        final T thisValue = this.value;
+        final CollisionMap<K, V> thisValue = this.value;
         if (hashCode == thisHashCode) {
-            final T newValue = collisionMap.update(thisValue, hashKey, generator, sizeDelta);
+            final CollisionMap<K, V> newValue = value.update(hashKey, generator);
             if (newValue == thisValue) {
                 return this;
             } else {
@@ -145,35 +144,33 @@ public class HamtLeafNode<T, K, V>
             }
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
-            final MutableDelta ignored = new MutableDelta();
-            final Iterator<JImmutableMap.Entry<K, V>> entries = collisionMap.iterator(thisValue);
-            HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(hashCode, collisionMap.update(null, hashKey, generator, sizeDelta));
+            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, generator));
+            final Iterator<JImmutableMap.Entry<K, V>> entries = thisValue.iterator();
             while (entries.hasNext()) {
                 JImmutableMap.Entry<K, V> entry = entries.next();
-                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue(), ignored);
+                expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
         } else {
             // our path is shorter so expand using our hashcode then add new value to tree
-            final HamtNode<T, K, V> expanded = HamtBranchNode.forLeafExpansion(thisHashCode, thisValue);
-            return expanded.update(collisionMap, hashCode, hashKey, generator, sizeDelta);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, thisHashCode, thisValue);
+            return expanded.update(emptyMap, hashCode, hashKey, generator);
         }
     }
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey)
     {
         final int thisHashCode = this.hashCode;
-        final T thisValue = this.value;
-        if (hashCode == this.hashCode) {
-            final T newValue = collisionMap.delete(thisValue, hashKey, sizeDelta);
+        final CollisionMap<K, V> thisValue = this.value;
+        if (hashCode == thisHashCode) {
+            final CollisionMap<K, V> newValue = thisValue.delete(hashKey);
             if (newValue == thisValue) {
                 return this;
-            } else if (newValue == null) {
+            } else if (newValue.size() == 0) {
                 return HamtEmptyNode.of();
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
@@ -183,7 +180,7 @@ public class HamtLeafNode<T, K, V>
         }
     }
 
-    public HamtNode<T, K, V> liftNode(int index)
+    public HamtNode<K, V> liftNode(int index)
     {
         return new HamtLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, value);
     }
@@ -196,15 +193,8 @@ public class HamtLeafNode<T, K, V>
 
     @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return collisionMap.iterator(value);
-    }
-
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
-    {
-        return SingleValueIterator.of(value);
+        return value.iterator();
     }
 }

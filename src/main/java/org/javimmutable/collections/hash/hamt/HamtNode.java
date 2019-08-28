@@ -25,11 +25,11 @@
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECINDIRECINCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// THEORY OF LIABILITY, WHETHER IN CONTRACSTRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
@@ -42,55 +42,45 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface HamtNode<T, K, V>
-    extends SplitableIterable<T>,
+public interface HamtNode<K, V>
+    extends SplitableIterable<JImmutableMap.Entry<K, V>>,
             InvariantCheckable
 
 {
-    Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
-                   int hashCode,
+    Holder<V> find(int hashCode,
                    @Nonnull K hashKey);
 
-    V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
-                 int hashCode,
+    V getValueOr(int hashCode,
                  @Nonnull K hashKey,
                  V defaultValue);
 
     @Nonnull
-    HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
-                             int hashCode,
-                             @Nonnull K hashKey,
-                             @Nullable V value,
-                             @Nonnull MutableDelta sizeDelta);
+    HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+                          int hashCode,
+                          @Nonnull K hashKey,
+                          @Nullable V value);
 
     @Nonnull
-    HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
-                             int hashCode,
-                             @Nonnull K hashKey,
-                             @Nonnull Func1<Holder<V>, V> generator,
-                             @Nonnull MutableDelta sizeDelta);
+    HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+                          int hashCode,
+                          @Nonnull K hashKey,
+                          @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
-    HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
-                             int hashCode,
-                             @Nonnull K hashKey,
-                             @Nonnull MutableDelta sizeDelta);
+    HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+                          int hashCode,
+                          @Nonnull K hashKey);
 
     boolean isEmpty();
 
-    @Nonnull
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap);
+    int size();
 
     @Nonnull
-    default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(CollisionMap<T, K, V> collisionMap)
-    {
-        return () -> iterator(collisionMap);
-    }
+    SplitableIterator<JImmutableMap.Entry<K, V>> iterator();
 
     @Override
     default void checkInvariants()

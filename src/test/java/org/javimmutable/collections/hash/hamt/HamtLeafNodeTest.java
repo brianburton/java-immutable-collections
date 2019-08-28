@@ -36,8 +36,6 @@
 package org.javimmutable.collections.hash.hamt;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.list.EntryList;
 import org.javimmutable.collections.list.ListCollisionMap;
 
 public class HamtLeafNodeTest
@@ -49,24 +47,27 @@ public class HamtLeafNodeTest
         final Checked b = new Checked(1, 12);
         final Checked c = new Checked(1, 13);
         final Checked d = new Checked(1, 14);
-        final MutableDelta size = new MutableDelta();
-        final ListCollisionMap<Checked, Integer> transforms = new ListCollisionMap<>();
-        EntryList<Checked, Integer> values = transforms.update(null, a, 100, size);
-        values = transforms.update(values, b, 200, size);
-        values = transforms.update(values, c, 300, size);
-        assertEquals(3, size.getValue());
+        final ListCollisionMap<Checked, Integer> empty = ListCollisionMap.empty();
 
-        HamtNode<EntryList<Checked, Integer>, Checked, Integer> node = new HamtLeafNode<>(1, values);
-        assertSame(node, node.delete(transforms, 1, d, size));
-        assertEquals(3, size.getValue());
+        ListCollisionMap<Checked, Integer> transforms = empty;
+        transforms = transforms.update(a, 100);
+        transforms = transforms.update(b, 200);
+        transforms = transforms.update(c, 300);
+        assertEquals(3, transforms.size());
 
-        node = node.delete(transforms, 1, b, size);
-        assertEquals(2, size.getValue());
+        HamtNode<Checked, Integer> node = new HamtLeafNode<>(1, transforms);
+        assertEquals(3, node.size());
 
-        node = node.delete(transforms, 1, c, size);
-        assertEquals(1, size.getValue());
+        assertSame(node, node.delete(empty, 1, d));
+        assertEquals(3, node.size());
 
-        node = node.delete(transforms, 1, a, size);
+        node = node.delete(empty, 1, b);
+        assertEquals(2, node.size());
+
+        node = node.delete(empty, 1, c);
+        assertEquals(1, node.size());
+
+        node = node.delete(empty, 1, a);
         assertSame(HamtEmptyNode.of(), node);
     }
 }

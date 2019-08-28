@@ -11,7 +11,7 @@ import org.javimmutable.collections.SplitableIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EntryList<K, V>
+class EntryList<K, V>
     implements SplitableIterable<Entry<K, V>>
 {
     private static final EntryList<Object, Object> EMPTY = new EntryList<>(EmptyNode.instance());
@@ -43,12 +43,6 @@ public class EntryList<K, V>
     int size()
     {
         return root.size();
-    }
-
-    @Nullable
-    EntryList<K, V> nullify()
-    {
-        return root.isEmpty() ? null : this;
     }
 
     @Nonnull

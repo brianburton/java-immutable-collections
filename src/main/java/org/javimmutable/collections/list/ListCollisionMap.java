@@ -5,77 +5,106 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ListCollisionMap<K, V>
-    implements CollisionMap<EntryList<K, V>, K, V>
+    implements CollisionMap<K, V>
 {
+    @SuppressWarnings("unchecked")
+    private static final ListCollisionMap EMPTY = new ListCollisionMap(EntryList.empty());
+
+    private final EntryList<K, V> root;
+
+    private ListCollisionMap(@Nonnull EntryList<K, V> root)
+    {
+        this.root = root;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public static <K, V> ListCollisionMap<K, V> empty()
+    {
+        return (ListCollisionMap<K, V>)EMPTY;
+    }
+
+    @Override
+    public int size()
+    {
+        return root.size();
+    }
+
     @Nonnull
     @Override
-    public EntryList<K, V> update(@Nullable EntryList<K, V> leaf,
-                                  @Nonnull K key,
-                                  @Nullable V value,
-                                  @Nonnull MutableDelta delta)
+    public ListCollisionMap<K, V> update(@Nonnull K key,
+                                         @Nullable V value)
     {
-        final EntryList<K, V> oldList = EntryList.instance(leaf);
-        final EntryList<K, V> newList = oldList.assign(key, value);
-        delta.add(newList.size() - oldList.size());
-        return newList;
+        return assignForUpdate(root.assign(key, value));
     }
 
     @Nonnull
     @Override
-    public EntryList<K, V> update(@Nullable EntryList<K, V> leaf,
-                                  @Nonnull K key,
-                                  @Nonnull Func1<Holder<V>, V> generator,
-                                  @Nonnull MutableDelta delta)
+    public ListCollisionMap<K, V> update(@Nonnull K key,
+                                         @Nonnull Func1<Holder<V>, V> generator)
     {
-        final EntryList<K, V> oldList = EntryList.instance(leaf);
-        final EntryList<K, V> newList = oldList.update(key, generator);
-        delta.add(newList.size() - oldList.size());
-        return newList;
+        return assignForUpdate(root.update(key, generator));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public EntryList<K, V> delete(@Nonnull EntryList<K, V> leaf,
-                                  @Nonnull K key,
-                                  @Nonnull MutableDelta delta)
+    public ListCollisionMap<K, V> delete(@Nonnull K key)
     {
-        final EntryList<K, V> oldList = EntryList.instance(leaf);
-        final EntryList<K, V> newList = oldList.delete(key);
-        delta.add(newList.size() - oldList.size());
-        return newList.nullify();
+        return assignForDelete(root.delete(key));
     }
 
     @Override
-    public V getValueOr(@Nonnull EntryList<K, V> leaf,
-                        @Nonnull K key,
+    public V getValueOr(@Nonnull K key,
                         V defaultValue)
     {
-        return EntryList.instance(leaf).getValueOr(key, defaultValue);
+        return root.getValueOr(key, defaultValue);
     }
 
+    @Nonnull
     @Override
-    public Holder<V> findValue(@Nonnull EntryList<K, V> leaf,
-                               @Nonnull K key)
+    public Holder<V> findValue(@Nonnull K key)
     {
-        return EntryList.instance(leaf).findValue(key);
+        return root.findValue(key);
     }
 
+    @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull EntryList<K, V> leaf,
-                                                       @Nonnull K key)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key)
     {
-        return EntryList.instance(leaf).findEntry(key);
+        return root.findEntry(key);
     }
 
+    @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull EntryList<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return EntryList.instance(leaf).iterator();
+        return root.iterator();
+    }
+
+    @Nonnull
+    private ListCollisionMap<K, V> assignForUpdate(@Nonnull EntryList<K, V> newRoot)
+    {
+        if (newRoot == root) {
+            return this;
+        } else {
+            return new ListCollisionMap<>(newRoot);
+        }
+    }
+
+    @Nonnull
+    private ListCollisionMap<K, V> assignForDelete(@Nonnull EntryList<K, V> newRoot)
+    {
+        if (newRoot == root) {
+            return this;
+        } else if (newRoot.size() == 0) {
+            return empty();
+        } else {
+            return new ListCollisionMap<>(newRoot);
+        }
     }
 }

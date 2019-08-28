@@ -38,80 +38,41 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Interface for transformation objects that manage the leaf nodes in the hash table.
+ * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.
  * Implementations are free to use any class for their leaf nodes and manage them as needed.
- * NOTE: The transforms object is shared across all versions of a hash table so it MUST BE IMMUTABLE.
- * If the transforms object is not immutable it can cause the table to become
- * corrupted over time and/or make older versions of the table invalid.
  */
-public interface CollisionMap<T, K, V>
+public interface CollisionMap<K, V>
+    extends SplitableIterable<JImmutableMap.Entry<K, V>>
 {
-    /**
-     * Take the current leaf object (if there is one) and produce a new one
-     * (possibly the same) with the specified key and value.  If there is not currently
-     * a leaf for this key in the array the leaf will be null.  The result must be
-     * a non-null leaf object with the specified value associated with the specified key.
-     * If this key was not previously present the method must add 1 to the delta
-     * so that the size of the array can be properly maintained.
-     */
-    @Nonnull
-    T update(@Nullable T leaf,
-             @Nonnull K key,
-             @Nullable V value,
-             @Nonnull MutableDelta delta);
+    int size();
 
     @Nonnull
-    T update(@Nullable T leaf,
-             @Nonnull K key,
-             @Nonnull Func1<Holder<V>, V> generator,
-             @Nonnull MutableDelta delta);
+    CollisionMap<K, V> update(@Nonnull K key,
+                              @Nullable V value);
 
-    /**
-     * Take the current leaf object and produce a new one (possibly the same)
-     * with the specified key removed.  If the key was previously present in the leaf
-     * the method must subtract 1 from the delta so that the size of the array can be
-     * properly maintained.  The returned leaf will be null of no values remain after
-     * the deletion.
-     */
-    @Nullable
-    T delete(@Nonnull T leaf,
-             @Nonnull K key,
-             @Nonnull MutableDelta delta);
+    @Nonnull
+    CollisionMap<K, V> update(@Nonnull K key,
+                              @Nonnull Func1<Holder<V>, V> generator);
 
-    /**
-     * Look for the specified key in the leaf object and return a Holder
-     * that is empty if the key is not in the leaf or else contains the value associated
-     * with the key.
-     */
-    V getValueOr(@Nonnull T leaf,
-                 @Nonnull K key,
+    @Nonnull
+    CollisionMap<K, V> delete(@Nonnull K key);
+
+    V getValueOr(@Nonnull K key,
                  V defaultValue);
 
-    /**
-     * Look for the specified key in the leaf object and return a Holder
-     * that is empty if the key is not in the leaf or else contains the value associated
-     * with the key.
-     */
-    Holder<V> findValue(@Nonnull T leaf,
-                        @Nonnull K key);
+    @Nonnull
+    Holder<V> findValue(@Nonnull K key);
 
-    /**
-     * Look for the specified key in the leaf object and return a Holder
-     * that is empty if the key is not in the leaf or else contains a JImmutableMap.Entry
-     * associated with the key and value.
-     */
-    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull T leaf,
-                                                @Nonnull K key);
+    @Nonnull
+    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key);
 
-    /**
-     * Return a (possibly empty) SplitableIterator over all of the JImmutableMap.Entries
-     * in the specified leaf object.
-     */
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull T leaf);
+    @Nonnull
+    SplitableIterator<JImmutableMap.Entry<K, V>> iterator();
 }

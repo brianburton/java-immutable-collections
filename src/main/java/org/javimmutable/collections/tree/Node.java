@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
-public interface Node<K, V>
+interface Node<K, V>
     extends SplitableIterable<JImmutableMap.Entry<K, V>>,
             GenericIterator.Iterable<JImmutableMap.Entry<K, V>>
 {

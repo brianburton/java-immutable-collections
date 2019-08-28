@@ -25,11 +25,11 @@
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECINDIRECINCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// THEORY OF LIABILITY, WHETHER IN CONTRACSTRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
@@ -41,35 +41,32 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class HamtEmptyNode<T, K, V>
-    implements HamtNode<T, K, V>
+public class HamtEmptyNode<K, V>
+    implements HamtNode<K, V>
 {
     private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
 
 
     @SuppressWarnings("unchecked")
-    public static <T, K, V> HamtNode<T, K, V> of()
+    public static <K, V> HamtNode<K, V> of()
     {
         return EMPTY;
     }
 
     @Override
-    public Holder<V> find(@Nonnull CollisionMap<T, K, V> collisionMap,
-                          int hashCode,
+    public Holder<V> find(int hashCode,
                           @Nonnull K hashKey)
     {
         return Holders.of();
     }
 
     @Override
-    public V getValueOr(@Nonnull CollisionMap<T, K, V> collisionMap,
-                        int hashCode,
+    public V getValueOr(int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
@@ -78,34 +75,37 @@ public class HamtEmptyNode<T, K, V>
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> assign(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nullable V value,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey,
+                                 @Nullable V value)
     {
-        return new HamtLeafNode<>(hashCode, collisionMap.update(null, hashKey, value, sizeDelta));
+        return new HamtLeafNode<>(hashCode, emptyMap.update(hashKey, value));
     }
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> update(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nonnull Func1<Holder<V>, V> generator,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey,
+                                 @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new HamtLeafNode<>(hashCode, collisionMap.update(null, hashKey, generator, sizeDelta));
+        return new HamtLeafNode<>(hashCode, emptyMap.update(hashKey, generator));
     }
 
     @Nonnull
     @Override
-    public HamtNode<T, K, V> delete(@Nonnull CollisionMap<T, K, V> collisionMap,
-                                    int hashCode,
-                                    @Nonnull K hashKey,
-                                    @Nonnull MutableDelta sizeDelta)
+    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+                                 int hashCode,
+                                 @Nonnull K hashKey)
     {
         return this;
+    }
+
+    @Override
+    public int size()
+    {
+        return 0;
     }
 
     @Override
@@ -116,14 +116,7 @@ public class HamtEmptyNode<T, K, V>
 
     @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap)
-    {
-        return EmptyIterator.of();
-    }
-
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
         return EmptyIterator.of();
     }

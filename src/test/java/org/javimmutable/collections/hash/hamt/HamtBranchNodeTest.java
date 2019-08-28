@@ -39,7 +39,6 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.list.EntryList;
 import org.javimmutable.collections.list.ListCollisionMap;
 
 import javax.annotation.Nonnull;
@@ -59,78 +58,75 @@ public class HamtBranchNodeTest
 {
     public void testVarious()
     {
-        final ListCollisionMap<Integer, String> transforms = new ListCollisionMap<>();
+        final ListCollisionMap<Integer, String> transforms = ListCollisionMap.empty();
 
-        HamtNode<EntryList<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
-        assertEquals(null, empty.getValueOr(transforms, 1, 1, null));
+        HamtNode<Integer, String> empty = HamtEmptyNode.of();
+        assertEquals(null, empty.getValueOr(1, 1, null));
         verifyContents(transforms, empty);
 
         MutableDelta delta = new MutableDelta();
-        HamtNode<EntryList<Integer, String>, Integer, String> node = empty.assign(transforms, 1, 1, "able", delta);
-        assertEquals(1, delta.getValue());
-        assertEquals("able", node.getValueOr(transforms, 1, 1, null));
+        HamtNode<Integer, String> node = empty.assign(transforms, 1, 1, "able");
+        assertEquals(1, node.size());
+        assertEquals("able", node.getValueOr(1, 1, null));
         verifyContents(transforms, node, "able");
 
-        assertSame(node, node.assign(transforms, 1, 1, "able", delta));
-        assertEquals(1, delta.getValue());
+        assertSame(node, node.assign(transforms, 1, 1, "able"));
 
-        node = node.assign(transforms, 1, 1, "baker", delta);
-        assertEquals(1, delta.getValue());
-        assertEquals("baker", node.getValueOr(transforms, 1, 1, null));
+        node = node.assign(transforms, 1, 1, "baker");
+        assertEquals(1, node.size());
+        assertEquals("baker", node.getValueOr(1, 1, null));
         verifyContents(transforms, node, "baker");
 
-        node = node.assign(transforms, -1, -1, "charlie", delta);
-        assertEquals(2, delta.getValue());
-        assertEquals("charlie", node.getValueOr(transforms, -1, -1, null));
+        node = node.assign(transforms, -1, -1, "charlie");
+        assertEquals(2, node.size());
+        assertEquals("charlie", node.getValueOr(-1, -1, null));
         verifyContents(transforms, node, "baker", "charlie");
 
-        assertSame(node, node.assign(transforms, -1, -1, "charlie", delta));
-        assertEquals(2, delta.getValue());
+        assertSame(node, node.assign(transforms, -1, -1, "charlie"));
 
-        node = node.assign(transforms, 7, 7, "delta", delta);
-        assertEquals(3, delta.getValue());
-        assertEquals("delta", node.getValueOr(transforms, 7, 7, null));
+        node = node.assign(transforms, 7, 7, "delta");
+        assertEquals(3, node.size());
+        assertEquals("delta", node.getValueOr(7, 7, null));
         verifyContents(transforms, node, "baker", "charlie", "delta");
 
-        node = node.assign(transforms, 4725297, 4725297, "echo", delta);
-        assertEquals(4, delta.getValue());
-        assertEquals("echo", node.getValueOr(transforms, 4725297, 4725297, null));
+        node = node.assign(transforms, 4725297, 4725297, "echo");
+        assertEquals(4, node.size());
+        assertEquals("echo", node.getValueOr(4725297, 4725297, null));
         verifyContents(transforms, node, "baker", "charlie", "delta", "echo");
 
-        assertSame(node, node.delete(transforms, -2, -2, delta));
-        assertEquals(4, delta.getValue());
+        assertSame(node, node.delete(transforms, -2, -2));
+        assertEquals(4, node.size());
         verifyContents(transforms, node, "baker", "charlie", "delta", "echo");
 
-        node = node.assign(transforms, 33, 33, "foxtrot", delta);
-        assertEquals(5, delta.getValue());
-        assertEquals("foxtrot", node.getValueOr(transforms, 33, 33, null));
+        node = node.assign(transforms, 33, 33, "foxtrot");
+        assertEquals(5, node.size());
+        assertEquals("foxtrot", node.getValueOr(33, 33, null));
         verifyContents(transforms, node, "baker", "charlie", "delta", "echo", "foxtrot");
 
-        node = node.delete(transforms, 1, 1, delta);
-        assertEquals(4, delta.getValue());
-        assertEquals(null, node.getValueOr(transforms, 1, 1, null));
+        node = node.delete(transforms, 1, 1);
+        assertEquals(4, node.size());
+        assertEquals(null, node.getValueOr(1, 1, null));
         verifyContents(transforms, node, "charlie", "delta", "echo", "foxtrot");
 
-        assertSame(node, node.delete(transforms, -2, -2, delta));
-        assertEquals(4, delta.getValue());
+        assertSame(node, node.delete(transforms, -2, -2));
 
-        node = node.delete(transforms, 4725297, 4725297, delta);
-        assertEquals(3, delta.getValue());
-        assertEquals(null, node.getValueOr(transforms, 4725297, 4725297, null));
+        node = node.delete(transforms, 4725297, 4725297);
+        assertEquals(3, node.size());
+        assertEquals(null, node.getValueOr(4725297, 4725297, null));
         verifyContents(transforms, node, "charlie", "delta", "foxtrot");
 
-        node = node.delete(transforms, -1, -1, delta);
-        assertEquals(2, delta.getValue());
-        assertEquals(null, node.getValueOr(transforms, -1, -1, null));
+        node = node.delete(transforms, -1, -1);
+        assertEquals(2, node.size());
+        assertEquals(null, node.getValueOr(-1, -1, null));
         verifyContents(transforms, node, "delta", "foxtrot");
 
-        node = node.delete(transforms, 7, 7, delta);
-        assertEquals(1, delta.getValue());
-        assertEquals(null, node.getValueOr(transforms, 7, 7, null));
+        node = node.delete(transforms, 7, 7);
+        assertEquals(1, node.size());
+        assertEquals(null, node.getValueOr(7, 7, null));
         verifyContents(transforms, node, "foxtrot");
 
-        node = node.delete(transforms, 33, 33, delta);
-        assertEquals(0, delta.getValue());
+        node = node.delete(transforms, 33, 33);
+        assertEquals(0, node.size());
         assertSame(empty, node);
     }
 
@@ -145,173 +141,173 @@ public class HamtBranchNodeTest
         final Checked y = new Checked(0, 25);
         final Checked z = new Checked(0, 29);
         final MutableDelta size = new MutableDelta();
-        final ListCollisionMap<Checked, Integer> transforms = new ListCollisionMap<>();
+        final ListCollisionMap<Checked, Integer> transforms = ListCollisionMap.empty();
 
-        HamtNode<EntryList<Checked, Integer>, Checked, Integer> node = HamtEmptyNode.of();
+        HamtNode<Checked, Integer> node = HamtEmptyNode.of();
 
-        node = node.assign(transforms, a.hashCode, a, 100, size);
-        assertEquals(1, size.getValue());
-        assertSame(node, node.assign(transforms, a.hashCode, a, 100, size));
+        node = node.assign(transforms, a.hashCode, a, 100);
+        assertEquals(1, node.size());
+        assertSame(node, node.assign(transforms, a.hashCode, a, 100));
 
-        node = node.assign(transforms, b.hashCode, b, 100, size);
-        assertEquals(2, size.getValue());
-        assertSame(node, node.assign(transforms, a.hashCode, a, 100, size));
-        assertSame(node, node.assign(transforms, b.hashCode, b, 100, size));
-        assertSame(node, node.delete(transforms, z.hashCode, z, size));
-        assertEquals(null, node.find(transforms, z.hashCode, z).getValueOrNull());
-        assertEquals(null, node.getValueOr(transforms, z.hashCode, z, null));
+        node = node.assign(transforms, b.hashCode, b, 100);
+        assertEquals(2, node.size());
+        assertSame(node, node.assign(transforms, a.hashCode, a, 100));
+        assertSame(node, node.assign(transforms, b.hashCode, b, 100));
+        assertSame(node, node.delete(transforms, z.hashCode, z));
+        assertEquals(null, node.find(z.hashCode, z).getValueOrNull());
+        assertEquals(null, node.getValueOr(z.hashCode, z, null));
 
-        node = node.assign(transforms, c.hashCode, c, 100, size);
-        assertEquals(3, size.getValue());
+        node = node.assign(transforms, c.hashCode, c, 100);
+        assertEquals(3, node.size());
 
-        node = node.assign(transforms, x.hashCode, x, 200, size);
-        assertEquals(4, size.getValue());
+        node = node.assign(transforms, x.hashCode, x, 200);
+        assertEquals(4, node.size());
 
-        node = node.assign(transforms, y.hashCode, y, 200, size);
-        assertEquals(5, size.getValue());
+        node = node.assign(transforms, y.hashCode, y, 200);
+        assertEquals(5, node.size());
 
-        assertSame(node, node.delete(transforms, d.hashCode, d, size));
-        assertSame(node, node.delete(transforms, e.hashCode, e, size));
-        assertSame(node, node.delete(transforms, z.hashCode, z, size));
+        assertSame(node, node.delete(transforms, d.hashCode, d));
+        assertSame(node, node.delete(transforms, e.hashCode, e));
+        assertSame(node, node.delete(transforms, z.hashCode, z));
 
         node = node
-            .delete(transforms, x.hashCode, x, size)
-            .delete(transforms, a.hashCode, a, size)
-            .delete(transforms, b.hashCode, b, size)
-            .delete(transforms, c.hashCode, c, size)
-            .delete(transforms, y.hashCode, y, size);
-        assertEquals(0, size.getValue());
+            .delete(transforms, x.hashCode, x)
+            .delete(transforms, a.hashCode, a)
+            .delete(transforms, b.hashCode, b)
+            .delete(transforms, c.hashCode, c)
+            .delete(transforms, y.hashCode, y);
+        assertEquals(0, node.size());
         assertSame(HamtEmptyNode.of(), node);
     }
 
     public void testRollupOnDelete()
     {
-        final CollisionMap<EntryList<Integer, String>, Integer, String> transforms = new ListCollisionMap<>();
-        HamtNode<EntryList<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final CollisionMap<Integer, String> transforms = ListCollisionMap.empty();
+        HamtNode<Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<EntryList<Integer, String>, Integer, String> node = empty.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
+        HamtNode<Integer, String> node = empty.assign(transforms, 0x1fffff, 0x1fffff, "able");
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
-        assertEquals("able", node.getValueOr(transforms, 0x1fffff, 0x1fffff, null));
+        assertEquals(1, node.size());
+        assertEquals("able", node.getValueOr(0x1fffff, 0x1fffff, null));
         verifyContents(transforms, node, "able");
 
-        node = node.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        node = node.assign(transforms, 0x2fffff, 0x2fffff, "baker");
         assertEquals(true, node instanceof HamtBranchNode);
-        assertEquals(2, delta.getValue());
+        assertEquals(2, node.size());
         verifyContents(transforms, node, "able", "baker");
 
-        node = node.delete(transforms, 0x1fffff, 0x1fffff, delta);
+        node = node.delete(transforms, 0x1fffff, 0x1fffff);
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
+        assertEquals(1, node.size());
         verifyContents(transforms, node, "baker");
 
-        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        node = node.delete(transforms, 0x2fffff, 0x2fffff);
         assertEquals(true, node instanceof HamtEmptyNode);
-        assertEquals(0, delta.getValue());
+        assertEquals(0, node.size());
         verifyContents(transforms, node);
     }
 
     public void testRollupOnDelete2()
     {
-        final CollisionMap<EntryList<Integer, String>, Integer, String> transforms = new ListCollisionMap<>();
-        HamtNode<EntryList<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final CollisionMap<Integer, String> transforms = ListCollisionMap.empty();
+        HamtNode<Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<EntryList<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        HamtNode<Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker");
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
-        assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
+        assertEquals(1, node.size());
+        assertEquals("baker", node.getValueOr(0x2fffff, 0x2fffff, null));
         verifyContents(transforms, node, "baker");
 
-        node = node.assign(transforms, 0x1fffff, 0x1fffff, "able", delta);
+        node = node.assign(transforms, 0x1fffff, 0x1fffff, "able");
         assertEquals(true, node instanceof HamtBranchNode);
-        assertEquals(2, delta.getValue());
+        assertEquals(2, node.size());
         verifyContents(transforms, node, "able", "baker");
 
-        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        node = node.delete(transforms, 0x2fffff, 0x2fffff);
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
+        assertEquals(1, node.size());
         verifyContents(transforms, node, "able");
 
-        node = node.delete(transforms, 0x1fffff, 0x1fffff, delta);
+        node = node.delete(transforms, 0x1fffff, 0x1fffff);
         assertEquals(true, node instanceof HamtEmptyNode);
-        assertEquals(0, delta.getValue());
+        assertEquals(0, node.size());
         verifyContents(transforms, node);
     }
 
     public void testRollupOnDelete3()
     {
-        final CollisionMap<EntryList<Integer, String>, Integer, String> transforms = new ListCollisionMap<>();
-        HamtNode<EntryList<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final CollisionMap<Integer, String> transforms = ListCollisionMap.empty();
+        HamtNode<Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<EntryList<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker", delta);
+        HamtNode<Integer, String> node = empty.assign(transforms, 0x2fffff, 0x2fffff, "baker");
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
-        assertEquals("baker", node.getValueOr(transforms, 0x2fffff, 0x2fffff, null));
+        assertEquals(1, node.size());
+        assertEquals("baker", node.getValueOr(0x2fffff, 0x2fffff, null));
         verifyContents(transforms, node, "baker");
 
-        node = node.assign(transforms, 0x4fffffff, 0x4fffffff, "able", delta);
+        node = node.assign(transforms, 0x4fffffff, 0x4fffffff, "able");
         assertEquals(true, node instanceof HamtBranchNode);
-        assertEquals(2, delta.getValue());
+        assertEquals(2, node.size());
         verifyContents(transforms, node, "able", "baker");
 
-        node = node.delete(transforms, 0x2fffff, 0x2fffff, delta);
+        node = node.delete(transforms, 0x2fffff, 0x2fffff);
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
+        assertEquals(1, node.size());
         verifyContents(transforms, node, "able");
 
-        node = node.delete(transforms, 0x4fffffff, 0x4fffffff, delta);
+        node = node.delete(transforms, 0x4fffffff, 0x4fffffff);
         assertEquals(true, node instanceof HamtEmptyNode);
-        assertEquals(0, delta.getValue());
+        assertEquals(0, node.size());
         verifyContents(transforms, node);
     }
 
     public void testRollupOnDelete4()
     {
-        final CollisionMap<EntryList<Integer, String>, Integer, String> transforms = new ListCollisionMap<>();
-        HamtNode<EntryList<Integer, String>, Integer, String> empty = HamtEmptyNode.of();
+        final CollisionMap<Integer, String> transforms = ListCollisionMap.empty();
+        HamtNode<Integer, String> empty = HamtEmptyNode.of();
         MutableDelta delta = new MutableDelta();
 
-        HamtNode<EntryList<Integer, String>, Integer, String> node = empty.assign(transforms, 0x2fffffff, 0x2fffffff, "baker", delta);
+        HamtNode<Integer, String> node = empty.assign(transforms, 0x2fffffff, 0x2fffffff, "baker");
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
-        assertEquals("baker", node.getValueOr(transforms, 0x2fffffff, 0x2fffffff, null));
+        assertEquals(1, node.size());
+        assertEquals("baker", node.getValueOr(0x2fffffff, 0x2fffffff, null));
         verifyContents(transforms, node, "baker");
 
-        node = node.assign(transforms, 0x4fffff, 0x4fffff, "able", delta);
+        node = node.assign(transforms, 0x4fffff, 0x4fffff, "able");
         assertEquals(true, node instanceof HamtBranchNode);
-        assertEquals(2, delta.getValue());
+        assertEquals(2, node.size());
         verifyContents(transforms, node, "able", "baker");
 
-        node = node.delete(transforms, 0x2fffffff, 0x2fffffff, delta);
+        node = node.delete(transforms, 0x2fffffff, 0x2fffffff);
         assertEquals(true, node instanceof HamtLeafNode);
-        assertEquals(1, delta.getValue());
+        assertEquals(1, node.size());
         verifyContents(transforms, node, "able");
 
-        node = node.delete(transforms, 0x4fffff, 0x4fffff, delta);
+        node = node.delete(transforms, 0x4fffff, 0x4fffff);
         assertEquals(true, node instanceof HamtEmptyNode);
-        assertEquals(0, delta.getValue());
+        assertEquals(0, node.size());
         verifyContents(transforms, node);
     }
 
     public void testDeleteCollapseBranchIntoLeaf()
     {
-        final CollisionMap<EntryList<Integer, Integer>, Integer, Integer> transforms = new ListCollisionMap<>();
+        final CollisionMap<Integer, Integer> transforms = ListCollisionMap.empty();
         final MutableDelta size = new MutableDelta();
-        HamtNode<EntryList<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
-        node = node.assign(transforms, 7129, 7129, 1, size);
-        node = node.assign(transforms, 985, 985, 2, size);
-        node = node.delete(transforms, 7129, 7129, size);
-        assertEquals(Integer.valueOf(2), node.getValueOr(transforms, 985, 985, -1));
-        node = node.delete(transforms, 985, 985, size);
+        HamtNode<Integer, Integer> node = HamtEmptyNode.of();
+        node = node.assign(transforms, 7129, 7129, 1);
+        node = node.assign(transforms, 985, 985, 2);
+        node = node.delete(transforms, 7129, 7129);
+        assertEquals(Integer.valueOf(2), node.getValueOr(985, 985, -1));
+        node = node.delete(transforms, 985, 985);
         assertSame(HamtEmptyNode.of(), node);
     }
 
     public void testRandom()
     {
-        final CollisionMap<EntryList<Integer, Integer>, Integer, Integer> transforms = new ListCollisionMap<>();
+        final CollisionMap<Integer, Integer> transforms = ListCollisionMap.empty();
         final Random r = new Random();
 
         for (int loop = 1; loop <= 50; ++loop) {
@@ -321,64 +317,61 @@ public class HamtBranchNodeTest
                 .collect(Collectors.toList());
 
             final MutableDelta size = new MutableDelta();
-            HamtNode<EntryList<Integer, Integer>, Integer, Integer> node = HamtEmptyNode.of();
+            HamtNode<Integer, Integer> node = HamtEmptyNode.of();
             for (Integer key : domain) {
-                node = node.assign(transforms, key, key, key, size);
-                assertEquals(node.getValueOr(transforms, key, key, -1), node.find(transforms, key, key).getValueOr(-1));
+                node = node.assign(transforms, key, key, key);
+                assertEquals(node.getValueOr(key, key, -1), node.find(key, key).getValueOr(-1));
             }
             node.checkInvariants();
             verifyIntContents(transforms, node, domain);
 
-            final MutableDelta zero = new MutableDelta();
             Collections.shuffle(domain);
             for (Integer key : domain) {
-                node = node.delete(transforms, key, key, size);
-                assertSame(node, node.delete(transforms, key, key, zero));
-                assertEquals(null, node.getValueOr(transforms, key, key, null));
-                assertEquals(null, node.find(transforms, key, key).getValueOr(null));
+                node = node.delete(transforms, key, key);
+                assertSame(node, node.delete(transforms, key, key));
+                assertEquals(null, node.getValueOr(key, key, null));
+                assertEquals(null, node.find(key, key).getValueOr(null));
             }
             node.checkInvariants();
             assertSame(HamtEmptyNode.of(), node);
-            assertEquals(0, size.getValue());
-            assertEquals(0, zero.getValue());
+            assertEquals(0, node.size());
         }
     }
 
-    private void verifyContents(CollisionMap<EntryList<Integer, String>, Integer, String> transforms,
-                                HamtNode<EntryList<Integer, String>, Integer, String> node,
+    private void verifyContents(CollisionMap<Integer, String> transforms,
+                                HamtNode<Integer, String> node,
                                 String... values)
     {
         Set<String> expected = new HashSet<>(asList(values));
-        Set<String> actual = collectValues(transforms, node);
+        Set<String> actual = collectValues(node);
         assertEquals(expected, actual);
         verifyConnectivity(transforms, node);
     }
 
-    private void verifyIntContents(CollisionMap<EntryList<Integer, Integer>, Integer, Integer> transforms,
-                                   HamtNode<EntryList<Integer, Integer>, Integer, Integer> node,
+    private void verifyIntContents(CollisionMap<Integer, Integer> transforms,
+                                   HamtNode<Integer, Integer> node,
                                    List<Integer> values)
     {
         Set<Integer> expected = new HashSet<>(values);
-        Set<Integer> actual = collectValues(transforms, node);
+        Set<Integer> actual = collectValues(node);
         assertEquals(expected, actual);
         verifyConnectivity(transforms, node);
     }
 
-    private <T, K, V> void verifyConnectivity(CollisionMap<T, K, V> transforms,
-                                              HamtNode<T, K, V> node)
+    private <T, K, V> void verifyConnectivity(CollisionMap<K, V> transforms,
+                                              HamtNode<K, V> node)
     {
-        for (JImmutableMap.Entry<K, V> entry : node.iterable(transforms)) {
-            final V usingGet = node.getValueOr(transforms, entry.getKey().hashCode(), entry.getKey(), null);
-            final V usingFind = node.find(transforms, entry.getKey().hashCode(), entry.getKey()).getValueOrNull();
+        for (JImmutableMap.Entry<K, V> entry : node) {
+            final V usingGet = node.getValueOr(entry.getKey().hashCode(), entry.getKey(), null);
+            final V usingFind = node.find(entry.getKey().hashCode(), entry.getKey()).getValueOrNull();
             assertEquals(entry.getValue(), usingGet);
         }
     }
 
     @Nonnull
-    private <T, K, V> Set<V> collectValues(CollisionMap<T, K, V> transforms,
-                                           HamtNode<T, K, V> node)
+    private <T, K, V> Set<V> collectValues(HamtNode<K, V> node)
     {
-        Iterator<JImmutableMap.Entry<K, V>> iterator = node.iterator(transforms);
+        Iterator<JImmutableMap.Entry<K, V>> iterator = node.iterator();
         Set<V> actual = new HashSet<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next().getValue());

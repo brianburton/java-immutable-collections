@@ -37,14 +37,11 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
@@ -54,88 +51,109 @@ import java.util.Comparator;
  * type of key.
  */
 @Immutable
-public class TreeCollisionMap<K extends Comparable<K>, V>
-    implements CollisionMap<Node<K, V>, K, V>
+public class TreeCollisionMap<K, V>
+    implements CollisionMap<K, V>
 {
-    private final Comparator<K> comparator = ComparableComparator.of();
+    @SuppressWarnings("unchecked")
+    private static final TreeCollisionMap EMPTY = new TreeCollisionMap(ComparableComparator.of(), FringeNode.instance());
 
-    @Nonnull
-    @Override
-    public Node<K, V> update(Node<K, V> leaf,
-                             @Nonnull K key,
-                             V value,
-                             @Nonnull MutableDelta delta)
+    private final Comparator<K> comparator;
+    private final AbstractNode<K, V> root;
+
+    private TreeCollisionMap(@Nonnull Comparator<K> comparator,
+                             @Nonnull AbstractNode<K, V> root)
     {
-        if (leaf == null) {
-            delta.add(1);
-            return Node.single(key, value);
-        } else {
-            return resultForUpdate(leaf, delta, leaf.assign(comparator, key, value));
-        }
+        this.comparator = comparator;
+        this.root = root;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> TreeCollisionMap<K, V> empty()
+    {
+        return (TreeCollisionMap<K, V>)EMPTY;
+    }
+
+    @Override
+    public int size()
+    {
+        return root.size();
     }
 
     @Nonnull
     @Override
-    public Node<K, V> update(@Nullable Node<K, V> leaf,
-                             @Nonnull K key,
-                             @Nonnull Func1<Holder<V>, V> generator,
-                             @Nonnull MutableDelta delta)
+    public TreeCollisionMap<K, V> update(@Nonnull K key,
+                                         V value)
     {
-        if (leaf == null) {
-            delta.add(1);
-            return Node.single(key, generator.apply(Holders.of()));
-        } else {
-            return resultForUpdate(leaf, delta, leaf.update(comparator, key, generator));
-        }
+        return resultForUpdate(root.assign(comparator, key, value));
+    }
+
+    @Nonnull
+    @Override
+    public TreeCollisionMap<K, V> update(@Nonnull K key,
+                                         @Nonnull Func1<Holder<V>, V> generator)
+    {
+        return resultForUpdate(root.update(comparator, key, generator));
+    }
+
+    @Nonnull
+    @Override
+    public TreeCollisionMap<K, V> delete(@Nonnull K key)
+    {
+        return resultForDelete(root.delete(comparator, key));
     }
 
     @Override
-    public Node<K, V> delete(@Nonnull Node<K, V> leaf,
-                             @Nonnull K key,
-                             @Nonnull MutableDelta delta)
-    {
-        final Node<K, V> newLeaf = leaf.delete(comparator, key);
-        if (newLeaf == leaf) {
-            return leaf;
-        } else {
-            delta.add(-1);
-            return newLeaf.isEmpty() ? null : newLeaf;
-        }
-    }
-
-    @Override
-    public V getValueOr(@Nonnull Node<K, V> leaf,
-                        @Nonnull K key,
+    public V getValueOr(@Nonnull K key,
                         V defaultValue)
     {
-        return leaf.get(comparator, key, defaultValue);
+        return root.get(comparator, key, defaultValue);
     }
 
+    @Nonnull
     @Override
-    public Holder<V> findValue(@Nonnull Node<K, V> leaf,
-                               @Nonnull K key)
+    public Holder<V> findValue(@Nonnull K key)
     {
-        return leaf.find(comparator, key);
+        return root.find(comparator, key);
     }
 
+    @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node<K, V> leaf,
-                                                       @Nonnull K key)
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key)
     {
-        return leaf.findEntry(comparator, key);
+        return root.findEntry(comparator, key);
     }
 
+    @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
     {
-        return leaf.iterator();
+        return root.iterator();
     }
 
-    private Node<K, V> resultForUpdate(Node<K, V> leaf,
-                                       @Nonnull MutableDelta delta,
-                                       Node<K, V> result)
+    AbstractNode<K, V> root()
     {
-        delta.add(result.size() - leaf.size());
-        return result;
+        return root;
+    }
+
+    @Nonnull
+    private TreeCollisionMap<K, V> resultForUpdate(AbstractNode<K, V> root)
+    {
+        if (root == this.root) {
+            return this;
+        } else {
+            return new TreeCollisionMap<>(comparator, root);
+        }
+    }
+
+    @Nonnull
+    private TreeCollisionMap<K, V> resultForDelete(AbstractNode<K, V> root)
+    {
+        if (root == this.root) {
+            return this;
+        } else if (root.isEmpty()) {
+            return empty();
+        } else {
+            return new TreeCollisionMap<>(comparator, root);
+        }
     }
 }
