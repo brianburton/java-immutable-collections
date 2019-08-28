@@ -402,6 +402,12 @@ class BranchNode<T>
         }
 
         @Override
+        public boolean hasValue()
+        {
+            return false;
+        }
+
+        @Override
         public T value()
         {
             throw new UnsupportedOperationException();

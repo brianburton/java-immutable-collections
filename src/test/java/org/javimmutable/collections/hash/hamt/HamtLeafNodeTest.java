@@ -36,7 +36,14 @@
 package org.javimmutable.collections.hash.hamt;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.ListCollisionMap;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.javimmutable.collections.MapEntry.mapEntry;
 
 public class HamtLeafNodeTest
     extends TestCase
@@ -69,5 +76,27 @@ public class HamtLeafNodeTest
 
         node = node.delete(empty, 1, a);
         assertSame(HamtEmptyNode.of(), node);
+    }
+
+    public void testIterator()
+    {
+        final Checked a = new Checked(1, 11);
+        final Checked b = new Checked(1, 12);
+        final Checked c = new Checked(1, 13);
+        final Checked d = new Checked(1, 14);
+        final ListCollisionMap<Checked, Integer> empty = ListCollisionMap.empty();
+
+        ListCollisionMap<Checked, Integer> node = empty
+            .update(a, 100)
+            .update(b, 200)
+            .update(c, 300)
+            .update(d, 400);
+
+        List<JImmutableMap.Entry<Checked, Integer>> expected = new ArrayList<>();
+        expected.add(mapEntry(a, 100));
+        expected.add(mapEntry(b, 200));
+        expected.add(mapEntry(c, 300));
+        expected.add(mapEntry(d, 400));
+        StandardIteratorTests.verifyOrderedIterable(expected, node);
     }
 }

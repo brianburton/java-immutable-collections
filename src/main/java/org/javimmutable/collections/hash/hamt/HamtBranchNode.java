@@ -38,13 +38,11 @@ package org.javimmutable.collections.hash.hamt;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -313,11 +311,21 @@ public class HamtBranchNode<K, V>
         return new HamtNode[size];
     }
 
+    @Nullable
     @Override
-    @Nonnull
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        return LazyMultiIterator.iterator(indexedForIterator());
+        assert offset >= 0 && offset <= limit && limit <= size;
+        final int valueSize = value.size();
+        if (offset >= valueSize) {
+            return GenericIterator.indexedState(parent, IndexedArray.retained(children), HamtNode::size, offset - valueSize, limit - valueSize);
+        } else if (limit > valueSize) {
+            return value.iterateOverRange(new ChildrenIteratorState(parent, limit - valueSize), offset, valueSize);
+        } else {
+            return value.iterateOverRange(parent, offset, limit);
+        }
     }
 
     @Override
@@ -352,25 +360,35 @@ public class HamtBranchNode<K, V>
         }
     }
 
-    private Indexed<SplitableIterable<JImmutableMap.Entry<K, V>>> indexedForIterator()
+    private class ChildrenIteratorState
+        implements GenericIterator.State<JImmutableMap.Entry<K, V>>
     {
-        return new Indexed<SplitableIterable<JImmutableMap.Entry<K, V>>>()
-        {
-            @Override
-            public SplitableIterable<JImmutableMap.Entry<K, V>> get(int index)
-            {
-                if (index == 0) {
-                    return value;
-                } else {
-                    return children[index - 1];
-                }
-            }
+        private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
+        private final int limit;
 
-            @Override
-            public int size()
-            {
-                return children.length + 1;
-            }
-        };
+        private ChildrenIteratorState(GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                      int limit)
+        {
+            this.parent = parent;
+            this.limit = limit;
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return false;
+        }
+
+        @Override
+        public JImmutableMap.Entry<K, V> value()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
+        {
+            return GenericIterator.indexedState(parent, IndexedArray.retained(children), HamtNode::size, 0, limit);
+        }
     }
 }

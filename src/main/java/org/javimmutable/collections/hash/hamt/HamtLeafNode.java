@@ -39,12 +39,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Iterator;
 
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree
@@ -113,9 +112,7 @@ public class HamtLeafNode<K, V>
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
             HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, value));
-            final Iterator<JImmutableMap.Entry<K, V>> entries = thisValue.iterator();
-            while (entries.hasNext()) {
-                JImmutableMap.Entry<K, V> entry = entries.next();
+            for (JImmutableMap.Entry<K, V> entry : thisValue) {
                 expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
@@ -145,9 +142,7 @@ public class HamtLeafNode<K, V>
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
             HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, generator));
-            final Iterator<JImmutableMap.Entry<K, V>> entries = thisValue.iterator();
-            while (entries.hasNext()) {
-                JImmutableMap.Entry<K, V> entry = entries.next();
+            for (JImmutableMap.Entry<K, V> entry : thisValue) {
                 expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
@@ -191,10 +186,12 @@ public class HamtLeafNode<K, V>
         return false;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        return value.iterator();
+        return value.iterateOverRange(parent, offset, limit);
     }
 }

@@ -42,12 +42,14 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface HamtNode<K, V>
-    extends SplitableIterable<JImmutableMap.Entry<K, V>>,
+    extends GenericIterator.Iterable<JImmutableMap.Entry<K, V>>,
+            SplitableIterable<JImmutableMap.Entry<K, V>>,
             InvariantCheckable
 
 {
@@ -79,11 +81,14 @@ public interface HamtNode<K, V>
 
     int size();
 
-    @Nonnull
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator();
-
     @Override
     default void checkInvariants()
     {
+    }
+
+    @Override
+    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
     }
 }

@@ -39,9 +39,8 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,10 +113,13 @@ public class HamtEmptyNode<K, V>
         return true;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        return EmptyIterator.of();
+        assert offset == 0 && limit == 0;
+        return parent;
     }
 }

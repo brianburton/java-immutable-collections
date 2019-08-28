@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 @Immutable
 class ValueNode<K, V>
@@ -340,6 +341,7 @@ class ValueNode<K, V>
     {
         private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
         private final int limit;
+        private boolean available;
 
         private IteratorState(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
                               int limit)
@@ -347,18 +349,31 @@ class ValueNode<K, V>
             assert limit <= 1 + right.size();
             this.parent = parent;
             this.limit = limit;
+            available = true;
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return available;
         }
 
         @Override
         public JImmutableMap.Entry<K, V> value()
         {
-            return MapEntry.of(key, value);
+            if (available) {
+                available = false;
+                return MapEntry.of(key, value);
+            } else {
+                throw new NoSuchElementException();
+            }
         }
 
         @Nullable
         @Override
         public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
         {
+            assert !available;
             if (limit == 1) {
                 return parent;
             } else {

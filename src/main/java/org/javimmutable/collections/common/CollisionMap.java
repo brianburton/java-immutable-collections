@@ -38,18 +38,19 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 /**
  * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.
  * Implementations are free to use any class for their leaf nodes and manage them as needed.
  */
 public interface CollisionMap<K, V>
-    extends SplitableIterable<JImmutableMap.Entry<K, V>>
+    extends GenericIterator.Iterable<JImmutableMap.Entry<K, V>>,
+            Iterable<JImmutableMap.Entry<K, V>>
 {
     int size();
 
@@ -74,5 +75,9 @@ public interface CollisionMap<K, V>
     Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key);
 
     @Nonnull
-    SplitableIterator<JImmutableMap.Entry<K, V>> iterator();
+    @Override
+    default Iterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
+    }
 }

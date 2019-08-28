@@ -92,6 +92,13 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
+    public static <K, V> MapEntry<K, V> mapEntry(@Nonnull K key,
+                                                 V value)
+    {
+        return new MapEntry<K, V>(key, value);
+    }
+
+    @Nonnull
     @Override
     public K getKey()
     {
@@ -109,7 +116,7 @@ public class MapEntry<K, V>
     {
         throw new UnsupportedOperationException();
     }
-    
+
     public JImmutableMap.Entry<K, V> jimmutableEntry()
     {
         return this;
@@ -119,7 +126,7 @@ public class MapEntry<K, V>
     {
         return this;
     }
-    
+
     @Override
     public int hashCode()
     {

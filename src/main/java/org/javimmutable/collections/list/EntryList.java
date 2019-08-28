@@ -5,14 +5,13 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 class EntryList<K, V>
-    implements SplitableIterable<Entry<K, V>>
+    implements GenericIterator.Iterable<Entry<K, V>>
 {
     private static final EntryList<Object, Object> EMPTY = new EntryList<>(EmptyNode.instance());
 
@@ -134,10 +133,12 @@ class EntryList<K, V>
         return Holders.of();
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<Entry<K, V>> parent,
+                                                               int offset,
+                                                               int limit)
     {
-        return root.iterator();
+        return root.iterateOverRange(parent, offset, limit);
     }
 }

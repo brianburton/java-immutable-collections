@@ -41,6 +41,8 @@ public class GenericIterator<T>
 
     public interface State<T>
     {
+        boolean hasValue();
+
         T value();
 
         State<T> advance();
@@ -49,14 +51,13 @@ public class GenericIterator<T>
     @Override
     public synchronized boolean hasNext()
     {
-        assert offset < limit || state == null;
-        return state != null;
+        return prepare();
     }
 
     @Override
     public synchronized T next()
     {
-        if (state == null) {
+        if (!prepare()) {
             throw new NoSuchElementException();
         }
         final T answer = state.value();
@@ -85,33 +86,54 @@ public class GenericIterator<T>
                                    new GenericIterator<>(root, splitIndex, limit));
     }
 
+    private boolean prepare()
+    {
+        while (state != null) {
+            if (state.hasValue()) {
+                return true;
+            }
+            state = state.advance();
+        }
+        return false;
+    }
+
     private static class SingleValueState<T>
         implements State<T>
     {
         private final State<T> parent;
         private final T value;
+        private boolean available;
 
         private SingleValueState(State<T> parent,
                                  T value)
         {
             this.parent = parent;
             this.value = value;
+            available = true;
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return available;
         }
 
         @Override
         public T value()
         {
-            return value;
+            if (available) {
+                available = false;
+                return value;
+            } else {
+                throw new NoSuchElementException();
+            }
         }
 
         @Override
         public State<T> advance()
         {
-            if (parent != null) {
-                return parent.advance();
-            } else {
-                return null;
-            }
+            assert !available;
+            return parent;
         }
     }
 
@@ -150,6 +172,12 @@ public class GenericIterator<T>
         }
 
         @Override
+        public boolean hasValue()
+        {
+            return offset < limit;
+        }
+
+        @Override
         public T value()
         {
             return values.get(offset);
@@ -162,10 +190,8 @@ public class GenericIterator<T>
             offset += 1;
             if (offset < limit) {
                 return this;
-            } else if (parent != null) {
-                return parent.advance();
             } else {
-                return null;
+                return parent;
             }
         }
     }
@@ -227,6 +253,12 @@ public class GenericIterator<T>
             this.limit = limit;
             this.childIndex = childIndex;
             this.childOffset = childOffset;
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return false;
         }
 
         @Override
