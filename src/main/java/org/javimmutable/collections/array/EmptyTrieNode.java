@@ -38,10 +38,9 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -116,11 +115,13 @@ public class EmptyTrieNode<T>
         return this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return EmptyIterator.of();
+        return parent;
     }
 
     @Override

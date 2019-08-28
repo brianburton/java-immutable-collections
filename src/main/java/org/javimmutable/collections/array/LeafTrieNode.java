@@ -39,10 +39,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -164,11 +164,13 @@ public class LeafTrieNode<T>
         }
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return SingleValueIterator.of(this);
+        return GenericIterator.valueState(parent, this);
     }
 
     @Override

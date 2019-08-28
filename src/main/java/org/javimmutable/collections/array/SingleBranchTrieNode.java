@@ -38,9 +38,9 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -154,11 +154,13 @@ public class SingleBranchTrieNode<T>
         return (branchIndex == 0) ? child.trimmedToMinimumDepth() : this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return child.iterator();
+        return child.iterateOverRange(parent, offset, limit);
     }
 
     @Override

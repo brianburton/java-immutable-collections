@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.indexed.IndexedArray;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -183,7 +184,7 @@ public class GenericIteratorTest
                                                                int offset,
                                                                int limit)
         {
-            return GenericIterator.arrayState(parent, nodes, Node::size, offset, limit);
+            return GenericIterator.indexedState(parent, IndexedArray.retained(nodes), Node::size, offset, limit);
         }
     }
 }

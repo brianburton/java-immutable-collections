@@ -38,11 +38,10 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -145,11 +144,17 @@ public class FullBranchTrieNode<T>
         return false;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return LazyMultiIterator.iterator(IndexedArray.retained(entries));
+        return GenericIterator.indexedState(parent,
+                                            IndexedArray.retained(entries),
+                                            TrieNode::valueCount,
+                                            offset,
+                                            limit);
     }
 
     @Override

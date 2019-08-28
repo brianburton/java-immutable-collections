@@ -1,5 +1,6 @@
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 
 import javax.annotation.Nonnull;
@@ -120,21 +121,21 @@ public class GenericIterator<T>
         return new SingleValueState<>(parent, value);
     }
 
-    public static <T, C extends Iterable<T>> State<T> arrayState(State<T> parent,
-                                                                 C[] children,
-                                                                 ToIntFunction<C> sizer,
-                                                                 int offset,
-                                                                 int limit)
+    public static <T, C extends Iterable<T>> State<T> indexedState(State<T> parent,
+                                                                   Indexed<C> children,
+                                                                   ToIntFunction<C> sizer,
+                                                                   int offset,
+                                                                   int limit)
     {
-        if (children.length == 0) {
+        if (children.size() == 0) {
             return null;
         }
         int childIndex = 0;
-        int childSize = sizer.applyAsInt(children[childIndex]);
+        int childSize = sizer.applyAsInt(children.get(childIndex));
         int childLimit = childSize;
         while (offset >= childLimit) {
             childIndex += 1;
-            childSize = sizer.applyAsInt(children[childIndex]);
+            childSize = sizer.applyAsInt(children.get(childIndex));
             childLimit += childSize;
         }
         final int childOffset = childLimit - childSize;
@@ -142,34 +143,34 @@ public class GenericIterator<T>
 
         final State<T> answerParent;
         if (remaining > childSize) {
-            answerParent = new ArrayState<>(parent, children, sizer, childIndex + 1, childLimit, limit);
+            answerParent = new IndexedState<>(parent, children, sizer, childIndex + 1, childLimit, limit);
             childLimit = childSize;
         } else {
             answerParent = parent;
             childLimit = remaining;
         }
 
-        return children[childIndex].iterateOverRange(answerParent, offset - childOffset, childLimit);
+        return children.get(childIndex).iterateOverRange(answerParent, offset - childOffset, childLimit);
     }
 
-    private static class ArrayState<T, C extends Iterable<T>>
+    private static class IndexedState<T, C extends Iterable<T>>
         implements State<T>
     {
         private final State<T> parent;
-        private final C[] children;
+        private final Indexed<C> children;
         private final ToIntFunction<C> sizer;
         private final int limit;
         private int childIndex;
         private int childOffset;
 
-        public ArrayState(State<T> parent,
-                          C[] children,
-                          ToIntFunction<C> sizer,
-                          int childIndex,
-                          int childOffset,
-                          int limit)
+        public IndexedState(State<T> parent,
+                            Indexed<C> children,
+                            ToIntFunction<C> sizer,
+                            int childIndex,
+                            int childOffset,
+                            int limit)
         {
-            assert childIndex < children.length;
+            assert childIndex < children.size();
             assert childOffset < limit;
             this.parent = parent;
             this.children = children;
@@ -188,7 +189,7 @@ public class GenericIterator<T>
         @Override
         public synchronized State<T> advance()
         {
-            final int childSize = sizer.applyAsInt(children[childIndex]);
+            final int childSize = sizer.applyAsInt(children.get(childIndex));
             final int remaining = limit - childOffset;
             final int childLimit;
             final State<T> parent;
@@ -200,7 +201,7 @@ public class GenericIterator<T>
                 childLimit = remaining;
             }
 
-            final State<T> answer = children[childIndex].iterateOverRange(parent, 0, childLimit);
+            final State<T> answer = children.get(childIndex).iterateOverRange(parent, 0, childLimit);
             childIndex += 1;
             childOffset += childSize;
             return answer;

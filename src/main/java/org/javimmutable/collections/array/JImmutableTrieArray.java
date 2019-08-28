@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
+import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
@@ -167,7 +168,7 @@ public class JImmutableTrieArray<T>
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return root.iterator();
+        return new GenericIterator<>(root, 0, root.valueCount());
     }
 
     @Override

@@ -39,11 +39,11 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -236,15 +236,19 @@ public class MultiBranchTrieNode<T>
         return (bitmask == 1) ? entries[0].trimmedToMinimumDepth() : this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
+        final Indexed<TrieNode<T>> source;
         if (shift != ROOT_SHIFT) {
-            return LazyMultiIterator.iterator(IndexedArray.retained(entries));
+            source = IndexedArray.retained(entries);
         } else {
-            return LazyMultiIterator.iterator(IndexedArray.retained(entriesForSignedOrderIteration()));
+            source = IndexedArray.retained(entriesForSignedOrderIteration());
         }
+        return GenericIterator.indexedState(parent, source, TrieNode::valueCount, offset, limit);
     }
 
     @Override

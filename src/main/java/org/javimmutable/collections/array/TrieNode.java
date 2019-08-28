@@ -38,13 +38,14 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public abstract class TrieNode<T>
-    implements SplitableIterable<JImmutableMap.Entry<Integer, T>>,
+    implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
                InvariantCheckable
 {
     public static final int ROOT_SHIFT = 30;
@@ -70,6 +71,11 @@ public abstract class TrieNode<T>
     public abstract int getShift();
 
     public abstract boolean isLeaf();
+
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return new GenericIterator<>(this, 0, valueCount());
+    }
 
     public TrieNode<T> trimmedToMinimumDepth()
     {
