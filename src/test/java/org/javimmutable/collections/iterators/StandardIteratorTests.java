@@ -73,6 +73,7 @@ public class StandardIteratorTests
                                                  @Nonnull Iterable<T> actual)
     {
         verifyOrderedIterable(expected, actual, identity());
+        verifyOrderedSplits(expected, actual.iterator(), identity());
     }
 
     public static <S, T> void verifyOrderedIterable(@Nonnull Iterable<T> expected,
@@ -81,6 +82,32 @@ public class StandardIteratorTests
     {
         verifyOrderedIteratorUsingHasNext(expected.iterator(), actual.iterator(), transforminator);
         verifyOrderedIteratorUsingNextOnly(expected.iterator(), actual.iterator(), transforminator);
+    }
+
+    private static <S, T> void verifyOrderedSplits(@Nonnull Iterable<T> expected,
+                                                   @Nonnull Iterator<T> actual,
+                                                   @Nonnull Function<S, T> transforminator)
+    {
+        if (actual instanceof SplitableIterator) {
+            List<T> result = new ArrayList<>();
+            traverseSplits((SplitableIterator<S>)actual, result, transforminator);
+            assertEquals(makeList(expected.iterator()), result);
+        }
+    }
+
+    private static <S, T> void traverseSplits(@Nonnull SplitableIterator<S> iterator,
+                                              @Nonnull List<T> result,
+                                              @Nonnull Function<S, T> transforminator)
+    {
+        if (iterator.isSplitAllowed()) {
+            SplitIterator<S> split = iterator.splitIterator();
+            traverseSplits(split.getLeft(), result, transforminator);
+            traverseSplits(split.getRight(), result, transforminator);
+        } else {
+            while (iterator.hasNext()) {
+                result.add(transforminator.apply(iterator.next()));
+            }
+        }
     }
 
     public static <S, T> void verifyUnorderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,

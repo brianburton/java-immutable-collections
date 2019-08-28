@@ -217,6 +217,14 @@ public class JImmutableTrieArrayTest
         entries.add(MapEntry.of(10, 101));
         entries.add(MapEntry.of(500, 5001));
         StandardIteratorTests.listIteratorTest(entries, array.iterator());
+
+        entries.clear();
+        array = JImmutableTrieArray.of();
+        for (int i = -1000; i <= 1000; ++i) {
+            entries.add(MapEntry.of(i, 1000 + i));
+            array = array.assign(i, 1000 + i);
+        }
+        StandardIteratorTests.verifyOrderedIterable(entries, array);
     }
 
     public void testSignedOrderIteration()
