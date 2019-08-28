@@ -50,7 +50,6 @@ import java.util.stream.Collector;
 @Immutable
 public interface JImmutableSet<T>
     extends Insertable<T, JImmutableSet<T>>,
-            Cursorable<T>,
             IterableStreamable<T>,
             Mapped<T, T>,
             InvariantCheckable
@@ -80,15 +79,6 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     @Override
-    JImmutableSet<T> insertAll(@Nonnull Cursor<? extends T> values);
-
-    /**
-     * Adds all of the elements of the specified collection to the set.
-     *
-     * @return instance of set containing the collection
-     */
-    @Nonnull
-    @Override
     JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -110,13 +100,6 @@ public interface JImmutableSet<T>
      *
      * @return true if the Set contains the values
      */
-    boolean containsAll(@Nonnull Cursor<? extends T> values);
-
-    /**
-     * Determines if the Set contains all values in the specified collection.
-     *
-     * @return true if the Set contains the values
-     */
     boolean containsAll(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -125,13 +108,6 @@ public interface JImmutableSet<T>
      * @return true if the Set contains a value
      */
     boolean containsAny(@Nonnull Iterable<? extends T> values);
-
-    /**
-     * Determines if the Set contains any values in the specified collection.
-     *
-     * @return true if the Set contains a value
-     */
-    boolean containsAny(@Nonnull Cursor<? extends T> values);
 
     /**
      * Determines if the Set contains any values in the specified collection.
@@ -162,14 +138,6 @@ public interface JImmutableSet<T>
      * @return instance of set without the values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll(@Nonnull Cursor<? extends T> other);
-
-    /**
-     * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
-     *
-     * @return instance of set without the values
-     */
-    @Nonnull
     JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> other);
 
     /**
@@ -188,15 +156,6 @@ public interface JImmutableSet<T>
      * @return instance of set containing the values
      */
     @Nonnull
-    JImmutableSet<T> union(@Nonnull Cursor<? extends T> values);
-
-    /**
-     * Adds all values from other to the Set.
-     *
-     * @param values source of values to add
-     * @return instance of set containing the values
-     */
-    @Nonnull
     JImmutableSet<T> union(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -206,14 +165,6 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other);
-
-    /**
-     * Removes all values from the Set that are not contained in the other collection.
-     *
-     * @return instance of set with unmatched values removed
-     */
-    @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Cursor<? extends T> values);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -315,7 +266,7 @@ public interface JImmutableSet<T>
     {
         return transform((JImmutableSet)deleteAll(), transform);
     }
-    
+
     /**
      * Returns a set of the same type as this containing only those elements for which
      * predicate returns true.  Implementations are optimized assuming predicate will

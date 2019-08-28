@@ -38,14 +38,14 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.List;
 
 import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 public abstract class AbstractListStressTestable
-        extends AbstractStressTestable
+    extends AbstractStressTestable
 {
     protected void verifyContents(JImmutableList<String> list,
                                   List<String> expected)
@@ -73,11 +73,11 @@ public abstract class AbstractListStressTestable
         verifySerializable(null, list);
     }
 
-    protected void verifyCursor(JImmutableList<String> list,
-                                List<String> expected)
+    protected void verifyIterator(JImmutableList<String> list,
+                                  List<String> expected)
     {
         System.out.printf("checking cursor with size %d%n", list.size());
-        StandardCursorTest.listCursorTest(expected, list.cursor());
+        StandardIteratorTests.listIteratorTest(expected, list.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
     }
 }

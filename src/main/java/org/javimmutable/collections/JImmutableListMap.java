@@ -49,7 +49,6 @@ public interface JImmutableListMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>, JImmutableListMap<K, V>>,
             Mapped<K, JImmutableList<V>>,
             IterableStreamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
-            Cursorable<JImmutableMap.Entry<K, JImmutableList<V>>>,
             InvariantCheckable
 {
     /**
@@ -105,16 +104,6 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     default JImmutableListMap<K, V> insertAll(@Nonnull K key,
-                                              @Nonnull Cursor<? extends V> values)
-    {
-        return assign(key, getList(key).insertAll(values));
-    }
-
-    /**
-     * Adds all of the elements of the specified collection to the List for the specified key.
-     */
-    @Nonnull
-    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
                                               @Nonnull Iterator<? extends V> values)
     {
         return assign(key, getList(key).insertAll(values));
@@ -138,20 +127,6 @@ public interface JImmutableListMap<K, V>
     default JImmutableListMap<K, V> deleteAll(@Nonnull Iterable<? extends K> keys)
     {
         return deleteAll(keys.iterator());
-    }
-
-    /**
-     * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
-     * current map if the keys were contained in the map.
-     */
-    @Nonnull
-    default JImmutableListMap<K, V> deleteAll(@Nonnull Cursor<? extends K> keys)
-    {
-        JImmutableListMap<K, V> map = this;
-        for (Cursor<? extends K> cursor = keys.start(); cursor.hasValue(); cursor = cursor.next()) {
-            map = map.delete(cursor.getValue());
-        }
-        return map;
     }
 
     /**
@@ -222,21 +197,6 @@ public interface JImmutableListMap<K, V>
      */
     @Nonnull
     JImmutableListMap<K, V> deleteAll();
-
-    /**
-     * Creates a Cursor to access all of the Map's keys.
-     */
-    @Nonnull
-    Cursor<K> keysCursor();
-
-    /**
-     * Creates a Cursor to access all of the specified key's list.
-     * If no list exists for key an empty cursor is returned.
-     *
-     * @return a (possibly empty) cursor for traversing the values associated with key
-     */
-    @Nonnull
-    Cursor<V> valuesCursor(@Nonnull K key);
 
     /**
      * Creates a Streamable to access all of the Map's keys.

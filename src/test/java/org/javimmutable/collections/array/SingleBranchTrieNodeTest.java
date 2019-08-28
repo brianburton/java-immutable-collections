@@ -38,8 +38,7 @@ package org.javimmutable.collections.array;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.Collections;
 
@@ -64,46 +63,37 @@ public class SingleBranchTrieNodeTest
     {
         LeafTrieNode<String> child = LeafTrieNode.of(30 << 20, "value");
         SingleBranchTrieNode<String> node = SingleBranchTrieNode.forBranchIndex(20, 30, child);
+        assertEquals(1, node.valueCount());
         assertEquals(null, node.getValueOr(20, 31 << 20, null));
         assertEquals("value", node.getValueOr(20, 30 << 20, null));
         assertEquals(Holders.<String>of(), node.find(20, 31 << 20));
         assertEquals(Holders.of("value"), node.find(20, 30 << 20));
-        StandardCursorTest.listCursorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.cursor());
-        StandardCursorTest.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.iterator());
+        StandardIteratorTests.listIteratorTest(Collections.singletonList(MapEntry.of(30 << 20, "value")), node.iterator());
 
-        MutableDelta delta = new MutableDelta();
-        assertSame(node, node.assign(20, 30 << 20, "value", delta));
-        assertEquals(0, delta.getValue());
+        assertSame(node, node.assign(20, 30 << 20, "value"));
+        assertEquals(1, node.valueCount());
 
-        delta = new MutableDelta();
-        assertSame(node, node.delete(20, 18 << 20, delta));
-        assertEquals(0, delta.getValue());
+        assertSame(node, node.delete(20, 18 << 20));
+        assertEquals(1, node.valueCount());
 
-        delta = new MutableDelta();
-        assertSame(EmptyTrieNode.instance(), node.delete(20, 30 << 20, delta));
-        assertEquals(-1, delta.getValue());
+        assertSame(EmptyTrieNode.instance(), node.delete(20, 30 << 20));
 
-        delta = new MutableDelta();
-        TrieNode<String> newNode = node.assign(20, 30 << 20, "30", delta);
-        assertEquals(0, delta.getValue());
+        TrieNode<String> newNode = node.assign(20, 30 << 20, "30");
+        assertEquals(1, newNode.valueCount());
         assertTrue(newNode instanceof SingleBranchTrieNode);
         assertEquals("30", newNode.getValueOr(20, 30 << 20, null));
 
-        delta = new MutableDelta();
-        newNode = node.assign(20, 18 << 20, "18", delta);
-        assertEquals(1, delta.getValue());
+        newNode = node.assign(20, 18 << 20, "18");
+        assertEquals(2, newNode.valueCount());
         assertTrue(newNode instanceof MultiBranchTrieNode);
         assertEquals("value", newNode.getValueOr(20, 30 << 20, null));
         assertEquals("18", newNode.getValueOr(20, 18 << 20, null));
 
-        delta = new MutableDelta();
-        newNode = newNode.delete(20, 18 << 20, delta);
+        newNode = newNode.delete(20, 18 << 20);
+        assertEquals(1, newNode.valueCount());
         assertTrue(newNode instanceof LeafTrieNode);
-        assertEquals(-1, delta.getValue());
 
-        delta = new MutableDelta();
-        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20, delta));
-        assertEquals(-1, delta.getValue());
+        assertSame(EmptyTrieNode.instance(), newNode.delete(20, 30 << 20));
     }
 
     @SuppressWarnings({"unchecked", "PointlessBitwiseExpression"})
@@ -119,13 +109,9 @@ public class SingleBranchTrieNodeTest
         assertEquals("value1", node.getValueOr(25, 0 << 20, null));
         assertEquals("value2", node.getValueOr(25, 1 << 20, null));
 
-        MutableDelta delta = new MutableDelta();
-        assertSame(leaf2, node.delete(25, 0 << 20, delta));
-        assertEquals(-1, delta.getValue());
+        assertSame(leaf2, node.delete(25, 0 << 20));
 
-        delta = new MutableDelta();
-        assertSame(leaf1, node.delete(25, 1 << 20, delta));
-        assertEquals(-1, delta.getValue());
+        assertSame(leaf1, node.delete(25, 1 << 20));
     }
 
     public void testPadding()

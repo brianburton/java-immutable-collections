@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEnumeration;
-import static org.javimmutable.collections.cursors.StandardCursorTest.*;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class JImmutableHashMapTest
     extends TestCase
@@ -172,17 +172,14 @@ public class JImmutableHashMapTest
                     assertEquals(entry.getValue(), mapValue.getValue());
                 }
 
-                // verify the cursor worked properly
+                // verify the iterator worked properly
                 final List<JImmutableMap.Entry<ManualHashKey, Integer>> entries = new ArrayList<>();
-                Map<ManualHashKey, Integer> fromCursor = new HashMap<>();
+                Map<ManualHashKey, Integer> fromIterator = new HashMap<>();
                 for (JImmutableMap.Entry<ManualHashKey, Integer> entry : map) {
                     entries.add(entry);
-                    fromCursor.put(entry.getKey(), entry.getValue());
+                    fromIterator.put(entry.getKey(), entry.getValue());
                 }
-                assertEquals(expected, fromCursor);
-                listCursorTest(entries, map.cursor());
-                cursorTest(value -> entries.get(value).getKey(), entries.size(), map.keysCursor());
-                cursorTest(value -> entries.get(value).getValue(), entries.size(), map.valuesCursor());
+                assertEquals(expected, fromIterator);
                 listIteratorTest(entries, map.iterator());
                 iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
                 iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());

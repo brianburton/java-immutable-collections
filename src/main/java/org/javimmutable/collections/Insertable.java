@@ -63,15 +63,6 @@ public interface Insertable<T, C extends Insertable<T, C>>
      * Add all values to the container in some manner appropriate to the implementation.
      */
     @Nonnull
-    default C insertAll(@Nonnull Cursor<? extends T> cursor)
-    {
-        return insertAll(cursor.iterator());
-    }
-
-    /**
-     * Add all values to the container in some manner appropriate to the implementation.
-     */
-    @Nonnull
     default C insertAll(@Nonnull Iterator<? extends T> iterator)
     {
         C container = getInsertableSelf();

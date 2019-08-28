@@ -39,8 +39,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,22 +65,19 @@ public class JImmutableLinkedStackTest
             // expected
         }
         assertSame(list, list.getTail());
-        StandardCursorTest.emptyCursorTest(list.cursor());
-        StandardCursorTest.emptyIteratorTest(list.iterator());
+        StandardIteratorTests.emptyIteratorTest(list.iterator());
 
         JImmutableStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
-        StandardCursorTest.listCursorTest(Arrays.asList(10), list2.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(10), list2.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(10), list2.iterator());
 
         JImmutableStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
-        StandardCursorTest.listCursorTest(Arrays.asList(30, 10), list3.cursor());
-        StandardCursorTest.listIteratorTest(Arrays.asList(30, 10), list3.iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(30, 10), list3.iterator());
 
         assertEquals(Collections.<Integer>emptyList(), list.makeList());
         assertEquals(Arrays.asList(10), list2.makeList());
@@ -112,9 +109,9 @@ public class JImmutableLinkedStackTest
 
     public void testParallelStreams()
     {
-        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(StandardCursor.makeList(StandardCursor.forRange(1, 10000)));
+        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(StandardIteratorTests.makeList(IndexedIterator.forRange(1, 10000)));
         final List<Integer> collected = original.stream().parallel().collect(toList());
-        assertEquals(StandardCursor.makeList(original.cursor()), collected);
+        assertEquals(StandardIteratorTests.makeList(original.iterator()), collected);
     }
 
     public void testSerialization()

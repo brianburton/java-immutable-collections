@@ -42,7 +42,7 @@ import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 import java.util.ArrayList;
@@ -64,8 +64,8 @@ public class JImmutableInsertOrderSetTest
     public void testStandard()
     {
         StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.of());
-        StandardCursorTest.emptyCursorTest(JImmutableInsertOrderSet.<Integer>of().cursor());
-        StandardCursorTest.listCursorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).cursor());
+        StandardIteratorTests.emptyIteratorTest(JImmutableInsertOrderSet.<Integer>of().iterator());
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).iterator());
     }
 
     public void test()
@@ -236,7 +236,7 @@ public class JImmutableInsertOrderSetTest
         assertEquals(asList(), iterToList(tset));
 
         // JImmutableSet inherits Set's retainAll() behavior in intersection(Set)
-        // but NOT in the Collection, Cursorable, Cursor, and Iterator variations.
+        // but NOT in the Collection and Iterator variations.
         // Iterable intersection makes membership decision itself
         // Set intersection defers membership decision to passed in Set (like java.util.Set)
         // Collection intersection uses Iterator internally

@@ -1,19 +1,12 @@
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.indexed.IndexedHelper;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -280,7 +273,7 @@ class ValueNode<K, V>
     }
 
     @Override
-    void checkInvariants(@Nonnull Comparator<K> comp)
+    public void checkInvariants(@Nonnull Comparator<K> comp)
     {
         if (key == null) {
             throw new IllegalStateException();
@@ -322,19 +315,55 @@ class ValueNode<K, V>
         return this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        final SplitableIterable<Entry<K, V>> valueIterator = () -> SingleValueIterator.of(entry());
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(left, valueIterator, right));
+        assert offset >= 0 && limit <= size && offset <= limit;
+        final int leftSize = left.size();
+        if (limit <= leftSize) {
+            return left.iterateOverRange(parent, offset, limit);
+        } else if (offset == leftSize) {
+            return new IteratorState(parent, limit - leftSize);
+        } else if (offset > leftSize) {
+            return right.iterateOverRange(parent, offset - leftSize - 1, limit - leftSize - 1);
+        } else {
+            return left.iterateOverRange(new IteratorState(parent, limit - leftSize), offset, leftSize);
+        }
     }
 
-    @Nonnull
-    @Override
-    public Cursor<Entry<K, V>> cursor()
+    // state object to resume iteration down right branch from start to limit (limit relative to right branch)
+    class IteratorState
+        implements GenericIterator.State<JImmutableMap.Entry<K, V>>
     {
-        final Cursorable<Entry<K, V>> valueCursor = () -> SingleValueCursor.of(entry());
-        return LazyMultiCursor.cursor(IndexedHelper.indexed(left, valueCursor, right));
+        private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
+        private final int limit;
+
+        private IteratorState(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                              int limit)
+        {
+            assert limit <= 1 + right.size();
+            this.parent = parent;
+            this.limit = limit;
+        }
+
+        @Override
+        public JImmutableMap.Entry<K, V> value()
+        {
+            return MapEntry.of(key, value);
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
+        {
+            if (limit == 1) {
+                return parent;
+            } else {
+                return right.iterateOverRange(parent, 0, limit - 1);
+            }
+        }
     }
 }

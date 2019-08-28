@@ -39,7 +39,6 @@ import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableRandomAccessList;
 import org.javimmutable.collections.JImmutableSet;
 
 import javax.annotation.Nonnull;
@@ -64,16 +63,6 @@ public final class JImmutableCollectors
     public static <T> Collector<T, ?, JImmutableList<T>> toList()
     {
         return JImmutables.listCollector();
-    }
-
-    /**
-     * Collects values into a JImmutableRandomAccessList.
-     */
-    @Deprecated
-    @Nonnull
-    public static <T> Collector<T, ?, JImmutableRandomAccessList<T>> toRalist()
-    {
-        return JImmutables.ralistCollector();
     }
 
     /**

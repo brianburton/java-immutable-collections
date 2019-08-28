@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -53,13 +54,101 @@ import java.util.stream.Collector;
 public interface JImmutableList<T>
     extends Insertable<T, JImmutableList<T>>,
             Indexed<T>,
-            Cursorable<T>,
             IterableStreamable<T>,
             InvariantCheckable
 {
     interface Builder<T>
-        extends MutableBuilder<T, JImmutableList<T>>
     {
+        /**
+         * Builds and returns a collection containing all of the added values.  May be called
+         * as often as desired and is safe to call and then continue adding more elements to build
+         * another collection with those additional elements.
+         *
+         * @return the collection
+         */
+        @Nonnull
+        JImmutableList<T> build();
+
+        /**
+         * Determines how many values will be in the collection if build() is called now.
+         */
+        int size();
+
+        /**
+         * Adds the specified value to the values included in the collection when build() is called.
+         *
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        Builder<T> add(T value);
+
+        /**
+         * Adds all values in the Iterator to the values included in the collection when build() is called.
+         *
+         * @param source Iterator containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<T> add(Iterator<? extends T> source)
+        {
+            while (source.hasNext()) {
+                add(source.next());
+            }
+            return this;
+        }
+
+        /**
+         * Adds all values in the Collection to the values included in the collection when build() is called.
+         *
+         * @param source Collection containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<T> add(Iterable<? extends T> source)
+        {
+            return add(source.iterator());
+        }
+
+        /**
+         * Adds all values in the array to the values included in the collection when build() is called.
+         *
+         * @param source array containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default <K extends T> Builder<T> add(K... source)
+        {
+            return add(Arrays.asList(source));
+        }
+
+        /**
+         * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
+         *
+         * @param source Indexed containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<T> add(Indexed<? extends T> source,
+                               int offset,
+                               int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
+            return this;
+        }
+
+        /**
+         * Adds all values in the Indexed to the values included in the collection when build() is called.
+         *
+         * @param source Indexed containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<T> add(Indexed<? extends T> source)
+        {
+            return add(source, 0, source.size());
+        }
     }
 
     /**
@@ -100,6 +189,15 @@ public interface JImmutableList<T>
     JImmutableList<T> insert(@Nonnull Iterable<? extends T> values);
 
     /**
+     * Insert value at index (which must be within 0 to size).
+     * Shifts all values at and after index one position to the right and adds 1
+     * to size of the list.
+     */
+    @Nonnull
+    JImmutableList<T> insert(int index,
+                             @Nullable T value);
+
+    /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
      */
@@ -129,16 +227,31 @@ public interface JImmutableList<T>
      */
     @Nonnull
     @Override
-    JImmutableList<T> insertAll(@Nonnull Cursor<? extends T> values);
+    JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
      *
      * @return instance of list containing the collection
      */
     @Nonnull
-    @Override
-    JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
+    JImmutableList<T> insertAll(int index,
+                                @Nonnull Iterable<? extends T> values);
+
+    /**
+     * Inserts all elements at index (which must be within 0 to size) in the same
+     * order they appear in the Iterable.
+     * Shifts all values at and after index x positions to the right and adds x
+     * to size of the list, where x is the number of elements being inserted.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    JImmutableList<T> insertAll(int index,
+                                @Nonnull Iterator<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -147,14 +260,6 @@ public interface JImmutableList<T>
      */
     @Nonnull
     JImmutableList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
-
-    /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -172,15 +277,6 @@ public interface JImmutableList<T>
      */
     @Nonnull
     JImmutableList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
-
-    /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
-     *
-     * @return instance of list containing the collection
-     */
-    @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Cursor<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -215,6 +311,14 @@ public interface JImmutableList<T>
     boolean isEmpty();
 
     /**
+     * Delete value at index (which must be within the current bounds of the list).
+     * Shifts all values at and after index one position to the left and subtracts 1
+     * from size of the list.
+     */
+    @Nonnull
+    JImmutableList<T> delete(int index);
+
+    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
@@ -235,16 +339,7 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default JImmutableList<T> select(@Nonnull Predicate<T> predicate)
-    {
-        JImmutableList<T> answer = deleteAll();
-        for (T value : this) {
-            if (predicate.test(value)) {
-                answer = answer.insert(value);
-            }
-        }
-        return answer.size() == size() ? this : answer;
-    }
+    JImmutableList<T> select(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a list of the same type as this containing all those elements for which
@@ -255,10 +350,7 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default JImmutableList<T> reject(@Nonnull Predicate<T> predicate)
-    {
-        return select(predicate.negate());
-    }
+    JImmutableList<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a Collector that creates a list of the same type as this containing all
@@ -287,4 +379,52 @@ public interface JImmutableList<T>
      * @return the collection after all elements have been processed
      */
     <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
+
+    /**
+     * Return the (possibly empty) list containing the first limit values.
+     *
+     * @param limit last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> prefix(int limit);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items.
+     *
+     * @param offset first index (inclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> suffix(int offset);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items up to but excluding the value at index limit.
+     *
+     * @param offset first index (inclusive) of values to include
+     * @param limit  last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> middle(int offset,
+                             int limit);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items up to but excluding the value at index limit.  Similar
+     * to middle() but accepts a more permissive set of values.  Negative values are interpreted
+     * relative to the end of the list and are inclusive when used as limit.  This (-5,-1) would
+     * return the last 5 elements of the list.  Bounds checking is removed and values past the
+     * end of the list are simply set to the end of the list.  So (0,10000) for a list with
+     * five elements would be equivalent to (0,5).
+     *
+     * @param offset first index (inclusive) of values to include
+     * @param limit  last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    JImmutableList<T> slice(int offset,
+                            int limit);
 }

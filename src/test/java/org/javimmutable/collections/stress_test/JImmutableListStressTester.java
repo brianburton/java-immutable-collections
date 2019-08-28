@@ -37,7 +37,6 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.cursors.IterableCursor;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -48,7 +47,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * Test program for all implementations of JImmutableList, including JImmutableRandomAccessList.
+ * Test program for all implementations of JImmutableList.
  * Divided into five sections: growing (adds new values to the beginning or end of the list),
  * updating (changes values at any index in the list), shrinking (removes values from either
  * end of the list), contains (tests methods that search for values in the list), and cleanup
@@ -85,11 +84,13 @@ public class JImmutableListStressTester
         int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
 
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             assert expected.size() == list.size();
             System.out.printf("growing %d%n", list.size());
             while (expected.size() < step.growthSize()) {
-                switch (random.nextInt(19)) {
+                final int maxToAdd = Math.min(1000, step.growthSize() - expected.size());
+                final int maxToDelete = maxToAdd / 4;
+                switch (random.nextInt(25)) {
                     case 0: { //insert(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         list = list.insert(value);
@@ -109,99 +110,157 @@ public class JImmutableListStressTester
                         break;
                     }
                     case 3: { //insert(Iterable)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insert(values);
                         expected.addAll(values);
                         break;
                     }
                     case 4: { //insert(jlist)
-                        List<String> values = makeInsertList(tokens, random, 64);
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insert(listIterable(list, values));
                         expected.addAll(values);
                         break;
                     }
                     case 5: { //insertAll(Iterable)
-                        List<String> values = makeInsertList(tokens, random);
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAll(plainIterable(values));
                         expected.addAll(values);
                         break;
                     }
-                    case 6: { //insertAll(Cursor)
-                        List<String> values = makeInsertList(tokens, random);
-                        list = list.insertAll(IterableCursor.of(values));
-                        expected.addAll(values);
-                        break;
-                    }
-                    case 7: { //insertAll(Iterator)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 6: { //insertAll(Iterator)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAll(values.iterator());
                         expected.addAll(values);
                         break;
                     }
-                    case 8: { //insertAll(jlist)
-                        List<String> values = makeInsertList(tokens, random, 64);
+                    case 7: { //insertAll(jlist)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAll(listIterable(list, values));
                         expected.addAll(values);
                         break;
                     }
-                    case 9: { //insertAll(Collection)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 8: { //insertAll(Collection)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAll(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 10: { //insertAllLast(Iterable)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 9: { //insertAllLast(Iterable)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllLast(plainIterable(values));
                         expected.addAll(values);
                         break;
                     }
-                    case 11: { //insertAllLast(jlist)
-                        List<String> values = makeInsertList(tokens, random, 64);
+                    case 10: { //insertAllLast(jlist)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllLast(listIterable(list, values));
                         expected.addAll(values);
                         break;
                     }
-                    case 12: { //insertAllLast(Collection)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 11: { //insertAllLast(Collection)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllLast(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 13: { //insertAllFirst(Iterable)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 12: { //insertAllFirst(Iterable)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllFirst(plainIterable(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 14: { //insertAllFirst(Cursor)
-                        List<String> values = makeInsertList(tokens, random);
-                        list = list.insertAllFirst(IterableCursor.of(values));
-                        expected.addAll(0, values);
-                        break;
-                    }
-                    case 15: { //insertAllFirst(Iterator)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 13: { //insertAllFirst(Iterator)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllFirst(values.iterator());
                         expected.addAll(0, values);
                         break;
                     }
-                    case 16: { //insertAllFirst(Indexed and Iterable)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 14: { //insertAllFirst(Indexed and Iterable)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllFirst(IndexedList.retained(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 17: { //insertAllFirst(jlist)
-                        List<String> values = makeInsertList(tokens, random, 64);
+                    case 15: { //insertAllFirst(jlist)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllFirst(listIterable(list, values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 18: { //insertAllFirst(Collection)
-                        List<String> values = makeInsertList(tokens, random);
+                    case 16: { //insertAllFirst(Collection)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
                         list = list.insertAllFirst(values);
                         expected.addAll(0, values);
+                        break;
+                    }
+                    case 17: { //insert(int, T)
+                        int index = random.nextInt(Math.max(1, list.size()));
+                        String value = RandomKeyManager.makeValue(tokens, random);
+                        list = list.insert(index, value);
+                        expected.add(index, value);
+                        break;
+                    }
+                    case 18: { //insertAll(int, Cursorable);
+                        int index = random.nextInt(Math.max(1, list.size()));
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
+                        list = list.insertAll(index, plainIterable(values));
+                        expected.addAll(index, values);
+                        break;
+                    }
+                    case 19: { //insertAll(int, Collection)
+                        int index = random.nextInt(Math.max(1, list.size()));
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
+                        list = list.insertAll(index, values);
+                        expected.addAll(index, values);
+                        break;
+                    }
+                    case 20: { //insertAll(int, JImmutableList)
+                        int index = random.nextInt(Math.max(1, list.size()));
+                        JImmutableList<String> values = makeInsertJList(tokens, random, maxToAdd);
+                        list = list.insertAll(index, values);
+                        expected.addAll(index, values.getList());
+                        break;
+                    }
+                    case 21: { //delete(int)
+                        if (expected.size() > 0) {
+                            int index = random.nextInt(Math.max(1, list.size()));
+                            list = list.delete(index);
+                            expected.remove(index);
+                        }
+                        break;
+                    }
+                    case 22: { //prefix(int)
+                        int index = list.size() - random.nextInt(Math.max(1, maxToDelete));
+                        if (index >= 0 && index <= list.size()) {
+                            list = list.prefix(index);
+                            if (index < expected.size()) {
+                                expected.subList(index, expected.size()).clear();
+                            }
+                        }
+                        break;
+                    }
+                    case 23: { //suffix(int)
+                        int index = random.nextInt(Math.max(1, maxToDelete));
+                        if (index >= 0 && index <= list.size()) {
+                            list = list.suffix(index);
+                            if (index > 0) {
+                                expected.subList(0, index).clear();
+                            }
+                        }
+                        break;
+                    }
+                    case 24: { //middle(int,int)
+                        int offset = random.nextInt(Math.max(1, maxToDelete));
+                        int limit = list.size() - random.nextInt(Math.max(1, maxToDelete));
+                        if ((offset < limit) && (limit <= list.size()) && ((limit - offset) >= (expected.size() - maxToDelete))) {
+                            list = list.middle(offset, limit);
+                            if (limit < expected.size()) {
+                                expected.subList(limit, expected.size()).clear();
+                            }
+                            if (offset > 0) {
+                                expected.subList(0, offset).clear();
+                            }
+                        }
                         break;
                     }
                     default:
@@ -283,7 +342,7 @@ public class JImmutableListStressTester
                         throw new RuntimeException();
                 }
             }
-            verifyCursor(list, expected);
+            verifyIterator(list, expected);
         }
         verifyFinalSize(size, list.size());
         System.out.printf("cleanup %d%n", expected.size());

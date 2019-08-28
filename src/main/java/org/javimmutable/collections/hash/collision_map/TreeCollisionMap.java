@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash.collision_map;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -125,12 +124,6 @@ public class TreeCollisionMap<K extends Comparable<K>, V>
                                                        @Nonnull K key)
     {
         return leaf.findEntry(comparator, key);
-    }
-
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull Node<K, V> leaf)
-    {
-        return leaf.cursor();
     }
 
     @Override

@@ -41,7 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.Node;
 
@@ -126,7 +126,7 @@ public class TreeCollisionMapTest
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
-        StandardCursorTest.listCursorTest(expected, transforms.cursor(value));
+        StandardIteratorTests.listIteratorTest(expected, transforms.iterator(value));
     }
 
     private Node<Integer, Integer> branch(Tuple2<Integer, Integer> a,

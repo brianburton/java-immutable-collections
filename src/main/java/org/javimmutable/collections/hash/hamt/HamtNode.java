@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash.hamt;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
@@ -51,7 +49,6 @@ import javax.annotation.Nullable;
 
 public interface HamtNode<T, K, V>
     extends SplitableIterable<T>,
-            Cursorable<T>,
             InvariantCheckable
 
 {
@@ -90,7 +87,10 @@ public interface HamtNode<T, K, V>
     SplitableIterator<JImmutableMap.Entry<K, V>> iterator(CollisionMap<T, K, V> collisionMap);
 
     @Nonnull
-    Cursor<JImmutableMap.Entry<K, V>> cursor(CollisionMap<T, K, V> collisionMap);
+    default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(CollisionMap<T, K, V> collisionMap)
+    {
+        return () -> iterator(collisionMap);
+    }
 
     @Override
     default void checkInvariants()

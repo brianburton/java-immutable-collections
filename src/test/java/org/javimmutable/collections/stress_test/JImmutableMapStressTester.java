@@ -42,8 +42,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 import org.javimmutable.collections.util.JImmutables;
@@ -134,7 +134,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         JImmutableMap<K, String> map = this.map;
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
-        for (SizeStepCursor.Step step : SizeStepCursor.steps(6, size, random)) {
+        for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d%n", map.size());
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(5)) {
@@ -275,7 +275,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         throw new RuntimeException();
                 }
             }
-            verifyCursor(map, expected);
+            verifyIteration(map, expected);
         }
         verifyFinalSize(size, map.size());
         System.out.printf("cleanup %d%n", map.size());
@@ -333,8 +333,8 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         System.out.printf("done checking contents with size %d%n", map.size());
     }
 
-    private void verifyCursor(JImmutableMap<K, String> map,
-                              Map<K, String> expected)
+    private void verifyIteration(JImmutableMap<K, String> map,
+                                 Map<K, String> expected)
     {
         System.out.printf("checking cursor with size %d%n", map.size());
 
@@ -355,9 +355,9 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         if (entries.size() != map.size()) {
             throw new RuntimeException("entries list generated incorrectly\n");
         }
-        StandardCursorTest.listCursorTest(keys, map.keysCursor());
-        StandardCursorTest.listCursorTest(values, map.valuesCursor());
-        StandardCursorTest.listCursorTest(entries, map.cursor());
+        StandardIteratorTests.listIteratorTest(keys, map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(values, map.values().iterator());
+        StandardIteratorTests.listIteratorTest(entries, map.iterator());
         StandardJImmutableMapTests.verifyEnumeration(entries, map);
     }
 

@@ -35,16 +35,12 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -57,6 +53,12 @@ public class EmptyTrieNode<T>
     static <T> EmptyTrieNode<T> instance()
     {
         return (EmptyTrieNode<T>)EMPTY;
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return 0;
     }
 
     @Override
@@ -83,17 +85,14 @@ public class EmptyTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
-        sizeDelta.add(1);
         return LeafTrieNode.of(index, value);
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         return this;
     }
@@ -116,18 +115,13 @@ public class EmptyTrieNode<T>
         return this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return StandardCursor.of();
-    }
-
-    @Nonnull
-    @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
-    {
-        return EmptyIterator.of();
+        return parent;
     }
 
     @Override

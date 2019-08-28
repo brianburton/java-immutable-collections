@@ -1,297 +1,262 @@
-///###////////////////////////////////////////////////////////////////////////
-//
-// Burton Computer Corporation
-// http://www.burton-computer.com
-//
-// Copyright (c) 2018, Burton Computer Corporation
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-//     Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     Neither the name of the Burton Computer Corporation nor the names
-//     of its contributors may be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+@NotThreadSafe
 class TreeBuilder<T>
 {
-    private final LeafBuilder<T> leafBuilder;
+    private final T[] buffer;
+    private int count;
+    private int size;
+    private BranchBuilder<T> parent;
 
-    TreeBuilder(boolean forwardOrder)
+    @SuppressWarnings("unchecked")
+    TreeBuilder()
     {
-        leafBuilder = new LeafBuilder<>(forwardOrder);
-    }
-
-    synchronized void add(T value)
-    {
-        leafBuilder.add(value);
-    }
-
-    synchronized int size()
-    {
-        return leafBuilder.size;
+        buffer = (T[])new Object[LeafNode.MAX_SIZE];
     }
 
     @Nonnull
-    synchronized Node<T> build()
+    AbstractNode<T> build()
     {
-        return leafBuilder.build();
-    }
-
-    @Nonnull
-    static <T> Node<T> createFromIterator(int maxSize,
-                                          boolean forwardOrder,
-                                          @Nonnull Iterator<? extends T> values)
-    {
-        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder);
-        while (values.hasNext() && (builder.size < maxSize)) {
-            builder.add(values.next());
+        AbstractNode<T> answer;
+        if (count > 0) {
+            answer = new LeafNode<>(buffer, count);
+        } else {
+            answer = EmptyNode.instance();
         }
-        return builder.build();
+        if (parent != null) {
+            answer = parent.build(answer);
+        }
+        return answer;
+    }
+
+    int size()
+    {
+        return size;
+    }
+
+    void combineWith(@Nonnull TreeBuilder<T> other)
+    {
+        final AbstractNode<T> a = build();
+        final AbstractNode<T> b = other.build();
+        final AbstractNode<T> ab = a.append(b);
+        rebuild(ab);
     }
 
     /**
-     * Takes a single LeafNode and returns a new Node of size maxSize containing all of the values
-     * from the LeafNode plus values from Iterator.  If Iterator contains insufficient values to
-     * reach maxSize than a smaller than requested Node containing all of the values in the Iterator
-     * is returned.
+     * Clears any existing data in this builder and then populates the builder with
+     * nodes from the provided tree.  At each level of the tree it creates a parent
+     * branch using the left node and proceeds further using the right node.
+     * At the leaf all values are copied into the buffer.
      */
-    @Nonnull
-    static <T> Node<T> expandLeafNode(int maxSize,
-                                      boolean forwardOrder,
-                                      @Nonnull LeafNode<T> nodeToFill,
-                                      @Nonnull Iterator<? extends T> values)
+    void rebuild(@Nonnull AbstractNode<T> node)
     {
-        assert maxSize >= nodeToFill.size();
-        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder);
-        final Indexed<T> nodeValues = nodeToFill.values();
-        final Iterable<T> prefill = forwardOrder ? IndexedIterator.fwd(nodeValues) : IndexedIterator.rev(nodeValues);
-        for (T t : prefill) {
-            builder.add(t);
+        count = 0;
+        size = node.size();
+        parent = null;
+        while (node.depth() > 0) {
+            parent = new BranchBuilder<>(parent, node.left());
+            node = node.right();
         }
-        while (values.hasNext() && (builder.size < maxSize)) {
-            builder.add(values.next());
+        for (T t : node) {
+            buffer[count++] = t;
         }
-        return builder.build();
     }
 
-    /**
-     * Takes a single BranchNode which has an empty prefix/suffix and builds a new BranchNode
-     * containing all of the filled nodes from nodeToFill as a starting point plus sufficient
-     * values added to from the Iterator to bring the total size of the new node to maxSize.
-     * If the Iterator contains insufficient values to produce a node of maxSize then a smaller
-     * than requested node containing all values in the Iterator is returned.
-     */
-    @Nonnull
-    static <T> BranchNode<T> expandBranchNode(int maxSize,
-                                              boolean forwardOrder,
-                                              @Nonnull BranchNode<T> nodeToFill,
-                                              @Nonnull Iterator<? extends T> values)
+    void add(T value)
     {
-        assert (forwardOrder ? nodeToFill.suffix() : nodeToFill.prefix()).isEmpty();
-        final LeafBuilder<T> builder = new LeafBuilder<>(forwardOrder, nodeToFill.filledNodes());
-        assert maxSize >= builder.size;
-        while (values.hasNext() && (builder.size < maxSize)) {
-            builder.add(values.next());
-        }
-        return (BranchNode<T>)builder.build();
-    }
-
-    private static class LeafBuilder<T>
-    {
-        private final boolean forwardOrder;
-        private final T[] values;
-        private BranchBuilder<T> next;
-        private int offset;
-        private int remaining;
-        private int size;
-
-        private LeafBuilder(boolean forwardOrder)
-        {
-            this.forwardOrder = forwardOrder;
-            values = ListHelper.allocateValues(32);
-            offset = forwardOrder ? 0 : 32;
-            remaining = 32;
-        }
-
-        private LeafBuilder(boolean forwardOrder,
-                            @Nonnull Indexed<Node<T>> startNodes)
-        {
-            this(forwardOrder);
-            next = new BranchBuilder<>(1, forwardOrder, startNodes);
-            for (Node<T> node : IndexedIterator.fwd(startNodes)) {
-                size += node.size();
-            }
-        }
-
-        private void add(T value)
-        {
-            assert remaining >= 1;
-
-            if (forwardOrder) {
-                values[offset++] = value;
+        buffer[count++] = value;
+        if (count == LeafNode.MAX_SIZE) {
+            final AbstractNode<T> leaf = new LeafNode<>(buffer, count);
+            if (parent == null) {
+                parent = new BranchBuilder<>(leaf);
             } else {
-                values[--offset] = value;
+                parent.add(leaf);
             }
-            if (remaining == 1) {
-                if (next == null) {
-                    next = new BranchBuilder<>(1, forwardOrder);
+            count = 0;
+        }
+        size += 1;
+    }
+
+    void add(@Nonnull Iterator<? extends T> source)
+    {
+        while (source.hasNext()) {
+            add(source.next());
+        }
+    }
+
+    void add(@Nonnull Iterable<? extends T> source)
+    {
+        add(source.iterator());
+    }
+
+    @SafeVarargs
+    final <K extends T> void add(K... source)
+    {
+        for (K k : source) {
+            add(k);
+        }
+    }
+
+    void add(@Nonnull Indexed<? extends T> source,
+             int offset,
+             int limit)
+    {
+        for (int i = offset; i < limit; ++i) {
+            add(source.get(i));
+        }
+    }
+
+    void add(@Nonnull Indexed<? extends T> source)
+    {
+        add(source, 0, source.size());
+    }
+
+    @Nonnull
+    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source)
+    {
+        return nodeFromIndexed(source, 0, source.size());
+    }
+
+    @Nonnull
+    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source,
+                                               int offset,
+                                               int limit)
+    {
+        final int sourceSize = limit - offset;
+        if (sourceSize == 0) {
+            return EmptyNode.instance();
+        }
+
+        final List<AbstractNode<T>> nodes = new ArrayList<>(1 + sourceSize / LeafNode.MAX_SIZE);
+        int o = offset;
+        while (o < limit) {
+            final int nodeSize = Math.min(LeafNode.MAX_SIZE, limit - o);
+            nodes.add(new LeafNode<>(source.subArray(o, o + nodeSize), nodeSize));
+            o += nodeSize;
+        }
+        int nodeCount = nodes.size();
+        while (nodeCount > 1) {
+            int writeIndex = 0;
+            int readIndex = 0;
+            int remaining = nodeCount;
+            while (remaining > 0) {
+                if (remaining > 1) {
+                    nodes.set(writeIndex, BranchNode.balance(nodes.get(readIndex), nodes.get(readIndex + 1)));
+                    readIndex += 2;
+                    writeIndex += 1;
+                    remaining -= 2;
+                } else {
+                    nodes.set(writeIndex - 1, nodes.get(writeIndex - 1).append(nodes.get(readIndex)));
+                    readIndex += 1;
+                    remaining -= 1;
                 }
-                next.add(createNodeForNext());
-                offset = forwardOrder ? 0 : 32;
-                remaining = 32;
-            } else {
-                remaining -= 1;
             }
-            size += 1;
+            nodeCount = writeIndex;
         }
+        return nodes.get(0);
+    }
 
-        @Nonnull
-        private Node<T> createNodeForNext()
-        {
-            if (forwardOrder) {
-                return LeafNode.fromList(IndexedArray.retained(values), 0, offset);
-            } else {
-                return LeafNode.fromList(IndexedArray.retained(values), offset, 32);
-            }
-        }
+    @Nonnull
+    static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
+    {
+        TreeBuilder<T> builder = new TreeBuilder<>();
+        builder.add(values);
+        return builder.build();
+    }
 
-        @Nonnull
-        private Node<T> build()
-        {
-            final Node<T> myNode = (remaining == 32) ? EmptyNode.of() : createNodeForNext();
-            return (next == null) ? myNode : next.build(myNode);
+    void checkInvariants()
+    {
+        if (size != computeSize()) {
+            throw new IllegalStateException("size mismatch");
         }
+        if (parent != null) {
+            parent.checkInvariants();
+        }
+    }
+
+    private int computeSize()
+    {
+        int answer = count;
+        if (parent != null) {
+            answer += parent.computeSize();
+        }
+        return answer;
     }
 
     private static class BranchBuilder<T>
     {
-        private final int depth;
-        private final boolean forwardOrder;
-        private final Node<T>[] nodes;
-        private BranchBuilder<T> next;
-        private int offset;
-        private int remaining;
-        private int size;
+        private BranchBuilder<T> parent;
+        private AbstractNode<T> buffer;
 
-        private BranchBuilder(int depth,
-                              boolean forwardOrder)
+        private BranchBuilder(@Nonnull BranchBuilder<T> parent,
+                              @Nonnull AbstractNode<T> node)
         {
-            this.depth = depth;
-            this.forwardOrder = forwardOrder;
-            nodes = ListHelper.allocateNodes(32);
-            next = null;
-            offset = forwardOrder ? 0 : 32;
-            remaining = 32;
-            size = 0;
+            this.parent = parent;
+            buffer = node;
         }
 
-        private BranchBuilder(int depth,
-                              boolean forwardOrder,
-                              @Nonnull Indexed<Node<T>> startNodes)
+        private BranchBuilder(@Nonnull AbstractNode<T> node)
         {
-            this(depth, forwardOrder);
-            assert startNodes.size() > 0;
-            if (startNodes.get(0).getDepth() == depth) {
-                final int nodeCount = startNodes.size();
-                if (forwardOrder) {
-                    for (int i = 0; i < nodeCount; ++i) {
-                        final Node<T> node = startNodes.get(i);
-                        size += node.size();
-                        nodes[offset++] = node;
-                    }
+            buffer = node;
+        }
+
+        private void add(@Nonnull AbstractNode<T> node)
+        {
+            if (buffer == null) {
+                buffer = node;
+            } else {
+                final AbstractNode<T> branch = new BranchNode<>(buffer, node);
+                if (parent == null) {
+                    parent = new BranchBuilder<>(branch);
                 } else {
-                    for (int i = nodeCount - 1; i >= 0; --i) {
-                        final Node<T> node = startNodes.get(i);
-                        size += node.size();
-                        nodes[--offset] = node;
-                    }
+                    parent.add(branch);
                 }
-                remaining -= startNodes.size();
-            } else {
-                next = new BranchBuilder<>(depth + 1, forwardOrder, startNodes);
+                buffer = null;
             }
-        }
-
-        private void add(@Nonnull Node<T> node)
-        {
-            assert node.isFull();
-            assert node.getDepth() == depth;
-
-            if (forwardOrder) {
-                nodes[offset++] = node;
-            } else {
-                nodes[--offset] = node;
-            }
-            size += node.size();
-            if (remaining == 1) {
-                if (next == null) {
-                    next = new BranchBuilder<>(depth + 1, forwardOrder);
-                }
-                next.add(createNodeForNext(EmptyNode.of()));
-                offset = forwardOrder ? 0 : 32;
-                remaining = 32;
-                size = 0;
-            } else {
-                remaining -= 1;
-            }
-        }
-
-        private Node<T> build(@Nonnull Node<T> extra)
-        {
-            Node<T> node;
-            if (remaining == 32) {
-                node = extra;
-            } else if (remaining == 31 && next == null && extra.isEmpty()) {
-                final int nodeOffset = forwardOrder ? offset - 1 : offset;
-                return nodes[nodeOffset];
-            } else {
-                node = createNodeForNext(extra);
-            }
-            if (next != null) {
-                node = next.build(node);
-            }
-            return node;
         }
 
         @Nonnull
-        private Node<T> createNodeForNext(@Nonnull Node<T> extra)
+        private AbstractNode<T> build(@Nonnull AbstractNode<T> extra)
         {
-            final int nodeSize = size + extra.size();
-            assert nodeSize <= ListHelper.sizeForDepth(depth + 1);
-            if (forwardOrder) {
-                return BranchNode.forNodeBuilder(depth + 1, nodeSize, EmptyNode.of(), IndexedArray.retained(nodes), 0, offset, extra);
+            AbstractNode<T> answer;
+            if (buffer == null) {
+                answer = extra;
             } else {
-                return BranchNode.forNodeBuilder(depth + 1, nodeSize, extra, IndexedArray.retained(nodes), offset, 32, EmptyNode.of());
+                answer = buffer.append(extra);
+            }
+            if (parent != null) {
+                answer = parent.build(answer);
+            }
+            return answer;
+        }
+
+        private int computeSize()
+        {
+            int answer = 0;
+            if (buffer != null) {
+                answer += buffer.size();
+            }
+            if (parent != null) {
+                answer += parent.computeSize();
+            }
+            return answer;
+        }
+
+        private void checkInvariants()
+        {
+            if (buffer == null && parent == null) {
+                throw new IllegalStateException("buffer is null");
+            }
+            if (parent != null) {
+                parent.checkInvariants();
             }
         }
     }

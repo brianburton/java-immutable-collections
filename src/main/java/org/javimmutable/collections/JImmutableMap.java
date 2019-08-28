@@ -50,7 +50,6 @@ public interface JImmutableMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>,
             Mapped<K, V>,
             IterableStreamable<JImmutableMap.Entry<K, V>>,
-            Cursorable<JImmutableMap.Entry<K, V>>,
             InvariantCheckable
 {
     /**
@@ -165,18 +164,6 @@ public interface JImmutableMap<K, V>
      */
     @Nonnull
     Map<K, V> getMap();
-
-    /**
-     * Creates a Cursor to access all of the Map's keys.
-     */
-    @Nonnull
-    Cursor<K> keysCursor();
-
-    /**
-     * Creates a Cursor to access all of the Map's values.
-     */
-    @Nonnull
-    Cursor<V> valuesCursor();
 
     /**
      * Creates a Streamable to access all of the Map's keys.

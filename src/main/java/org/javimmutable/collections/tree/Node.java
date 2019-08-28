@@ -1,10 +1,11 @@
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +13,7 @@ import java.util.Comparator;
 
 public interface Node<K, V>
     extends SplitableIterable<JImmutableMap.Entry<K, V>>,
-            Cursorable<JImmutableMap.Entry<K, V>>
+            GenericIterator.Iterable<JImmutableMap.Entry<K, V>>
 {
     static <K, V> Node<K, V> empty()
     {
@@ -54,4 +55,12 @@ public interface Node<K, V>
     boolean isEmpty();
 
     int size();
+
+    void checkInvariants(@Nonnull Comparator<K> comparator);
+
+    @Nonnull
+    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
+    }
 }

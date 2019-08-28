@@ -39,7 +39,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableHashListMapProxy;
 
 import javax.annotation.concurrent.Immutable;
@@ -54,7 +54,7 @@ public class JImmutableHashListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of(), JImmutableArrayList.of());
+    private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of(), JImmutableTreeList.of());
     private static final long serialVersionUID = -121805;
 
     private JImmutableHashListMap(JImmutableMap<K, JImmutableList<V>> contents,

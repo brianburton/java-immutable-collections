@@ -35,17 +35,13 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -53,13 +49,16 @@ public class FullBranchTrieNode<T>
     extends TrieNode<T>
 {
     private final int shift;
+    private final int valueCount;
     private final TrieNode<T>[] entries;
 
     FullBranchTrieNode(int shift,
+                       int valueCount,
                        TrieNode<T>[] entries)
     {
         assert shift != ROOT_SHIFT;
         this.shift = shift;
+        this.valueCount = valueCount;
         this.entries = entries;
     }
 
@@ -72,7 +71,13 @@ public class FullBranchTrieNode<T>
         for (int i = 0; i < 32; ++i) {
             entries[i] = LeafTrieNode.of(index++, source.get(offset++));
         }
-        return new FullBranchTrieNode<>(0, entries);
+        return new FullBranchTrieNode<>(0, computeValueCount(entries), entries);
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return valueCount;
     }
 
     @Override
@@ -103,13 +108,12 @@ public class FullBranchTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+        final TrieNode<T> newChild = child.assign(shift - 5, index, value);
         if (newChild == child) {
             return this;
         } else {
@@ -119,13 +123,12 @@ public class FullBranchTrieNode<T>
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert this.shift == shift;
         final int childIndex = (index >>> shift) & 0x1f;
         final TrieNode<T> child = entries[childIndex];
-        final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+        final TrieNode<T> newChild = child.delete(shift - 5, index);
         return createDeleteResultNode(shift, childIndex, child, newChild);
     }
 
@@ -141,18 +144,17 @@ public class FullBranchTrieNode<T>
         return false;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return LazyMultiIterator.iterator(IndexedArray.retained(entries));
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return LazyMultiCursor.cursor(IndexedArray.retained(entries));
+        return GenericIterator.indexedState(parent,
+                                            IndexedArray.retained(entries),
+                                            TrieNode::valueCount,
+                                            offset,
+                                            limit);
     }
 
     @Override
@@ -164,6 +166,9 @@ public class FullBranchTrieNode<T>
         if (entries.length != 32) {
             throw new IllegalStateException("unexpected entries size: expected=32 actual=" + entries.length);
         }
+        if (valueCount != computeValueCount(entries)) {
+            throw new IllegalStateException("unexpected valueCount: expected=" + valueCount + " actual=" + computeValueCount(entries));
+        }
         for (TrieNode<T> entry : entries) {
             entry.checkInvariants();
         }
@@ -174,9 +179,10 @@ public class FullBranchTrieNode<T>
                                              TrieNode<T> newChild)
     {
         assert newChild.isLeaf() || (newChild.getShift() == (shift - 5));
+        final int newValueCount = valueCount - entries[childIndex].valueCount() + newChild.valueCount();
         TrieNode<T>[] newEntries = entries.clone();
         newEntries[childIndex] = newChild;
-        return new FullBranchTrieNode<>(shift, newEntries);
+        return new FullBranchTrieNode<>(shift, newValueCount, newEntries);
     }
 
     private TrieNode<T> createDeleteResultNode(int shift,
@@ -187,7 +193,8 @@ public class FullBranchTrieNode<T>
         if (newChild == child) {
             return this;
         } else if (newChild.isEmpty()) {
-            return MultiBranchTrieNode.fullWithout(shift, entries, childIndex);
+            final int newValueCount = valueCount - child.valueCount() + newChild.valueCount();
+            return MultiBranchTrieNode.fullWithout(shift, newValueCount, entries, childIndex);
         } else {
             return createUpdatedEntries(shift, childIndex, newChild);
         }

@@ -68,7 +68,7 @@ public final class ArrayHelper
     }
 
     /**
-     * Allocate an array containing values from a logical formed by concatenating the two input arrays.
+     * Allocate an array containing values from a logical array formed by concatenating the two input arrays.
      * Functionally equivalent to calling append(a,b) and then calling subArray() with the result
      *
      * @param allocator used to allocate the resulting array
@@ -271,6 +271,76 @@ public final class ArrayHelper
     }
 
     /**
+     * Returns a copy of orig containing of length limit containing all values from [0,limit).
+     */
+    @Nonnull
+    public static <T> T[] prefix(@Nonnull Allocator<T> allocator,
+                                 @Nonnull T[] orig,
+                                 int limit)
+    {
+        final T[] answer = allocator.allocate(limit);
+        System.arraycopy(orig, 0, answer, 0, limit);
+        return answer;
+    }
+
+    /**
+     * Returns a copy of orig containing of length limit+1 containing all values from [0,limit)
+     * but with value inserted at index and values after that shifted to the right.
+     */
+    @Nonnull
+    public static <T> T[] prefixInsert(@Nonnull Allocator<T> allocator,
+                                       @Nonnull T[] orig,
+                                       int limit,
+                                       int index,
+                                       T value)
+    {
+        final T[] answer = allocator.allocate(limit + 1);
+        System.arraycopy(orig, 0, answer, 0, index);
+        answer[index] = value;
+        System.arraycopy(orig, index, answer, index + 1, limit - index);
+        return answer;
+    }
+
+    /**
+     * Returns a copy of orig containing of length orig.length-offset containing all values from [offset,orig.length).
+     */
+    @Nonnull
+    public static <T> T[] suffix(@Nonnull Allocator<T> allocator,
+                                 @Nonnull T[] orig,
+                                 int offset)
+    {
+        try {
+            final int length = orig.length - offset;
+            final T[] answer = allocator.allocate(length);
+            System.arraycopy(orig, offset, answer, 0, length);
+            return answer;
+        } catch (NegativeArraySizeException ex) {
+            throw new ArrayIndexOutOfBoundsException(offset);
+        }
+    }
+
+    /**
+     * Returns a copy of orig containing of length orig.length-offset containing all values from [offset,orig.length)
+     * but with value inserted at index relative to orig (index-offset relative to resulting array) and all values
+     * past that point shifted to the right.
+     */
+    @Nonnull
+    public static <T> T[] suffixInsert(@Nonnull Allocator<T> allocator,
+                                       @Nonnull T[] orig,
+                                       int offset,
+                                       int index,
+                                       T value)
+    {
+        final int length = orig.length - offset;
+        final int answerIndex = index - offset;
+        final T[] answer = allocator.allocate(length + 1);
+        System.arraycopy(orig, offset, answer, 0, answerIndex);
+        answer[answerIndex] = value;
+        System.arraycopy(orig, index, answer, answerIndex + 1, length - answerIndex);
+        return answer;
+    }
+
+    /**
      * Creates an Allocator for arrays of the given class.
      */
     @Nonnull
@@ -286,5 +356,13 @@ public final class ArrayHelper
                 return (T[])(Array.newInstance(klass, size));
             }
         };
+    }
+
+    public static <T> void checkBounds(T[] values,
+                                       int index)
+    {
+        if (index < 0 || index >= values.length) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
     }
 }

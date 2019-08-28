@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
@@ -45,12 +43,11 @@ import org.javimmutable.collections.Insertable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Library of static functions that perform various operations on Cursors.
+ * Library of static functions that perform various operations on Iterators.
  */
 public final class Functions
 {
@@ -59,74 +56,74 @@ public final class Functions
     }
 
     /**
-     * Calls func for every value in cursor passing in the accumulator and each value as parameters
+     * Calls func for every value in iterator passing in the accumulator and each value as parameters
      * and setting accumulator to the result.  The final accumulator value is returned.
      */
     public static <T, R> R foldLeft(R accumulator,
-                                    Cursor<? extends T> cursor,
+                                    Iterator<? extends T> iterator,
                                     Func2<R, ? super T, R> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            accumulator = func.apply(accumulator, cursor.getValue());
+        while (iterator.hasNext()) {
+            accumulator = func.apply(accumulator, iterator.next());
         }
         return accumulator;
     }
 
     /**
-     * Calls func for every value in cursor from right to left (i.e. in reverse order) passing in the accumulator and each value
+     * Calls func for every value in iterator from right to left (i.e. in reverse order) passing in the accumulator and each value
      * as parameters and setting the accumulator to the result.  The final accumulator value is returned.
-     * Requires 2x time compared to foldLeft() since it reverses the order of the cursor before calling the function.
+     * Requires 2x time compared to foldLeft() since it reverses the order of the iterator before calling the function.
      */
     public static <T, R> R foldRight(R accumulator,
-                                     Cursor<? extends T> cursor,
+                                     Iterator<? extends T> iterator,
                                      Func2<R, ? super T, R> func)
     {
-        return foldLeft(accumulator, reverse(cursor), func);
+        return foldLeft(accumulator, reverse(iterator), func);
     }
 
     /**
-     * Creates a new Cursor whose values are in the reverse order of the provided Cursor.
-     * Requires O(n) time and creates an intermediate copy of the Cursor's values.
+     * Creates a new Iterator whose values are in the reverse order of the provided Iterator.
+     * Requires O(n) time and creates an intermediate copy of the Iterator's values.
      */
-    public static <T> Cursor<T> reverse(Cursor<? extends T> cursor)
+    public static <T> Iterator<T> reverse(Iterator<? extends T> iterator)
     {
-        return JImmutableLinkedStack.<T>of().insertAll(cursor).cursor();
+        return JImmutableLinkedStack.<T>of().insertAll(iterator).iterator();
     }
 
     /**
-     * Calls func for every value in cursor and adds each value returned by func
+     * Calls func for every value in iterator and adds each value returned by func
      * to a list.  Returns the resulting list.
      *
-     * @param cursor source of the values
-     * @param func   function to transform the values
-     * @param list   list to receive the values
+     * @param iterator source of the values
+     * @param func     function to transform the values
+     * @param list     list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R, A>> A collectAll(Cursor<? extends T> cursor,
+    public static <T, R, A extends Insertable<R, A>> A collectAll(Iterator<? extends T> iterator,
                                                                   A list,
                                                                   Func1<? super T, R> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            list = list.insert(func.apply(cursor.getValue()));
+        while (iterator.hasNext()) {
+            list = list.insert(func.apply(iterator.next()));
         }
         return list;
     }
 
     /**
-     * Calls func for every value in cursor and adds each value for which func returns a non-empty
+     * Calls func for every value in iterator and adds each value for which func returns a non-empty
      * Holder to a list.  Returns the resulting list.
      *
-     * @param cursor source of the values
-     * @param func   function to reject the values
-     * @param list   list to receive the values
+     * @param iterator source of the values
+     * @param func     function to reject the values
+     * @param list     list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R, A>> A collectSome(Cursor<? extends T> cursor,
+    public static <T, R, A extends Insertable<R, A>> A collectSome(Iterator<? extends T> iterator,
                                                                    A list,
                                                                    Func1<? super T, Holder<R>> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            Holder<R> mappedValue = func.apply(cursor.getValue());
+        while (iterator.hasNext()) {
+            Holder<R> mappedValue = func.apply(iterator.next());
             if (mappedValue.isFilled()) {
                 list = list.insert(mappedValue.getValue());
             }
@@ -135,92 +132,64 @@ public final class Functions
     }
 
     /**
-     * Calls func for each value in cursor and passes it to func until func returns true.
+     * Calls func for each value in iterator and passes it to func until func returns true.
      * If func returns true the value is returned.  If func never returns true an empty
      * value is returned.
      */
-    public static <T> Holder<T> find(Cursor<? extends T> cursor,
+    public static <T> Holder<T> find(Iterator<? extends T> iterator,
                                      Func1<? super T, Boolean> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            if (func.apply(cursor.getValue())) {
-                return Holders.of(cursor.getValue());
+        while (iterator.hasNext()) {
+            final T value = iterator.next();
+            if (func.apply(value)) {
+                return Holders.of(value);
             }
         }
         return Holders.of();
     }
 
     /**
-     * Calls func for every value in cursor and adds each value for which func returns false
+     * Calls func for every value in iterator and adds each value for which func returns false
      * to a list.  Returns the resulting list.
      *
-     * @param cursor source of the values
-     * @param func   function to reject the values
-     * @param list   list to receive the values
+     * @param iterator source of the values
+     * @param func     function to reject the values
+     * @param list     list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T, A>> A reject(Cursor<? extends T> cursor,
+    public static <T, A extends Insertable<T, A>> A reject(Iterator<? extends T> iterator,
                                                            A list,
                                                            Func1<? super T, Boolean> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            if (!func.apply(cursor.getValue())) {
-                list = list.insert(cursor.getValue());
+        while (iterator.hasNext()) {
+            final T value = iterator.next();
+            if (!func.apply(value)) {
+                list = list.insert(value);
             }
         }
         return list;
     }
 
     /**
-     * Calls func for every value in cursor and adds each value for which func returns true
+     * Calls func for every value in iterator and adds each value for which func returns true
      * to a list.  Returns the resulting list.
      *
-     * @param cursor source of the values
-     * @param func   function to select the values
-     * @param list   list to receive the values
+     * @param iterator source of the values
+     * @param func     function to select the values
+     * @param list     list to receive the values
      */
     @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T, A>> A select(Cursor<? extends T> cursor,
+    public static <T, A extends Insertable<T, A>> A select(Iterator<? extends T> iterator,
                                                            A list,
                                                            Func1<? super T, Boolean> func)
     {
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            if (func.apply(cursor.getValue())) {
-                list = list.insert(cursor.getValue());
+        while (iterator.hasNext()) {
+            final T value = iterator.next();
+            if (func.apply(value)) {
+                list = list.insert(value);
             }
         }
         return list;
-    }
-
-
-    /**
-     * Add all values form the iterator to the addable.
-     */
-    @Deprecated
-    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
-                                                              Iterator<? extends T> iterator)
-    {
-        return addable.insertAll(iterator);
-    }
-
-    /**
-     * Add all values form the cursor to the addable.
-     */
-    @Deprecated
-    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
-                                                              Cursor<? extends T> cursor)
-    {
-        return addable.insertAll(cursor);
-    }
-
-    /**
-     * Add all values form the array to the addable.
-     */
-    @Deprecated
-    public static <T, A extends Insertable<T, A>> A insertAll(A addable,
-                                                              T[] values)
-    {
-        return addable.insertAll(Arrays.asList(values));
     }
 
     public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,
@@ -239,29 +208,5 @@ public final class Functions
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
-    }
-
-    /**
-     * Returns an Iterable that can be used to navigate each element in the specified Cursor.
-     * The Cursor must not have been started yet.  Intended for use in java foreach loops.
-     *
-     * @deprecated Cursors are Iterable so this function is not needed
-     */
-    @Deprecated
-    public static <T> Iterable<T> each(final Cursor<T> cursor)
-    {
-        return cursor;
-    }
-
-    /**
-     * Returns an Iterable that can be used to navigate each element in the specified Cursorable.
-     * Intended for use in java foreach loops.
-     *
-     * @deprecated Cursors are Iterable so just use cursorable.cursor()
-     */
-    @Deprecated
-    public static <T> Iterable<T> each(final Cursorable<T> cursorable)
-    {
-        return cursorable.cursor();
     }
 }

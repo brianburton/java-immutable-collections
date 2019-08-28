@@ -9,8 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 
 public abstract class AbstractNode<K, V>
-    implements
-    Node<K, V>
+    implements Node<K, V>
 {
     @Nonnull
     @Override
@@ -53,7 +52,7 @@ public abstract class AbstractNode<K, V>
 
     abstract AbstractNode<K, V> rightWeighted();
 
-    abstract void checkInvariants(@Nonnull Comparator<K> comp);
+    public abstract void checkInvariants(@Nonnull Comparator<K> comp);
 
     @Override
     public int hashCode()

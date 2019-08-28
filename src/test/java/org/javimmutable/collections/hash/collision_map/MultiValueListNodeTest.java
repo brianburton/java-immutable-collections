@@ -36,12 +36,13 @@
 package org.javimmutable.collections.hash.collision_map;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.MutableDelta;
 
+import java.util.Iterator;
+
 public class MultiValueListNodeTest
-        extends TestCase
+    extends TestCase
 {
     public void testKeyMatches()
     {
@@ -115,20 +116,23 @@ public class MultiValueListNodeTest
         assertEquals(null, nv);
         assertEquals(-1, sizeDelta.getValue());
 
-        Cursor<JImmutableMap.Entry<String, String>> cursor = v.cursor().next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("c", cursor.getValue().getKey());
-        assertEquals("cc", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("b", cursor.getValue().getKey());
-        assertEquals("bb", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("a", cursor.getValue().getKey());
-        assertEquals("aa", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
+        Iterator<JImmutableMap.Entry<String, String>> iter = v.iterator();
+        assertEquals(true, iter.hasNext());
+        JImmutableMap.Entry<String, String> e = iter.next();
+        assertEquals("c", e.getKey());
+        assertEquals("cc", e.getValue());
+
+        assertEquals(true, iter.hasNext());
+        e = iter.next();
+        assertEquals("b", e.getKey());
+        assertEquals("bb", e.getValue());
+
+        assertEquals(true, iter.hasNext());
+        e = iter.next();
+        assertEquals("a", e.getKey());
+        assertEquals("aa", e.getValue());
+
+        assertEquals(false, iter.hasNext());
     }
 
     public void testKeyMismatches()
@@ -160,24 +164,28 @@ public class MultiValueListNodeTest
         assertSame(c, nv.getEntryForKey("c"));
         assertEquals(4, size(nv));
 
-        Cursor<JImmutableMap.Entry<String, String>> cursor = nv.cursor().next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("d", cursor.getValue().getKey());
-        assertEquals("dd", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("c", cursor.getValue().getKey());
-        assertEquals("cc", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("b", cursor.getValue().getKey());
-        assertEquals("bb", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(true, cursor.hasValue());
-        assertEquals("a", cursor.getValue().getKey());
-        assertEquals("aa", cursor.getValue().getValue());
-        cursor = cursor.next();
-        assertEquals(false, cursor.hasValue());
+        Iterator<JImmutableMap.Entry<String, String>> iter = nv.iterator();
+        assertEquals(true, iter.hasNext());
+        JImmutableMap.Entry<String, String> e = iter.next();
+        assertEquals("d", e.getKey());
+        assertEquals("dd", e.getValue());
+
+        assertEquals(true, iter.hasNext());
+        e = iter.next();
+        assertEquals("c", e.getKey());
+        assertEquals("cc", e.getValue());
+
+        assertEquals(true, iter.hasNext());
+        e = iter.next();
+        assertEquals("b", e.getKey());
+        assertEquals("bb", e.getValue());
+
+        assertEquals(true, iter.hasNext());
+        e = iter.next();
+        assertEquals("a", e.getKey());
+        assertEquals("aa", e.getValue());
+
+        assertEquals(false, iter.hasNext());
 
         sizeDelta = new MutableDelta();
         nv = v.deleteValueForKey("d", sizeDelta);
@@ -198,10 +206,8 @@ public class MultiValueListNodeTest
     private int size(ListNode node)
     {
         int answer = 0;
-        Cursor cursor = node.cursor().next();
-        while (cursor.hasValue()) {
+        for (Object o : node) {
             answer += 1;
-            cursor = cursor.next();
         }
         return answer;
     }

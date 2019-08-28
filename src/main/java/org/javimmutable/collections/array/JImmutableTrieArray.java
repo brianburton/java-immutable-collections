@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
@@ -43,7 +42,7 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableArray;
-import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
@@ -61,17 +60,14 @@ public class JImmutableTrieArray<T>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of(), 0);
+    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of());
     private static final long serialVersionUID = -121805;
 
     private final TrieNode<T> root;
-    private final int size;
 
-    private JImmutableTrieArray(TrieNode<T> root,
-                                int size)
+    private JImmutableTrieArray(TrieNode<T> root)
     {
         this.root = root;
-        this.size = size;
     }
 
     public static <T> Builder<T> builder()
@@ -138,10 +134,9 @@ public class JImmutableTrieArray<T>
     public JImmutableTrieArray<T> assign(int index,
                                          @Nullable T value)
     {
-        MutableDelta sizeDelta = new MutableDelta();
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
-        newRoot = newRoot.assign(newRoot.getShift(), index, value, sizeDelta);
-        return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot, size + sizeDelta.getValue());
+        newRoot = newRoot.assign(newRoot.getShift(), index, value);
+        return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
     }
 
     @Nonnull
@@ -151,16 +146,15 @@ public class JImmutableTrieArray<T>
         if (root.getShift() < TrieNode.shiftForIndex(index)) {
             return this;
         } else {
-            MutableDelta sizeDelta = new MutableDelta();
-            final TrieNode<T> newRoot = root.delete(root.getShift(), index, sizeDelta).trimmedToMinimumDepth();
-            return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot, size + sizeDelta.getValue());
+            final TrieNode<T> newRoot = root.delete(root.getShift(), index).trimmedToMinimumDepth();
+            return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
         }
     }
 
     @Override
     public int size()
     {
-        return size;
+        return root.valueCount();
     }
 
     @Nonnull
@@ -170,18 +164,11 @@ public class JImmutableTrieArray<T>
         return of();
     }
 
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return root.cursor();
-    }
-
     @Nonnull
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return root.iterator();
+        return new GenericIterator<>(root, 0, root.valueCount());
     }
 
     @Override
@@ -241,7 +228,7 @@ public class JImmutableTrieArray<T>
         @Override
         public JImmutableTrieArray<T> build()
         {
-            return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build(), builder.size());
+            return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build());
         }
 
         @Nonnull

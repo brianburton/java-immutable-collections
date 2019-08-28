@@ -51,4 +51,15 @@ public interface Indexed<T>
      * Retrieve the number of values available in the container.
      */
     int size();
+
+    @SuppressWarnings("unchecked")
+    default T[] subArray(int offset,
+                         int limit)
+    {
+        final Object[] answer = new Object[limit - offset];
+        for (int i = offset; i < limit; ++i) {
+            answer[i - offset] = get(i);
+        }
+        return (T[])answer;
+    }
 }

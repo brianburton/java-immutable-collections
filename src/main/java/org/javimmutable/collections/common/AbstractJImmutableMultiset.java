@@ -35,17 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.Cursors;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.cursors.StandardCursor;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
@@ -121,12 +118,6 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    public boolean containsAll(@Nonnull Cursor<? extends T> other)
-    {
-        return containsAll(other.iterator());
-    }
-
-    @Override
     public boolean containsAll(@Nonnull Iterator<? extends T> other)
     {
         while (other.hasNext()) {
@@ -139,12 +130,6 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     public boolean containsAllOccurrences(@Nonnull Iterable<? extends T> other)
-    {
-        return containsAllOccurrences(other.iterator());
-    }
-
-    @Override
-    public boolean containsAllOccurrences(@Nonnull Cursor<? extends T> other)
     {
         return containsAllOccurrences(other.iterator());
     }
@@ -170,12 +155,6 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     public boolean containsAny(@Nonnull Iterable<? extends T> other)
-    {
-        return containsAny(other.iterator());
-    }
-
-    @Override
-    public boolean containsAny(@Nonnull Cursor<? extends T> other)
     {
         return containsAny(other.iterator());
     }
@@ -226,13 +205,6 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> deleteAll(@Nonnull Cursor<? extends T> other)
-    {
-        return deleteAll(other.iterator());
-    }
-
-    @Override
-    @Nonnull
     public JImmutableMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other)
     {
         Editor editor = new Editor();
@@ -248,13 +220,6 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     @Nonnull
     public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other)
-    {
-        return deleteAllOccurrences(other.iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Cursor<? extends T> other)
     {
         return deleteAllOccurrences(other.iterator());
     }
@@ -289,13 +254,6 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Override
     @Nonnull
-    public JImmutableMultiset<T> insertAll(@Nonnull Cursor<? extends T> values)
-    {
-        return insertAll(values.iterator());
-    }
-
-    @Override
-    @Nonnull
     public JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> other)
     {
         Editor editor = new Editor();
@@ -318,13 +276,6 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     @Nonnull
     public JImmutableMultiset<T> union(@Nonnull Iterable<? extends T> other)
-    {
-        return union(other.iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> union(@Nonnull Cursor<? extends T> other)
     {
         return union(other.iterator());
     }
@@ -355,13 +306,6 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     @Nonnull
     public JImmutableMultiset<T> intersection(@Nonnull Iterable<? extends T> other)
-    {
-        return intersection(other.iterator());
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableMultiset<T> intersection(@Nonnull Cursor<? extends T> other)
     {
         return intersection(other.iterator());
     }
@@ -507,13 +451,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return map.getSpliteratorCharacteristics();
     }
 
-    @Override
-    @Nonnull
-    public Cursor<T> occurrenceCursor()
-    {
-        return LazyMultiCursor.transformed(entryCursor(), entry -> () -> StandardCursor.repeating(entry.getValue(), entry.getKey()));
-    }
-
     @Nonnull
     @Override
     public IterableStreamable<JImmutableMap.Entry<T, Integer>> entries()
@@ -543,23 +480,9 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     @Override
-    @Nonnull
-    public Cursor<T> cursor()
-    {
-        return map.keysCursor();
-    }
-
-    @Override
-    @Nonnull
-    public Cursor<JImmutableMap.Entry<T, Integer>> entryCursor()
-    {
-        return map.cursor();
-    }
-
-    @Override
     public int hashCode()
     {
-        return Cursors.computeHashCode(occurrenceCursor());
+        return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
@@ -584,7 +507,7 @@ public abstract class AbstractJImmutableMultiset<T>
     @Override
     public String toString()
     {
-        return Cursors.makeString(occurrenceCursor());
+        return IteratorHelper.iteratorToString(occurrences().iterator());
     }
 
     public void checkInvariants()
@@ -594,7 +517,7 @@ public abstract class AbstractJImmutableMultiset<T>
             throw new IllegalStateException();
         }
         int checkOccurrences = 0;
-        for (JImmutableMap.Entry<T, Integer> entry : entryCursor()) {
+        for (JImmutableMap.Entry<T, Integer> entry : entries()) {
             int entryCount = entry.getValue();
             if (entryCount <= 0) {
                 throw new IllegalStateException(String.format("illegal count of %d for value %s%n", entryCount, entry.getKey()));
@@ -608,8 +531,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
-        for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+        for (JImmutableMap.Entry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
             if (count(value) < otherCount) {
@@ -622,8 +544,7 @@ public abstract class AbstractJImmutableMultiset<T>
     private <T1 extends T> JImmutableMultiset<T> deleteAllOccurrencesMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
         final Editor editor = new Editor();
-        for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+        for (JImmutableMap.Entry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
             editor.delta(value, -otherCount);
@@ -634,8 +555,7 @@ public abstract class AbstractJImmutableMultiset<T>
     private <T1 extends T> JImmutableMultiset<T> insertAllMultisetHelper(@Nonnull JImmutableMultiset<T1> values)
     {
         final Editor editor = new Editor();
-        for (Cursor<JImmutableMap.Entry<T1, Integer>> e = values.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+        for (JImmutableMap.Entry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
             editor.delta(value, otherCount);
@@ -647,8 +567,7 @@ public abstract class AbstractJImmutableMultiset<T>
     private <T1 extends T> JImmutableMultiset<T> unionMultisetHelper(@Nonnull JImmutableMultiset<T1> other)
     {
         final Editor editor = new Editor();
-        for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+        for (JImmutableMap.Entry<T1, Integer> entry : other.entries()) {
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
             editor.set(value, Math.max(otherCount, count(value)));
@@ -661,8 +580,7 @@ public abstract class AbstractJImmutableMultiset<T>
     {
         final Counter counter = new Counter();
         final Editor editor = new Editor();
-        for (Cursor<JImmutableMap.Entry<T1, Integer>> e = other.entryCursor().start(); e.hasValue(); e = e.next()) {
-            final JImmutableMap.Entry<T1, Integer> entry = e.getValue();
+        for (JImmutableMap.Entry<T1, Integer> entry : other.entries()) {
             final T value = entry.getKey();
             final int otherCount = counter.add(value, entry.getValue());
             editor.set(value, Math.min(otherCount, count(value)));

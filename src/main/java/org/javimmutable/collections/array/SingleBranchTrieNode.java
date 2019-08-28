@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -79,6 +77,12 @@ public class SingleBranchTrieNode<T>
     }
 
     @Override
+    public int valueCount()
+    {
+        return child.valueCount();
+    }
+
+    @Override
     public boolean isEmpty()
     {
         return false;
@@ -106,30 +110,28 @@ public class SingleBranchTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert this.shift == shift;
         final int branchIndex = (index >>> shift) & 0x1f;
         if (this.branchIndex == branchIndex) {
-            TrieNode<T> newChild = child.assign(shift - 5, index, value, sizeDelta);
+            TrieNode<T> newChild = child.assign(shift - 5, index, value);
             return selectNodeForUpdateResult(shift, branchIndex, newChild);
         } else {
-            return MultiBranchTrieNode.forBranchIndex(shift, this.branchIndex, child).assign(shift, index, value, sizeDelta);
+            return MultiBranchTrieNode.forBranchIndex(shift, this.branchIndex, child).assign(shift, index, value);
         }
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert this.shift == shift;
         final int branchIndex = (index >>> shift) & 0x1f;
         if (this.branchIndex != branchIndex) {
             return this;
         } else {
-            final TrieNode<T> newChild = child.delete(shift - 5, index, sizeDelta);
+            final TrieNode<T> newChild = child.delete(shift - 5, index);
             return selectNodeForDeleteResult(shift, branchIndex, newChild);
         }
     }
@@ -152,18 +154,13 @@ public class SingleBranchTrieNode<T>
         return (branchIndex == 0) ? child.trimmedToMinimumDepth() : this;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return child.iterator();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return child.cursor();
+        return child.iterateOverRange(parent, offset, limit);
     }
 
     @Override

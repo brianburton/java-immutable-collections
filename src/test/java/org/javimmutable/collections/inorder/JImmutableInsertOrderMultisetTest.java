@@ -39,13 +39,12 @@ import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.cursors.StandardCursorTest;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -216,7 +215,7 @@ public class JImmutableInsertOrderMultisetTest
         jmet.checkInvariants();
         assertEquals(multi.elementSet(), jmet.getSet());
         assertEquals(new ArrayList<>(multi), asList(jmet));
-        StandardJImmutableMultisetTests.verifyCursor(jmet, multi);
+        StandardJImmutableMultisetTests.verifyIterators(jmet, multi);
 
         int a = random.nextInt(100000) - 50000;
         int b = random.nextInt(100000) - 50000;
@@ -236,7 +235,7 @@ public class JImmutableInsertOrderMultisetTest
             //expected
         }
         try {
-            StandardJImmutableMultisetTests.verifyCursor(jmet, multi);
+            StandardJImmutableMultisetTests.verifyIterators(jmet, multi);
         } catch (AssertionFailedError ignored) {
             //expected
         }
@@ -250,7 +249,7 @@ public class JImmutableInsertOrderMultisetTest
         assertSame(JImmutableInsertOrderMultiset.<Integer>of(), cleared);
         assertEquals(0, cleared.size());
         assertEquals(0, cleared.occurrenceCount());
-        StandardCursorTest.emptyCursorTest(cleared.cursor());
+        StandardIteratorTests.emptyIteratorTest(cleared.iterator());
     }
 
     public void testStreams()
@@ -305,10 +304,9 @@ public class JImmutableInsertOrderMultisetTest
 
     private ArrayList<Integer> asList(JImmutableMultiset<Integer> jmet)
     {
-        Cursor<Integer> cursor = jmet.occurrenceCursor();
         ArrayList<Integer> list = new ArrayList<>();
-        for (cursor = cursor.start(); cursor.hasValue(); cursor = cursor.next()) {
-            list.add(cursor.getValue());
+        for (Integer value : jmet.occurrences()) {
+            list.add(value);
         }
         return list;
     }

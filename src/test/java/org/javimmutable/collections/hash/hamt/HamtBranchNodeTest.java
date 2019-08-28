@@ -367,7 +367,7 @@ public class HamtBranchNodeTest
     private <T, K, V> void verifyConnectivity(CollisionMap<T, K, V> transforms,
                                               HamtNode<T, K, V> node)
     {
-        for (JImmutableMap.Entry<K, V> entry : node.cursor(transforms)) {
+        for (JImmutableMap.Entry<K, V> entry : node.iterable(transforms)) {
             final V usingGet = node.getValueOr(transforms, entry.getKey().hashCode(), entry.getKey(), null);
             final V usingFind = node.find(transforms, entry.getKey().hashCode(), entry.getKey()).getValueOrNull();
             assertEquals(entry.getValue(), usingGet);

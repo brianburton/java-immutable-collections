@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash.collision_map;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -109,12 +108,6 @@ public class ListCollisionMap<K, V>
                                                        @Nonnull K key)
     {
         return Holders.fromNullable(leaf.getEntryForKey(key));
-    }
-
-    @Override
-    public Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull ListNode<K, V> leaf)
-    {
-        return leaf.cursor();
     }
 
     @Override

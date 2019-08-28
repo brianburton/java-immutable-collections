@@ -50,7 +50,6 @@ public interface JImmutableSetMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>, JImmutableSetMap<K, V>>,
             Mapped<K, JImmutableSet<V>>,
             IterableStreamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
-            Cursorable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
             InvariantCheckable
 {
     /**
@@ -97,13 +96,6 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                     @Nonnull Cursor<? extends V> values);
-
-    /**
-     * Adds all of the elements of the specified collection to the Set for the specified key.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
                                      @Nonnull Iterator<? extends V> values);
 
     /**
@@ -133,14 +125,6 @@ public interface JImmutableSetMap<K, V>
      * @return true if the Set contains the values
      */
     boolean containsAll(@Nonnull K key,
-                        @Nonnull Cursor<? extends V> values);
-
-    /**
-     * Determines if the Set at key contains all values in the specified collection.
-     *
-     * @return true if the Set contains the values
-     */
-    boolean containsAll(@Nonnull K key,
                         @Nonnull Iterator<? extends V> values);
 
     /**
@@ -150,14 +134,6 @@ public interface JImmutableSetMap<K, V>
      */
     boolean containsAny(@Nonnull K key,
                         @Nonnull Iterable<? extends V> values);
-
-    /**
-     * Determines if the Set at key contains any values in the specified collection.
-     *
-     * @return true if the Set contains a value
-     */
-    boolean containsAny(@Nonnull K key,
-                        @Nonnull Cursor<? extends V> values);
 
     /**
      * Determines if the Set at key contains any values in the specified collection.
@@ -197,14 +173,6 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                     @Nonnull Cursor<? extends V> other);
-
-    /**
-     * Deletes the elements in other at the specified key. Returns a new map if the
-     * values were deleted or the current map if the key was not contained in the map.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
                                      @Nonnull Iterator<? extends V> other);
 
     /**
@@ -213,13 +181,6 @@ public interface JImmutableSetMap<K, V>
     @Nonnull
     JImmutableSetMap<K, V> union(@Nonnull K key,
                                  @Nonnull Iterable<? extends V> other);
-
-    /**
-     * Adds all values from other to the Set at key
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> union(@Nonnull K key,
-                                 @Nonnull Cursor<? extends V> other);
 
     /**
      * Adds all values from other to the Set at key
@@ -236,15 +197,6 @@ public interface JImmutableSetMap<K, V>
     @Nonnull
     JImmutableSetMap<K, V> intersection(@Nonnull K key,
                                         @Nonnull Iterable<? extends V> other);
-
-    /**
-     * Removes all values from the Set at key that are not contained in the other
-     * collection. If the given key is not present in the map, an empty set is added
-     * to the map.
-     */
-    @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Cursor<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other
@@ -329,21 +281,6 @@ public interface JImmutableSetMap<K, V>
     JImmutableSetMap<K, V> deleteAll();
 
     /**
-     * Creates a Cursor to access all of the Map's keys
-     */
-    @Nonnull
-    Cursor<K> keysCursor();
-
-    /**
-     * Creates a Cursor to access all of the specified key's set.
-     * If no set exists for key, an empty Cursor is returned.
-     *
-     * @return a (possibly empty) cursor for traversing the values associated with key
-     */
-    @Nonnull
-    Cursor<V> valuesCursor(@Nonnull K key);
-
-    /**
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
@@ -357,7 +294,7 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     IterableStreamable<V> values(@Nonnull K key);
-    
+
     /**
      * Creates a Streamable to access all of the Map's entries.
      */

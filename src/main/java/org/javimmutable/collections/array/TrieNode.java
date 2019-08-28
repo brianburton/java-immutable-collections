@@ -35,22 +35,22 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursorable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.common.MutableDelta;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public abstract class TrieNode<T>
-    implements Cursorable<JImmutableMap.Entry<Integer, T>>,
-               SplitableIterable<JImmutableMap.Entry<Integer, T>>,
+    implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
                InvariantCheckable
 {
     public static final int ROOT_SHIFT = 30;
+
+    public abstract int valueCount();
 
     public abstract boolean isEmpty();
 
@@ -63,16 +63,19 @@ public abstract class TrieNode<T>
 
     public abstract TrieNode<T> assign(int shift,
                                        int index,
-                                       T value,
-                                       MutableDelta sizeDelta);
+                                       T value);
 
     public abstract TrieNode<T> delete(int shift,
-                                       int index,
-                                       MutableDelta sizeDelta);
+                                       int index);
 
     public abstract int getShift();
 
     public abstract boolean isLeaf();
+
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    {
+        return new GenericIterator<>(this, 0, valueCount());
+    }
 
     public TrieNode<T> trimmedToMinimumDepth()
     {
@@ -88,6 +91,15 @@ public abstract class TrieNode<T>
             node = SingleBranchTrieNode.forBranchIndex(nodeShift, 0, node);
         }
         return node;
+    }
+
+    public static int computeValueCount(TrieNode<?>[] nodes)
+    {
+        int answer = 0;
+        for (TrieNode<?> node : nodes) {
+            answer += node.valueCount();
+        }
+        return answer;
     }
 
     public static <T> TrieNode<T> of()

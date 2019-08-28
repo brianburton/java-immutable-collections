@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.hash.collision_map;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
@@ -110,12 +109,6 @@ public interface CollisionMap<T, K, V>
      */
     Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull T leaf,
                                                 @Nonnull K key);
-
-    /**
-     * Return a (possibly empty) Cursor over all of the JImmutableMap.Entries
-     * in the specified leaf object.
-     */
-    Cursor<JImmutableMap.Entry<K, V>> cursor(@Nonnull T leaf);
 
     /**
      * Return a (possibly empty) SplitableIterator over all of the JImmutableMap.Entries

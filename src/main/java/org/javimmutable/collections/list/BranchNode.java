@@ -1,578 +1,417 @@
-///###////////////////////////////////////////////////////////////////////////
-//
-// Burton Computer Corporation
-// http://www.burton-computer.com
-//
-// Copyright (c) 2018, Burton Computer Corporation
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-//     Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     Neither the name of the Burton Computer Corporation nor the names
-//     of its contributors may be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Cursor;
-import org.javimmutable.collections.Cursorable;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.LazyMultiCursor;
-import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
+import java.util.StringJoiner;
 
-/**
- * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
- * of any depth and size (including empty) while body nodes array contains only full nodes
- * of exactly depth - 1.  This allows fast access to the body nodes by a computed offset
- * based on size but also quick adds and deletes from either end using the prefix and suffix
- * nodes.  Once a BranchNode reaches its theoretical limit based on depth any insert triggers
- * the creation of a new higher depth node containing the branch so that the new parent's prefix
- * or suffix can contain the new value.
- */
 @Immutable
 class BranchNode<T>
-    implements Node<T>
+    extends AbstractNode<T>
 {
-    private final int depth;
+    private final AbstractNode<T> left;
+    private final AbstractNode<T> right;
     private final int size;
-    private final Node<T> prefix;  // possibly empty and can be any depth
-    private final Node<T>[] nodes; // all of these are full and have depth - 1
-    private final Node<T> suffix;  // possibly empty and can be any depth
+    private final int depth;
 
-    private BranchNode(int depth,
-                       int size,
-                       Node<T> prefix,
-                       Node<T>[] nodes,
-                       Node<T> suffix)
+    BranchNode(@Nonnull AbstractNode<T> left,
+               @Nonnull AbstractNode<T> right)
     {
-        assert nodes.length <= 32;
-        assert size <= ListHelper.sizeForDepth(depth);
-        this.depth = depth;
+        this(left, right, left.size() + right.size());
+    }
+
+    BranchNode(@Nonnull AbstractNode<T> left,
+               @Nonnull AbstractNode<T> right,
+               int size)
+    {
+        assert !left.isEmpty();
+        assert !right.isEmpty();
+
+        this.left = left;
+        this.right = right;
         this.size = size;
-        this.prefix = prefix;
-        this.nodes = nodes;
-        this.suffix = suffix;
+        this.depth = 1 + Math.max(left.depth(), right.depth());
+        assert size > LeafNode.MAX_SIZE;
     }
 
-    BranchNode(T prefixValue,
-               Node<T> node)
+    /**
+     * Low level build a new node from the specified child nodes.
+     * Assumes that the two nodes are already in balance.  If the
+     * size of the resulting node is small enough a leaf is return.
+     * Otherwise a branch is returned.
+     */
+    @Nonnull
+    private static <T> AbstractNode<T> join(@Nonnull AbstractNode<T> left,
+                                            @Nonnull AbstractNode<T> right)
     {
-        this(node.getDepth() + 1,
-             node.size() + 1,
-             new LeafNode<>(prefixValue),
-             ListHelper.allocateSingleNode(node),
-             EmptyNode.of());
-        assert node.isFull();
-    }
-
-    BranchNode(Node<T> node)
-    {
-        this(node.getDepth() + 1,
-             node.size() + 1,
-             EmptyNode.of(),
-             ListHelper.allocateSingleNode(node),
-             EmptyNode.of());
-        assert node.isFull();
-    }
-
-    BranchNode(Node<T> node,
-               T suffixValue)
-    {
-        this(node.getDepth() + 1,
-             node.size() + 1,
-             EmptyNode.of(),
-             ListHelper.allocateSingleNode(node),
-             new LeafNode<>(suffixValue));
-        assert node.isFull();
-    }
-
-    static <T> Node<T> forNodeBuilder(int depth,
-                                      int size,
-                                      Node<T> prefix,
-                                      Indexed<Node<T>> sourceNodes,
-                                      int offset,
-                                      int limit,
-                                      Node<T> suffix)
-    {
-        assert limit > offset;
-        assert ListHelper.allNodesFull(depth, sourceNodes, offset, limit);
-        final Node<T>[] nodes = ListHelper.allocateNodes(sourceNodes, offset, limit);
-        return new BranchNode<>(depth, size, prefix, nodes, suffix);
-    }
-
-    static <T> Node<T> of(Indexed<? extends T> leaves)
-    {
-        int nodeCount = leaves.size();
-        if (nodeCount == 0) {
-            return EmptyNode.of();
+        final int size = left.size() + right.size();
+        if (size <= LeafNode.MAX_SIZE) {
+            return new LeafNode<>(left, right, size);
+        } else {
+            return new BranchNode<>(left, right, size);
         }
-
-        if (nodeCount <= 32) {
-            return LeafNode.fromList(leaves, 0, nodeCount);
-        }
-
-        final Node<T>[] nodes = ListHelper.allocateNodes(1 + (leaves.size() / 32));
-        int offset = 0;
-        int index = 0;
-        while (offset < nodeCount) {
-            nodes[index++] = LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount));
-            offset += 32;
-        }
-        nodeCount = index;
-
-        // loop invariant - all nodes except last one are always full
-        // last one is possibly full
-        int depth = 2;
-        while (nodeCount > 1) {
-            int dstOffset = 0;
-            int srcOffset = 0;
-            // fill all full nodes
-            while (nodeCount > 32) {
-                final Node<T>[] newNodes = ListHelper.allocateNodes(32);
-                System.arraycopy(nodes, srcOffset, newNodes, 0, 32);
-                nodes[dstOffset++] = new BranchNode<>(depth, ListHelper.sizeForDepth(depth), EmptyNode.of(), newNodes, EmptyNode.of());
-                srcOffset += 32;
-                nodeCount -= 32;
-            }
-            // collect remaining nodes
-            if (nodeCount == 1) {
-                nodes[dstOffset++] = nodes[srcOffset];
-            } else if (nodeCount > 1) {
-                final Node<T> lastNode = nodes[srcOffset + nodeCount - 1];
-                if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
-                    // all remaining nodes are full
-                    final Node<T>[] newNodes = ListHelper.allocateNodes(nodeCount);
-                    System.arraycopy(nodes, srcOffset, newNodes, 0, nodeCount);
-                    nodes[dstOffset++] = new BranchNode<>(depth, ListHelper.sizeForDepth(depth - 1) * nodeCount, EmptyNode.of(), newNodes, EmptyNode.of());
-                } else {
-                    // all but last remaining nodes are full
-                    final int newNodesLength = nodeCount - 1;
-                    final Node<T>[] newNodes = ListHelper.allocateNodes(newNodesLength);
-                    System.arraycopy(nodes, srcOffset, newNodes, 0, newNodesLength);
-                    nodes[dstOffset++] = new BranchNode<>(depth, (ListHelper.sizeForDepth(depth - 1) * newNodesLength) + lastNode.size(), EmptyNode.of(), newNodes, lastNode);
-                }
-            }
-            nodeCount = dstOffset;
-            depth += 1;
-        }
-        assert nodeCount == 1;
-        return nodes[0];
     }
 
-    static <T> BranchNode<T> forTesting(Node<T> prefix,
-                                        Node<T>[] nodes,
-                                        Node<T> suffix)
+    /**
+     * Build a new node from the specified child nodes.  Performs rotations if necessary to ensure the tree
+     * remains in balance (depths of two child branches stay within 1 of each other).
+     */
+    @Nonnull
+    static <T> AbstractNode<T> balance(@Nonnull AbstractNode<T> left,
+                                       @Nonnull AbstractNode<T> right)
     {
-        return new BranchNode<>(2,
-                                prefix.size() + (nodes.length * 32) + suffix.size(),
-                                prefix,
-                                nodes.clone(),
-                                suffix);
+        final int diff = left.depth() - right.depth();
+        if (diff > 1) {
+            return left.rotateRight(right);
+        } else if (diff < -1) {
+            return right.rotateLeft(left);
+        } else {
+            return join(left, right);
+        }
     }
 
     @Override
-    public boolean isEmpty()
+    boolean isEmpty()
     {
         return size == 0;
     }
 
     @Override
-    public boolean isFull()
-    {
-        return size == ListHelper.sizeForDepth(depth);
-    }
-
-    @Override
-    public int size()
+    int size()
     {
         return size;
     }
 
     @Override
-    public int getDepth()
+    int depth()
     {
         return depth;
     }
 
-    private static <T> Node<T> forDelete(int size,
-                                         Node<T> prefix,
-                                         Node<T>[] nodes,
-                                         Node<T> suffix)
+    @Override
+    T get(int index)
     {
-        if (nodes.length == 0) {
-            if (prefix.isEmpty()) {
-                return suffix;
-            } else if (suffix.isEmpty()) {
-                return prefix;
-            } else {
-                int depth = 1 + Math.max(prefix.getDepth(), suffix.getDepth());
-                return new BranchNode<>(depth, size, prefix, nodes, suffix);
-            }
-        } else if ((nodes.length == 1) && prefix.isEmpty() && suffix.isEmpty()) {
-            return nodes[0];
+        final int leftSize = left.size();
+        if (index < leftSize) {
+            return left.get(index);
         } else {
-            int depth = 1 + nodes[0].getDepth();
-            return new BranchNode<>(depth, size, prefix, nodes, suffix);
+            return right.get(index - leftSize);
         }
     }
 
+    @Nonnull
     @Override
-    public Node<T> deleteFirst()
+    AbstractNode<T> append(T value)
     {
-        if (!prefix.isEmpty()) {
-            return forDelete(size - 1, prefix.deleteFirst(), nodes, suffix);
-        }
-        if (nodes.length > 0) {
-            Node<T> newPrefix = nodes[0];
-            Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
-            System.arraycopy(nodes, 1, newNodes, 0, newNodes.length);
-            return forDelete(size - 1, newPrefix.deleteFirst(), newNodes, suffix);
-        }
-        if (!suffix.isEmpty()) {
-            return suffix.deleteFirst();
-        }
-        throw new IllegalStateException();
+        return balance(left, right.append(value));
     }
 
+    @Nonnull
     @Override
-    public Node<T> deleteLast()
+    AbstractNode<T> append(@Nonnull AbstractNode<T> node)
     {
-        if (!suffix.isEmpty()) {
-            return forDelete(size - 1, prefix, nodes, suffix.deleteLast());
-        }
-        if (nodes.length > 0) {
-            Node<T> newSuffix = nodes[nodes.length - 1];
-            Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length - 1);
-            System.arraycopy(nodes, 0, newNodes, 0, newNodes.length);
-            return forDelete(size - 1, prefix, newNodes, newSuffix.deleteLast());
-        }
-        if (!prefix.isEmpty()) {
-            return prefix.deleteLast();
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public Node<T> insertFirst(T value)
-    {
-        if (isFull()) {
-            return new BranchNode<>(value, this);
-        }
-        if (prefix.getDepth() < (depth - 1)) {
-            return new BranchNode<>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
-        }
-        assert prefix.getDepth() == (depth - 1);
-        assert !prefix.isFull();
-        Node<T>[] newNodes;
-        Node<T> newPrefix = prefix.insertFirst(value);
-        if (newPrefix.isFull()) {
-            newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
-            newNodes[0] = newPrefix;
-            newPrefix = EmptyNode.of();
-        } else {
-            newNodes = nodes;
-        }
-        return new BranchNode<>(depth, size + 1, newPrefix, newNodes, suffix);
-    }
-
-    @Override
-    public Node<T> insertLast(T value)
-    {
-        if (isFull()) {
-            return new BranchNode<>(this, value);
-        }
-        if (suffix.getDepth() < (depth - 1)) {
-            return new BranchNode<>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
-        }
-        assert suffix.getDepth() == (depth - 1);
-        assert !suffix.isFull();
-        Node<T>[] newNodes;
-        Node<T> newSuffix = suffix.insertLast(value);
-        if (newSuffix.isFull()) {
-            newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
-            newNodes[nodes.length] = newSuffix;
-            newSuffix = EmptyNode.of();
-        } else {
-            newNodes = nodes;
-        }
-        return new BranchNode<>(depth, size + 1, prefix, newNodes, newSuffix);
-    }
-
-    @Override
-    public boolean containsIndex(int index)
-    {
-        return (index >= 0) && (index < size);
-    }
-
-    @Override
-    public T get(int index)
-    {
-        if (prefix.containsIndex(index)) {
-            return prefix.get(index);
-        }
-        index -= prefix.size();
-        final int fullNodeSize = ListHelper.sizeForDepth(depth - 1);
-        int arrayIndex = index / fullNodeSize;
-        if (arrayIndex < nodes.length) {
-            return nodes[arrayIndex].get(index - (arrayIndex * fullNodeSize));
-        }
-        index -= nodes.length * fullNodeSize;
-        if (suffix.containsIndex(index)) {
-            return suffix.get(index);
-        }
-        throw new IndexOutOfBoundsException();
-    }
-
-    @Override
-    public Node<T> assign(int index,
-                          T value)
-    {
-        if (prefix.containsIndex(index)) {
-            return new BranchNode<>(depth, size, prefix.assign(index, value), nodes, suffix);
-        }
-        index -= prefix.size();
-        final int fullNodeSize = ListHelper.sizeForDepth(depth - 1);
-        int arrayIndex = index / fullNodeSize;
-        if (arrayIndex < nodes.length) {
-            Node<T>[] newNodes = nodes.clone();
-            newNodes[arrayIndex] = nodes[arrayIndex].assign(index - (arrayIndex * fullNodeSize), value);
-            return new BranchNode<>(depth, size, prefix, newNodes, suffix);
-        }
-        index -= nodes.length * fullNodeSize;
-        if (suffix.containsIndex(index)) {
-            return new BranchNode<>(depth, size, prefix, nodes, suffix.assign(index, value));
-        }
-        throw new IndexOutOfBoundsException();
-    }
-
-    /**
-     * Efficiently add values from an Iterator to those contained in this BranchNode
-     * to create a new BranchNode of a given maximum size.  This is done in two stages.
-     * First the appropriate (based on insertion order) prefix/suffix is expanded until
-     * it is full.  Then a builder is created from the full nodes of this branch and any
-     * remaining values from the iterator are added to the builder.  Finally the original
-     * prefix/suffix from the unexpanded side is added to the final result.
-     */
-    @Override
-    public Node<T> insertAll(int maxSize,
-                             boolean forwardOrder,
-                             @Nonnull Iterator<? extends T> values)
-    {
-        assert maxSize >= size;
-        assert ListHelper.sizeForDepth(depth) >= size;
-        if (size >= maxSize || !values.hasNext()) {
+        if (node.isEmpty()) {
             return this;
         }
-        final int fullSize = Math.min(ListHelper.sizeForDepth(depth), maxSize);
-        final int growthAllowed = fullSize - size;
-        BranchNode<T> newNode;
-        if (isFull()) {
-            newNode = this;
-        } else if (forwardOrder) {
-            if (suffix.isEmpty()) {
-                newNode = this;
-            } else {
-                final int maxSuffixSize = Math.min(ListHelper.sizeForDepth(depth - 1), suffix.size() + growthAllowed);
-                final Node<T> newSuffix = suffix.insertAll(maxSuffixSize, true, values);
-                newNode = withSuffix(newSuffix);
-            }
-            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
-                assert newNode.suffix.isEmpty();
-                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
-                newNode = TreeBuilder.expandBranchNode(fullSize - prefix.size(), true, newNode, values).withPrefix(prefix);
-            }
+        final int diff = depth - node.depth();
+        if (diff < 0) {
+            return node.prepend(this);
+        } else if (diff <= 1) {
+            return new BranchNode<>(this, node);
         } else {
-            if (prefix.isEmpty()) {
-                newNode = this;
-            } else {
-                final int maxPrefixSize = Math.min(ListHelper.sizeForDepth(depth - 1), prefix.size() + growthAllowed);
-                final Node<T> newPrefix = prefix.insertAll(maxPrefixSize, false, values);
-                newNode = withPrefix(newPrefix);
-            }
-            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
-                assert newNode.prefix.isEmpty();
-                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
-                newNode = TreeBuilder.expandBranchNode(fullSize - suffix.size(), false, newNode, values).withSuffix(suffix);
-            }
+            return balance(left, right.append(node));
         }
-        assert newNode.isFull() || newNode.size == maxSize || !values.hasNext();
-        if (newNode.size() < maxSize && values.hasNext()) {
-            // since we are already full we need to create a parent and expand that
-            newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, new BranchNode<>(newNode), values);
-        }
-        assert newNode.size() == maxSize || !values.hasNext();
-        return newNode;
     }
 
     @Nonnull
     @Override
-    public Cursor<T> cursor()
+    AbstractNode<T> prepend(T value)
     {
-        return LazyMultiCursor.cursor(indexedForCursor());
+        return balance(left.prepend(value), right);
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
+    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node)
     {
-        return LazyMultiIterator.iterator(indexedForIterator());
-    }
-
-    private Indexed<Cursorable<T>> indexedForCursor()
-    {
-        final int last = nodes.length + 1;
-        return new Indexed<Cursorable<T>>()
-        {
-            @Override
-            public Cursorable<T> get(int index)
-            {
-                return getNode(index, last);
-            }
-
-            @Override
-            public int size()
-            {
-                return last + 1;
-            }
-        };
-    }
-
-    private Indexed<SplitableIterable<T>> indexedForIterator()
-    {
-        final int last = nodes.length + 1;
-        return new Indexed<SplitableIterable<T>>()
-        {
-            @Override
-            public SplitableIterable<T> get(int index)
-            {
-                return getNode(index, last);
-            }
-
-            @Override
-            public int size()
-            {
-                return last + 1;
-            }
-        };
-    }
-
-    private Node<T> getNode(int index,
-                            int last)
-    {
-        if (index == 0) {
-            return prefix;
-        } else if (index == last) {
-            return suffix;
+        if (node.isEmpty()) {
+            return this;
+        }
+        final int diff = depth - node.depth();
+        if (diff < 0) {
+            return node.append(this);
+        } else if (diff <= 1) {
+            return new BranchNode<>(node, this);
         } else {
-            return nodes[index - 1];
+            return balance(left.prepend(node), right);
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> assign(int index,
+                           T value)
+    {
+        final int leftSize = left.size();
+        if (index < leftSize) {
+            return new BranchNode<>(left.assign(index, value), right);
+        } else {
+            return new BranchNode<>(left, right.assign(index - leftSize, value));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> insert(int index,
+                           T value)
+    {
+        final int leftSize = left.size();
+        if (index < leftSize) {
+            return balance(left.insert(index, value), right);
+        } else if (index == leftSize && leftSize <= right.size()) {
+            return balance(left.insert(index, value), right);
+        } else {
+            return balance(left, right.insert(index - leftSize, value));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> delete(int index)
+    {
+        final int leftSize = left.size();
+        final AbstractNode<T> newLeft, newRight;
+        if (index < leftSize) {
+            newLeft = left.delete(index);
+            newRight = right;
+            if (newLeft.isEmpty()) {
+                return right;
+            }
+        } else {
+            newLeft = left;
+            newRight = right.delete(index - leftSize);
+            if (newRight.isEmpty()) {
+                return left;
+            }
+        }
+        return balance(newLeft, newRight);
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> deleteFirst()
+    {
+        final AbstractNode<T> newLeft = left.deleteFirst();
+        if (newLeft.isEmpty()) {
+            return right;
+        } else {
+            return balance(newLeft, right);
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> deleteLast()
+    {
+        final AbstractNode<T> newRight = right.deleteLast();
+        if (newRight.isEmpty()) {
+            return left;
+        } else {
+            return balance(left, newRight);
+        }
+    }
+
+    @Override
+    void copyTo(T[] array,
+                int offset)
+    {
+        left.copyTo(array, offset);
+        right.copyTo(array, offset + left.size());
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> prefix(int limit)
+    {
+        if (limit == size) {
+            return this;
+        } else if (limit == 0) {
+            return EmptyNode.instance();
+        } else {
+            final int leftSize = left.size();
+            if (limit <= leftSize) {
+                return left.prefix(limit);
+            } else {
+                return left.append(right.prefix(limit - leftSize));
+            }
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> suffix(int offset)
+    {
+        if (offset == 0) {
+            return this;
+        } else if (offset == size) {
+            return EmptyNode.instance();
+        } else {
+            final int leftSize = left.size();
+            if (offset < leftSize) {
+                return left.suffix(offset).append(right);
+            } else {
+                return right.suffix(offset - leftSize);
+            }
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> left()
+    {
+        return left;
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> right()
+    {
+        return right;
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> rotateRight(AbstractNode<T> parentRight)
+    {
+        if (left.depth() >= right.depth()) {
+            return join(left, join(right, parentRight));
+        } else {
+            return join(join(left, right.left()), join(right.right(), parentRight));
+        }
+    }
+
+    @Nonnull
+    @Override
+    AbstractNode<T> rotateLeft(AbstractNode<T> parentLeft)
+    {
+        if (left.depth() > right.depth()) {
+            return join(join(parentLeft, left.left()), join(left.right(), right));
+        } else {
+            return join(join(parentLeft, this.left), right);
         }
     }
 
     @Override
     public void checkInvariants()
     {
-        if (nodes.length > 32) {
-            throw new IllegalStateException();
+        if (depth != Math.max(left.depth(), right.depth()) + 1) {
+            throw new RuntimeException(String.format("incorrect depth: depth=%d leftDepth=%d rightDepth=%d", depth, left.depth(), right.depth()));
         }
-        if ((nodes.length == 32) && !(prefix.isEmpty() && suffix.isEmpty())) {
-            throw new IllegalStateException();
+        if (Math.abs(left.depth() - right.depth()) > 1) {
+            throw new RuntimeException(String.format("invalid child depths: leftDepth=%d rightDepth=%d", left.depth(), right.depth()));
         }
-        for (Node<T> node : nodes) {
-            if ((node.getDepth() != (depth - 1)) || !node.isFull()) {
-                throw new IllegalStateException();
-            }
+        if (size != left.size() + right.size()) {
+            throw new RuntimeException(String.format("incorrect size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
         }
-        int computedSize = prefix.size() + suffix.size();
-        for (Node<T> node : nodes) {
-            computedSize += node.size();
+        if (size <= LeafNode.MAX_SIZE) {
+            throw new RuntimeException(String.format("invalid size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
         }
-        if (computedSize != size) {
-            throw new IllegalStateException();
+        if (left.isEmpty() || right.isEmpty()) {
+            throw new RuntimeException(String.format("branch node has an empty branch: leftSize=%d rightSize=%d", left.size(), right.size()));
         }
-        if (prefix.isFull() && (prefix.getDepth() == (depth - 1))) {
-            throw new IllegalStateException();
-        }
-        if (suffix.isFull() && (suffix.getDepth() == (depth - 1))) {
-            throw new IllegalStateException();
-        }
-
-        prefix.checkInvariants();
-        for (Node<T> node : nodes) {
-            node.checkInvariants();
-        }
-        suffix.checkInvariants();
+        left.checkInvariants();
+        right.checkInvariants();
     }
 
-    Node<T> prefix()
+    @Override
+    public boolean equals(Object o)
     {
-        return prefix;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BranchNode<?> that = (BranchNode<?>)o;
+
+        if (size != that.size) {
+            return false;
+        }
+        if (depth != that.depth) {
+            return false;
+        }
+        if (!left.equals(that.left)) {
+            return false;
+        }
+        return right.equals(that.right);
     }
 
-    Indexed<Node<T>> filledNodes()
+    @Override
+    public int hashCode()
     {
-        return IndexedArray.retained(nodes);
+        int result = left.hashCode();
+        result = 31 * result + right.hashCode();
+        result = 31 * result + size;
+        result = 31 * result + depth;
+        return result;
     }
 
-    Node<T> suffix()
+    public String toString()
     {
-        return suffix;
+        return new StringJoiner(", ", BranchNode.class.getSimpleName() + "[", "]")
+            .add("left=" + left)
+            .add("right=" + right)
+            .add("size=" + size)
+            .add("depth=" + depth)
+            .toString();
     }
 
-    private BranchNode<T> withPrefix(@Nonnull Node<T> newPrefix)
+    @Nullable
+    @Override
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
-        assert newPrefix.getDepth() < depth;
-        final int baseSize = size - prefix.size();
-        if (newPrefix.size() == ListHelper.sizeForDepth(depth - 1)) {
-            final Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
-            newNodes[0] = newPrefix;
-            return new BranchNode<T>(depth, baseSize + newPrefix.size(), EmptyNode.of(), newNodes, suffix);
+        assert offset >= 0 && limit <= size && offset <= limit;
+        final int leftSize = left.size();
+        if (limit <= leftSize) {
+            return left.iterateOverRange(parent, offset, limit);
+        } else if (offset >= leftSize) {
+            return right.iterateOverRange(parent, offset - leftSize, limit - leftSize);
         } else {
-            return new BranchNode<T>(depth, baseSize + newPrefix.size(), newPrefix, nodes, suffix);
+            return left.iterateOverRange(new IteratorState(parent, limit - leftSize), offset, leftSize);
         }
     }
 
-    private BranchNode<T> withSuffix(@Nonnull Node<T> newSuffix)
+    // state object to resume iteration down right branch from start to limit (limit relative to right branch)
+    class IteratorState
+        implements GenericIterator.State<T>
     {
-        assert newSuffix.getDepth() < depth;
-        final int baseSize = size - suffix.size();
-        if (newSuffix.size() == ListHelper.sizeForDepth(depth - 1)) {
-            final Node<T>[] newNodes = ListHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
-            newNodes[nodes.length] = newSuffix;
-            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, newNodes, EmptyNode.of());
-        } else {
-            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, nodes, newSuffix);
+        private final GenericIterator.State<T> parent;
+        private final int limit;
+
+        private IteratorState(@Nullable GenericIterator.State<T> parent,
+                              int limit)
+        {
+            assert limit <= right.size();
+            this.parent = parent;
+            this.limit = limit;
+        }
+
+        @Override
+        public T value()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<T> advance()
+        {
+            return right.iterateOverRange(parent, 0, limit);
         }
     }
 }

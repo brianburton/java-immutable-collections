@@ -35,14 +35,12 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.cursors.TransformCursor;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
@@ -91,20 +89,6 @@ public abstract class AbstractJImmutableArray<T>
     public JImmutableArray<T> getInsertableSelf()
     {
         return this;
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<Integer> keysCursor()
-    {
-        return TransformCursor.ofKeys(cursor());
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<T> valuesCursor()
-    {
-        return TransformCursor.ofValues(cursor());
     }
 
     @Nonnull

@@ -35,17 +35,14 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.cursors.SingleValueCursor;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -71,6 +68,12 @@ public class LeafTrieNode<T>
                                   @Nonnull T value)
     {
         return new LeafTrieNode<>(index, value, shiftForIndex(index));
+    }
+
+    @Override
+    public int valueCount()
+    {
+        return 1;
     }
 
     @Override
@@ -112,8 +115,7 @@ public class LeafTrieNode<T>
     @Override
     public TrieNode<T> assign(int shift,
                               int index,
-                              T value,
-                              MutableDelta sizeDelta)
+                              T value)
     {
         assert shift >= -5;
         if (this.index == index) {
@@ -124,18 +126,16 @@ public class LeafTrieNode<T>
             }
         } else {
             assert shift >= 0;
-            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value, sizeDelta);
+            return SingleBranchTrieNode.forIndex(shift, this.index, this).assign(shift, index, value);
         }
     }
 
     @Override
     public TrieNode<T> delete(int shift,
-                              int index,
-                              MutableDelta sizeDelta)
+                              int index)
     {
         assert shift >= -5;
         if (this.index == index) {
-            sizeDelta.subtract(1);
             return of();
         } else {
             return this;
@@ -164,18 +164,13 @@ public class LeafTrieNode<T>
         }
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return SingleValueIterator.of(this);
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<JImmutableMap.Entry<Integer, T>> cursor()
-    {
-        return SingleValueCursor.of(this);
+        return GenericIterator.valueState(parent, this);
     }
 
     @Override

@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.SplitableIterator;
@@ -168,13 +167,6 @@ public class JImmutableTreeMap<K, V>
     public JImmutableTreeMap<K, V> deleteAll()
     {
         return (comparator == ComparableComparator.of()) ? EMPTY : new JImmutableTreeMap<>(comparator, FringeNode.instance());
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<Entry<K, V>> cursor()
-    {
-        return root.cursor();
     }
 
     @Override

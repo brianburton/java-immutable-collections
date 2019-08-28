@@ -1,13 +1,10 @@
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.Cursor;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.cursors.StandardCursor;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -153,22 +150,18 @@ class FringeNode<K, V>
         return this;
     }
 
+    @Nullable
     @Override
-    void checkInvariants(@Nonnull Comparator<K> comp)
+    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<Entry<K, V>> parent,
+                                                               int offset,
+                                                               int limit)
     {
+        assert offset == 0 && limit == 0;
+        return parent;
     }
 
-    @Nonnull
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public void checkInvariants(@Nonnull Comparator<K> comp)
     {
-        return EmptyIterator.of();
-    }
-
-    @Nonnull
-    @Override
-    public Cursor<Entry<K, V>> cursor()
-    {
-        return StandardCursor.of();
     }
 }

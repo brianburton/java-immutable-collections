@@ -38,7 +38,7 @@ package org.javimmutable.collections.listmap;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.list.JImmutableArrayList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableTreeListMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -56,7 +56,7 @@ public class JImmutableTreeListMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked"})
-    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of(), JImmutableArrayList.of());
+    private static final JImmutableTreeListMap EMPTY = new JImmutableTreeListMap(JImmutableTreeMap.of(), JImmutableTreeList.of());
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
@@ -92,7 +92,7 @@ public class JImmutableTreeListMap<K, V>
      */
     public static <K, V> JImmutableTreeListMap<K, V> of(Comparator<K> comparator)
     {
-        return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator), JImmutableArrayList.of());
+        return new JImmutableTreeListMap<>(JImmutableTreeMap.of(comparator), JImmutableTreeList.of());
     }
 
     public Comparator<K> getComparator()

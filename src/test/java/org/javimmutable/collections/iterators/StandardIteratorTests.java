@@ -35,10 +35,14 @@
 
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +73,7 @@ public class StandardIteratorTests
                                                  @Nonnull Iterable<T> actual)
     {
         verifyOrderedIterable(expected, actual, identity());
+        verifyOrderedSplits(expected, actual.iterator(), identity());
     }
 
     public static <S, T> void verifyOrderedIterable(@Nonnull Iterable<T> expected,
@@ -77,6 +82,32 @@ public class StandardIteratorTests
     {
         verifyOrderedIteratorUsingHasNext(expected.iterator(), actual.iterator(), transforminator);
         verifyOrderedIteratorUsingNextOnly(expected.iterator(), actual.iterator(), transforminator);
+    }
+
+    private static <S, T> void verifyOrderedSplits(@Nonnull Iterable<T> expected,
+                                                   @Nonnull Iterator<T> actual,
+                                                   @Nonnull Function<S, T> transforminator)
+    {
+        if (actual instanceof SplitableIterator) {
+            List<T> result = new ArrayList<>();
+            traverseSplits((SplitableIterator<S>)actual, result, transforminator);
+            assertEquals(makeList(expected.iterator()), result);
+        }
+    }
+
+    private static <S, T> void traverseSplits(@Nonnull SplitableIterator<S> iterator,
+                                              @Nonnull List<T> result,
+                                              @Nonnull Function<S, T> transforminator)
+    {
+        if (iterator.isSplitAllowed()) {
+            SplitIterator<S> split = iterator.splitIterator();
+            traverseSplits(split.getLeft(), result, transforminator);
+            traverseSplits(split.getRight(), result, transforminator);
+        } else {
+            while (iterator.hasNext()) {
+                result.add(transforminator.apply(iterator.next()));
+            }
+        }
     }
 
     public static <S, T> void verifyUnorderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,
@@ -170,5 +201,110 @@ public class StandardIteratorTests
             verifyOrderedIteratorUsingHasNext(leftExpected.iterator(), split.getLeft());
             verifyOrderedIteratorUsingHasNext(rightExpected.iterator(), split.getRight());
         }
+    }
+
+    public static <T> void iteratorTest(Func1<Integer, T> lookup,
+                                        int size,
+                                        Iterator<T> iterator)
+    {
+        // calling next advances through entire sequence
+        for (int i = 0; i < size; ++i) {
+            assertEquals(true, iterator.hasNext());
+            assertEquals(lookup.apply(i), iterator.next());
+        }
+        // after expected sequence has no values
+        assertEquals(false, iterator.hasNext());
+        // calling next() at end throws
+        try {
+            iterator.next();
+            fail();
+        } catch (NoSuchElementException ignored) {
+            // expected
+        }
+        // safe to call multiple times once at end
+        assertEquals(false, iterator.hasNext());
+    }
+
+    public static <T> void indexedIteratorTest(Indexed<T> indexed,
+                                               int size,
+                                               Iterator<T> iterator)
+    {
+        iteratorTest(new IndexedLookup<>(indexed), size, iterator);
+    }
+
+    public static <T> void listIteratorTest(List<T> list,
+                                            Iterator<T> iterator)
+    {
+        iteratorTest(new ListLookup<>(list), list.size(), iterator);
+    }
+
+    public static <T> void emptyIteratorTest(Iterator<T> iterator)
+    {
+        listIteratorTest(Collections.emptyList(), iterator);
+    }
+
+    public static <T> void verifySplit(SplitableIterator<T> cursor,
+                                       List<T> left,
+                                       List<T> right)
+    {
+        SplitIterator<T> split = cursor.splitIterator();
+        listIteratorTest(left, split.getLeft());
+        listIteratorTest(right, split.getRight());
+    }
+
+    private static class ListLookup<T>
+        implements Func1<Integer, T>
+    {
+        private final List<T> list;
+
+        private ListLookup(List<T> list)
+        {
+            this.list = list;
+        }
+
+        @Override
+        public T apply(Integer value)
+        {
+            return list.get(value);
+        }
+    }
+
+    private static class IndexedLookup<T>
+        implements Func1<Integer, T>
+    {
+        private final Indexed<T> indexed;
+
+        private IndexedLookup(Indexed<T> indexed)
+        {
+            this.indexed = indexed;
+        }
+
+        @Override
+        public T apply(Integer value)
+        {
+            return indexed.get(value);
+        }
+    }
+
+    /**
+     * Utility method, useful in unit tests, that collects all of the values in the Iterator into a List
+     * and returns the List.
+     */
+    public static <T> List<T> makeList(Iterator<T> iterator)
+    {
+        List<T> answer = new ArrayList<>();
+        while (iterator.hasNext()) {
+            answer.add(iterator.next());
+        }
+        return answer;
+    }
+
+    /**
+     * Utility method, useful in unit tests, that essentially casts away actual type of an object
+     * so that Iterable version of an overload is triggered instead of more specific class.
+     */
+    public static <T> Iterable<T> plainIterable(Iterable<T> obj)
+    {
+        return obj::iterator;
     }
 }
