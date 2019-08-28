@@ -1,6 +1,5 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -304,13 +303,6 @@ class BranchNode<T>
         }
     }
 
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
-    {
-        return new GenericIterator<>(this, 0, size);
-    }
-
     @Override
     public void checkInvariants()
     {
@@ -366,6 +358,7 @@ class BranchNode<T>
         result = 31 * result + depth;
         return result;
     }
+
     public String toString()
     {
         return new StringJoiner(", ", BranchNode.class.getSimpleName() + "[", "]")
@@ -382,9 +375,7 @@ class BranchNode<T>
                                                      int offset,
                                                      int limit)
     {
-        if (offset < 0 || limit > size || offset > limit) {
-            throw new IndexOutOfBoundsException();
-        }
+        assert offset >= 0 && limit <= size && offset <= limit;
         final int leftSize = left.size();
         if (limit <= leftSize) {
             return left.iterateOverRange(parent, offset, limit);

@@ -1,11 +1,7 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
-import org.javimmutable.collections.iterators.IndexedIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -248,13 +244,6 @@ class LeafNode<T>
         return (T[])new Object[size];
     }
 
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
-    {
-        return IndexedIterator.iterator(IndexedArray.retained(values));
-    }
-
     @Override
     public void checkInvariants()
     {
@@ -300,12 +289,7 @@ class LeafNode<T>
                                                      int offset,
                                                      int limit)
     {
-        if (limit > values.length) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (offset < 0 || offset >= limit) {
-            throw new IndexOutOfBoundsException();
-        }
+        assert offset >= 0 && offset <= limit && limit <= values.length;
         return new IteratorState(parent, offset, limit);
     }
 

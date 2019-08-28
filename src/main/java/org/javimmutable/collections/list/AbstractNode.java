@@ -2,10 +2,10 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 abstract class AbstractNode<T>
     implements SplitableIterable<T>,
@@ -85,12 +85,9 @@ abstract class AbstractNode<T>
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Creates a new iterator state if possible, otherwise returns null.
-     */
-    @Nullable
-    @Override
-    public abstract GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                              int offset,
-                                                              int limit);
+    @Nonnull
+    public SplitableIterator<T> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
+    }
 }

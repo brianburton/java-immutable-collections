@@ -1,7 +1,5 @@
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -145,19 +143,13 @@ public class EmptyNode<T>
         }
     }
 
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
-    {
-        return EmptyIterator.of();
-    }
-
     @Nullable
     @Override
     public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
                                                      int offset,
                                                      int limit)
     {
+        assert offset == 0 && limit == 0;
         return parent;
     }
 
