@@ -37,8 +37,8 @@ package org.javimmutable.collections.hash.hamt;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hash.collision_map.ListCollisionMap;
-import org.javimmutable.collections.hash.collision_map.ListNode;
+import org.javimmutable.collections.list.EntryList;
+import org.javimmutable.collections.list.ListCollisionMap;
 
 public class HamtLeafNodeTest
     extends TestCase
@@ -51,12 +51,12 @@ public class HamtLeafNodeTest
         final Checked d = new Checked(1, 14);
         final MutableDelta size = new MutableDelta();
         final ListCollisionMap<Checked, Integer> transforms = new ListCollisionMap<>();
-        ListNode<Checked, Integer> values = transforms.update(null, a, 100, size);
+        EntryList<Checked, Integer> values = transforms.update(null, a, 100, size);
         values = transforms.update(values, b, 200, size);
         values = transforms.update(values, c, 300, size);
         assertEquals(3, size.getValue());
 
-        HamtNode<ListNode<Checked, Integer>, Checked, Integer> node = new HamtLeafNode<>(1, values);
+        HamtNode<EntryList<Checked, Integer>, Checked, Integer> node = new HamtLeafNode<>(1, values);
         assertSame(node, node.delete(transforms, 1, d, size));
         assertEquals(3, size.getValue());
 

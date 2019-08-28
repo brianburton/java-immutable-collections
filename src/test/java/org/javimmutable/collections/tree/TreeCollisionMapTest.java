@@ -33,72 +33,62 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.collision_map;
+package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListCollisionMapTest
+public class TreeCollisionMapTest
     extends TestCase
 {
-    private SingleValueListNode<Integer, Integer> single(int key,
-                                                         int value)
-    {
-        return SingleValueListNode.of(key, value);
-    }
-
-    private ListNode<Integer, Integer> multi(SingleValueListNode<Integer, Integer> e1,
-                                             SingleValueListNode<Integer, Integer> e2)
-    {
-        return MultiValueListNode.of(e1, e2);
-    }
-
     public void testUpdateDelete()
     {
-        ListCollisionMap<Integer, Integer> transforms = new ListCollisionMap<>();
+        TreeCollisionMap<Integer, Integer> transforms = new TreeCollisionMap<>();
         MutableDelta delta = new MutableDelta();
-        ListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
+        Node<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(single(10, 100), value);
+        assertEquals(Node.single(10, 100), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 10, 1000, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(single(10, 1000), value);
+        assertEquals(Node.single(10, 1000), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 12, 60, delta);
         assertEquals(1, delta.getValue());
-        assertEquals(multi(single(10, 1000), single(12, 60)), value);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 60)), value);
 
         delta = new MutableDelta();
         value = transforms.update(value, 12, 90, delta);
         assertEquals(0, delta.getValue());
-        assertEquals(multi(single(10, 1000), single(12, 90)), value);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), value);
 
         delta = new MutableDelta();
-        ListNode<Integer, Integer> deleted = transforms.delete(value, 87, delta);
+        Node<Integer, Integer> deleted = transforms.delete(value, 87, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(multi(single(10, 1000), single(12, 90)), deleted);
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 10, delta);
         assertNotNull(deleted);
         assertEquals(-1, delta.getValue());
-        assertEquals(single(12, 90), deleted);
+        assertEquals(Node.single(12, 90), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 40, delta);
         assertNotNull(deleted);
         assertEquals(0, delta.getValue());
-        assertEquals(single(12, 90), deleted);
+        assertEquals(Node.single(12, 90), deleted);
 
         delta = new MutableDelta();
         deleted = transforms.delete(deleted, 12, delta);
@@ -108,9 +98,9 @@ public class ListCollisionMapTest
 
     public void testFindGet()
     {
-        ListCollisionMap<Integer, Integer> transforms = new ListCollisionMap<>();
+        TreeCollisionMap<Integer, Integer> transforms = new TreeCollisionMap<>();
         MutableDelta delta = new MutableDelta();
-        ListNode<Integer, Integer> value = transforms.update(null, 10, 100, delta);
+        Node<Integer, Integer> value = transforms.update(null, 10, 100, delta);
         value = transforms.update(value, 18, 180, delta);
         value = transforms.update(value, 12, 60, delta);
         value = transforms.update(value, -6, -60, delta);
@@ -123,17 +113,23 @@ public class ListCollisionMapTest
         assertEquals(Holders.of(-60), transforms.findValue(value, -6));
         assertEquals(Holders.<Integer>of(), transforms.findValue(value, 11));
 
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(single(10, 100)), transforms.findEntry(value, 10));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(single(12, 90)), transforms.findEntry(value, 12));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(single(18, 180)), transforms.findEntry(value, 18));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(single(-6, -60)), transforms.findEntry(value, -6));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(value, 10));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(value, 12));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(value, 18));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(value, -6));
         assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(value, 11));
 
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
-        expected.add(single(12, 90));
-        expected.add(single(10, 100));
-        expected.add(single(18, 180));
-        expected.add(single(-6, -60));
+        expected.add(MapEntry.of(-6, -60));
+        expected.add(MapEntry.of(10, 100));
+        expected.add(MapEntry.of(12, 90));
+        expected.add(MapEntry.of(18, 180));
         StandardIteratorTests.listIteratorTest(expected, transforms.iterator(value));
+    }
+
+    private Node<Integer, Integer> branch(Tuple2<Integer, Integer> a,
+                                          Tuple2<Integer, Integer> b)
+    {
+        return Node.single(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
     }
 }

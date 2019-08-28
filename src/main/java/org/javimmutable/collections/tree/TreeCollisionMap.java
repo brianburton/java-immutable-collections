@@ -33,86 +33,109 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.collision_map;
+package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.MutableDelta;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Comparator;
 
+/**
+ * Transforms implementation that stores values in Node objects (balanced trees).
+ * Usable with keys that implement Comparable.  Will fail with any other
+ * type of key.
+ */
 @Immutable
-public class ListCollisionMap<K, V>
-    implements CollisionMap<ListNode<K, V>, K, V>
+public class TreeCollisionMap<K extends Comparable<K>, V>
+    implements CollisionMap<Node<K, V>, K, V>
 {
+    private final Comparator<K> comparator = ComparableComparator.of();
+
     @Nonnull
     @Override
-    public ListNode<K, V> update(ListNode<K, V> leaf,
-                                 @Nonnull K key,
-                                 V value,
-                                 @Nonnull MutableDelta delta)
+    public Node<K, V> update(Node<K, V> leaf,
+                             @Nonnull K key,
+                             V value,
+                             @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return SingleValueListNode.of(key, value);
+            return Node.single(key, value);
         } else {
-            return leaf.setValueForKey(key, value, delta);
+            return resultForUpdate(leaf, delta, leaf.assign(comparator, key, value));
         }
     }
 
     @Nonnull
     @Override
-    public ListNode<K, V> update(@Nullable ListNode<K, V> leaf,
-                                 @Nonnull K key,
-                                 @Nonnull Func1<Holder<V>, V> generator,
-                                 @Nonnull MutableDelta delta)
+    public Node<K, V> update(@Nullable Node<K, V> leaf,
+                             @Nonnull K key,
+                             @Nonnull Func1<Holder<V>, V> generator,
+                             @Nonnull MutableDelta delta)
     {
         if (leaf == null) {
             delta.add(1);
-            return SingleValueListNode.of(key, generator.apply(Holders.of()));
+            return Node.single(key, generator.apply(Holders.of()));
         } else {
-            return leaf.setValueForKey(key, generator, delta);
+            return resultForUpdate(leaf, delta, leaf.update(comparator, key, generator));
         }
     }
 
     @Override
-    public ListNode<K, V> delete(@Nonnull ListNode<K, V> leaf,
-                                 @Nonnull K key,
-                                 @Nonnull MutableDelta delta)
+    public Node<K, V> delete(@Nonnull Node<K, V> leaf,
+                             @Nonnull K key,
+                             @Nonnull MutableDelta delta)
     {
-        return leaf.deleteValueForKey(key, delta);
+        final Node<K, V> newLeaf = leaf.delete(comparator, key);
+        if (newLeaf == leaf) {
+            return leaf;
+        } else {
+            delta.add(-1);
+            return newLeaf.isEmpty() ? null : newLeaf;
+        }
     }
 
     @Override
-    public V getValueOr(@Nonnull ListNode<K, V> leaf,
+    public V getValueOr(@Nonnull Node<K, V> leaf,
                         @Nonnull K key,
                         V defaultValue)
     {
-        return leaf.getValueForKey(key, defaultValue);
+        return leaf.get(comparator, key, defaultValue);
     }
 
     @Override
-    public Holder<V> findValue(@Nonnull ListNode<K, V> leaf,
+    public Holder<V> findValue(@Nonnull Node<K, V> leaf,
                                @Nonnull K key)
     {
-        return leaf.findValueForKey(key);
+        return leaf.find(comparator, key);
     }
 
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull ListNode<K, V> leaf,
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node<K, V> leaf,
                                                        @Nonnull K key)
     {
-        return Holders.fromNullable(leaf.getEntryForKey(key));
+        return leaf.findEntry(comparator, key);
     }
 
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull ListNode<K, V> leaf)
+    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node<K, V> leaf)
     {
         return leaf.iterator();
+    }
+
+    private Node<K, V> resultForUpdate(Node<K, V> leaf,
+                                       @Nonnull MutableDelta delta,
+                                       Node<K, V> result)
+    {
+        delta.add(result.size() - leaf.size());
+        return result;
     }
 }

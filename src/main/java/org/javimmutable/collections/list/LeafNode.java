@@ -1,12 +1,12 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.common.ArrayHelper;
+import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
@@ -290,44 +290,6 @@ class LeafNode<T>
                                                      int limit)
     {
         assert offset >= 0 && offset <= limit && limit <= values.length;
-        return new IteratorState(parent, offset, limit);
-    }
-
-    @NotThreadSafe
-    class IteratorState
-        implements GenericIterator.State<T>
-    {
-        private final GenericIterator.State<T> parent;
-        private final int limit;
-        private int offset;
-
-        private IteratorState(@Nullable GenericIterator.State<T> parent,
-                              int offset,
-                              int limit)
-        {
-            this.parent = parent;
-            this.offset = offset;
-            this.limit = limit;
-        }
-
-        @Override
-        public T value()
-        {
-            return values[offset];
-        }
-
-        @Nullable
-        @Override
-        public GenericIterator.State<T> advance()
-        {
-            offset += 1;
-            if (offset < limit) {
-                return this;
-            } else if (parent != null) {
-                return parent.advance();
-            } else {
-                return null;
-            }
-        }
+        return GenericIterator.multiValueState(parent, IndexedArray.retained(values), offset, limit);
     }
 }

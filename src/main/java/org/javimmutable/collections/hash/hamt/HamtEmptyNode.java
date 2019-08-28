@@ -40,8 +40,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hash.collision_map.CollisionMap;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;

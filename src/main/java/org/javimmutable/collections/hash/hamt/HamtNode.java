@@ -41,8 +41,8 @@ import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hash.collision_map.CollisionMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

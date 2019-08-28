@@ -42,13 +42,13 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hash.collision_map.CollisionMap;
-import org.javimmutable.collections.hash.collision_map.ListCollisionMap;
-import org.javimmutable.collections.hash.collision_map.TreeCollisionMap;
 import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hash.hamt.HamtNode;
+import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
+import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
