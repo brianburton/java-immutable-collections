@@ -39,11 +39,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -174,11 +174,14 @@ public class LeafNode<K, V>
         return 0;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        return SingleValueIterator.of(this);
+        assert offset == 0 && limit == 1;
+        return GenericIterator.valueState(parent, this);
     }
 
     @Override

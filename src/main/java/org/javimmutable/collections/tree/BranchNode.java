@@ -39,11 +39,10 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -242,11 +241,14 @@ public class BranchNode<K, V>
         return 1 + children[0].depth();
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                             int offset,
+                                                                             int limit)
     {
-        return LazyMultiIterator.iterator(IndexedArray.retained(children));
+        assert offset >= 0 && limit <= valueCount;
+        return GenericIterator.indexedState(parent, IndexedArray.retained(children), Node::valueCount, offset, limit);
     }
 
     @Override

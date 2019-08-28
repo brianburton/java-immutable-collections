@@ -38,15 +38,16 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Tuple2;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
 public interface Node<K, V>
-    extends SplitableIterable<JImmutableMap.Entry<K, V>>
+    extends GenericIterator.Iterable<JImmutableMap.Entry<K, V>>
 {
     int MIN_CHILDREN = 16;
     int MAX_CHILDREN = 2 * MIN_CHILDREN;
@@ -107,4 +108,9 @@ public interface Node<K, V>
     }
 
     void checkInvariants(@Nonnull Comparator<K> comparator);
+
+    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    {
+        return new GenericIterator<>(this, 0, valueCount());
+    }
 }

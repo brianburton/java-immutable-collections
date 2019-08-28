@@ -299,6 +299,17 @@ public class JImmutableTreeMapTest
 
     }
 
+    public void testIterator()
+    {
+        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
+        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
+        for (int i = -1000; i <= 1000; ++i) {
+            expected.add(MapEntry.of(i, 1000 + i));
+            map = map.assign(i, 1000 + i);
+        }
+        StandardIteratorTests.verifyOrderedIterable(expected, map);
+    }
+
     public void testStreams()
     {
         final JImmutableMap<Integer, Integer> treeMap = JImmutableTreeMap.of();
