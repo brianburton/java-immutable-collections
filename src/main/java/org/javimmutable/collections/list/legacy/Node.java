@@ -38,6 +38,8 @@ package org.javimmutable.collections.list.legacy;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -48,6 +50,7 @@ import java.util.Iterator;
  */
 interface Node<T>
     extends SplitableIterable<T>,
+            GenericIterator.Iterable<T>,
             Indexed<T>,
             InvariantCheckable
 {
@@ -73,4 +76,11 @@ interface Node<T>
     Node<T> insertAll(int maxSize,
                       boolean forwardOrder,
                       @Nonnull Iterator<? extends T> values);
+
+    @Nonnull
+    @Override
+    default SplitableIterator<T> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
+    }
 }

@@ -36,12 +36,12 @@
 package org.javimmutable.collections.list.legacy;
 
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.List;
@@ -191,11 +191,13 @@ class LeafNode<T>
         return TreeBuilder.expandLeafNode(maxSize, forwardOrder, this, values);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<T> iterator()
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
-        return IndexedIterator.iterator(IndexedArray.retained(values));
+        return GenericIterator.multiValueState(parent, IndexedArray.retained(values), offset, limit);
     }
 
     @Override

@@ -35,11 +35,10 @@
 
 package org.javimmutable.collections.list.legacy;
 
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Tuple2;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -137,11 +136,14 @@ final class EmptyNode<T>
         return TreeBuilder.createFromIterator(maxSize, forwardOrder, values);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<T> iterator()
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
-        return EmptyIterator.of();
+        assert offset == 0 && limit == 0;
+        return parent;
     }
 
     @Override

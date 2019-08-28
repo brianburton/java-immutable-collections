@@ -121,6 +121,55 @@ public class GenericIterator<T>
         return new SingleValueState<>(parent, value);
     }
 
+    public static <T> State<T> multiValueState(@Nullable State<T> parent,
+                                               @Nonnull Indexed<T> values,
+                                               int offset,
+                                               int limit)
+    {
+        assert offset >= 0 && offset <= limit && limit <= values.size();
+        return new MultiValueState<>(parent, values, offset, limit);
+    }
+
+    private static class MultiValueState<T>
+        implements GenericIterator.State<T>
+    {
+        private final GenericIterator.State<T> parent;
+        private final Indexed<T> values;
+        private final int limit;
+        private int offset;
+
+        private MultiValueState(@Nullable GenericIterator.State<T> parent,
+                                @Nonnull Indexed<T> values,
+                                int offset,
+                                int limit)
+        {
+            this.parent = parent;
+            this.values = values;
+            this.offset = offset;
+            this.limit = limit;
+        }
+
+        @Override
+        public T value()
+        {
+            return values.get(offset);
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<T> advance()
+        {
+            offset += 1;
+            if (offset < limit) {
+                return this;
+            } else if (parent != null) {
+                return parent.advance();
+            } else {
+                return null;
+            }
+        }
+    }
+
     public static <T, C extends Iterable<T>> State<T> indexedState(State<T> parent,
                                                                    Indexed<C> children,
                                                                    ToIntFunction<C> sizer,

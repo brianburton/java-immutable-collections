@@ -36,12 +36,11 @@
 package org.javimmutable.collections.list.legacy;
 
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -431,42 +430,40 @@ class BranchNode<T>
         return newNode;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public SplitableIterator<T> iterator()
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                     int offset,
+                                                     int limit)
     {
-        return LazyMultiIterator.iterator(indexedForIterator());
+        return GenericIterator.indexedState(parent, indexedForIterator(), Node::size, offset, limit);
     }
 
-    private Indexed<SplitableIterable<T>> indexedForIterator()
+    @Nonnull
+    private Indexed<Node<T>> indexedForIterator()
     {
         final int last = nodes.length + 1;
-        return new Indexed<SplitableIterable<T>>()
+        final int size = last + 1;
+        return new Indexed<Node<T>>()
         {
             @Override
-            public SplitableIterable<T> get(int index)
+            public Node<T> get(int index)
             {
-                return getNode(index, last);
+                if (index == 0) {
+                    return prefix;
+                } else if (index == last) {
+                    return suffix;
+                } else {
+                    return nodes[index - 1];
+                }
             }
 
             @Override
             public int size()
             {
-                return last + 1;
+                return size;
             }
         };
-    }
-
-    private Node<T> getNode(int index,
-                            int last)
-    {
-        if (index == 0) {
-            return prefix;
-        } else if (index == last) {
-            return suffix;
-        } else {
-            return nodes[index - 1];
-        }
     }
 
     @Override

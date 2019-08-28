@@ -505,6 +505,12 @@ public class JImmutableArrayListTest
             }
             assertEquals(false, iterator.hasNext());
         }
+
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 1; i <= 2000; ++i) {
+            expected.add(i);
+        }
+        StandardIteratorTests.verifyOrderedIterable(expected, JImmutableArrayList.of(IndexedList.retained(expected)));
     }
 
     public void testDeleteAll()
