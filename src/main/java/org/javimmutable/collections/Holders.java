@@ -61,6 +61,17 @@ public class Holders<V>
         return EMPTY;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <V> Holder<V> holder()
+    {
+        return EMPTY;
+    }
+
+    public static <V> Holder<V> holder(@Nullable V value)
+    {
+        return of(value);
+    }
+
     /**
      * Creates a filled Holder for the specified type and (possibly null) value.
      */

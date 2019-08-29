@@ -9,6 +9,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.StringJoiner;
 
 class EntryList<K, V>
     implements GenericIterator.Iterable<Entry<K, V>>
@@ -30,13 +31,9 @@ class EntryList<K, V>
     }
 
     @Nonnull
-    static <K, V> EntryList<K, V> instance(@Nullable EntryList<K, V> e)
+    static <K, V> EntryList<K, V> instance(@Nonnull AbstractNode<Entry<K, V>> root)
     {
-        if (e == null) {
-            return empty();
-        } else {
-            return e;
-        }
+        return new EntryList<>(root);
     }
 
     int size()
@@ -140,5 +137,34 @@ class EntryList<K, V>
                                                                int limit)
     {
         return root.iterateOverRange(parent, offset, limit);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        EntryList<?, ?> entryList = (EntryList<?, ?>)o;
+
+        return root.equals(entryList.root);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return root.hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new StringJoiner(", ", EntryList.class.getSimpleName() + "[", "]")
+            .add("root=" + root)
+            .toString();
     }
 }
