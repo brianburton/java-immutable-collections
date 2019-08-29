@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 
 @Immutable
-class LeafNode<T>
+class MultiValueNode<T>
     extends AbstractNode<T>
     implements ArrayHelper.Allocator<T>
 {
@@ -20,10 +20,12 @@ class LeafNode<T>
 
     private final T[] values;
 
-    LeafNode(T value)
+    MultiValueNode(T a,
+                   T b)
     {
-        values = allocate(1);
-        values[0] = value;
+        values = allocate(2);
+        values[0] = a;
+        values[1] = b;
     }
 
     /**
@@ -31,9 +33,9 @@ class LeafNode<T>
      *
      * @param values array to retain and use for leaf node
      */
-    private LeafNode(T[] values)
+    private MultiValueNode(T[] values)
     {
-        assert values.length > 0;
+        assert values.length > 1;
         assert values.length <= MAX_SIZE;
         this.values = values;
     }
@@ -43,10 +45,10 @@ class LeafNode<T>
      *
      * @param values array to copy for use in leaf node
      */
-    LeafNode(T[] values,
-             int count)
+    MultiValueNode(T[] values,
+                   int count)
     {
-        assert count > 0;
+        assert count > 1;
         assert count <= MAX_SIZE;
         this.values = allocate(count);
         System.arraycopy(values, 0, this.values, 0, count);
@@ -56,11 +58,11 @@ class LeafNode<T>
      * Builds a leaf node using a new array populated by calling copyTo() on the two nodes.
      * Total size of the two nodes must not exceed MAX_SIZE.
      */
-    LeafNode(@Nonnull AbstractNode<T> left,
-             @Nonnull AbstractNode<T> right,
-             int size)
+    MultiValueNode(@Nonnull AbstractNode<T> left,
+                   @Nonnull AbstractNode<T> right,
+                   int size)
     {
-        assert size > 0;
+        assert size > 1;
         assert size <= MAX_SIZE;
         assert size == (left.size() + right.size());
         values = allocate(size);
@@ -108,10 +110,9 @@ class LeafNode<T>
         } else if (node.depth() > 0) {
             return node.prepend(this);
         } else {
-            final LeafNode<T> other = (LeafNode<T>)node;
-            final int combinedSize = size() + other.size();
+            final int combinedSize = size() + node.size();
             if (combinedSize <= MAX_SIZE) {
-                return new LeafNode<>(ArrayHelper.concat(this, values, other.values));
+                return new MultiValueNode<>(this, node, combinedSize);
             } else {
                 return new BranchNode<>(this, node, combinedSize);
             }
@@ -134,10 +135,9 @@ class LeafNode<T>
         } else if (node.depth() > 0) {
             return node.append(this);
         } else {
-            final LeafNode<T> other = (LeafNode<T>)node;
-            final int combinedSize = size() + other.size();
+            final int combinedSize = size() + node.size();
             if (combinedSize <= MAX_SIZE) {
-                return new LeafNode<>(ArrayHelper.concat(this, other.values, values));
+                return new MultiValueNode<>(node, this, combinedSize);
             } else {
                 return new BranchNode<>(node, this, combinedSize);
             }
@@ -149,7 +149,7 @@ class LeafNode<T>
     AbstractNode<T> assign(int index,
                            T value)
     {
-        return new LeafNode<>(ArrayHelper.assign(values, index, value));
+        return new MultiValueNode<>(ArrayHelper.assign(values, index, value));
     }
 
     @Nonnull
@@ -158,7 +158,7 @@ class LeafNode<T>
                            T value)
     {
         if (values.length < MAX_SIZE) {
-            return new LeafNode<>(ArrayHelper.insert(this, values, index, value));
+            return new MultiValueNode<>(ArrayHelper.insert(this, values, index, value));
         } else {
             final T[] left, right;
             if (index <= SPLIT_SIZE) {
@@ -168,7 +168,7 @@ class LeafNode<T>
                 left = ArrayHelper.prefix(this, values, SPLIT_SIZE);
                 right = ArrayHelper.suffixInsert(this, values, SPLIT_SIZE, index, value);
             }
-            return new BranchNode<>(new LeafNode<>(left), new LeafNode<>(right));
+            return new BranchNode<>(new MultiValueNode<>(left), new MultiValueNode<>(right));
         }
     }
 
@@ -176,11 +176,16 @@ class LeafNode<T>
     @Override
     AbstractNode<T> delete(int index)
     {
-        if (values.length == 1) {
+        final int length = values.length;
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException();
+        } else if (length == 1) {
             ArrayHelper.checkBounds(values, index);
             return EmptyNode.instance();
+        } else if (length == 2) {
+            return new OneValueNode<>(values[1 - index]);
         } else {
-            return new LeafNode<>(ArrayHelper.delete(this, values, index));
+            return new MultiValueNode<>(ArrayHelper.delete(this, values, index));
         }
     }
 
@@ -209,14 +214,17 @@ class LeafNode<T>
     @Override
     AbstractNode<T> prefix(int limit)
     {
-        if (limit < 0 || limit > values.length) {
+        final int length = values.length;
+        if (limit < 0 || limit > length) {
             throw new IndexOutOfBoundsException();
         } else if (limit == 0) {
             return EmptyNode.instance();
-        } else if (limit == values.length) {
+        } else if (limit == length) {
             return this;
+        } else if (limit == 1) {
+            return new OneValueNode<>(values[0]);
         } else {
-            return new LeafNode<>(ArrayHelper.prefix(this, values, limit));
+            return new MultiValueNode<>(ArrayHelper.prefix(this, values, limit));
         }
     }
 
@@ -224,14 +232,17 @@ class LeafNode<T>
     @Override
     AbstractNode<T> suffix(int offset)
     {
-        if (offset < 0 || offset > values.length) {
+        final int length = values.length;
+        if (offset < 0 || offset > length) {
             throw new IndexOutOfBoundsException();
         } else if (offset == 0) {
             return this;
-        } else if (offset == values.length) {
+        } else if (offset == length - 1) {
+            return new OneValueNode<>(values[offset]);
+        } else if (offset == length) {
             return EmptyNode.instance();
         } else {
-            return new LeafNode<>(ArrayHelper.suffix(this, values, offset));
+            return new MultiValueNode<>(ArrayHelper.suffix(this, values, offset));
         }
     }
 
@@ -263,7 +274,7 @@ class LeafNode<T>
             return false;
         }
 
-        LeafNode<?> leafNode = (LeafNode<?>)o;
+        MultiValueNode<?> leafNode = (MultiValueNode<?>)o;
 
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         return Arrays.equals(values, leafNode.values);
@@ -278,7 +289,7 @@ class LeafNode<T>
     @Override
     public String toString()
     {
-        return new StringJoiner(", ", LeafNode.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", MultiValueNode.class.getSimpleName() + "[", "]")
             .add("values=" + Arrays.toString(values))
             .toString();
     }

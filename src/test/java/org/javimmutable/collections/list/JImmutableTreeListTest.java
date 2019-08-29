@@ -755,7 +755,7 @@ public class JImmutableTreeListTest
             size -= JImmutableTreeList.create(nodeFromIterator(values.iterator())).size();
         }
         long ofTime = System.currentTimeMillis() - start;
-        System.out.printf("indexBuilder=%d  builder=%d\n", ibTime, ofTime);
+//        System.out.printf("indexBuilder=%d  builder=%d\n", ibTime, ofTime);
         assertEquals(0, size);
     }
 

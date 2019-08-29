@@ -19,17 +19,23 @@ class TreeBuilder<T>
     @SuppressWarnings("unchecked")
     TreeBuilder()
     {
-        buffer = (T[])new Object[LeafNode.MAX_SIZE];
+        buffer = (T[])new Object[MultiValueNode.MAX_SIZE];
     }
 
     @Nonnull
     AbstractNode<T> build()
     {
         AbstractNode<T> answer;
-        if (count > 0) {
-            answer = new LeafNode<>(buffer, count);
-        } else {
-            answer = EmptyNode.instance();
+        switch (count) {
+            case 0:
+                answer = EmptyNode.instance();
+                break;
+            case 1:
+                answer = new OneValueNode<>(buffer[0]);
+                break;
+            default:
+                answer = new MultiValueNode<>(buffer, count);
+                break;
         }
         if (parent != null) {
             answer = parent.build(answer);
@@ -73,8 +79,8 @@ class TreeBuilder<T>
     void add(T value)
     {
         buffer[count++] = value;
-        if (count == LeafNode.MAX_SIZE) {
-            final AbstractNode<T> leaf = new LeafNode<>(buffer, count);
+        if (count == MultiValueNode.MAX_SIZE) {
+            final AbstractNode<T> leaf = new MultiValueNode<>(buffer, count);
             if (parent == null) {
                 parent = new BranchBuilder<>(leaf);
             } else {
@@ -135,11 +141,15 @@ class TreeBuilder<T>
             return EmptyNode.instance();
         }
 
-        final List<AbstractNode<T>> nodes = new ArrayList<>(1 + sourceSize / LeafNode.MAX_SIZE);
+        final List<AbstractNode<T>> nodes = new ArrayList<>(1 + sourceSize / MultiValueNode.MAX_SIZE);
         int o = offset;
         while (o < limit) {
-            final int nodeSize = Math.min(LeafNode.MAX_SIZE, limit - o);
-            nodes.add(new LeafNode<>(source.subArray(o, o + nodeSize), nodeSize));
+            final int nodeSize = Math.min(MultiValueNode.MAX_SIZE, limit - o);
+            if (nodeSize == 1) {
+                nodes.add(new OneValueNode<>(source.get(o)));
+            } else {
+                nodes.add(new MultiValueNode<>(source.subArray(o, o + nodeSize), nodeSize));
+            }
             o += nodeSize;
         }
         int nodeCount = nodes.size();

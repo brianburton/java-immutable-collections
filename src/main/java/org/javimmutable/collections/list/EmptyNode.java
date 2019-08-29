@@ -50,7 +50,7 @@ public class EmptyNode<T>
     @Override
     AbstractNode<T> append(T value)
     {
-        return new LeafNode<>(value);
+        return new OneValueNode<>(value);
     }
 
     @Nonnull
@@ -64,7 +64,7 @@ public class EmptyNode<T>
     @Override
     AbstractNode<T> prepend(T value)
     {
-        return new LeafNode<>(value);
+        return new OneValueNode<>(value);
     }
 
     @Nonnull
@@ -88,7 +88,7 @@ public class EmptyNode<T>
                            T value)
     {
         if (index == 0) {
-            return new LeafNode<>(value);
+            return new OneValueNode<>(value);
         } else {
             throw new IndexOutOfBoundsException();
         }

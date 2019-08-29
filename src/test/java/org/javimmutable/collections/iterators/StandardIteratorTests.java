@@ -307,4 +307,13 @@ public class StandardIteratorTests
     {
         return obj::iterator;
     }
+
+    public static <T> void verifyContents(Iterable<T> a,
+                                          Iterable<T> b)
+    {
+        List<T> al = makeList(a.iterator());
+        List<T> bl = makeList(b.iterator());
+        assertEquals(al, bl);
+    }
+
 }

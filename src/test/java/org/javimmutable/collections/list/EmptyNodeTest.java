@@ -12,7 +12,7 @@ public class EmptyNodeTest
 
     public void testVarious()
     {
-        final LeafNode<Integer> leaf = new LeafNode<>(100);
+        final OneValueNode<Integer> leaf = new OneValueNode<>(100);
         assertEquals(true, node.isEmpty());
         assertEquals(0, node.size());
         assertEquals(0, node.depth());

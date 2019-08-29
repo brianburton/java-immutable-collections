@@ -33,7 +33,7 @@ class BranchNode<T>
         this.right = right;
         this.size = size;
         this.depth = 1 + Math.max(left.depth(), right.depth());
-        assert size > LeafNode.MAX_SIZE;
+        assert size > MultiValueNode.MAX_SIZE;
     }
 
     /**
@@ -47,8 +47,8 @@ class BranchNode<T>
                                             @Nonnull AbstractNode<T> right)
     {
         final int size = left.size() + right.size();
-        if (size <= LeafNode.MAX_SIZE) {
-            return new LeafNode<>(left, right, size);
+        if (size <= MultiValueNode.MAX_SIZE) {
+            return new MultiValueNode<>(left, right, size);
         } else {
             return new BranchNode<>(left, right, size);
         }
@@ -315,7 +315,7 @@ class BranchNode<T>
         if (size != left.size() + right.size()) {
             throw new RuntimeException(String.format("incorrect size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
         }
-        if (size <= LeafNode.MAX_SIZE) {
+        if (size <= MultiValueNode.MAX_SIZE) {
             throw new RuntimeException(String.format("invalid size: size=%d leftSize=%d rightSize=%d", size, left.size(), right.size()));
         }
         if (left.isEmpty() || right.isEmpty()) {

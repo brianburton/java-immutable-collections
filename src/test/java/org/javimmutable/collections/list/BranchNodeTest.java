@@ -1,14 +1,13 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.list.EmptyNodeTest.verifyOutOfBounds;
-import static org.javimmutable.collections.list.LeafNode.*;
-import static org.javimmutable.collections.list.LeafNodeTest.leaf;
+import static org.javimmutable.collections.list.MultiValueNode.*;
+import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
 
 public class BranchNodeTest
     extends TestCase

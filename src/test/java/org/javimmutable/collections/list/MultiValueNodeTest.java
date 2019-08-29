@@ -4,9 +4,9 @@ import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.list.EmptyNodeTest.*;
-import static org.javimmutable.collections.list.LeafNode.*;
+import static org.javimmutable.collections.list.MultiValueNode.*;
 
-public class LeafNodeTest
+public class MultiValueNodeTest
     extends TestCase
 {
     public void testVarious()
@@ -37,8 +37,8 @@ public class LeafNodeTest
         verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
 
         verifyOutOfBounds(() -> leaf(0, 5).insert(-1, 9));
-        assertThat(leaf(0, 5).insert(3, 9)).isEqualTo(new LeafNode<>(new Integer[]{0, 1, 2, 9, 3, 4}, 6));
-        assertThat(leaf(0, 5).insert(5, 9)).isEqualTo(new LeafNode<>(new Integer[]{0, 1, 2, 3, 4, 9}, 6));
+        assertThat(leaf(0, 5).insert(3, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 9, 3, 4}, 6));
+        assertThat(leaf(0, 5).insert(5, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 3, 4, 9}, 6));
         verifyOutOfBounds(() -> leaf(0, 5).insert(6, 9));
 
         assertThat(leaf(0, 5).deleteFirst()).isEqualTo(leaf(1, 5));
@@ -47,13 +47,13 @@ public class LeafNodeTest
         assertThat(leaf(0, 1).delete(0)).isSameAs(EmptyNode.instance());
         verifyOutOfBounds(() -> leaf(0, 1).delete(-1));
         verifyOutOfBounds(() -> leaf(0, 1).delete(1));
-        
+
         assertThat(leaf(0, 5).delete(0)).isEqualTo(leaf(1, 5));
         assertThat(leaf(0, 5).delete(4)).isEqualTo(leaf(0, 4));
         verifyOutOfBounds(() -> leaf(0, 5).delete(-1));
         verifyOutOfBounds(() -> leaf(0, 5).delete(5));
 
-        final LeafNode<Integer> self = leaf(0, 5);
+        final AbstractNode<Integer> self = leaf(0, 5);
         assertThat(self.prefix(0)).isSameAs(EmptyNode.instance());
         assertThat(self.prefix(5)).isSameAs(self);
         assertThat(self.prefix(3)).isEqualTo(leaf(0, 3));
@@ -77,21 +77,27 @@ public class LeafNodeTest
         verifyUnsupported(() -> self.rotateRight(self));
     }
 
-    static LeafNode<Integer> leaf(int start,
-                                  int limit)
+    static AbstractNode<Integer> leaf(int start,
+                                      int limit)
     {
         final int length = limit - start;
-        Integer[] values = new Integer[length];
-        for (int i = 0; i < length; ++i) {
-            values[i] = start + i;
+        if (length == 0) {
+            return EmptyNode.instance();
+        } else if (length == 1) {
+            return new OneValueNode<>(start);
+        } else {
+            Integer[] values = new Integer[length];
+            for (int i = 0; i < length; ++i) {
+                values[i] = start + i;
+            }
+            return new MultiValueNode<>(values, length);
         }
-        return new LeafNode<>(values, length);
     }
 
-    static LeafNode<Integer> leaf(int start,
-                                  int limit,
-                                  int index,
-                                  int value)
+    static AbstractNode<Integer> leaf(int start,
+                                      int limit,
+                                      int index,
+                                      int value)
     {
         final int length = limit - start;
         Integer[] values = new Integer[length];
@@ -99,6 +105,12 @@ public class LeafNodeTest
             values[i] = start + i;
         }
         values[index] = value;
-        return new LeafNode<>(values, length);
+        if (length == 0) {
+            return EmptyNode.instance();
+        } else if (length == 1) {
+            return new OneValueNode<>(start);
+        } else {
+            return new MultiValueNode<>(values, length);
+        }
     }
 }
