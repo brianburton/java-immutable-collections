@@ -2,31 +2,49 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
-public abstract class AbstractNode<K, V>
-    implements Node<K, V>
+abstract class AbstractNode<K, V>
+    implements SplitableIterable<Entry<K, V>>,
+               GenericIterator.Iterable<Entry<K, V>>
 {
-    @Nonnull
-    @Override
-    public abstract AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
-                                              @Nonnull K key,
-                                              @Nullable V value);
+    abstract V get(@Nonnull Comparator<K> comp,
+                   @Nonnull K key,
+                   V defaultValue);
 
     @Nonnull
-    @Override
-    public abstract AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
-                                              @Nonnull K key);
+    abstract Holder<V> find(@Nonnull Comparator<K> comp,
+                            @Nonnull K key);
 
     @Nonnull
-    @Override
-    public abstract AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
-                                              @Nonnull K key,
-                                              @Nonnull Func1<Holder<V>, V> generator);
+    abstract Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                           @Nonnull K key);
+
+    abstract boolean isEmpty();
+
+    abstract int size();
+
+    @Nonnull
+    abstract AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
+                                       @Nonnull K key,
+                                       @Nullable V value);
+
+    @Nonnull
+    abstract AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
+                                       @Nonnull K key);
+
+    @Nonnull
+    abstract AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
+                                       @Nonnull K key,
+                                       @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
     abstract DeleteResult<K, V> deleteLeftmost();
@@ -48,11 +66,13 @@ public abstract class AbstractNode<K, V>
     @Nonnull
     abstract AbstractNode<K, V> right();
 
+    @Nonnull
     abstract AbstractNode<K, V> leftWeighted();
 
+    @Nonnull
     abstract AbstractNode<K, V> rightWeighted();
 
-    public abstract void checkInvariants(@Nonnull Comparator<K> comp);
+    abstract void checkInvariants(@Nonnull Comparator<K> comp);
 
     @Override
     public int hashCode()
@@ -63,7 +83,13 @@ public abstract class AbstractNode<K, V>
     @Override
     public boolean equals(Object obj)
     {
-        return IteratorHelper.iteratorEquals(iterator(), ((Node)obj).iterator());
+        return (obj instanceof AbstractNode) && IteratorHelper.iteratorEquals(iterator(), ((AbstractNode)obj).iterator());
+    }
+
+    @Nonnull
+    public SplitableIterator<Entry<K, V>> iterator()
+    {
+        return new GenericIterator<>(this, 0, size());
     }
 
     static class DeleteResult<K, V>

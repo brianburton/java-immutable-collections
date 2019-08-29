@@ -38,6 +38,12 @@ class ValueNode<K, V>
         size = 1 + left.size() + right.size();
     }
 
+    static <K, V> AbstractNode<K, V> instance(K key,
+                                              V value)
+    {
+        return new ValueNode<>(key, value, FringeNode.instance(), FringeNode.instance());
+    }
+
     private static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
                                                      @Nullable V value,
                                                      @Nonnull AbstractNode<K, V> left,
@@ -294,8 +300,11 @@ class ValueNode<K, V>
         if (size != 1 + left.size() + right.size()) {
             throw new IllegalStateException();
         }
+        left.checkInvariants(comp);
+        right.checkInvariants(comp);
     }
 
+    @Nonnull
     @Override
     AbstractNode<K, V> leftWeighted()
     {
@@ -306,6 +315,7 @@ class ValueNode<K, V>
         return this;
     }
 
+    @Nonnull
     @Override
     AbstractNode<K, V> rightWeighted()
     {

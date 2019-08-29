@@ -138,12 +138,14 @@ class FringeNode<K, V>
         throw new UnsupportedOperationException();
     }
 
+    @Nonnull
     @Override
     AbstractNode<K, V> leftWeighted()
     {
         return this;
     }
 
+    @Nonnull
     @Override
     AbstractNode<K, V> rightWeighted()
     {

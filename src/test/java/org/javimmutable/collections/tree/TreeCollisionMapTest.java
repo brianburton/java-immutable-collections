@@ -53,11 +53,11 @@ public class TreeCollisionMapTest
         TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.empty();
         transforms = transforms.update(10, 100);
         assertEquals(1, transforms.size());
-        assertEquals(Node.single(10, 100), transforms.root());
+        assertEquals(ValueNode.instance(10, 100), transforms.root());
 
         transforms = transforms.update(10, 1000);
         assertEquals(1, transforms.size());
-        assertEquals(Node.single(10, 1000), transforms.root());
+        assertEquals(ValueNode.instance(10, 1000), transforms.root());
 
         transforms = transforms.update(12, 60);
         assertEquals(2, transforms.size());
@@ -73,11 +73,11 @@ public class TreeCollisionMapTest
 
         deleted = deleted.delete(10);
         assertEquals(1, deleted.size());
-        assertEquals(Node.single(12, 90), deleted.root());
+        assertEquals(ValueNode.instance(12, 90), deleted.root());
 
         deleted = deleted.delete(40);
         assertEquals(1, deleted.size());
-        assertEquals(Node.single(12, 90), deleted.root());
+        assertEquals(ValueNode.instance(12, 90), deleted.root());
 
         deleted = deleted.delete(12);
         assertEquals(0, deleted.size());
@@ -114,9 +114,9 @@ public class TreeCollisionMapTest
         StandardIteratorTests.listIteratorTest(expected, transforms.iterator());
     }
 
-    private Node<Integer, Integer> branch(Tuple2<Integer, Integer> a,
-                                          Tuple2<Integer, Integer> b)
+    private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a,
+                                                  Tuple2<Integer, Integer> b)
     {
-        return Node.single(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
+        return ValueNode.instance(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
     }
 }

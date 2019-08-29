@@ -37,7 +37,7 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -69,9 +69,10 @@ public class TreeCollisionMap<K, V>
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     public static <K, V> TreeCollisionMap<K, V> empty()
     {
-        return (TreeCollisionMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     @Override
@@ -119,27 +120,28 @@ public class TreeCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
         return root.findEntry(comparator, key);
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                             int offset,
-                                                                             int limit)
+    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<Entry<K, V>> parent,
+                                                               int offset,
+                                                               int limit)
     {
         return root.iterateOverRange(parent, offset, limit);
     }
 
+    @Nonnull
     AbstractNode<K, V> root()
     {
         return root;
     }
 
     @Nonnull
-    private TreeCollisionMap<K, V> resultForUpdate(AbstractNode<K, V> root)
+    private TreeCollisionMap<K, V> resultForUpdate(@Nonnull AbstractNode<K, V> root)
     {
         if (root == this.root) {
             return this;
@@ -149,7 +151,7 @@ public class TreeCollisionMap<K, V>
     }
 
     @Nonnull
-    private TreeCollisionMap<K, V> resultForDelete(AbstractNode<K, V> root)
+    private TreeCollisionMap<K, V> resultForDelete(@Nonnull AbstractNode<K, V> root)
     {
         if (root == this.root) {
             return this;
