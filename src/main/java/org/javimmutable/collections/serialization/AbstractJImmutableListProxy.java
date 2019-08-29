@@ -84,7 +84,7 @@ abstract class AbstractJImmutableListProxy
         for (int i = 0; i < size; ++i) {
             builder.add(in.readObject());
         }
-        list = (JImmutableList)builder.build();
+        list = builder.build();
     }
 
     protected Object readResolve()
