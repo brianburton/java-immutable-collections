@@ -206,6 +206,20 @@ public class JImmutableHashMultisetTest
     {
         JImmutableMultiset<Integer> mset = JImmutableHashMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 1; i <= 500; i++) {
+            for (int j = 0; j <= i % 5; j++) {
+                expected.add(i);
+            }
+        }
+        Collections.shuffle(expected);
+        mset = mset.deleteAll();
+        for (Integer i : expected) {
+            mset = mset.insert(i);
+        }
+        Collections.sort(expected);
+        List<Integer> actual = mset.occurrences().parallelStream().sorted().collect(toList());
+        assertEquals(expected, actual);
     }
 
     public void testSerialization()
