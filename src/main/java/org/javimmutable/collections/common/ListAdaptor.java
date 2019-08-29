@@ -37,28 +37,29 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.JImmutableList;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 
 /**
  * Immutable List implementation backed by a JImmutableList.
- *
- * @param <T>
  */
 @Immutable
 public class ListAdaptor<T>
-        extends AbstractList<T>
-        implements List<T>
+    extends AbstractList<T>
+    implements List<T>
 {
     private final JImmutableList<T> list;
 
-    public ListAdaptor(JImmutableList<T> list)
+    public ListAdaptor(@Nonnull JImmutableList<T> list)
     {
         this.list = list;
     }
 
-    public static <T> ListAdaptor<T> of(JImmutableList<T> list)
+    public static <T> ListAdaptor<T> of(@Nonnull JImmutableList<T> list)
     {
         return new ListAdaptor<T>(list);
     }
@@ -73,5 +74,18 @@ public class ListAdaptor<T>
     public int size()
     {
         return list.size();
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<T> iterator()
+    {
+        return list.iterator();
+    }
+
+    @Override
+    public Spliterator<T> spliterator()
+    {
+        return list.spliterator();
     }
 }
