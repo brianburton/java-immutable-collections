@@ -41,7 +41,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -60,13 +59,13 @@ public class HamtBranchNode<K, V>
 
     private final int bitmask;
     @Nonnull
-    private final CollisionMap<K, V> value;
+    private final CollisionMap.Node value;
     @Nonnull
     private final HamtNode<K, V>[] children;
     private final int size;
 
     private HamtBranchNode(int bitmask,
-                           @Nonnull CollisionMap<K, V> value,
+                           @Nonnull CollisionMap.Node value,
                            @Nonnull HamtNode<K, V>[] children,
                            int size)
     {
@@ -77,34 +76,35 @@ public class HamtBranchNode<K, V>
     }
 
     @SuppressWarnings("unchecked")
-    static <K, V> HamtNode<K, V> forLeafExpansion(@Nonnull CollisionMap<K, V> emptyMap,
+    static <K, V> HamtNode<K, V> forLeafExpansion(@Nonnull CollisionMap<K, V> collisionMap,
                                                   int hashCode,
-                                                  @Nonnull CollisionMap<K, V> value)
+                                                  @Nonnull CollisionMap.Node value)
     {
         if (hashCode == 0) {
-            return new HamtBranchNode<>(0, value, EMPTY_NODES, value.size());
+            return new HamtBranchNode<>(0, value, EMPTY_NODES, collisionMap.size(value));
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final HamtNode<K, V>[] children = new HamtNode[1];
-            children[0] = forLeafExpansion(emptyMap, remainder, value);
-            return new HamtBranchNode<>(bit, emptyMap, children, value.size());
+            children[0] = forLeafExpansion(collisionMap, remainder, value);
+            return new HamtBranchNode<>(bit, collisionMap.emptyNode(), children, collisionMap.size(value));
         }
     }
 
     @Override
-    public int size()
+    public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return size;
     }
 
     @Override
-    public Holder<V> find(int hashCode,
+    public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                          int hashCode,
                           @Nonnull K hashKey)
     {
         if (hashCode == 0) {
-            return value.findValue(hashKey);
+            return collisionMap.findValue(value, hashKey);
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
@@ -114,17 +114,18 @@ public class HamtBranchNode<K, V>
             return Holders.of();
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].find(remainder, hashKey);
+            return children[childIndex].find(collisionMap, remainder, hashKey);
         }
     }
 
     @Override
-    public V getValueOr(int hashCode,
+    public V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
+                        int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
         if (hashCode == 0) {
-            return value.getValueOr(hashKey, defaultValue);
+            return collisionMap.getValueOr(value, hashKey, defaultValue);
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
@@ -134,26 +135,26 @@ public class HamtBranchNode<K, V>
             return defaultValue;
         } else {
             final int childIndex = realIndex(bitmask, bit);
-            return children[childIndex].getValueOr(remainder, hashKey, defaultValue);
+            return children[childIndex].getValueOr(collisionMap, remainder, hashKey, defaultValue);
         }
     }
 
     @Override
     @Nonnull
-    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nullable V value)
     {
         final HamtNode<K, V>[] children = this.children;
         final int bitmask = this.bitmask;
-        final CollisionMap<K, V> thisValue = this.value;
+        final CollisionMap.Node thisValue = this.value;
         if (hashCode == 0) {
-            final CollisionMap<K, V> newValue = thisValue.update(hashKey, value);
+            final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, value);
             if (thisValue == newValue) {
                 return this;
             } else {
-                return new HamtBranchNode<>(bitmask, newValue, children, size - thisValue.size() + newValue.size());
+                return new HamtBranchNode<>(bitmask, newValue, children, size - collisionMap.size(thisValue) + collisionMap.size(newValue));
             }
         }
         final int index = hashCode & MASK;
@@ -161,37 +162,37 @@ public class HamtBranchNode<K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, emptyMap.update(hashKey, value));
+            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(collisionMap.emptyNode(), hashKey, value));
             final HamtNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
         } else {
             final HamtNode<K, V> child = children[childIndex];
-            final HamtNode<K, V> newChild = child.assign(emptyMap, remainder, hashKey, value);
+            final HamtNode<K, V> newChild = child.assign(collisionMap, remainder, hashKey, value);
             if (newChild == child) {
                 return this;
             } else {
                 final HamtNode<K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return new HamtBranchNode<>(bitmask, thisValue, newChildren, size - child.size() + newChild.size());
+                return new HamtBranchNode<>(bitmask, thisValue, newChildren, size - child.size(collisionMap) + newChild.size(collisionMap));
             }
         }
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
         final HamtNode<K, V>[] children = this.children;
         final int bitmask = this.bitmask;
-        final CollisionMap<K, V> thisValue = this.value;
+        final CollisionMap.Node thisValue = this.value;
         if (hashCode == 0) {
-            final CollisionMap<K, V> newValue = thisValue.update(hashKey, generator);
+            final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, generator);
             if (thisValue == newValue) {
                 return this;
             } else {
-                return new HamtBranchNode<>(bitmask, newValue, children, size - thisValue.size() + newValue.size());
+                return new HamtBranchNode<>(bitmask, newValue, children, size - collisionMap.size(thisValue) + collisionMap.size(newValue));
             }
         }
         final int index = hashCode & MASK;
@@ -199,40 +200,40 @@ public class HamtBranchNode<K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, emptyMap.update(hashKey, generator));
+            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(collisionMap.emptyNode(), hashKey, generator));
             final HamtNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
         } else {
             final HamtNode<K, V> child = children[childIndex];
-            final HamtNode<K, V> newChild = child.update(emptyMap, remainder, hashKey, generator);
+            final HamtNode<K, V> newChild = child.update(collisionMap, remainder, hashKey, generator);
             if (newChild == child) {
                 return this;
             } else {
                 final HamtNode<K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return new HamtBranchNode<>(bitmask, thisValue, newChildren, size - child.size() + newChild.size());
+                return new HamtBranchNode<>(bitmask, thisValue, newChildren, size - child.size(collisionMap) + newChild.size(collisionMap));
             }
         }
     }
 
     @Override
     @Nonnull
-    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey)
     {
         final int bitmask = this.bitmask;
         final HamtNode<K, V>[] children = this.children;
-        final CollisionMap<K, V> value = this.value;
+        final CollisionMap.Node value = this.value;
         if (hashCode == 0) {
-            final CollisionMap<K, V> newValue = value.delete(hashKey);
-            final int newSize = this.size - value.size() + newValue.size();
+            final CollisionMap.Node newValue = collisionMap.delete(value, hashKey);
+            final int newSize = this.size - collisionMap.size(value) + collisionMap.size(newValue);
             if (newValue == value) {
                 return this;
-            } else if (newValue.size() == 0) {
+            } else if (collisionMap.size(newValue) == 0) {
                 if (bitmask == 0) {
                     return HamtEmptyNode.of();
                 } else {
-                    return createForDelete(bitmask, newValue, children, newSize);
+                    return createForDelete(collisionMap, bitmask, newValue, children, newSize);
                 }
             } else {
                 return new HamtBranchNode<>(bitmask, newValue, children, newSize);
@@ -246,44 +247,45 @@ public class HamtBranchNode<K, V>
             return this;
         } else {
             final HamtNode<K, V> child = children[childIndex];
-            final HamtNode<K, V> newChild = child.delete(emptyMap, remainder, hashKey);
-            final int newSize = size - child.size() + newChild.size();
+            final HamtNode<K, V> newChild = child.delete(collisionMap, remainder, hashKey);
+            final int newSize = size - child.size(collisionMap) + newChild.size(collisionMap);
             if (newChild == child) {
                 return this;
-            } else if (newChild.isEmpty()) {
+            } else if (newChild.isEmpty(collisionMap)) {
                 if (children.length == 1) {
-                    if (value.size() == 0) {
+                    if (collisionMap.size(value) == 0) {
                         return HamtEmptyNode.of();
                     } else {
                         return new HamtLeafNode<>(0, value);
                     }
                 } else {
                     final HamtNode<K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);
-                    return createForDelete(bitmask & ~bit, value, newChildren, newSize);
+                    return createForDelete(collisionMap, bitmask & ~bit, value, newChildren, newSize);
                 }
             } else {
                 final HamtNode<K, V>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
-                return createForDelete(bitmask, value, newChildren, newSize);
+                return createForDelete(collisionMap, bitmask, value, newChildren, newSize);
             }
         }
     }
 
-    private HamtNode<K, V> createForDelete(int bitmask,
-                                           CollisionMap<K, V> value,
+    private HamtNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
+                                           int bitmask,
+                                           CollisionMap.Node value,
                                            @Nonnull HamtNode<K, V>[] children,
                                            int newSize)
     {
-        if (value.size() == 0 && children.length == 1) {
+        if (collisionMap.size(value) == 0 && children.length == 1) {
             final HamtNode<K, V> child = children[0];
             if (child instanceof HamtLeafNode) {
                 final HamtLeafNode<K, V> leaf = (HamtLeafNode<K, V>)child;
-                assert newSize == leaf.size();
+                assert newSize == leaf.size(collisionMap);
                 return leaf.liftNode(Integer.numberOfTrailingZeros(bitmask));
             }
             if (child instanceof HamtBranchNode) {
                 final HamtBranchNode<K, V> branch = (HamtBranchNode<K, V>)child;
-                if (branch.value.size() > 0 && branch.children.length == 0) {
-                    assert newSize == branch.value.size();
+                if (collisionMap.size(branch.value) > 0 && branch.children.length == 0) {
+                    assert newSize == collisionMap.size(branch.value);
                     return new HamtLeafNode<>(Integer.numberOfTrailingZeros(bitmask), branch.value);
                 }
             }
@@ -292,9 +294,9 @@ public class HamtBranchNode<K, V>
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return bitmask == 0 && value.size() == 0;
+        return bitmask == 0 && collisionMap.size(value) == 0;
     }
 
     private static int realIndex(int bitmask,
@@ -313,19 +315,13 @@ public class HamtBranchNode<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull CollisionMap<K, V> collisionMap,
+                                                                             @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
                                                                              int offset,
                                                                              int limit)
     {
-        assert offset >= 0 && offset <= limit && limit <= size;
-        final int valueSize = value.size();
-        if (offset >= valueSize) {
-            return GenericIterator.indexedState(parent, IndexedArray.retained(children), HamtNode::size, offset - valueSize, limit - valueSize);
-        } else if (limit > valueSize) {
-            return value.iterateOverRange(new ChildrenIteratorState(parent, limit - valueSize), offset, valueSize);
-        } else {
-            return value.iterateOverRange(parent, offset, limit);
-        }
+        assert offset >= 0 && limit <= size && offset <= limit;
+        return new IteratorState(collisionMap, parent, offset, limit);
     }
 
     @Override
@@ -334,61 +330,97 @@ public class HamtBranchNode<K, V>
         return "(" + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
     }
 
-    private int computeSize()
+    private int computeSize(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        int answer = value.size();
+        int answer = collisionMap.size(value);
         for (HamtNode<K, V> child : children) {
-            answer += child.size();
+            answer += child.size(collisionMap);
         }
         return answer;
     }
 
     @Override
-    public void checkInvariants()
+    public void checkInvariants(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        if (size != computeSize()) {
-            throw new IllegalStateException(String.format("incorrect size: expected=%d actual=%d", computeSize(), size));
+        if (size != computeSize(collisionMap)) {
+            throw new IllegalStateException(String.format("incorrect size: expected=%d actual=%d", computeSize(collisionMap), size));
         }
-        if (value.size() == 0 && children.length == 1) {
+        if (collisionMap.size(value) == 0 && children.length == 1) {
             if (children[0] instanceof HamtLeafNode) {
                 // we should have replaced ourselves with a leaf
                 throw new IllegalStateException();
             }
         }
         for (HamtNode<K, V> child : children) {
-            child.checkInvariants();
+            child.checkInvariants(collisionMap);
         }
     }
 
-    private class ChildrenIteratorState
+    private class IteratorState
         implements GenericIterator.State<JImmutableMap.Entry<K, V>>
     {
         private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
+        private final CollisionMap<K, V> collisionMap;
         private final int limit;
+        private int offset;
+        private int item;
+        private int pos;
 
-        private ChildrenIteratorState(GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                      int limit)
+        private IteratorState(@Nonnull CollisionMap<K, V> collisionMap,
+                              @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                              int offset,
+                              int limit)
         {
             this.parent = parent;
+            this.collisionMap = collisionMap;
+            this.offset = offset;
             this.limit = limit;
-        }
-
-        @Override
-        public boolean hasValue()
-        {
-            return false;
-        }
-
-        @Override
-        public JImmutableMap.Entry<K, V> value()
-        {
-            throw new UnsupportedOperationException();
+            item = -1;
+            pos = 0;
         }
 
         @Override
         public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
         {
-            return GenericIterator.indexedState(parent, IndexedArray.retained(children), HamtNode::size, 0, limit);
+            assert item <= children.length;
+            assert offset <= limit;
+            assert pos <= offset;
+            while (item < children.length) {
+                final int size = itemSize();
+                final int nextPos = pos + itemSize();
+                if (nextPos > offset) {
+                    return itemState(size);
+                }
+                item += 1;
+                pos = nextPos;
+            }
+            return parent;
+        }
+
+        private int itemSize()
+        {
+            if (item == -1) {
+                return collisionMap.size(value);
+            } else {
+                return children[item].size(collisionMap);
+            }
+        }
+
+        private GenericIterator.State<JImmutableMap.Entry<K, V>> itemState(int size)
+        {
+            final int itemOffset = (offset > pos) ? offset - pos : 0;
+            final int itemCount = Math.min(size - itemOffset, limit - offset);
+            final int itemLimit = itemOffset + itemCount;
+            final GenericIterator.State<JImmutableMap.Entry<K, V>> answer;
+            if (item == -1) {
+                answer = collisionMap.iterateOverRange(value, this, itemOffset, itemLimit);
+            } else {
+                answer = children[item].iterateOverRange(collisionMap, this, itemOffset, itemLimit);
+            }
+            item += 1;
+            pos += size;
+            offset += itemLimit - itemOffset;
+            return answer;
         }
     }
 }

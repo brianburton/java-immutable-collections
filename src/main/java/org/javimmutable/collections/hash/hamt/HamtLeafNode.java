@@ -55,39 +55,41 @@ public class HamtLeafNode<K, V>
 {
     private final int hashCode;
     @Nonnull
-    private final CollisionMap<K, V> value;
+    private final CollisionMap.Node value;
 
     HamtLeafNode(int hashCode,
-                 @Nonnull CollisionMap<K, V> value)
+                 @Nonnull CollisionMap.Node value)
     {
         this.hashCode = hashCode;
         this.value = value;
     }
 
     @Override
-    public int size()
+    public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return value.size();
+        return collisionMap.size(value);
     }
 
     @Override
-    public Holder<V> find(int hashCode,
+    public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                          int hashCode,
                           @Nonnull K hashKey)
     {
         if (hashCode == this.hashCode) {
-            return value.findValue(hashKey);
+            return collisionMap.findValue(value, hashKey);
         } else {
             return Holders.of();
         }
     }
 
     @Override
-    public V getValueOr(int hashCode,
+    public V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
+                        int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
         if (hashCode == this.hashCode) {
-            return value.getValueOr(hashKey, defaultValue);
+            return collisionMap.getValueOr(value, hashKey, defaultValue);
         } else {
             return defaultValue;
         }
@@ -95,15 +97,15 @@ public class HamtLeafNode<K, V>
 
     @Nonnull
     @Override
-    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nullable V value)
     {
         final int thisHashCode = this.hashCode;
-        final CollisionMap<K, V> thisValue = this.value;
+        final CollisionMap.Node thisValue = this.value;
         if (hashCode == thisHashCode) {
-            final CollisionMap<K, V> newValue = thisValue.update(hashKey, value);
+            final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, value);
             if (newValue == thisValue) {
                 return this;
             } else {
@@ -111,29 +113,29 @@ public class HamtLeafNode<K, V>
             }
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
-            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, value));
-            for (JImmutableMap.Entry<K, V> entry : thisValue) {
-                expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
+            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, value));
+            for (JImmutableMap.Entry<K, V> entry : collisionMap.iterable(thisValue)) {
+                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
         } else {
             // our path is shorter so expand using our hashcode then add new value to tree
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, thisHashCode, thisValue);
-            return expanded.assign(emptyMap, hashCode, hashKey, value);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
+            return expanded.assign(collisionMap, hashCode, hashKey, value);
         }
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
         final int thisHashCode = this.hashCode;
-        final CollisionMap<K, V> thisValue = this.value;
+        final CollisionMap.Node thisValue = this.value;
         if (hashCode == thisHashCode) {
-            final CollisionMap<K, V> newValue = value.update(hashKey, generator);
+            final CollisionMap.Node newValue = collisionMap.update(value, hashKey, generator);
             if (newValue == thisValue) {
                 return this;
             } else {
@@ -141,31 +143,31 @@ public class HamtLeafNode<K, V>
             }
         } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
             // our path is longer so expand using new value then add our values to tree
-            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, hashCode, emptyMap.update(hashKey, generator));
-            for (JImmutableMap.Entry<K, V> entry : thisValue) {
-                expanded = expanded.assign(emptyMap, thisHashCode, entry.getKey(), entry.getValue());
+            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, generator));
+            for (JImmutableMap.Entry<K, V> entry : collisionMap.iterable(thisValue)) {
+                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue());
             }
             return expanded;
         } else {
             // our path is shorter so expand using our hashcode then add new value to tree
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(emptyMap, thisHashCode, thisValue);
-            return expanded.update(emptyMap, hashCode, hashKey, generator);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
+            return expanded.update(collisionMap, hashCode, hashKey, generator);
         }
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey)
     {
         final int thisHashCode = this.hashCode;
-        final CollisionMap<K, V> thisValue = this.value;
+        final CollisionMap.Node thisValue = this.value;
         if (hashCode == thisHashCode) {
-            final CollisionMap<K, V> newValue = thisValue.delete(hashKey);
+            final CollisionMap.Node newValue = collisionMap.delete(thisValue, hashKey);
             if (newValue == thisValue) {
                 return this;
-            } else if (newValue.size() == 0) {
+            } else if (collisionMap.size(newValue) == 0) {
                 return HamtEmptyNode.of();
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
@@ -181,17 +183,18 @@ public class HamtLeafNode<K, V>
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return false;
+        return collisionMap.size(value) == 0;
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull CollisionMap<K, V> collisionMap,
+                                                                             @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
                                                                              int offset,
                                                                              int limit)
     {
-        return value.iterateOverRange(parent, offset, limit);
+        return collisionMap.iterateOverRange(value, parent, offset, limit);
     }
 }

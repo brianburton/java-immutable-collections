@@ -5,6 +5,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
@@ -14,7 +15,8 @@ import java.util.Comparator;
 
 abstract class AbstractNode<K, V>
     implements SplitableIterable<Entry<K, V>>,
-               GenericIterator.Iterable<Entry<K, V>>
+               GenericIterator.Iterable<Entry<K, V>>,
+               CollisionMap.Node
 {
     abstract V get(@Nonnull Comparator<K> comp,
                    @Nonnull K key,

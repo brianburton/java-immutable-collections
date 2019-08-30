@@ -54,27 +54,27 @@ public class HamtLeafNodeTest
         final Checked b = new Checked(1, 12);
         final Checked c = new Checked(1, 13);
         final Checked d = new Checked(1, 14);
-        final ListCollisionMap<Checked, Integer> empty = ListCollisionMap.empty();
+        final ListCollisionMap<Checked, Integer> collisionMap = ListCollisionMap.instance();
 
-        ListCollisionMap<Checked, Integer> transforms = empty;
-        transforms = transforms.update(a, 100);
-        transforms = transforms.update(b, 200);
-        transforms = transforms.update(c, 300);
-        assertEquals(3, transforms.size());
+        ListCollisionMap.Node value = collisionMap.emptyNode();
+        value = collisionMap.update(value, a, 100);
+        value = collisionMap.update(value, b, 200);
+        value = collisionMap.update(value, c, 300);
+        assertEquals(3, collisionMap.size(value));
 
-        HamtNode<Checked, Integer> node = new HamtLeafNode<>(1, transforms);
-        assertEquals(3, node.size());
+        HamtNode<Checked, Integer> node = new HamtLeafNode<>(1, value);
+        assertEquals(3, node.size(collisionMap));
 
-        assertSame(node, node.delete(empty, 1, d));
-        assertEquals(3, node.size());
+        assertSame(node, node.delete(collisionMap, 1, d));
+        assertEquals(3, node.size(collisionMap));
 
-        node = node.delete(empty, 1, b);
-        assertEquals(2, node.size());
+        node = node.delete(collisionMap, 1, b);
+        assertEquals(2, node.size(collisionMap));
 
-        node = node.delete(empty, 1, c);
-        assertEquals(1, node.size());
+        node = node.delete(collisionMap, 1, c);
+        assertEquals(1, node.size(collisionMap));
 
-        node = node.delete(empty, 1, a);
+        node = node.delete(collisionMap, 1, a);
         assertSame(HamtEmptyNode.of(), node);
     }
 
@@ -84,19 +84,22 @@ public class HamtLeafNodeTest
         final Checked b = new Checked(1, 12);
         final Checked c = new Checked(1, 13);
         final Checked d = new Checked(1, 14);
-        final ListCollisionMap<Checked, Integer> empty = ListCollisionMap.empty();
+        final ListCollisionMap<Checked, Integer> collisionMap = ListCollisionMap.instance();
 
-        ListCollisionMap<Checked, Integer> node = empty
-            .update(a, 100)
-            .update(b, 200)
-            .update(c, 300)
-            .update(d, 400);
+        ListCollisionMap.Node node = collisionMap.emptyNode();
+        node = collisionMap.update(node, a, 100);
+        node = collisionMap.update(node, b, 200);
+        node = collisionMap.update(node, c, 300);
+        node = collisionMap.update(node, d, 400);
+
+        HamtNode<Checked, Integer> leaf = new HamtLeafNode<>(1, node);
+        assertEquals(4, leaf.size(collisionMap));
 
         List<JImmutableMap.Entry<Checked, Integer>> expected = new ArrayList<>();
         expected.add(mapEntry(a, 100));
         expected.add(mapEntry(b, 200));
         expected.add(mapEntry(c, 300));
         expected.add(mapEntry(d, 400));
-        StandardIteratorTests.verifyOrderedIterable(expected, node);
+        StandardIteratorTests.verifyOrderedIterable(expected, leaf.iterable(collisionMap));
     }
 }

@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections;
 
+import java.util.function.Function;
+
 /**
  * Interface for containers that allow access to values by an integer index.
  */
@@ -61,5 +63,24 @@ public interface Indexed<T>
             answer[i - offset] = get(i);
         }
         return (T[])answer;
+    }
+
+    static <S, T> Indexed<T> transformed(Indexed<S> source,
+                                         Function<S, T> transforminator)
+    {
+        return new Indexed<T>()
+        {
+            @Override
+            public T get(int index)
+            {
+                return transforminator.apply(source.get(index));
+            }
+
+            @Override
+            public int size()
+            {
+                return source.size();
+            }
+        };
     }
 }

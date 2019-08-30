@@ -37,7 +37,6 @@ package org.javimmutable.collections.hash.hamt;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
@@ -48,47 +47,62 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface HamtNode<K, V>
-    extends GenericIterator.Iterable<JImmutableMap.Entry<K, V>>,
-            SplitableIterable<JImmutableMap.Entry<K, V>>,
-            InvariantCheckable
-
 {
-    Holder<V> find(int hashCode,
+    Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                   int hashCode,
                    @Nonnull K hashKey);
 
-    V getValueOr(int hashCode,
+    V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
+                 int hashCode,
                  @Nonnull K hashKey,
                  V defaultValue);
 
     @Nonnull
-    HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+    HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                           int hashCode,
                           @Nonnull K hashKey,
                           @Nullable V value);
 
     @Nonnull
-    HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+    HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                           int hashCode,
                           @Nonnull K hashKey,
                           @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
-    HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+    HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                           int hashCode,
                           @Nonnull K hashKey);
 
-    boolean isEmpty();
+    boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap);
 
-    int size();
+    int size(@Nonnull CollisionMap<K, V> collisionMap);
 
-    @Override
-    default void checkInvariants()
+    default void checkInvariants(@Nonnull CollisionMap<K, V> collisionMap)
     {
     }
 
-    @Override
-    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    @Nullable
+    GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull CollisionMap<K, V> collisionMap,
+                                                                      @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                      int offset,
+                                                                      int limit);
+
+    @Nonnull
+    default GenericIterator.Iterable<JImmutableMap.Entry<K, V>> genericIterable(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return new GenericIterator<>(this, 0, size());
+        return (parent, offset, limit) -> iterateOverRange(collisionMap, parent, offset, limit);
+    }
+
+    @Nonnull
+    default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(@Nonnull CollisionMap<K, V> collisionMap)
+    {
+        return () -> iterator(collisionMap);
+    }
+
+    @Nonnull
+    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull CollisionMap<K, V> collisionMap)
+    {
+        return new GenericIterator<>(genericIterable(collisionMap), 0, size(collisionMap));
     }
 }

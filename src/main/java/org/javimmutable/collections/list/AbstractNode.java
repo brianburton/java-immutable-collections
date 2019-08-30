@@ -3,6 +3,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -10,7 +11,8 @@ import javax.annotation.Nonnull;
 abstract class AbstractNode<T>
     implements SplitableIterable<T>,
                InvariantCheckable,
-               GenericIterator.Iterable<T>
+               GenericIterator.Iterable<T>,
+               CollisionMap.Node
 {
     abstract boolean isEmpty();
 

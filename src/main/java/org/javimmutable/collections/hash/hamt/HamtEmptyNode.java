@@ -58,14 +58,16 @@ public class HamtEmptyNode<K, V>
     }
 
     @Override
-    public Holder<V> find(int hashCode,
+    public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                          int hashCode,
                           @Nonnull K hashKey)
     {
         return Holders.of();
     }
 
     @Override
-    public V getValueOr(int hashCode,
+    public V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
+                        int hashCode,
                         @Nonnull K hashKey,
                         V defaultValue)
     {
@@ -74,27 +76,27 @@ public class HamtEmptyNode<K, V>
 
     @Nonnull
     @Override
-    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nullable V value)
     {
-        return new HamtLeafNode<>(hashCode, emptyMap.update(hashKey, value));
+        return new HamtLeafNode<>(hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, value));
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new HamtLeafNode<>(hashCode, emptyMap.update(hashKey, generator));
+        return new HamtLeafNode<>(hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, generator));
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> emptyMap,
+    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey)
     {
@@ -102,20 +104,21 @@ public class HamtEmptyNode<K, V>
     }
 
     @Override
-    public int size()
+    public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return 0;
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return true;
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull CollisionMap<K, V> collisionMap,
+                                                                             @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
                                                                              int offset,
                                                                              int limit)
     {

@@ -41,9 +41,15 @@ public class GenericIterator<T>
 
     public interface State<T>
     {
-        boolean hasValue();
+        default boolean hasValue()
+        {
+            return false;
+        }
 
-        T value();
+        default T value()
+        {
+            throw new UnsupportedOperationException();
+        }
 
         State<T> advance();
     }

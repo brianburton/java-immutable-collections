@@ -40,6 +40,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Tuple2;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
@@ -50,68 +51,71 @@ public class TreeCollisionMapTest
 {
     public void testUpdateDelete()
     {
-        TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.empty();
-        transforms = transforms.update(10, 100);
-        assertEquals(1, transforms.size());
-        assertEquals(ValueNode.instance(10, 100), transforms.root());
+        TreeCollisionMap<Integer, Integer> collisionMap = TreeCollisionMap.instance();
+        CollisionMap.Node node = collisionMap.emptyNode();
 
-        transforms = transforms.update(10, 1000);
-        assertEquals(1, transforms.size());
-        assertEquals(ValueNode.instance(10, 1000), transforms.root());
+        node = collisionMap.update(node, 10, 100);
+        assertEquals(1, collisionMap.size(node));
+        assertEquals(ValueNode.instance(10, 100), node);
 
-        transforms = transforms.update(12, 60);
-        assertEquals(2, transforms.size());
-        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 60)), transforms.root());
+        node = collisionMap.update(node, 10, 1000);
+        assertEquals(1, collisionMap.size(node));
+        assertEquals(ValueNode.instance(10, 1000), node);
 
-        transforms = transforms.update(12, 90);
-        assertEquals(2, transforms.size());
-        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), transforms.root());
+        node = collisionMap.update(node, 12, 60);
+        assertEquals(2, collisionMap.size(node));
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 60)), node);
 
-        TreeCollisionMap<Integer, Integer> deleted = transforms.delete(87);
-        assertEquals(2, deleted.size());
-        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), deleted.root());
+        node = collisionMap.update(node, 12, 90);
+        assertEquals(2, collisionMap.size(node));
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), node);
 
-        deleted = deleted.delete(10);
-        assertEquals(1, deleted.size());
-        assertEquals(ValueNode.instance(12, 90), deleted.root());
+        TreeCollisionMap.Node deleted = collisionMap.delete(node, 87);
+        assertEquals(2, collisionMap.size(deleted));
+        assertEquals(branch(Tuple2.of(10, 1000), Tuple2.of(12, 90)), deleted);
 
-        deleted = deleted.delete(40);
-        assertEquals(1, deleted.size());
-        assertEquals(ValueNode.instance(12, 90), deleted.root());
+        deleted = collisionMap.delete(deleted, 10);
+        assertEquals(1, collisionMap.size(deleted));
+        assertEquals(ValueNode.instance(12, 90), deleted);
 
-        deleted = deleted.delete(12);
-        assertEquals(0, deleted.size());
-        assertSame(TreeCollisionMap.empty(), deleted);
+        deleted = collisionMap.delete(deleted, 40);
+        assertEquals(1, collisionMap.size(deleted));
+        assertEquals(ValueNode.instance(12, 90), deleted);
+
+        deleted = collisionMap.delete(deleted, 12);
+        assertEquals(0, collisionMap.size(deleted));
+        assertSame(FringeNode.instance(), deleted);
     }
 
     public void testFindGet()
     {
-        TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.empty();
-        transforms = transforms.update(10, 100);
-        transforms = transforms.update(18, 180);
-        transforms = transforms.update(12, 60);
-        transforms = transforms.update(-6, -60);
-        transforms = transforms.update(12, 90);
-        assertEquals(4, transforms.size());
+        TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.instance();
+        CollisionMap.Node node = transforms.emptyNode();
+        node = transforms.update(node, 10, 100);
+        node = transforms.update(node, 18, 180);
+        node = transforms.update(node, 12, 60);
+        node = transforms.update(node, -6, -60);
+        node = transforms.update(node, 12, 90);
+        assertEquals(4, transforms.size(node));
 
-        assertEquals(Holders.of(100), transforms.findValue(10));
-        assertEquals(Holders.of(90), transforms.findValue(12));
-        assertEquals(Holders.of(180), transforms.findValue(18));
-        assertEquals(Holders.of(-60), transforms.findValue(-6));
-        assertEquals(Holders.<Integer>of(), transforms.findValue(11));
+        assertEquals(Holders.of(100), transforms.findValue(node, 10));
+        assertEquals(Holders.of(90), transforms.findValue(node, 12));
+        assertEquals(Holders.of(180), transforms.findValue(node, 18));
+        assertEquals(Holders.of(-60), transforms.findValue(node, -6));
+        assertEquals(Holders.<Integer>of(), transforms.findValue(node, 11));
 
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(10));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(12));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(18));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(-6));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(11));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(node, 11));
 
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(MapEntry.of(-6, -60));
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
-        StandardIteratorTests.listIteratorTest(expected, transforms.iterator());
+        StandardIteratorTests.verifyContents(expected, transforms.iterable(node));
     }
 
     private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a,

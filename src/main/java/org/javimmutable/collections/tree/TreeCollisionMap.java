@@ -56,109 +56,97 @@ public class TreeCollisionMap<K, V>
     implements CollisionMap<K, V>
 {
     @SuppressWarnings("unchecked")
-    private static final TreeCollisionMap EMPTY = new TreeCollisionMap(ComparableComparator.of(), FringeNode.instance());
+    private static final TreeCollisionMap EMPTY = new TreeCollisionMap(ComparableComparator.of());
 
     private final Comparator<K> comparator;
-    private final AbstractNode<K, V> root;
 
-    private TreeCollisionMap(@Nonnull Comparator<K> comparator,
-                             @Nonnull AbstractNode<K, V> root)
+    private TreeCollisionMap(@Nonnull Comparator<K> comparator)
     {
         this.comparator = comparator;
-        this.root = root;
     }
 
     @SuppressWarnings("unchecked")
-    @Nonnull
-    public static <K, V> TreeCollisionMap<K, V> empty()
+    public static <K, V> TreeCollisionMap<K, V> instance()
     {
         return EMPTY;
     }
 
-    @Override
-    public int size()
+    @SuppressWarnings("unchecked")
+    private AbstractNode<K, V> root(@Nonnull CollisionMap.Node node)
     {
-        return root.size();
+        return (AbstractNode<K, V>)node;
     }
 
     @Nonnull
     @Override
-    public TreeCollisionMap<K, V> update(@Nonnull K key,
-                                         V value)
+    public Node emptyNode()
     {
-        return resultForUpdate(root.assign(comparator, key, value));
+        return FringeNode.instance();
+    }
+
+    @Override
+    public int size(@Nonnull Node node)
+    {
+        return root(node).size();
     }
 
     @Nonnull
     @Override
-    public TreeCollisionMap<K, V> update(@Nonnull K key,
-                                         @Nonnull Func1<Holder<V>, V> generator)
+    public Node update(@Nonnull Node node,
+                       @Nonnull K key,
+                       @Nullable V value)
     {
-        return resultForUpdate(root.update(comparator, key, generator));
+        return root(node).assign(comparator, key, value);
     }
 
     @Nonnull
     @Override
-    public TreeCollisionMap<K, V> delete(@Nonnull K key)
+    public Node update(@Nonnull Node node,
+                       @Nonnull K key,
+                       @Nonnull Func1<Holder<V>, V> generator)
     {
-        return resultForDelete(root.delete(comparator, key));
+        return root(node).update(comparator, key, generator);
+    }
+
+    @Nonnull
+    @Override
+    public Node delete(@Nonnull Node node,
+                       @Nonnull K key)
+    {
+        return root(node).delete(comparator, key);
     }
 
     @Override
-    public V getValueOr(@Nonnull K key,
+    public V getValueOr(@Nonnull Node node,
+                        @Nonnull K key,
                         V defaultValue)
     {
-        return root.get(comparator, key, defaultValue);
+        return root(node).get(comparator, key, defaultValue);
     }
 
     @Nonnull
     @Override
-    public Holder<V> findValue(@Nonnull K key)
+    public Holder<V> findValue(@Nonnull Node node,
+                               @Nonnull K key)
     {
-        return root.find(comparator, key);
+        return root(node).find(comparator, key);
     }
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull Node node,
+                                         @Nonnull K key)
     {
-        return root.findEntry(comparator, key);
+        return root(node).findEntry(comparator, key);
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<Entry<K, V>> parent,
+    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                               @Nullable GenericIterator.State<Entry<K, V>> parent,
                                                                int offset,
                                                                int limit)
     {
-        return root.iterateOverRange(parent, offset, limit);
-    }
-
-    @Nonnull
-    AbstractNode<K, V> root()
-    {
-        return root;
-    }
-
-    @Nonnull
-    private TreeCollisionMap<K, V> resultForUpdate(@Nonnull AbstractNode<K, V> root)
-    {
-        if (root == this.root) {
-            return this;
-        } else {
-            return new TreeCollisionMap<>(comparator, root);
-        }
-    }
-
-    @Nonnull
-    private TreeCollisionMap<K, V> resultForDelete(@Nonnull AbstractNode<K, V> root)
-    {
-        if (root == this.root) {
-            return this;
-        } else if (root.isEmpty()) {
-            return empty();
-        } else {
-            return new TreeCollisionMap<>(comparator, root);
-        }
+        return root(node).iterateOverRange(parent, offset, limit);
     }
 }

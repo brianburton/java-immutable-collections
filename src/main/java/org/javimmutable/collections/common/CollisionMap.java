@@ -39,7 +39,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -50,35 +49,58 @@ import javax.annotation.Nullable;
  * Implementations are free to use any class for their leaf nodes and manage them as needed.
  */
 public interface CollisionMap<K, V>
-    extends GenericIterator.Iterable<JImmutableMap.Entry<K, V>>,
-            SplitableIterable<JImmutableMap.Entry<K, V>>
 {
-    int size();
+    interface Node
+    {
+    }
 
     @Nonnull
-    CollisionMap<K, V> update(@Nonnull K key,
-                              @Nullable V value);
+    Node emptyNode();
+
+    int size(@Nonnull Node node);
 
     @Nonnull
-    CollisionMap<K, V> update(@Nonnull K key,
-                              @Nonnull Func1<Holder<V>, V> generator);
+    Node update(@Nonnull Node node,
+                @Nonnull K key,
+                @Nullable V value);
 
     @Nonnull
-    CollisionMap<K, V> delete(@Nonnull K key);
+    Node update(@Nonnull Node node,
+                @Nonnull K key,
+                @Nonnull Func1<Holder<V>, V> generator);
 
-    V getValueOr(@Nonnull K key,
+    @Nonnull
+    Node delete(@Nonnull Node node,
+                @Nonnull K key);
+
+    V getValueOr(@Nonnull Node node,
+                 @Nonnull K key,
                  V defaultValue);
 
     @Nonnull
-    Holder<V> findValue(@Nonnull K key);
+    Holder<V> findValue(@Nonnull Node node,
+                        @Nonnull K key);
 
     @Nonnull
-    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key);
+    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node node,
+                                                @Nonnull K key);
+
+    @Nullable
+    GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                                      @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                      int offset,
+                                                                      int limit);
 
     @Nonnull
-    @Override
-    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    default GenericIterator.Iterable<JImmutableMap.Entry<K, V>> genericIterable(@Nonnull Node node)
     {
-        return new GenericIterator<>(this, 0, size());
+        return (parent, offset, limit) -> iterateOverRange(node, parent, offset, limit);
+    }
+
+
+    @Nonnull
+    default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(@Nonnull CollisionMap.Node node)
+    {
+        return () -> new GenericIterator<>(genericIterable(node), 0, size(node));
     }
 }

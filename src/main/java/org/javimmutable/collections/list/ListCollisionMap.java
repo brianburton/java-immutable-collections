@@ -2,111 +2,176 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static org.javimmutable.collections.MapEntry.mapEntry;
+
 public class ListCollisionMap<K, V>
     implements CollisionMap<K, V>
 {
-    @SuppressWarnings("unchecked")
-    private static final ListCollisionMap EMPTY = new ListCollisionMap(EntryList.empty());
+    private static final ListCollisionMap INSTANCE = new ListCollisionMap();
 
-    private final EntryList<K, V> root;
-
-    private ListCollisionMap(@Nonnull EntryList<K, V> root)
+    private ListCollisionMap()
     {
-        this.root = root;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <K, V> ListCollisionMap<K, V> empty()
+    public static <K, V> ListCollisionMap<K, V> instance()
     {
-        return (ListCollisionMap<K, V>)EMPTY;
+        return INSTANCE;
     }
 
-    @Override
-    public int size()
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    private AbstractNode<Entry<K, V>> root(@Nonnull Node node)
     {
-        return root.size();
+        return (AbstractNode<Entry<K, V>>)node;
     }
 
     @Nonnull
     @Override
-    public ListCollisionMap<K, V> update(@Nonnull K key,
-                                         @Nullable V value)
+    public Node emptyNode()
     {
-        return assignForUpdate(root.assign(key, value));
+        return EmptyNode.instance();
+    }
+
+    @Override
+    public int size(@Nonnull Node node)
+    {
+        return root(node).size();
     }
 
     @Nonnull
     @Override
-    public ListCollisionMap<K, V> update(@Nonnull K key,
-                                         @Nonnull Func1<Holder<V>, V> generator)
+    public Node update(@Nonnull Node node,
+                       @Nonnull K key,
+                       @Nullable V value)
     {
-        return assignForUpdate(root.update(key, generator));
+        final AbstractNode<Entry<K, V>> root = root(node);
+        int i = 0;
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                if (e.getValue() == value) {
+                    return root;
+                } else {
+                    return root.assign(i, mapEntry(key, value));
+                }
+            }
+            i += 1;
+        }
+        return root.append(mapEntry(key, value));
     }
 
     @Nonnull
     @Override
-    public ListCollisionMap<K, V> delete(@Nonnull K key)
+    public Node update(@Nonnull Node node,
+                       @Nonnull K key,
+                       @Nonnull Func1<Holder<V>, V> generator)
     {
-        return assignForDelete(root.delete(key));
+        final AbstractNode<Entry<K, V>> root = root(node);
+        int i = 0;
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                V value = generator.apply(Holders.of(e.getValue()));
+                if (e.getValue() == value) {
+                    return root;
+                } else {
+                    return root.assign(i, mapEntry(key, value));
+                }
+            }
+            i += 1;
+        }
+        V value = generator.apply(Holders.of());
+        return root.append(mapEntry(key, value));
+    }
+
+    @Nonnull
+    @Override
+    public Node delete(@Nonnull Node node,
+                       @Nonnull K key)
+    {
+        final AbstractNode<Entry<K, V>> root = root(node);
+        int i = 0;
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                return root.delete(i);
+            }
+            i += 1;
+        }
+        return root;
     }
 
     @Override
-    public V getValueOr(@Nonnull K key,
+    public V getValueOr(@Nonnull Node node,
+                        @Nonnull K key,
                         V defaultValue)
     {
-        return root.getValueOr(key, defaultValue);
+        final AbstractNode<Entry<K, V>> root = root(node);
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                return e.getValue();
+            }
+        }
+        return defaultValue;
     }
 
     @Nonnull
     @Override
-    public Holder<V> findValue(@Nonnull K key)
+    public Holder<V> findValue(@Nonnull Node node,
+                               @Nonnull K key)
     {
-        return root.findValue(key);
+        final AbstractNode<Entry<K, V>> root = root(node);
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                return Holders.of(e.getValue());
+            }
+        }
+        return Holders.of();
     }
 
     @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<Entry<K, V>> findEntry(@Nonnull Node node,
+                                         @Nonnull K key)
     {
-        return root.findEntry(key);
+        final AbstractNode<Entry<K, V>> root = root(node);
+        for (Entry<K, V> e : root) {
+            if (e.getKey().equals(key)) {
+                return Holders.of(e);
+            }
+        }
+        return Holders.of();
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                             int offset,
-                                                                             int limit)
+    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                               @Nullable GenericIterator.State<Entry<K, V>> parent,
+                                                               int offset,
+                                                               int limit)
     {
-        return root.iterateOverRange(parent, offset, limit);
+        return root(node).iterateOverRange(parent, offset, limit);
     }
 
     @Nonnull
-    private ListCollisionMap<K, V> assignForUpdate(@Nonnull EntryList<K, V> newRoot)
+    public SplitableIterator<Entry<K, V>> iterator(@Nonnull Node node)
     {
-        if (newRoot == root) {
-            return this;
-        } else {
-            return new ListCollisionMap<>(newRoot);
-        }
+        final AbstractNode<Entry<K, V>> root = root(node);
+        return new GenericIterator<>(root, 0, root.size());
     }
 
     @Nonnull
-    private ListCollisionMap<K, V> assignForDelete(@Nonnull EntryList<K, V> newRoot)
+    public SplitableIterable<Entry<K, V>> iterable(@Nonnull Node node)
     {
-        if (newRoot == root) {
-            return this;
-        } else if (newRoot.size() == 0) {
-            return empty();
-        } else {
-            return new ListCollisionMap<>(newRoot);
-        }
+        return () -> iterator(node);
     }
 }

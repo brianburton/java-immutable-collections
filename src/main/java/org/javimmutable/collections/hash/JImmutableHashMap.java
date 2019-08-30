@@ -59,10 +59,10 @@ public class JImmutableHashMap<T, K, V>
     implements Serializable
 {
     // we only need one instance of the transformations object
-    static final ListCollisionMap LIST_COLLISION_MAP = ListCollisionMap.empty();
+    static final CollisionMap LIST_COLLISION_MAP = ListCollisionMap.instance();
 
     // we only need one instance of the transformations object
-    static final TreeCollisionMap TREE_COLLISION_MAP = TreeCollisionMap.empty();
+    static final CollisionMap TREE_COLLISION_MAP = TreeCollisionMap.instance();
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings("unchecked")
@@ -144,14 +144,14 @@ public class JImmutableHashMap<T, K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        return root.getValueOr(key.hashCode(), key, defaultValue);
+        return root.getValueOr(collisionMap, key.hashCode(), key, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        return root.find(key.hashCode(), key);
+        return root.find(collisionMap, key.hashCode(), key);
     }
 
     @Nonnull
@@ -199,7 +199,7 @@ public class JImmutableHashMap<T, K, V>
         final HamtNode<K, V> newRoot = root.delete(collisionMap, key.hashCode(), key);
         if (newRoot == root) {
             return this;
-        } else if (newRoot.isEmpty()) {
+        } else if (newRoot.isEmpty(collisionMap)) {
             return of();
         } else {
             return new JImmutableHashMap<>(newRoot, collisionMap);
@@ -209,7 +209,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public int size()
     {
-        return root.size();
+        return root.size(collisionMap);
     }
 
     @Nonnull
@@ -223,13 +223,13 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return root.iterator();
+        return root.iterator(collisionMap);
     }
 
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants();
+        root.checkInvariants(collisionMap);
     }
 
     // for unit test to verify proper transforms selected
