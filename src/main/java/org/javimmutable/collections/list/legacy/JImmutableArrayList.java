@@ -210,6 +210,7 @@ public class JImmutableArrayList<T>
         return insertAllLast(values);
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
@@ -251,6 +252,7 @@ public class JImmutableArrayList<T>
         return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
     public JImmutableArrayList<T> insertAllLast(@Nonnull Iterable<? extends T> values)
@@ -271,31 +273,6 @@ public class JImmutableArrayList<T>
     {
         final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values);
         return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
-    }
-
-    @Nonnull
-    JImmutableArrayList<T> insertAllFirstOldWay(@Nonnull Iterator<? extends T> values)
-    {
-        InsertableSequence<T> seq = EmptySequenceNode.of();
-        while (values.hasNext()) {
-            seq = seq.insert(values.next());
-        }
-        Node<T> newRoot = root;
-        while (!seq.isEmpty()) {
-            newRoot = newRoot.insertFirst(seq.getHead());
-            seq = seq.getTail();
-        }
-        return (newRoot != root) ? new JImmutableArrayList<>(newRoot) : this;
-    }
-
-    @Nonnull
-    JImmutableArrayList<T> insertAllLastOldWay(@Nonnull Iterator<? extends T> values)
-    {
-        Node<T> newRoot = root;
-        while (values.hasNext()) {
-            newRoot = newRoot.insertLast(values.next());
-        }
-        return new JImmutableArrayList<>(newRoot);
     }
 
     @Nonnull
