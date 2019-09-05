@@ -401,18 +401,6 @@ class BranchNode<T>
             this.limit = limit;
         }
 
-        @Override
-        public boolean hasValue()
-        {
-            return false;
-        }
-
-        @Override
-        public T value()
-        {
-            throw new UnsupportedOperationException();
-        }
-
         @Nullable
         @Override
         public GenericIterator.State<T> advance()

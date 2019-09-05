@@ -262,18 +262,6 @@ public class GenericIterator<T>
         }
 
         @Override
-        public boolean hasValue()
-        {
-            return false;
-        }
-
-        @Override
-        public T value()
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public synchronized State<T> advance()
         {
             final int childSize = sizer.applyAsInt(children.get(childIndex));
