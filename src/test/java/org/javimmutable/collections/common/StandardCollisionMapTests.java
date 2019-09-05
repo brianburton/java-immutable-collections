@@ -26,15 +26,25 @@ public class StandardCollisionMapTests
                 case 0: {
                     Integer k = r.nextInt(250);
                     Integer v = randomValue(r, k, expected);
+                    boolean noChange = (v == expected.get(k));
+                    CollisionMap.Node oldNode = node;
                     expected.put(k, v);
                     node = map.update(node, k, v);
+                    if (noChange && node != oldNode) {
+                        fail(String.format("update value noChange fail: k=%d v=%s", k, v));
+                    }
                     break;
                 }
                 case 1: {
                     Integer k = r.nextInt(250);
                     Integer v = randomValue(r, k, expected);
+                    boolean noChange = (v == expected.get(k));
+                    CollisionMap.Node oldNode = node;
                     expected.put(k, v);
                     node = map.update(node, k, ov -> v);
+                    if (noChange && node != oldNode) {
+                        fail(String.format("update generator noChange fail: k=%d v=%s", k, v));
+                    }
                     break;
                 }
                 case 2: {
