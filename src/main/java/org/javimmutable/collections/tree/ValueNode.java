@@ -333,46 +333,39 @@ class ValueNode<K, V>
                                                                              int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        final int leftSize = left.size();
-        if (limit <= leftSize) {
-            return left.iterateOverRange(parent, offset, limit);
-        } else if (offset == leftSize) {
-            return new IteratorState(parent, limit - leftSize);
-        } else if (offset > leftSize) {
-            return right.iterateOverRange(parent, offset - leftSize - 1, limit - leftSize - 1);
-        } else {
-            return left.iterateOverRange(new IteratorState(parent, limit - leftSize), offset, leftSize);
-        }
+        return new IteratorState(parent, offset, limit);
     }
 
-    // state object to resume iteration down right branch from start to limit (limit relative to right branch)
     class IteratorState
         implements GenericIterator.State<JImmutableMap.Entry<K, V>>
     {
         private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
         private final int limit;
-        private boolean available;
+        private final int leftSize;
+        private int currentOffset;
+        private int nextOffset;
 
         private IteratorState(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                              int offset,
                               int limit)
         {
-            assert limit <= 1 + right.size();
             this.parent = parent;
             this.limit = limit;
-            available = true;
+            leftSize = left.size();
+            currentOffset = -1;
+            nextOffset = offset;
         }
 
         @Override
         public boolean hasValue()
         {
-            return available;
+            return currentOffset == leftSize;
         }
 
         @Override
         public JImmutableMap.Entry<K, V> value()
         {
-            if (available) {
-                available = false;
+            if (currentOffset == leftSize) {
                 return MapEntry.of(key, value);
             } else {
                 throw new NoSuchElementException();
@@ -383,11 +376,18 @@ class ValueNode<K, V>
         @Override
         public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
         {
-            assert !available;
-            if (limit == 1) {
+            assert nextOffset <= limit;
+            currentOffset = nextOffset;
+            if (currentOffset >= limit) {
                 return parent;
+            } else if (currentOffset < leftSize) {
+                nextOffset = Math.min(leftSize, limit);
+                return left.iterateOverRange(this, currentOffset, nextOffset);
+            } else if (currentOffset == leftSize) {
+                nextOffset = leftSize + 1;
+                return this;
             } else {
-                return right.iterateOverRange(parent, 0, limit - 1);
+                return right.iterateOverRange(parent, currentOffset - leftSize - 1, limit - leftSize - 1);
             }
         }
     }
