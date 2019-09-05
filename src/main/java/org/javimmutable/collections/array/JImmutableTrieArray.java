@@ -38,13 +38,17 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.AbstractJImmutableArray;
+import org.javimmutable.collections.common.ArrayToMapAdaptor;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
 import javax.annotation.Nonnull;
@@ -52,12 +56,13 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collector;
 
 @Immutable
 public class JImmutableTrieArray<T>
-    extends AbstractJImmutableArray<T>
-    implements Serializable
+    implements Serializable,
+               JImmutableArray<T>
 {
     @SuppressWarnings("unchecked")
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of());
@@ -108,6 +113,13 @@ public class JImmutableTrieArray<T>
 
     @Override
     @Nullable
+    public T get(int index)
+    {
+        return find(index).getValueOrNull();
+    }
+
+    @Override
+    @Nullable
     public T getValueOr(int index,
                         @Nullable T defaultValue)
     {
@@ -131,12 +143,31 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
+    public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int key)
+    {
+        Holder<T> value = find(key);
+        return value.isFilled() ? Holders.of(MapEntry.of(key, value.getValue())) : Holders.of();
+    }
+
+    @Nonnull
+    @Override
     public JImmutableTrieArray<T> assign(int index,
                                          @Nullable T value)
     {
         TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
         newRoot = newRoot.assign(newRoot.getShift(), index, value);
         return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
+    }
+
+    /**
+     * Adds the key/value pair to this map.  Any value already existing for the specified key
+     * is replaced with the new value.
+     */
+    @Override
+    @Nonnull
+    public JImmutableArray<T> insert(@Nullable JImmutableMap.Entry<Integer, T> e)
+    {
+        return (e == null) ? this : assign(e.getKey(), e.getValue());
     }
 
     @Nonnull
@@ -149,6 +180,12 @@ public class JImmutableTrieArray<T>
             final TrieNode<T> newRoot = root.delete(root.getShift(), index).trimmedToMinimumDepth();
             return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
         }
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return root.isEmpty();
     }
 
     @Override
@@ -166,9 +203,43 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
+    public JImmutableArray<T> getInsertableSelf()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<Integer> keys()
+    {
+        return TransformStreamable.ofKeys(this);
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<T> values()
+    {
+        return TransformStreamable.ofValues(this);
+    }
+
+    @Override
+    public int getSpliteratorCharacteristics()
+    {
+        return StreamConstants.SPLITERATOR_ORDERED;
+    }
+
+    @Nonnull
+    @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return new GenericIterator<>(root, 0, root.valueCount());
+    }
+
+    @Nonnull
+    @Override
+    public Map<Integer, T> getMap()
+    {
+        return ArrayToMapAdaptor.of(this);
     }
 
     @Override
