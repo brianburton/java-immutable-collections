@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
@@ -49,6 +50,11 @@ import java.util.List;
 public class TreeCollisionMapTest
     extends TestCase
 {
+    public void testStandard()
+    {
+        StandardCollisionMapTests.randomTests(TreeCollisionMap.instance());
+    }
+
     public void testUpdateDelete()
     {
         TreeCollisionMap<Integer, Integer> collisionMap = TreeCollisionMap.instance();

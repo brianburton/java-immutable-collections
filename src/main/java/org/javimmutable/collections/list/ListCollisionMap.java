@@ -165,8 +165,7 @@ public class ListCollisionMap<K, V>
     @Nonnull
     public SplitableIterator<Entry<K, V>> iterator(@Nonnull Node node)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
-        return new GenericIterator<>(root, 0, root.size());
+        return new GenericIterator<>((p, o, l) -> iterateOverRange(node, p, o, l), 0, size(node));
     }
 
     @Nonnull
