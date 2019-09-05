@@ -669,7 +669,10 @@ public abstract class AbstractJImmutableMultiset<T>
         {
             this();
             while (values.hasNext()) {
-                add(values.next(), 1);
+                final T value = values.next();
+                if (value != null) {
+                    add(value, 1);
+                }
             }
         }
 
