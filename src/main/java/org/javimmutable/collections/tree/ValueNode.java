@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 
 @Immutable
 class ValueNode<K, V>
@@ -336,7 +335,7 @@ class ValueNode<K, V>
         return new IteratorState(parent, offset, limit);
     }
 
-    class IteratorState
+    private class IteratorState
         implements GenericIterator.State<JImmutableMap.Entry<K, V>>
     {
         private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
@@ -365,11 +364,8 @@ class ValueNode<K, V>
         @Override
         public JImmutableMap.Entry<K, V> value()
         {
-            if (currentOffset == leftSize) {
-                return MapEntry.of(key, value);
-            } else {
-                throw new NoSuchElementException();
-            }
+            assert currentOffset == leftSize;
+            return MapEntry.of(key, value);
         }
 
         @Nullable

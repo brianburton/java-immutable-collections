@@ -1,10 +1,12 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,9 +42,9 @@ public class GenericIteratorTest
         verifyOrderedIterable(asList(1, 2), n(1, 2));
         verifyOrderedIterable(lr(1, limit(4)), nr(1, limit(4)));
         verifyOrderedSplit(false, asList(), asList(), nr(1, MIN_SIZE_FOR_SPLIT - 1).iterator());
-        verifyOrderedSplit(true, lr(1, limit(1)), lr(limit(1) + 1, limit(2)), nr(1, limit(2)).iterator());
+        verifyOrderedSplit(true, lr(1, limit(1)), lr(limit(1) + 1, limit(2)), rg(1, limit(2)).iterator());
         final int len = MIN_SIZE_FOR_SPLIT + MIN_SIZE_FOR_SPLIT / 2 - 1;
-        final Node deep = n(nr(1, 10), n(nr(11, len / 2), n(nr(len / 2 + 1, len / 2 + 2)), nr(len / 2 + 3, len)));
+        final Node deep = n(nr(1, 10), n(rg(11, len / 2), n(nr(len / 2 + 1, len / 2 + 2)), nr(len / 2 + 3, len)));
         eq(lr(1, len), deep);
         verifyOrderedIterable(lr(1, len), deep);
         verifyOrderedSplit(true, lr(1, len / 2), lr(len / 2 + 1, len), deep.iterator());
@@ -91,6 +93,12 @@ public class GenericIteratorTest
             nodes[i++] = n(value);
         }
         return new Branch(nodes);
+    }
+
+    private static Node rg(int first,
+                           int last)
+    {
+        return new Range(first, last);
     }
 
     private static List<Integer> lr(int first,
@@ -146,6 +154,40 @@ public class GenericIteratorTest
                                                                int limit)
         {
             return GenericIterator.valueState(parent, value);
+        }
+    }
+
+    private static class Range
+        extends Node
+    {
+        private final Indexed<Integer> values;
+
+        private Range(int first,
+                      int last)
+        {
+            values = IndexedHelper.range(first, last);
+        }
+
+        @Override
+        int size()
+        {
+            return values.size();
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<Integer> iterator()
+        {
+            return new GenericIterator<>(this, 0, size());
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<Integer> iterateOverRange(@Nullable GenericIterator.State<Integer> parent,
+                                                               int offset,
+                                                               int limit)
+        {
+            return GenericIterator.multiValueState(parent, values, offset, limit);
         }
     }
 

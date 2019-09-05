@@ -442,8 +442,8 @@ class BranchNode<T>
     @Nonnull
     private Indexed<Node<T>> indexedForIterator()
     {
-        final int last = nodes.length + 1;
-        final int size = last + 1;
+        final int size = nodes.length + 2;
+        final int last = size - 1;
         return new Indexed<Node<T>>()
         {
             @Override

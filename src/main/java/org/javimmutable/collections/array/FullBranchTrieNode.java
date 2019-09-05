@@ -150,11 +150,7 @@ public class FullBranchTrieNode<T>
                                                                                    int offset,
                                                                                    int limit)
     {
-        return GenericIterator.indexedState(parent,
-                                            IndexedArray.retained(entries),
-                                            TrieNode::valueCount,
-                                            offset,
-                                            limit);
+        return GenericIterator.indexedState(parent, IndexedArray.retained(entries), TrieNode::valueCount, offset, limit);
     }
 
     @Override
