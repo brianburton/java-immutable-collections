@@ -58,6 +58,11 @@ import static java.util.Arrays.asList;
 public class JImmutableInsertOrderMapTest
     extends TestCase
 {
+    public void test()
+    {
+        StandardJImmutableMapTests.verifyMiscellaneous(JImmutableInsertOrderMap.of());
+    }
+
     public void testIterators()
     {
         List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<>();
@@ -177,8 +182,9 @@ public class JImmutableInsertOrderMapTest
                         break;
                     }
                 }
-
             }
+            map.checkInvariants();
+            
             assertEquals(expected, map.getMap());
             List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
             List<Integer> keys = new ArrayList<>();

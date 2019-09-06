@@ -70,6 +70,8 @@ public class StandardJImmutableMapTests
 
         x = x.update(2, generator(4));
         assertEquals(Integer.valueOf(71), x.get(2));
+
+        assertSame(x, x.delete(-1));
     }
 
     public static <K, V> void verifyEmptyEnumeration(@Nonnull JImmutableMap<K, V> map)

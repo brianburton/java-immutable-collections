@@ -41,11 +41,12 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.InfiniteKey;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -69,16 +70,16 @@ public class JImmutableInsertOrderMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("unchecked")
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTrieArray.of(), JImmutableHashMap.of(), Integer.MIN_VALUE);
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTreeMap.of(), JImmutableHashMap.of(), InfiniteKey.first());
     private static final long serialVersionUID = -121805;
 
-    private final JImmutableTrieArray<Node<K, V>> sortedNodes;
+    private final JImmutableMap<InfiniteKey, Node<K, V>> sortedNodes;
     private final JImmutableMap<K, Node<K, V>> hashedNodes;
-    private final int nextIndex;
+    private final InfiniteKey nextIndex;
 
-    private JImmutableInsertOrderMap(JImmutableTrieArray<Node<K, V>> sortedNodes,
+    private JImmutableInsertOrderMap(JImmutableMap<InfiniteKey, Node<K, V>> sortedNodes,
                                      JImmutableMap<K, Node<K, V>> hashedNodes,
-                                     int nextIndex)
+                                     InfiniteKey nextIndex)
     {
         assert sortedNodes.size() == hashedNodes.size();
         this.sortedNodes = sortedNodes;
@@ -89,7 +90,7 @@ public class JImmutableInsertOrderMap<K, V>
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableInsertOrderMap<K, V> of()
     {
-        return (JImmutableInsertOrderMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class JImmutableInsertOrderMap<K, V>
             final Node<K, V> newNode = new Node<>(key, value, nextIndex);
             return new JImmutableInsertOrderMap<>(sortedNodes.assign(newNode.index, newNode),
                                                   hashedNodes.assign(key, newNode),
-                                                  nextIndex + 1);
+                                                  nextIndex.next());
         } else if (current.getValue() == value) {
             return this;
         } else {
@@ -187,7 +188,21 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public void checkInvariants()
     {
-        //TODO: fix empty checkInvariants()
+        if (sortedNodes.size() != hashedNodes.size()) {
+            throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", sortedNodes.size(), hashedNodes.size()));
+        }
+        for (Entry<InfiniteKey, Node<K, V>> e : sortedNodes) {
+            Node<K, V> hashedNode = hashedNodes.get(e.getValue().getKey());
+            if (e.getValue() != hashedNode) {
+                throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e.getValue(), hashedNode));
+            }
+        }
+        for (Entry<K, Node<K, V>> e : hashedNodes) {
+            Node<K, V> sortedNode = sortedNodes.get(e.getValue().index);
+            if (e.getValue() != sortedNode) {
+                throw new IllegalStateException(String.format("node mismatch: hashed=%s sorted=%s", sortedNode, e.getValue()));
+            }
+        }
     }
 
     private Object writeReplace()
@@ -203,11 +218,11 @@ public class JImmutableInsertOrderMap<K, V>
         extends MapEntry<K, V>
         implements Holders.Filled<V>
     {
-        private final int index;
+        private final InfiniteKey index;
 
         private Node(K key,
                      V value,
-                     int index)
+                     InfiniteKey index)
         {
             super(key, value);
             this.index = index;
