@@ -40,6 +40,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import java.util.HashMap;
@@ -67,23 +68,24 @@ public final class MapTimingComparison
         MutableDelta hashElapsed = new MutableDelta();
         MutableDelta treeElapsed = new MutableDelta();
         MutableDelta arrayElapsed = new MutableDelta();
+        MutableDelta inOrderElapsed = new MutableDelta();
         System.out.println("warm up runs");
 
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;
         final int maxCommand = 10;
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
         System.out.println();
 
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaElapsed, hashElapsed, treeElapsed, arrayElapsed);
+            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaElapsed, hashElapsed, treeElapsed, arrayElapsed, inOrderElapsed);
             System.out.println();
         }
-        System.out.printf("java avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f%n", javaElapsed.getValue() / 25.0, treeElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0);
+        System.out.printf("java avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n", javaElapsed.getValue() / 25.0, treeElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0, inOrderElapsed.getValue() / 25.0);
     }
 
     @SuppressWarnings("UnusedAssignment")
@@ -95,7 +97,8 @@ public final class MapTimingComparison
                                 MutableDelta javaElapsed,
                                 MutableDelta hashElapsed,
                                 MutableDelta treeElapsed,
-                                MutableDelta arrayElapsed)
+                                MutableDelta arrayElapsed,
+                                MutableDelta inOrderElapsed)
         throws Exception
     {
         Random random = new Random(seed);
@@ -184,6 +187,36 @@ public final class MapTimingComparison
         endMillis = System.currentTimeMillis();
         hashElapsed.add((int)(endMillis - startMillis));
         System.out.printf("jimm hash adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        map = null;
+        System.gc();
+        Thread.sleep(500);
+
+        random = new Random(seed);
+        adds = 0;
+        removes = 0;
+        gets = 0;
+        startMillis = System.currentTimeMillis();
+        map = JImmutableInsertOrderMap.of();
+        for (int i = 1; i <= loops; ++i) {
+            int command = random.nextInt(maxCommand);
+            if (command <= 2) {
+                Integer key = random.nextInt(maxKey);
+                Integer value = random.nextInt(maxValue);
+                map = map.assign(key, value);
+                adds += 1;
+            } else if (command == 3) {
+                Integer key = random.nextInt(maxKey);
+                map = map.delete(key);
+                removes += 1;
+            } else {
+                Integer key = random.nextInt(maxKey);
+                map.getValueOr(key, null);
+                gets += 1;
+            }
+        }
+        endMillis = System.currentTimeMillis();
+        inOrderElapsed.add((int)(endMillis - startMillis));
+        System.out.printf("jimm iord adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
         Thread.sleep(500);
