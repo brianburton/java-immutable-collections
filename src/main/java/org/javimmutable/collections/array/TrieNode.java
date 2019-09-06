@@ -44,7 +44,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public abstract class TrieNode<T>
+abstract class TrieNode<T>
     implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
                InvariantCheckable
 {

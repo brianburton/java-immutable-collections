@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class EmptyTrieNode<T>
+class EmptyTrieNode<T>
     extends TrieNode<T>
 {
     private static final EmptyTrieNode EMPTY = new EmptyTrieNode();

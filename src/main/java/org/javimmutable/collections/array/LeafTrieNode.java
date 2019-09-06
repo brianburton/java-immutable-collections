@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class LeafTrieNode<T>
+class LeafTrieNode<T>
     extends TrieNode<T>
     implements JImmutableMap.Entry<Integer, T>,
                Holders.Filled<T>

@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class MultiBranchTrieNode<T>
+class MultiBranchTrieNode<T>
     extends TrieNode<T>
 {
     private final int shift;
