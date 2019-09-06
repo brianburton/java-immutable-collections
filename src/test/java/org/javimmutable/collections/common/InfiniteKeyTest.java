@@ -38,33 +38,27 @@ package org.javimmutable.collections.common;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.common.InfiniteKey.testKey;
+import static org.javimmutable.collections.common.InfiniteKey.*;
 
 public class InfiniteKeyTest
     extends TestCase
 {
-    private static final int MAX = 0x7fffffff;
-
-    @SuppressWarnings("NumericOverflow")
-    public void testMax()
-    {
-        assertThat(MAX).isGreaterThan(0);
-        assertThat(MAX + 1).isLessThan(0);
-    }
-
     public void testCompareTo()
     {
         verifyNext(InfiniteKey.first());
-        verifyNext(testKey(MAX - 500));
-        verifyNext(testKey(0, MAX - 500));
-        verifyNext(testKey(MAX, MAX - 500));
+        verifyNext(testKey(HIGH - 500));
+        verifyNext(testKey(LOW, HIGH - 500));
+        verifyNext(testKey(HIGH, HIGH - 500));
     }
 
     public void testToString()
     {
-        assertThat(testKey(0).toString()).isEqualTo("0");
-        assertThat(testKey(0, 1).toString()).isEqualTo("0.1");
-        assertThat(testKey(0, 1, 2).toString()).isEqualTo("0.1.2");
+
+        assertThat(testKey(LOW).toString()).isEqualTo("0");
+        assertThat(testKey(LOW, LOW + 1).toString()).isEqualTo("0.1");
+        assertThat(testKey(LOW, LOW + 1, LOW + 2).toString()).isEqualTo("0.1.2");
+        assertThat(testKey(HIGH).next().toString()).isEqualTo("0.0");
+        assertThat(testKey(HIGH, HIGH).next().toString()).isEqualTo("0.0.0");
     }
 
     public void testCache()
@@ -75,20 +69,28 @@ public class InfiniteKeyTest
             assertThat(next).isSameAs(key.next());
             key = next;
         }
+        assertThat(key.next()).isNotSameAs(key.next());
     }
 
     private void verifyNext(InfiniteKey key)
     {
         for (int i = 1; i <= 1000; ++i) {
             InfiniteKey next = key.next();
-            assertThat(key.compareTo(next)).isEqualTo(-1);
-            assertThat(next.compareTo(key.next())).isEqualTo(0);
-            assertThat(next.compareTo(key)).isEqualTo(1);
+            verifyCompare(key, next, -1);
+            verifyCompare(next, key.next(), 0);
+            verifyCompare(next, key, 1);
             assertThat(next.hashCode()).isEqualTo(key.next().hashCode());
             assertThat(key).isNotEqualTo(next);
             assertThat(next).isNotEqualTo(key);
             assertThat(key.next()).isEqualTo(next);
             key = next;
         }
+    }
+
+    private void verifyCompare(InfiniteKey a,
+                               InfiniteKey b,
+                               int diff)
+    {
+        assertThat(a.compareTo(b)).describedAs("%s <=> %s", a, b).isEqualTo(diff);
     }
 }

@@ -44,12 +44,15 @@ public abstract class InfiniteKey
     implements Comparable<InfiniteKey>
 {
     static final int CACHE_SIZE = 512;
+    static final int FLOOR = MIN_VALUE;
+    static final int LOW = FLOOR + 1;
+    static final int HIGH = MAX_VALUE;
 
     static InfiniteKey testKey(int... values)
     {
-        InfiniteKey key = values[0] == 0 ? Tiny.ZERO : new Tiny(values[0]);
+        InfiniteKey key = values[0] == LOW ? Single.FIRST : new Single(values[0]);
         for (int i = 1; i < values.length; ++i) {
-            key = new Large(key, values[i]);
+            key = new Multi(key, values[i]);
         }
         return key;
     }
@@ -57,13 +60,18 @@ public abstract class InfiniteKey
     @Nonnull
     public static InfiniteKey first()
     {
-        return Tiny.ZERO;
+        return Single.FIRST;
     }
 
     @Nonnull
     public abstract InfiniteKey next();
 
     abstract void addToString(StringBuilder sb);
+
+    abstract int value();
+
+    @Nonnull
+    abstract InfiniteKey parent();
 
     @Override
     public String toString()
@@ -73,24 +81,68 @@ public abstract class InfiniteKey
         return answer.toString();
     }
 
+    @Override
+    public int compareTo(@Nonnull InfiniteKey o)
+    {
+        if (this == o) {
+            return 0;
+        }
+        int diff = parent().compareTo(o.parent());
+        if (diff != 0) {
+            return diff;
+        }
+        return Integer.compare(value(), o.value());
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof InfiniteKey)) {
+            return false;
+        }
+        return equalTo((InfiniteKey)obj);
+    }
+
+    private boolean equalTo(InfiniteKey o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (value() != o.value()) {
+            return false;
+        }
+        return parent().equalTo(o.parent());
+    }
+
+    private static void hexString(StringBuilder sb,
+                                  int value)
+    {
+        final long lvalue = (long)value - (long)LOW;
+        sb.append(Long.toHexString(lvalue));
+    }
+
     @Immutable
-    private static class Tiny
+    private static class Single
         extends InfiniteKey
     {
+        private static final int CACHE_LIMIT;
         private static final InfiniteKey[] CACHE;
-        private static final InfiniteKey ZERO;
+        private static final InfiniteKey STOP;
+        private static final InfiniteKey FIRST;
 
         static {
+            STOP = new Single(FLOOR);
             CACHE = new InfiniteKey[CACHE_SIZE];
             for (int i = 0; i < CACHE_SIZE; ++i) {
-                CACHE[i] = new Tiny(i);
+                CACHE[i] = new Single(LOW + i);
             }
-            ZERO = CACHE[0];
+            FIRST = CACHE[0];
+            CACHE_LIMIT = LOW + CACHE_SIZE - 1;
         }
 
         private final int value;
 
-        private Tiny(int value)
+        private Single(int value)
         {
             this.value = value;
         }
@@ -99,32 +151,14 @@ public abstract class InfiniteKey
         @Nonnull
         public InfiniteKey next()
         {
+            if (value == HIGH) {
+                return new Multi(FIRST, LOW);
+            }
             final int next = value + 1;
-            if (next < 0) {
-                return new Large(ZERO, 0);
-            } else if (next < CACHE_SIZE) {
-                return CACHE[next];
-            } else {
-                return new Tiny(next);
+            if (next <= CACHE_LIMIT) {
+                return CACHE[next - LOW];
             }
-        }
-
-        @Override
-        public int compareTo(@Nonnull InfiniteKey key)
-        {
-            if (key instanceof Tiny) {
-                final Tiny o = (Tiny)key;
-                return compare(value, o.value);
-            } else {
-                assert key instanceof Large;
-                return -1;
-            }
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            return o instanceof Tiny && (value == ((Tiny)o).value);
+            return new Single(next);
         }
 
         @Override
@@ -136,70 +170,55 @@ public abstract class InfiniteKey
         @Override
         void addToString(StringBuilder sb)
         {
-            sb.append(toHexString(value));
+            hexString(sb, value);
+        }
+
+        @Override
+        int value()
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
+        InfiniteKey parent()
+        {
+            return STOP;
         }
     }
 
     @Immutable
-    private static class Large
+    private static class Multi
         extends InfiniteKey
     {
         @Nonnull
         private final InfiniteKey parent;
         private final int value;
+        private final int hashCode;
 
-        private Large(@Nonnull InfiniteKey parent,
+        private Multi(@Nonnull InfiniteKey parent,
                       int value)
         {
             this.value = value;
             this.parent = parent;
+            hashCode = value + 31 * parent.hashCode();
         }
 
         @Override
         @Nonnull
         public InfiniteKey next()
         {
-            final int next = value + 1;
-            if (next > 0) {
-                return new Large(parent, next);
+            if (value == HIGH) {
+                return new Multi(parent.next(), LOW);
             } else {
-                return new Large(parent.next(), 0);
-            }
-        }
-
-        @Override
-        public int compareTo(@Nonnull InfiniteKey key)
-        {
-            if (key instanceof Large) {
-                final Large o = (Large)key;
-                int diff = parent.compareTo(o.parent);
-                if (diff != 0) {
-                    return diff;
-                } else {
-                    return compare(value, o.value);
-                }
-            } else {
-                assert key instanceof Tiny;
-                return 1;
-            }
-        }
-
-        @Override
-        public boolean equals(Object key)
-        {
-            if (key instanceof Large) {
-                final Large o = (Large)key;
-                return value == o.value && parent.equals(o.parent);
-            } else {
-                assert key instanceof Tiny;
-                return false;
+                return new Multi(parent, value + 1);
             }
         }
 
         @Override
         public int hashCode()
         {
-            return value + 31 * parent.hashCode();
+            return hashCode;
         }
 
         @Override
@@ -207,7 +226,20 @@ public abstract class InfiniteKey
         {
             parent.addToString(sb);
             sb.append(".");
-            sb.append(toHexString(value));
+            hexString(sb, value);
+        }
+
+        @Override
+        int value()
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
+        InfiniteKey parent()
+        {
+            return parent;
         }
     }
 }
