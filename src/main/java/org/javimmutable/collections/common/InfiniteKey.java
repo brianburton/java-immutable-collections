@@ -114,11 +114,10 @@ public abstract class InfiniteKey
         return parent().equalTo(o.parent());
     }
 
-    private static void hexString(StringBuilder sb,
-                                  int value)
+    private static void stringValue(StringBuilder sb,
+                                    int value)
     {
-        final long lvalue = (long)value - (long)LOW;
-        sb.append(Long.toHexString(lvalue));
+        sb.append((long)value - (long)LOW);
     }
 
     @Immutable
@@ -170,7 +169,7 @@ public abstract class InfiniteKey
         @Override
         void addToString(StringBuilder sb)
         {
-            hexString(sb, value);
+            stringValue(sb, value);
         }
 
         @Override
@@ -226,7 +225,7 @@ public abstract class InfiniteKey
         {
             parent.addToString(sb);
             sb.append(".");
-            hexString(sb, value);
+            stringValue(sb, value);
         }
 
         @Override
