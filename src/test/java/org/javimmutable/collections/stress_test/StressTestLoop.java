@@ -108,7 +108,6 @@ public class StressTestLoop
 
             .insert(new JImmutableStackStressTester(JImmutables.stack()));
 
-
         OptionParser parser = makeTesterOptions(testers);
         OptionSpec<String> fileSpec = parser.accepts("file").withRequiredArg();
         OptionSpec<Long> seedSpec = parser.accepts("seed").withRequiredArg().ofType(Long.class);
@@ -122,23 +121,29 @@ public class StressTestLoop
         if (options.has(fileSpec)) {
             List<String> filenames = options.valuesOf(fileSpec);
             tokens = StressTestUtil.loadTokens(filenames);
-            System.out.printf("\nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
+            System.out.printf("%nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
         } else {
             tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
-            System.out.printf("\nLoaded %d tokens from index.md%n", tokens.size());
+            System.out.printf("%nLoaded %d tokens from index.md%n", tokens.size());
         }
-        boolean needsFilter = needsFilter(options, fileSpec, seedSpec);
+        if (needsFilter(options, fileSpec, seedSpec)) {
+            testers = testers.reject(tester -> filter(options, tester));
+            if (testers.isEmpty()) {
+                throw new RuntimeException("filter rejected all testers!!");
+            }
+        }
+        System.out.printf("%nLoaded %d testers%n", testers.size());
+
         //noinspection InfiniteLoopStatement
         while (true) {
             for (AbstractStressTestable tester : testers) {
-                if (!needsFilter || filter(options, tester)) {
-                    System.out.printf("\nStarting with seed %d%n", seed);
-                    tester.execute(random, tokens);
-                    seed = System.currentTimeMillis();
-                    random.setSeed(seed);
-                    //noinspection BusyWait
-                    Thread.sleep(5000);
-                }
+                System.out.printf("%nStarting with seed %d%n", seed);
+                tester.execute(random, tokens);
+                seed = System.currentTimeMillis();
+                random.setSeed(seed);
+                //noinspection BusyWait
+                Thread.sleep(5000);
+                System.out.println("sleeping before next test");
             }
         }
     }

@@ -287,7 +287,7 @@ public class JImmutableListStressTester
                         int index = random.nextInt(list.size()) + list.size();
                         try {
                             list.assign(index, RandomKeyManager.makeValue(tokens, random));
-                            throw new RuntimeException(String.format("error in assign(index, value) method call - index %d was out of bounds, but method did not fail%n", index));
+                            throw new RuntimeException(String.format("error in assign(index, value) method call - index %d was out of bounds (size=%d), but method did not fail%n", index, list.size()));
                         } catch (IndexOutOfBoundsException e) {
                             //ignored -- expected
                         }
