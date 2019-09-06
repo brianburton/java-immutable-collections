@@ -38,14 +38,14 @@ package org.javimmutable.collections.common;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static java.lang.Long.toHexString;
+import static java.lang.Integer.*;
 
 public abstract class InfiniteKey
     implements Comparable<InfiniteKey>
 {
-    static final int CACHE_SIZE = 256;
+    static final int CACHE_SIZE = 512;
 
-    static InfiniteKey testKey(long... values)
+    static InfiniteKey testKey(int... values)
     {
         InfiniteKey key = values[0] == 0 ? Tiny.ZERO : new Tiny(values[0]);
         for (int i = 1; i < values.length; ++i) {
@@ -88,9 +88,9 @@ public abstract class InfiniteKey
             ZERO = CACHE[0];
         }
 
-        private final long value;
+        private final int value;
 
-        private Tiny(long value)
+        private Tiny(int value)
         {
             this.value = value;
         }
@@ -99,11 +99,11 @@ public abstract class InfiniteKey
         @Nonnull
         public InfiniteKey next()
         {
-            final long next = value + 1;
+            final int next = value + 1;
             if (next < 0) {
                 return new Large(ZERO, 0);
             } else if (next < CACHE_SIZE) {
-                return CACHE[(int)next];
+                return CACHE[next];
             } else {
                 return new Tiny(next);
             }
@@ -114,7 +114,7 @@ public abstract class InfiniteKey
         {
             if (key instanceof Tiny) {
                 final Tiny o = (Tiny)key;
-                return Long.compare(value, o.value);
+                return compare(value, o.value);
             } else {
                 assert key instanceof Large;
                 return -1;
@@ -130,7 +130,7 @@ public abstract class InfiniteKey
         @Override
         public int hashCode()
         {
-            return (int)(value ^ (value >>> 32));
+            return value;
         }
 
         @Override
@@ -146,10 +146,10 @@ public abstract class InfiniteKey
     {
         @Nonnull
         private final InfiniteKey parent;
-        private final long value;
+        private final int value;
 
         private Large(@Nonnull InfiniteKey parent,
-                      long value)
+                      int value)
         {
             this.value = value;
             this.parent = parent;
@@ -159,7 +159,7 @@ public abstract class InfiniteKey
         @Nonnull
         public InfiniteKey next()
         {
-            final long next = value + 1;
+            final int next = value + 1;
             if (next > 0) {
                 return new Large(parent, next);
             } else {
@@ -176,7 +176,7 @@ public abstract class InfiniteKey
                 if (diff != 0) {
                     return diff;
                 } else {
-                    return Long.compare(value, o.value);
+                    return compare(value, o.value);
                 }
             } else {
                 assert key instanceof Tiny;
@@ -199,9 +199,7 @@ public abstract class InfiniteKey
         @Override
         public int hashCode()
         {
-            int result = (int)(value ^ (value >>> 32));
-            result = 31 * result + parent.hashCode();
-            return result;
+            return value + 31 * parent.hashCode();
         }
 
         @Override

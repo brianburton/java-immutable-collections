@@ -43,7 +43,7 @@ import static org.javimmutable.collections.common.InfiniteKey.testKey;
 public class InfiniteKeyTest
     extends TestCase
 {
-    private static final long MAX = 0x7fffffffffffffffL;
+    private static final int MAX = 0x7fffffff;
 
     @SuppressWarnings("NumericOverflow")
     public void testMax()
