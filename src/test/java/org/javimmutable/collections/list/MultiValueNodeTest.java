@@ -68,6 +68,7 @@ public class MultiValueNodeTest
         assertThat(leaf(1, MAX_SIZE + 1).prepend(0)).isEqualTo(new BranchNode<>(leaf(0, SPLIT_SIZE + 1), leaf(SPLIT_SIZE + 1, MAX_SIZE + 1)));
 
         verifyOutOfBounds(() -> leaf(0, 5).assign(-1, 9));
+        verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
         assertThat(leaf(0, 7).assign(3, 9)).isEqualTo(leaf(0, 7, 3, 9));
         verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
 

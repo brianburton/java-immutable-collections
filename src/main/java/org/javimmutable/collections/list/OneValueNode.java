@@ -133,19 +133,12 @@ class OneValueNode<T>
     AbstractNode<T> assign(int index,
                            T value)
     {
-        switch (index) {
-            case 0:
-                if (value == this.value) {
-                    return this;
-                } else {
-                    return new OneValueNode<>(value);
-                }
-
-            case 1:
-                return new MultiValueNode<>(this.value, value);
-
-            default:
-                throw new IndexOutOfBoundsException();
+        if (index != 0) {
+            throw new IndexOutOfBoundsException();
+        } else if (value == this.value) {
+            return this;
+        } else {
+            return new OneValueNode<>(value);
         }
     }
 

@@ -521,6 +521,14 @@ public class JImmutableTreeListTest
         assertEquals(range(1, 600), range(101, 600).insertAllFirst(range(1, 100)));
     }
 
+    public void testAssignAtSize()
+    {
+        EmptyNodeTest.verifyOutOfBounds(() -> range(1, 1).assign(1, -999));
+        EmptyNodeTest.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE).assign(MultiValueNode.MAX_SIZE, -999));
+        EmptyNodeTest.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE + 1).assign(MultiValueNode.MAX_SIZE + 1, -999));
+        EmptyNodeTest.verifyOutOfBounds(() -> range(1, 2 * MultiValueNode.MAX_SIZE + 1).assign(2 * MultiValueNode.MAX_SIZE + 1, -999));
+    }
+
     @SafeVarargs
     private final <T> JImmutableTreeList<T> btree(T... values)
     {

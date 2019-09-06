@@ -62,7 +62,6 @@ public class OneValueNodeTest
         assertEquals(1, node.size());
         assertSame(node, node.assign(0, 100));
         assertEquals(new OneValueNode<>(10), node.assign(0, 10));
-        assertEquals(new MultiValueNode<>(100, 10), node.assign(1, 10));
         assertEquals(new MultiValueNode<>(10, 100), node.insert(0, 10));
         assertEquals(new MultiValueNode<>(100, 10), node.insert(1, 10));
         assertEquals(new MultiValueNode<>(10, 100), node.prepend(10));
@@ -78,6 +77,7 @@ public class OneValueNodeTest
         assertEquals(new Integer(100), node.get(0));
         assertSame(empty, node.delete(0));
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> node.assign(1, 200)).isInstanceOf(IndexOutOfBoundsException.class);
         assertThatThrownBy(() -> node.assign(2, 100)).isInstanceOf(IndexOutOfBoundsException.class);
         assertThatThrownBy(() -> node.insert(2, 100)).isInstanceOf(IndexOutOfBoundsException.class);
         assertThatThrownBy(() -> node.delete(1)).isInstanceOf(IndexOutOfBoundsException.class);
