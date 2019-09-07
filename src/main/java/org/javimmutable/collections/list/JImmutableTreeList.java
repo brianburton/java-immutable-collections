@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
 
@@ -455,6 +456,8 @@ public class JImmutableTreeList<T>
         AbstractNode<T> otherRoot;
         if (values instanceof JImmutableTreeList) {
             otherRoot = ((JImmutableTreeList<T>)values).root;
+        } else if (values instanceof List) {
+            otherRoot = TreeBuilder.nodeFromIndexed(IndexedList.retained((List)values));
         } else {
             otherRoot = nodeFromIterator(values.iterator());
         }
