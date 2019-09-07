@@ -45,7 +45,7 @@ import java.util.List;
 import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 abstract class AbstractListStressTestable
-    extends AbstractStressTestable
+    extends StressTester
 {
     AbstractListStressTestable(String testName)
     {

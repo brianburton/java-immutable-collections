@@ -44,7 +44,7 @@ import java.util.Random;
 
 
 abstract class AbstractSetStressTestable
-        extends AbstractStressTestable
+    extends StressTester
 {
     AbstractSetStressTestable(String testName)
     {

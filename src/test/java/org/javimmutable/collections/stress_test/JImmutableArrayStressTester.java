@@ -60,7 +60,7 @@ import static org.javimmutable.collections.common.StandardSerializableTests.veri
  */
 @SuppressWarnings("Duplicates")
 public class JImmutableArrayStressTester
-    extends AbstractStressTestable
+    extends StressTester
 {
     private final JImmutableArray<String> array;
     private final ArrayIndexRange indexRange;

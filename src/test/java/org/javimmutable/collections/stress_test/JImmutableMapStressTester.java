@@ -71,7 +71,7 @@ import static org.javimmutable.collections.stress_test.KeyFactory.*;
  */
 @SuppressWarnings("Duplicates")
 public class JImmutableMapStressTester<K extends KeyWrapper<String>>
-    extends AbstractStressTestable
+    extends StressTester
 {
     private final JImmutableMap<K, String> map;
     private final Class<? extends Map> expectedClass;

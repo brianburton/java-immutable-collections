@@ -35,182 +35,160 @@
 
 package org.javimmutable.collections.stress_test;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
-import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.util.JImmutables;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
- * Test program to run an infinite loop feeding data to every implementation of every
- * JImmutable collection type, querying the data, and deleting the data to verify
- * the collection always contains what it should.
+ * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
+ * Each version of the method will first generate a goal size. Then it will grow the JImmutable by a third of
+ * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the JImmutable is the
+ * generated size. All the values are then deleted.
  */
-public class StressTester
+abstract class StressTester
 {
-    public static void main(String[] argv)
-        throws Exception
+    private final String testName;
+
+    StressTester(String testName)
     {
-        new StressTester().execute(argv);
+        this.testName = testName;
     }
 
-    @SuppressWarnings("deprecation")
-    public void execute(String[] args)
-        throws Exception
+    public String getTestName()
     {
-        final JImmutableList<AbstractStressTestable> allTesters = JImmutables.<AbstractStressTestable>list()
-            .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
+        return testName;
+    }
 
-            .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, IterationOrder.UNORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-            .insert(new JImmutableSetStressTester(JImmutables.sortedSet(), TreeSet.class, IterationOrder.ORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.multiset(), HashSet.class, IterationOrder.UNORDERED))
-            .insert(new JImmutableSetStressTester(JImmutables.insertOrderMultiset(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-            .insert(new JImmutableSetStressTester(JImmutables.sortedMultiset(), TreeSet.class, IterationOrder.ORDERED))
+    abstract void execute(Random random,
+                          JImmutableList<String> tokens)
+        throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
 
-            .insert(new JImmutableMultisetStressTester(JImmutables.multiset()))
-            .insert(new JImmutableMultisetStressTester(JImmutables.insertOrderMultiset()))
-            .insert(new JImmutableMultisetStressTester(JImmutables.sortedMultiset()))
+    abstract JImmutableList<String> getOptions();
 
-            .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new RegularKeyFactory()))
-            .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableRegularKeyFactory()))
-            .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new BadHashKeyFactory()))
-            .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableBadHashKeyFactory()))
+    protected String getNameOption(Object obj)
+    {
+        return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").replace("Empty", "").toLowerCase();
+    }
 
-            .insert(new JImmutableMapStressTester<>(JImmutables.insertOrderMap(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
-            .insert(new JImmutableMapStressTester<>(JImmutables.sortedMap(), TreeMap.class, new ComparableRegularKeyFactory()))
+    protected static String getName(Object obj)
+    {
+        return obj.getClass().getSimpleName().replace("Empty", "");
+    }
 
-            .insert(new JImmutableSetMapStressTester(JImmutables.setMap(), HashMap.class))
-            .insert(new JImmutableSetMapStressTester(JImmutables.insertOrderSetMap(), LinkedHashMap.class))
-            .insert(new JImmutableSetMapStressTester(JImmutables.sortedSetMap(), TreeMap.class))
-            .insert(new JImmutableSetMapStressTester(JImmutables.setMap(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.set()), TreeMap.class))
+    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
+                                                     Random random)
+    {
+        return makeInsertJList(tokens, random, 3);
+    }
 
-            .insert(new JImmutableListMapStressTester(JImmutables.listMap(), HashMap.class))
-            .insert(new JImmutableListMapStressTester(JImmutables.insertOrderListMap(), LinkedHashMap.class))
-            .insert(new JImmutableListMapStressTester(JImmutables.sortedListMap(), TreeMap.class))
+    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
+                                                     Random random,
+                                                     int maxToAdd)
+    {
+        return JImmutables.list(makeInsertList(tokens, random, maxToAdd));
+    }
 
-            .insert(new JImmutableArrayStressTester(JImmutables.array(), ArrayIndexRange.INTEGER))
+    protected List<String> makeInsertList(JImmutableList<String> tokens,
+                                          Random random)
+    {
+        return makeInsertList(tokens, random, 3);
+    }
 
-            .insert(new JImmutableStackStressTester(JImmutables.stack()));
-
-        final OptionParser parser = new OptionParser();
-        parser.accepts("help", "prints available options");
-        final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file").withRequiredArg();
-        final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies PRNG seed").withRequiredArg().ofType(Long.class);
-        final OptionSpec<String> filterSpec = parser.accepts("filter", "specifies specific tests to run").withRequiredArg().ofType(String.class);
-        final OptionSet options = parser.parse(args);
-        final JImmutableSet<String> filters = JImmutables.sortedSet(filterSpec.values(options));
-        if (options.has("help")) {
-            printHelpMessage(allTesters, parser, filters);
-            return;
+    protected List<String> makeInsertList(JImmutableList<String> tokens,
+                                          Random random,
+                                          int maxToAdd)
+    {
+        List<String> list = new ArrayList<>();
+        for (int i = 0, limit = random.nextInt(maxToAdd); i < limit; ++i) {
+            list.add(RandomKeyManager.makeValue(tokens, random));
         }
+        return list;
+    }
 
-        Long seed = (options.has(seedSpec)) ? options.valueOf(seedSpec) : System.currentTimeMillis();
-        Random random = new Random(seed);
-
-        JImmutableList<String> tokens;
-        if (options.has(fileSpec)) {
-            List<String> filenames = options.valuesOf(fileSpec);
-            tokens = StressTestUtil.loadTokens(filenames);
-            System.out.printf("%nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
-        } else {
-            tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
-            System.out.printf("%nLoaded %d tokens from index.md%n", tokens.size());
+    protected <T> List<T> asList(Iterable<T> values)
+    {
+        List<T> list = new ArrayList<T>();
+        for (T value : values) {
+            list.add(value);
         }
-        JImmutableList<AbstractStressTestable> testers = allTesters;
-        if (filters.size() > 0) {
-            testers = testers.select(tester -> filters.containsAny(tester.getOptions()));
-            if (testers.isEmpty()) {
-                System.out.println("ERROR: unrecognized filters: " + valuesString(filters));
-                printHelpMessage(allTesters, parser, JImmutables.set());
-                return;
-            }
-        }
-        System.out.printf("%nLoaded %d testers%n", testers.size());
+        return list;
+    }
 
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            for (AbstractStressTestable tester : testers) {
-                System.out.printf("%nStarting with seed %d%n", seed);
-                tester.execute(random, tokens);
-                seed = System.currentTimeMillis();
-                random.setSeed(seed);
-                System.out.println("sleeping before next test");
-                //noinspection BusyWait
-                Thread.sleep(5000);
-            }
+    protected <T> boolean equivalentHolder(Holder<T> holder,
+                                           Holder<T> expectedHolder)
+    {
+        return (holder.isFilled() == expectedHolder.isFilled()) && (!holder.isFilled() || holder.getValue().equals(expectedHolder.getValue()));
+    }
+
+    protected <K, V> boolean equivalentEntryHolder(Holder<JImmutableMap.Entry<K, V>> holder,
+                                                   Holder<JImmutableMap.Entry<K, V>> expectedHolder)
+    {
+        if (holder.isFilled() != expectedHolder.isFilled()) {
+            return false;
+        }
+        if (holder.isEmpty()) {
+            return true;
+        }
+        JImmutableMap.Entry<K, V> entry = holder.getValue();
+        JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
+        return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
+    }
+
+    // some tests delete more than one in a step so we allow some variance
+    protected void verifyFinalSize(int expected,
+                                   int actual)
+    {
+        if (actual > expected) {
+            throw new RuntimeException(String.format("final size is %d but expected at most %d%n", actual, expected));
+        }
+        if ((expected - actual) > 5) {
+            throw new RuntimeException(String.format("final size is %d but expected approx %d%n", actual, expected));
         }
     }
 
-    private String valuesString(Iterable<?> objects)
+    protected <T> Iterable<T> listIterable(JImmutableList<T> template,
+                                           Iterable<T> values)
     {
-        StringBuilder sb = new StringBuilder();
-        for (Object object : objects) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(object);
+        JImmutableList<T> answer = template.deleteAll();
+        for (T value : values) {
+            answer = answer.insert(value);
         }
-        return sb.toString();
+        return answer;
     }
 
-    public void printHelpMessage(JImmutableList<AbstractStressTestable> testers,
-                                 OptionParser parser,
-                                 JImmutableSet<String> selectedFilters)
-        throws IOException
+    protected <T> Iterable<T> plainIterable(Iterable<T> values)
     {
-        if (selectedFilters.size() > 0) {
-            System.out.println("Filters: " + valuesString(selectedFilters));
-            System.out.println();
-        }
+        return () -> values.iterator();
+    }
 
-        System.out.println("Available Options:");
-        System.out.println();
-        parser.printHelpOn(System.out);
+    @Nonnull
+    protected <K, V> List<JImmutableMap.Entry<K, V>> makeEntriesList(Map<K, V> expected)
+    {
+        final List<JImmutableMap.Entry<K, V>> entries = new ArrayList<>();
 
-        JImmutableSetMap<String, String> filterMap = JImmutableTemplateSetMap.of(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.sortedSet());
-        for (AbstractStressTestable tester : testers) {
-            for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(tester.getTestName(), option);
-            }
+        for (Map.Entry<K, V> entry : expected.entrySet()) {
+            entries.add(new MapEntry<>(entry.getKey(), entry.getValue()));
         }
-        System.out.println();
-        System.out.println("Available Filters By Class:");
-        System.out.printf("%-40s  %s%n", "Tester Class", "Filters");
-        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
-            System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue()));
-        }
+        return entries;
+    }
 
-        filterMap = filterMap.deleteAll();
-        for (AbstractStressTestable tester : testers) {
-            for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(option, tester.getTestName());
-            }
-        }
-        System.out.println();
-        System.out.println("Available Filters");
-        System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
-        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
-            System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue()));
-        }
+    protected <K, V> List<K> extractKeys(List<JImmutableMap.Entry<K, V>> entries)
+    {
+        return entries.stream().map(e -> e.getKey()).collect(Collectors.toList());
+    }
+
+    protected <K, V> List<V> extractValues(List<JImmutableMap.Entry<K, V>> entries)
+    {
+        return entries.stream().map(e -> e.getValue()).collect(Collectors.toList());
     }
 }

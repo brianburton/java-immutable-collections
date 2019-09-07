@@ -57,12 +57,12 @@ public class AbstractStressTestableTest
     private void testStandard(JImmutableList<String> tokens)
     {
         Random random = new Random();
-        AbstractStressTestable testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
+        StressTester testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }
 
-    private void testMakeInsertList(AbstractStressTestable testable,
+    private void testMakeInsertList(StressTester testable,
                                     JImmutableList<String> tokens,
                                     Random random)
     {
@@ -77,7 +77,7 @@ public class AbstractStressTestableTest
         assertTrue(average <= 1.1);
     }
 
-    private void testMakeInsertJList(AbstractStressTestable testable,
+    private void testMakeInsertJList(StressTester testable,
                                      JImmutableList<String> tokens,
                                      Random random)
     {

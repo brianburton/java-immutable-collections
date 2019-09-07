@@ -38,7 +38,7 @@ package org.javimmutable.collections.stress_test;
 import java.util.Map;
 
 abstract class AbstractMapStressTestable
-    extends AbstractStressTestable
+    extends StressTester
 {
     AbstractMapStressTestable(String testName)
     {

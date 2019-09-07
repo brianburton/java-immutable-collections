@@ -54,7 +54,7 @@ import static org.javimmutable.collections.common.StandardSerializableTests.veri
  * and cleanup (empties the stack of all values).
  */
 public class JImmutableStackStressTester
-    extends AbstractStressTestable
+    extends StressTester
 {
     private final JImmutableStack<String> stack;
 
