@@ -77,7 +77,7 @@ public class StressTester
     public void execute(String[] args)
         throws Exception
     {
-        JImmutableList<AbstractStressTestable> testers = JImmutables.<AbstractStressTestable>list()
+        final JImmutableList<AbstractStressTestable> allTesters = JImmutables.<AbstractStressTestable>list()
             .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
 
             .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, IterationOrder.UNORDERED))
@@ -120,7 +120,7 @@ public class StressTester
         final OptionSet options = parser.parse(args);
         final JImmutableSet<String> filters = JImmutables.sortedSet(filterSpec.values(options));
         if (options.has("help")) {
-            printHelpMessage(testers, parser, filters);
+            printHelpMessage(allTesters, parser, filters);
             return;
         }
 
@@ -136,10 +136,13 @@ public class StressTester
             tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
             System.out.printf("%nLoaded %d tokens from index.md%n", tokens.size());
         }
+        JImmutableList<AbstractStressTestable> testers = allTesters;
         if (filters.size() > 0) {
             testers = testers.select(tester -> filters.containsAny(tester.getOptions()));
             if (testers.isEmpty()) {
-                throw new RuntimeException("filter rejected all testers!!");
+                System.out.println("ERROR: unrecognized filters: " + valuesString(filters));
+                printHelpMessage(allTesters, parser, JImmutables.set());
+                return;
             }
         }
         System.out.printf("%nLoaded %d testers%n", testers.size());
@@ -209,6 +212,5 @@ public class StressTester
         for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
             System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue()));
         }
-
     }
 }
