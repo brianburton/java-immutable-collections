@@ -45,6 +45,7 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -296,6 +297,15 @@ public final class JImmutables
     }
 
     /**
+     * Creates a Collector suitable for use in the stream to produce a map.
+     */
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    {
+        return JImmutableHashMap.<K, V>of().mapCollector();
+    }
+
+    /**
      * Constructs an empty map that sorts keys in their natural sort order (using ComparableComparator).
      */
     @Nonnull
@@ -390,6 +400,24 @@ public final class JImmutables
     }
 
     /**
+     * Creates a Collector suitable for use in the stream to produce a sorted map.
+     */
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> sortedMapCollector()
+    {
+        return JImmutableTreeMap.<K, V>of().mapCollector();
+    }
+
+    /**
+     * Creates a Collector suitable for use in the stream to produce a sorted map.
+     */
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> sortedMapCollector(@Nonnull Comparator<K> comparator)
+    {
+        return JImmutableTreeMap.<K, V>of(comparator).mapCollector();
+    }
+
+    /**
      * Constructs an empty map whose iterators traverse elements in the same order that they
      * were originally added to the map.  Similar to LinkedHapMap.
      * <p>
@@ -444,6 +472,15 @@ public final class JImmutables
         } else {
             return Functions.assignAll(JImmutableInsertOrderMap.of(), source);
         }
+    }
+
+    /**
+     * Creates a Collector suitable for use in the stream to produce an insert order map.
+     */
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> insertOrderMapCollector()
+    {
+        return JImmutableInsertOrderMap.<K, V>of().mapCollector();
     }
 
     /**
@@ -1134,5 +1171,24 @@ public final class JImmutables
     public static <T> InsertableSequence<T> sequence(T value)
     {
         return FilledSequenceNode.of(value);
+    }
+
+    /**
+     * Convenience function to create a JImmutableMap.Entry.
+     */
+    @Nonnull
+    public static <K, V, K1 extends K, V1 extends V> JImmutableMap.Entry<K, V> entry(K1 key,
+                                                                                     V1 value)
+    {
+        return MapEntry.of(key, value);
+    }
+
+    /**
+     * Convenience function to create a JImmutableMap.Entry.
+     */
+    @Nonnull
+    public static <K, V> JImmutableMap.Entry<K, V> entry(@Nonnull JImmutableMap.Entry<? extends K, ? extends V> e)
+    {
+        return MapEntry.of(e.getKey(), e.getValue());
     }
 }

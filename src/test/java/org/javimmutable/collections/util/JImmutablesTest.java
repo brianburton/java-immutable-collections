@@ -90,6 +90,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -434,6 +435,8 @@ public class JImmutablesTest
     {
         final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.insertOrderMap(), JImmutables.set());
         verifyOrdered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
+        final JImmutableSetMap<String, Integer> setmap2 = JImmutables.<String, Integer>setMapFactory().withMap(JImmutables.insertOrderMap()).withSet(JImmutables.set()).create();
+        verifyOrdered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap2.insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testSequence()
@@ -518,6 +521,20 @@ public class JImmutablesTest
         smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
         assertEquals(asList(10, 20, 30), new ArrayList<>(smap.getMap().keySet()));
         assertEquals(asList(80, 19, 31), new ArrayList<>(smap.getMap().values()));
+    }
+
+    public void testEntry()
+    {
+        JImmutableMap<Integer, Integer> m = JImmutables.<Integer, Integer>map().assign(1, 1).assign(2, 2);
+        JImmutableMap<Number, Number> n = m.stream().map(JImmutables::<Number, Number>entry).collect(JImmutables.mapCollector());
+        assertEquals(JImmutables.<Number, Number>map().assign(1, 1).assign(2, 2), n);
+
+        JImmutableList<Integer> il = JImmutables.list(4, 2, 3, 1);
+        final Function<Integer, Entry<String, Number>> mapper = i -> JImmutables.entry(String.valueOf(i), i);
+        JImmutableMap<String, Number> im = il.stream().map(mapper).collect(JImmutables.sortedMapCollector());
+        assertEquals("{1=1, 2=2, 3=3, 4=4}", im.toString());
+        im = il.stream().map(mapper).collect(JImmutables.insertOrderMapCollector());
+        assertEquals("{4=4, 2=2, 3=3, 1=1}", im.toString());
     }
 
     private <T, C extends Iterable<T>> void verifyOrdered(@Nonnull Predicate<C> classTest,
