@@ -69,39 +69,39 @@ import static org.javimmutable.collections.util.JImmutables.*;
 public class RunStressTests
 {
     private static final JImmutableList<StressTester> AllTesters = JImmutables.<StressTester>list()
-        .insert(new JImmutableListStressTester(JImmutables.list(), JImmutables.listCollector()))
+        .insert(new JImmutableListStressTester(list(), listCollector()))
 
-        .insert(new JImmutableSetStressTester(JImmutables.set(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new JImmutableSetStressTester(JImmutables.insertOrderSet(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new JImmutableSetStressTester(JImmutables.sortedSet(), TreeSet.class, IterationOrder.ORDERED))
-        .insert(new JImmutableSetStressTester(JImmutables.multiset(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new JImmutableSetStressTester(JImmutables.insertOrderMultiset(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new JImmutableSetStressTester(JImmutables.sortedMultiset(), TreeSet.class, IterationOrder.ORDERED))
+        .insert(new JImmutableSetStressTester(set(), HashSet.class, IterationOrder.UNORDERED))
+        .insert(new JImmutableSetStressTester(insertOrderSet(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+        .insert(new JImmutableSetStressTester(sortedSet(), TreeSet.class, IterationOrder.ORDERED))
+        .insert(new JImmutableSetStressTester(multiset(), HashSet.class, IterationOrder.UNORDERED))
+        .insert(new JImmutableSetStressTester(insertOrderMultiset(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+        .insert(new JImmutableSetStressTester(sortedMultiset(), TreeSet.class, IterationOrder.ORDERED))
 
-        .insert(new JImmutableMultisetStressTester(JImmutables.multiset()))
-        .insert(new JImmutableMultisetStressTester(JImmutables.insertOrderMultiset()))
-        .insert(new JImmutableMultisetStressTester(JImmutables.sortedMultiset()))
+        .insert(new JImmutableMultisetStressTester(multiset()))
+        .insert(new JImmutableMultisetStressTester(insertOrderMultiset()))
+        .insert(new JImmutableMultisetStressTester(sortedMultiset()))
 
         .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new RegularKeyFactory()))
         .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableRegularKeyFactory()))
         .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new BadHashKeyFactory()))
         .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableBadHashKeyFactory()))
 
-        .insert(new JImmutableMapStressTester<>(JImmutables.insertOrderMap(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
-        .insert(new JImmutableMapStressTester<>(JImmutables.sortedMap(), TreeMap.class, new ComparableRegularKeyFactory()))
+        .insert(new JImmutableMapStressTester<>(insertOrderMap(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
+        .insert(new JImmutableMapStressTester<>(sortedMap(), TreeMap.class, new ComparableRegularKeyFactory()))
 
-        .insert(new JImmutableSetMapStressTester(JImmutables.setMap(), HashMap.class))
-        .insert(new JImmutableSetMapStressTester(JImmutables.insertOrderSetMap(), LinkedHashMap.class))
-        .insert(new JImmutableSetMapStressTester(JImmutables.sortedSetMap(), TreeMap.class))
-        .insert(new JImmutableSetMapStressTester(JImmutables.setMap(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.set()), TreeMap.class))
+        .insert(new JImmutableSetMapStressTester(setMap(), HashMap.class))
+        .insert(new JImmutableSetMapStressTester(insertOrderSetMap(), LinkedHashMap.class))
+        .insert(new JImmutableSetMapStressTester(sortedSetMap(), TreeMap.class))
+        .insert(new JImmutableSetMapStressTester(setMapFactory(String.class, String.class).withMap(sortedMap()).withSet(set()).create(), TreeMap.class))
 
-        .insert(new JImmutableListMapStressTester(JImmutables.listMap(), HashMap.class))
-        .insert(new JImmutableListMapStressTester(JImmutables.insertOrderListMap(), LinkedHashMap.class))
-        .insert(new JImmutableListMapStressTester(JImmutables.sortedListMap(), TreeMap.class))
+        .insert(new JImmutableListMapStressTester(listMap(), HashMap.class))
+        .insert(new JImmutableListMapStressTester(insertOrderListMap(), LinkedHashMap.class))
+        .insert(new JImmutableListMapStressTester(sortedListMap(), TreeMap.class))
 
-        .insert(new JImmutableArrayStressTester(JImmutables.array(), ArrayIndexRange.INTEGER))
+        .insert(new JImmutableArrayStressTester(array(), ArrayIndexRange.INTEGER))
 
-        .insert(new JImmutableStackStressTester(JImmutables.stack()));
+        .insert(new JImmutableStackStressTester(stack()));
 
     public static void main(String[] argv)
         throws Exception
@@ -116,17 +116,17 @@ public class RunStressTests
             options = parser.parse(argv);
         } catch (OptionException ex) {
             System.out.printf("ERROR: %s%n%n", ex.getMessage());
-            printHelpMessage(parser, JImmutables.set(), JImmutables.list());
+            printHelpMessage(parser, set(), list());
             return;
         }
-        final JImmutableSet<String> filters = JImmutables.sortedSet(testSpec.values(options));
+        final JImmutableSet<String> filters = sortedSet(testSpec.values(options));
         final JImmutableList<StressTester> selectedTests = filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
         if (options.valueOf(helpSpec) || selectedTests.isEmpty()) {
             printHelpMessage(parser, filters, selectedTests);
             return;
         }
 
-        final JImmutableList<String> filenames = JImmutables.list(options.valuesOf(fileSpec));
+        final JImmutableList<String> filenames = list(options.valuesOf(fileSpec));
         final JImmutableList<String> tokens = StressTestUtil.loadTokens(filenames);
         System.out.printf("%nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
 
