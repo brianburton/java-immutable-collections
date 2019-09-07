@@ -65,6 +65,16 @@ public interface JImmutableMap<K, V>
         V getValue();
     }
 
+    interface Builder<K, V>
+    {
+        @Nonnull
+        JImmutableMap<K, V> build();
+
+        @Nonnull
+        Builder<K, V> add(@Nonnull K key,
+                          V value);
+    }
+    
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
      */

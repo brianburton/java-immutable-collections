@@ -37,6 +37,7 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
@@ -65,8 +66,8 @@ public class JImmutableTreeMap<K, V>
     private final Comparator<K> comparator;
     private final AbstractNode<K, V> root;
 
-    private JImmutableTreeMap(@Nonnull Comparator<K> comparator,
-                              @Nonnull AbstractNode<K, V> root)
+    JImmutableTreeMap(@Nonnull Comparator<K> comparator,
+                      @Nonnull AbstractNode<K, V> root)
     {
         this.comparator = comparator;
         this.root = root;
@@ -83,6 +84,18 @@ public class JImmutableTreeMap<K, V>
     public static <K, V> JImmutableTreeMap<K, V> of(@Nonnull Comparator<K> comparator)
     {
         return new JImmutableTreeMap<>(comparator, FringeNode.instance());
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> JImmutableMap.Builder<K, V> builder()
+    {
+        return new TreeMapBuilder<>(ComparableComparator.<K>of());
+    }
+
+    @Nonnull
+    public static <K, V> JImmutableMap.Builder<K, V> builder(@Nonnull Comparator<K> comparator)
+    {
+        return new TreeMapBuilder<>(comparator);
     }
 
     /**

@@ -400,6 +400,24 @@ public final class JImmutables
     }
 
     /**
+     * Create a Builder to construct sorted maps using the natural order of the keys.
+     */
+    @Nonnull
+    public static <K extends Comparable<K>, V> JImmutableMap.Builder<K, V> sortedMapBuilder()
+    {
+        return JImmutableTreeMap.builder();
+    }
+
+    /**
+     * Create a Builder to construct sorted maps using the specified Comparator for keys.
+     */
+    @Nonnull
+    public static <K, V> JImmutableMap.Builder<K, V> sortedMapBuilder(@Nonnull Comparator<K> comparator)
+    {
+        return JImmutableTreeMap.builder(comparator);
+    }
+
+    /**
      * Creates a Collector suitable for use in the stream to produce a sorted map.
      */
     @Nonnull

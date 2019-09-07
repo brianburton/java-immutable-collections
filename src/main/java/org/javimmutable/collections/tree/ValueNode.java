@@ -78,10 +78,10 @@ class ValueNode<K, V>
         return new ValueNode<>(key, value, FringeNode.instance(), FringeNode.instance());
     }
 
-    private static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
-                                                     @Nullable V value,
-                                                     @Nonnull AbstractNode<K, V> left,
-                                                     @Nonnull AbstractNode<K, V> right)
+    static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
+                                             @Nullable V value,
+                                             @Nonnull AbstractNode<K, V> left,
+                                             @Nonnull AbstractNode<K, V> right)
     {
         final int diff = left.depth() - right.depth();
         if (diff < -1) {
