@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class EmptyNode<T>
+class EmptyNode<T>
     extends AbstractNode<T>
 {
     private static EmptyNode INSTANCE = new EmptyNode();

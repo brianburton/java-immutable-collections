@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public abstract class AbstractJImmutableListMap<K, V>
+abstract class AbstractJImmutableListMap<K, V>
     implements JImmutableListMap<K, V>
 {
     protected final JImmutableList<V> emptyList;

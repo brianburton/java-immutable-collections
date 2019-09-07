@@ -53,7 +53,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 @Immutable
-public abstract class AbstractJImmutableSetMap<K, V>
+abstract class AbstractJImmutableSetMap<K, V>
     implements JImmutableSetMap<K, V>
 {
     protected final JImmutableSet<V> emptySet;
