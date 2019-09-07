@@ -66,7 +66,7 @@ public class JImmutableHashListMap<K, V>
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableHashListMap<K, V> of()
     {
-        return (JImmutableHashListMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     @Override

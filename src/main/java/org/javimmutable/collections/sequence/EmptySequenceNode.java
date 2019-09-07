@@ -53,7 +53,7 @@ public final class EmptySequenceNode<T>
     @SuppressWarnings("unchecked")
     public static <T> InsertableSequence<T> of()
     {
-        return (InsertableSequence<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

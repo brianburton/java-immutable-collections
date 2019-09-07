@@ -82,7 +82,7 @@ public class JImmutableTreeSetMap<K, V>
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<K>, V> JImmutableTreeSetMap<K, V> of()
     {
-        return (JImmutableTreeSetMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     /**

@@ -72,7 +72,7 @@ public class JImmutableInsertOrderMultiset<T>
     @SuppressWarnings("unchecked")
     public static <T> JImmutableInsertOrderMultiset<T> of()
     {
-        return (JImmutableInsertOrderMultiset<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

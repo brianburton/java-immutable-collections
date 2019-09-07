@@ -67,7 +67,7 @@ public class JImmutableInsertOrderSetMap<K, V>
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableInsertOrderSetMap<K, V> of()
     {
-        return (JImmutableInsertOrderSetMap<K, V>)EMPTY;
+        return EMPTY;
     }
 
     @Override

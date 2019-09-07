@@ -71,7 +71,7 @@ public class JImmutableHashMultiset<T>
     @SuppressWarnings("unchecked")
     public static <T> JImmutableHashMultiset<T> of()
     {
-        return (JImmutableHashMultiset<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

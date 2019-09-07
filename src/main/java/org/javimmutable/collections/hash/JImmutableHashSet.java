@@ -63,7 +63,7 @@ public class JImmutableHashSet<T>
     @SuppressWarnings("unchecked")
     public static <T> JImmutableHashSet<T> of()
     {
-        return (JImmutableHashSet<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

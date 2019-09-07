@@ -77,7 +77,7 @@ public class JImmutableTreeList<T>
     @Nonnull
     public static <T> JImmutableTreeList<T> of()
     {
-        return (JImmutableTreeList<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

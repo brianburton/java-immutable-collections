@@ -71,7 +71,7 @@ public class JImmutableInsertOrderSet<T>
     @SuppressWarnings("unchecked")
     public static <T> JImmutableInsertOrderSet<T> of()
     {
-        return (JImmutableInsertOrderSet<T>)EMPTY;
+        return EMPTY;
     }
 
     @Nonnull

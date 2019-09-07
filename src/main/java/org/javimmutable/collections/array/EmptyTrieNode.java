@@ -52,7 +52,7 @@ class EmptyTrieNode<T>
     @SuppressWarnings("unchecked")
     static <T> EmptyTrieNode<T> instance()
     {
-        return (EmptyTrieNode<T>)EMPTY;
+        return EMPTY;
     }
 
     @Override
