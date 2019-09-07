@@ -75,8 +75,7 @@ public class JImmutableArrayStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("array").insert(makeClassOption(array));
+        return JImmutables.list("array", getNameOption(array));
     }
 
     @Override

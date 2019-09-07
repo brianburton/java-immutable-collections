@@ -89,23 +89,21 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("map").insert(makeMapOption(map, factory));
-    }
-
-    private String makeMapOption(JImmutableMap<K, String> map,
-                                 KeyFactory factory)
-    {
-        String option = makeClassOption(map);
+        final String option = getNameOption(map);
+        final JImmutableList.Builder<String> options = JImmutables.listBuilder();
+        options.add("map");
+        options.add(option);
         if (map instanceof JImmutableHashMap) {
             if (factory instanceof BadHashKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
-                option = "bad" + option;
+                options.add("bad-hash");
+                options.add("bad" + option);
             }
             if (factory instanceof ComparableRegularKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
-                option = "comparable" + option;
+                options.add("good-hash");
+                options.add("comparable" + option);
             }
         }
-        return option;
+        return options.build();
     }
 
     private String getName(JImmutableMap<K, String> map,

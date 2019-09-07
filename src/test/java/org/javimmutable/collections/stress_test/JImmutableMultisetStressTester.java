@@ -95,8 +95,7 @@ public class JImmutableMultisetStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("mset").insert("multiset").insert(makeClassOption(multi));
+        return JImmutables.list("mset", "multiset", getNameOption(multi));
     }
 
     @Override

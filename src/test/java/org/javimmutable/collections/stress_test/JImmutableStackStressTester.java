@@ -66,8 +66,7 @@ public class JImmutableStackStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("stack");
+        return JImmutables.list("stack");
     }
 
     @Override

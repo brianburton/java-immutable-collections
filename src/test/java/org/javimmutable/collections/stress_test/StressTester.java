@@ -39,14 +39,18 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
 import org.javimmutable.collections.util.JImmutables;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -61,12 +65,12 @@ import java.util.TreeSet;
  * JImmutable collection type, querying the data, and deleting the data to verify
  * the collection always contains what it should.
  */
-public class StressTestLoop
+public class StressTester
 {
     public static void main(String[] argv)
         throws Exception
     {
-        new StressTestLoop().execute(argv);
+        new StressTester().execute(argv);
     }
 
     @SuppressWarnings("deprecation")
@@ -108,11 +112,17 @@ public class StressTestLoop
 
             .insert(new JImmutableStackStressTester(JImmutables.stack()));
 
-        OptionParser parser = makeTesterOptions(testers);
-        OptionSpec<String> fileSpec = parser.accepts("file").withRequiredArg();
-        OptionSpec<Long> seedSpec = parser.accepts("seed").withRequiredArg().ofType(Long.class);
-
-        OptionSet options = parser.parse(args);
+        final OptionParser parser = new OptionParser();
+        parser.accepts("help", "prints available options");
+        final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file").withRequiredArg();
+        final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies PRNG seed").withRequiredArg().ofType(Long.class);
+        final OptionSpec<String> filterSpec = parser.accepts("filter", "specifies specific tests to run").withRequiredArg().ofType(String.class);
+        final OptionSet options = parser.parse(args);
+        final JImmutableSet<String> filters = JImmutables.sortedSet(filterSpec.values(options));
+        if (options.has("help")) {
+            printHelpMessage(testers, parser, filters);
+            return;
+        }
 
         Long seed = (options.has(seedSpec)) ? options.valueOf(seedSpec) : System.currentTimeMillis();
         Random random = new Random(seed);
@@ -126,8 +136,8 @@ public class StressTestLoop
             tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
             System.out.printf("%nLoaded %d tokens from index.md%n", tokens.size());
         }
-        if (needsFilter(options, fileSpec, seedSpec)) {
-            testers = testers.reject(tester -> filter(options, tester));
+        if (filters.size() > 0) {
+            testers = testers.select(tester -> filters.containsAny(tester.getOptions()));
             if (testers.isEmpty()) {
                 throw new RuntimeException("filter rejected all testers!!");
             }
@@ -141,56 +151,64 @@ public class StressTestLoop
                 tester.execute(random, tokens);
                 seed = System.currentTimeMillis();
                 random.setSeed(seed);
+                System.out.println("sleeping before next test");
                 //noinspection BusyWait
                 Thread.sleep(5000);
-                System.out.println("sleeping before next test");
             }
         }
     }
 
-    private boolean needsFilter(OptionSet options,
-                                OptionSpec<String> file,
-                                OptionSpec<Long> seed)
+    private String valuesString(Iterable<?> objects)
     {
-        List<OptionSpec<?>> usedOptions = options.specs();
-        for (OptionSpec<?> spec : usedOptions) {
-            if (!(spec.equals(seed) || spec.equals(file))) {
-                return true;
+        StringBuilder sb = new StringBuilder();
+        for (Object object : objects) {
+            if (sb.length() > 0) {
+                sb.append(",");
             }
+            sb.append(object);
         }
-        return false;
+        return sb.toString();
     }
 
-    private boolean filter(OptionSet options,
-                           AbstractStressTestable tester)
+    public void printHelpMessage(JImmutableList<AbstractStressTestable> testers,
+                                 OptionParser parser,
+                                 JImmutableSet<String> selectedFilters)
+        throws IOException
     {
-        for (String option : tester.getOptions()) {
-            if (options.has(option)) {
-                if (options.hasArgument(option)) {
-                    @SuppressWarnings("unchecked") List<String> arguments = (List<String>)options.valuesOf(option);
-                    for (String argument : arguments) {
-                        for (String argOption : tester.getOptions()) {
-                            if (argument.equals(argOption)) {
-                                return true;
-                            }
-                        }
-                    }
-                } else {
-                    return true;
-                }
-            }
+        if (selectedFilters.size() > 0) {
+            System.out.println("Filters: " + valuesString(selectedFilters));
+            System.out.println();
         }
-        return false;
-    }
 
-    private OptionParser makeTesterOptions(JImmutableList<AbstractStressTestable> testers)
-    {
-        OptionParser parser = new OptionParser();
+        System.out.println("Available Options:");
+        System.out.println();
+        parser.printHelpOn(System.out);
+
+        JImmutableSetMap<String, String> filterMap = JImmutableTemplateSetMap.of(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.sortedSet());
         for (AbstractStressTestable tester : testers) {
             for (String option : tester.getOptions()) {
-                parser.accepts(option).withOptionalArg();
+                filterMap = filterMap.insert(tester.getClass().getSimpleName(), option);
             }
         }
-        return parser;
+        System.out.println();
+        System.out.println("Available Filters By Class:");
+        System.out.printf("%-40s  %s%n", "Tester Class", "Filters");
+        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
+            System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue()));
+        }
+
+        filterMap = filterMap.deleteAll();
+        for (AbstractStressTestable tester : testers) {
+            for (String option : tester.getOptions()) {
+                filterMap = filterMap.insert(option, tester.getClass().getSimpleName());
+            }
+        }
+        System.out.println();
+        System.out.println("Available Filters");
+        System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
+        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
+            System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue()));
+        }
+
     }
 }

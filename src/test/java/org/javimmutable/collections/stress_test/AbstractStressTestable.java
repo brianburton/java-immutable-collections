@@ -63,7 +63,7 @@ public abstract class AbstractStressTestable
 
     abstract JImmutableList<String> getOptions();
 
-    protected String makeClassOption(Object obj)
+    protected String getNameOption(Object obj)
     {
         return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").replace("Empty", "").toLowerCase();
     }

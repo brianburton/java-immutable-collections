@@ -80,8 +80,7 @@ public class JImmutableSetStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("set").insert(makeClassOption(set));
+        return JImmutables.list("set", getNameOption(set));
     }
 
     @Override

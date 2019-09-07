@@ -84,8 +84,7 @@ public class JImmutableListMapStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("lmap").insert("listmap").insert(makeClassOption(listmap));
+        return JImmutables.list("lmap", "listmap", getNameOption(listmap));
     }
 
     @Override

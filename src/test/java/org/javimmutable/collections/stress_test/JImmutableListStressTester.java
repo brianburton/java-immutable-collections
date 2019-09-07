@@ -71,8 +71,7 @@ public class JImmutableListStressTester
     @Override
     public JImmutableList<String> getOptions()
     {
-        JImmutableList<String> options = JImmutables.list();
-        return options.insert("list").insert(makeClassOption(list));
+        return JImmutables.list("list", getNameOption(list));
     }
 
     @Override
