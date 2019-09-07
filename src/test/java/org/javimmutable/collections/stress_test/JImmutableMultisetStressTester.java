@@ -89,6 +89,7 @@ public class JImmutableMultisetStressTester
     public JImmutableMultisetStressTester(JImmutableMultiset<String> multi)
         throws NoSuchMethodException
     {
+        super(getName(multi));
         this.multi = multi.deleteAll();
     }
 

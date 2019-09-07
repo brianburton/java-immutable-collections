@@ -81,6 +81,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                                      Class<? extends Map> expectedClass,
                                      KeyFactory<K> factory)
     {
+        super(getName(map));
         this.map = map;
         this.expectedClass = expectedClass;
         this.factory = factory;

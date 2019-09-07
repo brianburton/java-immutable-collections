@@ -60,6 +60,7 @@ public class JImmutableStackStressTester
 
     public JImmutableStackStressTester(JImmutableStack<String> stack)
     {
+        super(getName(stack));
         this.stack = stack;
     }
 

@@ -187,7 +187,7 @@ public class StressTester
         JImmutableSetMap<String, String> filterMap = JImmutableTemplateSetMap.of(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.sortedSet());
         for (AbstractStressTestable tester : testers) {
             for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(tester.getClass().getSimpleName(), option);
+                filterMap = filterMap.insert(tester.getTestName(), option);
             }
         }
         System.out.println();
@@ -200,7 +200,7 @@ public class StressTester
         filterMap = filterMap.deleteAll();
         for (AbstractStressTestable tester : testers) {
             for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(option, tester.getClass().getSimpleName());
+                filterMap = filterMap.insert(option, tester.getTestName());
             }
         }
         System.out.println();

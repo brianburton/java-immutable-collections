@@ -37,9 +37,14 @@ package org.javimmutable.collections.stress_test;
 
 import java.util.Map;
 
-public abstract class AbstractMapStressTestable
+abstract class AbstractMapStressTestable
     extends AbstractStressTestable
 {
+    AbstractMapStressTestable(String testName)
+    {
+        super(testName);
+    }
+
     protected <V> void verifyKeys(RandomKeyManager keys,
                                   Map<String, V> expected)
     {

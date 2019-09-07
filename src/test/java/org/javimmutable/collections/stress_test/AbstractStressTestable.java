@@ -55,8 +55,20 @@ import java.util.stream.Collectors;
  * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the JImmutable is the
  * generated size. All the values are then deleted.
  */
-public abstract class AbstractStressTestable
+abstract class AbstractStressTestable
 {
+    private final String testName;
+
+    AbstractStressTestable(String testName)
+    {
+        this.testName = testName;
+    }
+
+    public String getTestName()
+    {
+        return testName;
+    }
+
     abstract void execute(Random random,
                           JImmutableList<String> tokens)
         throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
@@ -68,7 +80,7 @@ public abstract class AbstractStressTestable
         return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").replace("Empty", "").toLowerCase();
     }
 
-    protected String getName(Object obj)
+    protected static String getName(Object obj)
     {
         return obj.getClass().getSimpleName().replace("Empty", "");
     }

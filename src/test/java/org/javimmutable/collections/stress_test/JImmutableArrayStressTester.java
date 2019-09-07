@@ -68,6 +68,7 @@ public class JImmutableArrayStressTester
     public JImmutableArrayStressTester(JImmutableArray<String> array,
                                        ArrayIndexRange indexRange)
     {
+        super(getName(array));
         this.array = array;
         this.indexRange = indexRange;
     }

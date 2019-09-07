@@ -77,6 +77,7 @@ public class JImmutableListMapStressTester
     public JImmutableListMapStressTester(JImmutableListMap<String, String> listmap,
                                          Class<? extends Map> expectedClass)
     {
+        super(getName(listmap));
         this.listmap = listmap;
         this.expectedClass = expectedClass;
     }

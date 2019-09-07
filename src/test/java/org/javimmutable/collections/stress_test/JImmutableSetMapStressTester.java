@@ -78,6 +78,7 @@ public class JImmutableSetMapStressTester
     public JImmutableSetMapStressTester(JImmutableSetMap<String, String> setmap,
                                         Class<? extends Map> expectedClass)
     {
+        super(getName(setmap));
         this.setmap = setmap;
         this.expectedClass = expectedClass;
     }

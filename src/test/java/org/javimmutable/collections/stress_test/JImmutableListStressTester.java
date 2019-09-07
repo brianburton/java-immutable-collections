@@ -64,6 +64,7 @@ public class JImmutableListStressTester
     public JImmutableListStressTester(JImmutableList<String> list,
                                       Collector<String, ?, ? extends JImmutableList<String>> collector)
     {
+        super(getName(list));
         this.collector = collector;
         this.list = list;
     }

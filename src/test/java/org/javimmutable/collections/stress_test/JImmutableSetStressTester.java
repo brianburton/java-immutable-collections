@@ -72,6 +72,7 @@ public class JImmutableSetStressTester
                                      Class<? extends Set> expectedClass,
                                      IterationOrder iterationOrder)
     {
+        super(getName(set));
         this.set = set;
         this.expectedClass = expectedClass;
         this.iterationOrder = iterationOrder;

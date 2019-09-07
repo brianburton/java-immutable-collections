@@ -44,9 +44,14 @@ import java.util.List;
 
 import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
-public abstract class AbstractListStressTestable
+abstract class AbstractListStressTestable
     extends AbstractStressTestable
 {
+    AbstractListStressTestable(String testName)
+    {
+        super(testName);
+    }
+
     protected void verifyContents(JImmutableList<String> list,
                                   List<String> expected)
     {

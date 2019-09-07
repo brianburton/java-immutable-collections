@@ -43,9 +43,14 @@ import java.util.List;
 import java.util.Random;
 
 
-public abstract class AbstractSetStressTestable
+abstract class AbstractSetStressTestable
         extends AbstractStressTestable
 {
+    AbstractSetStressTestable(String testName)
+    {
+        super(testName);
+    }
+
     protected String containedValue(List<String> list,
                                     Random random)
     {
