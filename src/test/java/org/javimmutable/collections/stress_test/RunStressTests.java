@@ -44,7 +44,6 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
@@ -59,6 +58,8 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import static org.javimmutable.collections.util.JImmutables.*;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every
@@ -164,7 +165,10 @@ public class RunStressTests
         System.out.println();
         parser.printHelpOn(System.out);
 
-        JImmutableSetMap<String, String> filterMap = JImmutableTemplateSetMap.of(JImmutables.<String, JImmutableSet<String>>sortedMap(), JImmutables.sortedSet());
+        JImmutableSetMap<String, String> filterMap = setMapFactory(String.class, String.class)
+            .withMap(sortedMap())
+            .withSet(sortedSet())
+            .create();
         for (StressTester tester : AllTesters) {
             for (String option : tester.getOptions()) {
                 filterMap = filterMap.insert(tester.getTestName(), option);

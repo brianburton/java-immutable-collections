@@ -63,6 +63,7 @@ import org.javimmutable.collections.sequence.EmptySequenceNode;
 import org.javimmutable.collections.sequence.FilledSequenceNode;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
+import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
 import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -956,6 +957,27 @@ public final class JImmutables
     public static <K, V> JImmutableSetMap<K, V> setMap()
     {
         return JImmutableHashSetMap.of();
+    }
+
+    /**
+     * Creates a builder to build a custom JImmutableSetMap configuration from a
+     * base map and set type.
+     */
+    @Nonnull
+    public static <K, V> JImmutableSetMapFactory<K, V> setMapFactory()
+    {
+        return new JImmutableSetMapFactory<>();
+    }
+
+    /**
+     * Creates a builder to build a custom JImmutableSetMap configuration from a
+     * base map and set type.
+     */
+    @Nonnull
+    public static <K, V> JImmutableSetMapFactory<K, V> setMapFactory(@Nonnull Class<K> keyClass,
+                                                                     @Nonnull Class<V> valueClass)
+    {
+        return new JImmutableSetMapFactory<>();
     }
 
     /**
