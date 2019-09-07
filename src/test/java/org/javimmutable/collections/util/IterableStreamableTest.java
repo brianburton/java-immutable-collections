@@ -165,6 +165,11 @@ public class IterableStreamableTest
         assertEquals(Holders.of(1), list(1).reduce((s, x) -> s + x));
         assertEquals(Holders.of(3), list(1, 2).reduce((s, x) -> s + x));
         assertEquals(Holders.of(6), list(1, 2, 3).reduce((s, x) -> s + x));
+
+        assertEquals(Integer.valueOf(0), list().reduce(0, (s, x) -> s));
+        assertEquals(Integer.valueOf(1), list(1).reduce(0, (s, x) -> s + x));
+        assertEquals(Integer.valueOf(3), list(1, 2).reduce(0, (s, x) -> s + x));
+        assertEquals(Integer.valueOf(6), list(1, 2, 3).reduce(0, (s, x) -> s + x));
     }
 
     public void testInject()
