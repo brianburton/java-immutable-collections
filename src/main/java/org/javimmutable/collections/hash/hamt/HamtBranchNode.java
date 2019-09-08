@@ -64,10 +64,10 @@ public class HamtBranchNode<K, V>
     private final HamtNode<K, V>[] children;
     private final int size;
 
-    private HamtBranchNode(int bitmask,
-                           @Nonnull CollisionMap.Node value,
-                           @Nonnull HamtNode<K, V>[] children,
-                           int size)
+    HamtBranchNode(int bitmask,
+                   @Nonnull CollisionMap.Node value,
+                   @Nonnull HamtNode<K, V>[] children,
+                   int size)
     {
         this.bitmask = bitmask;
         this.value = value;
@@ -90,49 +90,6 @@ public class HamtBranchNode<K, V>
             children[0] = forLeafExpansion(collisionMap, remainder, value);
             return new HamtBranchNode<>(bit, collisionMap.emptyNode(), children, collisionMap.size(value));
         }
-    }
-
-    static <K, V> HamtNode<K, V> forBuilder(@Nonnull CollisionMap<K, V> collisionMap,
-                                            @Nonnull CollisionMap.Node value,
-                                            @Nonnull HamtNode<K, V>[] children)
-    {
-        assert children.length == 32;
-        int childCount = 0;
-        final int valueSize = collisionMap.size(value);
-        int totalSize = valueSize;
-        int lastChildIndex = 0;
-        for (int i = 0; i < children.length; ++i) {
-            HamtNode<K, V> child = children[i];
-            if (child != null) {
-                childCount += 1;
-                totalSize += child.size(collisionMap);
-                lastChildIndex = i;
-            }
-        }
-        assert totalSize > 0;
-        if (childCount == 0) {
-            return new HamtLeafNode<>(0, value);
-        }
-        if (childCount == 1 && valueSize == 0) {
-            final HamtNode<K, V> child = children[lastChildIndex];
-            if (child instanceof HamtLeafNode) {
-                return ((HamtLeafNode<K, V>)child).liftNode(lastChildIndex);
-            }
-        }
-        int childIndex = 0;
-        int bit = 1;
-        int bitmask = 0;
-        @SuppressWarnings("unchecked") HamtNode<K, V>[] compactChildren = new HamtNode[childCount];
-        for (int i = 0; childIndex < childCount && i < children.length; ++i) {
-            HamtNode<K, V> child = children[i];
-            if (child != null) {
-                bitmask |= bit;
-                compactChildren[childIndex] = child;
-                childIndex += 1;
-            }
-            bit <<= 1;
-        }
-        return new HamtBranchNode<>(bitmask, value, compactChildren, totalSize);
     }
 
     @Override

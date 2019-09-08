@@ -9,27 +9,6 @@ import java.util.Random;
 public class HamtBuilderTest
     extends TestCase
 {
-    public void testSortHash()
-    {
-        assertEquals(0b0L, HamtBuilder.computeSortCode(0));
-        assertEquals(0b11111000000000000000000000000000000L,
-                     HamtBuilder.computeSortCode(0b00000000000000000000000000011111));
-        assertEquals(0b00000111110000000000000000000000000L,
-                     HamtBuilder.computeSortCode(0b00000000000000000000001111100000));
-        assertEquals(0b00000000001111100000000000000000000L,
-                     HamtBuilder.computeSortCode(0b00000000000000000111110000000000));
-        assertEquals(0b00000000000000011111000000000000000L,
-                     HamtBuilder.computeSortCode(0b00000000000011111000000000000000));
-        assertEquals(0b00000000000000000000111110000000000L,
-                     HamtBuilder.computeSortCode(0b00000001111100000000000000000000));
-        assertEquals(0b00000000000000000000000001111100000L,
-                     HamtBuilder.computeSortCode(0b00111110000000000000000000000000));
-        assertEquals(0b00000000000000000000000000000000011L,
-                     HamtBuilder.computeSortCode(0b11000000000000000000000000000000));
-        assertEquals(0b10110_01101_11011_10110_01101_01101_00011L,
-                     HamtBuilder.computeSortCode(0b11_01101_01101_10110_11011_01101_10110));
-    }
-
     public void testRandom()
     {
         final Random r = new Random(1000);
