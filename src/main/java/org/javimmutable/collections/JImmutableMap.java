@@ -266,6 +266,12 @@ public interface JImmutableMap<K, V>
     IterableStreamable<V> values();
 
     /**
+     * Creates a Builder with the same type signature as this Map.
+     */
+    @Nonnull
+    Builder<K, V> mapBuilder();
+
+    /**
      * Returns a Collector that creates a set of the same type as this containing all
      * of the collected values inserted over whatever starting values this already contained.
      */

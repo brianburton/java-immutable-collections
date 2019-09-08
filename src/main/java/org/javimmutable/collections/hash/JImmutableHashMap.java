@@ -147,6 +147,13 @@ public class JImmutableHashMap<T, K, V>
         return new Builder<>();
     }
 
+    @Nonnull
+    @Override
+    public JImmutableMap.Builder<K, V> mapBuilder()
+    {
+        return builder();
+    }
+
     @Override
     public V getValueOr(K key,
                         V defaultValue)

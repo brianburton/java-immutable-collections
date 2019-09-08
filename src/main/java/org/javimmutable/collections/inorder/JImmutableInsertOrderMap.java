@@ -93,6 +93,44 @@ public class JImmutableInsertOrderMap<K, V>
         return EMPTY;
     }
 
+    @Nonnull
+    public static <K, V> Builder<K, V> builder()
+    {
+        return new Builder<K, V>()
+        {
+            private JImmutableInsertOrderMap<K, V> map = of();
+
+            @Nonnull
+            @Override
+            public synchronized JImmutableMap<K, V> build()
+            {
+                return map;
+            }
+
+            @Nonnull
+            @Override
+            public synchronized Builder<K, V> add(@Nonnull K key,
+                                                  V value)
+            {
+                map = map.assign(key, value);
+                return this;
+            }
+
+            @Override
+            public synchronized int size()
+            {
+                return map.size();
+            }
+        };
+    }
+
+    @Nonnull
+    @Override
+    public Builder<K, V> mapBuilder()
+    {
+        return builder();
+    }
+
     @Override
     public V getValueOr(K key,
                         V defaultValue)

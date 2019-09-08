@@ -113,6 +113,13 @@ public class JImmutableTreeMap<K, V>
         return root.isEmpty() ? of() : new JImmutableTreeMap<>(comp, root);
     }
 
+    @Nonnull
+    @Override
+    public Builder<K, V> mapBuilder()
+    {
+        return new TreeMapBuilder<>(comparator);
+    }
+
     @Override
     public V getValueOr(K key,
                         V defaultValue)

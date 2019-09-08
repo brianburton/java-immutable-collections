@@ -40,6 +40,8 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -184,7 +186,7 @@ public class JImmutableInsertOrderMapTest
                 }
             }
             map.checkInvariants();
-            
+
             assertEquals(expected, map.getMap());
             List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
             List<Integer> keys = new ArrayList<>();
@@ -302,6 +304,51 @@ public class JImmutableInsertOrderMapTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZGBgYgc4WBJqdqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQHcIINT5leYmpRa1rZkqyz3lQTcTyEiQYSUMjIkVAEaTh0oNAQAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgATQ2YJAsxP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBXoDgGEOr/S3KTUorY1U2W5pzzoZgIZ2QA0rYSBMbG4kKGOgRnIYQTykiC8eqDVQF5yBQAzIFETKQEAAA==");
+    }
+
+    public void testBuilder()
+    {
+        final Random r = new Random(1265143000);
+        for (int i = 1; i <= 100; ++i) {
+            JImmutableMap.Builder<Integer, Integer> builder = JImmutableInsertOrderMap.builder();
+            JImmutableMap<Integer, Integer> expected = JImmutableInsertOrderMap.of();
+            final int size = 1 + r.nextInt(2000);
+            for (int k = 1; k <= size; ++k) {
+                final Integer key = r.nextInt(5 * size);
+                final Integer value = r.nextInt();
+                builder.add(key, value);
+                expected = expected.assign(key, value);
+            }
+            JImmutableMap<Integer, Integer> actual = builder.build();
+            actual.checkInvariants();
+            assertEquals(expected, actual);
+        }
+    }
+
+    public void testStandardBuilderTests()
+        throws InterruptedException
+    {
+        final List<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        for (int i = 1; i <= 5000; ++i) {
+            values.add(MapEntry.of(i, 5001 - i));
+        }
+        Collections.shuffle(values);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
+        values.sort(MapEntry::compareKeys);
+        StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
+    }
+
+    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
+    {
+        return new MapBuilderTestAdaptor<>(JImmutableInsertOrderMap.builder());
+    }
+
+    private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,
+                                             JImmutableMap<Integer, Integer> actual)
+    {
+        List<JImmutableMap.Entry<Integer, Integer>> sorted = new ArrayList<>(expected);
+        assertEquals(sorted, actual.stream().sorted(MapEntry::compareKeys).collect(Collectors.toList()));
+        return true;
     }
 
     private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,

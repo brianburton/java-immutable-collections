@@ -68,6 +68,13 @@ public class EmptyHashMap<K, V>
 
     @Nonnull
     @Override
+    public Builder<K, V> mapBuilder()
+    {
+        return JImmutableHashMap.builder();
+    }
+
+    @Nonnull
+    @Override
     public Holder<V> find(@Nonnull K key)
     {
         return Holders.of();
