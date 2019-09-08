@@ -98,6 +98,12 @@ public class MapEntry<K, V>
         return new MapEntry<K, V>(key, value);
     }
 
+    public static <K extends Comparable<K>, V> int compareKeys(@Nonnull JImmutableMap.Entry<K, V> a,
+                                                               @Nonnull JImmutableMap.Entry<K, V> b)
+    {
+        return a.getKey().compareTo(b.getKey());
+    }
+
     @Nonnull
     @Override
     public K getKey()

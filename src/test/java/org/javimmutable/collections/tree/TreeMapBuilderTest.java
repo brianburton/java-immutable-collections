@@ -50,25 +50,23 @@ public class TreeMapBuilderTest
         for (int i = 1; i <= 5000; ++i) {
             values.add(MapEntry.of(i, 5001 - i));
         }
-        StandardBuilderTests.verifyBuilder(values, this::adaptor, this::stdComparator, new Entry[0]);
-        StandardBuilderTests.verifyThreadSafety(values, this::compare, this::adaptor, a -> a);
+        Collections.shuffle(values);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new Entry[0]);
+        values.sort(MapEntry::compareKeys);
+        StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
     }
 
-    private MapBuilderTestAdaptor<Integer, Integer> adaptor()
+    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
     {
         return new MapBuilderTestAdaptor<>(new TreeMapBuilder<>(ComparableComparator.<Integer>of()));
     }
 
-    private Boolean stdComparator(List<Entry<Integer, Integer>> expected,
-                                  JImmutableMap<Integer, Integer> actual)
+    private Boolean stdBuilderTestComparator(List<Entry<Integer, Integer>> expected,
+                                             JImmutableMap<Integer, Integer> actual)
     {
-        assertEquals(expected, actual.stream().collect(Collectors.toList()));
+        List<Entry<Integer, Integer>> sorted = new ArrayList<>(expected);
+        sorted.sort(MapEntry::compareKeys);
+        assertEquals(sorted, actual.stream().collect(Collectors.toList()));
         return true;
-    }
-
-    private int compare(Entry<Integer, Integer> a,
-                        Entry<Integer, Integer> b)
-    {
-        return Integer.compare(a.getKey(), b.getKey());
     }
 }

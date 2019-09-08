@@ -6,7 +6,7 @@ import org.javimmutable.collections.JImmutableMap;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 
-public class MapBuilderTestAdaptor<K extends Comparable<K>, V>
+public class MapBuilderTestAdaptor<K, V>
     implements StandardBuilderTests.BuilderAdapter<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>
 {
     private final JImmutableMap.Builder<K, V> builder;

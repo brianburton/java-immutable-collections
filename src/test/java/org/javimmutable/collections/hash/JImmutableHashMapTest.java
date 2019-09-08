@@ -40,6 +40,8 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 
@@ -401,6 +403,33 @@ public class JImmutableHashMapTest
             actual.checkInvariants();
             assertEquals(expected, actual);
         }
+    }
+
+    public void testStandardBuilderTests()
+        throws InterruptedException
+    {
+        final List<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        for (int i = 1; i <= 5000; ++i) {
+            values.add(MapEntry.of(i, 5001 - i));
+        }
+        Collections.shuffle(values);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
+        values.sort(MapEntry::compareKeys);
+        StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
+    }
+
+    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
+    {
+        return new MapBuilderTestAdaptor<>(JImmutableHashMap.builder());
+    }
+
+    private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,
+                                             JImmutableMap<Integer, Integer> actual)
+    {
+        List<JImmutableMap.Entry<Integer, Integer>> sorted = new ArrayList<>(expected);
+        sorted.sort(MapEntry::compareKeys);
+        assertEquals(sorted, actual.stream().sorted(MapEntry::compareKeys).collect(Collectors.toList()));
+        return true;
     }
 
     private static class ManualHashKey
