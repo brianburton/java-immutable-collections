@@ -1157,7 +1157,7 @@ public class JImmutableTreeListTest
             return true;
         };
 
-        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator);
+        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator, new Integer[0]);
         StandardBuilderTests.verifyThreadSafety(this::builder);
     }
 

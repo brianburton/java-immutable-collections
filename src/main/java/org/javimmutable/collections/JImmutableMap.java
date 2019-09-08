@@ -91,7 +91,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Iterator<Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Iterator<? extends Entry<? extends K, ? extends V>> source)
         {
             while (source.hasNext()) {
                 add(source.next());
@@ -106,7 +106,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Iterable<Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Iterable<? extends Entry<? extends K, ? extends V>> source)
         {
             return add(source.iterator());
         }
@@ -118,7 +118,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Entry<? extends K, ? extends V>... source)
+        default <T extends JImmutableMap.Entry<? extends K, ? extends V>> Builder<K, V> add(T... source)
         {
             return add(Arrays.asList(source));
         }
@@ -130,7 +130,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Indexed<Entry<? extends K, ? extends V>> source,
+        default Builder<K, V> add(Indexed<? extends Entry<? extends K, ? extends V>> source,
                                   int offset,
                                   int limit)
         {
@@ -147,7 +147,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Indexed<Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Indexed<? extends Entry<? extends K, ? extends V>> source)
         {
             return add(source, 0, source.size());
         }

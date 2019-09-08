@@ -45,6 +45,7 @@ import org.javimmutable.collections.tree.ComparableComparator;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -87,7 +88,8 @@ public final class StandardBuilderTests
      */
     public static <T, C> void verifyBuilder(List<T> values,
                                             Func0<? extends BuilderAdapter<T, C>> builderFactory,
-                                            Func2<List<T>, C, Boolean> comparator)
+                                            Func2<List<T>, C, Boolean> comparator,
+                                            T[] arrayTemplate)
     {
         @SuppressWarnings("TooBroadScope") C collection;
 
@@ -107,7 +109,7 @@ public final class StandardBuilderTests
 
         // add via array
         //noinspection unchecked
-        T[] array = (T[])values.toArray();
+        T[] array = (T[])values.toArray(arrayTemplate);
         //noinspection unchecked
         builder = builderFactory.apply();
         builder.add(array);
@@ -152,15 +154,16 @@ public final class StandardBuilderTests
         assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
     }
 
-    public static <C> void verifyThreadSafety(@Nonnull Func0<BuilderAdapter<Integer, C>> builderFactory,
-                                              @Nonnull Func1<C, Iterable<Integer>> transform)
+    public static <T, C> void verifyThreadSafety(@Nonnull List<T> expected,
+                                                 @Nonnull Comparator<T> comparator,
+                                                 @Nonnull Func0<BuilderAdapter<T, C>> builderFactory,
+                                                 @Nonnull Func1<C, Iterable<T>> transform)
         throws InterruptedException
     {
-        final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
         final int numThreads = 32;
         final int perThread = (expected.size() + numThreads - 1) / numThreads;
         for (int loop = 1; loop <= 100; ++loop) {
-            final BuilderAdapter<Integer, C> builder = builderFactory.apply();
+            final BuilderAdapter<T, C> builder = builderFactory.apply();
             final ExecutorService es = Executors.newFixedThreadPool(numThreads);
             try {
                 int offset = 0;
@@ -174,13 +177,21 @@ public final class StandardBuilderTests
                 es.shutdown();
                 es.awaitTermination(10, TimeUnit.SECONDS);
             }
-            List<Integer> sorted = new ArrayList<>();
-            for (Integer value : transform.apply(builder.build())) {
+            List<T> sorted = new ArrayList<>();
+            for (T value : transform.apply(builder.build())) {
                 sorted.add(value);
             }
-            sorted.sort(ComparableComparator.of());
+            sorted.sort(comparator);
             assertEquals(expected, sorted);
         }
+    }
+
+    public static <C> void verifyThreadSafety(@Nonnull Func0<BuilderAdapter<Integer, C>> builderFactory,
+                                              @Nonnull Func1<C, Iterable<Integer>> transform)
+        throws InterruptedException
+    {
+        final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
+        verifyThreadSafety(expected, ComparableComparator.of(), builderFactory, transform);
     }
 
     public static <C extends JImmutableList<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
@@ -189,8 +200,8 @@ public final class StandardBuilderTests
         verifyThreadSafety(builderFactory, list -> list);
     }
 
-    private static <T, C> void addValues(BuilderAdapter<Integer, C> builder,
-                                         List<Integer> indexed,
+    private static <T, C> void addValues(BuilderAdapter<T, C> builder,
+                                         List<T> indexed,
                                          int first,
                                          int limit)
     {

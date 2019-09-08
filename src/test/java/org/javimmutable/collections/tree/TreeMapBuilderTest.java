@@ -2,13 +2,18 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.TestUtil;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class TreeMapBuilderTest
     extends TestCase
@@ -33,17 +38,37 @@ public class TreeMapBuilderTest
             map = builder.build();
             map.checkInvariants();
             assertEquals(map, builder.build());
-            assertEquals(list(expected.keySet()), list(map.keys()));
-            assertEquals(list(expected.values()), list(map.values()));
+            assertEquals(TestUtil.makeList(expected.keySet()), TestUtil.makeList(map.keys()));
+            assertEquals(TestUtil.makeList(expected.values()), TestUtil.makeList(map.values()));
         }
     }
 
-    private <T> List<T> list(@Nonnull Iterable<T> src)
+    public void testStandard()
+        throws InterruptedException
     {
-        final List<T> dst = new ArrayList<>();
-        for (T value : src) {
-            dst.add(value);
+        final List<Entry<Integer, Integer>> values = new ArrayList<>();
+        for (int i = 1; i <= 5000; ++i) {
+            values.add(MapEntry.of(i, 5001 - i));
         }
-        return dst;
+        StandardBuilderTests.verifyBuilder(values, this::adaptor, this::stdComparator, new Entry[0]);
+        StandardBuilderTests.verifyThreadSafety(values, this::compare, this::adaptor, a -> a);
+    }
+
+    private MapBuilderTestAdaptor<Integer, Integer> adaptor()
+    {
+        return new MapBuilderTestAdaptor<>(new TreeMapBuilder<>(ComparableComparator.<Integer>of()));
+    }
+
+    private Boolean stdComparator(List<Entry<Integer, Integer>> expected,
+                                  JImmutableMap<Integer, Integer> actual)
+    {
+        assertEquals(expected, actual.stream().collect(Collectors.toList()));
+        return true;
+    }
+
+    private int compare(Entry<Integer, Integer> a,
+                        Entry<Integer, Integer> b)
+    {
+        return Integer.compare(a.getKey(), b.getKey());
     }
 }
