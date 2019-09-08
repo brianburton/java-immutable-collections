@@ -97,29 +97,42 @@ public class HamtBranchNode<K, V>
                                             @Nonnull HamtNode<K, V>[] children)
     {
         assert children.length == 32;
+        int childCount = 0;
+        final int valueSize = collisionMap.size(value);
+        int totalSize = valueSize;
+        int lastChildIndex = 0;
+        for (int i = 0; i < children.length; ++i) {
+            HamtNode<K, V> child = children[i];
+            if (child != null) {
+                childCount += 1;
+                totalSize += child.size(collisionMap);
+                lastChildIndex = i;
+            }
+        }
+        assert totalSize > 0;
+        if (childCount == 0) {
+            return new HamtLeafNode<>(0, value);
+        }
+        if (childCount == 1 && valueSize == 0) {
+            final HamtNode<K, V> child = children[lastChildIndex];
+            if (child instanceof HamtLeafNode) {
+                return ((HamtLeafNode<K, V>)child).liftNode(lastChildIndex);
+            }
+        }
+        int childIndex = 0;
         int bit = 1;
         int bitmask = 0;
-        int childCount = 0;
-        int size = collisionMap.size(value);
-        for (HamtNode<K, V> child : children) {
-            if (child != null) {
-                bitmask |= bit;
-                childCount += 1;
-                size += child.size(collisionMap);
-            }
-            bit <<= 1;
-        }
-        assert size > 0; 
-        int childIndex = 0;
-        HamtNode<K, V>[] compactChildren = new HamtNode[childCount];
+        @SuppressWarnings("unchecked") HamtNode<K, V>[] compactChildren = new HamtNode[childCount];
         for (int i = 0; childIndex < childCount && i < children.length; ++i) {
             HamtNode<K, V> child = children[i];
             if (child != null) {
+                bitmask |= bit;
                 compactChildren[childIndex] = child;
                 childIndex += 1;
             }
+            bit <<= 1;
         }
-        return createForDelete(collisionMap, bitmask, value, compactChildren, size);
+        return new HamtBranchNode<>(bitmask, value, compactChildren, totalSize);
     }
 
     @Override
@@ -299,11 +312,11 @@ public class HamtBranchNode<K, V>
         }
     }
 
-    private static <K, V> HamtNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
-                                                         int bitmask,
-                                                         CollisionMap.Node value,
-                                                         @Nonnull HamtNode<K, V>[] children,
-                                                         int newSize)
+    private HamtNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
+                                           int bitmask,
+                                           CollisionMap.Node value,
+                                           @Nonnull HamtNode<K, V>[] children,
+                                           int newSize)
     {
         if (collisionMap.size(value) == 0 && children.length == 1) {
             final HamtNode<K, V> child = children[0];

@@ -58,14 +58,20 @@ class HamtBuilder<K, V>
                                    int limit)
     {
         assert limit > offset;
+
         CollisionMap.Node myValues = collisionMap.emptyNode();
+        if (offset == limit - 1) {
+            final Value<K, V> v = values.get(offset);
+            return new HamtLeafNode<>(v.shifted(shift), collisionMap.update(myValues, v.key, v.value));
+        }
+
+        final int childShift = shift + HamtBranchNode.SHIFT;
         final HamtNode<K, V>[] children = allocate(32);
-        final int childShift = Math.min(32, shift + HamtBranchNode.SHIFT);
         int childIndex = -1;
         int childOffset = limit;
         for (int i = offset; i < limit; ++i) {
             final Value<K, V> v = values.get(i);
-            final int hash = (shift != 32) ? v.hash >>> shift : 0;
+            final int hash = v.shifted(shift);
             if (hash == 0) {
                 myValues = collisionMap.update(myValues, v.key, v.value);
             } else {
@@ -121,6 +127,16 @@ class HamtBuilder<K, V>
         public String toString()
         {
             return String.format("[%s,%s,%s]", binary(sortHash), binary(hash), hash);
+        }
+
+        private int shifted(int shift)
+        {
+            assert shift >= 0 && shift <= 35;
+            if (shift >= 32) {
+                return 0;
+            } else {
+                return hash >>> shift;
+            }
         }
 
         private String binary(long value)
