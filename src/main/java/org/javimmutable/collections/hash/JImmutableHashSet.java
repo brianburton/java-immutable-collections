@@ -38,6 +38,7 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableHashSetProxy;
 
 import javax.annotation.Nonnull;
@@ -64,6 +65,12 @@ public class JImmutableHashSet<T>
     public static <T> JImmutableHashSet<T> of()
     {
         return EMPTY;
+    }
+
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> builder()
+    {
+        return new GenericSetBuilder<>(JImmutableHashMap.builder(), map -> map.isEmpty() ? of() : new JImmutableHashSet<>(map));
     }
 
     @Nonnull

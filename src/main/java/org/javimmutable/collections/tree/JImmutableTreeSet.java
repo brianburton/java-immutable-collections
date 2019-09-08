@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
 
 import javax.annotation.Nonnull;
@@ -92,6 +93,17 @@ public class JImmutableTreeSet<T>
         return new JImmutableTreeSet<>(comparator);
     }
 
+    public static <T extends Comparable<T>> JImmutableSet.Builder<T> builder()
+    {
+        return builder(ComparableComparator.<T>of());
+    }
+
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> builder(Comparator<T> comparator)
+    {
+        return new GenericSetBuilder<>(JImmutableTreeMap.builder(comparator), map -> map.isEmpty() ? of(comparator) : new JImmutableTreeSet<>(map, comparator));
+    }
+
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
@@ -108,7 +120,7 @@ public class JImmutableTreeSet<T>
     {
         return map;
     }
-    
+
     private Object writeReplace()
     {
         return new JImmutableTreeSetProxy(this);

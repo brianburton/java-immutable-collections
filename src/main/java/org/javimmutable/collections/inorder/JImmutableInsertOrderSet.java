@@ -39,6 +39,7 @@ import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
 
 import javax.annotation.Nonnull;
@@ -72,6 +73,12 @@ public class JImmutableInsertOrderSet<T>
     public static <T> JImmutableInsertOrderSet<T> of()
     {
         return EMPTY;
+    }
+
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> builder()
+    {
+        return new GenericSetBuilder<>(JImmutableInsertOrderMap.builder(), map -> map.isEmpty() ? of() : new JImmutableInsertOrderSet<>(map));
     }
 
     @Nonnull
