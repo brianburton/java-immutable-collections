@@ -1,0 +1,141 @@
+package org.javimmutable.collections.hash.hamt;
+
+import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.common.ArrayHelper;
+import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.list.ListCollisionMap;
+import org.javimmutable.collections.tree.ComparableComparator;
+import org.javimmutable.collections.tree.TreeCollisionMap;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.ArrayList;
+import java.util.List;
+
+@ThreadSafe
+class HamtBuilder<K, V>
+    implements ArrayHelper.Allocator<HamtNode<K, V>>,
+               JImmutableMap.Builder<K, V>
+{
+    private final List<Value<K, V>> values = new ArrayList<>();
+
+    @Nonnull
+    @Override
+    public synchronized JImmutableMap<K, V> build()
+    {
+        if (values.isEmpty()) {
+            return JImmutableHashMap.of();
+        } else {
+            values.sort(ComparableComparator.of());
+            final CollisionMap<K, V> collisionMap = getCollisionMap();
+            HamtNode<K, V> root = combine(collisionMap, 30, maskForShift(30), 0, values.size());
+            return JImmutableHashMap.forBuilder(root, collisionMap);
+        }
+    }
+
+    public CollisionMap<K, V> getCollisionMap()
+    {
+        if (values.get(0).key instanceof Comparable) {
+            return TreeCollisionMap.instance();
+        } else {
+            return ListCollisionMap.instance();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
+                                                        V value)
+    {
+        values.add(new Value<>(key, value));
+        return this;
+    }
+
+    private HamtNode<K, V> combine(CollisionMap<K, V> collisionMap,
+                                   int shift,
+                                   int mask,
+                                   int offset,
+                                   int limit)
+    {
+        assert limit > offset;
+        CollisionMap.Node myValues = collisionMap.emptyNode();
+        final HamtNode<K, V>[] children = allocate(32);
+        int childIndex = 0;
+        int childOffset = limit;
+        final int childMask = maskForShift(shift - 5);
+        for (int i = offset; i < limit; ++i) {
+            final Value<K, V> v = values.get(i);
+            final int hash = v.hash & mask;
+            if (hash == 0) {
+                myValues = collisionMap.update(myValues, v.key, v.value);
+            } else {
+                assert shift >= 0;
+                final int index = hash >>> shift;
+                if (index != childIndex) {
+                    if (i > childOffset) {
+                        children[childIndex] = combine(collisionMap,
+                                                       shift - HamtBranchNode.SHIFT,
+                                                       childMask,
+                                                       childOffset,
+                                                       i);
+                    }
+                    childOffset = i;
+                    childIndex = index;
+                }
+            }
+            if (childOffset < limit) {
+                children[childIndex] = combine(collisionMap,
+                                               shift - HamtBranchNode.SHIFT,
+                                               childMask,
+                                               childOffset,
+                                               limit);
+            }
+        }
+        return HamtBranchNode.forBuilder(collisionMap, myValues, children);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    @Override
+    public HamtNode<K, V>[] allocate(int size)
+    {
+        return new HamtNode[size];
+    }
+
+    static int maskForShift(int shift)
+    {
+        final int max1bit = Math.min(32, shift + HamtBranchNode.SHIFT);
+        int mask = 0;
+        int bit = 1;
+        for (int i = 1; i <= max1bit; ++i) {
+            mask |= bit;
+            bit <<= 1;
+        }
+        return mask;
+    }
+
+    private static class Value<K, V>
+        implements Comparable<Value<K, V>>
+    {
+        private final int hash;
+        private final K key;
+        private final V value;
+        private final long sortHash;
+
+        private Value(K key,
+                      V value)
+        {
+            this.key = key;
+            this.value = value;
+            this.hash = key.hashCode();
+            sortHash = ((long)hash) & 0xffffffffL;
+        }
+
+        @Override
+        public int compareTo(@Nonnull Value<K, V> other)
+        {
+            return Long.compare(sortHash, other.sortHash);
+        }
+    }
+}

@@ -140,6 +140,12 @@ public class JImmutableHashMap<T, K, V>
         return (JImmutableMap<K, V>)TREE_EMPTY;
     }
 
+    public static <V, K> JImmutableMap<K, V> forBuilder(HamtNode<K, V> root,
+                                                        CollisionMap<K, V> collisionMap)
+    {
+        return new JImmutableHashMap<>(root, collisionMap);
+    }
+
     @Override
     public V getValueOr(K key,
                         V defaultValue)

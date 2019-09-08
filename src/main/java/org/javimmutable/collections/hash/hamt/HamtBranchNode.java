@@ -92,6 +92,38 @@ public class HamtBranchNode<K, V>
         }
     }
 
+    static <K, V> HamtNode<K, V> forBuilder(@Nonnull CollisionMap<K, V> collisionMap,
+                                            @Nonnull CollisionMap.Node value,
+                                            @Nonnull HamtNode<K, V>[] children)
+    {
+        assert children.length == 32;
+        int bit = 1;
+        int bitmask = 0;
+        int childCount = 0;
+        int size = collisionMap.size(value);
+        for (int i = 0; i < children.length; ++i) {
+            HamtNode<K, V> child = children[i];
+            if (child != null) {
+                bitmask |= bit;
+                childCount += 1;
+                size += child.size(collisionMap);
+            }
+            bit <<= 1;
+        }
+        if (size == 0) {
+            return null;
+        }
+        int childIndex = 0;
+        HamtNode<K, V>[] compactChildren = new HamtNode[childCount];
+        for (int i = 0; childIndex < childCount && i < children.length; ++i) {
+            HamtNode<K, V> child = children[i];
+            if (child != null) {
+                compactChildren[childIndex] = child;
+            }
+        }
+        return createForDelete(collisionMap, bitmask, value, compactChildren, size);
+    }
+
     @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
@@ -269,11 +301,11 @@ public class HamtBranchNode<K, V>
         }
     }
 
-    private HamtNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
-                                           int bitmask,
-                                           CollisionMap.Node value,
-                                           @Nonnull HamtNode<K, V>[] children,
-                                           int newSize)
+    private static <K, V> HamtNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
+                                                         int bitmask,
+                                                         CollisionMap.Node value,
+                                                         @Nonnull HamtNode<K, V>[] children,
+                                                         int newSize)
     {
         if (collisionMap.size(value) == 0 && children.length == 1) {
             final HamtNode<K, V> child = children[0];
