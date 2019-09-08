@@ -1,25 +1,27 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMap.Entry;
-import org.javimmutable.collections.MapEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 @ThreadSafe
 class TreeMapBuilder<K, V>
     implements JImmutableMap.Builder<K, V>
 {
-    private final List<Entry<K, V>> values = new ArrayList<>();
     private final Comparator<K> comparator;
+    private final Map<K, V> values;
 
     TreeMapBuilder(@Nonnull Comparator<K> comparator)
     {
         this.comparator = comparator;
+        values = new TreeMap<>(comparator);
     }
 
     @Nonnull
@@ -27,7 +29,7 @@ class TreeMapBuilder<K, V>
     public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
                                                         V value)
     {
-        values.add(MapEntry.of(key, value));
+        values.put(key, value);
         return this;
     }
 
@@ -38,8 +40,8 @@ class TreeMapBuilder<K, V>
         if (values.isEmpty()) {
             return JImmutableTreeMap.of(comparator);
         } else {
-            values.sort((a, b) -> comparator.compare(a.getKey(), b.getKey()));
-            final AbstractNode<K, V> root = buildTree(values, 0, values.size());
+            final List<Entry<K, V>> sorted = new ArrayList<>(values.entrySet());
+            final AbstractNode<K, V> root = buildTree(sorted, 0, sorted.size());
             return new JImmutableTreeMap<>(comparator, root);
         }
     }

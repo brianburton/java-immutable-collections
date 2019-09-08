@@ -366,6 +366,25 @@ public class JImmutableTreeMapTest
         assertEquals(mapA.getComparator(), mapB.getComparator());
     }
 
+    public void testBuilder()
+    {
+        final Random r = new Random(1265143000);
+        for (int i = 1; i <= 1000; ++i) {
+            JImmutableMap.Builder<Integer, Integer> builder = JImmutableTreeMap.builder();
+            JImmutableMap<Integer, Integer> expected = JImmutableTreeMap.of();
+            final int size = 1 + r.nextInt(4000);
+            for (int k = 1; k <= size; ++k) {
+                final Integer key = r.nextInt(2 * size);
+                final Integer value = r.nextInt();
+                builder.add(key, value);
+                expected = expected.assign(key, value);
+            }
+            JImmutableMap<Integer, Integer> actual = builder.build();
+            actual.checkInvariants();
+            assertEquals(expected, actual);
+        }
+    }
+
     private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
                                                     Integer value)
     {
