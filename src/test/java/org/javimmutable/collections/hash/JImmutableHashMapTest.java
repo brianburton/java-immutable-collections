@@ -384,6 +384,25 @@ public class JImmutableHashMapTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAAmgewWBZifq5STmpet55pWkpqcWCT1asOR7Y7sFEwOjJwNrWWJOaSrQHQIIdX6luUmpRW1rpspyT3nQzQQysgFoWgkDY2JxIUMdAzOQwwjkJUF49UCrgbzkCgB7GrcPIgEAAA==");
     }
 
+    public void testBuilder()
+    {
+        final Random r = new Random(1265143000);
+        for (int i = 1; i <= 2000; ++i) {
+            JImmutableMap.Builder<Integer, Integer> builder = JImmutableHashMap.builder();
+            JImmutableMap<Integer, Integer> expected = JImmutableHashMap.of();
+            final int size = 1 + r.nextInt(5000);
+            for (int k = 1; k <= size; ++k) {
+                final Integer key = r.nextInt(5 * size);
+                final Integer value = r.nextInt();
+                builder.add(key, value);
+                expected = expected.assign(key, value);
+            }
+            JImmutableMap<Integer, Integer> actual = builder.build();
+            actual.checkInvariants();
+            assertEquals(expected, actual);
+        }
+    }
+
     private static class ManualHashKey
         implements Comparable<ManualHashKey>
     {

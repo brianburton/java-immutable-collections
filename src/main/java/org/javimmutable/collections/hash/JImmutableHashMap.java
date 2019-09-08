@@ -43,6 +43,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.hash.hamt.HamtBuilder;
 import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hash.hamt.HamtNode;
 import org.javimmutable.collections.list.ListCollisionMap;
@@ -51,6 +52,7 @@ import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 
 @Immutable
@@ -140,10 +142,9 @@ public class JImmutableHashMap<T, K, V>
         return (JImmutableMap<K, V>)TREE_EMPTY;
     }
 
-    public static <V, K> JImmutableMap<K, V> forBuilder(HamtNode<K, V> root,
-                                                        CollisionMap<K, V> collisionMap)
+    public static <K, V> JImmutableMap.Builder<K, V> builder()
     {
-        return new JImmutableHashMap<>(root, collisionMap);
+        return new Builder<>();
     }
 
     @Override
@@ -247,5 +248,34 @@ public class JImmutableHashMap<T, K, V>
     private Object writeReplace()
     {
         return new JImmutableHashMapProxy(this);
+    }
+
+    @ThreadSafe
+    public static class Builder<K, V>
+        implements JImmutableMap.Builder<K, V>
+    {
+        private final HamtBuilder<K, V> builder = new HamtBuilder<>();
+
+        @Nonnull
+        @Override
+        public synchronized JImmutableMap<K, V> build()
+        {
+            final HamtNode<K, V> root = builder.build();
+            final CollisionMap<K, V> collisionMap = builder.getCollisionMap();
+            if (root.isEmpty(collisionMap)) {
+                return of();
+            } else {
+                return new JImmutableHashMap<>(root, collisionMap);
+            }
+        }
+
+        @Nonnull
+        @Override
+        public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
+                                                            V value)
+        {
+            builder.add(key, value);
+            return this;
+        }
     }
 }

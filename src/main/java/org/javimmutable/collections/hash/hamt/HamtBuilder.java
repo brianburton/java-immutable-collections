@@ -1,36 +1,49 @@
 package org.javimmutable.collections.hash.hamt;
 
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import static org.javimmutable.collections.hash.hamt.HamtBranchNode.*;
 
-@ThreadSafe
-class HamtBuilder<K, V>
-    implements JImmutableMap.Builder<K, V>
+@NotThreadSafe
+public class HamtBuilder<K, V>
 {
-    private CollisionMap<K, V> collisionMap;
+    private CollisionMap<K, V> collisionMap = ListCollisionMap.instance();
     private Node<K, V> root;
 
     @Nonnull
-    @Override
-    public synchronized JImmutableMap<K, V> build()
+    public HamtNode<K, V> build()
     {
         if (root == null) {
-            return JImmutableHashMap.of();
+            return HamtEmptyNode.of();
         } else {
-            return JImmutableHashMap.forBuilder(root.toHamt(collisionMap), collisionMap);
+            return root.toHamt(collisionMap);
         }
     }
 
-    private CollisionMap<K, V> selectCollisionMapForKey(@Nonnull K key)
+    public void add(@Nonnull K key,
+                    V value)
+    {
+        if (root == null) {
+            collisionMap = selectCollisionMapForKey(key);
+            root = new Leaf<>(collisionMap, key.hashCode(), key, value);
+        } else {
+            root = root.add(collisionMap, key.hashCode(), key, value);
+        }
+    }
+
+    @Nonnull
+    public CollisionMap<K, V> getCollisionMap()
+    {
+        return collisionMap;
+    }
+
+    private static <K, V> CollisionMap<K, V> selectCollisionMapForKey(@Nonnull K key)
     {
         if (key instanceof Comparable) {
             return TreeCollisionMap.instance();
@@ -39,28 +52,15 @@ class HamtBuilder<K, V>
         }
     }
 
-    @Nonnull
-    @Override
-    public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
-                                                        V value)
-    {
-        if (root == null) {
-            collisionMap = selectCollisionMapForKey(key);
-            root = new Leaf<>(collisionMap, key.hashCode(), key, value);
-        } else {
-            root = root.add(collisionMap, key.hashCode(), key, value);
-        }
-        return this;
-    }
-
     private static abstract class Node<K, V>
     {
-
-        abstract Node<K, V> add(CollisionMap<K, V> collisionMap,
+        @Nonnull
+        abstract Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
                                 int hashCode,
                                 @Nonnull K key,
                                 @Nullable V value);
 
+        @Nonnull
         abstract HamtNode<K, V> toHamt(CollisionMap<K, V> collisionMap);
     }
 
@@ -86,8 +86,9 @@ class HamtBuilder<K, V>
             this.hashCode = hashCode;
         }
 
+        @Nonnull
         @Override
-        Node<K, V> add(CollisionMap<K, V> collisionMap,
+        Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
                        int hashCode,
                        @Nonnull K key,
                        @Nullable V value)
@@ -100,6 +101,7 @@ class HamtBuilder<K, V>
             }
         }
 
+        @Nonnull
         @Override
         HamtNode<K, V> toHamt(CollisionMap<K, V> collisionMap)
         {
@@ -114,7 +116,7 @@ class HamtBuilder<K, V>
         private Node<K, V>[] children;
 
         private Branch(@Nonnull CollisionMap<K, V> collisionMap,
-                       Leaf<K, V> leaf,
+                       @Nonnull Leaf<K, V> leaf,
                        int hashCode,
                        @Nonnull K key,
                        V value)
@@ -130,6 +132,7 @@ class HamtBuilder<K, V>
             add(collisionMap, hashCode, key, value);
         }
 
+        @Nonnull
         @Override
         Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
                        int hashCode,
@@ -151,6 +154,7 @@ class HamtBuilder<K, V>
             return this;
         }
 
+        @Nonnull
         @Override
         HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
         {

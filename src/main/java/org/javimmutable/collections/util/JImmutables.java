@@ -297,6 +297,21 @@ public final class JImmutables
     }
 
     /**
+     * Constructs a Builder to produce unsorted maps.
+     * <p>
+     * Implementation note: The map will adopt a hash code collision strategy based on
+     * the first key added.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
+     */
+    @Nonnull
+    public static <K, V> JImmutableMap.Builder<K, V> mapBuilder()
+    {
+        return JImmutableHashMap.builder();
+    }
+
+    /**
      * Creates a Collector suitable for use in the stream to produce a map.
      */
     @Nonnull
