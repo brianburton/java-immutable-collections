@@ -29,7 +29,7 @@ class HamtBuilder<K, V>
         } else {
             values.sort(ComparableComparator.of());
             final CollisionMap<K, V> collisionMap = getCollisionMap();
-            HamtNode<K, V> root = combine(collisionMap, 30, maskForShift(30), 0, values.size());
+            HamtNode<K, V> root = combine(collisionMap, 0, 0, values.size());
             return JImmutableHashMap.forBuilder(root, collisionMap);
         }
     }
@@ -54,43 +54,34 @@ class HamtBuilder<K, V>
 
     private HamtNode<K, V> combine(CollisionMap<K, V> collisionMap,
                                    int shift,
-                                   int mask,
                                    int offset,
                                    int limit)
     {
         assert limit > offset;
         CollisionMap.Node myValues = collisionMap.emptyNode();
         final HamtNode<K, V>[] children = allocate(32);
-        int childIndex = 0;
+        final int childShift = Math.min(32, shift + HamtBranchNode.SHIFT);
+        int childIndex = -1;
         int childOffset = limit;
-        final int childMask = maskForShift(shift - 5);
         for (int i = offset; i < limit; ++i) {
             final Value<K, V> v = values.get(i);
-            final int hash = v.hash & mask;
+            final int hash = (shift != 32) ? v.hash >>> shift : 0;
             if (hash == 0) {
                 myValues = collisionMap.update(myValues, v.key, v.value);
             } else {
-                assert shift >= 0;
-                final int index = hash >>> shift;
+                final int index = hash & HamtBranchNode.MASK;
                 if (index != childIndex) {
-                    if (i > childOffset) {
-                        children[childIndex] = combine(collisionMap,
-                                                       shift - HamtBranchNode.SHIFT,
-                                                       childMask,
-                                                       childOffset,
-                                                       i);
+                    assert index > childIndex;
+                    if (childOffset < i) {
+                        children[childIndex] = combine(collisionMap, childShift, childOffset, i);
                     }
                     childOffset = i;
                     childIndex = index;
                 }
             }
-            if (childOffset < limit) {
-                children[childIndex] = combine(collisionMap,
-                                               shift - HamtBranchNode.SHIFT,
-                                               childMask,
-                                               childOffset,
-                                               limit);
-            }
+        }
+        if (childOffset < limit) {
+            children[childIndex] = combine(collisionMap, childShift, childOffset, limit);
         }
         return HamtBranchNode.forBuilder(collisionMap, myValues, children);
     }
@@ -101,18 +92,6 @@ class HamtBuilder<K, V>
     public HamtNode<K, V>[] allocate(int size)
     {
         return new HamtNode[size];
-    }
-
-    static int maskForShift(int shift)
-    {
-        final int max1bit = Math.min(32, shift + HamtBranchNode.SHIFT);
-        int mask = 0;
-        int bit = 1;
-        for (int i = 1; i <= max1bit; ++i) {
-            mask |= bit;
-            bit <<= 1;
-        }
-        return mask;
     }
 
     private static class Value<K, V>
@@ -129,7 +108,7 @@ class HamtBuilder<K, V>
             this.key = key;
             this.value = value;
             this.hash = key.hashCode();
-            sortHash = ((long)hash) & 0xffffffffL;
+            sortHash = computeSortCode(hash);
         }
 
         @Override
@@ -137,5 +116,49 @@ class HamtBuilder<K, V>
         {
             return Long.compare(sortHash, other.sortHash);
         }
+
+        @Override
+        public String toString()
+        {
+            return String.format("[%s,%s,%s]", binary(sortHash), binary(hash), hash);
+        }
+
+        private String binary(long value)
+        {
+            return formatBinary(Long.toString(value, 2));
+        }
+
+        private String binary(int value)
+        {
+            return formatBinary(Integer.toString(value, 2));
+        }
+
+        private String formatBinary(String s)
+        {
+            if (s.startsWith("-")) {
+                s = s.substring(1);
+            }
+            while (s.length() < 35) {
+                s = "0" + s;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 30; i >= 0; i -= 5) {
+                if (sb.length() > 0) {
+                    sb.insert(0, "_");
+                }
+                sb.insert(0, s.substring(i, i + 5));
+            }
+            return sb.toString();
+        }
+    }
+
+    static long computeSortCode(int hashCode)
+    {
+        long answer = 0;
+        for (int shift = 0; shift < 32; shift += HamtBranchNode.SHIFT) {
+            answer = (answer << HamtBranchNode.SHIFT) | (hashCode & HamtBranchNode.MASK);
+            hashCode = hashCode >>> HamtBranchNode.SHIFT;
+        }
+        return answer;
     }
 }

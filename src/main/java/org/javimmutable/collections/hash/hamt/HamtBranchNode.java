@@ -101,8 +101,7 @@ public class HamtBranchNode<K, V>
         int bitmask = 0;
         int childCount = 0;
         int size = collisionMap.size(value);
-        for (int i = 0; i < children.length; ++i) {
-            HamtNode<K, V> child = children[i];
+        for (HamtNode<K, V> child : children) {
             if (child != null) {
                 bitmask |= bit;
                 childCount += 1;
@@ -110,15 +109,14 @@ public class HamtBranchNode<K, V>
             }
             bit <<= 1;
         }
-        if (size == 0) {
-            return null;
-        }
+        assert size > 0; 
         int childIndex = 0;
         HamtNode<K, V>[] compactChildren = new HamtNode[childCount];
         for (int i = 0; childIndex < childCount && i < children.length; ++i) {
             HamtNode<K, V> child = children[i];
             if (child != null) {
                 compactChildren[childIndex] = child;
+                childIndex += 1;
             }
         }
         return createForDelete(collisionMap, bitmask, value, compactChildren, size);
