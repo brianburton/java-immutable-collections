@@ -37,6 +37,8 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collector;
 
@@ -73,8 +75,84 @@ public interface JImmutableMap<K, V>
         @Nonnull
         Builder<K, V> add(@Nonnull K key,
                           V value);
+
+        int size();
+
+        @Nonnull
+        default Builder<K, V> add(Entry<? extends K, ? extends V> e)
+        {
+            return add(e.getKey(), e.getValue());
+        }
+
+        /**
+         * Adds all values in the Iterator to the values included in the collection when build() is called.
+         *
+         * @param source Iterator containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Iterator<Entry<? extends K, ? extends V>> source)
+        {
+            while (source.hasNext()) {
+                add(source.next());
+            }
+            return this;
+        }
+
+        /**
+         * Adds all values in the Collection to the values included in the collection when build() is called.
+         *
+         * @param source Collection containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Iterable<Entry<? extends K, ? extends V>> source)
+        {
+            return add(source.iterator());
+        }
+
+        /**
+         * Adds all values in the array to the values included in the collection when build() is called.
+         *
+         * @param source array containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Entry<? extends K, ? extends V>... source)
+        {
+            return add(Arrays.asList(source));
+        }
+
+        /**
+         * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
+         *
+         * @param source Indexed containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Indexed<Entry<? extends K, ? extends V>> source,
+                                  int offset,
+                                  int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
+            return this;
+        }
+
+        /**
+         * Adds all values in the Indexed to the values included in the collection when build() is called.
+         *
+         * @param source Indexed containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Indexed<Entry<? extends K, ? extends V>> source)
+        {
+            return add(source, 0, source.size());
+        }
     }
-    
+
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
      */

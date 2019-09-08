@@ -26,15 +26,6 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
-                                                        V value)
-    {
-        values.put(key, value);
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public synchronized JImmutableMap<K, V> build()
     {
         if (values.isEmpty()) {
@@ -44,6 +35,20 @@ class TreeMapBuilder<K, V>
             final AbstractNode<K, V> root = buildTree(sorted, 0, sorted.size());
             return new JImmutableTreeMap<>(comparator, root);
         }
+    }
+
+    @Nonnull
+    @Override
+    public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
+                                                        V value)
+    {
+        values.put(key, value);
+        return this;
+    }
+
+    public synchronized int size()
+    {
+        return values.size();
     }
 
     private AbstractNode<K, V> buildTree(@Nonnull List<Entry<K, V>> values,

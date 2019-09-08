@@ -43,6 +43,11 @@ public class HamtBuilder<K, V>
         return collisionMap;
     }
 
+    public int size()
+    {
+        return (root != null) ? root.size() : 0;
+    }
+
     private static <K, V> CollisionMap<K, V> selectCollisionMapForKey(@Nonnull K key)
     {
         if (key instanceof Comparable) {
@@ -62,6 +67,8 @@ public class HamtBuilder<K, V>
 
         @Nonnull
         abstract HamtNode<K, V> toHamt(CollisionMap<K, V> collisionMap);
+
+        abstract int size();
     }
 
     private static class Leaf<K, V>
@@ -69,12 +76,13 @@ public class HamtBuilder<K, V>
     {
         private CollisionMap.Node values;
         private int hashCode;
+        private int size;
 
-        private Leaf(int hashCode,
-                     CollisionMap.Node values)
+        private Leaf(@Nonnull Leaf<K, V> other)
         {
-            this.values = values;
-            this.hashCode = hashCode;
+            this.values = other.values;
+            this.hashCode = other.hashCode >>> SHIFT;
+            size = other.size;
         }
 
         private Leaf(@Nonnull CollisionMap<K, V> collisionMap,
@@ -84,6 +92,7 @@ public class HamtBuilder<K, V>
         {
             this.values = collisionMap.update(collisionMap.emptyNode(), key, value);
             this.hashCode = hashCode;
+            size = 1;
         }
 
         @Nonnull
@@ -95,6 +104,7 @@ public class HamtBuilder<K, V>
         {
             if (hashCode == this.hashCode) {
                 values = collisionMap.update(values, key, value);
+                size = collisionMap.size(values);
                 return this;
             } else {
                 return new Branch<>(collisionMap, this, hashCode, key, value);
@@ -107,6 +117,12 @@ public class HamtBuilder<K, V>
         {
             return new HamtLeafNode<>(hashCode, values);
         }
+
+        @Override
+        int size()
+        {
+            return size;
+        }
     }
 
     private static class Branch<K, V>
@@ -114,6 +130,7 @@ public class HamtBuilder<K, V>
     {
         private CollisionMap.Node values;
         private Node<K, V>[] children;
+        private int size;
 
         private Branch(@Nonnull CollisionMap<K, V> collisionMap,
                        @Nonnull Leaf<K, V> leaf,
@@ -127,8 +144,9 @@ public class HamtBuilder<K, V>
                 values = leaf.values;
             } else {
                 values = collisionMap.emptyNode();
-                children[leaf.hashCode & MASK] = new Leaf<>(leaf.hashCode >>> SHIFT, leaf.values);
+                children[leaf.hashCode & MASK] = new Leaf<>(leaf);
             }
+            size = leaf.size;
             add(collisionMap, hashCode, key, value);
         }
 
@@ -140,14 +158,19 @@ public class HamtBuilder<K, V>
                        @Nullable V value)
         {
             if (hashCode == 0) {
+                int oldSize = collisionMap.size(values);
                 values = collisionMap.update(values, key, value);
+                size = size - oldSize + collisionMap.size(values);
             } else {
                 final int index = hashCode & MASK;
                 final Node<K, V> child = children[index];
                 if (child == null) {
                     children[index] = new Leaf<>(collisionMap, hashCode >>> SHIFT, key, value);
+                    size += 1;
                 } else {
+                    int oldSize = children[index].size();
                     children[index] = child.add(collisionMap, hashCode >>> SHIFT, key, value);
+                    size = size - oldSize + children[index].size();
                 }
             }
             assert invariant(collisionMap);
@@ -164,7 +187,6 @@ public class HamtBuilder<K, V>
                     count += 1;
                 }
             }
-            int size = collisionMap.size(values);
             int bitmask = 0;
             int bit = 1;
             final HamtNode<K, V>[] nodes = new HamtNode[count];
@@ -172,7 +194,6 @@ public class HamtBuilder<K, V>
             for (Node<K, V> child : children) {
                 if (child != null) {
                     final HamtNode<K, V> hamt = child.toHamt(collisionMap);
-                    size += hamt.size(collisionMap);
                     nodes[index++] = hamt;
                     bitmask |= bit;
                 }
@@ -181,9 +202,15 @@ public class HamtBuilder<K, V>
             return new HamtBranchNode<>(bitmask, values, nodes, size);
         }
 
+        @Override
+        int size()
+        {
+            return size;
+        }
+
         private boolean invariant(@Nonnull CollisionMap<K, V> collisionMap)
         {
-            final int size = collisionMap.size(values);
+            final int valuesSize = collisionMap.size(values);
             int childCount = 0;
             int leafCount = 0;
             for (Node<K, V> child : children) {
@@ -194,7 +221,7 @@ public class HamtBuilder<K, V>
                     }
                 }
             }
-            return (childCount > 0) && (size > 0 || childCount > 1 || leafCount == 0);
+            return (childCount > 0) && (valuesSize > 0 || childCount > 1 || leafCount == 0);
         }
     }
 }

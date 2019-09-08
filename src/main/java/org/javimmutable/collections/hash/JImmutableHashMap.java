@@ -277,5 +277,11 @@ public class JImmutableHashMap<T, K, V>
             builder.add(key, value);
             return this;
         }
+
+        @Override
+        public synchronized int size()
+        {
+            return builder.size();
+        }
     }
 }
