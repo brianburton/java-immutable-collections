@@ -100,6 +100,21 @@ public interface JImmutableMap<K, V>
         }
 
         /**
+         * Adds all values in the Map to the values included in the collection when build() is called.
+         *
+         * @param source Iterator containing values to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<K, V> add(Map<? extends K, ? extends V> source)
+        {
+            for (Map.Entry<? extends K, ? extends V> e : source.entrySet()) {
+                add(e.getKey(), e.getValue());
+            }
+            return this;
+        }
+
+        /**
          * Adds all values in the Collection to the values included in the collection when build() is called.
          *
          * @param source Collection containing values to add

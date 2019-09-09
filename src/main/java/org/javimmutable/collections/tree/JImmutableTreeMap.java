@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @Immutable
 public class JImmutableTreeMap<K, V>
@@ -96,21 +95,6 @@ public class JImmutableTreeMap<K, V>
     public static <K, V> JImmutableMap.Builder<K, V> builder(@Nonnull Comparator<K> comparator)
     {
         return new TreeMapBuilder<>(comparator);
-    }
-
-    /**
-     * Constructs a new map containing the same key/value pairs as map using a ComparableComparator
-     * to compare the keys.
-     */
-    @Nonnull
-    public static <K extends Comparable<K>, V> JImmutableTreeMap<K, V> of(@Nonnull Iterable<Map.Entry<K, V>> map)
-    {
-        final Comparator<K> comp = ComparableComparator.of();
-        AbstractNode<K, V> root = FringeNode.instance();
-        for (Map.Entry<K, V> entry : map) {
-            root = root.assign(comp, entry.getKey(), entry.getValue());
-        }
-        return root.isEmpty() ? of() : new JImmutableTreeMap<>(comp, root);
     }
 
     @Nonnull
