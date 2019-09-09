@@ -14,22 +14,18 @@ import static org.javimmutable.collections.hash.hamt.HamtBranchNode.*;
 public class HamtBuilder<K, V>
 {
     private CollisionMap<K, V> collisionMap = ListCollisionMap.instance();
-    private Node<K, V> root;
+    private Node<K, V> root = new Empty<>();
 
     @Nonnull
     public HamtNode<K, V> build()
     {
-        if (root == null) {
-            return HamtEmptyNode.of();
-        } else {
-            return root.toHamt(collisionMap);
-        }
+        return root.toHamt(collisionMap);
     }
 
     public void add(@Nonnull K key,
                     V value)
     {
-        if (root == null) {
+        if (root.isEmpty()) {
             collisionMap = selectCollisionMapForKey(key);
             root = new Leaf<>(collisionMap, key.hashCode(), key, value);
         } else {
@@ -45,7 +41,7 @@ public class HamtBuilder<K, V>
 
     public int size()
     {
-        return (root != null) ? root.size() : 0;
+        return root.size();
     }
 
     private static <K, V> CollisionMap<K, V> selectCollisionMapForKey(@Nonnull K key)
@@ -69,6 +65,41 @@ public class HamtBuilder<K, V>
         abstract HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap);
 
         abstract int size();
+
+        abstract boolean isEmpty();
+    }
+
+    private static class Empty<K, V>
+        extends Node<K, V>
+    {
+        @Nonnull
+        @Override
+        Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
+                       int hashCode,
+                       @Nonnull K key,
+                       @Nullable V value)
+        {
+            return new Leaf<>(collisionMap, hashCode, key, value);
+        }
+
+        @Nonnull
+        @Override
+        HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
+        {
+            return HamtEmptyNode.of();
+        }
+
+        @Override
+        int size()
+        {
+            return 0;
+        }
+
+        @Override
+        boolean isEmpty()
+        {
+            return true;
+        }
     }
 
     private static class Leaf<K, V>
@@ -122,6 +153,12 @@ public class HamtBuilder<K, V>
         int size()
         {
             return size;
+        }
+
+        @Override
+        boolean isEmpty()
+        {
+            return false;
         }
     }
 
@@ -206,6 +243,12 @@ public class HamtBuilder<K, V>
         int size()
         {
             return size;
+        }
+
+        @Override
+        boolean isEmpty()
+        {
+            return false;
         }
 
         private boolean invariant(@Nonnull CollisionMap<K, V> collisionMap)
