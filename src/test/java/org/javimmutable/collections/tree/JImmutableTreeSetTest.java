@@ -44,6 +44,7 @@ import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
@@ -265,7 +266,7 @@ public class JImmutableTreeSetTest
         assertEquals(false, hset.containsAll(tset));
         // yet retainAll() retains the mis-matched string because TreeSet says they are the same
         hset.retainAll(tset);
-        assertEquals(asList("Hello"), iterToList(hset));
+        assertEquals(asList("Hello"), TestUtil.makeList(hset));
 
         // reversing who receives the retainAll() call results in different answer!
         // TreeSet does not retain the HELLO value because HashSet says it's not a member
@@ -278,7 +279,7 @@ public class JImmutableTreeSetTest
         assertEquals(true, tset.containsAll(hset));
         // yet retainAll() drops the matching String because HashSet says they are not the same
         tset.retainAll(hset);
-        assertEquals(asList(), iterToList(tset));
+        assertEquals(asList(), TestUtil.makeList(tset));
 
         // JImmutableSet inherits Set's retainAll() behavior in intersection(Set)
         // since the treeset's idea of equality is broader than the hash set's intersection works as expected
@@ -289,10 +290,10 @@ public class JImmutableTreeSetTest
         assertEquals(true, jet.contains("HELLO"));
         assertEquals(true, jet.containsAll(tset));
         // same as Set.retainAll()
-        assertEquals(asList("Hello"), iterToList(jet.intersection(hset)));
+        assertEquals(asList("Hello"), TestUtil.makeList(jet.intersection(hset)));
         // same as Set.retainAll()
-        assertEquals(asList("Hello"), iterToList(jet.intersection(hset.iterator())));
-        assertEquals(asList("Hello"), iterToList(jet.intersection((Collection)hset)));
+        assertEquals(asList("Hello"), TestUtil.makeList(jet.intersection(hset.iterator())));
+        assertEquals(asList("Hello"), TestUtil.makeList(jet.intersection((Collection)hset)));
     }
 
     public void testStreams()
@@ -351,14 +352,5 @@ public class JImmutableTreeSetTest
     private SetBuilderTestAdapter<Integer> builderAdaptor()
     {
         return new SetBuilderTestAdapter<>(JImmutableTreeSet.builder(ComparableComparator.<Integer>of()));
-    }
-
-    private List<String> iterToList(Iterable<String> source)
-    {
-        List<String> answer = new ArrayList<>();
-        for (String value : source) {
-            answer.add(value);
-        }
-        return answer;
     }
 }
