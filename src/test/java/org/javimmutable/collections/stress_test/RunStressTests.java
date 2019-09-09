@@ -44,6 +44,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
@@ -107,7 +108,7 @@ public class RunStressTests
         throws Exception
     {
         final OptionParser parser = new OptionParser();
-        final OptionSpec<Boolean> helpSpec = parser.accepts("help", "prints available options").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+        parser.accepts("help", "prints available options");
         final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file").withOptionalArg().ofType(String.class).defaultsTo("src/site/markdown/index.md");
         final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies random number seed").withOptionalArg().ofType(Long.class).defaultsTo(System.currentTimeMillis());
         final OptionSpec<String> testSpec = parser.accepts("test", "specifies tests to run").withRequiredArg().ofType(String.class);
@@ -121,7 +122,7 @@ public class RunStressTests
         }
         final JImmutableSet<String> filters = sortedSet(testSpec.values(options));
         final JImmutableList<StressTester> selectedTests = filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
-        if (options.valueOf(helpSpec) || selectedTests.isEmpty()) {
+        if (options.has("help") || selectedTests.isEmpty()) {
             printHelpMessage(parser, filters, selectedTests);
             return;
         }
@@ -165,15 +166,14 @@ public class RunStressTests
         System.out.println();
         parser.printHelpOn(System.out);
 
-        JImmutableSetMap<String, String> filterMap = setMapFactory(String.class, String.class)
+        final JImmutableSetMapFactory<String, String> filterMapFactory = setMapFactory(String.class, String.class)
             .withMap(sortedMap())
-            .withSet(sortedSet())
-            .create();
-        for (StressTester tester : AllTesters) {
-            for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(tester.getTestName(), option);
-            }
-        }
+            .withSet(sortedSet());
+        JImmutableSetMap<String, String> filterMap = AllTesters.stream()
+            .flatMap(tester -> tester.getOptions()
+                .stream()
+                .map(option -> JImmutables.entry(tester.getTestName(), option)))
+            .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters By Class:");
         System.out.printf("%-40s  %s%n", "Tester Class", "Filters");
@@ -181,12 +181,11 @@ public class RunStressTests
             System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue()));
         }
 
-        filterMap = filterMap.deleteAll();
-        for (StressTester tester : AllTesters) {
-            for (String option : tester.getOptions()) {
-                filterMap = filterMap.insert(option, tester.getTestName());
-            }
-        }
+        filterMap = AllTesters.stream()
+            .flatMap(tester -> tester.getOptions()
+                .stream()
+                .map(option -> JImmutables.entry(option, tester.getTestName())))
+            .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters");
         System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
