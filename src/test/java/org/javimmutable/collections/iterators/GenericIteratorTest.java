@@ -147,10 +147,16 @@ public class GenericIteratorTest
     }
 
     private static abstract class Node
-        implements IterableStreamable<Integer>,
-                   GenericIterator.Iterable<Integer>
+        implements GenericIterator.Iterable<Integer>,
+                   IterableStreamable<Integer>
+
     {
-        abstract int size();
+        @Nonnull
+        @Override
+        public SplitableIterator<Integer> iterator()
+        {
+            return GenericIterator.Iterable.super.iterator();
+        }
 
         @Override
         public int getSpliteratorCharacteristics()
@@ -170,16 +176,9 @@ public class GenericIteratorTest
         }
 
         @Override
-        int size()
+        public int iterableSize()
         {
             return 1;
-        }
-
-        @Nonnull
-        @Override
-        public SplitableIterator<Integer> iterator()
-        {
-            return new GenericIterator<>(this, 0, 1);
         }
 
         @Nullable
@@ -204,16 +203,9 @@ public class GenericIteratorTest
         }
 
         @Override
-        int size()
+        public int iterableSize()
         {
             return values.size();
-        }
-
-        @Nonnull
-        @Override
-        public SplitableIterator<Integer> iterator()
-        {
-            return new GenericIterator<>(this, 0, size());
         }
 
         @Nullable
@@ -236,23 +228,16 @@ public class GenericIteratorTest
         {
             int size = 0;
             for (Node node : nodes) {
-                size += node.size();
+                size += node.iterableSize();
             }
             this.nodes = nodes;
             this.size = size;
         }
 
         @Override
-        int size()
+        public int iterableSize()
         {
             return size;
-        }
-
-        @Nonnull
-        @Override
-        public SplitableIterator<Integer> iterator()
-        {
-            return new GenericIterator<>(this, 0, size);
         }
 
         @Nullable
@@ -261,7 +246,7 @@ public class GenericIteratorTest
                                                                int offset,
                                                                int limit)
         {
-            return GenericIterator.indexedState(parent, IndexedArray.retained(nodes), Node::size, offset, limit);
+            return GenericIterator.indexedState(parent, IndexedArray.retained(nodes), offset, limit);
         }
     }
 }

@@ -91,7 +91,23 @@ public interface HamtNode<K, V>
     @Nonnull
     default GenericIterator.Iterable<JImmutableMap.Entry<K, V>> genericIterable(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return (parent, offset, limit) -> iterateOverRange(collisionMap, parent, offset, limit);
+        return new GenericIterator.Iterable<JImmutableMap.Entry<K, V>>()
+        {
+            @Nullable
+            @Override
+            public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                                     int offset,
+                                                                                     int limit)
+            {
+                return HamtNode.this.iterateOverRange(collisionMap, parent, offset, limit);
+            }
+
+            @Override
+            public int iterableSize()
+            {
+                return size(collisionMap);
+            }
+        };
     }
 
     @Nonnull

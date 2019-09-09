@@ -37,7 +37,6 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -122,9 +121,9 @@ abstract class AbstractNode<T>
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
-    public SplitableIterator<T> iterator()
+    @Override
+    public int iterableSize()
     {
-        return new GenericIterator<>(this, 0, size());
+        return size();
     }
 }

@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -383,59 +384,12 @@ class ValueNode<K, V>
                                                                              int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        return new IteratorState(parent, offset, limit);
+        return GenericIterator.indexedState(parent, IndexedHelper.indexed(left, GenericIterator.valueIterable(MapEntry.of(key, value)), right), offset, limit);
     }
 
-    private class IteratorState
-        implements GenericIterator.State<JImmutableMap.Entry<K, V>>
+    @Override
+    public int iterableSize()
     {
-        private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
-        private final int limit;
-        private final int leftSize;
-        private int currentOffset;
-        private int nextOffset;
-
-        private IteratorState(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                              int offset,
-                              int limit)
-        {
-            this.parent = parent;
-            this.limit = limit;
-            leftSize = left.size();
-            currentOffset = -1;
-            nextOffset = offset;
-        }
-
-        @Override
-        public boolean hasValue()
-        {
-            return currentOffset == leftSize;
-        }
-
-        @Override
-        public JImmutableMap.Entry<K, V> value()
-        {
-            assert currentOffset == leftSize;
-            return MapEntry.of(key, value);
-        }
-
-        @Nullable
-        @Override
-        public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
-        {
-            assert nextOffset <= limit;
-            currentOffset = nextOffset;
-            if (currentOffset >= limit) {
-                return parent;
-            } else if (currentOffset < leftSize) {
-                nextOffset = Math.min(leftSize, limit);
-                return left.iterateOverRange(this, currentOffset, nextOffset);
-            } else if (currentOffset == leftSize) {
-                nextOffset = leftSize + 1;
-                return this;
-            } else {
-                return right.iterateOverRange(parent, currentOffset - leftSize - 1, limit - leftSize - 1);
-            }
-        }
+        return size;
     }
 }

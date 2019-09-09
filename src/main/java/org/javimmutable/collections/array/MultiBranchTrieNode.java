@@ -248,7 +248,7 @@ class MultiBranchTrieNode<T>
         } else {
             source = IndexedArray.retained(entriesForSignedOrderIteration());
         }
-        return GenericIterator.indexedState(parent, source, TrieNode::valueCount, offset, limit);
+        return GenericIterator.indexedState(parent, source, offset, limit);
     }
 
     @Override

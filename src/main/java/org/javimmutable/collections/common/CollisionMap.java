@@ -39,6 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -94,13 +95,34 @@ public interface CollisionMap<K, V>
     @Nonnull
     default GenericIterator.Iterable<JImmutableMap.Entry<K, V>> genericIterable(@Nonnull Node node)
     {
-        return (parent, offset, limit) -> iterateOverRange(node, parent, offset, limit);
-    }
+        return new GenericIterator.Iterable<JImmutableMap.Entry<K, V>>()
+        {
+            @Nullable
+            @Override
+            public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
+                                                                                     int offset,
+                                                                                     int limit)
+            {
+                return CollisionMap.this.iterateOverRange(node, parent, offset, limit);
+            }
 
+            @Override
+            public int iterableSize()
+            {
+                return size(node);
+            }
+        };
+    }
 
     @Nonnull
     default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(@Nonnull CollisionMap.Node node)
     {
-        return () -> new GenericIterator<>(genericIterable(node), 0, size(node));
+        return genericIterable(node);
+    }
+
+    @Nonnull
+    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node node)
+    {
+        return genericIterable(node).iterator();
     }
 }

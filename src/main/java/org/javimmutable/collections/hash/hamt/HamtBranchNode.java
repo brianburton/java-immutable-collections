@@ -38,6 +38,7 @@ package org.javimmutable.collections.hash.hamt;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.CollisionMap;
@@ -320,8 +321,8 @@ public class HamtBranchNode<K, V>
                                                                              int offset,
                                                                              int limit)
     {
-        assert offset >= 0 && limit <= size && offset <= limit;
-        return new IteratorState(collisionMap, parent, offset, limit);
+        assert offset >= 0 && offset <= limit && limit <= size;
+        return GenericIterator.indexedState(parent, indexedForIterator(collisionMap), offset, limit);
     }
 
     @Override
@@ -356,71 +357,26 @@ public class HamtBranchNode<K, V>
         }
     }
 
-    private class IteratorState
-        implements GenericIterator.State<JImmutableMap.Entry<K, V>>
+    @Nonnull
+    private Indexed<GenericIterator.Iterable<JImmutableMap.Entry<K, V>>> indexedForIterator(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        private final GenericIterator.State<JImmutableMap.Entry<K, V>> parent;
-        private final CollisionMap<K, V> collisionMap;
-        private final int limit;
-        private int offset;
-        private int item;
-        private int pos;
-
-        private IteratorState(@Nonnull CollisionMap<K, V> collisionMap,
-                              @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                              int offset,
-                              int limit)
+        return new Indexed<GenericIterator.Iterable<JImmutableMap.Entry<K, V>>>()
         {
-            this.parent = parent;
-            this.collisionMap = collisionMap;
-            this.offset = offset;
-            this.limit = limit;
-            item = -1;
-            pos = 0;
-        }
-
-        @Override
-        public GenericIterator.State<JImmutableMap.Entry<K, V>> advance()
-        {
-            assert item <= children.length;
-            assert offset <= limit;
-            assert pos <= offset;
-            while (item < children.length) {
-                final int size = itemSize();
-                final int nextPos = pos + itemSize();
-                if (nextPos > offset) {
-                    return itemState(size);
+            @Override
+            public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> get(int index)
+            {
+                if (index == 0) {
+                    return collisionMap.genericIterable(value);
+                } else {
+                    return children[index - 1].genericIterable(collisionMap);
                 }
-                item += 1;
-                pos = nextPos;
             }
-            return parent;
-        }
 
-        private int itemSize()
-        {
-            if (item == -1) {
-                return collisionMap.size(value);
-            } else {
-                return children[item].size(collisionMap);
+            @Override
+            public int size()
+            {
+                return 1 + children.length;
             }
-        }
-
-        private GenericIterator.State<JImmutableMap.Entry<K, V>> itemState(int size)
-        {
-            final int itemOffset = (offset > pos) ? offset - pos : 0;
-            final int itemCount = Math.min(size - itemOffset, limit - offset);
-            final int itemLimit = itemOffset + itemCount;
-            final GenericIterator.State<JImmutableMap.Entry<K, V>> answer;
-            if (item == -1) {
-                answer = collisionMap.iterateOverRange(value, this, itemOffset, itemLimit);
-            } else {
-                answer = children[item].iterateOverRange(collisionMap, this, itemOffset, itemLimit);
-            }
-            item += 1;
-            pos += size;
-            offset += itemLimit - itemOffset;
-            return answer;
-        }
+        };
     }
 }

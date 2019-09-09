@@ -203,6 +203,12 @@ class FringeNode<K, V>
     }
 
     @Override
+    public int iterableSize()
+    {
+        return 0;
+    }
+
+    @Override
     public void checkInvariants(@Nonnull Comparator<K> comp)
     {
     }

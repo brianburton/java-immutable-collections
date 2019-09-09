@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -411,36 +412,6 @@ class BranchNode<T>
                                                      int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        final int leftSize = left.size();
-        if (limit <= leftSize) {
-            return left.iterateOverRange(parent, offset, limit);
-        } else if (offset >= leftSize) {
-            return right.iterateOverRange(parent, offset - leftSize, limit - leftSize);
-        } else {
-            return left.iterateOverRange(new IteratorState(parent, limit - leftSize), offset, leftSize);
-        }
-    }
-
-    // state object to resume iteration down right branch from start to limit (limit relative to right branch)
-    class IteratorState
-        implements GenericIterator.State<T>
-    {
-        private final GenericIterator.State<T> parent;
-        private final int limit;
-
-        private IteratorState(@Nullable GenericIterator.State<T> parent,
-                              int limit)
-        {
-            assert limit <= right.size();
-            this.parent = parent;
-            this.limit = limit;
-        }
-
-        @Nullable
-        @Override
-        public GenericIterator.State<T> advance()
-        {
-            return right.iterateOverRange(parent, 0, limit);
-        }
+        return GenericIterator.indexedState(parent, IndexedHelper.indexed(left, right), offset, limit);
     }
 }

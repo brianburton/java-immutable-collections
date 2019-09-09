@@ -39,7 +39,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
@@ -121,12 +120,6 @@ abstract class AbstractNode<K, V>
     public boolean equals(Object obj)
     {
         return (obj instanceof AbstractNode) && IteratorHelper.iteratorEquals(iterator(), ((AbstractNode)obj).iterator());
-    }
-
-    @Nonnull
-    public SplitableIterator<Entry<K, V>> iterator()
-    {
-        return new GenericIterator<>(this, 0, size());
     }
 
     static class DeleteResult<K, V>

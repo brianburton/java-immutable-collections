@@ -38,7 +38,6 @@ package org.javimmutable.collections.array;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.concurrent.Immutable;
@@ -72,11 +71,6 @@ abstract class TrieNode<T>
 
     public abstract boolean isLeaf();
 
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
-    {
-        return new GenericIterator<>(this, 0, valueCount());
-    }
-
     public TrieNode<T> trimmedToMinimumDepth()
     {
         return this;
@@ -91,6 +85,12 @@ abstract class TrieNode<T>
             node = SingleBranchTrieNode.forBranchIndex(nodeShift, 0, node);
         }
         return node;
+    }
+
+    @Override
+    public int iterableSize()
+    {
+        return valueCount();
     }
 
     public static int computeValueCount(TrieNode<?>[] nodes)

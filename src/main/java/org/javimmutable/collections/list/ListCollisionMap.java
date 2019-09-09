@@ -39,8 +39,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -195,17 +193,5 @@ public class ListCollisionMap<K, V>
                                                                int limit)
     {
         return root(node).iterateOverRange(parent, offset, limit);
-    }
-
-    @Nonnull
-    public SplitableIterator<Entry<K, V>> iterator(@Nonnull Node node)
-    {
-        return new GenericIterator<>((p, o, l) -> iterateOverRange(node, p, o, l), 0, size(node));
-    }
-
-    @Nonnull
-    public SplitableIterable<Entry<K, V>> iterable(@Nonnull Node node)
-    {
-        return () -> iterator(node);
     }
 }

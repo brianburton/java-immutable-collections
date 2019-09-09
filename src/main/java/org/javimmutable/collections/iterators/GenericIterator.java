@@ -37,12 +37,13 @@ package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterable;
+import org.javimmutable.collections.SplitableIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.NoSuchElementException;
-import java.util.function.ToIntFunction;
 
 @ThreadSafe
 public class GenericIterator<T>
@@ -53,6 +54,7 @@ public class GenericIterator<T>
     private final Iterable<T> root;
     private final int limit;
     private int offset;
+    private boolean uninitialized;
     private State<T> state;
 
     public GenericIterator(@Nonnull Iterable<T> root,
@@ -63,15 +65,24 @@ public class GenericIterator<T>
         this.root = root;
         this.limit = limit;
         this.offset = offset;
-        this.state = root.iterateOverRange(null, offset, limit);
+        uninitialized = true;
     }
 
     public interface Iterable<T>
+        extends SplitableIterable<T>
     {
         @Nullable
         State<T> iterateOverRange(@Nullable State<T> parent,
                                   int offset,
                                   int limit);
+
+        int iterableSize();
+
+        @Nonnull
+        default SplitableIterator<T> iterator()
+        {
+            return new GenericIterator<>(this, 0, iterableSize());
+        }
     }
 
     public interface State<T>
@@ -129,6 +140,10 @@ public class GenericIterator<T>
 
     private boolean prepare()
     {
+        if (uninitialized) {
+            state = root.iterateOverRange(null, offset, limit);
+            uninitialized = false;
+        }
         while (state != null) {
             if (state.hasValue()) {
                 return true;
@@ -144,6 +159,31 @@ public class GenericIterator<T>
         return new SingleValueState<>(parent, value);
     }
 
+    public static <T> Iterable<T> valueIterable(T value)
+    {
+        return new Iterable<T>()
+        {
+            @Override
+            public State<T> iterateOverRange(@Nullable State<T> parent,
+                                             int offset,
+                                             int limit)
+            {
+                assert offset >= 0 && offset <= limit && limit <= 1;
+                if (offset == limit) {
+                    return parent;
+                } else {
+                    return new SingleValueState<T>(parent, value);
+                }
+            }
+
+            @Override
+            public int iterableSize()
+            {
+                return 1;
+            }
+        };
+    }
+
     public static <T> State<T> multiValueState(@Nullable State<T> parent,
                                                @Nonnull Indexed<T> values,
                                                int offset,
@@ -153,20 +193,19 @@ public class GenericIterator<T>
         return new MultiValueState<>(parent, values, offset, limit);
     }
 
-    public static <T, C extends Iterable<T>> State<T> indexedState(State<T> parent,
-                                                                   Indexed<C> children,
-                                                                   ToIntFunction<C> sizer,
-                                                                   int offset,
-                                                                   int limit)
+    public static <T> State<T> indexedState(State<T> parent,
+                                            Indexed<? extends Iterable<T>> children,
+                                            int offset,
+                                            int limit)
     {
         assert 0 <= offset && offset <= limit;
         if (offset == limit) {
             return parent;
         } else {
-            return new IndexedState<>(parent, children, sizer, offset, limit);
+            return new IndexedState<>(parent, children, offset, limit);
         }
     }
-    
+
     private static class SingleValueState<T>
         implements State<T>
     {
@@ -248,25 +287,22 @@ public class GenericIterator<T>
         }
     }
 
-    private static class IndexedState<T, C extends Iterable<T>>
+    private static class IndexedState<T>
         implements State<T>
     {
         private final State<T> parent;
-        private final Indexed<C> children;
-        private final ToIntFunction<C> sizer;
+        private final Indexed<? extends Iterable<T>> children;
         private int offset;
         private int limit;
         private int index;
 
         public IndexedState(State<T> parent,
-                            Indexed<C> children,
-                            ToIntFunction<C> sizer,
+                            Indexed<? extends Iterable<T>> children,
                             int offset,
                             int limit)
         {
             this.parent = parent;
             this.children = children;
-            this.sizer = sizer;
             this.limit = limit;
             this.offset = offset;
             index = 0;
@@ -275,8 +311,8 @@ public class GenericIterator<T>
         @Override
         public State<T> advance()
         {
-            final C child = children.get(index);
-            final int size = sizer.applyAsInt(child);
+            final Iterable<T> child = children.get(index);
+            final int size = child.iterableSize();
             if (offset >= size) {
                 index += 1;
                 offset -= size;
