@@ -220,7 +220,7 @@
                         <argument>-classpath</argument>
                         <classpath />
                         <argument>-ea</argument>
-                        <argument>org.javimmutable.collections.stress_test.StressTestLoop</argument>
+                        <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
                         <!--<argument>&#45;&#45;list</argument>-->
                         <!--<argument>arraylist</argument>-->
                     </arguments>
