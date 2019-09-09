@@ -43,13 +43,12 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -112,7 +111,7 @@ public class JImmutableHashMultisetTest
         assertEquals(false, jmet.containsAllOccurrences(valuesM));
 
         assertSame(jmet, jmet.union(asList("tennant", "smith")));
-        assertSame(jmet, jmet.union(asSet("tennant", "smith")));
+        assertSame(jmet, jmet.union(TestUtil.makeSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJMet("tennant", "smith")));
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
@@ -130,7 +129,7 @@ public class JImmutableHashMultisetTest
         assertEquals(true, jmet2.containsAll(valuesL));
         assertEquals(true, jmet2.containsAllOccurrences(valuesL));
         assertEquals(false, jmet2.containsAllOccurrences(valuesM));
-        assertEquals(asSet("tennant", "smith", "capaldi", "eccleston"), jmet2.getSet());
+        assertEquals(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston"), jmet2.getSet());
 
         assertEquals(jmet, jmet.intersection(jmet2));
         assertEquals(jmet, jmet2.intersection(jmet));
@@ -191,7 +190,7 @@ public class JImmutableHashMultisetTest
         JImmutableMultiset<String> expected = asJMet("tennant", "smith", "capaldi", "eccleston");
         expected.checkInvariants();
         assertEquals(expected, jmet3.intersection(valuesL));
-        assertEquals(expected, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
+        assertEquals(expected, jmet3.intersection(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(expected));
     }
@@ -233,13 +232,6 @@ public class JImmutableHashMultisetTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvAtzSnJLE4tCSjKr6j8DwL/VIx5GBgqCso5GBiYXzIwMDCWMDAmlrOAWBUAAnNNs3AAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvAtzSnJLE4tCSjKr6j8DwL/VIx5GBgqCso5GBiYXzIAiRIGxsRyFiCLEchKArOYgKxkiFgFABv7ITOEAAAA");
-    }
-
-    private Set<String> asSet(String... args)
-    {
-        Set<String> set = new HashSet<>();
-        Collections.addAll(set, args);
-        return set;
     }
 
     private JImmutableSet<String> asJSet(String... args)

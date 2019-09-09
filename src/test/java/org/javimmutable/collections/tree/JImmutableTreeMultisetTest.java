@@ -43,14 +43,13 @@ import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -128,7 +127,7 @@ public class JImmutableTreeMultisetTest
         StandardJImmutableMultisetTests.verifyIterators(jmet, expected);
 
         assertSame(jmet, jmet.union(Arrays.asList("tennant", "smith")));
-        assertSame(jmet, jmet.union(asSet("tennant", "smith")));
+        assertSame(jmet, jmet.union(TestUtil.makeSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJSet("tennant", "smith")));
         assertSame(jmet, jmet.union(asJMet("tennant", "smith")));
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
@@ -151,7 +150,7 @@ public class JImmutableTreeMultisetTest
         assertEquals(true, jmet2.containsAll(valueSet));
         assertEquals(true, jmet2.containsAllOccurrences(valueSet));
         assertEquals(false, jmet2.containsAllOccurrences(valueList));
-        assertEquals(asSet("tennant", "smith", "capaldi", "eccleston"), jmet2.getSet());
+        assertEquals(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston"), jmet2.getSet());
         StandardJImmutableMultisetTests.verifyIterators(jmet2, expected2);
 
         assertEquals(jmet, jmet.intersection(jmet2));
@@ -219,7 +218,7 @@ public class JImmutableTreeMultisetTest
         JImmutableMultiset<String> jmet4 = asJMet(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
         jmet4.checkInvariants();
         assertEquals(jmet4, jmet3.intersection(valueSet));
-        assertEquals(jmet4, jmet3.intersection(asSet("tennant", "smith", "capaldi", "eccleston")));
+        assertEquals(jmet4, jmet3.intersection(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(jmet4, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(jmet4, jmet3.intersection(jmet4));
         StandardJImmutableMultisetTests.verifyIterators(jmet3.intersection(valueSet), TreeMultiset.create(Arrays.asList("tennant", "smith", "capaldi", "eccleston")));
@@ -302,13 +301,6 @@ public class JImmutableTreeMultisetTest
         JImmutableTreeMultiset setB = (JImmutableTreeMultiset)b;
         assertEquals(setA.getComparator(), setB.getComparator());
         JImmutableTreeMapTest.extraSerializationChecks(setA.getMap(), setB.getMap());
-    }
-
-    private Set<String> asSet(String... args)
-    {
-        Set<String> set = new HashSet<>();
-        Collections.addAll(set, args);
-        return set;
     }
 
     private JImmutableSet<String> asJSet(String... args)
