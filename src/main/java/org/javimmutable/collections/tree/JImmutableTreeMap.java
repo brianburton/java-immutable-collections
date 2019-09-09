@@ -47,10 +47,9 @@ import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Immutable
 public class JImmutableTreeMap<K, V>
@@ -201,11 +200,7 @@ public class JImmutableTreeMap<K, V>
     @Nonnull
     List<K> getKeysList()
     {
-        List<K> keys = new LinkedList<>();
-        for (Entry<K, V> entry : this) {
-            keys.add(entry.getKey());
-        }
-        return Collections.unmodifiableList(keys);
+        return keys().stream().collect(Collectors.toList());
     }
 
     @Nonnull
