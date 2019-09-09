@@ -46,6 +46,11 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
+/**
+ * Node with no value and no children.  Used as the terminating node at the bottom
+ * of every tree or the root of an empty tree.  Only one instance exists and is
+ * reused everywhere.
+ */
 @Immutable
 class FringeNode<K, V>
     extends AbstractNode<K, V>

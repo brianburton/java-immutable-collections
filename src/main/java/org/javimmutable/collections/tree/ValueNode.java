@@ -48,6 +48,13 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
+/**
+ * A Node containing one value and two (possibly empty) children.  Class invariant
+ * is that the difference in depth of the two children is no more than one.  Rotations
+ * are used when necessary to maintain that invariant whenever ValueNodes are constructed.
+ * Additionally values in left subtree are always less than this nodes value and values
+ * in right subtree are always greater than this nodes value.
+ */
 @Immutable
 class ValueNode<K, V>
     extends AbstractNode<K, V>
@@ -72,12 +79,21 @@ class ValueNode<K, V>
         size = 1 + left.size() + right.size();
     }
 
+    /**
+     * Convenience method to create a node with two empty children.
+     */
     static <K, V> AbstractNode<K, V> instance(K key,
                                               V value)
     {
         return new ValueNode<>(key, value, FringeNode.instance(), FringeNode.instance());
     }
 
+    /**
+     * Creates a new node with one value while enforcing the class invariant by ensuring
+     * depth of the two children are within one of each other.  Rotation is performed
+     * when invariant would be violated to bring the depth of the two children
+     * back into range.
+     */
     static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
                                              @Nullable V value,
                                              @Nonnull AbstractNode<K, V> left,

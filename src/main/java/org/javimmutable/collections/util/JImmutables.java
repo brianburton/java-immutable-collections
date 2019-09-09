@@ -1041,7 +1041,9 @@ public final class JImmutables
 
     /**
      * Creates a builder to build a custom JImmutableSetMap configuration from a
-     * base map and set type.
+     * base map and set type.   The provided classes are used to tell the java
+     * type system what the target times are.  Sometimes this can be more
+     * convenient than angle brackets.
      */
     @Nonnull
     public static <K, V> JImmutableSetMapFactory<K, V> setMapFactory(@Nonnull Class<K> keyClass,

@@ -47,7 +47,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
 /**
- * Transforms implementation that stores values in Node objects (balanced trees).
+ * CollisionMap implementation that stores values in Node objects (balanced trees).
  * Usable with keys that implement Comparable.  Will fail with any other
  * type of key.
  */
