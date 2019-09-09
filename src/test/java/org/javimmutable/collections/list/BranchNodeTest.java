@@ -40,7 +40,7 @@ import junit.framework.TestCase;
 import javax.annotation.Nonnull;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.list.EmptyNodeTest.verifyOutOfBounds;
+import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
 import static org.javimmutable.collections.list.MultiValueNode.*;
 import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
 

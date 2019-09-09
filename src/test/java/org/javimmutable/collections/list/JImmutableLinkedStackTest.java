@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -109,9 +110,9 @@ public class JImmutableLinkedStackTest
 
     public void testParallelStreams()
     {
-        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(StandardIteratorTests.makeList(IndexedIterator.forRange(1, 10000)));
+        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(TestUtil.makeList(IndexedIterator.forRange(1, 10000)));
         final List<Integer> collected = original.stream().parallel().collect(toList());
-        assertEquals(StandardIteratorTests.makeList(original.iterator()), collected);
+        assertEquals(TestUtil.makeList(original.iterator()), collected);
     }
 
     public void testSerialization()

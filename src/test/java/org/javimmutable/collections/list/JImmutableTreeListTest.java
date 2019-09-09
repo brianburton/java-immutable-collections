@@ -43,6 +43,7 @@ import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
@@ -523,10 +524,10 @@ public class JImmutableTreeListTest
 
     public void testAssignAtSize()
     {
-        EmptyNodeTest.verifyOutOfBounds(() -> range(1, 1).assign(1, -999));
-        EmptyNodeTest.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE).assign(MultiValueNode.MAX_SIZE, -999));
-        EmptyNodeTest.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE + 1).assign(MultiValueNode.MAX_SIZE + 1, -999));
-        EmptyNodeTest.verifyOutOfBounds(() -> range(1, 2 * MultiValueNode.MAX_SIZE + 1).assign(2 * MultiValueNode.MAX_SIZE + 1, -999));
+        TestUtil.verifyOutOfBounds(() -> range(1, 1).assign(1, -999));
+        TestUtil.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE).assign(MultiValueNode.MAX_SIZE, -999));
+        TestUtil.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE + 1).assign(MultiValueNode.MAX_SIZE + 1, -999));
+        TestUtil.verifyOutOfBounds(() -> range(1, 2 * MultiValueNode.MAX_SIZE + 1).assign(2 * MultiValueNode.MAX_SIZE + 1, -999));
     }
 
     @SafeVarargs
@@ -1121,7 +1122,7 @@ public class JImmutableTreeListTest
 
     public void testParallelStreams()
     {
-        final JImmutableList<Integer> original = JImmutableTreeList.of(IndexedList.retained(StandardIteratorTests.makeList(IndexedIterator.forRange(1, 10000))));
+        final JImmutableList<Integer> original = JImmutableTreeList.of(IndexedList.retained(TestUtil.makeList(IndexedIterator.forRange(1, 10000))));
         final JImmutableList<Object> collected = original.stream().parallel().collect(JImmutableTreeList.of().listCollector());
         collected.checkInvariants();
         assertEquals(original, collected);

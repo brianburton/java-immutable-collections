@@ -38,7 +38,7 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyContents;
+import static org.javimmutable.collections.common.TestUtil.verifyContents;
 
 public class OneValueNodeTest
     extends TestCase

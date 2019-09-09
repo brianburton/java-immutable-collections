@@ -59,6 +59,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.javimmutable.collections.common.TestUtil.makeSet;
+
 public abstract class AbstractJImmutableSetMapTestCase
     extends TestCase
 {
@@ -150,7 +152,6 @@ public abstract class AbstractJImmutableSetMapTestCase
 
         return map;
     }
-
 
     private void verifyTransform(JImmutableSetMap<Integer, Integer> map)
     {
@@ -250,7 +251,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertEquals(false, jetMap.contains(1, 10));
         assertEquals(false, jetMap.contains(1, 20));
 
-        final Set<Integer> values = asSet(1, 2, 3, 4);
+        final Set<Integer> values = makeSet(1, 2, 3, 4);
         HashMap<Integer, Set<Integer>> expected = new HashMap<>();
         expected.put(1, values);
         verifyExpected(expected, 1, values);
@@ -259,7 +260,7 @@ public abstract class AbstractJImmutableSetMapTestCase
 
         //intersect with larger set
         jetMap = emptyMap.union(1, values);
-        final Set<Integer> withExtra = asSet(0, 1, 2, 3, 4, 5);
+        final Set<Integer> withExtra = makeSet(0, 1, 2, 3, 4, 5);
         Set<Integer> intersectionSet = new HashSet<>(withExtra);
         JImmutableSet<Integer> intersectionJet = emptyJet.union(withExtra);
         verifyContents(jetMap.intersection(1, asIterable(withExtra)), expected);
@@ -298,8 +299,8 @@ public abstract class AbstractJImmutableSetMapTestCase
         verifyContents(jetMap.intersection(1, intersectionSet), expected);
 
         //deleteAll from smaller set
-        expected.put(1, asSet(0, 5));
-        verifyExpected(expected, 1, asSet(0, 5));
+        expected.put(1, makeSet(0, 5));
+        verifyExpected(expected, 1, makeSet(0, 5));
         jetMap = emptyMap.union(1, withExtra);
         verifyContents(jetMap.deleteAll(1, values), expected);
         verifyContents(jetMap.deleteAll(1, values.iterator()), expected);
@@ -327,8 +328,8 @@ public abstract class AbstractJImmutableSetMapTestCase
 
         //insertAll to smaller set
         jetMap = emptyMap.union(1, Arrays.asList(4, 5, 6, 7));
-        expected.put(1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
-        verifyExpected(expected, 1, asSet(0, 1, 2, 3, 4, 5, 6, 7));
+        expected.put(1, makeSet(0, 1, 2, 3, 4, 5, 6, 7));
+        verifyExpected(expected, 1, makeSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
     }
@@ -383,9 +384,9 @@ public abstract class AbstractJImmutableSetMapTestCase
                         if (expected.containsKey(key)) {
                             expected.get(key).add(key);
                         } else {
-                            expected.put(key, asSet(key));
+                            expected.put(key, makeSet(key));
                         }
-                        verifyExpected(expected, key, asSet(key));
+                        verifyExpected(expected, key, makeSet(key));
                         assertEquals(expected.size(), jetMap.size());
                         break;
                     case 1:
@@ -476,15 +477,6 @@ public abstract class AbstractJImmutableSetMapTestCase
             assertEquals(true, jetMap.isEmpty());
             assertEquals(expected.size(), jetMap.size());
         }
-    }
-
-    protected Set<Integer> asSet(int... args)
-    {
-        Set<Integer> set = new HashSet<>();
-        for (int arg : args) {
-            set.add(arg);
-        }
-        return set;
     }
 
     // forces java type system to use Iterable version of method

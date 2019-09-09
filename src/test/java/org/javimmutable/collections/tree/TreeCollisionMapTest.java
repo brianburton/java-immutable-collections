@@ -42,7 +42,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.common.TestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +121,7 @@ public class TreeCollisionMapTest
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
-        StandardIteratorTests.verifyContents(expected, transforms.iterable(node));
+        TestUtil.verifyContents(expected, transforms.iterable(node));
     }
 
     private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a,

@@ -36,9 +36,9 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.common.TestUtil;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.list.EmptyNodeTest.*;
 import static org.javimmutable.collections.list.MultiValueNode.*;
 
 public class MultiValueNodeTest
@@ -52,8 +52,8 @@ public class MultiValueNodeTest
         assertThat(leaf(0, 1).depth()).isEqualTo(0);
         assertThat(leaf(0, 5).get(0)).isEqualTo(0);
         assertThat(leaf(0, 5).get(4)).isEqualTo(4);
-        verifyOutOfBounds(() -> leaf(0, 5).get(-1));
-        verifyOutOfBounds(() -> leaf(0, 5).get(5));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).get(-1));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).get(5));
 
         assertThat(leaf(0, 5).append(5)).isEqualTo(leaf(0, 6));
         assertThat(leaf(0, 5).append(leaf(5, 10))).isEqualTo(leaf(0, 10));
@@ -67,50 +67,50 @@ public class MultiValueNodeTest
         assertThat(leaf(MAX_SIZE - 3, MAX_SIZE + 1).prepend(leaf(0, MAX_SIZE - 3))).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
         assertThat(leaf(1, MAX_SIZE + 1).prepend(0)).isEqualTo(new BranchNode<>(leaf(0, SPLIT_SIZE + 1), leaf(SPLIT_SIZE + 1, MAX_SIZE + 1)));
 
-        verifyOutOfBounds(() -> leaf(0, 5).assign(-1, 9));
-        verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(-1, 9));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
         assertThat(leaf(0, 7).assign(3, 9)).isEqualTo(leaf(0, 7, 3, 9));
-        verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
 
-        verifyOutOfBounds(() -> leaf(0, 5).insert(-1, 9));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).insert(-1, 9));
         assertThat(leaf(0, 5).insert(3, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 9, 3, 4}, 6));
         assertThat(leaf(0, 5).insert(5, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 3, 4, 9}, 6));
-        verifyOutOfBounds(() -> leaf(0, 5).insert(6, 9));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).insert(6, 9));
 
         assertThat(leaf(0, 5).deleteFirst()).isEqualTo(leaf(1, 5));
         assertThat(leaf(0, 5).deleteLast()).isEqualTo(leaf(0, 4));
 
         assertThat(leaf(0, 1).delete(0)).isSameAs(EmptyNode.instance());
-        verifyOutOfBounds(() -> leaf(0, 1).delete(-1));
-        verifyOutOfBounds(() -> leaf(0, 1).delete(1));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 1).delete(-1));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 1).delete(1));
 
         assertThat(leaf(0, 5).delete(0)).isEqualTo(leaf(1, 5));
         assertThat(leaf(0, 5).delete(4)).isEqualTo(leaf(0, 4));
-        verifyOutOfBounds(() -> leaf(0, 5).delete(-1));
-        verifyOutOfBounds(() -> leaf(0, 5).delete(5));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).delete(-1));
+        TestUtil.verifyOutOfBounds(() -> leaf(0, 5).delete(5));
 
         final AbstractNode<Integer> self = leaf(0, 5);
         assertThat(self.prefix(0)).isSameAs(EmptyNode.instance());
         assertThat(self.prefix(5)).isSameAs(self);
         assertThat(self.prefix(3)).isEqualTo(leaf(0, 3));
-        verifyOutOfBounds(() -> self.prefix(-1));
-        verifyOutOfBounds(() -> self.prefix(6));
+        TestUtil.verifyOutOfBounds(() -> self.prefix(-1));
+        TestUtil.verifyOutOfBounds(() -> self.prefix(6));
 
         assertThat(self.suffix(0)).isSameAs(self);
         assertThat(self.suffix(5)).isSameAs(EmptyNode.instance());
         assertThat(self.suffix(1)).isEqualTo(leaf(1, 5));
         assertThat(self.suffix(3)).isEqualTo(leaf(3, 5));
-        verifyOutOfBounds(() -> self.suffix(-1));
-        verifyOutOfBounds(() -> self.suffix(6));
+        TestUtil.verifyOutOfBounds(() -> self.suffix(-1));
+        TestUtil.verifyOutOfBounds(() -> self.suffix(6));
 
         Integer[] values = new Integer[]{-1, -1, -1, -1, -1, -1, -1};
         self.copyTo(values, 1);
         assertThat(values).isEqualTo(new Integer[]{-1, 0, 1, 2, 3, 4, -1});
 
-        verifyUnsupported(() -> self.left());
-        verifyUnsupported(() -> self.right());
-        verifyUnsupported(() -> self.rotateLeft(self));
-        verifyUnsupported(() -> self.rotateRight(self));
+        TestUtil.verifyUnsupported(() -> self.left());
+        TestUtil.verifyUnsupported(() -> self.right());
+        TestUtil.verifyUnsupported(() -> self.rotateLeft(self));
+        TestUtil.verifyUnsupported(() -> self.rotateRight(self));
     }
 
     static AbstractNode<Integer> leaf(int start,

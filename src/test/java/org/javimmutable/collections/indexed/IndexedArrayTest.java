@@ -43,15 +43,15 @@ import java.util.Arrays;
 public class IndexedArrayTest
     extends TestCase
 {
-    public void test()
-    {
-        verifyEquals(IndexedArray.retained(new Integer[]{7, 8, 9}), list(7, 8, 9));
-        verifyEquals(IndexedArray.copied(new Integer[]{7, 8, 9}), list(7, 8, 9));
-    }
-
-    private Indexed<Integer> list(Integer... values)
+    public static Indexed<Integer> makeIndexed(Integer... values)
     {
         return IndexedList.retained(Arrays.asList(values));
+    }
+
+    public void test()
+    {
+        verifyEquals(IndexedArray.retained(new Integer[]{7, 8, 9}), makeIndexed(7, 8, 9));
+        verifyEquals(IndexedArray.copied(new Integer[]{7, 8, 9}), makeIndexed(7, 8, 9));
     }
 
     private void verifyEquals(Indexed<Integer> expected,

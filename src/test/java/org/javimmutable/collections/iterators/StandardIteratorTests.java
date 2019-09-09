@@ -39,6 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.TestUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class StandardIteratorTests
         if (actual instanceof SplitableIterator) {
             List<T> result = new ArrayList<>();
             traverseSplits((SplitableIterator<S>)actual, result, transforminator);
-            assertEquals(makeList(expected.iterator()), result);
+            assertEquals(TestUtil.makeList(expected.iterator()), result);
         }
     }
 
@@ -287,19 +288,6 @@ public class StandardIteratorTests
     }
 
     /**
-     * Utility method, useful in unit tests, that collects all of the values in the Iterator into a List
-     * and returns the List.
-     */
-    public static <T> List<T> makeList(Iterator<T> iterator)
-    {
-        List<T> answer = new ArrayList<>();
-        while (iterator.hasNext()) {
-            answer.add(iterator.next());
-        }
-        return answer;
-    }
-
-    /**
      * Utility method, useful in unit tests, that essentially casts away actual type of an object
      * so that Iterable version of an overload is triggered instead of more specific class.
      */
@@ -307,13 +295,4 @@ public class StandardIteratorTests
     {
         return obj::iterator;
     }
-
-    public static <T> void verifyContents(Iterable<T> a,
-                                          Iterable<T> b)
-    {
-        List<T> al = makeList(a.iterator());
-        List<T> bl = makeList(b.iterator());
-        assertEquals(al, bl);
-    }
-
 }
