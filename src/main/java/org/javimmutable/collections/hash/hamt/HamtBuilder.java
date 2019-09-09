@@ -66,7 +66,7 @@ public class HamtBuilder<K, V>
                                 @Nullable V value);
 
         @Nonnull
-        abstract HamtNode<K, V> toHamt(CollisionMap<K, V> collisionMap);
+        abstract HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap);
 
         abstract int size();
     }
@@ -113,7 +113,7 @@ public class HamtBuilder<K, V>
 
         @Nonnull
         @Override
-        HamtNode<K, V> toHamt(CollisionMap<K, V> collisionMap)
+        HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
         {
             return new HamtLeafNode<>(hashCode, values);
         }
