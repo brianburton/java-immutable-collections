@@ -37,12 +37,16 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.SetBuilderTestAdapter;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +57,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 
@@ -323,6 +329,28 @@ public class JImmutableTreeSetTest
         JImmutableTreeSet setB = (JImmutableTreeSet)b;
         assertEquals(setA.getComparator(), setB.getComparator());
         JImmutableTreeMapTest.extraSerializationChecks(setA.getMap(), setB.getMap());
+    }
+
+    public void testBuilder()
+        throws InterruptedException
+    {
+        final Func2<List<Integer>, JImmutableSet<Integer>, Boolean> comparator = (list, set) -> {
+            set.checkInvariants();
+            final List<Integer> sortedExpected = list.stream().sorted().collect(Collectors.toList());
+            final List<Integer> actual = set.stream().collect(Collectors.toList());
+            assertEquals(sortedExpected, actual);
+            return true;
+        };
+        final ComparableComparator<Integer> intComparator = ComparableComparator.of();
+        final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
+        StandardBuilderTests.verifyBuilder(expected, this::builderAdaptor, comparator, new Integer[0]);
+        StandardBuilderTests.verifyThreadSafety(expected, intComparator, this::builderAdaptor, a -> a);
+    }
+
+    @Nonnull
+    private SetBuilderTestAdapter<Integer> builderAdaptor()
+    {
+        return new SetBuilderTestAdapter<>(JImmutableTreeSet.builder(ComparableComparator.<Integer>of()));
     }
 
     private List<String> iterToList(Iterable<String> source)

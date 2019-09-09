@@ -40,7 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -418,9 +418,9 @@ public class JImmutableHashMapTest
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
     }
 
-    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
+    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdaptor()
     {
-        return new MapBuilderTestAdaptor<>(JImmutableHashMap.builder());
+        return new MapBuilderTestAdapter<>(JImmutableHashMap.builder());
     }
 
     private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,

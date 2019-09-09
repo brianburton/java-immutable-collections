@@ -40,7 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -333,21 +333,20 @@ public class JImmutableInsertOrderMapTest
             values.add(MapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
-        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
         values.sort(MapEntry::compareKeys);
-        StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
+        StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdapter, a -> a);
     }
 
-    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
+    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdapter()
     {
-        return new MapBuilderTestAdaptor<>(JImmutableInsertOrderMap.builder());
+        return new MapBuilderTestAdapter<>(JImmutableInsertOrderMap.builder());
     }
 
     private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,
                                              JImmutableMap<Integer, Integer> actual)
     {
-        List<JImmutableMap.Entry<Integer, Integer>> sorted = new ArrayList<>(expected);
-        assertEquals(sorted, actual.stream().sorted(MapEntry::compareKeys).collect(Collectors.toList()));
+        assertEquals(expected, actual.stream().collect(Collectors.toList()));
         return true;
     }
 

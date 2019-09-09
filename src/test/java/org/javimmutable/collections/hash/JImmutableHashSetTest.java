@@ -37,14 +37,19 @@ package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.common.SetBuilderTestAdapter;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.tree.ComparableComparator;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -52,6 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 
@@ -219,6 +226,28 @@ public class JImmutableHashSetTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yMDAwljAwJlYAAIYCjBFlAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAIkSBsZEIE4C4uQKAIJXlKptAAAA");
+    }
+
+    public void testBuilder()
+        throws InterruptedException
+    {
+        final Func2<List<Integer>, JImmutableSet<Integer>, Boolean> comparator = (list, set) -> {
+            set.checkInvariants();
+            final List<Integer> sortedExpected = list.stream().sorted().collect(Collectors.toList());
+            final List<Integer> sortedActual = set.stream().sorted().collect(Collectors.toList());
+            assertEquals(sortedExpected, sortedActual);
+            return true;
+        };
+        final ComparableComparator<Integer> intComparator = ComparableComparator.of();
+        final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
+        StandardBuilderTests.verifyBuilder(expected, this::builderAdaptor, comparator, new Integer[0]);
+        StandardBuilderTests.verifyThreadSafety(expected, intComparator, this::builderAdaptor, a -> a);
+    }
+
+    @Nonnull
+    private SetBuilderTestAdapter<Integer> builderAdaptor()
+    {
+        return new SetBuilderTestAdapter<>(JImmutableHashSet.builder());
     }
 
     private List<String> iterToList(Iterable<String> source)

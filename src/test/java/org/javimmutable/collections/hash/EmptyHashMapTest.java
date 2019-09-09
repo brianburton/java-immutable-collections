@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EmptyHashMapTest
-        extends TestCase
+    extends TestCase
 {
     @SuppressWarnings("ConstantConditions")
     public void testAssign()

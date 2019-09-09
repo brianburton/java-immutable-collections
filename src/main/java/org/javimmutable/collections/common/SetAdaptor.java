@@ -45,12 +45,10 @@ import java.util.Set;
 
 /**
  * Adaptor that implements an unmodifiable Set backed by a JImmutableSet.
- *
- * @param <T>
  */
 @Immutable
 public class SetAdaptor<T>
-        extends AbstractSet<T>
+    extends AbstractSet<T>
 {
     private final JImmutableSet<T> pset;
 

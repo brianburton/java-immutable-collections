@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MapBuilderTestAdaptor;
+import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.TestUtil;
 
@@ -56,9 +56,9 @@ public class TreeMapBuilderTest
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
     }
 
-    private MapBuilderTestAdaptor<Integer, Integer> stdBuilderTestAdaptor()
+    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdaptor()
     {
-        return new MapBuilderTestAdaptor<>(new TreeMapBuilder<>(ComparableComparator.<Integer>of()));
+        return new MapBuilderTestAdapter<>(new TreeMapBuilder<>(ComparableComparator.<Integer>of()));
     }
 
     private Boolean stdBuilderTestComparator(List<Entry<Integer, Integer>> expected,

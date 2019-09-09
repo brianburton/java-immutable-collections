@@ -6,12 +6,12 @@ import org.javimmutable.collections.JImmutableMap;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 
-public class MapBuilderTestAdaptor<K, V>
+public class MapBuilderTestAdapter<K, V>
     implements StandardBuilderTests.BuilderAdapter<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>
 {
     private final JImmutableMap.Builder<K, V> builder;
 
-    public MapBuilderTestAdaptor(@Nonnull JImmutableMap.Builder<K, V> builder)
+    public MapBuilderTestAdapter(@Nonnull JImmutableMap.Builder<K, V> builder)
     {
         this.builder = builder;
     }
