@@ -272,7 +272,7 @@ public final class JImmutables
     @Nonnull
     public static <K, V> JImmutableMap<K, V> map(@Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableHashMap.of(), source);
+        return JImmutableHashMap.<K, V>builder().add(source).build();
     }
 
     /**
@@ -292,7 +292,7 @@ public final class JImmutables
         if (source instanceof JImmutableHashMap) {
             return source;
         } else {
-            return Functions.assignAll(JImmutableHashMap.of(), source);
+            return JImmutableHashMap.<K, V>builder().add(source).build();
         }
     }
 
@@ -338,7 +338,7 @@ public final class JImmutables
     @Nonnull
     public static <K extends Comparable<K>, V> JImmutableMap<K, V> sortedMap(@Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.of(), source);
+        return sortedMap(ComparableComparator.of(), source);
     }
 
     /**
@@ -385,7 +385,7 @@ public final class JImmutables
     public static <K, V> JImmutableMap<K, V> sortedMap(@Nonnull Comparator<K> comparator,
                                                        @Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableTreeMap.of(comparator), source);
+        return JImmutableTreeMap.<K, V>builder(comparator).add(source).build();
     }
 
     /**
@@ -411,7 +411,7 @@ public final class JImmutables
                 return source;
             }
         }
-        return Functions.assignAll(JImmutableTreeMap.of(comparator), source);
+        return JImmutableTreeMap.<K, V>builder(comparator).add(source).build();
     }
 
     /**
