@@ -291,6 +291,7 @@ public class JImmutableInsertOrderMapTest
 
         map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+        assertEquals(map, map.parallelStream().collect(JImmutableInsertOrderMap.createMapCollector()));
     }
 
     public void testSerialization()

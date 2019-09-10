@@ -402,6 +402,7 @@ public class JImmutableHashMapTest
             JImmutableMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
+            assertEquals(actual, actual.parallelStream().collect(JImmutableHashMap.createMapCollector()));
         }
     }
 

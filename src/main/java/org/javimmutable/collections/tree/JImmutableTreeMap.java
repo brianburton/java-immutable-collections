@@ -49,6 +49,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Immutable
@@ -101,6 +102,22 @@ public class JImmutableTreeMap<K, V>
     public Builder<K, V> mapBuilder()
     {
         return new TreeMapBuilder<>(comparator);
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    {
+        return createMapCollector(ComparableComparator.<K>of());
+    }
+
+    @Nonnull
+    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector(@Nonnull Comparator<K> comparator)
+    {
+        return Collector.<Entry<K, V>, Builder<K, V>, JImmutableMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
+                                                                             (b, v) -> b.add(v),
+                                                                             (b1, b2) -> b1.add(b2),
+                                                                             b -> b.build(),
+                                                                             Collector.Characteristics.CONCURRENT);
     }
 
     @Override

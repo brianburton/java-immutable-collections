@@ -335,6 +335,7 @@ public class JImmutableTreeMapTest
         }
         Collections.sort(keys);
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+        assertEquals(map, map.parallelStream().collect(JImmutableTreeMap.createMapCollector()));
     }
 
     public void testSerialization()

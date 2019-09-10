@@ -131,6 +131,20 @@ public class JImmutableInsertOrderMap<K, V>
         return builder();
     }
 
+    @Nonnull
+    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    {
+        final JImmutableMap<K, V> empty = of();
+        return GenericCollector.ordered(empty, empty, a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    }
+
+    @Nonnull
+    @Override
+    public Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    {
+        return GenericCollector.ordered(this, of(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    }
+
     @Override
     public V getValueOr(K key,
                         V defaultValue)
@@ -214,13 +228,6 @@ public class JImmutableInsertOrderMap<K, V>
     public int getSpliteratorCharacteristics()
     {
         return SPLITERATOR_ORDERED;
-    }
-
-    @Nonnull
-    @Override
-    public Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
-    {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override

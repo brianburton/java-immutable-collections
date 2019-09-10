@@ -317,7 +317,7 @@ public final class JImmutables
     @Nonnull
     public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
     {
-        return JImmutableHashMap.<K, V>of().mapCollector();
+        return JImmutableHashMap.createMapCollector();
     }
 
     /**
@@ -438,7 +438,7 @@ public final class JImmutables
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> sortedMapCollector()
     {
-        return JImmutableTreeMap.<K, V>of().mapCollector();
+        return JImmutableTreeMap.createMapCollector();
     }
 
     /**
@@ -447,7 +447,7 @@ public final class JImmutables
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableMap<K, V>> sortedMapCollector(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeMap.<K, V>of(comparator).mapCollector();
+        return JImmutableTreeMap.createMapCollector(comparator);
     }
 
     /**

@@ -133,7 +133,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default <T extends JImmutableMap.Entry<? extends K, ? extends V>> Builder<K, V> add(T... source)
+        default <T extends Entry<? extends K, ? extends V>> Builder<K, V> add(T... source)
         {
             return add(Arrays.asList(source));
         }
@@ -165,6 +165,13 @@ public interface JImmutableMap<K, V>
         default Builder<K, V> add(Indexed<? extends Entry<? extends K, ? extends V>> source)
         {
             return add(source, 0, source.size());
+        }
+
+        @Nonnull
+        default Builder<K, V> add(@Nonnull Builder<K, V> other)
+        {
+            add(other.build());
+            return this;
         }
     }
 

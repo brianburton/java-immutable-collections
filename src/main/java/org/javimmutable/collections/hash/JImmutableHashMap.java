@@ -54,6 +54,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
+import java.util.stream.Collector;
 
 @Immutable
 public class JImmutableHashMap<T, K, V>
@@ -152,6 +153,17 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap.Builder<K, V> mapBuilder()
     {
         return builder();
+    }
+
+    @Nonnull
+    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    {
+        return Collector.<Entry<K, V>, JImmutableMap.Builder<K, V>, JImmutableMap<K, V>>of(JImmutableHashMap::builder,
+                                                                                           (b, v) -> b.add(v),
+                                                                                           (b1, b2) -> b1.add(b2),
+                                                                                           b -> b.build(),
+                                                                                           Collector.Characteristics.UNORDERED,
+                                                                                           Collector.Characteristics.CONCURRENT);
     }
 
     @Override
