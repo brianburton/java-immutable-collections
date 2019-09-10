@@ -49,13 +49,13 @@ import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
+import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeMultisetTest;
 import org.javimmutable.collections.util.JImmutables;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -101,7 +101,6 @@ public class JImmutableMultisetStressTester
     @Override
     public void execute(Random random,
                         JImmutableList<String> tokens)
-        throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
         JImmutableMultiset<String> multi = this.multi;
         Multiset<String> expected = getEmptyMultiset();
@@ -143,7 +142,7 @@ public class JImmutableMultisetStressTester
                     }
                     case 3: { //insertAll(Iterable)
                         Multiset<String> values = HashMultiset.create(makeInsertJList(tokens, random, multiList, expected));
-                        multi = multi.insertAll(plainIterable(values));
+                        multi = multi.insertAll(IteratorHelper.plainIterable(values));
                         expected.addAll(values);
                         multiList.addAll(values);
                         break;

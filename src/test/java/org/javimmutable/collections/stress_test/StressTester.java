@@ -166,11 +166,6 @@ abstract class StressTester
         return answer;
     }
 
-    protected <T> Iterable<T> plainIterable(Iterable<T> values)
-    {
-        return () -> values.iterator();
-    }
-
     @Nonnull
     protected <K, V> List<JImmutableMap.Entry<K, V>> makeEntriesList(Map<K, V> expected)
     {

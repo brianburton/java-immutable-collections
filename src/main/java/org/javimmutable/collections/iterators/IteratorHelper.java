@@ -82,4 +82,13 @@ public class IteratorHelper
         sb.append("]");
         return sb.toString();
     }
+
+    /**
+     * Utility method, useful in unit tests, that essentially casts away actual type of an object
+     * so that Iterable version of an overload is triggered instead of more specific class.
+     */
+    public static <T> Iterable<T> plainIterable(Iterable<T> values)
+    {
+        return () -> values.iterator();
+    }
 }

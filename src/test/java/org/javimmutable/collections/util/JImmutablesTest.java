@@ -71,6 +71,7 @@ import org.javimmutable.collections.sequence.EmptySequenceNode;
 import org.javimmutable.collections.sequence.FilledSequenceNode;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
+import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
 import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.tree.ComparableComparator;
@@ -186,6 +187,7 @@ public class JImmutablesTest
         assertEquals(list, list(list));
         assertEquals(list, list(1, 2, 3));
         assertEquals(list, JImmutables.<Integer>listBuilder().add(input).build());
+        assertEquals(list, list(IteratorHelper.plainIterable(asList(1, 2, 3))));
 
         verifyOrdered(isList, asList(), () -> list());
         verifyOrdered(isList, asList("a", "b", "c"), () -> list("a", "b", "c"));
@@ -227,6 +229,7 @@ public class JImmutablesTest
         verifyUnordered(isEmptyMap, asList(), () -> JImmutables.map());
         final List<Entry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
         verifyUnordered(isMap, entries, () -> JImmutables.map(map(entries)));
+        verifyUnordered(isMap, entries, () -> JImmutables.<String, String>mapBuilder().add(entries).build());
     }
 
     public void testSortedMap()
@@ -257,9 +260,13 @@ public class JImmutablesTest
 
         verifyOrdered(isSortedMap, asList(), () -> JImmutables.sortedMap());
         verifyOrdered(isSortedMap, sorted, () -> JImmutables.sortedMap(map(entries)));
+        verifyOrdered(isSortedMap, sorted, () -> JImmutables.<String, String>sortedMapBuilder().add(entries).build());
+        verifyOrdered(isSortedMap, sorted, () -> entries.stream().collect(JImmutables.sortedMapCollector()));
 
         verifyOrdered(isSortedMap, asList(), () -> JImmutables.sortedMap());
         verifyOrdered(isSortedMap, reversed, () -> JImmutables.sortedMap(reverse, map(entries)));
+        verifyOrdered(isSortedMap, reversed, () -> JImmutables.<String, String>sortedMapBuilder(reverse).add(entries).build());
+        verifyOrdered(isSortedMap, reversed, () -> entries.stream().collect(JImmutables.sortedMapCollector(reverse)));
     }
 
     public void testInsertOrderMap()
@@ -285,6 +292,7 @@ public class JImmutablesTest
         assertEquals(set, set(input.iterator()));
         assertEquals(set, set(set));
         assertEquals(set, set(1, 100, 45, 87, 1));
+        assertEquals(set, setBuilder().add(1, 100, 45, 87, 1).build());
 
         verifyUnordered(isSet, asList(), () -> set());
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set("a", "b", "c"));
@@ -302,6 +310,8 @@ public class JImmutablesTest
         assertEquals(set, JImmutables.sortedSet(input.iterator()));
         assertEquals(set, JImmutables.sortedSet(set));
         assertEquals(set, JImmutables.sortedSet(1, 100, 45, 87, 1));
+        assertEquals(set, JImmutables.<Integer>sortedSetBuilder().add(1, 100, 45, 87, 1).build());
+        assertEquals(set, sortedSetBuilder(ComparableComparator.<Integer>of()).add(1, 100, 45, 87, 1).build());
         IteratorHelper.iteratorEquals(set.iterator(), asList(1, 45, 87, 100).iterator());
 
         Comparator<Integer> reverser = (a, b) -> -a.compareTo(b);
@@ -310,6 +320,7 @@ public class JImmutablesTest
         assertEquals(set, JImmutables.sortedSet(reverser, input.iterator()));
         assertEquals(set, JImmutables.sortedSet(reverser, set));
         assertEquals(set, JImmutables.sortedSet(reverser, 1, 100, 45, 87, 1));
+        assertEquals(set, JImmutables.sortedSetBuilder(reverser).add(1, 100, 45, 87, 1).build());
         IteratorHelper.iteratorEquals(set.iterator(), asList(100, 87, 45, 1).iterator());
 
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
@@ -337,6 +348,7 @@ public class JImmutablesTest
         verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet("x", "w", "z", "y"));
         verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet(iterable("x", "w", "z", "y")));
         verifyOrdered(isInsertOrderSet, entries, () -> insertOrderSet(iterator("x", "w", "z", "y")));
+        verifyOrdered(isInsertOrderSet, entries, () -> JImmutables.<String>insertOrderSetBuilder().add("x", "w", "z", "y").build());
         verifyOrdered(isInsertOrderSet, entries, () -> Stream.of("x", "w", "z", "y").collect(insertOrderSetCollector()));
     }
 
@@ -420,6 +432,10 @@ public class JImmutablesTest
     {
         final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.map(), JImmutables.set());
         verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
+        final JImmutableSetMapFactory<String, Integer> factory1 = JImmutables.<String, Integer>setMapFactory().withMap(JImmutables.map()).withSet(JImmutables.set());
+        verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> factory1.create().insert("y", 1).insert("z", 2).insert("x", 3));
+        final JImmutableSetMapFactory<String, Integer> factory2 = JImmutables.setMapFactory(String.class, Integer.class).withMap(JImmutables.map()).withSet(JImmutables.set());
+        verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> factory2.create().insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testTemplateSortedSetMap()
@@ -535,6 +551,14 @@ public class JImmutablesTest
         assertEquals("{1=1, 2=2, 3=3, 4=4}", im.toString());
         im = il.stream().map(mapper).collect(JImmutables.insertOrderMapCollector());
         assertEquals("{4=4, 2=2, 3=3, 1=1}", im.toString());
+
+        Map<Integer, Integer> m1 = new LinkedHashMap<>();
+        m1.put(4, 4);
+        m1.put(2, 2);
+        m1.put(3, 3);
+        m1.put(1, 1);
+        JImmutableMap<Integer, Integer> m2 = m1.entrySet().stream().map(JImmutables::entry).collect(JImmutables.insertOrderMapCollector());
+        assertEquals("{4=4, 2=2, 3=3, 1=1}", m2.toString());         
     }
 
     private <T, C extends Iterable<T>> void verifyOrdered(@Nonnull Predicate<C> classTest,

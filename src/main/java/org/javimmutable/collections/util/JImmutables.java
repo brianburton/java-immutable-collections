@@ -544,7 +544,7 @@ public final class JImmutables
     @SafeVarargs
     public static <T> JImmutableSet<T> set(T... source)
     {
-        return JImmutableHashSet.<T>of().insertAll(Arrays.asList(source));
+        return JImmutableHashSet.<T>builder().add(source).build();
     }
 
     /**
@@ -559,7 +559,7 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableSet<T> set(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableHashSet.<T>of().insertAll(source);
+        return JImmutableHashSet.<T>builder().add(source).build();
     }
 
     /**
@@ -574,7 +574,22 @@ public final class JImmutables
     @Nonnull
     public static <T> JImmutableSet<T> set(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableHashSet.<T>of().insertAll(source);
+        return JImmutableHashSet.<T>builder().add(source).build();
+    }
+
+    /**
+     * Constructs Builder object to produce unsorted sets.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     */
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> setBuilder()
+    {
+        return JImmutableHashSet.builder();
     }
 
     /**
@@ -603,7 +618,7 @@ public final class JImmutables
     @SafeVarargs
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(T... source)
     {
-        return JImmutableTreeSet.<T>of().insertAll(Arrays.asList(source));
+        return JImmutableTreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -613,7 +628,7 @@ public final class JImmutables
     @Nonnull
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeSet.<T>of().insertAll(source);
+        return JImmutableTreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -623,7 +638,7 @@ public final class JImmutables
     @Nonnull
     public static <T extends Comparable<T>> JImmutableSet<T> sortedSet(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeSet.<T>of().insertAll(source);
+        return JImmutableTreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -651,7 +666,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(@Nonnull Comparator<T> comparator,
                                                  T... source)
     {
-        return JImmutableTreeSet.of(comparator).insertAll(Arrays.asList(source));
+        return JImmutableTreeSet.builder(comparator).add(source).build();
     }
 
     /**
@@ -665,7 +680,7 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(@Nonnull Comparator<T> comparator,
                                                  @Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeSet.of(comparator).insertAll(source);
+        return JImmutableTreeSet.builder(comparator).add(source).build();
     }
 
     /**
@@ -679,7 +694,26 @@ public final class JImmutables
     public static <T> JImmutableSet<T> sortedSet(@Nonnull Comparator<T> comparator,
                                                  @Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeSet.of(comparator).insertAll(source);
+        return JImmutableTreeSet.builder(comparator).add(source).build();
+    }
+
+    /**
+     * Constructs a Builder object to produce sets that sort values in their natural
+     * sort order (using ComparableComparator).
+     */
+    @Nonnull
+    public static <T extends Comparable<T>> JImmutableSet.Builder<T> sortedSetBuilder()
+    {
+        return JImmutableTreeSet.builder();
+    }
+
+    /**
+     * Constructs a Builder object to produce sets that sort values using specified Comparator.
+     */
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> sortedSetBuilder(@Nonnull Comparator<T> comparator)
+    {
+        return JImmutableTreeSet.builder(comparator);
     }
 
     /**
@@ -702,6 +736,12 @@ public final class JImmutables
 
     /**
      * Constructs an empty set that sorts values based on the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
      */
     @Nonnull
     public static <T> JImmutableSet<T> insertOrderSet()
@@ -712,36 +752,76 @@ public final class JImmutables
     /**
      * Constructs a set containing all of the values in source that sorts values based on
      * the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
      */
     @Nonnull
     @SafeVarargs
     public static <T> JImmutableSet<T> insertOrderSet(T... source)
     {
-        return JImmutableInsertOrderSet.<T>of().insertAll(Arrays.asList(source));
+        return JImmutableInsertOrderSet.<T>builder().add(source).build();
     }
 
     /**
      * Constructs a set containing all of the values in source that sorts values based on
      * the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
      */
     @Nonnull
     public static <T> JImmutableSet<T> insertOrderSet(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableInsertOrderSet.<T>of().insertAll(source);
+        return JImmutableInsertOrderSet.<T>builder().add(source).build();
     }
 
     /**
      * Constructs a set containing all of the values in source that sorts values based on
      * the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
      */
     @Nonnull
     public static <T> JImmutableSet<T> insertOrderSet(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableInsertOrderSet.<T>of().insertAll(source);
+        return JImmutableInsertOrderSet.<T>builder().add(source).build();
+    }
+
+    /**
+     * Constructs Builder object to produce sets that sort values based on
+     * the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     */
+    @Nonnull
+    public static <T> JImmutableSet.Builder<T> insertOrderSetBuilder()
+    {
+        return JImmutableInsertOrderSet.builder();
     }
 
     /**
      * Collects into a set that sorts values based on the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
      */
     @Nonnull
     public static <T> Collector<T, ?, JImmutableSet<T>> insertOrderSetCollector()
@@ -1223,6 +1303,15 @@ public final class JImmutables
      */
     @Nonnull
     public static <K, V> JImmutableMap.Entry<K, V> entry(@Nonnull JImmutableMap.Entry<? extends K, ? extends V> e)
+    {
+        return MapEntry.of(e.getKey(), e.getValue());
+    }
+
+    /**
+     * Convenience function to create a Map.Entry.
+     */
+    @Nonnull
+    public static <K, V> JImmutableMap.Entry<K, V> entry(@Nonnull Map.Entry<? extends K, ? extends V> e)
     {
         return MapEntry.of(e.getKey(), e.getValue());
     }

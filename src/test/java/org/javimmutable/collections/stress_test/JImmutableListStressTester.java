@@ -46,6 +46,8 @@ import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
+
 /**
  * Test program for all implementations of JImmutableList.
  * Divided into five sections: growing (adds new values to the beginning or end of the list),

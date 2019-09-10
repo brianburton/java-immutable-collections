@@ -286,13 +286,4 @@ public class StandardIteratorTests
             return indexed.get(value);
         }
     }
-
-    /**
-     * Utility method, useful in unit tests, that essentially casts away actual type of an object
-     * so that Iterable version of an overload is triggered instead of more specific class.
-     */
-    public static <T> Iterable<T> plainIterable(Iterable<T> obj)
-    {
-        return obj::iterator;
-    }
 }
