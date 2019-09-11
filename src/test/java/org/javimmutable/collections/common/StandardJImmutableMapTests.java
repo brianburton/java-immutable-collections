@@ -41,12 +41,14 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static junit.framework.Assert.*;
 import static org.javimmutable.collections.common.StandardIterableStreamableTests.*;
@@ -72,6 +74,9 @@ public class StandardJImmutableMapTests
         assertEquals(Integer.valueOf(71), x.get(2));
 
         assertSame(x, x.delete(-1));
+
+        verifyForEach(map.deleteAll());
+        verifyReduce(map.deleteAll());
     }
 
     public static <K, V> void verifyEmptyEnumeration(@Nonnull JImmutableMap<K, V> map)
@@ -118,6 +123,51 @@ public class StandardJImmutableMapTests
         verifyUnorderedUsingCollection(expectedMap.keySet(), proxy.keySet());
         verifyUnorderedUsingCollection(expectedMap.values(), proxy.values());
         testCollector(map.assignAll(expectedMap), map);
+    }
+
+    private static void verifyReduce(@Nonnull JImmutableMap<Integer, Integer> empty)
+    {
+        final int sum = IntStream.range(1, 1001).sum();
+        @Nonnull JImmutableMap<Integer, Integer> map = IntStream.range(1, 1001)
+            .boxed()
+            .map(i -> MapEntry.entry(i, -i))
+            .collect(empty.mapCollector());
+        assertEquals(Integer.valueOf(2 * sum), map.reduce(0, (s, k, v) -> s + k - v));
+
+        try {
+            map.reduceThrows(0, (s, k, v) -> {
+                if (k == 1000) {
+                    throw new IOException();
+                }
+                return s + k - v;
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
+    }
+
+    private static void verifyForEach(@Nonnull JImmutableMap<Integer, Integer> empty)
+    {
+        final int sum = IntStream.range(1, 1001).sum();
+        @Nonnull JImmutableMap<Integer, Integer> map = IntStream.range(1, 1001)
+            .boxed()
+            .map(i -> MapEntry.entry(i, -i))
+            .collect(empty.mapCollector());
+        MutableDelta delta = new MutableDelta();
+        map.forEach((k, v) -> delta.add(k - v));
+        assertEquals(2 * sum, delta.getValue());
+
+        try {
+            map.forEachThrows((k, v) -> {
+                if (k == 1000) {
+                    throw new IOException();
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
     }
 
     private static Func1<Holder<Integer>, Integer> generator(int newValue)

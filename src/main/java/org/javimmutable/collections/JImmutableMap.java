@@ -35,6 +35,11 @@
 
 package org.javimmutable.collections;
 
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -318,5 +323,62 @@ public interface JImmutableMap<K, V>
         final Holder<V> current = find(key);
         final V newValue = generator.apply(current);
         return assign(key, newValue);
+    }
+
+    /**
+     * Processes every key/value pair in this map using the provided function.
+     */
+    default void forEach(@Nonnull Each2<K, V> proc)
+    {
+        for (Entry<K, V> e : this) {
+            proc.accept(e.getKey(), e.getValue());
+        }
+    }
+
+    /**
+     * Processes every key/value pair in this map using the provided function.
+     */
+    default <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        for (Entry<K, V> e : this) {
+            proc.accept(e.getKey(), e.getValue());
+        }
+    }
+
+    /**
+     * Processes every key value pair in this map using the provided function to produce a value.
+     *
+     * @param sum  initial value for process (used with first key/value pair of map)
+     * @param proc function to combine a sum with a key value pair to produce a new sum
+     * @param <R>  type of the sum
+     * @return final value (or initial value if this map is empty)
+     */
+    default <R> R reduce(R sum,
+                         Sum2<K, V, R> proc)
+    {
+        for (Entry<K, V> e : this) {
+            sum = proc.process(sum, e.getKey(), e.getValue());
+        }
+        return sum;
+    }
+
+    /**
+     * Processes every key value pair in this map using the provided function to produce a value.
+     *
+     * @param sum  initial value for process (used with first key/value pair of map)
+     * @param proc function to combine a sum with a key value pair to produce a new sum
+     * @param <R>  type of the sum
+     * @param <E>  type of the Exception thrown by the function
+     * @return final value (or initial value if this map is empty)
+     */
+    default <R, E extends Exception> R reduceThrows(R sum,
+                                                    Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        for (Entry<K, V> e : this) {
+            sum = proc.process(sum, e.getKey(), e.getValue());
+        }
+        return sum;
     }
 }

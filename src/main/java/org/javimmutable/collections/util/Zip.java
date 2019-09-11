@@ -1,5 +1,10 @@
 package org.javimmutable.collections.util;
 
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
+
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 
@@ -55,31 +60,4 @@ public class Zip
         return sum;
     }
 
-    public interface Each2<A, B>
-    {
-        void accept(A a,
-                    B b);
-    }
-
-    public interface Each2Throws<A, B, E extends Exception>
-    {
-        void accept(A a,
-                    B b)
-            throws E;
-    }
-
-    public interface Sum2<A, B, R>
-    {
-        R process(R sum,
-                  A a,
-                  B b);
-    }
-
-    public interface Sum2Throws<A, B, R, E extends Exception>
-    {
-        R process(R sum,
-                  A a,
-                  B b)
-            throws E;
-    }
 }

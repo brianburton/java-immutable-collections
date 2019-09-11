@@ -92,6 +92,13 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
+    public static <K, V> JImmutableMap.Entry<K, V> entry(@Nonnull K key,
+                                                         V value)
+    {
+        return new MapEntry<K, V>(key, value);
+    }
+
+    @Nonnull
     public static <K, V> MapEntry<K, V> mapEntry(@Nonnull K key,
                                                  V value)
     {
