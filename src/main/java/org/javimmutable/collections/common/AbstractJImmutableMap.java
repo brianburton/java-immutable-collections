@@ -62,7 +62,7 @@ public abstract class AbstractJImmutableMap<K, V>
      */
     @Override
     @Nonnull
-    public JImmutableMap<K, V> insert(@Nonnull Entry<K, V> e)
+    public JImmutableMap<K, V> insert(@Nonnull Entry<? extends K, ? extends V> e)
     {
         return assign(e.getKey(), e.getValue());
     }

@@ -49,7 +49,7 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface JImmutableMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>,
+    extends Insertable<JImmutableMap.Entry<? extends K, ? extends V>, JImmutableMap<K, V>>,
             Mapped<K, V>,
             IterableStreamable<JImmutableMap.Entry<K, V>>,
             InvariantCheckable
@@ -180,7 +180,7 @@ public interface JImmutableMap<K, V>
      */
     @Nonnull
     @Override
-    JImmutableMap<K, V> insert(@Nonnull Entry<K, V> value);
+    JImmutableMap<K, V> insert(@Nonnull Entry<? extends K, ? extends V> value);
 
     /**
      * Search for a value within the map and return a Holder indicating if the value
