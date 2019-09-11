@@ -99,8 +99,8 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> mapEntry(@Nonnull K key,
-                                                 V value)
+    public static <K, V> Map.Entry<K, V> javaEntry(@Nonnull K key,
+                                                   V value)
     {
         return new MapEntry<K, V>(key, value);
     }
@@ -130,12 +130,12 @@ public class MapEntry<K, V>
         throw new UnsupportedOperationException();
     }
 
-    public JImmutableMap.Entry<K, V> jimmutableEntry()
+    public JImmutableMap.Entry<K, V> asEntry()
     {
         return this;
     }
 
-    public Map.Entry<K, V> javaEntry()
+    public Map.Entry<K, V> asJavaEntry()
     {
         return this;
     }

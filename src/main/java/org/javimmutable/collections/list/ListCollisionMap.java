@@ -49,7 +49,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.javimmutable.collections.MapEntry.mapEntry;
+import static org.javimmutable.collections.MapEntry.entry;
 
 public class ListCollisionMap<K, V>
     implements CollisionMap<K, V>
@@ -100,12 +100,12 @@ public class ListCollisionMap<K, V>
                 if (e.getValue() == value) {
                     return root;
                 } else {
-                    return root.assign(i, mapEntry(key, value));
+                    return root.assign(i, entry(key, value));
                 }
             }
             i += 1;
         }
-        return root.append(mapEntry(key, value));
+        return root.append(entry(key, value));
     }
 
     @Nonnull
@@ -122,13 +122,13 @@ public class ListCollisionMap<K, V>
                 if (e.getValue() == value) {
                     return root;
                 } else {
-                    return root.assign(i, mapEntry(key, value));
+                    return root.assign(i, entry(key, value));
                 }
             }
             i += 1;
         }
         V value = generator.apply(Holders.of());
-        return root.append(mapEntry(key, value));
+        return root.append(entry(key, value));
     }
 
     @Nonnull

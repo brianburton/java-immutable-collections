@@ -43,7 +43,7 @@ import org.javimmutable.collections.list.ListCollisionMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.javimmutable.collections.MapEntry.mapEntry;
+import static org.javimmutable.collections.MapEntry.entry;
 
 public class HamtLeafNodeTest
     extends TestCase
@@ -96,10 +96,10 @@ public class HamtLeafNodeTest
         assertEquals(4, leaf.size(collisionMap));
 
         List<JImmutableMap.Entry<Checked, Integer>> expected = new ArrayList<>();
-        expected.add(mapEntry(a, 100));
-        expected.add(mapEntry(b, 200));
-        expected.add(mapEntry(c, 300));
-        expected.add(mapEntry(d, 400));
+        expected.add(entry(a, 100));
+        expected.add(entry(b, 200));
+        expected.add(entry(c, 300));
+        expected.add(entry(d, 400));
         StandardIteratorTests.verifyOrderedIterable(expected, leaf.iterable(collisionMap));
     }
 }
