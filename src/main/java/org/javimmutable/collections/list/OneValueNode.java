@@ -35,11 +35,15 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 class OneValueNode<T>
     extends AbstractNode<T>
@@ -235,6 +239,34 @@ class OneValueNode<T>
                                                      int limit)
     {
         return GenericIterator.valueState(parent, value);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        action.accept(value);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+        proc.accept(value);
+    }
+
+    @Override
+    public <V> V inject(V initialValue,
+                        Func2<V, T, V> accumulator)
+    {
+        return accumulator.apply(initialValue, value);
+    }
+
+    @Override
+    public <V, E extends Exception> V injectThrows(V initialValue,
+                                                   Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        return accumulator.process(initialValue, value);
     }
 
     @Override

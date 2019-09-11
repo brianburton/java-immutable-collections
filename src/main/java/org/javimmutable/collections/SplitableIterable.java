@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections;
 
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -48,12 +51,23 @@ public interface SplitableIterable<T>
     SplitableIterator<T> iterator();
 
     /**
+     * Processes every value using the provided function.
+     */
+    default <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+        for (T value : this) {
+            proc.accept(value);
+        }
+    }
+
+    /**
      * Apply the specified accumulator to all elements in iterator order calling the accumulator function
      * for each element.  The first call to accumulator is passed initialValue and first element in the sequence.
      * All remaining calls to accumulator are passed the result from the previous call and next element in the sequence.
      *
      * @param initialValue value passed to accumulator on first call
-     * @param accumulator method called to compute result
+     * @param accumulator  method called to compute result
      * @return result from last call to accumulator
      */
     default <V> V inject(V initialValue,
@@ -62,6 +76,17 @@ public interface SplitableIterable<T>
         V answer = initialValue;
         for (T value : this) {
             answer = accumulator.apply(answer, value);
+        }
+        return answer;
+    }
+
+    default <V, E extends Exception> V injectThrows(V initialValue,
+                                                    Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        V answer = initialValue;
+        for (T value : this) {
+            answer = accumulator.process(answer, value);
         }
         return answer;
     }

@@ -44,8 +44,13 @@ import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -417,6 +422,69 @@ public class JImmutableHashMapTest
         StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
         values.sort(MapEntry::compareKeys);
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
+    }
+
+    public void testForEach()
+    {
+        final StringBuilder sb = new StringBuilder();
+        final Each2<String, String> append = (k, v) -> {
+            sb.append("[");
+            sb.append(k);
+            sb.append(",");
+            sb.append(v);
+            sb.append("]");
+        };
+        final JImmutableMap<String, String> empty = JImmutableHashMap.of();
+        empty.forEach(append);
+        assertEquals("", sb.toString());
+
+        final JImmutableMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        map.forEach(append);
+        assertEquals("[a,A][b,B][c,C]", sb.toString());
+
+        final Each2Throws<String, String, IOException> appendThrows = (k, v) -> {
+            sb.append("[");
+            sb.append(k);
+            sb.append(",");
+            sb.append(v);
+            sb.append("]");
+            if (k.equals("b")) {
+                throw new IOException();
+            }
+        };
+        try {
+            sb.delete(0, sb.length());
+            map.forEachThrows(appendThrows);
+            fail();
+        } catch (IOException ex) {
+            assertEquals("[a,A][b,B]", sb.toString());
+        }
+    }
+
+    public void testReduce()
+    {
+        final Sum2<String, String, String> append = (s, k, v) -> {
+            return s + "[" + k + "," + v + "]";
+        };
+        final JImmutableMap<String, String> empty = JImmutableHashMap.of();
+        assertEquals("", empty.reduce("", append));
+
+        final JImmutableMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        assertEquals("[a,A][b,B][c,C]", map.reduce("", append));
+
+        final Sum2Throws<String, String, String, IOException> appendThrows = (s, k, v) -> {
+            if (k.equals("b")) {
+                throw new IOException();
+            } else {
+                return s + "[" + k + "," + v + "]";
+            }
+        };
+        try {
+            map.reduceThrows("", appendThrows);
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
     }
 
     private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdaptor()

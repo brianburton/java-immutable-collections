@@ -42,6 +42,10 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -323,6 +327,53 @@ public class HamtBranchNode<K, V>
     {
         assert offset >= 0 && offset <= limit && limit <= size;
         return GenericIterator.indexedState(parent, indexedForIterator(collisionMap), offset, limit);
+    }
+
+
+    @Override
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                        @Nonnull Each2<K, V> proc)
+    {
+        collisionMap.forEach(value, proc);
+        for (HamtNode<K, V> child : children) {
+            child.forEach(collisionMap, proc);
+        }
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                    @Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        collisionMap.forEachThrows(value, proc);
+        for (HamtNode<K, V> child : children) {
+            child.forEachThrows(collisionMap, proc);
+        }
+    }
+
+    @Override
+    public <R> R reduce(@Nonnull CollisionMap<K, V> collisionMap,
+                        R sum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        sum = collisionMap.reduce(value, sum, proc);
+        for (HamtNode<K, V> child : children) {
+            sum = child.reduce(collisionMap, sum, proc);
+        }
+        return sum;
+    }
+
+    @Override
+    public <R, E extends Exception> R reduceThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                   R sum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        sum = collisionMap.reduceThrows(value, sum, proc);
+        for (HamtNode<K, V> child : children) {
+            sum = child.reduceThrows(collisionMap, sum, proc);
+        }
+        return sum;
     }
 
     @Override

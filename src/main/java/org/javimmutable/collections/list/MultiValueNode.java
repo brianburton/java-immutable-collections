@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.common.ArrayHelper;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -44,6 +47,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 @Immutable
 class MultiValueNode<T>
@@ -337,5 +341,43 @@ class MultiValueNode<T>
     {
         assert offset >= 0 && offset <= limit && limit <= values.length;
         return GenericIterator.multiValueState(parent, IndexedArray.retained(values), offset, limit);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        for (T value : values) {
+            action.accept(value);
+        }
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+        for (T value : values) {
+            proc.accept(value);
+        }
+    }
+
+    @Override
+    public <V> V inject(V sum,
+                        Func2<V, T, V> accumulator)
+    {
+        for (T value : values) {
+            sum = accumulator.apply(sum, value);
+        }
+        return sum;
+    }
+
+    @Override
+    public <V, E extends Exception> V injectThrows(V sum,
+                                                   Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        for (T value : values) {
+            sum = accumulator.process(sum, value);
+        }
+        return sum;
     }
 }

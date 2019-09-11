@@ -35,12 +35,16 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
 abstract class AbstractNode<T>
     implements SplitableIterable<T>,
@@ -126,4 +130,20 @@ abstract class AbstractNode<T>
     {
         return size();
     }
+
+    @Override
+    public abstract void forEach(Consumer<? super T> action);
+
+    @Override
+    public abstract <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E;
+
+    @Override
+    public abstract <V> V inject(V initialValue,
+                                 Func2<V, T, V> accumulator);
+
+    @Override
+    public abstract <V, E extends Exception> V injectThrows(V initialValue,
+                                                            Sum1Throws<T, V, E> accumulator)
+        throws E;
 }

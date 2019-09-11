@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -42,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 @Immutable
 class BranchNode<T>
@@ -413,5 +417,39 @@ class BranchNode<T>
     {
         assert offset >= 0 && limit <= size && offset <= limit;
         return GenericIterator.indexedState(parent, IndexedHelper.indexed(left, right), offset, limit);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        left.forEach(action);
+        right.forEach(action);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+        left.forEachThrows(proc);
+        right.forEachThrows(proc);
+    }
+
+    @Override
+    public <V> V inject(V sum,
+                        Func2<V, T, V> accumulator)
+    {
+        sum = left.inject(sum, accumulator);
+        sum = right.inject(sum, accumulator);
+        return sum;
+    }
+
+    @Override
+    public <V, E extends Exception> V injectThrows(V sum,
+                                                   Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        sum = left.injectThrows(sum, accumulator);
+        sum = right.injectThrows(sum, accumulator);
+        return sum;
     }
 }

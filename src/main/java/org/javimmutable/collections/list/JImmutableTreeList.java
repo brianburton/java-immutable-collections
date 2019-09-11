@@ -36,12 +36,15 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
@@ -53,6 +56,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 
@@ -462,6 +466,34 @@ public class JImmutableTreeList<T>
             otherRoot = nodeFromIterator(values.iterator());
         }
         return otherRoot;
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        root.forEach(action);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+        root.forEachThrows(proc);
+    }
+
+    @Override
+    public <V> V inject(V initialValue,
+                        Func2<V, T, V> accumulator)
+    {
+        return root.inject(initialValue, accumulator);
+    }
+
+    @Override
+    public <V, E extends Exception> V injectThrows(V initialValue,
+                                                   Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        return root.injectThrows(initialValue, accumulator);
     }
 
     @ThreadSafe

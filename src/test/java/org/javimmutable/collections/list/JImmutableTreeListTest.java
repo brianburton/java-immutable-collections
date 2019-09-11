@@ -49,12 +49,14 @@ import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -1202,6 +1204,94 @@ public class JImmutableTreeListTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQFWQwvKORgYmF8yMDAwljAwJlYAAN9HqSrDAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBK78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCkrMS8nPdUxOTi0u9sksLgkoyq+o/A8C/1SMeRgYKooY3Egw2DGpuKQoMbkEYQFWQwvKORgYmF8yAIkSBsZEIE4C4uQKAKP4XnfLAAAA");
+    }
+
+    public void testForEach()
+    {
+        final StringBuilder sb = new StringBuilder();
+        final JImmutableList<Integer> empty = JImmutableTreeList.of();
+        empty.forEach(i -> sb.append("[").append(i).append("]"));
+        assertEquals("", sb.toString());
+
+        JImmutableList<Integer> list = empty.insert(1);
+        list.forEach(i -> sb.append("[").append(i).append("]"));
+        assertEquals("[1]", sb.toString());
+
+        sb.delete(0, sb.length());
+        list = IntStream.range(1, 500)
+            .boxed()
+            .collect(JImmutableTreeList.createListCollector());
+        String expected = IntStream.range(1, 500).boxed().reduce("", (s, i) -> s + "[" + i + "]", (a, b) -> a + b);
+        list.forEach(i -> sb.append("[").append(i).append("]"));
+        assertEquals(expected, sb.toString());
+
+        try {
+            sb.delete(0, sb.length());
+            empty.insert(1).forEachThrows(i -> {
+                sb.append("[");
+                sb.append(i);
+                sb.append("]");
+                if (i == 1) {
+                    throw new IOException();
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            assertEquals("[1]", sb.toString());
+        }
+        try {
+            sb.delete(0, sb.length());
+            list.forEachThrows(i -> {
+                sb.append("[");
+                sb.append(i);
+                sb.append("]");
+                if (i == 499) {
+                    throw new IOException();
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            assertEquals(expected, sb.toString());
+        }
+    }
+
+    public void testInject()
+    {
+        final JImmutableList<Integer> empty = JImmutableTreeList.of();
+
+        assertEquals("", empty.inject("", (s, i) -> s + "[" + i + "]"));
+        assertEquals("[1]", empty.insert(1).inject("", (s, i) -> s + "[" + i + "]"));
+
+        JImmutableList<Integer> list = IntStream.range(1, 500)
+            .boxed()
+            .collect(JImmutableTreeList.createListCollector());
+        String expected = IntStream.range(1, 500).boxed().reduce("", (s, i) -> s + "[" + i + "]", (a, b) -> a + b);
+        assertEquals(expected, list.inject("", (s, i) -> s + "[" + i + "]"));
+
+        try {
+            empty.insert(1).injectThrows("", (s, i) -> {
+                if (i == 1) {
+                    throw new IOException();
+                } else {
+                    return s + "[" + i + "]";
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
+        try {
+            list.insert(1).injectThrows("", (s, i) -> {
+                if (i == 499) {
+                    throw new IOException();
+                } else {
+                    return s + "[" + i + "]";
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
     }
 
     private JImmutableList<Integer> list(Integer... values)

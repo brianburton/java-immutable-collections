@@ -43,7 +43,12 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,6 +127,75 @@ public class TreeCollisionMapTest
         expected.add(MapEntry.of(12, 90));
         expected.add(MapEntry.of(18, 180));
         TestUtil.verifyContents(expected, transforms.iterable(node));
+    }
+
+    public void testForEach()
+    {
+        TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
+        CollisionMap.Node node = transforms.emptyNode();
+
+        final StringBuilder sb = new StringBuilder();
+        final Each2<String, String> append = (k, v) -> {
+            sb.append("[");
+            sb.append(k);
+            sb.append(",");
+            sb.append(v);
+            sb.append("]");
+        };
+        transforms.forEach(node, append);
+        assertEquals("", sb.toString());
+
+        node = transforms.update(node, "a", "A");
+        node = transforms.update(node, "c", "C");
+        node = transforms.update(node, "b", "B");
+        transforms.forEach(node, append);
+        assertEquals("[a,A][b,B][c,C]", sb.toString());
+
+        final Each2Throws<String, String, IOException> appendThrows = (k, v) -> {
+            sb.append("[");
+            sb.append(k);
+            sb.append(",");
+            sb.append(v);
+            sb.append("]");
+            if (k.equals("b")) {
+                throw new IOException();
+            }
+        };
+        try {
+            sb.delete(0, sb.length());
+            transforms.forEachThrows(node, appendThrows);
+            fail();
+        } catch (IOException ex) {
+            assertEquals("[a,A][b,B]", sb.toString());
+        }
+    }
+
+    public void testReduce()
+    {
+        TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
+        CollisionMap.Node node = transforms.emptyNode();
+
+        final Sum2<String, String, String> append = (s, k, v) -> s + "[" + k + "," + v + "]";
+        assertEquals("", transforms.reduce(node, "", append));
+
+        node = transforms.update(node, "a", "A");
+        node = transforms.update(node, "c", "C");
+        node = transforms.update(node, "b", "B");
+        assertEquals("[a,A][b,B][c,C]", transforms.reduce(node, "", append));
+
+        final Sum2Throws<String, String, String, IOException> appendThrows = (s, k, v) -> {
+            if (k.equals("b")) {
+                throw new IOException();
+            } else {
+                return s + "[" + k + "," + v + "]";
+            }
+        };
+        try {
+            transforms.reduceThrows(node, "", appendThrows);
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
     }
 
     private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a,

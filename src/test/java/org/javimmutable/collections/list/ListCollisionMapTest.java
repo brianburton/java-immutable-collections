@@ -36,7 +36,14 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Sum2;
+
+import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class ListCollisionMapTest
     extends TestCase
@@ -44,5 +51,110 @@ public class ListCollisionMapTest
     public void testStandard()
     {
         StandardCollisionMapTests.randomTests(ListCollisionMap.instance());
+    }
+
+    public void testForEach()
+    {
+        ListCollisionMap<Integer, Integer> transforms = ListCollisionMap.instance();
+        CollisionMap.Node node = transforms.emptyNode();
+
+        final StringBuilder sb = new StringBuilder();
+        final Each2<Integer, Integer> append = (k, v) -> {
+            sb.append("[");
+            sb.append(k);
+            sb.append(",");
+            sb.append(v);
+            sb.append("]");
+        };
+        transforms.forEach(node, append);
+        assertEquals("", sb.toString());
+
+        node = transforms.update(node, 1, -1);
+        transforms.forEach(node, append);
+        assertEquals("[1,-1]", sb.toString());
+
+        sb.delete(0, sb.length());
+        JImmutableList<Integer> integers = IntStream.range(1, 500)
+            .boxed()
+            .collect(JImmutableTreeList.createListCollector());
+        node = integers.reduce(node, (n, i) -> transforms.update(n, i, -i));
+        String expected = integers.reduce("", (s, i) -> s + "[" + i + "," + -i + "]");
+        transforms.forEach(node, append);
+        assertEquals(expected, sb.toString());
+
+        try {
+            sb.delete(0, sb.length());
+            transforms.forEachThrows(transforms.update(transforms.emptyNode(), 1, -1), (k, v) -> {
+                sb.append("[");
+                sb.append(k);
+                sb.append(",");
+                sb.append(v);
+                sb.append("]");
+                if (k == 1) {
+                    throw new IOException();
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            assertEquals("[1,-1]", sb.toString());
+        }
+        try {
+            sb.delete(0, sb.length());
+            transforms.forEachThrows(node, (k, v) -> {
+                sb.append("[");
+                sb.append(k);
+                sb.append(",");
+                sb.append(v);
+                sb.append("]");
+                if (k == 499) {
+                    throw new IOException();
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            assertEquals(expected, sb.toString());
+        }
+    }
+
+    public void testReduce()
+    {
+        ListCollisionMap<Integer, Integer> transforms = ListCollisionMap.instance();
+        CollisionMap.Node node = transforms.emptyNode();
+
+        final Sum2<Integer, Integer, String> append = (s, k, v) -> s + "[" + k + "," + v + "]";
+        assertEquals("", transforms.reduce(node, "", append));
+        assertEquals("[1,-1]", transforms.reduce(transforms.update(node, 1, -1), "", append));
+
+        JImmutableList<Integer> integers = IntStream.range(1, 500)
+            .boxed()
+            .collect(JImmutableTreeList.createListCollector());
+        node = integers.reduce(node, (n, i) -> transforms.update(n, i, -i));
+        String expected = integers.reduce("", (s, i) -> s + "[" + i + "," + -i + "]");
+        assertEquals(expected, transforms.reduce(node, "", append));
+
+        try {
+            transforms.reduceThrows(transforms.update(transforms.emptyNode(), 1, -1), "", (s, k, v) -> {
+                if (k == 1) {
+                    throw new IOException();
+                } else {
+                    return s + "[" + k + "," + v + "]";
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
+        try {
+            transforms.reduceThrows(node, "", (s, k, v) -> {
+                if (k == 499) {
+                    throw new IOException();
+                } else {
+                    return s + "[" + k + "," + v + "]";
+                }
+            });
+            fail();
+        } catch (IOException ex) {
+            // pass
+        }
     }
 }

@@ -40,6 +40,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -193,5 +197,37 @@ public class ListCollisionMap<K, V>
                                                                int limit)
     {
         return root(node).iterateOverRange(parent, offset, limit);
+    }
+
+    @Override
+    public void forEach(@Nonnull Node node,
+                        @Nonnull Each2<K, V> proc)
+    {
+        root(node).forEach(e -> proc.accept(e.getKey(), e.getValue()));
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Node node,
+                                                    @Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        root(node).forEachThrows(e -> proc.accept(e.getKey(), e.getValue()));
+    }
+
+    @Override
+    public <R> R reduce(@Nonnull Node node,
+                        R sum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        return root(node).inject(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
+    }
+
+    @Override
+    public <R, E extends Exception> R reduceThrows(@Nonnull Node node,
+                                                   R sum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        return root(node).injectThrows(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
     }
 }

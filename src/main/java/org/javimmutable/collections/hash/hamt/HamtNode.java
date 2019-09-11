@@ -41,6 +41,10 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -121,4 +125,20 @@ public interface HamtNode<K, V>
     {
         return new GenericIterator<>(genericIterable(collisionMap), 0, size(collisionMap));
     }
+
+    void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                 @Nonnull Each2<K, V> proc);
+
+    <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                             @Nonnull Each2Throws<K, V, E> proc)
+        throws E;
+
+    <R> R reduce(@Nonnull CollisionMap<K, V> collisionMap,
+                 R sum,
+                 @Nonnull Sum2<K, V, R> proc);
+
+    <R, E extends Exception> R reduceThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                            R sum,
+                                            @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E;
 }

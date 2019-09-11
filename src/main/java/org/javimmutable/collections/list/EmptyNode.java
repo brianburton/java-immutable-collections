@@ -35,11 +35,15 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.functional.Each1Throws;
+import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.function.Consumer;
 
 @Immutable
 class EmptyNode<T>
@@ -186,6 +190,32 @@ class EmptyNode<T>
     {
         assert offset == 0 && limit == 0;
         return parent;
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+        throws E
+    {
+    }
+
+    @Override
+    public <V> V inject(V initialValue,
+                        Func2<V, T, V> accumulator)
+    {
+        return initialValue;
+    }
+
+    @Override
+    public <V, E extends Exception> V injectThrows(V initialValue,
+                                                   Sum1Throws<T, V, E> accumulator)
+        throws E
+    {
+        return initialValue;
     }
 
     @Override

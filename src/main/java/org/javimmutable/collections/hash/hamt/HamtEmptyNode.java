@@ -40,6 +40,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -124,5 +128,35 @@ public class HamtEmptyNode<K, V>
     {
         assert offset == 0 && limit == 0;
         return parent;
+    }
+
+    @Override
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                        @Nonnull Each2<K, V> proc)
+    {
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                    @Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+    }
+
+    @Override
+    public <R> R reduce(@Nonnull CollisionMap<K, V> collisionMap,
+                        R sum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        return sum;
+    }
+
+    @Override
+    public <R, E extends Exception> R reduceThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                   R sum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        return sum;
     }
 }

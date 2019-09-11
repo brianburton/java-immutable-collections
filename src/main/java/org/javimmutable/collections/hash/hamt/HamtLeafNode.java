@@ -40,6 +40,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -196,5 +200,37 @@ public class HamtLeafNode<K, V>
                                                                              int limit)
     {
         return collisionMap.iterateOverRange(value, parent, offset, limit);
+    }
+
+    @Override
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                        @Nonnull Each2<K, V> proc)
+    {
+        collisionMap.forEach(value, proc);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                    @Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        collisionMap.forEachThrows(value, proc);
+    }
+
+    @Override
+    public <R> R reduce(@Nonnull CollisionMap<K, V> collisionMap,
+                        R sum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        return collisionMap.reduce(value, sum, proc);
+    }
+
+    @Override
+    public <R, E extends Exception> R reduceThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                   R sum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        return collisionMap.reduceThrows(value, sum, proc);
     }
 }
