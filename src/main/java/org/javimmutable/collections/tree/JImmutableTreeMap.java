@@ -38,14 +38,14 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
 
 import javax.annotation.Nonnull;
@@ -207,13 +207,13 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Override
-    public void forEach(@Nonnull Each2<K, V> proc)
+    public void forEach(@Nonnull Proc2<K, V> proc)
     {
         root.forEach(proc);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
         root.forEachThrows(proc);

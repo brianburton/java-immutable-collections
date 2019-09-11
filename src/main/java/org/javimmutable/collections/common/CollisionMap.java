@@ -38,12 +38,12 @@ package org.javimmutable.collections.common;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -131,10 +131,10 @@ public interface CollisionMap<K, V>
     }
 
     void forEach(@Nonnull Node node,
-                 @Nonnull Each2<K, V> proc);
+                 @Nonnull Proc2<K, V> proc);
 
     <E extends Exception> void forEachThrows(@Nonnull Node node,
-                                             @Nonnull Each2Throws<K, V, E> proc)
+                                             @Nonnull Proc2Throws<K, V, E> proc)
         throws E;
 
     <R> R reduce(@Nonnull Node node,

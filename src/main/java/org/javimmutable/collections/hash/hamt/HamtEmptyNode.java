@@ -39,11 +39,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -132,13 +132,13 @@ public class HamtEmptyNode<K, V>
 
     @Override
     public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
-                        @Nonnull Each2<K, V> proc)
+                        @Nonnull Proc2<K, V> proc)
     {
     }
 
     @Override
     public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
-                                                    @Nonnull Each2Throws<K, V, E> proc)
+                                                    @Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
     }

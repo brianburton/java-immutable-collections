@@ -36,8 +36,8 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.functional.Each1Throws;
-import org.javimmutable.collections.functional.Sum1Throws;
+import org.javimmutable.collections.Proc1Throws;
+import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -427,7 +427,7 @@ class BranchNode<T>
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
         throws E
     {
         left.forEachThrows(proc);

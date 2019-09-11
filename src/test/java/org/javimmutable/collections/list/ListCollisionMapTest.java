@@ -37,10 +37,10 @@ package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Sum2;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
@@ -59,7 +59,7 @@ public class ListCollisionMapTest
         CollisionMap.Node node = transforms.emptyNode();
 
         final StringBuilder sb = new StringBuilder();
-        final Each2<Integer, Integer> append = (k, v) -> {
+        final Proc2<Integer, Integer> append = (k, v) -> {
             sb.append("[");
             sb.append(k);
             sb.append(",");

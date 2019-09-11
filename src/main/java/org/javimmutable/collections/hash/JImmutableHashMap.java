@@ -40,13 +40,13 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.hash.hamt.HamtBuilder;
 import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
 import org.javimmutable.collections.hash.hamt.HamtNode;
@@ -257,13 +257,13 @@ public class JImmutableHashMap<T, K, V>
     }
 
     @Override
-    public void forEach(@Nonnull Each2<K, V> proc)
+    public void forEach(@Nonnull Proc2<K, V> proc)
     {
         root.forEach(collisionMap, proc);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
         root.forEachThrows(collisionMap, proc);

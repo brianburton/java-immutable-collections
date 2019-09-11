@@ -35,9 +35,6 @@
 
 package org.javimmutable.collections;
 
-import org.javimmutable.collections.functional.Each1Throws;
-import org.javimmutable.collections.functional.Sum1Throws;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -53,11 +50,11 @@ public interface SplitableIterable<T>
     /**
      * Processes every value using the provided function.
      */
-    default <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+    default <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
         throws E
     {
         for (T value : this) {
-            proc.accept(value);
+            proc.apply(value);
         }
     }
 
@@ -86,7 +83,7 @@ public interface SplitableIterable<T>
     {
         V answer = initialValue;
         for (T value : this) {
-            answer = accumulator.process(answer, value);
+            answer = accumulator.apply(answer, value);
         }
         return answer;
     }

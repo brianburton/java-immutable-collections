@@ -39,14 +39,14 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -135,7 +135,7 @@ public class TreeCollisionMapTest
         CollisionMap.Node node = transforms.emptyNode();
 
         final StringBuilder sb = new StringBuilder();
-        final Each2<String, String> append = (k, v) -> {
+        final Proc2<String, String> append = (k, v) -> {
             sb.append("[");
             sb.append(k);
             sb.append(",");
@@ -151,7 +151,7 @@ public class TreeCollisionMapTest
         transforms.forEach(node, append);
         assertEquals("[a,A][b,B][c,C]", sb.toString());
 
-        final Each2Throws<String, String, IOException> appendThrows = (k, v) -> {
+        final Proc2Throws<String, String, IOException> appendThrows = (k, v) -> {
             sb.append("[");
             sb.append(k);
             sb.append(",");

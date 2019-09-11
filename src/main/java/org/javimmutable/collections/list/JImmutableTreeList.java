@@ -40,12 +40,12 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.functional.Each1Throws;
-import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
@@ -475,7 +475,7 @@ public class JImmutableTreeList<T>
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
         throws E
     {
         root.forEachThrows(proc);

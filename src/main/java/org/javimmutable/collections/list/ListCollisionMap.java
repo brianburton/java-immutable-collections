@@ -39,11 +39,11 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -201,17 +201,17 @@ public class ListCollisionMap<K, V>
 
     @Override
     public void forEach(@Nonnull Node node,
-                        @Nonnull Each2<K, V> proc)
+                        @Nonnull Proc2<K, V> proc)
     {
-        root(node).forEach(e -> proc.accept(e.getKey(), e.getValue()));
+        root(node).forEach(e -> proc.apply(e.getKey(), e.getValue()));
     }
 
     @Override
     public <E extends Exception> void forEachThrows(@Nonnull Node node,
-                                                    @Nonnull Each2Throws<K, V, E> proc)
+                                                    @Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
-        root(node).forEachThrows(e -> proc.accept(e.getKey(), e.getValue()));
+        root(node).forEachThrows(e -> proc.apply(e.getKey(), e.getValue()));
     }
 
     @Override
@@ -219,7 +219,7 @@ public class ListCollisionMap<K, V>
                         R sum,
                         @Nonnull Sum2<K, V, R> proc)
     {
-        return root(node).reduce(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
+        return root(node).reduce(sum, (s, e) -> proc.apply(s, e.getKey(), e.getValue()));
     }
 
     @Override
@@ -228,6 +228,6 @@ public class ListCollisionMap<K, V>
                                                    @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
-        return root(node).reduceThrows(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
+        return root(node).reduceThrows(sum, (s, e) -> proc.apply(s, e.getKey(), e.getValue()));
     }
 }

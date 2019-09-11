@@ -35,11 +35,6 @@
 
 package org.javimmutable.collections;
 
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -328,21 +323,21 @@ public interface JImmutableMap<K, V>
     /**
      * Processes every key/value pair in this map using the provided function.
      */
-    default void forEach(@Nonnull Each2<K, V> proc)
+    default void forEach(@Nonnull Proc2<K, V> proc)
     {
         for (Entry<K, V> e : this) {
-            proc.accept(e.getKey(), e.getValue());
+            proc.apply(e.getKey(), e.getValue());
         }
     }
 
     /**
      * Processes every key/value pair in this map using the provided function.
      */
-    default <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
         for (Entry<K, V> e : this) {
-            proc.accept(e.getKey(), e.getValue());
+            proc.apply(e.getKey(), e.getValue());
         }
     }
 
@@ -358,7 +353,7 @@ public interface JImmutableMap<K, V>
                          @Nonnull Sum2<K, V, R> proc)
     {
         for (Entry<K, V> e : this) {
-            sum = proc.process(sum, e.getKey(), e.getValue());
+            sum = proc.apply(sum, e.getKey(), e.getValue());
         }
         return sum;
     }
@@ -377,7 +372,7 @@ public interface JImmutableMap<K, V>
         throws E
     {
         for (Entry<K, V> e : this) {
-            sum = proc.process(sum, e.getKey(), e.getValue());
+            sum = proc.apply(sum, e.getKey(), e.getValue());
         }
         return sum;
     }

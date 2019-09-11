@@ -36,9 +36,9 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Proc1Throws;
+import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.functional.Each1Throws;
-import org.javimmutable.collections.functional.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -352,11 +352,11 @@ class MultiValueNode<T>
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
         throws E
     {
         for (T value : values) {
-            proc.accept(value);
+            proc.apply(value);
         }
     }
 
@@ -376,7 +376,7 @@ class MultiValueNode<T>
         throws E
     {
         for (T value : values) {
-            sum = accumulator.process(sum, value);
+            sum = accumulator.apply(sum, value);
         }
         return sum;
     }

@@ -42,7 +42,6 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 import java.util.Arrays;

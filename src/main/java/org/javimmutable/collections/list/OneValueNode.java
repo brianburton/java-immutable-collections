@@ -36,8 +36,8 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.functional.Each1Throws;
-import org.javimmutable.collections.functional.Sum1Throws;
+import org.javimmutable.collections.Proc1Throws;
+import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -248,10 +248,10 @@ class OneValueNode<T>
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Each1Throws<T, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
         throws E
     {
-        proc.accept(value);
+        proc.apply(value);
     }
 
     @Override
@@ -266,7 +266,7 @@ class OneValueNode<T>
                                                    Sum1Throws<T, V, E> accumulator)
         throws E
     {
-        return accumulator.process(initialValue, value);
+        return accumulator.apply(initialValue, value);
     }
 
     @Override

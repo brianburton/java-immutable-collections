@@ -40,14 +40,14 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.functional.Each2;
-import org.javimmutable.collections.functional.Each2Throws;
-import org.javimmutable.collections.functional.Sum2;
-import org.javimmutable.collections.functional.Sum2Throws;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -427,7 +427,7 @@ public class JImmutableHashMapTest
     public void testForEach()
     {
         final StringBuilder sb = new StringBuilder();
-        final Each2<String, String> append = (k, v) -> {
+        final Proc2<String, String> append = (k, v) -> {
             sb.append("[");
             sb.append(k);
             sb.append(",");
@@ -442,7 +442,7 @@ public class JImmutableHashMapTest
         map.forEach(append);
         assertEquals("[a,A][b,B][c,C]", sb.toString());
 
-        final Each2Throws<String, String, IOException> appendThrows = (k, v) -> {
+        final Proc2Throws<String, String, IOException> appendThrows = (k, v) -> {
             sb.append("[");
             sb.append(k);
             sb.append(",");
