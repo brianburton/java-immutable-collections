@@ -94,11 +94,7 @@ public interface IterableStreamable<T>
      */
     default int count()
     {
-        int answer = 0;
-        for (T ignored : this) {
-            answer += 1;
-        }
-        return answer;
+        return reduce(0, (s, v) -> s + 1);
     }
 
     /**
@@ -110,13 +106,7 @@ public interface IterableStreamable<T>
      */
     default int count(@Nonnull Predicate<T> predicate)
     {
-        int answer = 0;
-        for (T value : this) {
-            if (predicate.test(value)) {
-                answer += 1;
-            }
-        }
-        return answer;
+        return reduce(0, (s, v) -> predicate.test(v) ? s + 1 : s);
     }
 
     /**
@@ -179,10 +169,7 @@ public interface IterableStreamable<T>
      */
     default <C extends Insertable<T, C>> C collect(@Nonnull C collection)
     {
-        for (T value : this) {
-            collection = collection.insert(value);
-        }
-        return collection;
+        return reduce(collection, Insertable::insert);
     }
 
     /**
@@ -212,12 +199,7 @@ public interface IterableStreamable<T>
     default <C extends Insertable<T, C>> C collect(@Nonnull C collection,
                                                    @Nonnull Predicate<T> predicate)
     {
-        for (T value : this) {
-            if (predicate.test(value)) {
-                collection = collection.insert(value);
-            }
-        }
-        return collection;
+        return reduce(collection, (c, v) -> predicate.test(v) ? c.insert(v) : c);
     }
 
     /**
@@ -255,10 +237,7 @@ public interface IterableStreamable<T>
     default <A, C extends Insertable<A, C>> C transform(@Nonnull C collection,
                                                         @Nonnull Func1<T, A> transform)
     {
-        for (T value : this) {
-            collection = collection.insert(transform.apply(value));
-        }
-        return collection;
+        return reduce(collection, (c, v) -> c.insert(transform.apply(v)));
     }
 
     /**
@@ -295,13 +274,10 @@ public interface IterableStreamable<T>
     default <A, C extends Insertable<A, C>> C transformSome(@Nonnull C collection,
                                                             @Nonnull Func1<T, Holder<A>> transform)
     {
-        for (T value : this) {
-            Holder<A> transformed = transform.apply(value);
-            if (transformed.isFilled()) {
-                collection = collection.insert(transformed.getValue());
-            }
-        }
-        return collection;
+        return reduce(collection, (c, v) -> {
+            final Holder<A> transformed = transform.apply(v);
+            return transformed.isFilled() ? c.insert(transformed.getValue()) : c;
+        });
     }
 
     /**
@@ -321,7 +297,7 @@ public interface IterableStreamable<T>
         final Iterator<T> iterator = iterator();
         while (maxToCollect > 0 && iterator.hasNext()) {
             final T value = iterator.next();
-            Holder<A> transformed = transform.apply(value);
+            final Holder<A> transformed = transform.apply(value);
             if (transformed.isFilled()) {
                 collection = collection.insert(transformed.getValue());
                 maxToCollect -= 1;
@@ -363,9 +339,9 @@ public interface IterableStreamable<T>
      * @param accumulator method called to compute result
      * @return empty Holder if the sequence is empty, otherwise Holder containing result from last call to accumulator
      */
-    default Holder<T> reduce(Func2<T, T, T> accumulator)
+    default Holder<T> reduce(@Nonnull Func2<T, T, T> accumulator)
     {
-        Iterator<T> iterator = iterator();
+        final Iterator<T> iterator = iterator();
         if (!iterator.hasNext()) {
             return Holders.of();
         }
