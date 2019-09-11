@@ -175,10 +175,10 @@ public class IterableStreamableTest
     public void testInject()
     {
         final Func2<String, Integer, String> accumulator = (s, x) -> String.valueOf(Integer.parseInt(s) + x);
-        assertEquals("0", JImmutables.<Integer>list().inject("0", accumulator));
-        assertEquals("1", JImmutables.list(1).inject("0", accumulator));
-        assertEquals("9", JImmutables.list(1, 3, 5).inject("0", accumulator));
-        assertEquals(Integer.valueOf(-9), JImmutables.list(1, 3, 5).inject(-18, (s, x) -> s + x));
+        assertEquals("0", JImmutables.<Integer>list().reduce("0", accumulator));
+        assertEquals("1", JImmutables.list(1).reduce("0", accumulator));
+        assertEquals("9", JImmutables.list(1, 3, 5).reduce("0", accumulator));
+        assertEquals(Integer.valueOf(-9), JImmutables.list(1, 3, 5).reduce(-18, (s, x) -> s + x));
     }
 
     public void testConversions()

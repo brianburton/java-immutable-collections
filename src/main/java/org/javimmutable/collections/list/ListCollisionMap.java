@@ -219,7 +219,7 @@ public class ListCollisionMap<K, V>
                         R sum,
                         @Nonnull Sum2<K, V, R> proc)
     {
-        return root(node).inject(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
+        return root(node).reduce(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
     }
 
     @Override
@@ -228,6 +228,6 @@ public class ListCollisionMap<K, V>
                                                    @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
-        return root(node).injectThrows(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
+        return root(node).reduceThrows(sum, (s, e) -> proc.process(s, e.getKey(), e.getValue()));
     }
 }

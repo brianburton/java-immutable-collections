@@ -482,18 +482,18 @@ public class JImmutableTreeList<T>
     }
 
     @Override
-    public <V> V inject(V initialValue,
+    public <V> V reduce(V initialValue,
                         Func2<V, T, V> accumulator)
     {
-        return root.inject(initialValue, accumulator);
+        return root.reduce(initialValue, accumulator);
     }
 
     @Override
-    public <V, E extends Exception> V injectThrows(V initialValue,
+    public <V, E extends Exception> V reduceThrows(V initialValue,
                                                    Sum1Throws<T, V, E> accumulator)
         throws E
     {
-        return root.injectThrows(initialValue, accumulator);
+        return root.reduceThrows(initialValue, accumulator);
     }
 
     @ThreadSafe

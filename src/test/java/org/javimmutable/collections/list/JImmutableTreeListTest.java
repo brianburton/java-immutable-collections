@@ -1259,17 +1259,17 @@ public class JImmutableTreeListTest
     {
         final JImmutableList<Integer> empty = JImmutableTreeList.of();
 
-        assertEquals("", empty.inject("", (s, i) -> s + "[" + i + "]"));
-        assertEquals("[1]", empty.insert(1).inject("", (s, i) -> s + "[" + i + "]"));
+        assertEquals("", empty.reduce("", (s, i) -> s + "[" + i + "]"));
+        assertEquals("[1]", empty.insert(1).reduce("", (s, i) -> s + "[" + i + "]"));
 
         JImmutableList<Integer> list = IntStream.range(1, 500)
             .boxed()
             .collect(JImmutableTreeList.createListCollector());
         String expected = IntStream.range(1, 500).boxed().reduce("", (s, i) -> s + "[" + i + "]", (a, b) -> a + b);
-        assertEquals(expected, list.inject("", (s, i) -> s + "[" + i + "]"));
+        assertEquals(expected, list.reduce("", (s, i) -> s + "[" + i + "]"));
 
         try {
-            empty.insert(1).injectThrows("", (s, i) -> {
+            empty.insert(1).reduceThrows("", (s, i) -> {
                 if (i == 1) {
                     throw new IOException();
                 } else {
@@ -1281,7 +1281,7 @@ public class JImmutableTreeListTest
             // pass
         }
         try {
-            list.insert(1).injectThrows("", (s, i) -> {
+            list.insert(1).reduceThrows("", (s, i) -> {
                 if (i == 499) {
                     throw new IOException();
                 } else {

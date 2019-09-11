@@ -435,21 +435,21 @@ class BranchNode<T>
     }
 
     @Override
-    public <V> V inject(V sum,
+    public <V> V reduce(V sum,
                         Func2<V, T, V> accumulator)
     {
-        sum = left.inject(sum, accumulator);
-        sum = right.inject(sum, accumulator);
+        sum = left.reduce(sum, accumulator);
+        sum = right.reduce(sum, accumulator);
         return sum;
     }
 
     @Override
-    public <V, E extends Exception> V injectThrows(V sum,
+    public <V, E extends Exception> V reduceThrows(V sum,
                                                    Sum1Throws<T, V, E> accumulator)
         throws E
     {
-        sum = left.injectThrows(sum, accumulator);
-        sum = right.injectThrows(sum, accumulator);
+        sum = left.reduceThrows(sum, accumulator);
+        sum = right.reduceThrows(sum, accumulator);
         return sum;
     }
 }

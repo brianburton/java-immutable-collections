@@ -361,7 +361,7 @@ class MultiValueNode<T>
     }
 
     @Override
-    public <V> V inject(V sum,
+    public <V> V reduce(V sum,
                         Func2<V, T, V> accumulator)
     {
         for (T value : values) {
@@ -371,7 +371,7 @@ class MultiValueNode<T>
     }
 
     @Override
-    public <V, E extends Exception> V injectThrows(V sum,
+    public <V, E extends Exception> V reduceThrows(V sum,
                                                    Sum1Throws<T, V, E> accumulator)
         throws E
     {

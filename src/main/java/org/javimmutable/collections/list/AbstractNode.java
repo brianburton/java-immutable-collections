@@ -139,11 +139,11 @@ abstract class AbstractNode<T>
         throws E;
 
     @Override
-    public abstract <V> V inject(V initialValue,
+    public abstract <V> V reduce(V initialValue,
                                  Func2<V, T, V> accumulator);
 
     @Override
-    public abstract <V, E extends Exception> V injectThrows(V initialValue,
+    public abstract <V, E extends Exception> V reduceThrows(V initialValue,
                                                             Sum1Throws<T, V, E> accumulator)
         throws E;
 }

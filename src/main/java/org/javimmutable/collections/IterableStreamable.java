@@ -376,24 +376,6 @@ public interface IterableStreamable<T>
         return Holders.of(answer);
     }
 
-    /**
-     * Apply the specified accumulator to all elements in iterator order calling the accumulator function
-     * for each element.  The first call to accumulator is passed the specified result value.
-     * All remaining calls to accumulator are passed the result from the previous call.
-     *
-     * @param result      initial result value
-     * @param accumulator method called to compute result
-     * @return final result value or initial result value if sequence is empty
-     */
-    default <R> R reduce(R result,
-                         Func2<R, T, R> accumulator)
-    {
-        for (T value : this) {
-            result = accumulator.apply(result, value);
-        }
-        return result;
-    }
-
     class Partitions<T>
     {
         private final T matched;

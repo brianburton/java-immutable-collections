@@ -204,14 +204,14 @@ class EmptyNode<T>
     }
 
     @Override
-    public <V> V inject(V initialValue,
+    public <V> V reduce(V initialValue,
                         Func2<V, T, V> accumulator)
     {
         return initialValue;
     }
 
     @Override
-    public <V, E extends Exception> V injectThrows(V initialValue,
+    public <V, E extends Exception> V reduceThrows(V initialValue,
                                                    Sum1Throws<T, V, E> accumulator)
         throws E
     {

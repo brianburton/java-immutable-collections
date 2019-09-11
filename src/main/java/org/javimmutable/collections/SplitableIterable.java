@@ -70,7 +70,7 @@ public interface SplitableIterable<T>
      * @param accumulator  method called to compute result
      * @return result from last call to accumulator
      */
-    default <V> V inject(V initialValue,
+    default <V> V reduce(V initialValue,
                          Func2<V, T, V> accumulator)
     {
         V answer = initialValue;
@@ -80,7 +80,7 @@ public interface SplitableIterable<T>
         return answer;
     }
 
-    default <V, E extends Exception> V injectThrows(V initialValue,
+    default <V, E extends Exception> V reduceThrows(V initialValue,
                                                     Sum1Throws<T, V, E> accumulator)
         throws E
     {
