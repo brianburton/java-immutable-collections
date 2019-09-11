@@ -42,6 +42,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ListAdaptor;
+import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.functional.Each1Throws;
 import org.javimmutable.collections.functional.Sum1Throws;
@@ -283,9 +284,7 @@ public class JImmutableTreeList<T>
     public <A> JImmutableTreeList<A> transform(@Nonnull Func1<T, A> transform)
     {
         final ListBuilder<A> builder = new ListBuilder<>();
-        for (T t : this) {
-            builder.add(transform.apply(t));
-        }
+        root.forEach(t -> builder.add(transform.apply(t)));
         return builder.build();
     }
 
@@ -293,12 +292,7 @@ public class JImmutableTreeList<T>
     public <A> JImmutableTreeList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
         final ListBuilder<A> builder = new ListBuilder<>();
-        for (T t : this) {
-            final Holder<A> ha = transform.apply(t);
-            if (ha.isFilled()) {
-                builder.add(ha.getValue());
-            }
-        }
+        root.forEach(t -> transform.apply(t).ifPresent(builder::add));
         return builder.build();
     }
 
@@ -325,11 +319,11 @@ public class JImmutableTreeList<T>
     public JImmutableTreeList<T> select(@Nonnull Predicate<T> predicate)
     {
         final ListBuilder<T> answer = listBuilder();
-        for (T value : this) {
+        root.forEach(value -> {
             if (predicate.test(value)) {
                 answer.add(value);
             }
-        }
+        });
         return answer.size() == size() ? this : answer.build();
     }
 
@@ -337,17 +331,23 @@ public class JImmutableTreeList<T>
     @Override
     public JImmutableTreeList<T> reject(@Nonnull Predicate<T> predicate)
     {
-        JImmutableTreeList<T> answer = this;
-        int index = 0;
-        for (T value : this) {
-            assert value == answer.get(index);
+        final MutableDelta index = new MutableDelta();
+        final AbstractNode<T> newRoot = root.reduce(root, (answer, value) -> {
+            assert value == answer.get(index.getValue());
             if (predicate.test(value)) {
-                answer = answer.delete(index);
+                answer = answer.delete(index.getValue());
             } else {
-                index += 1;
+                index.add(1);
             }
+            return answer;
+        });
+        if (newRoot.isEmpty()) {
+            return of();
+        } else if (newRoot == root) {
+            return this;
+        } else {
+            return new JImmutableTreeList<>(newRoot);
         }
-        return answer.size() == size() ? this : answer;
     }
 
     @Nonnull
