@@ -40,6 +40,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
@@ -121,6 +125,18 @@ abstract class AbstractNode<K, V>
     {
         return (obj instanceof AbstractNode) && IteratorHelper.iteratorEquals(iterator(), ((AbstractNode)obj).iterator());
     }
+
+    abstract void forEach(@Nonnull Each2<K, V> proc);
+
+    abstract <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+        throws E;
+
+    abstract <R> R reduce(R sum,
+                          @Nonnull Sum2<K, V, R> proc);
+
+    abstract <R, E extends Exception> R reduceThrows(R sum,
+                                                     @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E;
 
     static class DeleteResult<K, V>
     {

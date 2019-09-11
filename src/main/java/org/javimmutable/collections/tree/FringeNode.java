@@ -39,6 +39,10 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -206,6 +210,32 @@ class FringeNode<K, V>
     public int iterableSize()
     {
         return 0;
+    }
+
+    @Override
+    void forEach(@Nonnull Each2<K, V> proc)
+    {
+    }
+
+    @Override
+    <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+    }
+
+    @Override
+    <R> R reduce(R sum,
+                 @Nonnull Sum2<K, V, R> proc)
+    {
+        return sum;
+    }
+
+    @Override
+    <R, E extends Exception> R reduceThrows(R sum,
+                                            @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        return sum;
     }
 
     @Override

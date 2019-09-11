@@ -355,7 +355,7 @@ public interface JImmutableMap<K, V>
      * @return final value (or initial value if this map is empty)
      */
     default <R> R reduce(R sum,
-                         Sum2<K, V, R> proc)
+                         @Nonnull Sum2<K, V, R> proc)
     {
         for (Entry<K, V> e : this) {
             sum = proc.process(sum, e.getKey(), e.getValue());
@@ -373,7 +373,7 @@ public interface JImmutableMap<K, V>
      * @return final value (or initial value if this map is empty)
      */
     default <R, E extends Exception> R reduceThrows(R sum,
-                                                    Sum2Throws<K, V, R, E> proc)
+                                                    @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
         for (Entry<K, V> e : this) {

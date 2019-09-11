@@ -127,15 +127,29 @@ public class StandardJImmutableMapTests
 
     private static void verifyReduce(@Nonnull JImmutableMap<Integer, Integer> empty)
     {
-        final int sum = IntStream.range(1, 1001).sum();
+        assertEquals(Integer.valueOf(0), empty.reduce(0, (s, k, v) -> s + k - v));
+
+        final Integer expected = 2 * IntStream.range(1, 1001).sum();
         @Nonnull JImmutableMap<Integer, Integer> map = IntStream.range(1, 1001)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
             .collect(empty.mapCollector());
-        assertEquals(Integer.valueOf(2 * sum), map.reduce(0, (s, k, v) -> s + k - v));
+        assertEquals(expected, map.reduce(0, (s, k, v) -> s + k - v));
 
         try {
-            map.reduceThrows(0, (s, k, v) -> {
+            int x = empty.reduceThrows(0, (s, k, v) -> {
+                if (k == 1000) {
+                    throw new IOException();
+                }
+                return s + k - v;
+            });
+            assertEquals(0, x);
+        } catch (IOException ex) {
+            fail();
+        }
+
+        try {
+            int x = map.reduceThrows(0, (s, k, v) -> {
                 if (k == 1000) {
                     throw new IOException();
                 }

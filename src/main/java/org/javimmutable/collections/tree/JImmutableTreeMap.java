@@ -42,6 +42,10 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
 
 import javax.annotation.Nonnull;
@@ -200,6 +204,34 @@ public class JImmutableTreeMap<K, V>
     public SplitableIterator<Entry<K, V>> iterator()
     {
         return root.iterator();
+    }
+
+    @Override
+    public void forEach(@Nonnull Each2<K, V> proc)
+    {
+        root.forEach(proc);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        root.forEachThrows(proc);
+    }
+
+    @Override
+    public <R> R reduce(R sum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        return root.reduce(sum, proc);
+    }
+
+    @Override
+    public <R, E extends Exception> R reduceThrows(R sum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        return root.reduceThrows(sum, proc);
     }
 
     @Override

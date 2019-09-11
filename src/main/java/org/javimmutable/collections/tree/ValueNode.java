@@ -41,6 +41,10 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.functional.Each2;
+import org.javimmutable.collections.functional.Each2Throws;
+import org.javimmutable.collections.functional.Sum2;
+import org.javimmutable.collections.functional.Sum2Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -391,5 +395,43 @@ class ValueNode<K, V>
     public int iterableSize()
     {
         return size;
+    }
+
+    @Override
+    void forEach(@Nonnull Each2<K, V> proc)
+    {
+        left.forEach(proc);
+        proc.accept(key, value);
+        right.forEach(proc);
+    }
+
+    @Override
+    <E extends Exception> void forEachThrows(@Nonnull Each2Throws<K, V, E> proc)
+        throws E
+    {
+        left.forEachThrows(proc);
+        proc.accept(key, value);
+        right.forEachThrows(proc);
+    }
+
+    @Override
+    <R> R reduce(R sum,
+                 @Nonnull Sum2<K, V, R> proc)
+    {
+        sum = left.reduce(sum, proc);
+        sum = proc.process(sum, key, value);
+        sum = right.reduce(sum, proc);
+        return sum;
+    }
+
+    @Override
+    <R, E extends Exception> R reduceThrows(R sum,
+                                            @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        sum = left.reduceThrows(sum, proc);
+        sum = proc.process(sum, key, value);
+        sum = right.reduceThrows(sum, proc);
+        return sum;
     }
 }
