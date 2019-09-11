@@ -40,7 +40,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
@@ -169,29 +168,24 @@ public class RunStressTests
         final JImmutableSetMapFactory<String, String> filterMapFactory = setMapFactory(String.class, String.class)
             .withMap(sortedMap())
             .withSet(sortedSet());
-        JImmutableSetMap<String, String> filterMap = AllTesters.stream()
+        final JImmutableSetMap<String, String> filterMap = AllTesters.stream()
             .flatMap(tester -> tester.getOptions()
                 .stream()
-                .map(option -> JImmutables.entry(tester.getTestName(), option)))
+                .map(option -> entry(tester.getTestName(), option)))
             .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters By Class:");
         System.out.printf("%-40s  %s%n", "Tester Class", "Filters");
-        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
-            System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue()));
-        }
+        filterMap.stream()
+            .forEach(e -> System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue())));
 
-        filterMap = AllTesters.stream()
-            .flatMap(tester -> tester.getOptions()
-                .stream()
-                .map(option -> JImmutables.entry(option, tester.getTestName())))
-            .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters");
         System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
-        for (JImmutableMap.Entry<String, JImmutableSet<String>> e : filterMap) {
-            System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue()));
-        }
+        filterMap.stream()
+            .flatMap(e -> e.getValue().stream().map(s -> entry(s, e.getKey())))
+            .collect(filterMapFactory.collector())
+            .forEach(e -> System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue())));
     }
 
     private static String valuesString(Iterable<?> objects)
