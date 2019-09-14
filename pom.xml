@@ -3,7 +3,7 @@
 
     <groupId>org.javimmutable</groupId>
     <artifactId>javimmutable-collections</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
     <name>JImmutable Collections</name>
@@ -72,7 +72,7 @@
     <scm>
         <connection>scm:git:git://github.com/brianburton/java-immutable-collections.git</connection>
         <developerConnection>scm:git:git@github.com:brianburton/java-immutable-collections.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v3.0.0</tag>
         <url>https://github.com/brianburton/java-immutable-collections</url>
     </scm>
 
