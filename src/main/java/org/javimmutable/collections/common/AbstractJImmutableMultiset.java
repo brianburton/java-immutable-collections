@@ -51,6 +51,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 @Immutable
 public abstract class AbstractJImmutableMultiset<T>
@@ -602,23 +603,21 @@ public abstract class AbstractJImmutableMultiset<T>
 
         private Editor max(Counter counter)
         {
-            for (Map.Entry<T, Integer> entry : counter) {
-                final T value = entry.getKey();
+            counter.forEach((value, count) -> {
                 final int ourCount = newMap.getValueOr(value, 0);
-                final int theirCount = entry.getValue();
+                final int theirCount = count;
                 adjust(value, ourCount, Math.max(ourCount, theirCount));
-            }
+            });
             return this;
         }
 
         private Editor min(Counter counter)
         {
-            for (Map.Entry<T, Integer> entry : counter) {
-                final T value = entry.getKey();
+            counter.forEach((value, count) -> {
                 final int ourCount = newMap.getValueOr(value, 0);
-                final int theirCount = entry.getValue();
+                final int theirCount = count;
                 adjust(value, ourCount, Math.min(ourCount, theirCount));
-            }
+            });
             return this;
         }
 
@@ -639,12 +638,12 @@ public abstract class AbstractJImmutableMultiset<T>
 
         private Editor removeValuesNotInCounter(Counter counter)
         {
-            for (JImmutableMap.Entry<T, Integer> entry : newMap) {
-                if (counter.get(entry.getKey()) == 0) {
-                    newMap = newMap.delete(entry.getKey());
-                    newOccurrences -= entry.getValue();
+            newMap.forEach((value, count) -> {
+                if (counter.get(value) == 0) {
+                    newMap = newMap.delete(value);
+                    newOccurrences -= count;
                 }
-            }
+            });
             return this;
         }
 
@@ -655,7 +654,6 @@ public abstract class AbstractJImmutableMultiset<T>
     }
 
     private class Counter
-        implements Iterable<Map.Entry<T, Integer>>
     {
         private final Map<T, Integer> counts;
 
@@ -703,11 +701,9 @@ public abstract class AbstractJImmutableMultiset<T>
             return (count == null) ? 0 : count;
         }
 
-        @Nonnull
-        @Override
-        public Iterator<Map.Entry<T, Integer>> iterator()
+        void forEach(@Nonnull BiConsumer<T, Integer> proc)
         {
-            return counts.entrySet().iterator();
+            counts.forEach(proc);
         }
     }
 }
