@@ -508,6 +508,16 @@ public final class JImmutables
     }
 
     /**
+     * Create a Builder to construct maps whose iterators visit entries in the same order they were
+     * added to the map.
+     */
+    @Nonnull
+    public static <K, V> JImmutableMap.Builder<K, V> insertOrderMapBuilder()
+    {
+        return JImmutableInsertOrderMap.builder();
+    }
+
+    /**
      * Creates a Collector suitable for use in the stream to produce an insert order map.
      */
     @Nonnull

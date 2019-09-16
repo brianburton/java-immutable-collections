@@ -281,6 +281,8 @@ public class JImmutablesTest
 
         JImmutableMap<String, String> iomap = JImmutables.insertOrderMap(map(entries));
         assertSame(iomap, JImmutables.insertOrderMap(iomap));
+
+        assertEquals(JImmutables.insertOrderMap().insertAll(entries), JImmutables.insertOrderMapBuilder().add(entries).build());
     }
 
     public void testSet()
@@ -511,7 +513,7 @@ public class JImmutablesTest
         assertEquals(JImmutables.list("baker", "charlie"), source.select(str -> str.contains("r")));
         assertEquals(JImmutables.list("able", "baker", "delta"), source.reject(str -> str.contains("h")));
         assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
-        assertEquals(JImmutables.list("baker", "charlie"), 
+        assertEquals(JImmutables.list("baker", "charlie"),
                      source.stream()
                          .filter(str -> str.contains("r"))
                          .collect(JImmutables.listCollector()));
