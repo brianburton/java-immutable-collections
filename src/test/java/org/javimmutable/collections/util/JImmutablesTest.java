@@ -506,6 +506,15 @@ public class JImmutablesTest
         assertEquals(30, ralist2.get(2));
         assertEquals(asList(10, 20, 30), ralist.getList());
         assertEquals(asList(10, 87, 30), ralist2.getList());
+
+        JImmutableList<String> source = JImmutables.list("able", "baker", "charlie", "delta", "echo");
+        assertEquals(JImmutables.list("baker", "charlie"), source.select(str -> str.contains("r")));
+        assertEquals(JImmutables.list("able", "baker", "delta"), source.reject(str -> str.contains("h")));
+        assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
+        assertEquals(JImmutables.list("baker", "charlie"), 
+                     source.stream()
+                         .filter(str -> str.contains("r"))
+                         .collect(JImmutables.listCollector()));
     }
 
     public void testMapTutorialCode()
@@ -558,7 +567,7 @@ public class JImmutablesTest
         m1.put(3, 3);
         m1.put(1, 1);
         JImmutableMap<Integer, Integer> m2 = m1.entrySet().stream().map(JImmutables::entry).collect(JImmutables.insertOrderMapCollector());
-        assertEquals("{4=4, 2=2, 3=3, 1=1}", m2.toString());         
+        assertEquals("{4=4, 2=2, 3=3, 1=1}", m2.toString());
     }
 
     private <T, C extends Iterable<T>> void verifyOrdered(@Nonnull Predicate<C> classTest,
