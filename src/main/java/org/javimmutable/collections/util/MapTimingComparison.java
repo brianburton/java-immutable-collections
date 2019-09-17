@@ -46,6 +46,7 @@ import org.javimmutable.collections.tree.JImmutableTreeMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public final class MapTimingComparison
 {
@@ -64,7 +65,8 @@ public final class MapTimingComparison
         final int seed = Integer.parseInt(argv[0]);
         final int loops = Integer.parseInt(argv[1]);
 
-        MutableDelta javaElapsed = new MutableDelta();
+        MutableDelta javaHashElapsed = new MutableDelta();
+        MutableDelta javaTreeElapsed = new MutableDelta();
         MutableDelta hashElapsed = new MutableDelta();
         MutableDelta treeElapsed = new MutableDelta();
         MutableDelta arrayElapsed = new MutableDelta();
@@ -74,18 +76,18 @@ public final class MapTimingComparison
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;
         final int maxCommand = 10;
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
         System.out.println();
 
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaElapsed, hashElapsed, treeElapsed, arrayElapsed, inOrderElapsed);
+            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaHashElapsed, javaTreeElapsed, hashElapsed, treeElapsed, arrayElapsed, inOrderElapsed);
             System.out.println();
         }
-        System.out.printf("java avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n", javaElapsed.getValue() / 25.0, treeElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0, inOrderElapsed.getValue() / 25.0);
+        System.out.printf("jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n", javaHashElapsed.getValue() / 25.0, javaTreeElapsed.getValue() / 25.0, treeElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0, inOrderElapsed.getValue() / 25.0);
     }
 
     @SuppressWarnings("UnusedAssignment")
@@ -94,7 +96,8 @@ public final class MapTimingComparison
                                 int maxValue,
                                 int maxKey,
                                 int maxCommand,
-                                MutableDelta javaElapsed,
+                                MutableDelta javaHashElapsed,
+                                MutableDelta javaTreeElapsed,
                                 MutableDelta hashElapsed,
                                 MutableDelta treeElapsed,
                                 MutableDelta arrayElapsed,
@@ -125,8 +128,38 @@ public final class MapTimingComparison
             }
         }
         long endMillis = System.currentTimeMillis();
-        javaElapsed.add((int)(endMillis - startMillis));
+        javaHashElapsed.add((int)(endMillis - startMillis));
         System.out.printf("java map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
+        expected = null;
+        System.gc();
+        Thread.sleep(500);
+
+        random = new Random(seed);
+        adds = 0;
+        removes = 0;
+        gets = 0;
+        startMillis = System.currentTimeMillis();
+        expected = new TreeMap<>();
+        for (int i = 1; i <= loops; ++i) {
+            int command = random.nextInt(maxCommand);
+            if (command <= 2) {
+                Integer key = random.nextInt(maxKey);
+                Integer value = random.nextInt(maxValue);
+                expected.put(key, value);
+                adds += 1;
+            } else if (command == 3) {
+                Integer key = random.nextInt(maxKey);
+                expected.remove(key);
+                removes += 1;
+            } else {
+                Integer key = random.nextInt(maxKey);
+                expected.get(key);
+                gets += 1;
+            }
+        }
+        endMillis = System.currentTimeMillis();
+        javaTreeElapsed.add((int)(endMillis - startMillis));
+        System.out.printf("java tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
         expected = null;
         System.gc();
         Thread.sleep(500);
