@@ -115,15 +115,7 @@ public class HamtLeafNode<K, V>
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
             }
-        } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
-            // our path is longer so expand using new value then add our values to tree
-            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, value));
-            for (JImmutableMap.Entry<K, V> entry : collisionMap.iterable(thisValue)) {
-                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue());
-            }
-            return expanded;
         } else {
-            // our path is shorter so expand using our hashcode then add new value to tree
             final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
             return expanded.assign(collisionMap, hashCode, hashKey, value);
         }
@@ -145,15 +137,7 @@ public class HamtLeafNode<K, V>
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
             }
-        } else if (Integer.numberOfLeadingZeros(thisHashCode) < Integer.numberOfLeadingZeros(hashCode)) {
-            // our path is longer so expand using new value then add our values to tree
-            HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, hashCode, collisionMap.update(collisionMap.emptyNode(), hashKey, generator));
-            for (JImmutableMap.Entry<K, V> entry : collisionMap.iterable(thisValue)) {
-                expanded = expanded.assign(collisionMap, thisHashCode, entry.getKey(), entry.getValue());
-            }
-            return expanded;
         } else {
-            // our path is shorter so expand using our hashcode then add new value to tree
             final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
             return expanded.update(collisionMap, hashCode, hashKey, generator);
         }

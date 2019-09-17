@@ -92,7 +92,7 @@ public class HamtBranchNode<K, V>
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final HamtNode<K, V>[] children = new HamtNode[1];
-            children[0] = forLeafExpansion(collisionMap, remainder, value);
+            children[0] = new HamtLeafNode<>(remainder, value);
             return new HamtBranchNode<>(bit, collisionMap.emptyNode(), children, collisionMap.size(value));
         }
     }
