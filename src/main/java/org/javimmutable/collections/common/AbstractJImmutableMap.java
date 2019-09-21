@@ -141,14 +141,14 @@ public abstract class AbstractJImmutableMap<K, V>
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (Entry<K, V> kvEntry : this) {
+        forEach((k, v) -> {
             if (sb.length() > 1) {
                 sb.append(", ");
             }
-            MapEntry.addToString(sb, kvEntry);
-        }
+            MapEntry.addToString(sb, k, v);
+        });
         sb.append("}");
         return sb.toString();
     }

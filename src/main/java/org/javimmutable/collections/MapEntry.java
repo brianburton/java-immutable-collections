@@ -192,9 +192,16 @@ public class MapEntry<K, V>
     public static void addToString(StringBuilder sb,
                                    JImmutableMap.Entry entry)
     {
-        addToString(sb, entry.getKey());
+        addToString(sb, entry.getKey(), entry.getValue());
+    }
+
+    public static <K, V> void addToString(StringBuilder sb,
+                                          K key,
+                                          V value)
+    {
+        addToString(sb, key);
         sb.append("=");
-        addToString(sb, entry.getValue());
+        addToString(sb, value);
     }
 
     public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<JImmutableMap.Entry<K, V>> source)
