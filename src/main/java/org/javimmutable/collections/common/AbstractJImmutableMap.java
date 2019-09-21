@@ -79,7 +79,7 @@ public abstract class AbstractJImmutableMap<K, V>
     @Override
     public JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map)
     {
-        return assignAllHelper(map);
+        return map.reduce((JImmutableMap<K, V>)this, (m, k, v) -> m = m.assign(k, v));
     }
 
     @Nonnull
@@ -170,16 +170,5 @@ public abstract class AbstractJImmutableMap<K, V>
     public JImmutableMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate)
     {
         return reduce((JImmutableMap<K, V>)this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
-    }
-
-    //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28
-    @Nonnull
-    private <K1 extends K, V1 extends V> JImmutableMap<K, V> assignAllHelper(@Nonnull JImmutableMap<K1, V1> map)
-    {
-        JImmutableMap<K, V> answer = this;
-        for (Entry<K1, V1> e : map) {
-            answer = answer.assign(e.getKey(), e.getValue());
-        }
-        return answer;
     }
 }
