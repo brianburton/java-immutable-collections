@@ -77,6 +77,7 @@ public class StandardJImmutableMapTests
 
         verifyForEach(map.deleteAll());
         verifyReduce(map.deleteAll());
+        verifySelectReject(map.deleteAll());
     }
 
     public static <K, V> void verifyEmptyEnumeration(@Nonnull JImmutableMap<K, V> map)
@@ -182,6 +183,28 @@ public class StandardJImmutableMapTests
         } catch (IOException ex) {
             // pass
         }
+    }
+
+    private static void verifySelectReject(@Nonnull JImmutableMap<Integer, Integer> empty)
+    {
+        final JImmutableMap<Integer, Integer> all = IntStream.range(1, 50)
+            .boxed()
+            .map(i -> MapEntry.entry(i, -i))
+            .collect(empty.mapCollector());
+
+        final JImmutableMap<Integer, Integer> evens = all.stream()
+            .filter(e -> e.getKey() % 2 == 0)
+            .collect(empty.mapCollector());
+
+        final JImmutableMap<Integer, Integer> odds = all.stream()
+            .filter(e -> e.getKey() % 2 == 1)
+            .collect(empty.mapCollector());
+
+        assertEquals(evens, all.select((k, v) -> k % 2 == 0));
+        assertEquals(odds, all.select((k, v) -> k % 2 == 1));
+
+        assertEquals(odds, all.reject((k, v) -> k % 2 == 0));
+        assertEquals(evens, all.reject((k, v) -> k % 2 == 1));
     }
 
     private static Func1<Holder<Integer>, Integer> generator(int newValue)

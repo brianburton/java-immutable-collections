@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 @Immutable
 public abstract class AbstractJImmutableMap<K, V>
@@ -155,6 +156,20 @@ public abstract class AbstractJImmutableMap<K, V>
     public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_UNORDERED;
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableMap<K, V> select(@Nonnull BiPredicate<K, V> predicate)
+    {
+        return reduce(deleteAll().mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b).build();
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate)
+    {
+        return reduce((JImmutableMap<K, V>)this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
     }
 
     //resolves generics issue in assignAll(JImmutableMap). See Effective Java, Item 28

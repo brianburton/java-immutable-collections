@@ -40,6 +40,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.stream.Collector;
 
 /**
@@ -376,4 +377,26 @@ public interface JImmutableMap<K, V>
         }
         return sum;
     }
+
+    /**
+     * Returns a map of the same type as this containing only those elements for which
+     * predicate returns true.  Implementations are optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return map of same type as this containing only those elements for which predicate returns true
+     */
+    @Nonnull
+    JImmutableMap<K, V> select(@Nonnull BiPredicate<K, V> predicate);
+
+    /**
+     * Returns a map of the same type as this containing all those elements for which
+     * predicate returns false.  Implementations can be optimized assuming predicate will
+     * return false more often than true.
+     *
+     * @param predicate decides whether to include an element
+     * @return map of same type as this containing only those elements for which predicate returns false
+     */
+    @Nonnull
+    JImmutableMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate);
 }
