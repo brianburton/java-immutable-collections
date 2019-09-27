@@ -177,4 +177,19 @@ public class Temp
             this.z = z;
         }
     }
+
+    public static class Int1
+    {
+        public int a;
+
+        public Int1(int a)
+        {
+            this.a = a;
+        }
+    }
+
+    public static Int1 intVar(int a)
+    {
+        return new Int1(a);
+    }
 }

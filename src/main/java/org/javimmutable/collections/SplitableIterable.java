@@ -87,4 +87,23 @@ public interface SplitableIterable<T>
         }
         return answer;
     }
+
+    /**
+     * Version of forEach that includes an integer index along with each value.
+     */
+    default void indexedForEach(@Nonnull IndexedProc1<T> proc)
+    {
+        final Temp.Int1 index = Temp.intVar(0);
+        forEach(v -> proc.apply(index.a++, v));
+    }
+
+    /**
+     * Version of forEachThrows that includes an integer index along with each value.
+     */
+    default <E extends Exception> void indexedForEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
+        throws E
+    {
+        final Temp.Int1 index = Temp.intVar(0);
+        forEachThrows(v -> proc.apply(index.a++, v));
+    }
 }
