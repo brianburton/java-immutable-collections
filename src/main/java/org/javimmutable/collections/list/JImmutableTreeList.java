@@ -572,6 +572,14 @@ public class JImmutableTreeList<T>
             return this;
         }
 
+        @Nonnull
+        @Override
+        public synchronized ListBuilder<T> clear()
+        {
+            builder.clear();
+            return this;
+        }
+
         public synchronized void checkInvariants()
         {
             builder.checkInvariants();

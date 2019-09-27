@@ -785,6 +785,8 @@ public class JImmutableTreeListTest
             actual.checkInvariants();
         }
 
+        assertEquals(JImmutableTreeList.<Integer>of().insert(1), builder.clear().add(1).build());
+
         for (int i = 4097; i <= 20480; ++i) {
             values.add(i);
         }

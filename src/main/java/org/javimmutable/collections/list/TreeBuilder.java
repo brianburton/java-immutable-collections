@@ -40,6 +40,7 @@ import org.javimmutable.collections.Indexed;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,6 +56,14 @@ class TreeBuilder<T>
     TreeBuilder()
     {
         buffer = (T[])new Object[MultiValueNode.MAX_SIZE];
+    }
+
+    void clear()
+    {
+        Arrays.fill(buffer, null);
+        count = 0;
+        size = 0;
+        parent = null;
     }
 
     @Nonnull

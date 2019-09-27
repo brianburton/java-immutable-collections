@@ -149,6 +149,14 @@ public interface JImmutableList<T>
         {
             return add(source, 0, source.size());
         }
+
+        /**
+         * Deletes all values.  This is useful to reset to build a new list with the same builder.
+         *
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        Builder<T> clear();
     }
 
     /**
