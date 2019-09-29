@@ -57,6 +57,12 @@ public class HamtBuilder<K, V>
         return root.toHamt(collisionMap);
     }
 
+    public void clear()
+    {
+        collisionMap = ListCollisionMap.instance();
+        root = new Empty<>();
+    }
+
     public void add(@Nonnull K key,
                     V value)
     {

@@ -109,6 +109,14 @@ public class JImmutableInsertOrderMap<K, V>
 
             @Nonnull
             @Override
+            public synchronized Builder<K, V> clear()
+            {
+                map = of();
+                return this;
+            }
+
+            @Nonnull
+            @Override
             public synchronized Builder<K, V> add(@Nonnull K key,
                                                   V value)
             {

@@ -174,6 +174,14 @@ public interface JImmutableMap<K, V>
             add(other.build());
             return this;
         }
+
+        /**
+         * Deletes all values.  This is useful to reset to build a new map with the same builder.
+         *
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        Builder<K, V> clear();
     }
 
     /**

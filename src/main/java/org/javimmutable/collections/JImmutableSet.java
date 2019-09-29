@@ -147,6 +147,14 @@ public interface JImmutableSet<T>
         {
             return add(source, 0, source.size());
         }
+
+        /**
+         * Removes all objects and resets the builder to it's initial post-build state.
+         *
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        Builder<T> clear();
     }
 
     /**

@@ -323,6 +323,8 @@ public class JImmutableInsertOrderMapTest
             JImmutableMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
+
+            assertEquals(expected.deleteAll().assign(8, 3), builder.clear().add(8, 3).build());
         }
     }
 

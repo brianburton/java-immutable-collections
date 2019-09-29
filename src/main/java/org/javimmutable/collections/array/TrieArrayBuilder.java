@@ -37,11 +37,17 @@ package org.javimmutable.collections.array;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 class TrieArrayBuilder<T>
 {
     private final LeafBuilder<T> leafBuilder = new LeafBuilder<>();
 
+    synchronized void clear()
+    {
+        leafBuilder.clear();
+    }
+    
     synchronized int size()
     {
         return leafBuilder.index;
@@ -71,6 +77,14 @@ class TrieArrayBuilder<T>
             leaves = new LeafTrieNode[32];
         }
 
+        private void clear()
+        {
+            Arrays.fill(leaves, null);
+            offset = 0;
+            index = 0;
+            next = null;
+        }
+        
         private void add(T value)
         {
             leaves[offset] = LeafTrieNode.of(index, value);

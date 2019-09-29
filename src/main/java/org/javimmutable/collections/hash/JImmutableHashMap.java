@@ -322,6 +322,14 @@ public class JImmutableHashMap<T, K, V>
 
         @Nonnull
         @Override
+        public synchronized JImmutableMap.Builder<K, V> clear()
+        {
+            builder.clear();
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
                                                             V value)
         {

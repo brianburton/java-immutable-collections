@@ -81,6 +81,8 @@ public final class StandardBuilderTests
                  int limit);
 
         void add(Indexed<? extends T> source);
+
+        void clear();
     }
 
     /**
@@ -111,19 +113,19 @@ public final class StandardBuilderTests
         //noinspection unchecked
         T[] array = (T[])values.toArray(arrayTemplate);
         //noinspection unchecked
-        builder = builderFactory.apply();
+        builder.clear();
         builder.add(array);
         collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via Indexed in its entirety
-        builder = builderFactory.apply();
+        builder.clear();
         builder.add(indexed);
         collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));
 
         // add via indexed range
-        builder = builderFactory.apply();
+        builder.clear();
         builder.add(indexed, 0, indexed.size());
         collection = builder.build();
         assertEquals(Boolean.TRUE, comparator.apply(values, collection));

@@ -388,6 +388,9 @@ public class JImmutableTreeMapTest
             JImmutableMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
+
+            builder.clear();
+            assertEquals(expected.deleteAll().assign(1, 2).assign(2, 3), builder.add(1, 2).add(2, 3).build());
         }
     }
 

@@ -408,6 +408,8 @@ public class JImmutableHashMapTest
             actual.checkInvariants();
             assertEquals(expected, actual);
             assertEquals(actual, actual.parallelStream().collect(JImmutableHashMap.createMapCollector()));
+
+            assertEquals(expected.deleteAll().assign(1, 2).assign(3, 4), builder.clear().add(1, 2).add(3, 4).build());
         }
     }
 

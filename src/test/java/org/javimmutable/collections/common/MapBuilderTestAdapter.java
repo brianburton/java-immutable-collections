@@ -58,6 +58,12 @@ public class MapBuilderTestAdapter<K, V>
     }
 
     @Override
+    public void clear()
+    {
+        builder.clear();
+    }
+
+    @Override
     public int size()
     {
         return builder.size();

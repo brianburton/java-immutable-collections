@@ -74,6 +74,14 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
+    public synchronized JImmutableMap.Builder<K, V> clear()
+    {
+        values.clear();
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
                                                         V value)
     {

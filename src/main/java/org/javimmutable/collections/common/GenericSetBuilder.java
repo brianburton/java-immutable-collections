@@ -61,6 +61,14 @@ public class GenericSetBuilder<T>
         return setFactory.apply(mapBuilder.build());
     }
 
+    @Nonnull
+    @Override
+    public JImmutableSet.Builder<T> clear()
+    {
+        mapBuilder.clear();
+        return this;
+    }
+
     @Override
     public int size()
     {

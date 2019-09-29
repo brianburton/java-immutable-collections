@@ -289,6 +289,14 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
+        public JImmutableArray.Builder<T> clear()
+        {
+            builder.clear();
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public Builder<T> add(T value)
         {
             builder.add(value);
