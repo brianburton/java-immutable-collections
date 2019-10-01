@@ -109,8 +109,6 @@ public class MultiValueNodeTest
 
         TestUtil.verifyUnsupported(() -> self.left());
         TestUtil.verifyUnsupported(() -> self.right());
-        TestUtil.verifyUnsupported(() -> self.rotateLeft(self));
-        TestUtil.verifyUnsupported(() -> self.rotateRight(self));
     }
 
     static AbstractNode<Integer> leaf(int start,

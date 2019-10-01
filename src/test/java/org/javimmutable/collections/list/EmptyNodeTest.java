@@ -71,7 +71,5 @@ public class EmptyNodeTest
         assertThat(values).isEqualTo(new Integer[]{1});
         TestUtil.verifyUnsupported(() -> node.left());
         TestUtil.verifyUnsupported(() -> node.right());
-        TestUtil.verifyUnsupported(() -> node.rotateLeft(leaf));
-        TestUtil.verifyUnsupported(() -> node.rotateRight(leaf));
     }
 }

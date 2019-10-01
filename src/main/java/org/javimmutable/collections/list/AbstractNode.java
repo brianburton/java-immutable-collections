@@ -113,18 +113,6 @@ abstract class AbstractNode<T>
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
-    AbstractNode<T> rotateRight(AbstractNode<T> right)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    AbstractNode<T> rotateLeft(AbstractNode<T> left)
-    {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public int iterableSize()
     {

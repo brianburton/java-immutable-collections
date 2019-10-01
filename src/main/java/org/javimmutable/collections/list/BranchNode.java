@@ -104,9 +104,9 @@ class BranchNode<T>
     {
         final int diff = left.depth() - right.depth();
         if (diff > 1) {
-            return left.rotateRight(right);
+            return rotateRight(left, right);
         } else if (diff < -1) {
-            return right.rotateLeft(left);
+            return rotateLeft(right, left);
         } else {
             return join(left, right);
         }
@@ -322,9 +322,11 @@ class BranchNode<T>
     }
 
     @Nonnull
-    @Override
-    AbstractNode<T> rotateRight(AbstractNode<T> parentRight)
+    private static <T> AbstractNode<T> rotateRight(@Nonnull AbstractNode<T> node,
+                                                   @Nonnull AbstractNode<T> parentRight)
     {
+        final AbstractNode<T> left = node.left();
+        final AbstractNode<T> right = node.right();
         if (left.depth() >= right.depth()) {
             return join(left, join(right, parentRight));
         } else {
@@ -333,13 +335,15 @@ class BranchNode<T>
     }
 
     @Nonnull
-    @Override
-    AbstractNode<T> rotateLeft(AbstractNode<T> parentLeft)
+    private static <T> AbstractNode<T> rotateLeft(@Nonnull AbstractNode<T> node,
+                                                  @Nonnull AbstractNode<T> parentLeft)
     {
+        final AbstractNode<T> left = node.left();
+        final AbstractNode<T> right = node.right();
         if (left.depth() > right.depth()) {
             return join(join(parentLeft, left.left()), join(left.right(), right));
         } else {
-            return join(join(parentLeft, this.left), right);
+            return join(join(parentLeft, left), right);
         }
     }
 
