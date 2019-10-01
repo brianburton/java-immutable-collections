@@ -106,16 +106,58 @@ class ValueNode<K, V>
     {
         final int diff = left.depth() - right.depth();
         if (diff < -1) {
-            right = right.rightWeighted();
-            final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
-            return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
+            return rotateLeft(key, value, left, right);
         } else if (diff > 1) {
-            left = left.leftWeighted();
-            final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
-            return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
+            return rotateRight(key, value, left, right);
         } else {
             return new ValueNode<>(key, value, left, right);
         }
+    }
+
+    @Nonnull
+    private static <K, V> AbstractNode<K, V> rotateRight(@Nonnull K key,
+                                                         @Nullable V value,
+                                                         @Nonnull AbstractNode<K, V> left,
+                                                         @Nonnull AbstractNode<K, V> right)
+    {
+        left = ensureLeftBranchTaller(left);
+        final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
+        return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
+    }
+
+    @Nonnull
+    private static <K, V> AbstractNode<K, V> rotateLeft(@Nonnull K key,
+                                                        @Nullable V value,
+                                                        @Nonnull AbstractNode<K, V> left,
+                                                        @Nonnull AbstractNode<K, V> right)
+    {
+        right = ensureRightBranchTaller(right);
+        final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
+        return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
+    }
+
+    @Nonnull
+    private static <K, V> AbstractNode<K, V> ensureLeftBranchTaller(@Nonnull AbstractNode<K, V> node)
+    {
+        final AbstractNode<K, V> left = node.left();
+        final AbstractNode<K, V> right = node.right();
+        if (right.depth() > left.depth()) {
+            final AbstractNode<K, V> newLeft = new ValueNode<>(node.key(), node.value(), left, right.left());
+            node = new ValueNode<>(right.key(), right.value(), newLeft, right.right());
+        }
+        return node;
+    }
+
+    @Nonnull
+    private static <K, V> AbstractNode<K, V> ensureRightBranchTaller(@Nonnull AbstractNode<K, V> node)
+    {
+        final AbstractNode<K, V> left = node.left();
+        final AbstractNode<K, V> right = node.right();
+        if (left.depth() > right.depth()) {
+            final AbstractNode<K, V> newRight = new ValueNode<>(node.key(), node.value(), left.right(), right);
+            node = new ValueNode<>(left.key(), left.value(), left.left(), newRight);
+        }
+        return node;
     }
 
     @Nonnull
@@ -357,28 +399,6 @@ class ValueNode<K, V>
         }
         left.checkInvariants(comp);
         right.checkInvariants(comp);
-    }
-
-    @Nonnull
-    @Override
-    AbstractNode<K, V> leftWeighted()
-    {
-        if (right.depth() > left.depth()) {
-            final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
-            return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
-        }
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    AbstractNode<K, V> rightWeighted()
-    {
-        if (left.depth() > right.depth()) {
-            final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
-            return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
-        }
-        return this;
     }
 
     @Nullable

@@ -106,12 +106,6 @@ abstract class AbstractNode<K, V>
     @Nonnull
     abstract AbstractNode<K, V> right();
 
-    @Nonnull
-    abstract AbstractNode<K, V> leftWeighted();
-
-    @Nonnull
-    abstract AbstractNode<K, V> rightWeighted();
-
     abstract void checkInvariants(@Nonnull Comparator<K> comp);
 
     @Override
