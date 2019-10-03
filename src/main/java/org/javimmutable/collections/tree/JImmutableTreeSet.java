@@ -38,6 +38,7 @@ package org.javimmutable.collections.tree;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
 

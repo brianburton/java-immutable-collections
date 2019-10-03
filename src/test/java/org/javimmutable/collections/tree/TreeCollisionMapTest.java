@@ -45,6 +45,7 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
 

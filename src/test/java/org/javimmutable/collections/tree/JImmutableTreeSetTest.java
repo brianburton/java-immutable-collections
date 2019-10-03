@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.SetBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;

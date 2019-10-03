@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMap.Entry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.TestUtil;

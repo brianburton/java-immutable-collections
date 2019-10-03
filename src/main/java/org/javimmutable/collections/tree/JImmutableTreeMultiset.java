@@ -37,6 +37,7 @@ package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.serialization.JImmutableTreeMultisetProxy;
 
 import javax.annotation.Nonnull;
