@@ -119,7 +119,6 @@ public class JImmutableTrieArray<T>
     }
 
     @Override
-    @Nullable
     public T getValueOr(int index,
                         @Nullable T defaultValue)
     {
