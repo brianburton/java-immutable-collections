@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.util.JImmutables;
@@ -360,6 +361,25 @@ public abstract class AbstractJImmutableSetMapTestCase
                 assertEquals(true, jetMap.containsAny(key, subset.iterator()));
             }
         }
+
+        verifyForEach(jetMap);
+    }
+
+    private void verifyForEach(JImmutableSetMap<Integer, Integer> jetMap)
+    {
+        final Temp.Int1 count = Temp.intVar(0);
+        jetMap.forEach((key, set) -> {
+            count.a += 1;
+            assertEquals(set, jetMap.getSet(key));
+        });
+        assertEquals(jetMap.size(), count.a);
+
+        count.a = 0;
+        jetMap.forEachThrows((key, set) -> {
+            count.a += 1;
+            assertEquals(set, jetMap.getSet(key));
+        });
+        assertEquals(jetMap.size(), count.a);
     }
 
     public void verifyRandom(JImmutableSetMap<Integer, Integer> emptyJetMap,
