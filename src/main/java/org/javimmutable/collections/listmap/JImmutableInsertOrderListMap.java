@@ -79,7 +79,7 @@ public class JImmutableInsertOrderListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableInsertOrderListMap<>(map, emptyList);
+        return (map == contents) ? this : new JImmutableInsertOrderListMap<>(map, emptyList);
     }
 
     private Object writeReplace()

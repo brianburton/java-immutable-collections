@@ -78,7 +78,7 @@ public class JImmutableHashListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableHashListMap<>(map, emptyList);
+        return (map == contents) ? this : new JImmutableHashListMap<>(map, emptyList);
     }
 
     private Object writeReplace()

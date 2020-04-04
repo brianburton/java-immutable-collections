@@ -109,7 +109,7 @@ public class JImmutableTreeListMap<K, V>
     @Override
     protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
     {
-        return new JImmutableTreeListMap<>(map, comparator, emptyList);
+        return (map == contents) ? this : new JImmutableTreeListMap<>(map, comparator, emptyList);
     }
 
     JImmutableMap<K, JImmutableList<V>> getMap()

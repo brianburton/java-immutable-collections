@@ -108,6 +108,8 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(Arrays.asList(300, 7, 7, 14), map.getList(3).getList());
         assertSame(map.getList(3), map.get(3));
 
+        assertSame(map, map.delete(12)); // nothing to delete returns same map
+
         preInsertMap = preInsertMap.delete(3);
         final List<Integer> insertValuesList = asList(300, 7, 7, 14);
         assertEquals(map, preInsertMap.insertAll(3, insertValuesList));
