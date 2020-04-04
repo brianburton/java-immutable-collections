@@ -148,13 +148,6 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableTreeList<T> insert(@Nonnull Iterable<? extends T> values)
-    {
-        return create(root.append(nodeFromIterable(values)));
-    }
-
-    @Nonnull
-    @Override
     public JImmutableTreeList<T> insert(int index,
                                         @Nullable T value)
     {

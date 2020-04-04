@@ -153,10 +153,10 @@ public class JImmutableTreeListTest
         JImmutableList<Integer> list = JImmutableTreeList.of();
         StandardIteratorTests.emptyIteratorTest(list.iterator());
 
-        list = list.insert(Arrays.asList(1, 2, 3));
+        list = list.insertAll(Arrays.asList(1, 2, 3));
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), list.iterator());
 
-        list = list.insert(6).insert(Arrays.asList(10, 11, 12)).insert(20);
+        list = list.insert(6).insertAllLast(Arrays.asList(10, 11, 12)).insert(20);
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3, 6, 10, 11, 12, 20), list.iterator());
     }
 

@@ -191,12 +191,6 @@ public interface JImmutableList<T>
     JImmutableList<T> insert(@Nullable T value);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     */
-    @Nonnull
-    JImmutableList<T> insert(@Nonnull Iterable<? extends T> values);
-
-    /**
      * Insert value at index (which must be within 0 to size).
      * Shifts all values at and after index one position to the right and adds 1
      * to size of the list.
