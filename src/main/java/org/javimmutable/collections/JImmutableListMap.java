@@ -220,6 +220,27 @@ public interface JImmutableListMap<K, V>
     IterableStreamable<JImmutableMap.Entry<K, V>> entries();
 
     /**
+     * Processes every key/list pair in this map using the provided function.
+     */
+    default void forEach(@Nonnull Proc2<K, JImmutableList<V>> proc)
+    {
+        for (JImmutableMap.Entry<K, JImmutableList<V>> e : this) {
+            proc.apply(e.getKey(), e.getValue());
+        }
+    }
+
+    /**
+     * Processes every key/list pair in this map using the provided function.
+     */
+    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, JImmutableList<V>, E> proc)
+        throws E
+    {
+        for (JImmutableMap.Entry<K, JImmutableList<V>> e : this) {
+            proc.apply(e.getKey(), e.getValue());
+        }
+    }
+
+    /**
      * Returns a Collector that creates a listMap of the same type as this containing all
      * of the collected values inserted over whatever starting values this already contained.
      */

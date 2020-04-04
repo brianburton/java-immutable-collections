@@ -41,6 +41,7 @@ import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.JImmutableListMap;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableTreeList;
 
@@ -189,5 +190,24 @@ public abstract class AbstractJImmutableListMapTestCase
         JImmutableListMap<Integer, Integer> expected = template.insertAll(values);
         JImmutableListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());
         assertEquals(expected, actual);
+
+        verifyForEach(actual);
+    }
+
+    private static void verifyForEach(JImmutableListMap<Integer, Integer> jetMap)
+    {
+        final Temp.Int1 count = Temp.intVar(0);
+        jetMap.forEach((key, set) -> {
+            count.a += 1;
+            assertEquals(set, jetMap.getList(key));
+        });
+        assertEquals(jetMap.size(), count.a);
+
+        count.a = 0;
+        jetMap.forEachThrows((key, set) -> {
+            count.a += 1;
+            assertEquals(set, jetMap.getList(key));
+        });
+        assertEquals(jetMap.size(), count.a);
     }
 }

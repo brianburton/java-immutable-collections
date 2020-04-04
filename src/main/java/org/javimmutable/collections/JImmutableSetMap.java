@@ -302,7 +302,7 @@ public interface JImmutableSetMap<K, V>
     IterableStreamable<JImmutableMap.Entry<K, V>> entries();
 
     /**
-     * Processes every key/value pair in this map using the provided function.
+     * Processes every key/set pair in this map using the provided function.
      */
     default void forEach(@Nonnull Proc2<K, JImmutableSet<V>> proc)
     {
@@ -312,7 +312,7 @@ public interface JImmutableSetMap<K, V>
     }
 
     /**
-     * Processes every key/value pair in this map using the provided function.
+     * Processes every key/set pair in this map using the provided function.
      */
     default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, JImmutableSet<V>, E> proc)
         throws E
