@@ -41,6 +41,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

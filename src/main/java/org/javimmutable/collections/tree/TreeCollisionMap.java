@@ -43,7 +43,6 @@ import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;

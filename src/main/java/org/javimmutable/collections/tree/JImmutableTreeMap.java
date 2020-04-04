@@ -44,7 +44,6 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
-import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;

@@ -40,7 +40,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.common.ComparableComparator;
 import org.javimmutable.collections.common.SetBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -49,6 +48,7 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;

@@ -39,7 +39,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.common.ComparableComparator;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 import java.util.Collections;
 import java.util.Comparator;
