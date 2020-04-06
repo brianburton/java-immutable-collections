@@ -50,6 +50,15 @@ public interface Sequence<T>
     boolean isEmpty();
 
     /**
+     * Determines if this is the end of the Sequence.  When true the Sequence is non-empty and
+     * getHead() can be called.
+     */
+    default boolean isNonEmpty()
+    {
+        return !isEmpty();
+    }
+
+    /**
      * Accesses the first value in the Sequence.
      */
     T getHead();

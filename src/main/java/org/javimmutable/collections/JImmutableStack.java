@@ -51,8 +51,6 @@ public interface JImmutableStack<T>
             IterableStreamable<T>,
             InvariantCheckable
 {
-    boolean isEmpty();
-
     /**
      * Accesses the first value in the List.
      */

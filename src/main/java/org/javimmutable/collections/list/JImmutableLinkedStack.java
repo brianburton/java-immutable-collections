@@ -52,7 +52,7 @@ import java.util.List;
 /**
  * Singly linked list implementation of JImmutableStack that stores and retrieves values
  * in the reverse order of the corresponding add() method calls.  If forward or random
- * access to stored values is required use JImmutableList instead, but this class may be 
+ * access to stored values is required use JImmutableList instead, but this class may be
  * significantly faster when its limitations are acceptable.
  */
 @Immutable
@@ -108,6 +108,12 @@ public class JImmutableLinkedStack<V>
     public boolean isEmpty()
     {
         return next == null;
+    }
+
+    @Override
+    public boolean isNonEmpty()
+    {
+        return next != null;
     }
 
     public V getHead()

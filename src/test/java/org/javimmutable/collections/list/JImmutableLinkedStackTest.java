@@ -59,6 +59,7 @@ public class JImmutableLinkedStackTest
     {
         JImmutableStack<Integer> list = JImmutableLinkedStack.of();
         assertEquals(true, list.isEmpty());
+        assertEquals(false, list.isNonEmpty());
         try {
             list.getHead();
             fail();
@@ -70,12 +71,14 @@ public class JImmutableLinkedStackTest
 
         JImmutableStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
+        assertEquals(true, list2.isNonEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
         StandardIteratorTests.listIteratorTest(Arrays.asList(10), list2.iterator());
 
         JImmutableStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
+        assertEquals(true, list3.isNonEmpty());
         assertEquals(30, (int)list3.getHead());
         assertEquals(list2, list3.getTail());
         StandardIteratorTests.listIteratorTest(Arrays.asList(30, 10), list3.iterator());
