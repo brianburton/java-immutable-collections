@@ -432,12 +432,6 @@ public interface JImmutableMultiset<T>
                                    int count);
 
     /**
-     * @return true only if the multiset contains no values
-     */
-    @Override
-    boolean isEmpty();
-
-    /**
      * @return total number of unique values in the multiset. Same as the number of items in iterator() and entries().iterator().
      */
     @Override
