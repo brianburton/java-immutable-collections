@@ -69,12 +69,14 @@ public abstract class AbstractJImmutableListMapTestCase
                                                                 Ordering ordering)
     {
         assertTrue(map.isEmpty());
+        assertFalse(map.isNonEmpty());
         assertEquals(0, map.size());
         assertNull(map.get(1));
         assertEquals(0, map.getList(1).size());
 
         map = map.insert(1, 100);
         assertFalse(map.isEmpty());
+        assertTrue(map.isNonEmpty());
         assertEquals(1, map.size());
         assertSame(map.getList(1), map.get(1));
         assertEquals(1, map.getList(1).size());

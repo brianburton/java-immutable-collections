@@ -188,9 +188,17 @@ public interface JImmutableListMap<K, V>
     int size();
 
     /**
-     * @return true only if list contains no values
+     * @return true only if map contains no values
      */
     boolean isEmpty();
+
+    /**
+     * @return true only if map contains values
+     */
+    default boolean isNonEmpty()
+    {
+        return !isEmpty();
+    }
 
     /**
      * @return an equivalent collection with no values
