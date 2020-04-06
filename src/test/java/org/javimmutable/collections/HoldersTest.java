@@ -51,6 +51,7 @@ public class HoldersTest
         assertSame(e1, e2);
         assertEquals(e1, e2);
         assertEquals(true, e1.isEmpty());
+        assertEquals(false, e1.isNonEmpty());
         assertEquals(false, e1.isFilled());
         try {
             e1.getValue();
@@ -87,6 +88,7 @@ public class HoldersTest
         assertEquals(false, filled1.equals(empty));
 
         assertEquals(false, filled1.isEmpty());
+        assertEquals(true, filled1.isNonEmpty());
         assertEquals(true, filled1.isFilled());
         assertFalse(filled1.equals(filled2));
         assertFalse(filled1.equals(filled3));
@@ -97,6 +99,7 @@ public class HoldersTest
         assertEquals(1, filled1.hashCode());
 
         assertEquals(false, filled2.isEmpty());
+        assertEquals(true, filled1.isNonEmpty());
         assertEquals(true, filled2.isFilled());
         assertFalse(filled2.equals(filled1));
         assertFalse(filled2.equals(filled3));
@@ -107,6 +110,7 @@ public class HoldersTest
         assertEquals(64578, filled2.hashCode());
 
         assertEquals(false, filled3.isEmpty());
+        assertEquals(true, filled1.isNonEmpty());
         assertEquals(true, filled3.isFilled());
         assertFalse(filled3.equals(filled1));
         assertFalse(filled3.equals(filled2));
@@ -117,6 +121,7 @@ public class HoldersTest
         assertEquals(2113, filled3.hashCode());
 
         assertEquals(false, filled4.isEmpty());
+        assertEquals(true, filled1.isNonEmpty());
         assertEquals(true, filled4.isFilled());
         assertFalse(filled4.equals(filled1));
         assertTrue(filled4.equals(filled2));

@@ -58,6 +58,11 @@ public interface Holder<T>
     /**
      * @return true iff this Holder has a value to return
      */
+    boolean isNonEmpty();
+
+    /**
+     * @return true iff this Holder has a value to return
+     */
     boolean isFilled();
 
     /**

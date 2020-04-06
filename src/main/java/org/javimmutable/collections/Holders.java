@@ -135,6 +135,12 @@ public class Holders<V>
             return true;
         }
 
+        @Override
+        public boolean isNonEmpty()
+        {
+            return false;
+        }
+
         public boolean isFilled()
         {
             return false;
@@ -213,6 +219,12 @@ public class Holders<V>
         default boolean isEmpty()
         {
             return false;
+        }
+
+        @Override
+        default boolean isNonEmpty()
+        {
+            return true;
         }
 
         default boolean isFilled()

@@ -82,6 +82,12 @@ class LeafTrieNode<T>
         return false;
     }
 
+    @Override
+    public boolean isNonEmpty()
+    {
+        return true;
+    }
+
     @Nonnull
     @Override
     public Integer getKey()
