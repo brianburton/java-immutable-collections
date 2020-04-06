@@ -66,6 +66,8 @@ public class HoldersTest
         final AtomicReference<String> called = new AtomicReference<>();
         e1.ifPresent(x -> called.set(x));
         assertEquals(null, called.get());
+        e1.ifPresentThrows(x -> called.set(x));
+        assertEquals(null, called.get());
         assertEquals(Holders.of(), e1.map(String::hashCode));
         assertEquals("ZZZ", e1.orElse("ZZZ"));
         assertEquals("ZZZ", e1.orElseGet(() -> "ZZZ"));
@@ -133,6 +135,10 @@ public class HoldersTest
 
         final AtomicReference<String> called = new AtomicReference<>();
         filled4.ifPresent(x -> called.set(x));
+        assertEquals("ABC", called.get());
+        called.set(null);
+        assertNull(called.get());
+        filled4.ifPresentThrows(x -> called.set(x));
         assertEquals("ABC", called.get());
         assertEquals(Holders.of("ABC".hashCode()), filled4.map(String::hashCode));
         assertEquals("ABC", filled4.orElse("ZZZ"));

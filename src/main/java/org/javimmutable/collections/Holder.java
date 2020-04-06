@@ -99,6 +99,17 @@ public interface Holder<T>
     }
 
     /**
+     * Call consumer with my value if I am filled.  Otherwise do nothing.
+     */
+    default <E extends Exception> void ifPresentThrows(@Nonnull Proc1Throws<? super T, E> consumer)
+        throws E
+    {
+        if (isFilled()) {
+            consumer.apply(getValue());
+        }
+    }
+
+    /**
      * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
      * If I am empty return an empty Holder.
      */

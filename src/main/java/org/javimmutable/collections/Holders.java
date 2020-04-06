@@ -169,6 +169,11 @@ public class Holders<V>
         }
 
         @Override
+        public <E extends Exception> void ifPresentThrows(@Nonnull Proc1Throws<? super V, E> consumer)
+        {
+        }
+
+        @Override
         public <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
         {
             return of();
@@ -248,6 +253,13 @@ public class Holders<V>
         default void ifPresent(@Nonnull Consumer<? super V> consumer)
         {
             consumer.accept(getValue());
+        }
+
+        @Override
+        default <E extends Exception> void ifPresentThrows(@Nonnull Proc1Throws<? super V, E> consumer)
+            throws E
+        {
+            consumer.apply(getValue());
         }
 
         @Override
