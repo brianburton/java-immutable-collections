@@ -72,6 +72,18 @@ public class TestUtil
         return dst;
     }
 
+    /**
+     * Creates a copy of the provided list with elements in reversed order.
+     */
+    public static <T> List<T> reversedList(@Nonnull List<T> src)
+    {
+        List<T> answer = new ArrayList<>(src.size());
+        for (int i = src.size() - 1; i >= 0; --i) {
+            answer.add(src.get(i));
+        }
+        return answer;
+    }
+
     public static Set<String> makeSet(String... args)
     {
         Set<String> set = new HashSet<>();

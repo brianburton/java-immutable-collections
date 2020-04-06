@@ -308,6 +308,17 @@ public class ArrayHelperTest
         verifyOutOfBounds(() -> suffixInsert(alloc, a(1, 2), 1, 0, 9));
     }
 
+    public void testReverse()
+    {
+        verifyValues(reverse(alloc, new Integer[0]));
+        verifyValues(reverse(alloc, new Integer[]{1}), 1);
+        verifyValues(reverse(alloc, new Integer[]{1, 2}), 2, 1);
+        verifyValues(reverse(alloc, new Integer[]{1, 2, 3}), 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4}), 4, 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4, 5}), 5, 4, 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4, 5, 6}), 6, 5, 4, 3, 2, 1);
+    }
+
     private void verifyOutOfBounds(Callable<Integer[]> op)
     {
         try {

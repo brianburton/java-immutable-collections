@@ -1134,6 +1134,19 @@ public class JImmutableTreeListTest
         assertEquals(original, original.stream().parallel().collect(JImmutableTreeList.createListCollector()));
     }
 
+    public void testReverse()
+    {
+        JImmutableTreeList<Integer> list = JImmutableTreeList.of();
+        assertSame(list, list.reverse());
+        list = JImmutableTreeList.of(IndexedList.retained(Arrays.asList(1)));
+        assertSame(list, list.reverse());
+        for (Integer length : asList(2, 3, 5, 6, 200, 201, 400, 401)) {
+            final List<Integer> expected = TestUtil.makeList(IndexedIterator.forRange(1, length));
+            list = JImmutableTreeList.of(IndexedList.retained(expected));
+            assertEquals(TestUtil.reversedList(expected), list.reverse().getList());
+        }
+    }
+
     public void testBuilder()
         throws InterruptedException
     {

@@ -95,6 +95,9 @@ abstract class AbstractNode<T>
     @Nonnull
     abstract AbstractNode<T> suffix(int offset);
 
+    @Nonnull
+    abstract AbstractNode<T> reverse();
+
     @Override
     public abstract void checkInvariants();
 

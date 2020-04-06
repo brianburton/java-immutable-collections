@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
 import static org.javimmutable.collections.list.MultiValueNode.*;
-import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
+import static org.javimmutable.collections.list.MultiValueNodeTest.*;
 
 public class BranchNodeTest
     extends TestCase
@@ -128,6 +128,20 @@ public class BranchNodeTest
         assertThat(node.suffix(SPLIT_SIZE)).isEqualTo(branch(leaf(SPLIT_SIZE - 1, MAX_SIZE),
                                                              branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
                                                                     leaf(2 * MAX_SIZE, 3 * MAX_SIZE))));
+    }
+
+    public void testReverse()
+    {
+        final AbstractNode<Integer> node = branch(branch(leaf(-1, SPLIT_SIZE),
+                                                         leaf(SPLIT_SIZE, MAX_SIZE)),
+                                                  branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
+                                                         leaf(2 * MAX_SIZE, 3 * MAX_SIZE)));
+        final AbstractNode<Integer> reverseNode = branch(branch(reversed(2 * MAX_SIZE, 3 * MAX_SIZE),
+                                                                reversed(MAX_SIZE, 2 * MAX_SIZE)),
+                                                         branch(reversed(SPLIT_SIZE, MAX_SIZE),
+                                                                reversed(-1, SPLIT_SIZE)));
+        assertThat(node.reverse()).isEqualTo(reverseNode);
+        assertThat(reverseNode.reverse()).isEqualTo(node);
     }
 
     public void testIndexOutOfBounds()

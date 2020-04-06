@@ -340,6 +340,22 @@ public final class ArrayHelper
         return answer;
     }
 
+    @Nonnull
+    public static <T> T[] reverse(@Nonnull Allocator<T> allocator,
+                                  @Nonnull T[] orig)
+    {
+        final int length = orig.length;
+        if (length == 0) {
+            return orig;
+        } else {
+            final T[] answer = allocator.allocate(length);
+            for (int from = 0, to = length - 1; to >= 0; from++, to--) {
+                answer[to] = orig[from];
+            }
+            return answer;
+        }
+    }
+
     /**
      * Creates an Allocator for arrays of the given class.
      */

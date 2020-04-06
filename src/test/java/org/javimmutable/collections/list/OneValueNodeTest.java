@@ -56,6 +56,7 @@ public class OneValueNodeTest
         assertSame(empty, node.prefix(0));
         assertSame(node, node.prefix(1));
         assertSame(node, node.suffix(0));
+        assertSame(node, node.reverse());
         assertSame(empty, node.suffix(1));
         assertEquals(false, node.isEmpty());
         assertEquals(0, node.depth());

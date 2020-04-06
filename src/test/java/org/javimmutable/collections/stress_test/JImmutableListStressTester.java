@@ -37,6 +37,7 @@ package org.javimmutable.collections.stress_test;
 
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.util.JImmutables;
 
@@ -92,7 +93,7 @@ public class JImmutableListStressTester
             while (expected.size() < step.growthSize()) {
                 final int maxToAdd = Math.min(1000, step.growthSize() - expected.size());
                 final int maxToDelete = maxToAdd / 4;
-                switch (random.nextInt(23)) {
+                switch (random.nextInt(24)) {
                     case 0: { //insert(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         list = list.insert(value);
@@ -251,6 +252,11 @@ public class JImmutableListStressTester
                                 expected.subList(0, offset).clear();
                             }
                         }
+                        break;
+                    }
+                    case 23: { //reverse()
+                        expected = TestUtil.reversedList(expected);
+                        list = list.reverse();
                         break;
                     }
                     default:

@@ -51,6 +51,7 @@ public class EmptyNodeTest
         assertEquals(true, node.isEmpty());
         assertEquals(0, node.size());
         assertEquals(0, node.depth());
+        assertSame(node, node.reverse());
         TestUtil.verifyOutOfBounds(() -> node.get(0));
         assertEquals(leaf, node.append(100));
         assertSame(leaf, node.append(leaf));

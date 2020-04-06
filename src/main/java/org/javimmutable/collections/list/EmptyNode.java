@@ -182,6 +182,13 @@ class EmptyNode<T>
         }
     }
 
+    @Nonnull
+    @Override
+    AbstractNode<T> reverse()
+    {
+        return this;
+    }
+
     @Nullable
     @Override
     public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,

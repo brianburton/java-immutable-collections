@@ -285,6 +285,13 @@ class MultiValueNode<T>
         }
     }
 
+    @Nonnull
+    @Override
+    AbstractNode<T> reverse()
+    {
+        return new MultiValueNode<>(ArrayHelper.reverse(this, values));
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override

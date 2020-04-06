@@ -309,6 +309,13 @@ class BranchNode<T>
 
     @Nonnull
     @Override
+    AbstractNode<T> reverse()
+    {
+        return new BranchNode<>(right.reverse(), left.reverse(), size);
+    }
+
+    @Nonnull
+    @Override
     AbstractNode<T> left()
     {
         return left;

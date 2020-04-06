@@ -273,6 +273,18 @@ public class JImmutableTreeList<T>
         return of();
     }
 
+    @Nonnull
+    @Override
+    public JImmutableList<T> reverse()
+    {
+        final AbstractNode<T> newRoot = root.reverse();
+        if (newRoot == root) {
+            return this;
+        } else {
+            return new JImmutableTreeList<>(newRoot);
+        }
+    }
+
     @Override
     public <A> JImmutableTreeList<A> transform(@Nonnull Func1<T, A> transform)
     {

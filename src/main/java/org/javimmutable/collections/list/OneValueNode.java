@@ -220,6 +220,13 @@ class OneValueNode<T>
         }
     }
 
+    @Nonnull
+    @Override
+    AbstractNode<T> reverse()
+    {
+        return this;
+    }
+
     @Override
     public void checkInvariants()
     {

@@ -111,6 +111,15 @@ public class MultiValueNodeTest
         TestUtil.verifyUnsupported(() -> self.right());
     }
 
+    public void testReverse()
+    {
+        for (int len = 2; len <= MultiValueNode.MAX_SIZE; ++len) {
+            AbstractNode<Integer> node = leaf(0, len);
+            assertThat(node.reverse()).isEqualTo(reversed(0, len));
+            assertThat(node.reverse().reverse()).isEqualTo(node);
+        }
+    }
+
     static AbstractNode<Integer> leaf(int start,
                                       int limit)
     {
@@ -123,6 +132,24 @@ public class MultiValueNodeTest
             Integer[] values = new Integer[length];
             for (int i = 0; i < length; ++i) {
                 values[i] = start + i;
+            }
+            return new MultiValueNode<>(values, length);
+        }
+    }
+
+    static AbstractNode<Integer> reversed(int start,
+                                          int limit)
+    {
+        final int length = limit - start;
+        if (length == 0) {
+            return EmptyNode.instance();
+        } else if (length == 1) {
+            return new OneValueNode<>(start);
+        } else {
+            final int max = start + length - 1;
+            Integer[] values = new Integer[length];
+            for (int i = 0; i < length; ++i) {
+                values[i] = max - i;
             }
             return new MultiValueNode<>(values, length);
         }
