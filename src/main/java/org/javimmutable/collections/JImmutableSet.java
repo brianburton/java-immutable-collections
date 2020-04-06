@@ -306,6 +306,14 @@ public interface JImmutableSet<T>
     boolean isEmpty();
 
     /**
+     * @return true only if set contains values
+     */
+    default boolean isNonEmpty()
+    {
+        return !isEmpty();
+    }
+
+    /**
      * @return an equivalent collection with no values
      */
     @Nonnull

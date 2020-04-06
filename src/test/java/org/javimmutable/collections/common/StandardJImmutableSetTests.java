@@ -72,6 +72,7 @@ public final class StandardJImmutableSetTests
 
         assertEquals(0, template.size());
         assertEquals(true, template.isEmpty());
+        assertEquals(false, template.isNonEmpty());
         assertEquals(template, new HashSet<Integer>());
         assertEquals(template.getSet(), new HashSet<Integer>());
 
@@ -81,6 +82,7 @@ public final class StandardJImmutableSetTests
         assertEquals(true, jet != template);
         assertEquals(1, jet.size());
         assertEquals(false, jet.isEmpty());
+        assertEquals(true, jet.isNonEmpty());
         assertEquals(true, jet.contains(10));
 
         assertEquals((Integer)10, jet.get(10));
@@ -90,6 +92,7 @@ public final class StandardJImmutableSetTests
         jet = jet.delete(10);
         assertEquals(0, jet.size());
         assertEquals(true, template.isEmpty());
+        assertEquals(false, template.isNonEmpty());
         assertEquals(false, jet.contains(10));
 
         assertEquals(null, jet.get(10));
