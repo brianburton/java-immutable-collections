@@ -99,6 +99,12 @@ public abstract class AbstractJImmutableMap<K, V>
         return size() == 0;
     }
 
+    @Override
+    public boolean isNonEmpty()
+    {
+        return size() != 0;
+    }
+
     @Nonnull
     @Override
     public Map<K, V> getMap()

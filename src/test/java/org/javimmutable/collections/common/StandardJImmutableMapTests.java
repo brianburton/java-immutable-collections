@@ -59,9 +59,15 @@ public class StandardJImmutableMapTests
     {
         JImmutableMap<Integer, Integer> x = map.deleteAll();
 
+        assertEquals(true, x.isEmpty());
+        assertEquals(false, x.isNonEmpty());
+
         x = x.update(1, generator(3));
         assertEquals(Integer.valueOf(3), x.get(1));
         assertSame(x, x.update(1, h -> h.getValueOr(8)));
+
+        assertEquals(false, x.isEmpty());
+        assertEquals(true, x.isNonEmpty());
 
         x = x.update(1, generator(4));
         assertEquals(Integer.valueOf(31), x.get(1));
