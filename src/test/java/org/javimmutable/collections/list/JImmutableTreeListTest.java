@@ -827,6 +827,8 @@ public class JImmutableTreeListTest
                 list.checkInvariants();
             }
             assertEquals(expected, list.getList());
+            assertEquals(expected.isEmpty(), list.isEmpty());
+            assertEquals(!expected.isEmpty(), list.isNonEmpty());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
             StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
 
@@ -850,6 +852,8 @@ public class JImmutableTreeListTest
             }
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
+            assertEquals(expected.isEmpty(), list.isEmpty());
+            assertEquals(!expected.isEmpty(), list.isNonEmpty());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
             StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
         }

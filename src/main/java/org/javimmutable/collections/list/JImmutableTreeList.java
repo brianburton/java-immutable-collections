@@ -319,6 +319,12 @@ public class JImmutableTreeList<T>
         return root.isEmpty();
     }
 
+    @Override
+    public boolean isNonEmpty()
+    {
+        return !root.isEmpty();
+    }
+
     @Nonnull
     @Override
     public JImmutableTreeList<T> select(@Nonnull Predicate<T> predicate)

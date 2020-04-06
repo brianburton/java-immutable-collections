@@ -313,6 +313,11 @@ public interface JImmutableList<T>
     boolean isEmpty();
 
     /**
+     * @return false only if list contains no values
+     */
+    boolean isNonEmpty();
+
+    /**
      * Delete value at index (which must be within the current bounds of the list).
      * Shifts all values at and after index one position to the left and subtracts 1
      * from size of the list.
