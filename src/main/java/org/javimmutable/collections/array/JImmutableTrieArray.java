@@ -188,6 +188,12 @@ public class JImmutableTrieArray<T>
     }
 
     @Override
+    public boolean isNonEmpty()
+    {
+        return !root.isEmpty();
+    }
+
+    @Override
     public int size()
     {
         return root.valueCount();

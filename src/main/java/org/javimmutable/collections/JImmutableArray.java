@@ -242,6 +242,11 @@ public interface JImmutableArray<T>
     boolean isEmpty();
 
     /**
+     * @return false only if list contains no values
+     */
+    boolean isNonEmpty();
+
+    /**
      * @return an equivalent collection with no values
      */
     @Nonnull

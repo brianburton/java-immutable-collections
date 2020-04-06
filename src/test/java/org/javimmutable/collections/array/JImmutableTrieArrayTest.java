@@ -107,6 +107,8 @@ public class JImmutableTrieArrayTest
                     assertEquals(array.find(index).getValueOrNull(), array.get(index));
                     break;
             }
+            assertEquals(array.isEmpty(), expected.isEmpty());
+            assertEquals(array.isNonEmpty(), !expected.isEmpty());
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
