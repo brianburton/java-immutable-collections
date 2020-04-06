@@ -79,18 +79,21 @@ public abstract class AbstractJImmutableSetMapTestCase
         verifyContains(map);
 
         assertTrue(map.isEmpty());
+        assertFalse(map.isNonEmpty());
         assertEquals(0, map.size());
         assertNull(map.get(1));
         assertEquals(0, map.getSet(1).size());
 
         map = map.insert(1, 100);
         assertFalse(map.isEmpty());
+        assertTrue(map.isNonEmpty());
         assertEquals(1, map.size());
         assertSame(map.getSet(1), map.get(1));
         assertEquals(1, map.getSet(1).size());
 
         map = map.insert(1, 18);
         assertFalse(map.isEmpty());
+        assertTrue(map.isNonEmpty());
         assertEquals(1, map.size());
         assertEquals(new HashSet<>(Arrays.asList(100, 18)), map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
@@ -101,6 +104,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         map = map.insert(MapEntry.of(1, 87));
         map = map.insert(MapEntry.of(1, 87));
         assertFalse(map.isEmpty());
+        assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
         assertEquals(new HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
         assertEquals(3, map.getSet(1).size());
@@ -112,6 +116,7 @@ public abstract class AbstractJImmutableSetMapTestCase
 
         map = map.assign(3, map.getSet(Integer.MIN_VALUE).insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
+        assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
         assertEquals(new HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
@@ -129,6 +134,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertSame(map.get(3), map.find(3).getValue());
         assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());
+        assertFalse(map.deleteAll().isNonEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
         if (ordering == Ordering.HASH) {

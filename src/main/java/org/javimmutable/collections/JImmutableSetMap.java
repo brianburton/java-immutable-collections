@@ -275,6 +275,14 @@ public interface JImmutableSetMap<K, V>
     boolean isEmpty();
 
     /**
+     * @return true only if set contains values
+     */
+    default boolean isNonEmpty()
+    {
+        return !isEmpty();
+    }
+
+    /**
      * @return an equivalent collectin with no values
      */
     @Nonnull
