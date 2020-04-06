@@ -37,6 +37,7 @@ package org.javimmutable.collections;
 
 import junit.framework.TestCase;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.javimmutable.collections.Holders.areEqual;
@@ -45,6 +46,7 @@ public class HoldersTest
     extends TestCase
 {
     public void testEmpty()
+        throws IOException
     {
         Holder<String> e1 = Holders.of();
         Holder<String> e2 = Holders.of();
@@ -69,6 +71,7 @@ public class HoldersTest
         e1.ifPresentThrows(x -> called.set(x));
         assertEquals(null, called.get());
         assertEquals(Holders.of(), e1.map(String::hashCode));
+        assertEquals(Holders.of(), e1.mapThrows(this::hashCodeThrows));
         assertEquals("ZZZ", e1.orElse("ZZZ"));
         assertEquals("ZZZ", e1.orElseGet(() -> "ZZZ"));
         try {
@@ -80,6 +83,7 @@ public class HoldersTest
     }
 
     public void testFilled()
+        throws IOException
     {
         Holder<String> empty = Holders.of();
         Holder<String> filled1 = Holders.of(null);
@@ -141,6 +145,7 @@ public class HoldersTest
         filled4.ifPresentThrows(x -> called.set(x));
         assertEquals("ABC", called.get());
         assertEquals(Holders.of("ABC".hashCode()), filled4.map(String::hashCode));
+        assertEquals(Holders.of("ABC".hashCode()), filled4.mapThrows(this::hashCodeThrows));
         assertEquals("ABC", filled4.orElse("ZZZ"));
         assertEquals("ABC", filled4.orElseGet(() -> "ZZZ"));
         assertEquals("ABC", filled4.orElseThrow(() -> new RuntimeException("threw")));
@@ -168,5 +173,14 @@ public class HoldersTest
         assertEquals(true, areEqual(e, e));
         assertEquals(false, areEqual(e, b));
         assertEquals(false, areEqual(b, e));
+    }
+
+    private Integer hashCodeThrows(String value)
+        throws IOException
+    {
+        if (value == null) {
+            throw new IOException();
+        }
+        return value.hashCode();
     }
 }

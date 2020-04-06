@@ -180,6 +180,13 @@ public class Holders<V>
         }
 
         @Override
+        public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super V, ? extends U, E> transforminator)
+            throws E
+        {
+            return of();
+        }
+
+        @Override
         public V orElse(V defaultValue)
         {
             return defaultValue;
@@ -264,6 +271,13 @@ public class Holders<V>
 
         @Override
         default <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
+        {
+            return of(transforminator.apply(getValue()));
+        }
+
+        @Override
+        default <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super V, ? extends U, E> transforminator)
+            throws E
         {
             return of(transforminator.apply(getValue()));
         }

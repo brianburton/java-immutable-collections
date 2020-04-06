@@ -119,6 +119,16 @@ public interface Holder<T>
     }
 
     /**
+     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
+     * If I am empty return an empty Holder.
+     */
+    default <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
+        throws E
+    {
+        return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
+    }
+
+    /**
      * Return my value if I am filled.  Otherwise return defaultValue.
      */
     default T orElse(T defaultValue)
