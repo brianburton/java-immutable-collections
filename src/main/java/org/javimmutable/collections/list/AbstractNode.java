@@ -35,16 +35,12 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.InvariantCheckable;
-import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
-import java.util.function.Consumer;
 
 abstract class AbstractNode<T>
     implements SplitableIterable<T>,
@@ -98,9 +94,6 @@ abstract class AbstractNode<T>
     @Nonnull
     abstract AbstractNode<T> reverse();
 
-    @Override
-    public abstract void checkInvariants();
-
     abstract void copyTo(T[] array,
                          int offset);
 
@@ -121,20 +114,4 @@ abstract class AbstractNode<T>
     {
         return size();
     }
-
-    @Override
-    public abstract void forEach(Consumer<? super T> action);
-
-    @Override
-    public abstract <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
-        throws E;
-
-    @Override
-    public abstract <V> V reduce(V initialValue,
-                                 Func2<V, T, V> accumulator);
-
-    @Override
-    public abstract <V, E extends Exception> V reduceThrows(V initialValue,
-                                                            Sum1Throws<T, V, E> accumulator)
-        throws E;
 }
