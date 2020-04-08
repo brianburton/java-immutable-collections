@@ -49,16 +49,34 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class HamtEmptyNode<K, V>
+import static org.javimmutable.collections.MapEntry.entry;
+
+/**
+ * HamtNode that stores only one key/value pair.  Any assign that would progress down the tree
+ * below this node replaces it with a normal node instead.  These exist to shorten the
+ * height of the overall tree structure when hashCodes are dispersed.
+ */
+public class HamtOneKeyLeafNode<K, V>
     implements HamtNode<K, V>
 {
-    private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
+    private final int hashCode;
+    @Nonnull
+    private final K key;
+    private final V value;
 
-
-    @SuppressWarnings("unchecked")
-    public static <K, V> HamtNode<K, V> of()
+    HamtOneKeyLeafNode(int hashCode,
+                       @Nonnull K key,
+                       @Nullable V value)
     {
-        return EMPTY;
+        this.hashCode = hashCode;
+        this.key = key;
+        this.value = value;
+    }
+
+    @Override
+    public int size(@Nonnull CollisionMap<K, V> collisionMap)
+    {
+        return 1;
     }
 
     @Override
@@ -66,7 +84,11 @@ public class HamtEmptyNode<K, V>
                           int hashCode,
                           @Nonnull K hashKey)
     {
-        return Holders.of();
+        if (this.hashCode == hashCode && key.equals(hashKey)) {
+            return Holders.of(value);
+        } else {
+            return Holders.of();
+        }
     }
 
     @Override
@@ -75,7 +97,11 @@ public class HamtEmptyNode<K, V>
                         @Nonnull K hashKey,
                         V defaultValue)
     {
-        return defaultValue;
+        if (this.hashCode == hashCode && key.equals(hashKey)) {
+            return value;
+        } else {
+            return defaultValue;
+        }
     }
 
     @Nonnull
@@ -83,9 +109,27 @@ public class HamtEmptyNode<K, V>
     public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
-                                 @Nullable V value)
+                                 @Nullable V newValue)
     {
-        return new HamtOneKeyLeafNode<>(hashCode, hashKey, value);
+        final int thisHashCode = this.hashCode;
+        final K thisKey = key;
+        final V thisValue = this.value;
+        if (thisHashCode == hashCode) {
+            if (thisKey.equals(hashKey)) {
+                if (newValue == thisValue) {
+                    return this;
+                } else {
+                    return new HamtOneKeyLeafNode<>(hashCode, thisKey, newValue);
+                }
+            } else {
+                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+                return new HamtLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
+            }
+        } else {
+            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
+            return expanded.assign(collisionMap, hashCode, hashKey, newValue);
+        }
     }
 
     @Nonnull
@@ -95,7 +139,27 @@ public class HamtEmptyNode<K, V>
                                  @Nonnull K hashKey,
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new HamtOneKeyLeafNode<>(hashCode, hashKey, generator.apply(Holders.of()));
+        final int thisHashCode = this.hashCode;
+        final K thisKey = key;
+        final V thisValue = this.value;
+        if (thisHashCode == hashCode) {
+            if (thisKey.equals(hashKey)) {
+                final V newValue = generator.apply(Holders.of(thisValue));
+                if (newValue == thisValue) {
+                    return this;
+                } else {
+                    return new HamtOneKeyLeafNode<>(hashCode, thisKey, newValue);
+                }
+            } else {
+                final V newValue = generator.apply(Holders.of());
+                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+                return new HamtLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
+            }
+        } else {
+            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
+            return expanded.update(collisionMap, hashCode, hashKey, generator);
+        }
     }
 
     @Nonnull
@@ -104,19 +168,22 @@ public class HamtEmptyNode<K, V>
                                  int hashCode,
                                  @Nonnull K hashKey)
     {
-        return this;
+        if (this.hashCode == hashCode && key.equals(hashKey)) {
+            return HamtEmptyNode.of();
+        } else {
+            return this;
+        }
     }
 
-    @Override
-    public int size(@Nonnull CollisionMap<K, V> collisionMap)
+    public HamtNode<K, V> liftNode(int index)
     {
-        return 0;
+        return new HamtOneKeyLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, key, value);
     }
 
     @Override
     public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return true;
+        return false;
     }
 
     @Nullable
@@ -126,14 +193,14 @@ public class HamtEmptyNode<K, V>
                                                                              int offset,
                                                                              int limit)
     {
-        assert offset == 0 && limit == 0;
-        return parent;
+        return GenericIterator.valueState(parent, entry(key, value));
     }
 
     @Override
     public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
                         @Nonnull Proc2<K, V> proc)
     {
+        proc.apply(key, value);
     }
 
     @Override
@@ -141,6 +208,7 @@ public class HamtEmptyNode<K, V>
                                                     @Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
+        proc.apply(key, value);
     }
 
     @Override
@@ -148,7 +216,7 @@ public class HamtEmptyNode<K, V>
                         R sum,
                         @Nonnull Sum2<K, V, R> proc)
     {
-        return sum;
+        return proc.apply(sum, key, value);
     }
 
     @Override
@@ -157,6 +225,6 @@ public class HamtEmptyNode<K, V>
                                                    @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
-        return sum;
+        return proc.apply(sum, key, value);
     }
 }

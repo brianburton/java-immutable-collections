@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash.hamt;
 
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.tree.TreeCollisionMap;
@@ -187,7 +188,12 @@ public class HamtBuilder<K, V>
         @Override
         HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
         {
-            return new HamtLeafNode<>(hashCode, values);
+            if (size == 1) {
+                final JImmutableMap.Entry<K, V> entry = collisionMap.iterator(values).next();
+                return new HamtOneKeyLeafNode<>(hashCode, entry.getKey(), entry.getValue());
+            } else {
+                return new HamtLeafNode<>(hashCode, values);
+            }
         }
 
         @Override
