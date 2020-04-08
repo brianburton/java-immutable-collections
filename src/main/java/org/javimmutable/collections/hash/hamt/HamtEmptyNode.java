@@ -85,7 +85,7 @@ public class HamtEmptyNode<K, V>
                                  @Nonnull K hashKey,
                                  @Nullable V value)
     {
-        return new HamtOneKeyLeafNode<>(hashCode, hashKey, value);
+        return new HamtSingleKeyLeafNode<>(hashCode, hashKey, value);
     }
 
     @Nonnull
@@ -95,7 +95,7 @@ public class HamtEmptyNode<K, V>
                                  @Nonnull K hashKey,
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new HamtOneKeyLeafNode<>(hashCode, hashKey, generator.apply(Holders.of()));
+        return new HamtSingleKeyLeafNode<>(hashCode, hashKey, generator.apply(Holders.of()));
     }
 
     @Nonnull

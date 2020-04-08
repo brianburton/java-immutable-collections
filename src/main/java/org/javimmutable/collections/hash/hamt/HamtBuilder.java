@@ -187,7 +187,7 @@ public class HamtBuilder<K, V>
         @Override
         HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
         {
-            return HamtLeafNode.createLeaf(collisionMap, hashCode, values);
+            return HamtMultiKeyLeafNode.createLeaf(collisionMap, hashCode, values);
         }
 
         @Override

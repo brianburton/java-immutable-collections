@@ -49,39 +49,35 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.javimmutable.collections.MapEntry.entry;
-
 /**
- * HamtNode that stores only one key/value pair.  Any assign that would progress down the tree
+ * HamtNode that stores only one value.  Any assign that would progress down the tree
  * below this node replaces it with a normal node instead.  These exist to shorten the
  * height of the overall tree structure when hashCodes are dispersed.
  */
-public class HamtOneKeyLeafNode<K, V>
+public class HamtMultiKeyLeafNode<K, V>
     implements HamtNode<K, V>
 {
     private final int hashCode;
     @Nonnull
-    private final K key;
-    private final V value;
+    private final CollisionMap.Node value;
 
-    HamtOneKeyLeafNode(int hashCode,
-                       @Nonnull K key,
-                       @Nullable V value)
+    HamtMultiKeyLeafNode(int hashCode,
+                         @Nonnull CollisionMap.Node value)
     {
         this.hashCode = hashCode;
-        this.key = key;
         this.value = value;
     }
 
-    HamtOneKeyLeafNode(@Nonnull CollisionMap<K, V> collisionMap,
-                       int hashCode,
-                       @Nonnull CollisionMap.Node node)
+    static <K, V> HamtNode<K, V> createLeaf(@Nonnull CollisionMap<K, V> collisionMap,
+                                            int hashCode,
+                                            @Nonnull CollisionMap.Node value)
     {
-        assert collisionMap.size(node) == 1;
-        final JImmutableMap.Entry<K, V> entry = collisionMap.iterator(node).next();
-        this.hashCode = hashCode;
-        this.key = entry.getKey();
-        this.value = entry.getValue();
+        if (collisionMap.size(value) == 1) {
+            return new HamtSingleKeyLeafNode<>(collisionMap, hashCode, value);
+        } else {
+            assert collisionMap.size(value) > 1;
+            return new HamtMultiKeyLeafNode<>(hashCode, value);
+        }
     }
 
     @Override
@@ -93,7 +89,7 @@ public class HamtOneKeyLeafNode<K, V>
     @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return 1;
+        return collisionMap.size(value);
     }
 
     @Override
@@ -101,8 +97,8 @@ public class HamtOneKeyLeafNode<K, V>
                           int hashCode,
                           @Nonnull K hashKey)
     {
-        if (this.hashCode == hashCode && key.equals(hashKey)) {
-            return Holders.of(value);
+        if (hashCode == this.hashCode) {
+            return collisionMap.findValue(value, hashKey);
         } else {
             return Holders.of();
         }
@@ -114,8 +110,8 @@ public class HamtOneKeyLeafNode<K, V>
                         @Nonnull K hashKey,
                         V defaultValue)
     {
-        if (this.hashCode == hashCode && key.equals(hashKey)) {
-            return value;
+        if (hashCode == this.hashCode) {
+            return collisionMap.getValueOr(value, hashKey, defaultValue);
         } else {
             return defaultValue;
         }
@@ -126,26 +122,20 @@ public class HamtOneKeyLeafNode<K, V>
     public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                  int hashCode,
                                  @Nonnull K hashKey,
-                                 @Nullable V newValue)
+                                 @Nullable V value)
     {
         final int thisHashCode = this.hashCode;
-        final K thisKey = key;
-        final V thisValue = this.value;
-        if (thisHashCode == hashCode) {
-            if (thisKey.equals(hashKey)) {
-                if (newValue == thisValue) {
-                    return this;
-                } else {
-                    return new HamtOneKeyLeafNode<>(hashCode, thisKey, newValue);
-                }
+        final CollisionMap.Node thisValue = this.value;
+        if (hashCode == thisHashCode) {
+            final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, value);
+            if (newValue == thisValue) {
+                return this;
             } else {
-                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-                return new HamtLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
+                return new HamtMultiKeyLeafNode<>(hashCode, newValue);
             }
         } else {
-            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
-            return expanded.assign(collisionMap, hashCode, hashKey, newValue);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
+            return expanded.assign(collisionMap, hashCode, hashKey, value);
         }
     }
 
@@ -157,24 +147,16 @@ public class HamtOneKeyLeafNode<K, V>
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
         final int thisHashCode = this.hashCode;
-        final K thisKey = key;
-        final V thisValue = this.value;
-        if (thisHashCode == hashCode) {
-            if (thisKey.equals(hashKey)) {
-                final V newValue = generator.apply(Holders.of(thisValue));
-                if (newValue == thisValue) {
-                    return this;
-                } else {
-                    return new HamtOneKeyLeafNode<>(hashCode, thisKey, newValue);
-                }
+        final CollisionMap.Node thisValue = this.value;
+        if (hashCode == thisHashCode) {
+            final CollisionMap.Node newValue = collisionMap.update(value, hashKey, generator);
+            if (newValue == thisValue) {
+                return this;
             } else {
-                final V newValue = generator.apply(Holders.of());
-                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-                return new HamtLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
+                return new HamtMultiKeyLeafNode<>(hashCode, newValue);
             }
         } else {
-            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisValue);
             return expanded.update(collisionMap, hashCode, hashKey, generator);
         }
     }
@@ -185,23 +167,38 @@ public class HamtOneKeyLeafNode<K, V>
                                  int hashCode,
                                  @Nonnull K hashKey)
     {
-        if (this.hashCode == hashCode && key.equals(hashKey)) {
-            return HamtEmptyNode.of();
+        final int thisHashCode = this.hashCode;
+        final CollisionMap.Node thisValue = this.value;
+        if (hashCode == thisHashCode) {
+            final CollisionMap.Node newValue = collisionMap.delete(thisValue, hashKey);
+            if (newValue == thisValue) {
+                return this;
+            } else {
+                final int newSize = collisionMap.size(newValue);
+                if (newSize == 1) {
+                    return new HamtSingleKeyLeafNode<>(collisionMap, hashCode, newValue);
+                } else if (newSize == 0) {
+                    return HamtEmptyNode.of();
+                } else {
+                    return new HamtMultiKeyLeafNode<>(hashCode, newValue);
+                }
+            }
         } else {
             return this;
         }
     }
 
+    @Override
     @Nonnull
     public HamtNode<K, V> liftNode(int index)
     {
-        return new HamtOneKeyLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, key, value);
+        return new HamtMultiKeyLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, value);
     }
 
     @Override
     public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return false;
+        return collisionMap.size(value) == 0;
     }
 
     @Nullable
@@ -211,14 +208,14 @@ public class HamtOneKeyLeafNode<K, V>
                                                                              int offset,
                                                                              int limit)
     {
-        return GenericIterator.valueState(parent, entry(key, value));
+        return collisionMap.iterateOverRange(value, parent, offset, limit);
     }
 
     @Override
     public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
                         @Nonnull Proc2<K, V> proc)
     {
-        proc.apply(key, value);
+        collisionMap.forEach(value, proc);
     }
 
     @Override
@@ -226,7 +223,7 @@ public class HamtOneKeyLeafNode<K, V>
                                                     @Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
-        proc.apply(key, value);
+        collisionMap.forEachThrows(value, proc);
     }
 
     @Override
@@ -234,7 +231,7 @@ public class HamtOneKeyLeafNode<K, V>
                         R sum,
                         @Nonnull Sum2<K, V, R> proc)
     {
-        return proc.apply(sum, key, value);
+        return collisionMap.reduce(value, sum, proc);
     }
 
     @Override
@@ -243,12 +240,26 @@ public class HamtOneKeyLeafNode<K, V>
                                                    @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
-        return proc.apply(sum, key, value);
+        return collisionMap.reduceThrows(value, sum, proc);
+    }
+
+    @Override
+    public void checkInvariants(@Nonnull CollisionMap<K, V> collisionMap)
+    {
+        if (collisionMap.size(value) < 2) {
+            throw new IllegalStateException(String.format("expected size greater than one: size=%d", collisionMap.size(value)));
+        }
     }
 
     @Override
     public String toString()
     {
-        return "(0x" + Integer.toHexString(hashCode) + "," + key + "," + value + ")";
+        final StringBuilder sb = new StringBuilder();
+        sb.append("(0x");
+        sb.append(Integer.toHexString(hashCode));
+        sb.append(",");
+        sb.append(value);
+        sb.append(")");
+        return sb.toString();
     }
 }

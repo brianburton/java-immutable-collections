@@ -132,6 +132,30 @@ abstract class AbstractNode<K, V>
                                                      @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E;
 
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        forEach((key, value) -> addToString(sb, key, value));
+        sb.append("]");
+        return sb.toString();
+    }
+
+    private void addToString(StringBuilder sb,
+                             K key,
+                             V value)
+    {
+        if (sb.length() > 1) {
+            sb.append(",");
+        }
+        sb.append("(");
+        sb.append(key);
+        sb.append(",");
+        sb.append(value);
+        sb.append(")");
+    }
+
     static class DeleteResult<K, V>
     {
         final K key;

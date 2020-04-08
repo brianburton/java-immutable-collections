@@ -45,7 +45,7 @@ import java.util.List;
 
 import static org.javimmutable.collections.MapEntry.entry;
 
-public class HamtLeafNodeTest
+public class HamtMultiKeyLeafNodeTest
     extends TestCase
 {
     public void testDelete()
@@ -62,7 +62,7 @@ public class HamtLeafNodeTest
         value = collisionMap.update(value, c, 300);
         assertEquals(3, collisionMap.size(value));
 
-        HamtNode<Checked, Integer> node = new HamtLeafNode<>(1, value);
+        HamtNode<Checked, Integer> node = new HamtMultiKeyLeafNode<>(1, value);
         assertEquals(3, node.size(collisionMap));
 
         assertSame(node, node.delete(collisionMap, 1, d));
@@ -92,7 +92,7 @@ public class HamtLeafNodeTest
         node = collisionMap.update(node, c, 300);
         node = collisionMap.update(node, d, 400);
 
-        HamtNode<Checked, Integer> leaf = new HamtLeafNode<>(1, node);
+        HamtNode<Checked, Integer> leaf = new HamtMultiKeyLeafNode<>(1, node);
         assertEquals(4, leaf.size(collisionMap));
 
         List<JImmutableMap.Entry<Checked, Integer>> expected = new ArrayList<>();
