@@ -134,6 +134,8 @@ public class HamtLeafNode<K, V>
             final CollisionMap.Node newValue = collisionMap.update(value, hashKey, generator);
             if (newValue == thisValue) {
                 return this;
+            } else if (collisionMap.size(newValue) == 1) {
+                return new HamtOneKeyLeafNode<>(collisionMap, hashCode, newValue);
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
             }
@@ -155,10 +157,15 @@ public class HamtLeafNode<K, V>
             final CollisionMap.Node newValue = collisionMap.delete(thisValue, hashKey);
             if (newValue == thisValue) {
                 return this;
-            } else if (collisionMap.size(newValue) == 0) {
-                return HamtEmptyNode.of();
             } else {
-                return new HamtLeafNode<>(hashCode, newValue);
+                final int newSize = collisionMap.size(newValue);
+                if (newSize == 1) {
+                    return new HamtOneKeyLeafNode<>(collisionMap, hashCode, newValue);
+                } else if (newSize == 0) {
+                    return HamtEmptyNode.of();
+                } else {
+                    return new HamtLeafNode<>(hashCode, newValue);
+                }
             }
         } else {
             return this;

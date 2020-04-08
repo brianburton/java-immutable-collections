@@ -73,6 +73,17 @@ public class HamtOneKeyLeafNode<K, V>
         this.value = value;
     }
 
+    HamtOneKeyLeafNode(@Nonnull CollisionMap<K, V> collisionMap,
+                       int hashCode,
+                       @Nonnull CollisionMap.Node node)
+    {
+        assert collisionMap.size(node) == 1;
+        final JImmutableMap.Entry<K, V> entry = collisionMap.iterator(node).next();
+        this.hashCode = hashCode;
+        this.key = entry.getKey();
+        this.value = entry.getValue();
+    }
+
     @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
