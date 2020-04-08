@@ -46,11 +46,14 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Immutable
 public class HamtBranchNode<K, V>
@@ -388,9 +391,33 @@ public class HamtBranchNode<K, V>
     }
 
     @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HamtBranchNode<?, ?> that = (HamtBranchNode<?, ?>)o;
+        return bitmask == that.bitmask &&
+               size == that.size &&
+               value.equals(that.value) &&
+               Arrays.equals(children, that.children);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = Objects.hash(bitmask, value, size);
+        result = 31 * result + Arrays.hashCode(children);
+        return result;
+    }
+
+    @Override
     public String toString()
     {
-        return "(" + size + "," + value + ",0x" + Integer.toHexString(bitmask) + "," + children.length + ")";
+        return "(" + size + ",0x" + Integer.toHexString(bitmask) + "," + children.length + "," + value + "," + ToStringHelper.arrayToString(children) + ")";
     }
 
     private int computeSize(@Nonnull CollisionMap<K, V> collisionMap)

@@ -175,10 +175,10 @@ public class HamtMultiKeyLeafNode<K, V>
                 return this;
             } else {
                 final int newSize = collisionMap.size(newValue);
-                if (newSize == 1) {
-                    return new HamtSingleKeyLeafNode<>(collisionMap, hashCode, newValue);
-                } else if (newSize == 0) {
+                if (newSize == 0) {
                     return HamtEmptyNode.of();
+                } else if (newSize == 1) {
+                    return new HamtSingleKeyLeafNode<>(collisionMap, hashCode, newValue);
                 } else {
                     return new HamtMultiKeyLeafNode<>(hashCode, newValue);
                 }

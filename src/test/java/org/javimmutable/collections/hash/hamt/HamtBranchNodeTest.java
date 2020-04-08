@@ -93,6 +93,15 @@ public class HamtBranchNodeTest
         assertEquals("echo", node.getValueOr(collisionMap, 4725297, 4725297, null));
         verifyContents(collisionMap, node, "baker", "charlie", "delta", "echo");
 
+        node = node.assign(collisionMap, 0, -3, "zoom");
+        assertEquals(5, node.size(collisionMap));
+        assertEquals("zoom", node.getValueOr(collisionMap, 0, -3, null));
+        assertSame(node, node.assign(collisionMap, 0, -3, "zoom"));
+        node = node.delete(collisionMap, 0, -3);
+        assertEquals(4, node.size(collisionMap));
+        assertEquals("echo", node.getValueOr(collisionMap, 4725297, 4725297, null));
+        verifyContents(collisionMap, node, "baker", "charlie", "delta", "echo");
+
         assertSame(node, node.delete(collisionMap, -2, -2));
         assertEquals(4, node.size(collisionMap));
         verifyContents(collisionMap, node, "baker", "charlie", "delta", "echo");
@@ -270,7 +279,7 @@ public class HamtBranchNodeTest
         MutableDelta delta = new MutableDelta();
 
         HamtNode<Integer, String> node = empty.assign(collisionMap, 0x2fffffff, 0x2fffffff, "baker");
-        assertEquals(true, node.isLeaf());
+        assertEquals(true, node instanceof HamtSingleKeyLeafNode);
         assertEquals(1, node.size(collisionMap));
         assertEquals("baker", node.getValueOr(collisionMap, 0x2fffffff, 0x2fffffff, null));
         verifyContents(collisionMap, node, "baker");
@@ -281,7 +290,7 @@ public class HamtBranchNodeTest
         verifyContents(collisionMap, node, "able", "baker");
 
         node = node.delete(collisionMap, 0x2fffffff, 0x2fffffff);
-        assertEquals(true, node.isLeaf());
+        assertEquals(true, node instanceof HamtSingleKeyLeafNode);
         assertEquals(1, node.size(collisionMap));
         verifyContents(collisionMap, node, "able");
 

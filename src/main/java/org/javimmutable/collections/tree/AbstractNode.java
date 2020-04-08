@@ -44,6 +44,7 @@ import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
@@ -137,23 +138,9 @@ abstract class AbstractNode<K, V>
     {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
-        forEach((key, value) -> addToString(sb, key, value));
+        forEach((key, value) -> ToStringHelper.addToString(sb, 1, key, value));
         sb.append("]");
         return sb.toString();
-    }
-
-    private void addToString(StringBuilder sb,
-                             K key,
-                             V value)
-    {
-        if (sb.length() > 1) {
-            sb.append(",");
-        }
-        sb.append("(");
-        sb.append(key);
-        sb.append(",");
-        sb.append(value);
-        sb.append(")");
     }
 
     static class DeleteResult<K, V>

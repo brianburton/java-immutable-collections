@@ -39,6 +39,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
+import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -46,7 +47,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
-import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 @Immutable
@@ -335,9 +335,7 @@ class MultiValueNode<T>
     @Override
     public String toString()
     {
-        return new StringJoiner(", ", MultiValueNode.class.getSimpleName() + "[", "]")
-            .add("values=" + Arrays.toString(values))
-            .toString();
+        return ToStringHelper.arrayToString(values);
     }
 
     @Nullable

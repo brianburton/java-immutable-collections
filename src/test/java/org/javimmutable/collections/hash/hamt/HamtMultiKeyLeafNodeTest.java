@@ -66,16 +66,23 @@ public class HamtMultiKeyLeafNodeTest
         assertEquals(3, node.size(collisionMap));
 
         assertSame(node, node.delete(collisionMap, 1, d));
+        assertSame(node, node.delete(collisionMap, 99, a));
         assertEquals(3, node.size(collisionMap));
 
         node = node.delete(collisionMap, 1, b);
         assertEquals(2, node.size(collisionMap));
+        assertTrue(node instanceof HamtMultiKeyLeafNode);
 
         node = node.delete(collisionMap, 1, c);
         assertEquals(1, node.size(collisionMap));
+        assertTrue(node instanceof HamtSingleKeyLeafNode);
 
         node = node.delete(collisionMap, 1, a);
         assertSame(HamtEmptyNode.of(), node);
+
+        value = collisionMap.update(collisionMap.emptyNode(), a, 100);
+        node = new HamtMultiKeyLeafNode<>(1, value);
+        assertSame(HamtEmptyNode.of(), node.delete(collisionMap, 1, a));
     }
 
     public void testIterator()

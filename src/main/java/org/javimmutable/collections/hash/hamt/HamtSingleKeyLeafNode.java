@@ -48,6 +48,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 import static org.javimmutable.collections.MapEntry.entry;
 
@@ -244,6 +245,27 @@ public class HamtSingleKeyLeafNode<K, V>
         throws E
     {
         return proc.apply(sum, key, value);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HamtSingleKeyLeafNode<?, ?> that = (HamtSingleKeyLeafNode<?, ?>)o;
+        return hashCode == that.hashCode &&
+               key.equals(that.key) &&
+               Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(hashCode, key, value);
     }
 
     @Override

@@ -38,6 +38,7 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
+import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -229,5 +230,14 @@ class EmptyNode<T>
     public void checkInvariants()
     {
     }
-}
 
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        forEach(value -> ToStringHelper.addToString(sb, 1, value));
+        sb.append("]");
+        return sb.toString();
+    }
+}
