@@ -78,6 +78,11 @@ public interface HamtNode<K, V>
                           int hashCode,
                           @Nonnull K hashKey);
 
+    boolean isLeaf();
+
+    @Nonnull
+    HamtNode<K, V> liftNode(int index);
+
     boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap);
 
     int size(@Nonnull CollisionMap<K, V> collisionMap);

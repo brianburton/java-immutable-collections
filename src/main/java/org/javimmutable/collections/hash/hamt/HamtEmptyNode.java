@@ -114,6 +114,12 @@ public class HamtEmptyNode<K, V>
     }
 
     @Override
+    public boolean isLeaf()
+    {
+        return false;
+    }
+
+    @Override
     public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return true;
@@ -158,5 +164,12 @@ public class HamtEmptyNode<K, V>
         throws E
     {
         return sum;
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<K, V> liftNode(int index)
+    {
+        throw new UnsupportedOperationException();
     }
 }

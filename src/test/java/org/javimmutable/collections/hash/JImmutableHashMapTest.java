@@ -537,5 +537,11 @@ public class JImmutableHashMapTest
         {
             return value.compareTo(o.value);
         }
+
+        @Override
+        public String toString()
+        {
+            return Integer.toString(hash);
+        }
     }
 }

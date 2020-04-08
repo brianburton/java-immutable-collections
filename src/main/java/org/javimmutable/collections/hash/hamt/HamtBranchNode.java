@@ -92,9 +92,15 @@ public class HamtBranchNode<K, V>
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final HamtNode<K, V>[] children = new HamtNode[1];
-            children[0] = new HamtLeafNode<>(remainder, value);
+            children[0] = HamtLeafNode.createLeaf(collisionMap, remainder, value);
             return new HamtBranchNode<>(bit, collisionMap.emptyNode(), children, collisionMap.size(value));
         }
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+        return false;
     }
 
     @Override
@@ -167,7 +173,7 @@ public class HamtBranchNode<K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(collisionMap.emptyNode(), hashKey, value));
+            final HamtNode<K, V> newChild = new HamtOneKeyLeafNode<>(remainder, hashKey, value);
             final HamtNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
         } else {
@@ -205,7 +211,7 @@ public class HamtBranchNode<K, V>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final HamtNode<K, V> newChild = new HamtLeafNode<>(remainder, collisionMap.update(collisionMap.emptyNode(), hashKey, generator));
+            final HamtNode<K, V> newChild = new HamtOneKeyLeafNode<>(remainder, hashKey, generator.apply(Holders.of()));
             final HamtNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new HamtBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
         } else {
@@ -261,7 +267,7 @@ public class HamtBranchNode<K, V>
                     if (collisionMap.size(value) == 0) {
                         return HamtEmptyNode.of();
                     } else {
-                        return new HamtLeafNode<>(0, value);
+                        return HamtLeafNode.createLeaf(collisionMap, 0, value);
                     }
                 } else {
                     final HamtNode<K, V>[] newChildren = ArrayHelper.delete(this, children, childIndex);
@@ -282,16 +288,15 @@ public class HamtBranchNode<K, V>
     {
         if (collisionMap.size(value) == 0 && children.length == 1) {
             final HamtNode<K, V> child = children[0];
-            if (child instanceof HamtLeafNode) {
-                final HamtLeafNode<K, V> leaf = (HamtLeafNode<K, V>)child;
-                assert newSize == leaf.size(collisionMap);
-                return leaf.liftNode(Integer.numberOfTrailingZeros(bitmask));
+            if (child.isLeaf()) {
+                assert newSize == child.size(collisionMap);
+                return child.liftNode(Integer.numberOfTrailingZeros(bitmask));
             }
             if (child instanceof HamtBranchNode) {
                 final HamtBranchNode<K, V> branch = (HamtBranchNode<K, V>)child;
                 if (collisionMap.size(branch.value) > 0 && branch.children.length == 0) {
                     assert newSize == collisionMap.size(branch.value);
-                    return new HamtLeafNode<>(Integer.numberOfTrailingZeros(bitmask), branch.value);
+                    return HamtLeafNode.createLeaf(collisionMap, Integer.numberOfTrailingZeros(bitmask), branch.value);
                 }
             }
         }
@@ -302,6 +307,13 @@ public class HamtBranchNode<K, V>
     public boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return bitmask == 0 && collisionMap.size(value) == 0;
+    }
+
+    @Nonnull
+    @Override
+    public HamtNode<K, V> liftNode(int index)
+    {
+        throw new UnsupportedOperationException();
     }
 
     private static int realIndex(int bitmask,
@@ -328,7 +340,6 @@ public class HamtBranchNode<K, V>
         assert offset >= 0 && offset <= limit && limit <= size;
         return GenericIterator.indexedState(parent, indexedForIterator(collisionMap), offset, limit);
     }
-
 
     @Override
     public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
@@ -398,9 +409,9 @@ public class HamtBranchNode<K, V>
             throw new IllegalStateException(String.format("incorrect size: expected=%d actual=%d", computeSize(collisionMap), size));
         }
         if (collisionMap.size(value) == 0 && children.length == 1) {
-            if (children[0] instanceof HamtLeafNode) {
+            if (children[0] instanceof HamtLeafNode || children[0] instanceof HamtOneKeyLeafNode) {
                 // we should have replaced ourselves with a leaf
-                throw new IllegalStateException();
+                throw new IllegalStateException(String.format("expected leaf but was %s", children[0].getClass().getName()));
             }
         }
         for (HamtNode<K, V> child : children) {

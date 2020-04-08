@@ -68,6 +68,24 @@ public class HamtLeafNode<K, V>
         this.value = value;
     }
 
+    static <K, V> HamtNode<K, V> createLeaf(@Nonnull CollisionMap<K, V> collisionMap,
+                                            int hashCode,
+                                            @Nonnull CollisionMap.Node value)
+    {
+        if (collisionMap.size(value) == 1) {
+            return new HamtOneKeyLeafNode<>(collisionMap, hashCode, value);
+        } else {
+            assert collisionMap.size(value) > 1;
+            return new HamtLeafNode<>(hashCode, value);
+        }
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+        return true;
+    }
+
     @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
@@ -134,8 +152,6 @@ public class HamtLeafNode<K, V>
             final CollisionMap.Node newValue = collisionMap.update(value, hashKey, generator);
             if (newValue == thisValue) {
                 return this;
-            } else if (collisionMap.size(newValue) == 1) {
-                return new HamtOneKeyLeafNode<>(collisionMap, hashCode, newValue);
             } else {
                 return new HamtLeafNode<>(hashCode, newValue);
             }
@@ -172,6 +188,8 @@ public class HamtLeafNode<K, V>
         }
     }
 
+    @Override
+    @Nonnull
     public HamtNode<K, V> liftNode(int index)
     {
         return new HamtLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, value);
@@ -223,5 +241,13 @@ public class HamtLeafNode<K, V>
         throws E
     {
         return collisionMap.reduceThrows(value, sum, proc);
+    }
+
+    @Override
+    public void checkInvariants(@Nonnull CollisionMap<K, V> collisionMap)
+    {
+        if (collisionMap.size(value) < 2) {
+            throw new IllegalStateException(String.format("expected size greater than one: size=%d", collisionMap.size(value)));
+        }
     }
 }

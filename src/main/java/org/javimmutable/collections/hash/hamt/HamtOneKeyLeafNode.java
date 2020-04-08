@@ -85,6 +85,12 @@ public class HamtOneKeyLeafNode<K, V>
     }
 
     @Override
+    public boolean isLeaf()
+    {
+        return true;
+    }
+
+    @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return 1;
@@ -186,6 +192,7 @@ public class HamtOneKeyLeafNode<K, V>
         }
     }
 
+    @Nonnull
     public HamtNode<K, V> liftNode(int index)
     {
         return new HamtOneKeyLeafNode<>(hashCode << HamtBranchNode.SHIFT | index, key, value);
@@ -237,5 +244,11 @@ public class HamtOneKeyLeafNode<K, V>
         throws E
     {
         return proc.apply(sum, key, value);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(0x" + Integer.toHexString(hashCode) + "," + key + "," + value + ")";
     }
 }
