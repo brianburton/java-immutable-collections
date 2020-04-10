@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
@@ -206,6 +207,17 @@ public class GenericIterator<T>
         }
     }
 
+    public static <A, B> State<B> transformState(State<B> parent,
+                                                 State<A> source,
+                                                 Func1<A, B> transforminator)
+    {
+        if (source == null) {
+            return parent;
+        } else {
+            return new TransformState<>(parent, source, transforminator);
+        }
+    }
+
     private static class SingleValueState<T>
         implements State<T>
     {
@@ -326,6 +338,47 @@ public class GenericIterator<T>
                 offset = 0;
                 limit -= size;
                 return answer;
+            }
+        }
+    }
+
+    private static class TransformState<A, B>
+        implements GenericIterator.State<B>
+    {
+        private final Func1<A, B> transforminator;
+        private final GenericIterator.State<B> parent;
+        private GenericIterator.State<A> source;
+
+        private TransformState(@Nullable GenericIterator.State<B> parent,
+                               @Nonnull GenericIterator.State<A> source,
+                               @Nonnull Func1<A, B> transforminator)
+        {
+            this.transforminator = transforminator;
+            this.parent = parent;
+            this.source = source;
+        }
+
+        @Override
+        public boolean hasValue()
+        {
+            return source.hasValue();
+        }
+
+        @Override
+        public B value()
+        {
+            return transforminator.apply(source.value());
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<B> advance()
+        {
+            source = source.advance();
+            if (source == null) {
+                return parent;
+            } else {
+                return this;
             }
         }
     }

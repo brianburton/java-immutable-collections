@@ -36,6 +36,8 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
@@ -70,6 +72,14 @@ public class GenericIteratorTest
         assertEquals(expected, deep.parallelStream().collect(Collectors.toList()));
         assertEquals(lr(1, limit(4)), nr(1, limit(4)).stream().parallel().collect(Collectors.toList()));
         assertEquals(lr(1, limit(4)), nr(1, limit(4)).parallelStream().collect(Collectors.toList()));
+
+        final Transformed transformed = new Transformed(deep);
+        eq(expected, transformed);
+        assertEquals(expected, transformed.stream().map(Holder::getValue).collect(Collectors.toList()));
+        assertEquals(expected, transformed.stream().parallel().map(Holder::getValue).collect(Collectors.toList()));
+        assertEquals(expected, transformed.parallelStream().map(Holder::getValue).collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).stream().parallel().map(Holder::getValue).collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).parallelStream().map(Holder::getValue).collect(Collectors.toList()));
     }
 
     public void testStandard()
@@ -96,6 +106,16 @@ public class GenericIteratorTest
         List<Integer> list = new ArrayList<>();
         for (Integer integer : actual) {
             list.add(integer);
+        }
+        assertEquals(expected, list);
+    }
+
+    private void eq(List<Integer> expected,
+                    Transformed actual)
+    {
+        List<Integer> list = new ArrayList<>();
+        for (Holder<Integer> integer : actual) {
+            list.add(integer.getValue());
         }
         assertEquals(expected, list);
     }
@@ -247,6 +267,46 @@ public class GenericIteratorTest
                                                                int limit)
         {
             return GenericIterator.indexedState(parent, IndexedArray.retained(nodes), offset, limit);
+        }
+    }
+
+    private static class Transformed
+        implements GenericIterator.Iterable<Holder<Integer>>,
+                   IterableStreamable<Holder<Integer>>
+    {
+        private final Node node;
+
+        private Transformed(Node node)
+        {
+            this.node = node;
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<Holder<Integer>> iterator()
+        {
+            return GenericIterator.Iterable.super.iterator();
+        }
+
+        @Override
+        public int getSpliteratorCharacteristics()
+        {
+            return StreamConstants.SPLITERATOR_UNORDERED;
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<Holder<Integer>> iterateOverRange(@Nullable GenericIterator.State<Holder<Integer>> parent,
+                                                                       int offset,
+                                                                       int limit)
+        {
+            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holders.of(i));
+        }
+
+        @Override
+        public int iterableSize()
+        {
+            return node.iterableSize();
         }
     }
 }
