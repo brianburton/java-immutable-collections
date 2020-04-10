@@ -236,19 +236,21 @@ public class HamtBuilder<K, V>
                        @Nullable V value)
         {
             if (hashCode == 0) {
-                int oldSize = collisionMap.size(values);
+                int beforeSize = collisionMap.size(values);
                 values = collisionMap.update(values, key, value);
-                size = size - oldSize + collisionMap.size(values);
+                size = size - beforeSize + collisionMap.size(values);
             } else {
                 final int index = hashCode & MASK;
-                final Node<K, V> child = children[index];
-                if (child == null) {
+                final Node<K, V> beforeChild = children[index];
+                if (beforeChild == null) {
                     children[index] = new Leaf<>(collisionMap, hashCode >>> SHIFT, key, value);
                     size += 1;
                 } else {
-                    int oldSize = children[index].size();
-                    children[index] = child.add(collisionMap, hashCode >>> SHIFT, key, value);
-                    size = size - oldSize + children[index].size();
+                    // note: afterChild might be same object as beforeChild so capture size now
+                    final int beforeSize = beforeChild.size();
+                    final Node<K, V> afterChild = beforeChild.add(collisionMap, hashCode >>> SHIFT, key, value);
+                    children[index] = afterChild;
+                    size = size - beforeSize + afterChild.size();
                 }
             }
             assert invariant(collisionMap);
