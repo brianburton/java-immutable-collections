@@ -59,6 +59,7 @@ import java.util.Comparator;
 class FringeNode<K, V>
     extends AbstractNode<K, V>
 {
+    @SuppressWarnings("rawtypes")
     private static final FringeNode INSTANCE = new FringeNode();
 
     private FringeNode()
@@ -77,7 +78,7 @@ class FringeNode<K, V>
                                      @Nonnull K key,
                                      @Nullable V value)
     {
-        return new ValueNode<>(key, value, this, this);
+        return ValueNode.instance(key, value);
     }
 
     @Nonnull
@@ -86,7 +87,7 @@ class FringeNode<K, V>
                                      @Nonnull K key,
                                      @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new ValueNode<>(key, generator.apply(Holders.of()), this, this);
+        return ValueNode.instance(key, generator.apply(Holders.of()));
     }
 
     @Nonnull

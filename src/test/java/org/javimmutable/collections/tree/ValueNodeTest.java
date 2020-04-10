@@ -37,12 +37,41 @@ package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
 
+import java.util.Comparator;
+
 public class ValueNodeTest
     extends TestCase
 {
+    private final Comparator<Integer> comparator = Comparator.naturalOrder();
+
     public void testToString()
     {
         assertEquals("[]", FringeNode.instance().toString());
         assertEquals("[(1,2)]", ValueNode.instance(1, 2).toString());
+    }
+
+    public void testInstanceTypes()
+    {
+        AbstractNode<Integer, Integer> node = ValueNode.instance(1, 10);
+        assertTrue(node instanceof LeafNode);
+        assertEquals("[(1,10)]", node.toString());
+
+        node = node.assign(comparator, 1, 20);
+        assertTrue(node instanceof LeafNode);
+        assertEquals("[(1,20)]", node.toString());
+
+        node = node.assign(comparator, 2, 90);
+        assertTrue(node instanceof ValueNode);
+        assertEquals("[(1,20),(2,90)]", node.toString());
+
+        assertSame(node, node.delete(comparator, 3));
+
+        node = node.delete(comparator, 1);
+        assertTrue(node instanceof LeafNode);
+        assertEquals("[(2,90)]", node.toString());
+
+        node = node.delete(comparator, 2);
+        assertSame(FringeNode.instance(), node);
+        assertEquals("[]", node.toString());
     }
 }

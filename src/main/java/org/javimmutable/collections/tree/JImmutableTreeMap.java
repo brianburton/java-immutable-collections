@@ -61,7 +61,7 @@ public class JImmutableTreeMap<K, V>
     extends AbstractJImmutableMap<K, V>
     implements Serializable
 {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static final JImmutableTreeMap EMPTY = new JImmutableTreeMap(ComparableComparator.of(), FringeNode.instance());
 
     private static final long serialVersionUID = -121805;

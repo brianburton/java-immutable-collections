@@ -71,10 +71,10 @@ class ValueNode<K, V>
     private final int depth;
     private final int size;
 
-    ValueNode(K key,
-              V value,
-              AbstractNode<K, V> left,
-              AbstractNode<K, V> right)
+    ValueNode(@Nonnull K key,
+              @Nullable V value,
+              @Nonnull AbstractNode<K, V> left,
+              @Nonnull AbstractNode<K, V> right)
     {
         this.key = key;
         this.value = value;
@@ -90,7 +90,35 @@ class ValueNode<K, V>
     static <K, V> AbstractNode<K, V> instance(K key,
                                               V value)
     {
-        return new ValueNode<>(key, value, FringeNode.instance(), FringeNode.instance());
+        return new LeafNode<>(key, value);
+    }
+
+    static <K, V> AbstractNode<K, V> instance(K key,
+                                              V value,
+                                              AbstractNode<K, V> left,
+                                              AbstractNode<K, V> right)
+    {
+        if (left.isEmpty() && right.isEmpty()) {
+            return new LeafNode<>(key, value);
+        } else {
+            return new ValueNode<>(key, value, left, right);
+        }
+    }
+
+    static <K, V> AbstractNode<K, V> instance(@Nonnull Comparator<K> comp,
+                                              @Nonnull K key1,
+                                              @Nullable V value1,
+                                              @Nonnull K key2,
+                                              @Nullable V value2)
+    {
+        final int diff = comp.compare(key1, key2);
+        if (diff == 0) {
+            return instance(key1, value2);
+        } else if (diff < 0) {
+            return new ValueNode<>(key1, value1, FringeNode.instance(), instance(key2, value2));
+        } else {
+            return new ValueNode<>(key1, value1, instance(key2, value2), FringeNode.instance());
+        }
     }
 
     /**
@@ -110,7 +138,7 @@ class ValueNode<K, V>
         } else if (diff > 1) {
             return rotateRight(key, value, left, right);
         } else {
-            return new ValueNode<>(key, value, left, right);
+            return instance(key, value, left, right);
         }
     }
 
@@ -122,7 +150,7 @@ class ValueNode<K, V>
     {
         left = ensureLeftBranchTaller(left);
         final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
-        return new ValueNode<>(left.key(), left.value(), left.left(), newRight);
+        return instance(left.key(), left.value(), left.left(), newRight);
     }
 
     @Nonnull
@@ -133,7 +161,7 @@ class ValueNode<K, V>
     {
         right = ensureRightBranchTaller(right);
         final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
-        return new ValueNode<>(right.key(), right.value(), newLeft, right.right());
+        return instance(right.key(), right.value(), newLeft, right.right());
     }
 
     @Nonnull
@@ -143,7 +171,7 @@ class ValueNode<K, V>
         final AbstractNode<K, V> right = node.right();
         if (right.depth() > left.depth()) {
             final AbstractNode<K, V> newLeft = new ValueNode<>(node.key(), node.value(), left, right.left());
-            node = new ValueNode<>(right.key(), right.value(), newLeft, right.right());
+            node = instance(right.key(), right.value(), newLeft, right.right());
         }
         return node;
     }
@@ -155,7 +183,7 @@ class ValueNode<K, V>
         final AbstractNode<K, V> right = node.right();
         if (left.depth() > right.depth()) {
             final AbstractNode<K, V> newRight = new ValueNode<>(node.key(), node.value(), left.right(), right);
-            node = new ValueNode<>(left.key(), left.value(), left.left(), newRight);
+            node = instance(left.key(), left.value(), left.left(), newRight);
         }
         return node;
     }
