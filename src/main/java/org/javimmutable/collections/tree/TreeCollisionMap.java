@@ -83,9 +83,17 @@ public class TreeCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Node emptyNode()
+    public Node empty()
     {
         return FringeNode.instance();
+    }
+
+    @Nonnull
+    @Override
+    public Node single(@Nonnull K key,
+                       @Nullable V value)
+    {
+        return ValueNode.instance(key, value);
     }
 
     @Override

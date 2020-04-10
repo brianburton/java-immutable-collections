@@ -60,7 +60,11 @@ public interface CollisionMap<K, V>
     }
 
     @Nonnull
-    Node emptyNode();
+    Node empty();
+
+    @Nonnull
+    Node single(@Nonnull K key,
+                @Nullable V value);
 
     int size(@Nonnull Node node);
 

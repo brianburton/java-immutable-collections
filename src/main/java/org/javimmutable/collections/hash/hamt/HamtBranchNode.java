@@ -86,17 +86,35 @@ public class HamtBranchNode<K, V>
     @SuppressWarnings("unchecked")
     static <K, V> HamtNode<K, V> forLeafExpansion(@Nonnull CollisionMap<K, V> collisionMap,
                                                   int hashCode,
+                                                  @Nonnull K key,
+                                                  @Nullable V value)
+    {
+        if (hashCode == 0) {
+            return new HamtBranchNode<K, V>(0, collisionMap.single(key, value), EMPTY_NODES, 1);
+        } else {
+            final int index = hashCode & MASK;
+            final int remainder = hashCode >>> SHIFT;
+            final int bit = 1 << index;
+            final HamtNode<K, V>[] children = new HamtNode[1];
+            children[0] = new HamtSingleKeyLeafNode<>(remainder, key, value);
+            return new HamtBranchNode<>(bit, collisionMap.empty(), children, 1);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V> HamtNode<K, V> forLeafExpansion(@Nonnull CollisionMap<K, V> collisionMap,
+                                                  int hashCode,
                                                   @Nonnull CollisionMap.Node value)
     {
         if (hashCode == 0) {
-            return new HamtBranchNode<>(0, value, EMPTY_NODES, collisionMap.size(value));
+            return new HamtBranchNode<K, V>(0, value, EMPTY_NODES, collisionMap.size(value));
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final HamtNode<K, V>[] children = new HamtNode[1];
             children[0] = HamtMultiKeyLeafNode.createLeaf(collisionMap, remainder, value);
-            return new HamtBranchNode<>(bit, collisionMap.emptyNode(), children, collisionMap.size(value));
+            return new HamtBranchNode<>(bit, collisionMap.empty(), children, collisionMap.size(value));
         }
     }
 

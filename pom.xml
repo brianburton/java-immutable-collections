@@ -218,9 +218,13 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
+                        <argument>&#45;&#45;test</argument>
+                        <argument>hashmap</argument>
+                        <argument>&#45;&#45;test</argument>
+                        <argument>hashset</argument>
                         <!--<argument>&#45;&#45;list</argument>-->
                         <!--<argument>arraylist</argument>-->
                     </arguments>

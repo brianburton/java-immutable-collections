@@ -130,7 +130,7 @@ public class HamtSingleKeyLeafNode<K, V>
                                  @Nullable V newValue)
     {
         final int thisHashCode = this.hashCode;
-        final K thisKey = key;
+        final K thisKey = this.key;
         final V thisValue = this.value;
         if (thisHashCode == hashCode) {
             if (thisKey.equals(hashKey)) {
@@ -140,12 +140,11 @@ public class HamtSingleKeyLeafNode<K, V>
                     return new HamtSingleKeyLeafNode<>(hashCode, thisKey, newValue);
                 }
             } else {
-                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+                final CollisionMap.Node thisNode = collisionMap.single(thisKey, thisValue);
                 return new HamtMultiKeyLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
             }
         } else {
-            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisKey, thisValue);
             return expanded.assign(collisionMap, hashCode, hashKey, newValue);
         }
     }
@@ -158,7 +157,7 @@ public class HamtSingleKeyLeafNode<K, V>
                                  @Nonnull Func1<Holder<V>, V> generator)
     {
         final int thisHashCode = this.hashCode;
-        final K thisKey = key;
+        final K thisKey = this.key;
         final V thisValue = this.value;
         if (thisHashCode == hashCode) {
             if (thisKey.equals(hashKey)) {
@@ -170,12 +169,11 @@ public class HamtSingleKeyLeafNode<K, V>
                 }
             } else {
                 final V newValue = generator.apply(Holders.of());
-                final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
+                final CollisionMap.Node thisNode = collisionMap.single(thisKey, thisValue);
                 return new HamtMultiKeyLeafNode<>(hashCode, collisionMap.update(thisNode, hashKey, newValue));
             }
         } else {
-            final CollisionMap.Node thisNode = collisionMap.update(collisionMap.emptyNode(), thisKey, thisValue);
-            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisNode);
+            final HamtNode<K, V> expanded = HamtBranchNode.forLeafExpansion(collisionMap, thisHashCode, thisKey, thisValue);
             return expanded.update(collisionMap, hashCode, hashKey, generator);
         }
     }

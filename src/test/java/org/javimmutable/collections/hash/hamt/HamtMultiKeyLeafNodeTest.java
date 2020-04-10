@@ -56,7 +56,7 @@ public class HamtMultiKeyLeafNodeTest
         final Checked d = new Checked(1, 14);
         final ListCollisionMap<Checked, Integer> collisionMap = ListCollisionMap.instance();
 
-        ListCollisionMap.Node value = collisionMap.emptyNode();
+        ListCollisionMap.Node value = collisionMap.empty();
         value = collisionMap.update(value, a, 100);
         value = collisionMap.update(value, b, 200);
         value = collisionMap.update(value, c, 300);
@@ -80,7 +80,7 @@ public class HamtMultiKeyLeafNodeTest
         node = node.delete(collisionMap, 1, a);
         assertSame(HamtEmptyNode.of(), node);
 
-        value = collisionMap.update(collisionMap.emptyNode(), a, 100);
+        value = collisionMap.update(collisionMap.empty(), a, 100);
         node = new HamtMultiKeyLeafNode<>(1, value);
         assertSame(HamtEmptyNode.of(), node.delete(collisionMap, 1, a));
     }
@@ -93,7 +93,7 @@ public class HamtMultiKeyLeafNodeTest
         final Checked d = new Checked(1, 14);
         final ListCollisionMap<Checked, Integer> collisionMap = ListCollisionMap.instance();
 
-        ListCollisionMap.Node node = collisionMap.emptyNode();
+        ListCollisionMap.Node node = collisionMap.empty();
         node = collisionMap.update(node, a, 100);
         node = collisionMap.update(node, b, 200);
         node = collisionMap.update(node, c, 300);

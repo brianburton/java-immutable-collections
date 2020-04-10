@@ -146,14 +146,14 @@ public class HamtBuilder<K, V>
     private static class Leaf<K, V>
         extends Node<K, V>
     {
+        private final int hashCode;
         private CollisionMap.Node values;
-        private int hashCode;
         private int size;
 
         private Leaf(@Nonnull Leaf<K, V> other)
         {
-            this.values = other.values;
             this.hashCode = other.hashCode >>> SHIFT;
+            this.values = other.values;
             size = other.size;
         }
 
@@ -162,8 +162,8 @@ public class HamtBuilder<K, V>
                      @Nonnull K key,
                      @Nullable V value)
         {
-            this.values = collisionMap.update(collisionMap.emptyNode(), key, value);
             this.hashCode = hashCode;
+            this.values = collisionMap.single(key, value);
             size = 1;
         }
 
@@ -206,8 +206,8 @@ public class HamtBuilder<K, V>
     private static class Branch<K, V>
         extends Node<K, V>
     {
+        private final Node<K, V>[] children;
         private CollisionMap.Node values;
-        private Node<K, V>[] children;
         private int size;
 
         private Branch(@Nonnull CollisionMap<K, V> collisionMap,
@@ -221,7 +221,7 @@ public class HamtBuilder<K, V>
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
-                values = collisionMap.emptyNode();
+                values = collisionMap.empty();
                 children[leaf.hashCode & MASK] = new Leaf<>(leaf);
             }
             size = leaf.size;

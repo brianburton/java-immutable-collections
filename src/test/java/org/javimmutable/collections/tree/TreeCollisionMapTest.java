@@ -63,7 +63,7 @@ public class TreeCollisionMapTest
     public void testUpdateDelete()
     {
         TreeCollisionMap<Integer, Integer> collisionMap = TreeCollisionMap.instance();
-        CollisionMap.Node node = collisionMap.emptyNode();
+        CollisionMap.Node node = collisionMap.empty();
 
         node = collisionMap.update(node, 10, 100);
         assertEquals(1, collisionMap.size(node));
@@ -101,7 +101,7 @@ public class TreeCollisionMapTest
     public void testFindGet()
     {
         TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.instance();
-        CollisionMap.Node node = transforms.emptyNode();
+        CollisionMap.Node node = transforms.empty();
         node = transforms.update(node, 10, 100);
         node = transforms.update(node, 18, 180);
         node = transforms.update(node, 12, 60);
@@ -132,7 +132,7 @@ public class TreeCollisionMapTest
     public void testForEach()
     {
         TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
-        CollisionMap.Node node = transforms.emptyNode();
+        CollisionMap.Node node = transforms.empty();
 
         final StringBuilder sb = new StringBuilder();
         final Proc2<String, String> append = (k, v) -> {
@@ -173,7 +173,7 @@ public class TreeCollisionMapTest
     public void testReduce()
     {
         TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
-        CollisionMap.Node node = transforms.emptyNode();
+        CollisionMap.Node node = transforms.empty();
 
         final Sum2<String, String, String> append = (s, k, v) -> s + "[" + k + "," + v + "]";
         assertEquals("", transforms.reduce(node, "", append));

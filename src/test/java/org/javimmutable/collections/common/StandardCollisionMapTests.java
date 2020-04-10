@@ -46,14 +46,15 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static junit.framework.Assert.fail;
+import static junit.framework.Assert.*;
 
 public class StandardCollisionMapTests
 {
     public static void randomTests(@Nonnull CollisionMap<Integer, Integer> map)
     {
+        assertEquals(map.update(map.empty(), -45, 1000), map.single(-45, 1000));
         Map<Integer, Integer> expected = new TreeMap<>();
-        CollisionMap.Node node = map.emptyNode();
+        CollisionMap.Node node = map.empty();
         Random r = new Random(100);
         for (int loop = 1; loop <= 5000; ++loop) {
             int command = r.nextInt(6);

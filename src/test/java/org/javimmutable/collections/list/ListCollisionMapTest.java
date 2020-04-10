@@ -56,7 +56,7 @@ public class ListCollisionMapTest
     public void testForEach()
     {
         ListCollisionMap<Integer, Integer> transforms = ListCollisionMap.instance();
-        CollisionMap.Node node = transforms.emptyNode();
+        CollisionMap.Node node = transforms.empty();
 
         final StringBuilder sb = new StringBuilder();
         final Proc2<Integer, Integer> append = (k, v) -> {
@@ -84,7 +84,7 @@ public class ListCollisionMapTest
 
         try {
             sb.delete(0, sb.length());
-            transforms.forEachThrows(transforms.update(transforms.emptyNode(), 1, -1), (k, v) -> {
+            transforms.forEachThrows(transforms.update(transforms.empty(), 1, -1), (k, v) -> {
                 sb.append("[");
                 sb.append(k);
                 sb.append(",");
@@ -119,7 +119,7 @@ public class ListCollisionMapTest
     public void testReduce()
     {
         ListCollisionMap<Integer, Integer> transforms = ListCollisionMap.instance();
-        CollisionMap.Node node = transforms.emptyNode();
+        CollisionMap.Node node = transforms.empty();
 
         final Sum2<Integer, Integer, String> append = (s, k, v) -> s + "[" + k + "," + v + "]";
         assertEquals("", transforms.reduce(node, "", append));
@@ -133,7 +133,7 @@ public class ListCollisionMapTest
         assertEquals(expected, transforms.reduce(node, "", append));
 
         try {
-            transforms.reduceThrows(transforms.update(transforms.emptyNode(), 1, -1), "", (s, k, v) -> {
+            transforms.reduceThrows(transforms.update(transforms.empty(), 1, -1), "", (s, k, v) -> {
                 if (k == 1) {
                     throw new IOException();
                 } else {

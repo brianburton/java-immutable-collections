@@ -76,9 +76,17 @@ public class ListCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Node emptyNode()
+    public Node empty()
     {
         return EmptyNode.instance();
+    }
+
+    @Nonnull
+    @Override
+    public Node single(@Nonnull K key,
+                       @Nullable V value)
+    {
+        return new OneValueNode<>(entry(key, value));
     }
 
     @Override
