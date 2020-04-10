@@ -33,18 +33,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.map;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.list.ListCollisionMap;
 
-public class HamtSingleKeyLeafNodeTest
+public class MapSingleKeyLeafNodeTest
     extends TestCase
 {
     private final int HASH_CODE = 12;
     private final ListCollisionMap<String, String> collisionMap = ListCollisionMap.instance();
-    private final HamtSingleKeyLeafNode<String, String> ten = new HamtSingleKeyLeafNode<>(HASH_CODE, "10", "ten");
+    private final MapSingleKeyLeafNode<String, String> ten = new MapSingleKeyLeafNode<>(HASH_CODE, "10", "ten");
 
     public void testOperations()
     {
@@ -68,7 +68,7 @@ public class HamtSingleKeyLeafNodeTest
 
         assertSame(ten, ten.delete(collisionMap, 0, "10"));
         assertSame(ten, ten.delete(collisionMap, HASH_CODE, "20"));
-        assertSame(HamtEmptyNode.of(), ten.delete(collisionMap, HASH_CODE, "10"));
+        assertSame(MapEmptyNode.of(), ten.delete(collisionMap, HASH_CODE, "10"));
 
         assertEquals("(0x1e3,10,ten)", ten.liftNode(99).toString());
     }

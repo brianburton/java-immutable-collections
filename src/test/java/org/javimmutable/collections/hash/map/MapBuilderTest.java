@@ -33,20 +33,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.map;
 
 import junit.framework.TestCase;
 
 import java.util.Random;
 
-public class HamtBuilderTest
+public class MapBuilderTest
     extends TestCase
 {
     public void testRandom()
     {
         final Random r = new Random(1032946);
         for (int i = 1; i <= 5000; ++i) {
-            HamtBuilder<Integer, Integer> builder = new HamtBuilder<>();
+            MapBuilder<Integer, Integer> builder = new MapBuilder<>();
             final int size = 1 + r.nextInt(1000);
             for (int k = 1; k <= size; ++k) {
                 final Integer key = r.nextInt(5 * size);

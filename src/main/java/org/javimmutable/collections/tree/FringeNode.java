@@ -111,6 +111,13 @@ class FringeNode<K, V>
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    boolean containsKey(@Nonnull Comparator<K> comp,
+                        @Nonnull K key)
+    {
+        return false;
+    }
+
     @Nullable
     @Override
     public V get(@Nonnull Comparator<K> comp,

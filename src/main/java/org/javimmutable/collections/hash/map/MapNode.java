@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
@@ -50,7 +50,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface HamtNode<K, V>
+public interface MapNode<K, V>
 {
     Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
                    int hashCode,
@@ -62,26 +62,26 @@ public interface HamtNode<K, V>
                  V defaultValue);
 
     @Nonnull
-    HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
-                          int hashCode,
-                          @Nonnull K hashKey,
-                          @Nullable V value);
+    MapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
+                         int hashCode,
+                         @Nonnull K hashKey,
+                         @Nullable V value);
 
     @Nonnull
-    HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
-                          int hashCode,
-                          @Nonnull K hashKey,
-                          @Nonnull Func1<Holder<V>, V> generator);
+    MapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
+                         int hashCode,
+                         @Nonnull K hashKey,
+                         @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
-    HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
-                          int hashCode,
-                          @Nonnull K hashKey);
+    MapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
+                         int hashCode,
+                         @Nonnull K hashKey);
 
     boolean isLeaf();
 
     @Nonnull
-    HamtNode<K, V> liftNode(int index);
+    MapNode<K, V> liftNode(int index);
 
     boolean isEmpty(@Nonnull CollisionMap<K, V> collisionMap);
 
@@ -108,7 +108,7 @@ public interface HamtNode<K, V>
                                                                                      int offset,
                                                                                      int limit)
             {
-                return HamtNode.this.iterateOverRange(collisionMap, parent, offset, limit);
+                return MapNode.this.iterateOverRange(collisionMap, parent, offset, limit);
             }
 
             @Override

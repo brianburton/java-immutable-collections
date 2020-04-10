@@ -52,6 +52,7 @@ import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.EmptyHashMap;
+import org.javimmutable.collections.hash.EmptyHashSet;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -105,12 +106,12 @@ public class JImmutablesTest
     private final Predicate<JImmutableArray> isArray = x -> x instanceof JImmutableTrieArray;
     private final Predicate<JImmutableStack> isStack = x -> x instanceof JImmutableLinkedStack;
     private final Predicate<JImmutableList> isList = x -> x instanceof JImmutableTreeList;
-    private final Predicate<JImmutableList> isRalist = x -> x instanceof JImmutableTreeList;
     private final Predicate<JImmutableMap> isEmptyMap = x -> x instanceof EmptyHashMap;
     private final Predicate<JImmutableMap> isMap = x -> x instanceof JImmutableHashMap;
     private final Predicate<JImmutableMap> isSortedMap = x -> x instanceof JImmutableTreeMap;
     private final Predicate<JImmutableMap> isInsertOrderMap = x -> x instanceof JImmutableInsertOrderMap;
     private final Predicate<JImmutableSet> isSet = x -> x instanceof JImmutableHashSet;
+    private final Predicate<JImmutableSet> isEmptySet = x -> x instanceof EmptyHashSet;
     private final Predicate<JImmutableSet> isSortedSet = x -> x instanceof JImmutableTreeSet;
     private final Predicate<JImmutableSet> isInsertOrderSet = x -> x instanceof JImmutableInsertOrderSet;
     private final Predicate<JImmutableMultiset> isMultiset = x -> x instanceof JImmutableHashMultiset;
@@ -296,7 +297,7 @@ public class JImmutablesTest
         assertEquals(set, set(1, 100, 45, 87, 1));
         assertEquals(set, setBuilder().add(1, 100, 45, 87, 1).build());
 
-        verifyUnordered(isSet, asList(), () -> set());
+        verifyUnordered(isEmptySet, asList(), () -> set());
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set("a", "b", "c"));
         verifyUnordered(isSet, asList("a", "b", "c", "d", "e"), () -> set(iterable("a", "b", "c", "d", "e")));
         verifyUnordered(isSet, asList("a", "b", "c"), () -> set(iterator("a", "b", "c")));

@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
@@ -49,14 +49,14 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class HamtEmptyNode<K, V>
-    implements HamtNode<K, V>
+public class MapEmptyNode<K, V>
+    implements MapNode<K, V>
 {
-    private static final HamtEmptyNode EMPTY = new HamtEmptyNode();
+    private static final MapEmptyNode EMPTY = new MapEmptyNode();
 
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HamtNode<K, V> of()
+    public static <K, V> MapNode<K, V> of()
     {
         return EMPTY;
     }
@@ -80,29 +80,29 @@ public class HamtEmptyNode<K, V>
 
     @Nonnull
     @Override
-    public HamtNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
-                                 int hashCode,
-                                 @Nonnull K hashKey,
-                                 @Nullable V value)
+    public MapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
+                                int hashCode,
+                                @Nonnull K hashKey,
+                                @Nullable V value)
     {
-        return new HamtSingleKeyLeafNode<>(hashCode, hashKey, value);
+        return new MapSingleKeyLeafNode<>(hashCode, hashKey, value);
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
-                                 int hashCode,
-                                 @Nonnull K hashKey,
-                                 @Nonnull Func1<Holder<V>, V> generator)
+    public MapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
+                                int hashCode,
+                                @Nonnull K hashKey,
+                                @Nonnull Func1<Holder<V>, V> generator)
     {
-        return new HamtSingleKeyLeafNode<>(hashCode, hashKey, generator.apply(Holders.of()));
+        return new MapSingleKeyLeafNode<>(hashCode, hashKey, generator.apply(Holders.of()));
     }
 
     @Nonnull
     @Override
-    public HamtNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
-                                 int hashCode,
-                                 @Nonnull K hashKey)
+    public MapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
+                                int hashCode,
+                                @Nonnull K hashKey)
     {
         return this;
     }
@@ -168,7 +168,7 @@ public class HamtEmptyNode<K, V>
 
     @Nonnull
     @Override
-    public HamtNode<K, V> liftNode(int index)
+    public MapNode<K, V> liftNode(int index)
     {
         throw new UnsupportedOperationException();
     }

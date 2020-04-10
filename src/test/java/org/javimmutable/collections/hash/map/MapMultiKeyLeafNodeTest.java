@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.map;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.JImmutableMap;
@@ -45,7 +45,7 @@ import java.util.List;
 
 import static org.javimmutable.collections.MapEntry.entry;
 
-public class HamtMultiKeyLeafNodeTest
+public class MapMultiKeyLeafNodeTest
     extends TestCase
 {
     public void testDelete()
@@ -62,7 +62,7 @@ public class HamtMultiKeyLeafNodeTest
         value = collisionMap.update(value, c, 300);
         assertEquals(3, collisionMap.size(value));
 
-        HamtNode<Checked, Integer> node = new HamtMultiKeyLeafNode<>(1, value);
+        MapNode<Checked, Integer> node = new MapMultiKeyLeafNode<>(1, value);
         assertEquals(3, node.size(collisionMap));
 
         assertSame(node, node.delete(collisionMap, 1, d));
@@ -71,18 +71,18 @@ public class HamtMultiKeyLeafNodeTest
 
         node = node.delete(collisionMap, 1, b);
         assertEquals(2, node.size(collisionMap));
-        assertTrue(node instanceof HamtMultiKeyLeafNode);
+        assertTrue(node instanceof MapMultiKeyLeafNode);
 
         node = node.delete(collisionMap, 1, c);
         assertEquals(1, node.size(collisionMap));
-        assertTrue(node instanceof HamtSingleKeyLeafNode);
+        assertTrue(node instanceof MapSingleKeyLeafNode);
 
         node = node.delete(collisionMap, 1, a);
-        assertSame(HamtEmptyNode.of(), node);
+        assertSame(MapEmptyNode.of(), node);
 
         value = collisionMap.update(collisionMap.empty(), a, 100);
-        node = new HamtMultiKeyLeafNode<>(1, value);
-        assertSame(HamtEmptyNode.of(), node.delete(collisionMap, 1, a));
+        node = new MapMultiKeyLeafNode<>(1, value);
+        assertSame(MapEmptyNode.of(), node.delete(collisionMap, 1, a));
     }
 
     public void testIterator()
@@ -99,7 +99,7 @@ public class HamtMultiKeyLeafNodeTest
         node = collisionMap.update(node, c, 300);
         node = collisionMap.update(node, d, 400);
 
-        HamtNode<Checked, Integer> leaf = new HamtMultiKeyLeafNode<>(1, node);
+        MapNode<Checked, Integer> leaf = new MapMultiKeyLeafNode<>(1, node);
         assertEquals(4, leaf.size(collisionMap));
 
         List<JImmutableMap.Entry<Checked, Integer>> expected = new ArrayList<>();

@@ -44,6 +44,7 @@ import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
+import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
@@ -55,8 +56,12 @@ import java.util.Comparator;
 abstract class AbstractNode<K, V>
     implements SplitableIterable<Entry<K, V>>,
                GenericIterator.Iterable<Entry<K, V>>,
-               CollisionMap.Node
+               CollisionMap.Node,
+               CollisionSet.Node
 {
+    abstract boolean containsKey(@Nonnull Comparator<K> comp,
+                                 @Nonnull K key);
+
     abstract V get(@Nonnull Comparator<K> comp,
                    @Nonnull K key,
                    V defaultValue);

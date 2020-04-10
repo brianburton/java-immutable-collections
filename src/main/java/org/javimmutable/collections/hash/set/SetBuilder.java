@@ -33,51 +33,50 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.hamt;
+package org.javimmutable.collections.hash.set;
 
-import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.list.ListCollisionMap;
-import org.javimmutable.collections.tree.TreeCollisionMap;
+import org.javimmutable.collections.common.CollisionSet;
+import org.javimmutable.collections.list.ListCollisionSet;
+import org.javimmutable.collections.tree.TreeCollisionSet;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.javimmutable.collections.hash.hamt.HamtBranchNode.*;
+import static org.javimmutable.collections.hash.set.SetBranchNode.*;
+
 
 @NotThreadSafe
-public class HamtBuilder<K, V>
+public class SetBuilder<T>
 {
-    private CollisionMap<K, V> collisionMap = ListCollisionMap.instance();
-    private Node<K, V> root = new Empty<>();
+    private CollisionSet<T> collisionSet = ListCollisionSet.instance();
+    private Node<T> root = new Empty<>();
 
     @Nonnull
-    public HamtNode<K, V> build()
+    public SetNode<T> build()
     {
-        return root.toHamt(collisionMap);
+        return root.toSet(collisionSet);
     }
 
     public void clear()
     {
-        collisionMap = ListCollisionMap.instance();
+        collisionSet = ListCollisionSet.instance();
         root = new Empty<>();
     }
 
-    public void add(@Nonnull K key,
-                    V value)
+    public void add(@Nonnull T value)
     {
         if (root.isEmpty()) {
-            collisionMap = selectCollisionMapForKey(key);
-            root = new Leaf<>(collisionMap, key.hashCode(), key, value);
+            collisionSet = selectCollisionSetForValue(value);
+            root = new Leaf<>(collisionSet, value.hashCode(), value);
         } else {
-            root = root.add(collisionMap, key.hashCode(), key, value);
+            root = root.add(collisionSet, value.hashCode(), value);
         }
     }
 
     @Nonnull
-    public CollisionMap<K, V> getCollisionMap()
+    public CollisionSet<T> getCollisionSet()
     {
-        return collisionMap;
+        return collisionSet;
     }
 
     public int size()
@@ -85,49 +84,47 @@ public class HamtBuilder<K, V>
         return root.size();
     }
 
-    private static <K, V> CollisionMap<K, V> selectCollisionMapForKey(@Nonnull K key)
+    public static <T> CollisionSet<T> selectCollisionSetForValue(@Nonnull T value)
     {
-        if (key instanceof Comparable) {
-            return TreeCollisionMap.instance();
+        if (value instanceof Comparable) {
+            return TreeCollisionSet.instance();
         } else {
-            return ListCollisionMap.instance();
+            return ListCollisionSet.instance();
         }
     }
 
-    private static abstract class Node<K, V>
+    private static abstract class Node<T>
     {
         @Nonnull
-        abstract Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
-                                int hashCode,
-                                @Nonnull K key,
-                                @Nullable V value);
+        abstract Node<T> add(@Nonnull CollisionSet<T> collisionSet,
+                             int hashCode,
+                             @Nonnull T value);
 
         @Nonnull
-        abstract HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap);
+        abstract SetNode<T> toSet(@Nonnull CollisionSet<T> collisionSet);
 
         abstract int size();
 
         abstract boolean isEmpty();
     }
 
-    private static class Empty<K, V>
-        extends Node<K, V>
+    private static class Empty<T>
+        extends Node<T>
     {
         @Nonnull
         @Override
-        Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
-                       int hashCode,
-                       @Nonnull K key,
-                       @Nullable V value)
+        Node<T> add(@Nonnull CollisionSet<T> collisionSet,
+                    int hashCode,
+                    @Nonnull T value)
         {
-            return new Leaf<>(collisionMap, hashCode, key, value);
+            return new Leaf<>(collisionSet, hashCode, value);
         }
 
         @Nonnull
         @Override
-        HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
+        SetNode<T> toSet(@Nonnull CollisionSet<T> collisionSet)
         {
-            return HamtEmptyNode.of();
+            return SetEmptyNode.of();
         }
 
         @Override
@@ -143,51 +140,49 @@ public class HamtBuilder<K, V>
         }
     }
 
-    private static class Leaf<K, V>
-        extends Node<K, V>
+    private static class Leaf<T>
+        extends Node<T>
     {
         private final int hashCode;
-        private CollisionMap.Node values;
+        private CollisionSet.Node values;
         private int size;
 
-        private Leaf(@Nonnull Leaf<K, V> other)
+        private Leaf(@Nonnull Leaf<T> other)
         {
             this.hashCode = other.hashCode >>> SHIFT;
             this.values = other.values;
             size = other.size;
         }
 
-        private Leaf(@Nonnull CollisionMap<K, V> collisionMap,
+        private Leaf(@Nonnull CollisionSet<T> collisionSet,
                      int hashCode,
-                     @Nonnull K key,
-                     @Nullable V value)
+                     @Nonnull T value)
         {
             this.hashCode = hashCode;
-            this.values = collisionMap.single(key, value);
+            this.values = collisionSet.single(value);
             size = 1;
         }
 
         @Nonnull
         @Override
-        Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
-                       int hashCode,
-                       @Nonnull K key,
-                       @Nullable V value)
+        Node<T> add(@Nonnull CollisionSet<T> collisionSet,
+                    int hashCode,
+                    @Nonnull T value)
         {
             if (hashCode == this.hashCode) {
-                values = collisionMap.update(values, key, value);
-                size = collisionMap.size(values);
+                values = collisionSet.insert(values, value);
+                size = collisionSet.size(values);
                 return this;
             } else {
-                return new Branch<>(collisionMap, this, hashCode, key, value);
+                return new Branch<>(collisionSet, this, hashCode, value);
             }
         }
 
         @Nonnull
         @Override
-        HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
+        SetNode<T> toSet(@Nonnull CollisionSet<T> collisionSet)
         {
-            return HamtMultiKeyLeafNode.createLeaf(collisionMap, hashCode, values);
+            return SetMultiKeyLeafNode.createLeaf(collisionSet, hashCode, values);
         }
 
         @Override
@@ -203,83 +198,81 @@ public class HamtBuilder<K, V>
         }
     }
 
-    private static class Branch<K, V>
-        extends Node<K, V>
+    private static class Branch<T>
+        extends Node<T>
     {
-        private final Node<K, V>[] children;
-        private CollisionMap.Node values;
+        private final Node<T>[] children;
+        private CollisionSet.Node values;
         private int size;
 
-        private Branch(@Nonnull CollisionMap<K, V> collisionMap,
-                       @Nonnull Leaf<K, V> leaf,
+        private Branch(@Nonnull CollisionSet<T> collisionSet,
+                       @Nonnull Leaf<T> leaf,
                        int hashCode,
-                       @Nonnull K key,
-                       V value)
+                       @Nonnull T value)
         {
             assert hashCode != leaf.hashCode;
             children = new Node[32];
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
-                values = collisionMap.empty();
+                values = collisionSet.empty();
                 children[leaf.hashCode & MASK] = new Leaf<>(leaf);
             }
             size = leaf.size;
-            add(collisionMap, hashCode, key, value);
+            add(collisionSet, hashCode, value);
         }
 
         @Nonnull
         @Override
-        Node<K, V> add(@Nonnull CollisionMap<K, V> collisionMap,
-                       int hashCode,
-                       @Nonnull K key,
-                       @Nullable V value)
+        Node<T> add(@Nonnull CollisionSet<T> collisionSet,
+                    int hashCode,
+                    @Nonnull T value)
         {
             if (hashCode == 0) {
-                int beforeSize = collisionMap.size(values);
-                values = collisionMap.update(values, key, value);
-                size = size - beforeSize + collisionMap.size(values);
+                int beforeSize = collisionSet.size(values);
+                values = collisionSet.insert(values, value);
+                size = size - beforeSize + collisionSet.size(values);
             } else {
                 final int index = hashCode & MASK;
-                final Node<K, V> beforeChild = children[index];
+                final Node<T> beforeChild = children[index];
                 if (beforeChild == null) {
-                    children[index] = new Leaf<>(collisionMap, hashCode >>> SHIFT, key, value);
+                    children[index] = new Leaf<>(collisionSet, hashCode >>> SHIFT, value);
                     size += 1;
                 } else {
                     // note: afterChild might be same object as beforeChild so capture size now
                     final int beforeSize = beforeChild.size();
-                    final Node<K, V> afterChild = beforeChild.add(collisionMap, hashCode >>> SHIFT, key, value);
+                    final Node<T> afterChild = beforeChild.add(collisionSet, hashCode >>> SHIFT, value);
                     children[index] = afterChild;
                     size = size - beforeSize + afterChild.size();
                 }
             }
-            assert invariant(collisionMap);
+            assert invariant(collisionSet);
             return this;
         }
 
         @Nonnull
         @Override
-        HamtNode<K, V> toHamt(@Nonnull CollisionMap<K, V> collisionMap)
+        SetNode<T> toSet(@Nonnull CollisionSet<T> collisionSet)
         {
             int count = 0;
-            for (Node<K, V> child : children) {
+            for (Node<T> child : children) {
                 if (child != null) {
                     count += 1;
                 }
             }
             int bitmask = 0;
             int bit = 1;
-            final HamtNode<K, V>[] nodes = new HamtNode[count];
+            final SetNode<T>[] nodes = new SetNode[count];
             int index = 0;
-            for (Node<K, V> child : children) {
+            for (Node<T> child : children) {
                 if (child != null) {
-                    final HamtNode<K, V> hamt = child.toHamt(collisionMap);
+                    final SetNode<T> hamt = child.toSet(collisionSet);
                     nodes[index++] = hamt;
                     bitmask |= bit;
                 }
                 bit <<= 1;
             }
-            return new HamtBranchNode<>(bitmask, values, nodes, size);
+            return new SetBranchNode<>(bitmask, values, nodes, size);
         }
 
         @Override
@@ -294,12 +287,12 @@ public class HamtBuilder<K, V>
             return false;
         }
 
-        private boolean invariant(@Nonnull CollisionMap<K, V> collisionMap)
+        private boolean invariant(@Nonnull CollisionSet<T> collisionSet)
         {
-            final int valuesSize = collisionMap.size(values);
+            final int valuesSize = collisionSet.size(values);
             int childCount = 0;
             int leafCount = 0;
-            for (Node<K, V> child : children) {
+            for (Node<T> child : children) {
                 if (child != null) {
                     childCount += 1;
                     if (child instanceof Leaf) {

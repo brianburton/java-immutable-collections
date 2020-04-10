@@ -35,14 +35,11 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableMultiset;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
@@ -51,21 +48,6 @@ import java.util.Set;
 public abstract class AbstractJImmutableSet<T>
     implements JImmutableSet<T>
 {
-    protected final JImmutableMap<T, Boolean> map;
-
-    protected AbstractJImmutableSet(JImmutableMap<T, Boolean> map)
-    {
-        this.map = map;
-    }
-
-    @Override
-    @Nonnull
-    public JImmutableSet<T> insert(@Nonnull T value)
-    {
-        JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
-        return (newMap != map) ? create(newMap) : this;
-    }
-
     @Nonnull
     @Override
     public JImmutableSet<T> getInsertableSelf()
@@ -85,12 +67,6 @@ public abstract class AbstractJImmutableSet<T>
     public JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return union(values);
-    }
-
-    @Override
-    public boolean contains(@Nullable T value)
-    {
-        return (value != null) && map.getValueOr(value, Boolean.FALSE);
     }
 
     @Override
@@ -129,31 +105,9 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> delete(T value)
-    {
-        JImmutableMap<T, Boolean> newMap = map.delete(value);
-        return (newMap != map) ? create(newMap) : this;
-    }
-
-    @Nonnull
-    @Override
     public JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other)
     {
         return deleteAll(other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> values)
-    {
-        JImmutableMap<T, Boolean> newMap = map;
-        while (values.hasNext()) {
-            final T value = values.next();
-            if (value != null) {
-                newMap = newMap.delete(value);
-            }
-        }
-        return (newMap != map) ? create(newMap) : this;
     }
 
     @Nonnull
@@ -165,53 +119,9 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Iterator<? extends T> values)
-    {
-        JImmutableMap<T, Boolean> newMap = map;
-        while (values.hasNext()) {
-            final T value = values.next();
-            if (value != null) {
-                newMap = newMap.assign(value, Boolean.TRUE);
-            }
-        }
-        return (newMap != map) ? create(newMap) : this;
-    }
-
-    @Nonnull
-    @Override
     public JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return intersection(other.iterator());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values)
-    {
-        if (isEmpty()) {
-            return this;
-        }
-
-        if (!values.hasNext()) {
-            return deleteAll();
-        }
-
-        Set<T> otherSet = emptyMutableSet();
-        while (values.hasNext()) {
-            final T value = values.next();
-            if (value != null) {
-                otherSet.add(value);
-            }
-        }
-
-        JImmutableMap<T, Boolean> newMap = map;
-        for (JImmutableMap.Entry<T, Boolean> entry : map) {
-            if (!otherSet.contains(entry.getKey())) {
-                newMap = newMap.delete(entry.getKey());
-            }
-        }
-
-        return (newMap != map) ? create(newMap) : this;
     }
 
     @Nonnull
@@ -223,53 +133,9 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Set<? extends T> other)
-    {
-        if (isEmpty()) {
-            return this;
-        } else if (other.isEmpty()) {
-            return deleteAll();
-        } else {
-            JImmutableMap<T, Boolean> newMap = map;
-            for (T value : map.keys()) {
-                if (!other.contains(value)) {
-                    newMap = newMap.delete(value);
-                }
-            }
-            return (newMap != map) ? create(newMap) : this;
-        }
-    }
-
-    @Override
-    public int size()
-    {
-        return map.size();
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return map.isEmpty();
-    }
-
-    @Nonnull
-    @Override
     public Set<T> getSet()
     {
         return SetAdaptor.of(this);
-    }
-
-    @Nonnull
-    @Override
-    public SplitableIterator<T> iterator()
-    {
-        return map.keys().iterator();
-    }
-
-    @Override
-    public int getSpliteratorCharacteristics()
-    {
-        return map.keys().getSpliteratorCharacteristics();
     }
 
     @Override
@@ -299,27 +165,6 @@ public abstract class AbstractJImmutableSet<T>
     {
         return IteratorHelper.iteratorToString(iterator());
     }
-
-    @Override
-    public void checkInvariants()
-    {
-        checkSetInvariants();
-    }
-
-    protected void checkSetInvariants()
-    {
-        map.checkInvariants();
-        for (JImmutableMap.Entry<T, Boolean> entry : map) {
-            if (!entry.getValue()) {
-                throw new RuntimeException();
-            }
-        }
-    }
-
-    /**
-     * Implemented by derived classes to create a new instance of the appropriate class.
-     */
-    protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
 
     /**
      * Implemented by derived classes to create a new empty Set

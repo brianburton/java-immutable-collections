@@ -38,7 +38,7 @@ package org.javimmutable.collections.inorder;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
 
@@ -57,7 +57,7 @@ import java.util.stream.Collector;
  */
 @Immutable
 public class JImmutableInsertOrderSet<T>
-    extends AbstractJImmutableSet<T>
+    extends AbstractJImmutableSetUsingMap<T>
     implements Serializable
 {
     @SuppressWarnings("unchecked")

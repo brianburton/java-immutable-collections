@@ -47,9 +47,9 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.hash.hamt.HamtBuilder;
-import org.javimmutable.collections.hash.hamt.HamtEmptyNode;
-import org.javimmutable.collections.hash.hamt.HamtNode;
+import org.javimmutable.collections.hash.map.MapBuilder;
+import org.javimmutable.collections.hash.map.MapEmptyNode;
+import org.javimmutable.collections.hash.map.MapNode;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 import org.javimmutable.collections.tree.TreeCollisionMap;
@@ -66,25 +66,27 @@ public class JImmutableHashMap<T, K, V>
     implements Serializable
 {
     // we only need one instance of the transformations object
+    @SuppressWarnings({"rawtypes"})
     static final CollisionMap LIST_COLLISION_MAP = ListCollisionMap.instance();
 
     // we only need one instance of the transformations object
+    @SuppressWarnings({"rawtypes"})
     static final CollisionMap TREE_COLLISION_MAP = TreeCollisionMap.instance();
 
     // this is safe since the transformations object works for any possible K and V
-    @SuppressWarnings("unchecked")
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), LIST_COLLISION_MAP);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(MapEmptyNode.of(), LIST_COLLISION_MAP);
 
     // this is safe since the transformations object works for any possible K and V
-    @SuppressWarnings("unchecked")
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(HamtEmptyNode.of(), TREE_COLLISION_MAP);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(MapEmptyNode.of(), TREE_COLLISION_MAP);
 
     private static final long serialVersionUID = -121805;
 
-    private final HamtNode<K, V> root;
+    private final MapNode<K, V> root;
     private final CollisionMap<K, V> collisionMap;
 
-    private JImmutableHashMap(HamtNode<K, V> root,
+    private JImmutableHashMap(MapNode<K, V> root,
                               CollisionMap<K, V> collisionMap)
     {
         this.root = root;
@@ -201,7 +203,7 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> assign(@Nonnull K key,
                                       V value)
     {
-        final HamtNode<K, V> newRoot = root.assign(collisionMap, key.hashCode(), key, value);
+        final MapNode<K, V> newRoot = root.assign(collisionMap, key.hashCode(), key, value);
         if (newRoot == root) {
             return this;
         } else {
@@ -214,7 +216,7 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> update(@Nonnull K key,
                                       @Nonnull Func1<Holder<V>, V> generator)
     {
-        final HamtNode<K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator);
+        final MapNode<K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator);
         if (newRoot == root) {
             return this;
         } else {
@@ -226,7 +228,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public JImmutableMap<K, V> delete(@Nonnull K key)
     {
-        final HamtNode<K, V> newRoot = root.delete(collisionMap, key.hashCode(), key);
+        final MapNode<K, V> newRoot = root.delete(collisionMap, key.hashCode(), key);
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty(collisionMap)) {
@@ -305,13 +307,13 @@ public class JImmutableHashMap<T, K, V>
     public static class Builder<K, V>
         implements JImmutableMap.Builder<K, V>
     {
-        private final HamtBuilder<K, V> builder = new HamtBuilder<>();
+        private final MapBuilder<K, V> builder = new MapBuilder<>();
 
         @Nonnull
         @Override
         public synchronized JImmutableMap<K, V> build()
         {
-            final HamtNode<K, V> root = builder.build();
+            final MapNode<K, V> root = builder.build();
             final CollisionMap<K, V> collisionMap = builder.getCollisionMap();
             if (root.isEmpty(collisionMap)) {
                 return of();

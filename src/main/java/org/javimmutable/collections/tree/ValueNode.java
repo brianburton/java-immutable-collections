@@ -279,6 +279,20 @@ class ValueNode<K, V>
         }
     }
 
+    @Override
+    boolean containsKey(@Nonnull Comparator<K> comp,
+                        @Nonnull K key)
+    {
+        final int diff = comp.compare(key, this.key);
+        if (diff == 0) {
+            return true;
+        } else if (diff < 0) {
+            return left.containsKey(comp, key);
+        } else {
+            return right.containsKey(comp, key);
+        }
+    }
+
     @Nullable
     @Override
     public V get(@Nonnull Comparator<K> comp,

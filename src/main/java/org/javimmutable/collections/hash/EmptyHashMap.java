@@ -58,6 +58,7 @@ public class EmptyHashMap<K, V>
     extends AbstractJImmutableMap<K, V>
     implements Serializable
 {
+    @SuppressWarnings("rawtypes")
     static final EmptyHashMap INSTANCE = new EmptyHashMap();
 
     private static final long serialVersionUID = -121805;
