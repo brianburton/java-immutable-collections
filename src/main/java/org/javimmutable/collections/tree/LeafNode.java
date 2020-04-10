@@ -93,7 +93,7 @@ public class LeafNode<K, V>
             if (this.value == value) {
                 return this;
             } else {
-                return new LeafNode<>(this.key, value);
+                return new LeafNode<>(key, value);
             }
         } else {
             return ValueNode.instance(comp, this.key, this.value, key, value);
@@ -123,7 +123,7 @@ public class LeafNode<K, V>
             if (this.value == value) {
                 return this;
             } else {
-                return new LeafNode<>(this.key, value);
+                return new LeafNode<>(key, value);
             }
         } else {
             final V value = generator.apply(Holders.of());
