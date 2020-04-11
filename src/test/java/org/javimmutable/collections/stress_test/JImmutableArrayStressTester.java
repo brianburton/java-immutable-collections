@@ -245,7 +245,7 @@ public class JImmutableArrayStressTester
             throw new RuntimeException("method call failed - getMap()\n");
         }
         array.checkInvariants();
-        verifySerializable(null, array);
+        verifySerializable(null, array, JImmutableArray.class);
     }
 
     private void verifyIteration(JImmutableArray<String> array,

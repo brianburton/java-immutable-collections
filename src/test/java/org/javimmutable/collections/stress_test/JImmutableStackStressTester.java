@@ -137,6 +137,6 @@ public class JImmutableStackStressTester
             throw new RuntimeException("makeList() method call failed\n");
         }
         stack.checkInvariants();
-        verifySerializable(null, stack);
+        verifySerializable(null, stack, JImmutableStack.class);
     }
 }

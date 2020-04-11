@@ -75,7 +75,7 @@ abstract class AbstractListStressTestable
             throw new RuntimeException("method call failed - getList()\n");
         }
         list.checkInvariants();
-        verifySerializable(null, list);
+        verifySerializable(null, list, JImmutableList.class);
     }
 
     protected void verifyIterator(JImmutableList<String> list,

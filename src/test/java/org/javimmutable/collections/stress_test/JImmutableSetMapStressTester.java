@@ -419,7 +419,7 @@ public class JImmutableSetMapStressTester
             }
         }
         setmap.checkInvariants();
-        verifySerializable(this::extraSerializationChecks, setmap);
+        verifySerializable(this::extraSerializationChecks, setmap, JImmutableSetMap.class);
     }
 
     private void verifyIteration(final JImmutableSetMap<String, String> setmap,

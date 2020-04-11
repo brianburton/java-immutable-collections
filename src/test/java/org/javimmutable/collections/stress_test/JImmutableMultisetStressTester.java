@@ -499,7 +499,7 @@ public class JImmutableMultisetStressTester
             throw new RuntimeException("method call failed - getSet()\n");
         }
         multi.checkInvariants();
-        verifySerializable(this::extraSerializationChecks, multi);
+        verifySerializable(this::extraSerializationChecks, multi, JImmutableMultiset.class);
     }
 
     private void verifyOrder(JImmutableMultiset<String> set,

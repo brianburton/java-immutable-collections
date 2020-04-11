@@ -51,6 +51,8 @@ import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static org.assertj.core.api.Assertions.*;
+
 public class StandardSerializableTests
     extends TestCase
 {
@@ -121,18 +123,21 @@ public class StandardSerializableTests
     /**
      * Intended for use by stress tester.  Performs extra checks but not a backwards compatibility check.
      */
-    public static void verifySerializable(@Nullable BiConsumer extraChecks,
-                                          @Nonnull Object source)
+    public static void verifySerializable(@Nullable BiConsumer<?, ?> extraChecks,
+                                          @Nonnull Object source,
+                                          @Nonnull Class<?> collectionInterface)
     {
         try {
+            assertThat(collectionInterface).isAssignableFrom(source.getClass());
             byte[] bytes = serialize(source);
+
             Object dest = deserialize(bytes);
-            assertEquals(source.getClass().getName(), dest.getClass().getName());
+            assertThat(collectionInterface).isAssignableFrom(dest.getClass());
             assertEquals(source, dest);
             performExtraChecks(extraChecks, source, dest);
 
             dest = deserialize(serialize(dest));
-            assertEquals(source.getClass().getName(), dest.getClass().getName());
+            assertThat(collectionInterface).isAssignableFrom(dest.getClass());
             assertEquals(source, dest);
             performExtraChecks(extraChecks, source, dest);
         } catch (Exception ex) {

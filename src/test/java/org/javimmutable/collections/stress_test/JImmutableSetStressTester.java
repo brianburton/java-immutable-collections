@@ -311,7 +311,7 @@ public class JImmutableSetStressTester
             throw new RuntimeException("method call failed - getSet()\n");
         }
         set.checkInvariants();
-        verifySerializable(this::extraSerializationChecks, set);
+        verifySerializable(this::extraSerializationChecks, set, JImmutableSet.class);
     }
 
     private void verifyIterator(final JImmutableSet<String> set,

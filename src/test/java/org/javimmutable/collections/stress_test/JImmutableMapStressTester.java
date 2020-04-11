@@ -328,7 +328,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         System.out.printf("checking invariants with size %d%n", map.size());
         map.checkInvariants();
         System.out.printf("checking serializable with size %d%n", map.size());
-        verifySerializable(this::extraSerializationChecks, map);
+        verifySerializable(this::extraSerializationChecks, map, JImmutableMap.class);
         System.out.printf("done checking contents with size %d%n", map.size());
     }
 

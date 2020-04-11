@@ -245,7 +245,7 @@ public class JImmutableListMapStressTester
             }
         }
         listmap.checkInvariants();
-        verifySerializable(this::extraSerializationChecks, listmap);
+        verifySerializable(this::extraSerializationChecks, listmap, JImmutableListMap.class);
     }
 
     private void verifyIteration(final JImmutableListMap<String, String> listmap,
