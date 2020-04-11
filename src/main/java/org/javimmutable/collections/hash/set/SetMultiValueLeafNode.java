@@ -44,34 +44,36 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
- * SetNode that stores only one value.  Any assign that would progress down the tree
- * below this node replaces it with a branch node instead.  These exist to shorten the
+ * HamtNode that stores only one value.  Any assign that would progress down the tree
+ * below this node replaces it with a normal node instead.  These exist to shorten the
  * height of the overall tree structure when hashCodes are dispersed.
  */
-public class SetSingleKeyLeafNode<T>
+public class SetMultiValueLeafNode<T>
     implements SetNode<T>
 {
     private final int hashCode;
     @Nonnull
-    private final T value;
+    private final CollisionSet.Node values;
 
-    SetSingleKeyLeafNode(int hashCode,
-                         @Nonnull T value)
+    SetMultiValueLeafNode(int hashCode,
+                          @Nonnull CollisionSet.Node values)
     {
         this.hashCode = hashCode;
-        this.value = value;
+        this.values = values;
     }
 
-    SetSingleKeyLeafNode(@Nonnull CollisionSet<T> collisionSet,
-                         int hashCode,
-                         @Nonnull CollisionSet.Node node)
+    static <T> SetNode<T> createLeaf(@Nonnull CollisionSet<T> collisionSet,
+                                     int hashCode,
+                                     @Nonnull CollisionSet.Node values)
     {
-        assert collisionSet.size(node) == 1;
-        this.hashCode = hashCode;
-        this.value = collisionSet.iterator(node).next();
+        if (collisionSet.size(values) == 1) {
+            return new SetSingleValueLeafNode<>(collisionSet, hashCode, values);
+        } else {
+            assert collisionSet.size(values) > 1;
+            return new SetMultiValueLeafNode<>(hashCode, values);
+        }
     }
 
     @Override
@@ -83,7 +85,7 @@ public class SetSingleKeyLeafNode<T>
     @Override
     public int size(@Nonnull CollisionSet<T> collisionSet)
     {
-        return 1;
+        return collisionSet.size(values);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class SetSingleKeyLeafNode<T>
                             int hashCode,
                             @Nonnull T value)
     {
-        return this.hashCode == hashCode && this.value.equals(value);
+        return collisionSet.contains(values, value);
     }
 
     @Nonnull
@@ -101,16 +103,16 @@ public class SetSingleKeyLeafNode<T>
                              @Nonnull T value)
     {
         final int thisHashCode = this.hashCode;
-        final T thisValue = this.value;
-        if (thisHashCode == hashCode) {
-            if (thisValue.equals(value)) {
+        final CollisionSet.Node currentValues = this.values;
+        if (hashCode == thisHashCode) {
+            final CollisionSet.Node newValues = collisionSet.insert(currentValues, value);
+            if (newValues == currentValues) {
                 return this;
             } else {
-                final CollisionSet.Node thisNode = collisionSet.single(thisValue);
-                return new SetMultiKeyLeafNode<>(hashCode, collisionSet.insert(thisNode, value));
+                return new SetMultiValueLeafNode<>(hashCode, newValues);
             }
         } else {
-            final SetNode<T> expanded = SetBranchNode.forLeafExpansion(collisionSet, thisHashCode, thisValue);
+            final SetNode<T> expanded = SetBranchNode.forLeafExpansion(collisionSet, thisHashCode, currentValues);
             return expanded.insert(collisionSet, hashCode, value);
         }
     }
@@ -121,23 +123,35 @@ public class SetSingleKeyLeafNode<T>
                              int hashCode,
                              @Nonnull T value)
     {
-        if (this.hashCode == hashCode && this.value.equals(value)) {
-            return SetEmptyNode.of();
-        } else {
-            return this;
+        final int thisHashCode = this.hashCode;
+        final CollisionSet.Node currentValues = this.values;
+        if (hashCode == thisHashCode) {
+            final CollisionSet.Node newValues = collisionSet.delete(currentValues, value);
+            if (newValues != currentValues) {
+                final int newSize = collisionSet.size(newValues);
+                if (newSize == 0) {
+                    return SetEmptyNode.of();
+                } else if (newSize == 1) {
+                    return new SetSingleValueLeafNode<>(collisionSet, hashCode, newValues);
+                } else {
+                    return new SetMultiValueLeafNode<>(hashCode, newValues);
+                }
+            }
         }
+        return this;
     }
 
+    @Override
     @Nonnull
     public SetNode<T> liftNode(int index)
     {
-        return new SetSingleKeyLeafNode<>(hashCode << SetBranchNode.SHIFT | index, value);
+        return new SetMultiValueLeafNode<>(hashCode << SetBranchNode.SHIFT | index, values);
     }
 
     @Override
     public boolean isEmpty(@Nonnull CollisionSet<T> collisionSet)
     {
-        return false;
+        return collisionSet.size(values) == 0;
     }
 
     @Nullable
@@ -147,14 +161,14 @@ public class SetSingleKeyLeafNode<T>
                                                      int offset,
                                                      int limit)
     {
-        return GenericIterator.valueState(parent, value);
+        return collisionSet.iterateOverRange(values, parent, offset, limit);
     }
 
     @Override
     public void forEach(@Nonnull CollisionSet<T> collisionSet,
                         @Nonnull Proc1<T> proc)
     {
-        proc.apply(value);
+        collisionSet.forEach(values, proc);
     }
 
     @Override
@@ -162,7 +176,7 @@ public class SetSingleKeyLeafNode<T>
                                                     @Nonnull Proc1Throws<T, E> proc)
         throws E
     {
-        proc.apply(value);
+        collisionSet.forEachThrows(values, proc);
     }
 
     @Override
@@ -170,7 +184,7 @@ public class SetSingleKeyLeafNode<T>
                         R sum,
                         @Nonnull Sum1<T, R> proc)
     {
-        return proc.apply(sum, value);
+        return collisionSet.reduce(values, sum, proc);
     }
 
     @Override
@@ -179,32 +193,26 @@ public class SetSingleKeyLeafNode<T>
                                                    @Nonnull Sum1Throws<T, R, E> proc)
         throws E
     {
-        return proc.apply(sum, value);
+        return collisionSet.reduceThrows(values, sum, proc);
     }
 
     @Override
-    public boolean equals(Object o)
+    public void checkInvariants(@Nonnull CollisionSet<T> collisionSet)
     {
-        if (this == o) {
-            return true;
+        if (collisionSet.size(values) < 2) {
+            throw new IllegalStateException(String.format("expected size greater than one: size=%d", collisionSet.size(values)));
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SetSingleKeyLeafNode<?> that = (SetSingleKeyLeafNode<?>)o;
-        return hashCode == that.hashCode &&
-               value.equals(that.value);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(hashCode, value);
     }
 
     @Override
     public String toString()
     {
-        return "(0x" + Integer.toHexString(hashCode) + "," + value + ")";
+        final StringBuilder sb = new StringBuilder();
+        sb.append("(0x");
+        sb.append(Integer.toHexString(hashCode));
+        sb.append(",");
+        sb.append(values);
+        sb.append(")");
+        return sb.toString();
     }
 }

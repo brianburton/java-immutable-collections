@@ -182,7 +182,7 @@ public class SetBuilder<T>
         @Override
         SetNode<T> toSet(@Nonnull CollisionSet<T> collisionSet)
         {
-            return SetMultiKeyLeafNode.createLeaf(collisionSet, hashCode, values);
+            return SetMultiValueLeafNode.createLeaf(collisionSet, hashCode, values);
         }
 
         @Override

@@ -33,45 +33,34 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.map;
+package org.javimmutable.collections.hash.set;
 
-import javax.annotation.concurrent.Immutable;
+import junit.framework.TestCase;
+import org.javimmutable.collections.list.ListCollisionSet;
 
-@Immutable
-public class Checked
+public class SetSingleValueLeafNodeTest
+    extends TestCase
 {
-    final int hashCode;
-    final int value;
+    private final int HASH_CODE = 12;
+    private final ListCollisionSet<String> collisionSet = ListCollisionSet.instance();
+    private final SetSingleValueLeafNode<String> ten = new SetSingleValueLeafNode<>(HASH_CODE, "10");
 
-    public Checked(int hashCode,
-                   int value)
+    public void testOperations()
     {
-        this.hashCode = hashCode;
-        this.value = value;
-    }
+        assertEquals(false, ten.contains(collisionSet, 0, "10"));
+        assertEquals(false, ten.contains(collisionSet, 0, "20"));
+        assertEquals(true, ten.contains(collisionSet, HASH_CODE, "10"));
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Checked checked = (Checked)o;
-        return hashCode == checked.hashCode &&
-               value == checked.value;
-    }
+        assertSame(ten, ten.insert(collisionSet, HASH_CODE, "10"));
+        assertEquals("(2,0x3000,2,[],[(0x0,10),(0x0,20)])", ten.insert(collisionSet, HASH_CODE + 1, "20").toString());
+        assertEquals("(0xc,[10,20])", ten.insert(collisionSet, HASH_CODE, "20").toString());
 
-    @Override
-    public int hashCode()
-    {
-        return hashCode;
-    }
+        assertSame(ten, ten.insert(collisionSet, HASH_CODE, "10"));
 
-    public int value()
-    {
-        return value;
+        assertSame(ten, ten.delete(collisionSet, 0, "10"));
+        assertSame(ten, ten.delete(collisionSet, HASH_CODE, "20"));
+        assertSame(SetEmptyNode.of(), ten.delete(collisionSet, HASH_CODE, "10"));
+
+        assertEquals("(0x1e3,10)", ten.liftNode(99).toString());
     }
 }

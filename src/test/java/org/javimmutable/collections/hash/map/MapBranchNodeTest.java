@@ -153,37 +153,37 @@ public class MapBranchNodeTest
 
         MapNode<Checked, Integer> node = MapEmptyNode.of();
 
-        node = node.assign(collisionMap, a.hashCode, a, 100);
+        node = node.assign(collisionMap, a.hashCode(), a, 100);
         assertEquals(1, node.size(collisionMap));
-        assertSame(node, node.assign(collisionMap, a.hashCode, a, 100));
+        assertSame(node, node.assign(collisionMap, a.hashCode(), a, 100));
 
-        node = node.assign(collisionMap, b.hashCode, b, 100);
+        node = node.assign(collisionMap, b.hashCode(), b, 100);
         assertEquals(2, node.size(collisionMap));
-        assertSame(node, node.assign(collisionMap, a.hashCode, a, 100));
-        assertSame(node, node.assign(collisionMap, b.hashCode, b, 100));
-        assertSame(node, node.delete(collisionMap, z.hashCode, z));
-        assertEquals(null, node.find(collisionMap, z.hashCode, z).getValueOrNull());
-        assertEquals(null, node.getValueOr(collisionMap, z.hashCode, z, null));
+        assertSame(node, node.assign(collisionMap, a.hashCode(), a, 100));
+        assertSame(node, node.assign(collisionMap, b.hashCode(), b, 100));
+        assertSame(node, node.delete(collisionMap, z.hashCode(), z));
+        assertEquals(null, node.find(collisionMap, z.hashCode(), z).getValueOrNull());
+        assertEquals(null, node.getValueOr(collisionMap, z.hashCode(), z, null));
 
-        node = node.assign(collisionMap, c.hashCode, c, 100);
+        node = node.assign(collisionMap, c.hashCode(), c, 100);
         assertEquals(3, node.size(collisionMap));
 
-        node = node.assign(collisionMap, x.hashCode, x, 200);
+        node = node.assign(collisionMap, x.hashCode(), x, 200);
         assertEquals(4, node.size(collisionMap));
 
-        node = node.assign(collisionMap, y.hashCode, y, 200);
+        node = node.assign(collisionMap, y.hashCode(), y, 200);
         assertEquals(5, node.size(collisionMap));
 
-        assertSame(node, node.delete(collisionMap, d.hashCode, d));
-        assertSame(node, node.delete(collisionMap, e.hashCode, e));
-        assertSame(node, node.delete(collisionMap, z.hashCode, z));
+        assertSame(node, node.delete(collisionMap, d.hashCode(), d));
+        assertSame(node, node.delete(collisionMap, e.hashCode(), e));
+        assertSame(node, node.delete(collisionMap, z.hashCode(), z));
 
         node = node
-            .delete(collisionMap, x.hashCode, x)
-            .delete(collisionMap, a.hashCode, a)
-            .delete(collisionMap, b.hashCode, b)
-            .delete(collisionMap, c.hashCode, c)
-            .delete(collisionMap, y.hashCode, y);
+            .delete(collisionMap, x.hashCode(), x)
+            .delete(collisionMap, a.hashCode(), a)
+            .delete(collisionMap, b.hashCode(), b)
+            .delete(collisionMap, c.hashCode(), c)
+            .delete(collisionMap, y.hashCode(), y);
         assertEquals(0, node.size(collisionMap));
         assertSame(MapEmptyNode.of(), node);
     }

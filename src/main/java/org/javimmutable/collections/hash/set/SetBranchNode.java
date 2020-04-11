@@ -92,7 +92,7 @@ public class SetBranchNode<T>
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final SetNode<T>[] children = new SetNode[1];
-            children[0] = new SetSingleKeyLeafNode<>(remainder, key);
+            children[0] = new SetSingleValueLeafNode<>(remainder, key);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, 1);
         }
     }
@@ -109,7 +109,7 @@ public class SetBranchNode<T>
             final int remainder = hashCode >>> SHIFT;
             final int bit = 1 << index;
             final SetNode<T>[] children = new SetNode[1];
-            children[0] = SetMultiKeyLeafNode.createLeaf(collisionSet, remainder, value);
+            children[0] = SetMultiValueLeafNode.createLeaf(collisionSet, remainder, value);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, collisionSet.size(value));
         }
     }
@@ -168,7 +168,7 @@ public class SetBranchNode<T>
         final int bit = 1 << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
-            final SetNode<T> newChild = new SetSingleKeyLeafNode<>(remainder, hashKey);
+            final SetNode<T> newChild = new SetSingleValueLeafNode<>(remainder, hashKey);
             final SetNode<T>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new SetBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
         } else {
@@ -224,7 +224,7 @@ public class SetBranchNode<T>
                     if (collisionSet.size(value) == 0) {
                         return SetEmptyNode.of();
                     } else {
-                        return SetMultiKeyLeafNode.createLeaf(collisionSet, 0, value);
+                        return SetMultiValueLeafNode.createLeaf(collisionSet, 0, value);
                     }
                 } else {
                     final SetNode<T>[] newChildren = ArrayHelper.delete(this, children, childIndex);
@@ -253,7 +253,7 @@ public class SetBranchNode<T>
                 final SetBranchNode<T> branch = (SetBranchNode<T>)child;
                 if (collisionSet.size(branch.value) > 0 && branch.children.length == 0) {
                     assert newSize == collisionSet.size(branch.value);
-                    return SetMultiKeyLeafNode.createLeaf(collisionSet, Integer.numberOfTrailingZeros(bitmask), branch.value);
+                    return SetMultiValueLeafNode.createLeaf(collisionSet, Integer.numberOfTrailingZeros(bitmask), branch.value);
                 }
             }
         }
@@ -390,7 +390,7 @@ public class SetBranchNode<T>
             throw new IllegalStateException(String.format("incorrect size: expected=%d actual=%d", computeSize(collisionSet), size));
         }
         if (collisionSet.size(value) == 0 && children.length == 1) {
-            if (children[0] instanceof SetMultiKeyLeafNode || children[0] instanceof SetSingleKeyLeafNode) {
+            if (children[0] instanceof SetMultiValueLeafNode || children[0] instanceof SetSingleValueLeafNode) {
                 // we should have replaced ourselves with a leaf
                 throw new IllegalStateException(String.format("expected leaf but was %s", children[0].getClass().getName()));
             }

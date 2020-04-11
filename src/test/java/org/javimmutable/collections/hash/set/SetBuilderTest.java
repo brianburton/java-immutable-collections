@@ -33,45 +33,27 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.hash.map;
+package org.javimmutable.collections.hash.set;
 
-import javax.annotation.concurrent.Immutable;
+import junit.framework.TestCase;
 
-@Immutable
-public class Checked
+import java.util.Random;
+
+public class SetBuilderTest
+    extends TestCase
 {
-    final int hashCode;
-    final int value;
-
-    public Checked(int hashCode,
-                   int value)
+    public void testRandom()
     {
-        this.hashCode = hashCode;
-        this.value = value;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) {
-            return true;
+        final Random r = new Random(1032946);
+        for (int i = 1; i <= 5000; ++i) {
+            SetBuilder<Integer> builder = new SetBuilder<>();
+            final int size = 1 + r.nextInt(1000);
+            for (int k = 1; k <= size; ++k) {
+                final Integer key = r.nextInt(5 * size);
+                final Integer value = r.nextInt();
+                builder.add(key);
+            }
+            builder.build().checkInvariants(builder.getCollisionSet());
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Checked checked = (Checked)o;
-        return hashCode == checked.hashCode &&
-               value == checked.value;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return hashCode;
-    }
-
-    public int value()
-    {
-        return value;
     }
 }

@@ -71,7 +71,7 @@ public class SetEmptyNode<T>
                              int hashCode,
                              @Nonnull T value)
     {
-        return new SetSingleKeyLeafNode<>(hashCode, value);
+        return new SetSingleValueLeafNode<>(hashCode, value);
     }
 
     @Nonnull
