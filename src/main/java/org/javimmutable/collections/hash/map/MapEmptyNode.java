@@ -48,12 +48,13 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class MapEmptyNode<K, V>
     implements MapNode<K, V>
 {
     private static final MapEmptyNode EMPTY = new MapEmptyNode();
-
 
     @SuppressWarnings("unchecked")
     public static <K, V> MapNode<K, V> of()

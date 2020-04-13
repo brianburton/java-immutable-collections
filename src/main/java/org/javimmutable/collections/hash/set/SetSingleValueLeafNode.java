@@ -44,6 +44,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 /**
@@ -51,6 +52,7 @@ import java.util.Objects;
  * below this node replaces it with a branch node instead.  These exist to shorten the
  * height of the overall tree structure when hashCodes are dispersed.
  */
+@Immutable
 public class SetSingleValueLeafNode<T>
     implements SetNode<T>
 {

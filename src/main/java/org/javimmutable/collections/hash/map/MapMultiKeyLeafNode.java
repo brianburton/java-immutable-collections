@@ -48,12 +48,14 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree
  * below this node replaces it with a normal node instead.  These exist to shorten the
  * height of the overall tree structure when hashCodes are dispersed.
  */
+@Immutable
 public class MapMultiKeyLeafNode<K, V>
     implements MapNode<K, V>
 {

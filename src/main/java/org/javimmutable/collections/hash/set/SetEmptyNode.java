@@ -44,7 +44,9 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class SetEmptyNode<T>
     implements SetNode<T>
 {
