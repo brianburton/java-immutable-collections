@@ -211,7 +211,7 @@ public class SetBuilder<T>
                        @Nonnull T value)
         {
             assert hashCode != leaf.hashCode;
-            children = new Node[32];
+            children = new Node[1 << SHIFT];
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
@@ -260,14 +260,14 @@ public class SetBuilder<T>
                     count += 1;
                 }
             }
-            int bitmask = 0;
-            int bit = 1;
+            long bitmask = 0;
+            long bit = 1;
             final SetNode<T>[] nodes = new SetNode[count];
             int index = 0;
             for (Node<T> child : children) {
                 if (child != null) {
-                    final SetNode<T> hamt = child.toSet(collisionSet);
-                    nodes[index++] = hamt;
+                    final SetNode<T> node = child.toSet(collisionSet);
+                    nodes[index++] = node;
                     bitmask |= bit;
                 }
                 bit <<= 1;

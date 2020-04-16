@@ -59,21 +59,22 @@ public class SetBranchNode<T>
     @SuppressWarnings("rawtypes")
     private static final SetBranchNode[] EMPTY_NODES = new SetBranchNode[0];
 
-    static final int SHIFT = 5;
-    static final int MASK = 0x1f;
+    static final int SHIFT = 6;
+    static final int MASK = 0x3f;
 
-    private final int bitmask;
+    private final long bitmask;
     @Nonnull
     private final CollisionSet.Node value;
     @Nonnull
     private final SetNode<T>[] children;
     private final int size;
 
-    SetBranchNode(int bitmask,
+    SetBranchNode(long bitmask,
                   @Nonnull CollisionSet.Node value,
                   @Nonnull SetNode<T>[] children,
                   int size)
     {
+        assert countBits(bitmask) == children.length;
         this.bitmask = bitmask;
         this.value = value;
         this.children = children;
@@ -90,7 +91,7 @@ public class SetBranchNode<T>
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
-            final int bit = 1 << index;
+            final long bit = 1L << index;
             final SetNode<T>[] children = new SetNode[1];
             children[0] = new SetSingleValueLeafNode<>(remainder, key);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, 1);
@@ -107,7 +108,7 @@ public class SetBranchNode<T>
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
-            final int bit = 1 << index;
+            final long bit = 1L << index;
             final SetNode<T>[] children = new SetNode[1];
             children[0] = SetMultiValueLeafNode.createLeaf(collisionSet, remainder, value);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, collisionSet.size(value));
@@ -136,8 +137,8 @@ public class SetBranchNode<T>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
-        final int bitmask = this.bitmask;
+        final long bit = 1L << index;
+        final long bitmask = this.bitmask;
         if ((bitmask & bit) == 0) {
             return false;
         } else {
@@ -153,7 +154,7 @@ public class SetBranchNode<T>
                              @Nonnull T hashKey)
     {
         final SetNode<T>[] children = this.children;
-        final int bitmask = this.bitmask;
+        final long bitmask = this.bitmask;
         final CollisionSet.Node thisValue = this.value;
         if (hashCode == 0) {
             final CollisionSet.Node newValue = collisionSet.insert(thisValue, hashKey);
@@ -165,7 +166,7 @@ public class SetBranchNode<T>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
+        final long bit = 1L << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             final SetNode<T> newChild = new SetSingleValueLeafNode<>(remainder, hashKey);
@@ -189,7 +190,7 @@ public class SetBranchNode<T>
                              int hashCode,
                              @Nonnull T hashKey)
     {
-        final int bitmask = this.bitmask;
+        final long bitmask = this.bitmask;
         final SetNode<T>[] children = this.children;
         final CollisionSet.Node value = this.value;
         if (hashCode == 0) {
@@ -209,7 +210,7 @@ public class SetBranchNode<T>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
+        final long bit = 1L << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             return this;
@@ -238,7 +239,7 @@ public class SetBranchNode<T>
     }
 
     private SetNode<T> createForDelete(@Nonnull CollisionSet<T> collisionSet,
-                                       int bitmask,
+                                       long bitmask,
                                        CollisionSet.Node value,
                                        @Nonnull SetNode<T>[] children,
                                        int newSize)
@@ -247,13 +248,13 @@ public class SetBranchNode<T>
             final SetNode<T> child = children[0];
             if (child.isLeaf()) {
                 assert newSize == child.size(collisionSet);
-                return child.liftNode(Integer.numberOfTrailingZeros(bitmask));
+                return child.liftNode(Long.numberOfTrailingZeros(bitmask));
             }
             if (child instanceof SetBranchNode) {
                 final SetBranchNode<T> branch = (SetBranchNode<T>)child;
                 if (collisionSet.size(branch.value) > 0 && branch.children.length == 0) {
                     assert newSize == collisionSet.size(branch.value);
-                    return SetMultiValueLeafNode.createLeaf(collisionSet, Integer.numberOfTrailingZeros(bitmask), branch.value);
+                    return SetMultiValueLeafNode.createLeaf(collisionSet, Long.numberOfTrailingZeros(bitmask), branch.value);
                 }
             }
         }
@@ -273,10 +274,10 @@ public class SetBranchNode<T>
         throw new UnsupportedOperationException();
     }
 
-    private static int realIndex(int bitmask,
-                                 int bit)
+    private static int realIndex(long bitmask,
+                                 long bit)
     {
-        return Integer.bitCount(bitmask & (bit - 1));
+        return Long.bitCount(bitmask & (bit - 1));
     }
 
     @SuppressWarnings("unchecked")
@@ -371,7 +372,7 @@ public class SetBranchNode<T>
     @Override
     public String toString()
     {
-        return "(" + size + ",0x" + Integer.toHexString(bitmask) + "," + children.length + "," + value + "," + ToStringHelper.arrayToString(children) + ")";
+        return "(" + size + ",0x" + Long.toHexString(bitmask) + "," + children.length + "," + value + "," + ToStringHelper.arrayToString(children) + ")";
     }
 
     private int computeSize(@Nonnull CollisionSet<T> collisionSet)
@@ -421,5 +422,17 @@ public class SetBranchNode<T>
                 return 1 + children.length;
             }
         };
+    }
+
+    private static int countBits(long bitmask)
+    {
+        int count = 0;
+        while (bitmask != 0) {
+            if ((bitmask & 1L) == 1L) {
+                count += 1;
+            }
+            bitmask >>>= 1;
+        }
+        return count;
     }
 }

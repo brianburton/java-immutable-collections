@@ -403,8 +403,9 @@ public final class StandardJImmutableSetTests
                             expected.add(num);
                             values = values.insert(num);
                         }
+                        JImmutableSet<Integer> newSet = set.insertAll(values);
                         set = set.insertAll(values);
-                        assertEquals(true, set.containsAll(values));
+                        assertEquals(true, newSet.containsAll(values));
                         break;
                 }
                 assertEquals(expected.size(), set.size());

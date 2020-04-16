@@ -138,9 +138,9 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
         if (ordering == Ordering.HASH) {
-            StandardIteratorTests.listIteratorTest(Arrays.asList(100, 18, 87), map.values(1).iterator());
+            StandardIteratorTests.listIteratorTest(Arrays.asList(18, 87, 100), map.values(1).iterator());
             StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(7, 300, 14), map.values(3).iterator());
+            StandardIteratorTests.listIteratorTest(Arrays.asList(7, 14, 300), map.values(3).iterator());
             StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
         } else if (ordering == Ordering.REVERSED) {
             StandardIteratorTests.listIteratorTest(Arrays.asList(100, 87, 18), map.values(1).iterator());

@@ -61,6 +61,6 @@ public class SetSingleValueLeafNodeTest
         assertSame(ten, ten.delete(collisionSet, HASH_CODE, "20"));
         assertSame(SetEmptyNode.of(), ten.delete(collisionSet, HASH_CODE, "10"));
 
-        assertEquals("(0x1e3,10)", ten.liftNode(99).toString());
+        assertEquals("(0x363,10)", ten.liftNode(99).toString());
     }
 }
