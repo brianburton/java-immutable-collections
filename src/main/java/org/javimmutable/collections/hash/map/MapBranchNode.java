@@ -62,17 +62,17 @@ public class MapBranchNode<K, V>
 {
     private static final MapBranchNode[] EMPTY_NODES = new MapBranchNode[0];
 
-    static final int SHIFT = 5;
-    static final int MASK = 0x1f;
+    static final int SHIFT = 6;
+    static final int MASK = 0x3f;
 
-    private final int bitmask;
+    private final long bitmask;
     @Nonnull
     private final CollisionMap.Node value;
     @Nonnull
     private final MapNode<K, V>[] children;
     private final int size;
 
-    MapBranchNode(int bitmask,
+    MapBranchNode(long bitmask,
                   @Nonnull CollisionMap.Node value,
                   @Nonnull MapNode<K, V>[] children,
                   int size)
@@ -94,7 +94,7 @@ public class MapBranchNode<K, V>
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
-            final int bit = 1 << index;
+            final long bit = 1L << index;
             final MapNode<K, V>[] children = new MapNode[1];
             children[0] = new MapSingleKeyLeafNode<>(remainder, key, value);
             return new MapBranchNode<>(bit, collisionMap.empty(), children, 1);
@@ -111,7 +111,7 @@ public class MapBranchNode<K, V>
         } else {
             final int index = hashCode & MASK;
             final int remainder = hashCode >>> SHIFT;
-            final int bit = 1 << index;
+            final long bit = 1L << index;
             final MapNode<K, V>[] children = new MapNode[1];
             children[0] = MapMultiKeyLeafNode.createLeaf(collisionMap, remainder, value);
             return new MapBranchNode<>(bit, collisionMap.empty(), children, collisionMap.size(value));
@@ -140,8 +140,8 @@ public class MapBranchNode<K, V>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
-        final int bitmask = this.bitmask;
+        final long bit = 1L << index;
+        final long bitmask = this.bitmask;
         if ((bitmask & bit) == 0) {
             return Holders.of();
         } else {
@@ -161,8 +161,8 @@ public class MapBranchNode<K, V>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
-        final int bitmask = this.bitmask;
+        final long bit = 1L << index;
+        final long bitmask = this.bitmask;
         if ((bitmask & bit) == 0) {
             return defaultValue;
         } else {
@@ -179,7 +179,7 @@ public class MapBranchNode<K, V>
                                 @Nullable V value)
     {
         final MapNode<K, V>[] children = this.children;
-        final int bitmask = this.bitmask;
+        final long bitmask = this.bitmask;
         final CollisionMap.Node thisValue = this.value;
         if (hashCode == 0) {
             final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, value);
@@ -191,7 +191,7 @@ public class MapBranchNode<K, V>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
+        final long bit = 1L << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             final MapNode<K, V> newChild = new MapSingleKeyLeafNode<>(remainder, hashKey, value);
@@ -217,7 +217,7 @@ public class MapBranchNode<K, V>
                                 @Nonnull Func1<Holder<V>, V> generator)
     {
         final MapNode<K, V>[] children = this.children;
-        final int bitmask = this.bitmask;
+        final long bitmask = this.bitmask;
         final CollisionMap.Node thisValue = this.value;
         if (hashCode == 0) {
             final CollisionMap.Node newValue = collisionMap.update(thisValue, hashKey, generator);
@@ -229,7 +229,7 @@ public class MapBranchNode<K, V>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
+        final long bit = 1L << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             final MapNode<K, V> newChild = new MapSingleKeyLeafNode<>(remainder, hashKey, generator.apply(Holders.of()));
@@ -253,7 +253,7 @@ public class MapBranchNode<K, V>
                                 int hashCode,
                                 @Nonnull K hashKey)
     {
-        final int bitmask = this.bitmask;
+        final long bitmask = this.bitmask;
         final MapNode<K, V>[] children = this.children;
         final CollisionMap.Node value = this.value;
         if (hashCode == 0) {
@@ -273,7 +273,7 @@ public class MapBranchNode<K, V>
         }
         final int index = hashCode & MASK;
         final int remainder = hashCode >>> SHIFT;
-        final int bit = 1 << index;
+        final long bit = 1L << index;
         final int childIndex = realIndex(bitmask, bit);
         if ((bitmask & bit) == 0) {
             return this;
@@ -302,7 +302,7 @@ public class MapBranchNode<K, V>
     }
 
     private MapNode<K, V> createForDelete(@Nonnull CollisionMap<K, V> collisionMap,
-                                          int bitmask,
+                                          long bitmask,
                                           CollisionMap.Node value,
                                           @Nonnull MapNode<K, V>[] children,
                                           int newSize)
@@ -311,13 +311,13 @@ public class MapBranchNode<K, V>
             final MapNode<K, V> child = children[0];
             if (child.isLeaf()) {
                 assert newSize == child.size(collisionMap);
-                return child.liftNode(Integer.numberOfTrailingZeros(bitmask));
+                return child.liftNode(Long.numberOfTrailingZeros(bitmask));
             }
             if (child instanceof MapBranchNode) {
                 final MapBranchNode<K, V> branch = (MapBranchNode<K, V>)child;
                 if (collisionMap.size(branch.value) > 0 && branch.children.length == 0) {
                     assert newSize == collisionMap.size(branch.value);
-                    return MapMultiKeyLeafNode.createLeaf(collisionMap, Integer.numberOfTrailingZeros(bitmask), branch.value);
+                    return MapMultiKeyLeafNode.createLeaf(collisionMap, Long.numberOfTrailingZeros(bitmask), branch.value);
                 }
             }
         }
@@ -337,10 +337,10 @@ public class MapBranchNode<K, V>
         throw new UnsupportedOperationException();
     }
 
-    private static int realIndex(int bitmask,
-                                 int bit)
+    private static int realIndex(long bitmask,
+                                 long bit)
     {
-        return Integer.bitCount(bitmask & (bit - 1));
+        return Long.bitCount(bitmask & (bit - 1));
     }
 
     @SuppressWarnings("unchecked")
@@ -435,7 +435,7 @@ public class MapBranchNode<K, V>
     @Override
     public String toString()
     {
-        return "(" + size + ",0x" + Integer.toHexString(bitmask) + "," + children.length + "," + value + "," + ToStringHelper.arrayToString(children) + ")";
+        return "(" + size + ",0x" + Long.toHexString(bitmask) + "," + children.length + "," + value + "," + ToStringHelper.arrayToString(children) + ")";
     }
 
     private int computeSize(@Nonnull CollisionMap<K, V> collisionMap)

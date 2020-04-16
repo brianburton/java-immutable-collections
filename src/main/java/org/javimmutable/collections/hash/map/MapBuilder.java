@@ -217,7 +217,7 @@ public class MapBuilder<K, V>
                        V value)
         {
             assert hashCode != leaf.hashCode;
-            children = new Node[32];
+            children = new Node[1 << SHIFT];
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
@@ -267,8 +267,8 @@ public class MapBuilder<K, V>
                     count += 1;
                 }
             }
-            int bitmask = 0;
-            int bit = 1;
+            long bitmask = 0;
+            long bit = 1;
             final MapNode<K, V>[] nodes = new MapNode[count];
             int index = 0;
             for (Node<K, V> child : children) {

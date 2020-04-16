@@ -70,6 +70,6 @@ public class MapSingleKeyLeafNodeTest
         assertSame(ten, ten.delete(collisionMap, HASH_CODE, "20"));
         assertSame(MapEmptyNode.of(), ten.delete(collisionMap, HASH_CODE, "10"));
 
-        assertEquals("(0x1e3,10,ten)", ten.liftNode(99).toString());
+        assertEquals("(0x363,10,ten)", ten.liftNode(99).toString());
     }
 }
