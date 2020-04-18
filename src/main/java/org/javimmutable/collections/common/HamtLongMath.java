@@ -3,7 +3,7 @@ package org.javimmutable.collections.common;
 /**
  * Utility class that supports math related to Hash Array Mapped Tries
  * that use 64 element arrays.  All of the methods are static and short
- * so they should wind up being inlined by compiler of jit.
+ * so they should wind up being inlined by compiler or jit.
  */
 public final class HamtLongMath
 {
@@ -71,7 +71,7 @@ public final class HamtLongMath
     {
         int count = 0;
         while (bitmask != 0) {
-            if ((bitmask & 1L) == 1L) {
+            if (bitIsPresent(bitmask, 1L)) {
                 count += 1;
             }
             bitmask >>>= 1;
