@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.javimmutable.collections.hash.map.MapBranchNode.*;
+import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @NotThreadSafe
 public class MapBuilder<K, V>
@@ -152,7 +152,7 @@ public class MapBuilder<K, V>
 
         private Leaf(@Nonnull Leaf<K, V> other)
         {
-            this.hashCode = other.hashCode >>> SHIFT;
+            this.hashCode = remainderFromHashCode(other.hashCode);
             this.values = other.values;
             size = other.size;
         }
@@ -217,12 +217,12 @@ public class MapBuilder<K, V>
                        V value)
         {
             assert hashCode != leaf.hashCode;
-            children = new Node[1 << SHIFT];
+            children = new Node[ARRAY_SIZE];
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
                 values = collisionMap.empty();
-                children[leaf.hashCode & MASK] = new Leaf<>(leaf);
+                children[indexFromHashCode(leaf.hashCode)] = new Leaf<>(leaf);
             }
             size = leaf.size;
             add(collisionMap, hashCode, key, value);
@@ -240,15 +240,15 @@ public class MapBuilder<K, V>
                 values = collisionMap.update(values, key, value);
                 size = size - beforeSize + collisionMap.size(values);
             } else {
-                final int index = hashCode & MASK;
+                final int index = indexFromHashCode(hashCode);
                 final Node<K, V> beforeChild = children[index];
                 if (beforeChild == null) {
-                    children[index] = new Leaf<>(collisionMap, hashCode >>> SHIFT, key, value);
+                    children[index] = new Leaf<>(collisionMap, remainderFromHashCode(hashCode), key, value);
                     size += 1;
                 } else {
                     // note: afterChild might be same object as beforeChild so capture size now
                     final int beforeSize = beforeChild.size();
-                    final Node<K, V> afterChild = beforeChild.add(collisionMap, hashCode >>> SHIFT, key, value);
+                    final Node<K, V> afterChild = beforeChild.add(collisionMap, remainderFromHashCode(hashCode), key, value);
                     children[index] = afterChild;
                     size = size - beforeSize + afterChild.size();
                 }

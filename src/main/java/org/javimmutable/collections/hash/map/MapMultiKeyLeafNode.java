@@ -50,6 +50,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree
  * below this node replaces it with a normal node instead.  These exist to shorten the
@@ -194,7 +196,7 @@ public class MapMultiKeyLeafNode<K, V>
     @Nonnull
     public MapNode<K, V> liftNode(int index)
     {
-        return new MapMultiKeyLeafNode<>(hashCode << MapBranchNode.SHIFT | index, value);
+        return new MapMultiKeyLeafNode<>(liftedHashCode(hashCode, index), value);
     }
 
     @Override

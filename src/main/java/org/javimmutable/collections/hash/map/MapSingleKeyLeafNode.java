@@ -52,6 +52,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 import static org.javimmutable.collections.MapEntry.entry;
+import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
 
 /**
  * HamtNode that stores only one key/value pair.  Any assign that would progress down the tree
@@ -196,7 +197,7 @@ public class MapSingleKeyLeafNode<K, V>
     @Nonnull
     public MapNode<K, V> liftNode(int index)
     {
-        return new MapSingleKeyLeafNode<>(hashCode << MapBranchNode.SHIFT | index, key, value);
+        return new MapSingleKeyLeafNode<>(liftedHashCode(hashCode, index), key, value);
     }
 
     @Override
