@@ -51,6 +51,8 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static org.javimmutable.collections.common.HamtLongMath.*;
+
 @Immutable
 public class SetBranchNode<T>
     implements ArrayHelper.Allocator<SetNode<T>>,
@@ -58,9 +60,6 @@ public class SetBranchNode<T>
 {
     @SuppressWarnings("rawtypes")
     private static final SetBranchNode[] EMPTY_NODES = new SetBranchNode[0];
-
-    static final int SHIFT = 6;
-    static final int MASK = 0x3f;
 
     private final long bitmask;
     @Nonnull
@@ -74,7 +73,7 @@ public class SetBranchNode<T>
                   @Nonnull SetNode<T>[] children,
                   int size)
     {
-        assert countBits(bitmask) == children.length;
+        assert bitCount(bitmask) == children.length;
         this.bitmask = bitmask;
         this.value = value;
         this.children = children;
@@ -89,9 +88,9 @@ public class SetBranchNode<T>
         if (hashCode == 0) {
             return new SetBranchNode<T>(0, collisionSet.single(key), EMPTY_NODES, 1);
         } else {
-            final int index = hashCode & MASK;
-            final int remainder = hashCode >>> SHIFT;
-            final long bit = 1L << index;
+            final int index = indexFromHashCode(hashCode);
+            final int remainder = remainderFromHashCode(hashCode);
+            final long bit = bitFromIndex(index);
             final SetNode<T>[] children = new SetNode[1];
             children[0] = new SetSingleValueLeafNode<>(remainder, key);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, 1);
@@ -106,9 +105,9 @@ public class SetBranchNode<T>
         if (hashCode == 0) {
             return new SetBranchNode<T>(0, value, EMPTY_NODES, collisionSet.size(value));
         } else {
-            final int index = hashCode & MASK;
-            final int remainder = hashCode >>> SHIFT;
-            final long bit = 1L << index;
+            final int index = indexFromHashCode(hashCode);
+            final int remainder = remainderFromHashCode(hashCode);
+            final long bit = bitFromIndex(index);
             final SetNode<T>[] children = new SetNode[1];
             children[0] = SetMultiValueLeafNode.createLeaf(collisionSet, remainder, value);
             return new SetBranchNode<>(bit, collisionSet.empty(), children, collisionSet.size(value));
@@ -135,14 +134,14 @@ public class SetBranchNode<T>
         if (hashCode == 0) {
             return collisionSet.contains(value, hashKey);
         }
-        final int index = hashCode & MASK;
-        final int remainder = hashCode >>> SHIFT;
-        final long bit = 1L << index;
+        final int index = indexFromHashCode(hashCode);
+        final int remainder = remainderFromHashCode(hashCode);
+        final long bit = bitFromIndex(index);
         final long bitmask = this.bitmask;
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             return false;
         } else {
-            final int childIndex = realIndex(bitmask, bit);
+            final int childIndex = arrayIndexForBit(bitmask, bit);
             return children[childIndex].contains(collisionSet, remainder, hashKey);
         }
     }
@@ -164,14 +163,14 @@ public class SetBranchNode<T>
                 return new SetBranchNode<>(bitmask, newValue, children, size - collisionSet.size(thisValue) + collisionSet.size(newValue));
             }
         }
-        final int index = hashCode & MASK;
-        final int remainder = hashCode >>> SHIFT;
-        final long bit = 1L << index;
-        final int childIndex = realIndex(bitmask, bit);
-        if ((bitmask & bit) == 0) {
+        final int index = indexFromHashCode(hashCode);
+        final int remainder = remainderFromHashCode(hashCode);
+        final long bit = bitFromIndex(index);
+        final int childIndex = arrayIndexForBit(bitmask, bit);
+        if (bitIsAbsent(bitmask, bit)) {
             final SetNode<T> newChild = new SetSingleValueLeafNode<>(remainder, hashKey);
             final SetNode<T>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
-            return new SetBranchNode<>(bitmask | bit, thisValue, newChildren, size + 1);
+            return new SetBranchNode<>(addBit(bitmask, bit), thisValue, newChildren, size + 1);
         } else {
             final SetNode<T> child = children[childIndex];
             final SetNode<T> newChild = child.insert(collisionSet, remainder, hashKey);
@@ -208,11 +207,11 @@ public class SetBranchNode<T>
                 return new SetBranchNode<>(bitmask, newValue, children, newSize);
             }
         }
-        final int index = hashCode & MASK;
-        final int remainder = hashCode >>> SHIFT;
-        final long bit = 1L << index;
-        final int childIndex = realIndex(bitmask, bit);
-        if ((bitmask & bit) == 0) {
+        final int index = indexFromHashCode(hashCode);
+        final int remainder = remainderFromHashCode(hashCode);
+        final long bit = bitFromIndex(index);
+        final int childIndex = arrayIndexForBit(bitmask, bit);
+        if (bitIsAbsent(bitmask, bit)) {
             return this;
         } else {
             final SetNode<T> child = children[childIndex];
@@ -229,7 +228,7 @@ public class SetBranchNode<T>
                     }
                 } else {
                     final SetNode<T>[] newChildren = ArrayHelper.delete(this, children, childIndex);
-                    return createForDelete(collisionSet, bitmask & ~bit, value, newChildren, newSize);
+                    return createForDelete(collisionSet, removeBit(bitmask, bit), value, newChildren, newSize);
                 }
             } else {
                 final SetNode<T>[] newChildren = ArrayHelper.assign(children, childIndex, newChild);
@@ -272,12 +271,6 @@ public class SetBranchNode<T>
     public SetNode<T> liftNode(int index)
     {
         throw new UnsupportedOperationException();
-    }
-
-    private static int realIndex(long bitmask,
-                                 long bit)
-    {
-        return Long.bitCount(bitmask & (bit - 1));
     }
 
     @SuppressWarnings("unchecked")
@@ -422,17 +415,5 @@ public class SetBranchNode<T>
                 return 1 + children.length;
             }
         };
-    }
-
-    private static int countBits(long bitmask)
-    {
-        int count = 0;
-        while (bitmask != 0) {
-            if ((bitmask & 1L) == 1L) {
-                count += 1;
-            }
-            bitmask >>>= 1;
-        }
-        return count;
     }
 }

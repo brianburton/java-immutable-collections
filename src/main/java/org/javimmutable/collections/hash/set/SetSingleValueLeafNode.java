@@ -47,6 +47,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+
 /**
  * SetNode that stores only one value.  Any assign that would progress down the tree
  * below this node replaces it with a branch node instead.  These exist to shorten the
@@ -133,7 +135,7 @@ public class SetSingleValueLeafNode<T>
     @Nonnull
     public SetNode<T> liftNode(int index)
     {
-        return new SetSingleValueLeafNode<>(hashCode << SetBranchNode.SHIFT | index, value);
+        return new SetSingleValueLeafNode<>(liftedHashCode(hashCode, index), value);
     }
 
     @Override

@@ -46,6 +46,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree
  * below this node replaces it with a normal node instead.  These exist to shorten the
@@ -147,7 +149,7 @@ public class SetMultiValueLeafNode<T>
     @Nonnull
     public SetNode<T> liftNode(int index)
     {
-        return new SetMultiValueLeafNode<>(hashCode << SetBranchNode.SHIFT | index, values);
+        return new SetMultiValueLeafNode<>(liftedHashCode(hashCode, index), values);
     }
 
     @Override

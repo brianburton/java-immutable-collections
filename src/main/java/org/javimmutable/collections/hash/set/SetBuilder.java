@@ -42,8 +42,7 @@ import org.javimmutable.collections.tree.TreeCollisionSet;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.javimmutable.collections.hash.set.SetBranchNode.*;
-
+import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @NotThreadSafe
 public class SetBuilder<T>
@@ -149,7 +148,7 @@ public class SetBuilder<T>
 
         private Leaf(@Nonnull Leaf<T> other)
         {
-            this.hashCode = other.hashCode >>> SHIFT;
+            this.hashCode = remainderFromHashCode(other.hashCode);
             this.values = other.values;
             size = other.size;
         }
@@ -211,12 +210,12 @@ public class SetBuilder<T>
                        @Nonnull T value)
         {
             assert hashCode != leaf.hashCode;
-            children = new Node[1 << SHIFT];
+            children = new Node[ARRAY_SIZE];
             if (leaf.hashCode == 0) {
                 values = leaf.values;
             } else {
                 values = collisionSet.empty();
-                children[leaf.hashCode & MASK] = new Leaf<>(leaf);
+                children[indexFromHashCode(leaf.hashCode)] = new Leaf<>(leaf);
             }
             size = leaf.size;
             add(collisionSet, hashCode, value);
@@ -233,15 +232,15 @@ public class SetBuilder<T>
                 values = collisionSet.insert(values, value);
                 size = size - beforeSize + collisionSet.size(values);
             } else {
-                final int index = hashCode & MASK;
+                final int index = indexFromHashCode(hashCode);
                 final Node<T> beforeChild = children[index];
                 if (beforeChild == null) {
-                    children[index] = new Leaf<>(collisionSet, hashCode >>> SHIFT, value);
+                    children[index] = new Leaf<>(collisionSet, remainderFromHashCode(hashCode), value);
                     size += 1;
                 } else {
                     // note: afterChild might be same object as beforeChild so capture size now
                     final int beforeSize = beforeChild.size();
-                    final Node<T> afterChild = beforeChild.add(collisionSet, hashCode >>> SHIFT, value);
+                    final Node<T> afterChild = beforeChild.add(collisionSet, remainderFromHashCode(hashCode), value);
                     children[index] = afterChild;
                     size = size - beforeSize + afterChild.size();
                 }
@@ -268,7 +267,7 @@ public class SetBuilder<T>
                 if (child != null) {
                     final SetNode<T> node = child.toSet(collisionSet);
                     nodes[index++] = node;
-                    bitmask |= bit;
+                    bitmask = addBit(bitmask, bit);
                 }
                 bit <<= 1;
             }

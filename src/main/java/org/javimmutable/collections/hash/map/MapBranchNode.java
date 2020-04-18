@@ -142,7 +142,7 @@ public class MapBranchNode<K, V>
         final int remainder = remainderFromHashCode(hashCode);
         final long bit = bitFromIndex(index);
         final long bitmask = this.bitmask;
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             return Holders.of();
         } else {
             final int childIndex = arrayIndexForBit(bitmask, bit);
@@ -163,7 +163,7 @@ public class MapBranchNode<K, V>
         final int remainder = remainderFromHashCode(hashCode);
         final long bit = bitFromIndex(index);
         final long bitmask = this.bitmask;
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             return defaultValue;
         } else {
             final int childIndex = arrayIndexForBit(bitmask, bit);
@@ -193,7 +193,7 @@ public class MapBranchNode<K, V>
         final int remainder = remainderFromHashCode(hashCode);
         final long bit = bitFromIndex(index);
         final int childIndex = arrayIndexForBit(bitmask, bit);
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             final MapNode<K, V> newChild = new MapSingleKeyLeafNode<>(remainder, hashKey, value);
             final MapNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new MapBranchNode<>(addBit(bitmask, bit), thisValue, newChildren, size + 1);
@@ -231,7 +231,7 @@ public class MapBranchNode<K, V>
         final int remainder = remainderFromHashCode(hashCode);
         final long bit = bitFromIndex(index);
         final int childIndex = arrayIndexForBit(bitmask, bit);
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             final MapNode<K, V> newChild = new MapSingleKeyLeafNode<>(remainder, hashKey, generator.apply(Holders.of()));
             final MapNode<K, V>[] newChildren = ArrayHelper.insert(this, children, childIndex, newChild);
             return new MapBranchNode<>(addBit(bitmask, bit), thisValue, newChildren, size + 1);
@@ -275,7 +275,7 @@ public class MapBranchNode<K, V>
         final int remainder = remainderFromHashCode(hashCode);
         final long bit = bitFromIndex(index);
         final int childIndex = arrayIndexForBit(bitmask, bit);
-        if ((bitmask & bit) == 0) {
+        if (bitIsAbsent(bitmask, bit)) {
             return this;
         } else {
             final MapNode<K, V> child = children[childIndex];

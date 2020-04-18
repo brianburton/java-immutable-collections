@@ -37,6 +37,18 @@ public final class HamtLongMath
         return hashCode << SHIFT | index;
     }
 
+    public static boolean bitIsAbsent(long bitmask,
+                                      long bit)
+    {
+        return (bitmask & bit) == 0L;
+    }
+
+    public static boolean bitIsPresent(long bitmask,
+                                       long bit)
+    {
+        return (bitmask & bit) != 0L;
+    }
+
     public static long addBit(long bitmask,
                               long bit)
     {
@@ -53,5 +65,17 @@ public final class HamtLongMath
                                        long bit)
     {
         return Long.bitCount(bitmask & (bit - 1));
+    }
+
+    public static int bitCount(long bitmask)
+    {
+        int count = 0;
+        while (bitmask != 0) {
+            if ((bitmask & 1L) == 1L) {
+                count += 1;
+            }
+            bitmask >>>= 1;
+        }
+        return count;
     }
 }
