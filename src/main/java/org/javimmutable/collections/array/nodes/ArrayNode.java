@@ -12,8 +12,6 @@ public abstract class ArrayNode<T>
     static final int LEAF_SHIFTS = 0;
     static final int PARENT_SHIFTS = 1;
 
-    public abstract int valueCount();
-
     public abstract boolean isEmpty();
 
     public abstract T getValueOr(int shiftCount,
@@ -30,10 +28,4 @@ public abstract class ArrayNode<T>
 
     public abstract ArrayNode<T> delete(int shiftCount,
                                         int index);
-
-    @Override
-    public int iterableSize()
-    {
-        return valueCount();
-    }
 }

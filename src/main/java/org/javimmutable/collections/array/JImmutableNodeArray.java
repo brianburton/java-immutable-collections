@@ -131,7 +131,7 @@ public class JImmutableNodeArray<T>
         if (bitIsPresent(bitmask, bit)) {
             final ArrayNode<T> child = children[arrayIndex];
             final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
-            final int newSize = size - child.valueCount() + newChild.valueCount();
+            final int newSize = size - child.iterableSize() + newChild.iterableSize();
             final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
             return new JImmutableNodeArray<>(bitmask, newChildren, newSize);
         } else {
@@ -153,7 +153,7 @@ public class JImmutableNodeArray<T>
             final ArrayNode<T> child = children[arrayIndex];
             final ArrayNode<T> newChild = child.delete(ArrayNode.ROOT_SHIFTS, nodeIndex);
             if (newChild != child) {
-                final int newSize = size - child.valueCount() + newChild.valueCount();
+                final int newSize = size - child.iterableSize() + newChild.iterableSize();
                 if (newSize == 0) {
                     return of();
                 } else if (newChild.isEmpty()) {

@@ -24,7 +24,7 @@ public class ArrayEmptyNode<T>
     }
 
     @Override
-    public int valueCount()
+    public int iterableSize()
     {
         return 0;
     }

@@ -46,7 +46,7 @@ public class ArrayBranchNode<T>
     {
         int total = 0;
         for (ArrayNode<T> child : children) {
-            total += child.valueCount();
+            total += child.iterableSize();
         }
         return total;
     }
@@ -62,7 +62,7 @@ public class ArrayBranchNode<T>
     }
 
     @Override
-    public int valueCount()
+    public int iterableSize()
     {
         return size;
     }
@@ -119,7 +119,7 @@ public class ArrayBranchNode<T>
             final ArrayNode<T> newChild = child.assign(entryBaseIndex, shiftCount - 1, index, value);
             if (newChild != child) {
                 final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
-                final int newSize = size - child.valueCount() + newChild.valueCount();
+                final int newSize = size - child.iterableSize() + newChild.iterableSize();
                 return new ArrayBranchNode<>(bitmask, newChildren, newSize);
             } else {
                 return this;
@@ -148,7 +148,7 @@ public class ArrayBranchNode<T>
             final ArrayNode<T> child = children[arrayIndex];
             final ArrayNode<T> newChild = child.delete(shiftCount - 1, index);
             if (newChild != child) {
-                final int newSize = size - child.valueCount() + newChild.valueCount();
+                final int newSize = size - child.iterableSize() + newChild.iterableSize();
                 if (newSize == 0) {
                     return ArrayEmptyNode.of();
                 } else if (newChild.isEmpty()) {

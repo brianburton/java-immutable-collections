@@ -55,7 +55,7 @@ public class ArrayLeafNode<T>
     }
 
     @Override
-    public int valueCount()
+    public int iterableSize()
     {
         return values.length;
     }
