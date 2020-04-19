@@ -20,7 +20,9 @@ import org.javimmutable.collections.iterators.TransformStreamable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
 import static org.javimmutable.collections.common.HamtIntMath.*;
@@ -59,6 +61,20 @@ public class JImmutableNodeArray<T>
     public static <T> JImmutableArray<T> of()
     {
         return (JImmutableArray<T>)EMPTY;
+    }
+
+    public static <T> JImmutableArray.Builder<T> builder()
+    {
+        return new Builder<>();
+    }
+
+    @Nonnull
+    public static <T> Collector<T, ?, JImmutableArray<T>> collector()
+    {
+        return Collector.<T, JImmutableNodeArray.Builder<T>, JImmutableArray<T>>of(() -> new Builder<>(),
+                                                                                   (b, v) -> b.add(v),
+                                                                                   (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                                                   b -> b.build());
     }
 
     private static int childIndex(int userIndex)
@@ -290,6 +306,52 @@ public class JImmutableNodeArray<T>
         public int iterableSize()
         {
             return JImmutableNodeArray.this.size;
+        }
+    }
+
+    public static class Builder<T>
+        implements JImmutableArray.Builder<T>
+    {
+        private JImmutableArray<T> array;
+
+        private Builder()
+        {
+            array = of();
+        }
+
+        @Override
+        public int size()
+        {
+            return array.size();
+        }
+
+        @Nonnull
+        @Override
+        public JImmutableArray.Builder<T> clear()
+        {
+            array = of();
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public JImmutableArray.Builder<T> add(T value)
+        {
+            array = array.assign(array.size(), value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public JImmutableArray<T> build()
+        {
+            return array;
+        }
+
+        @Nonnull
+        private Iterator<T> iterator()
+        {
+            return array.values().iterator();
         }
     }
 }

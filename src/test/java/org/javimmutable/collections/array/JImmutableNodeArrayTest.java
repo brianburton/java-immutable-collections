@@ -22,16 +22,18 @@ public class JImmutableNodeArrayTest
     public void testTrimming()
     {
         JImmutableArray<Integer> array = JImmutableNodeArray.of();
-        array = array.assign(0, 0);
+        array = array.assign(0, 2);
 //        array = array.assign(-1, -1);
-        array = array.assign(33, 33);
-        array = array.assign(65, 65);
-        array = array.assign(97, 97);
-        assertEquals("[0=0,33=33,65=65,97=97]", array.toString());
-        assertEquals(0, array.hashCode());
-        array = array.delete(-1);
+        array = array.assign(33, 3);
+        array = array.assign(97, 5);
+        array = array.assign(-1234567, 1);
+        array = array.assign(65, 4);
+        assertEquals("[-1234567=1,0=2,33=3,65=4,97=5]", array.toString());
+        assertEquals(-1983045993, array.hashCode());
+        assertSame(array, array.delete(-1));
         array = array.delete(33);
         array = array.delete(97);
+        array = array.delete(-1234567);
         array = array.delete(65);
         array = array.delete(0);
         assertEquals("[]", array.toString());
@@ -72,20 +74,20 @@ public class JImmutableNodeArrayTest
         array.checkInvariants();
     }
 
-//    public void testCollector()
-//    {
-//        Random r = new Random(20L);
-//        JImmutableArray<Integer> array = JImmutableNodeArray.of();
-//        int size = 0;
-//        while (size < 50_000) {
-//            size += r.nextInt(250);
-//            while (array.size() < size) {
-//                final int value = r.nextInt();
-//                array = array.assign(array.size(), value);
-//            }
-//            assertEquals(array, array.values().parallelStream().collect(JImmutableNodeArray.collector()));
-//        }
-//    }
+    public void testCollector()
+    {
+        Random r = new Random(20L);
+        JImmutableArray<Integer> array = JImmutableNodeArray.of();
+        int size = 0;
+        while (size < 50_000) {
+            size += r.nextInt(250);
+            while (array.size() < size) {
+                final int value = r.nextInt();
+                array = array.assign(array.size(), value);
+            }
+            assertEquals(array, array.values().parallelStream().collect(JImmutableNodeArray.collector()));
+        }
+    }
 
     public void testSequential()
     {
