@@ -2,13 +2,13 @@ package org.javimmutable.collections.array.nodes;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.HamtIntMath;
+import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 public abstract class ArrayNode<T>
     implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
 {
-    public static final int ROOT_SHIFTS = HamtIntMath.maxShiftsForBitCount(30);
+    public static final int ROOT_SHIFTS = HamtLongMath.maxShiftsForBitCount(30);
     static final int LEAF_SHIFTS = 0;
     static final int PARENT_SHIFTS = 1;
 

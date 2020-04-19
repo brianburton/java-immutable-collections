@@ -11,7 +11,7 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.javimmutable.collections.common.HamtIntMath.*;
+import static org.javimmutable.collections.common.HamtLongMath.*;
 
 public class ArrayBranchNode<T>
     extends ArrayNode<T>
@@ -20,7 +20,7 @@ public class ArrayBranchNode<T>
     @SuppressWarnings("rawtypes")
     private static final ArrayBranchNode EMPTY = new ArrayBranchNode();
 
-    private final int bitmask;
+    private final long bitmask;
     private final ArrayNode<T>[] children;
     private final int size;
 
@@ -31,7 +31,7 @@ public class ArrayBranchNode<T>
         size = 0;
     }
 
-    private ArrayBranchNode(int bitmask,
+    private ArrayBranchNode(long bitmask,
                             ArrayNode<T>[] children,
                             int size)
     {
@@ -80,7 +80,7 @@ public class ArrayBranchNode<T>
     {
         assert shiftCount > LEAF_SHIFTS;
         final int childIndex = indexAtShift(shiftCount, index);
-        final int bit = bitFromIndex(childIndex);
+        final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return children[arrayIndex].getValueOr(shiftCount - 1, index, defaultValue);
@@ -95,7 +95,7 @@ public class ArrayBranchNode<T>
     {
         assert shiftCount > LEAF_SHIFTS;
         final int childIndex = indexAtShift(shiftCount, index);
-        final int bit = bitFromIndex(childIndex);
+        final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return children[arrayIndex].find(shiftCount - 1, index);
@@ -112,7 +112,7 @@ public class ArrayBranchNode<T>
     {
         assert shiftCount > LEAF_SHIFTS;
         final int childIndex = indexAtShift(shiftCount, index);
-        final int bit = bitFromIndex(childIndex);
+        final long bit = bitFromIndex(childIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         if (bitIsPresent(bitmask, bit)) {
             final ArrayNode<T> child = children[arrayIndex];
@@ -142,7 +142,7 @@ public class ArrayBranchNode<T>
     {
         assert shiftCount > LEAF_SHIFTS;
         final int childIndex = indexAtShift(shiftCount, index);
-        final int bit = bitFromIndex(childIndex);
+        final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             final ArrayNode<T> child = children[arrayIndex];

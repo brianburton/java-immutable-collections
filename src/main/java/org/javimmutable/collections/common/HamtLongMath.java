@@ -1,5 +1,9 @@
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+
 /**
  * Utility class that supports math related to Hash Array Mapped Tries
  * that use 64 element arrays.  All of the methods are static and short
@@ -67,15 +71,57 @@ public final class HamtLongMath
         return Long.bitCount(bitmask & (bit - 1));
     }
 
+    public static int maxShiftsForBitCount(int bitCount)
+    {
+        return (bitCount + SHIFT - 1) / SHIFT;
+    }
+
+    public static int indexAtShift(int shiftCount,
+                                   int hashCode)
+    {
+        return (hashCode >>> (shiftCount * SHIFT)) & MASK;
+    }
+
     public static int bitCount(long bitmask)
     {
-        int count = 0;
-        while (bitmask != 0) {
-            if (bitIsPresent(bitmask, 1L)) {
-                count += 1;
-            }
-            bitmask >>>= 1;
+        return Long.bitCount(bitmask);
+    }
+
+    @Nonnull
+    public static Indexed<Integer> indices(long bitmask)
+    {
+        return new Indexes(bitmask);
+    }
+
+    private static class Indexes
+        implements Indexed<Integer>
+    {
+        private final long bitmask;
+
+        private Indexes(long bitmask)
+        {
+            this.bitmask = bitmask;
         }
-        return count;
+
+        @Override
+        public Integer get(int index)
+        {
+            long remaining = bitmask;
+            while (index > 0) {
+                remaining = remaining & ~Long.lowestOneBit(remaining);
+                index -= 1;
+            }
+            long bit = Long.lowestOneBit(remaining);
+            if (bit == 0) {
+                throw new ArrayIndexOutOfBoundsException(index);
+            }
+            return Long.numberOfTrailingZeros(bit);
+        }
+
+        @Override
+        public int size()
+        {
+            return bitCount(bitmask);
+        }
     }
 }

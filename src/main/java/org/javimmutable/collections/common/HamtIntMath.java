@@ -19,7 +19,6 @@ public final class HamtIntMath
 
     private static final int SHIFT = 5;
     private static final int MASK = 0x1f;
-    private static final int MAX_SHIFTS = maxShiftsForBitCount(32);
 
     public static int remainderFromHashCode(int hashCode)
     {

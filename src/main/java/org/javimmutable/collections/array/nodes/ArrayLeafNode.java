@@ -6,7 +6,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.common.HamtIntMath;
+import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import static org.javimmutable.collections.common.HamtIntMath.*;
+import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @Immutable
 public class ArrayLeafNode<T>
@@ -22,11 +22,11 @@ public class ArrayLeafNode<T>
     implements ArrayHelper.Allocator<T>
 {
     private final int baseIndex;
-    private final int bitmask;
+    private final long bitmask;
     private final T[] values;
 
     private ArrayLeafNode(int baseIndex,
-                          int bitmask,
+                          long bitmask,
                           T[] values)
     {
         assert bitCount(bitmask) == values.length;
@@ -40,7 +40,7 @@ public class ArrayLeafNode<T>
                           T value)
     {
         final int arrayIndex = indexFromHashCode(index);
-        final int bitmask = bitFromIndex(arrayIndex);
+        final long bitmask = bitFromIndex(arrayIndex);
         this.baseIndex = entryBaseIndex + (index - arrayIndex);
         this.bitmask = bitmask;
         values = allocate(1);
@@ -74,7 +74,7 @@ public class ArrayLeafNode<T>
         assert shiftCount == LEAF_SHIFTS;
         assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
-        final int bit = bitFromIndex(valueIndex);
+        final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return values[arrayIndex];
@@ -90,7 +90,7 @@ public class ArrayLeafNode<T>
         assert shiftCount == LEAF_SHIFTS;
         assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
-        final int bit = bitFromIndex(valueIndex);
+        final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return Holders.of(values[arrayIndex]);
@@ -108,7 +108,7 @@ public class ArrayLeafNode<T>
         assert shiftCount == LEAF_SHIFTS;
         assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
-        final int bit = bitFromIndex(valueIndex);
+        final long bit = bitFromIndex(valueIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         if (bitIsPresent(bitmask, bit)) {
             final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
@@ -126,7 +126,7 @@ public class ArrayLeafNode<T>
         assert shiftCount == LEAF_SHIFTS;
         assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
-        final int bit = bitFromIndex(valueIndex);
+        final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return new ArrayLeafNode<>(baseIndex, removeBit(bitmask, bit), ArrayHelper.delete(this, values, arrayIndex));
@@ -138,7 +138,7 @@ public class ArrayLeafNode<T>
     @Nonnull
     private JImmutableMap.Entry<Integer, T> valueEntry(int valueIndex)
     {
-        final int bit = bitFromIndex(valueIndex);
+        final long bit = bitFromIndex(valueIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         final T value = values[arrayIndex];
         return MapEntry.entry(baseIndex + valueIndex, value);
@@ -150,7 +150,7 @@ public class ArrayLeafNode<T>
                                                                                    int offset,
                                                                                    int limit)
     {
-        final Indexed<Integer> indices = HamtIntMath.indices(bitmask);
+        final Indexed<Integer> indices = HamtLongMath.indices(bitmask);
         final Indexed<JImmutableMap.Entry<Integer, T>> entries = IndexedHelper.transformed(indices, this::valueEntry);
         return GenericIterator.multiValueState(parent, entries, offset, limit);
     }
