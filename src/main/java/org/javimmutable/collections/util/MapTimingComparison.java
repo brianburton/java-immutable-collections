@@ -37,7 +37,7 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.array.JImmutableTrieArray;
+import org.javimmutable.collections.array.JImmutableNodeArray;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
@@ -259,7 +259,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        JImmutableArray<Integer> array = JImmutableTrieArray.of();
+        JImmutableArray<Integer> array = JImmutableNodeArray.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {

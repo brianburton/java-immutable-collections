@@ -40,6 +40,7 @@ import org.javimmutable.collections.Indexed;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects
@@ -259,5 +260,25 @@ public class IndexedHelper
             answer.add(indexed.get(i));
         }
         return answer;
+    }
+
+    @Nonnull
+    public static <O, T> Indexed<T> transformed(@Nonnull Indexed<O> indexed,
+                                                @Nonnull Function<O, T> transforminator)
+    {
+        return new Indexed<T>()
+        {
+            @Override
+            public T get(int index)
+            {
+                return transforminator.apply(indexed.get(index));
+            }
+
+            @Override
+            public int size()
+            {
+                return indexed.size();
+            }
+        };
     }
 }

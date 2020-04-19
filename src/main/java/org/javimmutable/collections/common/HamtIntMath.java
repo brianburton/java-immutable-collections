@@ -1,5 +1,9 @@
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+
 /**
  * Utility class that supports math related to Hash Array Mapped Tries
  * that use 32 element arrays.  All of the methods are static and short
@@ -15,6 +19,7 @@ public final class HamtIntMath
 
     private static final int SHIFT = 5;
     private static final int MASK = 0x1f;
+    private static final int MAX_SHIFTS = maxShiftsForBitCount(32);
 
     public static int remainderFromHashCode(int hashCode)
     {
@@ -67,15 +72,57 @@ public final class HamtIntMath
         return Integer.bitCount(bitmask & (bit - 1));
     }
 
+    public static int maxShiftsForBitCount(int bitCount)
+    {
+        return (bitCount + SHIFT - 1) / SHIFT;
+    }
+
+    public static int indexAtShift(int shiftCount,
+                                   int hashCode)
+    {
+        return (hashCode >>> (shiftCount * SHIFT)) & MASK;
+    }
+
     public static int bitCount(int bitmask)
     {
-        int count = 0;
-        while (bitmask != 0) {
-            if (bitIsPresent(bitmask, 1)) {
-                count += 1;
-            }
-            bitmask >>>= 1;
+        return Integer.bitCount(bitmask);
+    }
+
+    @Nonnull
+    public static Indexed<Integer> indices(int bitmask)
+    {
+        return new Indexes(bitmask);
+    }
+
+    private static class Indexes
+        implements Indexed<Integer>
+    {
+        private final int bitmask;
+
+        private Indexes(int bitmask)
+        {
+            this.bitmask = bitmask;
         }
-        return count;
+
+        @Override
+        public Integer get(int index)
+        {
+            int remaining = bitmask;
+            while (index > 0) {
+                remaining = remaining & ~Integer.lowestOneBit(remaining);
+                index -= 1;
+            }
+            int bit = Integer.lowestOneBit(remaining);
+            if (bit == 0) {
+                throw new ArrayIndexOutOfBoundsException(index);
+            }
+            return Integer.numberOfTrailingZeros(bit);
+        }
+
+        @Override
+        public int size()
+        {
+            return bitCount(bitmask);
+        }
     }
 }
