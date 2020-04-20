@@ -40,6 +40,9 @@ public final class HamtLongMath
                                          int hashCode1,
                                          int hashCode2)
     {
+        assert maxAllowedShift >= 0;
+        assert maxAllowedShift < MAX_SHIFTS;
+
         int shift = maxAllowedShift;
         while (shift > 0) {
             final int index1 = indexAtShift(shift, hashCode1);
@@ -49,7 +52,6 @@ public final class HamtLongMath
             }
             shift -= 1;
         }
-        assert hashCode1 != hashCode2;
         return 0;
     }
 

@@ -129,6 +129,30 @@ public class HamtLongMathTest
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), remainderAtShift(0, hashCode));
     }
 
+    public void testFindMaxCommonShift()
+    {
+        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 0, 0));
+        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 1, 2));
+        assertEquals(5, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(9, 5, 4, 3, 2, 1)));
+        assertEquals(4, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(6, 9, 4, 3, 2, 1)));
+        assertEquals(3, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(6, 5, 9, 3, 2, 1)));
+        assertEquals(2, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(6, 5, 4, 9, 2, 1)));
+        assertEquals(1, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(6, 5, 4, 3, 9, 1)));
+        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER,
+                                           hash(6, 5, 4, 3, 2, 1),
+                                           hash(6, 5, 4, 3, 2, 9)));
+    }
+
     private void verifyEquals(int a,
                               int b)
     {
