@@ -16,6 +16,11 @@ public final class HamtLongMath
     }
 
     public static final int ARRAY_SIZE = 64;
+    public static final int MAX_INDEX = ARRAY_SIZE - 1;
+    public static final int MAX_SHIFTS = maxShiftsForBitCount(32);
+    public static final int MAX_FULL_SHIFTS = maxShiftsForBitCount(30);
+    public static final int MAX_SHIFT_NUMBER = MAX_SHIFTS - 1;
+    public static final int MAX_FULL_SHIFT_NUMBER = MAX_SHIFT_NUMBER - 1;
 
     private static final int SHIFT = 6;
     private static final int MASK = 0x3f;
@@ -108,8 +113,8 @@ public final class HamtLongMath
     public static int remainderAtShift(int shiftCount,
                                        int hashCode)
     {
-        final int shift = (1 + shiftCount) * SHIFT;
-        return (hashCode >>> shift) << shift;
+        final int bitShift = (1 + shiftCount) * SHIFT;
+        return (hashCode >>> bitShift) << bitShift;
     }
 
     public static int bitCount(long bitmask)
@@ -121,6 +126,29 @@ public final class HamtLongMath
     public static Indexed<Integer> indices(long bitmask)
     {
         return new Indexes(bitmask);
+    }
+
+    public static int hash(int shift5,
+                           int shift4,
+                           int shift3,
+                           int shift2,
+                           int shift1,
+                           int shift0)
+    {
+        int answer = (shift5 << SHIFT) | shift4;
+        answer = (answer << SHIFT) | shift3;
+        answer = (answer << SHIFT) | shift2;
+        answer = (answer << SHIFT) | shift1;
+        return (answer << SHIFT) | shift0;
+    }
+
+    public static long bitmask(int... indices)
+    {
+        long answer = 0;
+        for (int index : indices) {
+            answer |= bitFromIndex(index);
+        }
+        return answer;
     }
 
     private static class Indexes
