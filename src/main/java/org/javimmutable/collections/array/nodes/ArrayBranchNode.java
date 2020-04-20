@@ -15,21 +15,13 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 
 public class ArrayBranchNode<T>
     extends ArrayNode<T>
-    implements ArrayHelper.Allocator<ArrayNode<T>>
 {
-    @SuppressWarnings("rawtypes")
-    private static final ArrayBranchNode EMPTY = new ArrayBranchNode();
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static final ArrayBranchNode EMPTY = new ArrayBranchNode(0, allocate(0), 0);
 
     private final long bitmask;
     private final ArrayNode<T>[] children;
     private final int size;
-
-    private ArrayBranchNode()
-    {
-        bitmask = 0;
-        children = allocate(0);
-        size = 0;
-    }
 
     private ArrayBranchNode(long bitmask,
                             ArrayNode<T>[] children,
@@ -129,9 +121,9 @@ public class ArrayBranchNode<T>
             if (shiftCount == PARENT_SHIFTS) {
                 newChild = ArrayLeafNode.forValue(entryBaseIndex, index, value);
             } else {
-                newChild = new ArrayBranchNode<T>().assign(entryBaseIndex, shiftCount - 1, index, value);
+                newChild = forValue(entryBaseIndex, shiftCount - 1, index, value);
             }
-            final ArrayNode<T>[] newChildren = ArrayHelper.insert(this, children, arrayIndex, newChild);
+            final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayBranchNode::allocate, children, arrayIndex, newChild);
             return new ArrayBranchNode<>(addBit(bitmask, bit), newChildren, size + 1);
         }
     }
@@ -152,7 +144,7 @@ public class ArrayBranchNode<T>
                 if (newSize == 0) {
                     return ArrayEmptyNode.of();
                 } else if (newChild.isEmpty()) {
-                    final ArrayNode<T>[] newChildren = ArrayHelper.delete(this, children, arrayIndex);
+                    final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, arrayIndex);
                     return new ArrayBranchNode<>(removeBit(bitmask, bit), newChildren, newSize);
                 } else {
                     final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
@@ -176,8 +168,7 @@ public class ArrayBranchNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    @Override
-    public ArrayNode<T>[] allocate(int size)
+    private static <T> ArrayNode<T>[] allocate(int size)
     {
         return (ArrayNode<T>[])new ArrayNode[size];
     }
