@@ -44,14 +44,14 @@ public class ArrayBranchNode<T>
                                         int index2,
                                         ArrayNode<T> child2)
     {
-        assert index1 != index2;
         final int shiftCount = findMaxCommonShift(ROOT_SHIFTS, index1, index2);
         assert shiftCount > LEAF_SHIFTS;
-        assert remainderAtShift(shiftCount, index1) == remainderAtShift(shiftCount, index2);
-        final int baseIndex = remainderAtShift(shiftCount, index1);
+        assert baseIndexAtShift(shiftCount, index1) == baseIndexAtShift(shiftCount, index2);
+        final int baseIndex = baseIndexAtShift(shiftCount, index1);
         final int childIndex1 = indexAtShift(shiftCount, index1);
         final int childIndex2 = indexAtShift(shiftCount, index2);
         final long bitmask = addBit(bitFromIndex(childIndex1), bitFromIndex(childIndex2));
+        final int size = child1.iterableSize() + child2.iterableSize();
         final ArrayNode<T>[] children = allocate(2);
         if (childIndex1 < childIndex2) {
             children[0] = child1;
@@ -60,7 +60,7 @@ public class ArrayBranchNode<T>
             children[0] = child2;
             children[1] = child1;
         }
-        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, children, child1.iterableSize() + child2.iterableSize());
+        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, children, size);
     }
 
     @Override
@@ -81,7 +81,12 @@ public class ArrayBranchNode<T>
                         T defaultValue)
     {
         assert shiftCount >= this.shiftCount;
-        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
+        if (shiftCount != this.shiftCount) {
+            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+                return defaultValue;
+            }
+            shiftCount = this.shiftCount;
+        }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
@@ -95,8 +100,12 @@ public class ArrayBranchNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        assert shiftCount >= this.shiftCount;
-        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
+        if (shiftCount != this.shiftCount) {
+            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+                return Holders.of();
+            }
+            shiftCount = this.shiftCount;
+        }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
@@ -113,12 +122,13 @@ public class ArrayBranchNode<T>
                                T value)
     {
         assert shiftCount >= this.shiftCount;
-        if (shiftCount > this.shiftCount && remainderAtShift(this.shiftCount, index) != remainderAtShift(this.shiftCount, baseIndex)) {
-            final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
-            return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
+        if (shiftCount != this.shiftCount) {
+            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+                final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
+                return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
+            }
+            shiftCount = this.shiftCount;
         }
-        assert remainderAtShift(this.shiftCount, index) == remainderAtShift(this.shiftCount, baseIndex);
-        shiftCount = this.shiftCount;
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -149,7 +159,12 @@ public class ArrayBranchNode<T>
                                int index)
     {
         assert shiftCount >= this.shiftCount;
-        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
+        if (shiftCount != this.shiftCount) {
+            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+                return this;
+            }
+            shiftCount = this.shiftCount;
+        }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {

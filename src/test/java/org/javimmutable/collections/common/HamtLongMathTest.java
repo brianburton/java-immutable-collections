@@ -122,11 +122,11 @@ public class HamtLongMathTest
         verifyEquals(0b101001, indexAtShift(2, hashCode));
         verifyEquals(0b100101, indexAtShift(1, hashCode));
         verifyEquals(0b101011, indexAtShift(0, hashCode));
-        verifyEquals(hash(3, 0, 0, 0, 0, 0), remainderAtShift(4, hashCode));
-        verifyEquals(hash(3, 0b110001, 0, 0, 0, 0), remainderAtShift(3, hashCode));
-        verifyEquals(hash(3, 0b110001, 0b100001, 0, 0, 0), remainderAtShift(2, hashCode));
-        verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0, 0), remainderAtShift(1, hashCode));
-        verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), remainderAtShift(0, hashCode));
+        verifyEquals(hash(3, 0, 0, 0, 0, 0), baseIndexAtShift(4, hashCode));
+        verifyEquals(hash(3, 0b110001, 0, 0, 0, 0), baseIndexAtShift(3, hashCode));
+        verifyEquals(hash(3, 0b110001, 0b100001, 0, 0, 0), baseIndexAtShift(2, hashCode));
+        verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0, 0), baseIndexAtShift(1, hashCode));
+        verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), baseIndexAtShift(0, hashCode));
     }
 
     public void testFindMaxCommonShift()

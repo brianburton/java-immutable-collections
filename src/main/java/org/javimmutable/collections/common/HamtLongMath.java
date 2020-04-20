@@ -112,7 +112,7 @@ public final class HamtLongMath
         return (hashCode >>> (shiftCount * SHIFT)) & MASK;
     }
 
-    public static int remainderAtShift(int shiftCount,
+    public static int baseIndexAtShift(int shiftCount,
                                        int hashCode)
     {
         final int bitShift = (1 + shiftCount) * SHIFT;
