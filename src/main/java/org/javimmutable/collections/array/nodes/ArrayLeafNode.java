@@ -21,15 +21,18 @@ public class ArrayLeafNode<T>
     extends ArrayNode<T>
 {
     private final int iteratorBaseIndex;
+    private final int baseIndex;
     private final long bitmask;
     private final T[] values;
 
     private ArrayLeafNode(int iteratorBaseIndex,
+                          int baseIndex,
                           long bitmask,
                           T[] values)
     {
         assert bitCount(bitmask) == values.length;
         this.iteratorBaseIndex = iteratorBaseIndex;
+        this.baseIndex = baseIndex;
         this.bitmask = bitmask;
         this.values = values;
     }
@@ -41,8 +44,9 @@ public class ArrayLeafNode<T>
         final int arrayIndex = indexFromHashCode(index);
         final long bitmask = bitFromIndex(arrayIndex);
         final int iteratorBaseIndex = entryBaseIndex + (index - arrayIndex);
+        final int baseIndex = index - arrayIndex;
         final T[] values = ArrayHelper.newArray(value);
-        return new ArrayLeafNode<>(iteratorBaseIndex, bitmask, values);
+        return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, values);
     }
 
     @Override
@@ -103,10 +107,10 @@ public class ArrayLeafNode<T>
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         if (bitIsPresent(bitmask, bit)) {
             final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
-            return new ArrayLeafNode<>(iteratorBaseIndex, bitmask, newValues);
+            return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, newValues);
         } else {
             final T[] newValues = ArrayHelper.insert(values, arrayIndex, value);
-            return new ArrayLeafNode<>(iteratorBaseIndex, addBit(bitmask, bit), newValues);
+            return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, addBit(bitmask, bit), newValues);
         }
     }
 
@@ -120,7 +124,7 @@ public class ArrayLeafNode<T>
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            return new ArrayLeafNode<>(iteratorBaseIndex, removeBit(bitmask, bit), ArrayHelper.delete(values, arrayIndex));
+            return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, removeBit(bitmask, bit), ArrayHelper.delete(values, arrayIndex));
         }
         return this;
     }
