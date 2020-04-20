@@ -57,7 +57,7 @@ public class ArrayEmptyNode<T>
                                T value)
     {
         assert shiftCount > LEAF_SHIFTS;
-        return ArrayLeafNode.forValue(entryBaseIndex, index, value);
+        return ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
     }
 
     @Override
@@ -80,5 +80,11 @@ public class ArrayEmptyNode<T>
     @Override
     public void checkInvariants()
     {
+    }
+
+    @Override
+    boolean isLeaf()
+    {
+        return false;
     }
 }

@@ -30,4 +30,6 @@ public abstract class ArrayNode<T>
 
     public abstract ArrayNode<T> delete(int shiftCount,
                                         int index);
+
+    abstract boolean isLeaf();
 }

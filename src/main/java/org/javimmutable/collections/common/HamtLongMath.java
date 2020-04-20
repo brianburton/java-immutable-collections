@@ -95,6 +95,11 @@ public final class HamtLongMath
         return bitmask & ~bit;
     }
 
+    public static int indexForBit(long bit)
+    {
+        return Long.numberOfTrailingZeros(bit);
+    }
+
     public static int arrayIndexForBit(long bitmask,
                                        long bit)
     {
@@ -175,7 +180,7 @@ public final class HamtLongMath
             if (bit == 0) {
                 throw new ArrayIndexOutOfBoundsException(index);
             }
-            return Long.numberOfTrailingZeros(bit);
+            return indexForBit(bit);
         }
 
         @Override

@@ -46,7 +46,7 @@ public class JImmutableNodeArrayTest
         Map<Integer, Integer> expected = new TreeMap<>();
         JImmutableArray<Integer> array = JImmutableNodeArray.of();
         for (int loop = 1; loop <= 20000; ++loop) {
-            int index = r.nextInt(2000) - 1000;
+            int index = r.nextInt(200000) - 100000;
             int value = r.nextInt();
             switch (r.nextInt(4)) {
                 case 0:

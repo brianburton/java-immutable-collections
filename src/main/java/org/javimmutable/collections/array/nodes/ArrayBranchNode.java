@@ -124,7 +124,7 @@ public class ArrayBranchNode<T>
         assert shiftCount >= this.shiftCount;
         if (shiftCount != this.shiftCount) {
             if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
-                final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
+                final ArrayNode<T> leaf = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
                 return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
             }
             shiftCount = this.shiftCount;
@@ -147,7 +147,7 @@ public class ArrayBranchNode<T>
                 return this;
             }
         } else {
-            final ArrayNode<T> newChild = ArrayLeafNode.forValue(entryBaseIndex, index, value);
+            final ArrayNode<T> newChild = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
             final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayBranchNode::allocate, children, arrayIndex, newChild);
             assert newChildren.length > 1;
             return new ArrayBranchNode<>(shiftCount, baseIndex, addBit(bitmask, bit), newChildren, size + 1);
@@ -219,6 +219,12 @@ public class ArrayBranchNode<T>
         }
     }
 
+    @Override
+    boolean isLeaf()
+    {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     private static <T> ArrayNode<T>[] allocate(int size)
@@ -230,7 +236,7 @@ public class ArrayBranchNode<T>
     {
         if (shiftCount == PARENT_SHIFTS) {
             for (ArrayNode<T> child : children) {
-                if (!(child instanceof ArrayLeafNode)) {
+                if (!child.isLeaf()) {
                     return false;
                 }
             }

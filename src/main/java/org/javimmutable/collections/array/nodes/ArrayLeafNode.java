@@ -31,21 +31,33 @@ public class ArrayLeafNode<T>
                           T[] values)
     {
         assert bitCount(bitmask) == values.length;
+        assert values.length >= 2;
         this.iteratorBaseIndex = iteratorBaseIndex;
         this.baseIndex = baseIndex;
         this.bitmask = bitmask;
         this.values = values;
     }
 
-    public static <T> ArrayNode<T> forValue(int entryBaseIndex,
-                                            int index,
-                                            T value)
+    public static <T> ArrayNode<T> forValues(int entryBaseIndex,
+                                             int index1,
+                                             T value1,
+                                             int index2,
+                                             T value2)
     {
-        final int arrayIndex = indexFromHashCode(index);
-        final long bitmask = bitFromIndex(arrayIndex);
-        final int baseIndex = baseIndexFromHashCode(index);
+        assert baseIndexFromHashCode(index1) == baseIndexFromHashCode(index2);
+        final int arrayIndex1 = indexFromHashCode(index1);
+        final int arrayIndex2 = indexFromHashCode(index2);
+        final long bitmask = bitFromIndex(arrayIndex1) | bitFromIndex(arrayIndex2);
+        final int baseIndex = baseIndexFromHashCode(index1);
         final int iteratorBaseIndex = entryBaseIndex + baseIndex;
-        return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, ArrayHelper.newArray(value));
+        assert baseIndexFromHashCode(index2) == baseIndex;
+        final T[] values;
+        if (index1 < index2) {
+            values = ArrayHelper.newArray(value1, value2);
+        } else {
+            values = ArrayHelper.newArray(value2, value1);
+        }
+        return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, values);
     }
 
     @Override
@@ -102,7 +114,7 @@ public class ArrayLeafNode<T>
                                T value)
     {
         if (shiftCount > LEAF_SHIFTS && baseIndexFromHashCode(index) != baseIndex) {
-            final ArrayNode<T> leaf = forValue(entryBaseIndex, index, value);
+            final ArrayNode<T> leaf = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
             return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
         }
         final int valueIndex = indexFromHashCode(index);
@@ -127,8 +139,17 @@ public class ArrayLeafNode<T>
         }
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
-            final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, removeBit(bitmask, bit), ArrayHelper.delete(values, arrayIndex));
+            final long newBitmask = removeBit(bitmask, bit);
+            if (values.length == 2) {
+                assert bitCount(newBitmask) == 1;
+                final int keepValueIndex = indexForBit(newBitmask);
+                final int keepArrayIndex = arrayIndexForBit(bitmask, newBitmask);
+                return new ArraySingleLeafNode<>(iteratorBaseIndex + keepValueIndex, baseIndex + keepValueIndex, values[keepArrayIndex]);
+            } else {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                final T[] newValues = ArrayHelper.delete(values, arrayIndex);
+                return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, newBitmask, newValues);
+            }
         }
         return this;
     }
@@ -159,5 +180,11 @@ public class ArrayLeafNode<T>
         if (bitCount(bitmask) != values.length) {
             throw new IllegalStateException(String.format("invalid bitmask for array: bitmask=%s length=%d", Long.toBinaryString(bitmask), values.length));
         }
+    }
+
+    @Override
+    boolean isLeaf()
+    {
+        return true;
     }
 }
