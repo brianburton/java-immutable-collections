@@ -19,10 +19,33 @@ public final class HamtLongMath
 
     private static final int SHIFT = 6;
     private static final int MASK = 0x3f;
+    private static final int BASE_INDEX_MASK = ~MASK;
+
+    public static int baseIndexFromHashCode(int hashCode)
+    {
+        return hashCode & BASE_INDEX_MASK;
+    }
 
     public static int remainderFromHashCode(int hashCode)
     {
         return hashCode >>> SHIFT;
+    }
+
+    public static int findMaxCommonShift(int maxAllowedShift,
+                                         int hashCode1,
+                                         int hashCode2)
+    {
+        int shift = maxAllowedShift;
+        while (shift > 0) {
+            final int index1 = indexAtShift(shift, hashCode1);
+            final int index2 = indexAtShift(shift, hashCode2);
+            if (index1 != index2) {
+                return shift;
+            }
+            shift -= 1;
+        }
+        assert hashCode1 != hashCode2;
+        return 0;
     }
 
     public static int indexFromHashCode(int hashCode)
@@ -80,6 +103,13 @@ public final class HamtLongMath
                                    int hashCode)
     {
         return (hashCode >>> (shiftCount * SHIFT)) & MASK;
+    }
+
+    public static int remainderAtShift(int shiftCount,
+                                       int hashCode)
+    {
+        final int shift = (1 + shiftCount) * SHIFT;
+        return (hashCode >>> shift) << shift;
     }
 
     public static int bitCount(long bitmask)

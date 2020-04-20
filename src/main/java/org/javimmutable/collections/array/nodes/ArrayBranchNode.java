@@ -16,22 +16,46 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 public class ArrayBranchNode<T>
     extends ArrayNode<T>
 {
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static final ArrayBranchNode EMPTY = new ArrayBranchNode(0, allocate(0), 0);
-
+    private final int shiftCount;
+    private final int baseIndex;
     private final long bitmask;
     private final ArrayNode<T>[] children;
     private final int size;
 
-    private ArrayBranchNode(long bitmask,
+    private ArrayBranchNode(int shiftCount,
+                            int baseIndex,
+                            long bitmask,
                             ArrayNode<T>[] children,
                             int size)
     {
         assert bitCount(bitmask) == children.length;
+        this.shiftCount = shiftCount;
+        this.baseIndex = baseIndex;
         this.bitmask = bitmask;
         this.children = children;
         this.size = size;
+        assert checkChildShifts();
         assert computeSize() == size;
+    }
+
+    private boolean checkChildShifts()
+    {
+        if (shiftCount == PARENT_SHIFTS) {
+            for (ArrayNode<T> child : children) {
+                if (!(child instanceof ArrayLeafNode)) {
+                    return false;
+                }
+            }
+        } else {
+            for (ArrayNode<T> child : children) {
+                if (child instanceof ArrayBranchNode) {
+                    if (shiftCount <= ((ArrayBranchNode)child).shiftCount) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private int computeSize()
@@ -43,14 +67,49 @@ public class ArrayBranchNode<T>
         return total;
     }
 
-    @SuppressWarnings("unchecked")
     static <T> ArrayNode<T> forValue(int entryBaseIndex,
                                      int shiftCount,
                                      int index,
                                      T value)
     {
-        final ArrayNode<T> empty = (ArrayNode<T>)EMPTY;
-        return empty.assign(entryBaseIndex, shiftCount, index, value);
+        final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
+        return forChild(shiftCount, index, leaf);
+    }
+
+    static <T> ArrayNode<T> forChild(int shiftCount,
+                                     int index,
+                                     ArrayNode<T> child)
+    {
+        final int childIndex = indexAtShift(shiftCount, index);
+        final int baseIndex = remainderAtShift(shiftCount, index);
+        final long bitmask = bitFromIndex(childIndex);
+        final ArrayNode<T>[] children = allocate(1);
+        children[0] = child;
+        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, children, child.iterableSize());
+    }
+
+    static <T> ArrayNode<T> forChildren(int index1,
+                                        ArrayNode<T> child1,
+                                        int index2,
+                                        ArrayNode<T> child2)
+    {
+        assert index1 != index2;
+        final int shiftCount = findMaxCommonShift(ROOT_SHIFTS, index1, index2);
+        assert shiftCount > LEAF_SHIFTS;
+        assert remainderAtShift(shiftCount, index1) == remainderAtShift(shiftCount, index2);
+        final int baseIndex = remainderAtShift(shiftCount, index1);
+        final int childIndex1 = indexAtShift(shiftCount, index1);
+        final int childIndex2 = indexAtShift(shiftCount, index2);
+        final long bitmask = addBit(bitFromIndex(childIndex1), bitFromIndex(childIndex2));
+        final ArrayNode<T>[] children = allocate(2);
+        if (childIndex1 < childIndex2) {
+            children[0] = child1;
+            children[1] = child2;
+        } else {
+            children[0] = child2;
+            children[1] = child1;
+        }
+        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, children, child1.iterableSize() + child2.iterableSize());
     }
 
     @Override
@@ -70,30 +129,30 @@ public class ArrayBranchNode<T>
                         int index,
                         T defaultValue)
     {
-        assert shiftCount > LEAF_SHIFTS;
+        assert shiftCount >= this.shiftCount;
+        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return children[arrayIndex].getValueOr(shiftCount - 1, index, defaultValue);
-        } else {
-            return defaultValue;
         }
+        return defaultValue;
     }
 
     @Override
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        assert shiftCount > LEAF_SHIFTS;
+        assert shiftCount >= this.shiftCount;
+        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             return children[arrayIndex].find(shiftCount - 1, index);
-        } else {
-            return Holders.of();
         }
+        return Holders.of();
     }
 
     @Override
@@ -102,7 +161,13 @@ public class ArrayBranchNode<T>
                                int index,
                                T value)
     {
-        assert shiftCount > LEAF_SHIFTS;
+        assert shiftCount >= this.shiftCount;
+        if (shiftCount > this.shiftCount && remainderAtShift(this.shiftCount, index) != remainderAtShift(this.shiftCount, baseIndex)) {
+            final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
+            return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
+        }
+        assert remainderAtShift(this.shiftCount, index) == remainderAtShift(this.shiftCount, baseIndex);
+        shiftCount = this.shiftCount;
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -111,20 +176,20 @@ public class ArrayBranchNode<T>
             final ArrayNode<T> newChild = child.assign(entryBaseIndex, shiftCount - 1, index, value);
             if (newChild != child) {
                 final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
-                final int newSize = size - child.iterableSize() + newChild.iterableSize();
-                return new ArrayBranchNode<>(bitmask, newChildren, newSize);
+                if (newChildren.length == 1) {
+                    return newChild;
+                } else {
+                    final int newSize = size - child.iterableSize() + newChild.iterableSize();
+                    return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, newSize);
+                }
             } else {
                 return this;
             }
         } else {
-            final ArrayNode<T> newChild;
-            if (shiftCount == PARENT_SHIFTS) {
-                newChild = ArrayLeafNode.forValue(entryBaseIndex, index, value);
-            } else {
-                newChild = forValue(entryBaseIndex, shiftCount - 1, index, value);
-            }
+            final ArrayNode<T> newChild = ArrayLeafNode.forValue(entryBaseIndex, index, value);
             final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayBranchNode::allocate, children, arrayIndex, newChild);
-            return new ArrayBranchNode<>(addBit(bitmask, bit), newChildren, size + 1);
+            assert newChildren.length > 1;
+            return new ArrayBranchNode<>(shiftCount, baseIndex, addBit(bitmask, bit), newChildren, size + 1);
         }
     }
 
@@ -132,7 +197,8 @@ public class ArrayBranchNode<T>
     public ArrayNode<T> delete(int shiftCount,
                                int index)
     {
-        assert shiftCount > LEAF_SHIFTS;
+        assert shiftCount >= this.shiftCount;
+        shiftCount = this.shiftCount;   // let the leaf sort out if index doesn't match
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
         if (bitIsPresent(bitmask, bit)) {
@@ -145,10 +211,10 @@ public class ArrayBranchNode<T>
                     return ArrayEmptyNode.of();
                 } else if (newChild.isEmpty()) {
                     final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, arrayIndex);
-                    return new ArrayBranchNode<>(removeBit(bitmask, bit), newChildren, newSize);
+                    return new ArrayBranchNode<>(shiftCount, baseIndex, removeBit(bitmask, bit), newChildren, newSize);
                 } else {
                     final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
-                    return new ArrayBranchNode<>(bitmask, newChildren, newSize);
+                    return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, newSize);
                 }
 
             }

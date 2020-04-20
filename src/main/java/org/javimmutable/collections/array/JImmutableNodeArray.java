@@ -7,7 +7,7 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.nodes.ArrayEmptyNode;
+import org.javimmutable.collections.array.nodes.ArrayLeafNode;
 import org.javimmutable.collections.array.nodes.ArrayNode;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
@@ -151,7 +151,7 @@ public class JImmutableNodeArray<T>
             final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
             return new JImmutableNodeArray<>(bitmask, newChildren, newSize);
         } else {
-            final ArrayNode<T> newChild = ArrayEmptyNode.<T>of().assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
+            final ArrayNode<T> newChild = ArrayLeafNode.forValue(entryBaseIndex, nodeIndex, value);
             final ArrayNode<T>[] newChildren = ArrayHelper.insert(this, children, arrayIndex, newChild);
             return new JImmutableNodeArray<>(addBit(bitmask, bit), newChildren, size + 1);
         }

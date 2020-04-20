@@ -37,14 +37,14 @@ public class ArrayLeafNode<T>
         this.values = values;
     }
 
-    static <T> ArrayNode<T> forValue(int entryBaseIndex,
-                                     int index,
-                                     T value)
+    public static <T> ArrayNode<T> forValue(int entryBaseIndex,
+                                            int index,
+                                            T value)
     {
         final int arrayIndex = indexFromHashCode(index);
         final long bitmask = bitFromIndex(arrayIndex);
         final int iteratorBaseIndex = entryBaseIndex + (index - arrayIndex);
-        final int baseIndex = index - arrayIndex;
+        final int baseIndex = baseIndexFromHashCode(index);
         final T[] values = ArrayHelper.newArray(value);
         return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, values);
     }
@@ -66,9 +66,10 @@ public class ArrayLeafNode<T>
                         int index,
                         T defaultValue)
     {
-        assert shiftCount == LEAF_SHIFTS;
-        assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
+        if (baseIndex + valueIndex != index) {
+            return defaultValue;
+        }
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -82,9 +83,10 @@ public class ArrayLeafNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        assert shiftCount == LEAF_SHIFTS;
-        assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
+        if (baseIndex + valueIndex != index) {
+            return Holders.of();
+        }
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -100,8 +102,10 @@ public class ArrayLeafNode<T>
                                int index,
                                T value)
     {
-        assert shiftCount == LEAF_SHIFTS;
-        assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
+        if (shiftCount > LEAF_SHIFTS && baseIndexFromHashCode(index) != baseIndex) {
+            final ArrayNode<T> leaf = forValue(entryBaseIndex, index, value);
+            return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
+        }
         final int valueIndex = indexFromHashCode(index);
         final long bit = bitFromIndex(valueIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -118,9 +122,10 @@ public class ArrayLeafNode<T>
     public ArrayNode<T> delete(int shiftCount,
                                int index)
     {
-        assert shiftCount == LEAF_SHIFTS;
-        assert indexAtShift(shiftCount, index) == indexFromHashCode(index);
         final int valueIndex = indexFromHashCode(index);
+        if (baseIndex + valueIndex != index) {
+            return this;
+        }
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
