@@ -126,11 +126,11 @@ public class ArrayHelperTest
     {
         verifyValues(insert(alloc, new Integer[0], 0, 9), 9);
 
-        verifyValues(insert(alloc, new Integer[]{1}, 0, 9), 9, 1);
+        verifyValues(insert(new Integer[]{1}, 0, 9), 9, 1);
         verifyValues(insert(alloc, new Integer[]{1}, 1, 9), 1, 9);
 
         verifyValues(insert(alloc, new Integer[]{1, 2}, 0, 9), 9, 1, 2);
-        verifyValues(insert(alloc, new Integer[]{1, 2}, 1, 9), 1, 9, 2);
+        verifyValues(insert(new Integer[]{1, 2}, 1, 9), 1, 9, 2);
         verifyValues(insert(alloc, new Integer[]{1, 2}, 2, 9), 1, 2, 9);
     }
 
@@ -143,12 +143,12 @@ public class ArrayHelperTest
         // length 2
         orig = new Integer[]{1, 2};
         verifyValues(delete(alloc, orig, 0), 2);
-        verifyValues(delete(alloc, orig, 1), 1);
+        verifyValues(delete(orig, 1), 1);
 
         // length 3
         orig = new Integer[]{1, 2, 3};
         verifyValues(delete(alloc, orig, 0), 2, 3);
-        verifyValues(delete(alloc, orig, 1), 1, 3);
+        verifyValues(delete(orig, 1), 1, 3);
         verifyValues(delete(alloc, orig, 2), 1, 2);
     }
 
@@ -330,8 +330,8 @@ public class ArrayHelperTest
         }
     }
 
-    private void verifyValues(Integer[] actual,
-                              Integer... expected)
+    private <T> void verifyValues(T[] actual,
+                                  Integer... expected)
     {
         assertEquals(asList(expected), asList(actual));
     }

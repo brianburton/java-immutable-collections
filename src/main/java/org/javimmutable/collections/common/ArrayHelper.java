@@ -161,6 +161,22 @@ public final class ArrayHelper
     }
 
     /**
+     * Creates a copy of orig with one extra value inserted at index.
+     * All values from index->length are shifted to the right by 1.
+     *
+     * @param orig  array to copy
+     * @param index index where new value should be inserted
+     * @param value value to assign at end of new array
+     */
+    @Nonnull
+    public static <T> T[] insert(@Nonnull T[] orig,
+                                 int index,
+                                 T value)
+    {
+        return insert(ArrayHelper::allocate, orig, index, value);
+    }
+
+    /**
      * Creates a copy of orig with one value deleted at index.
      * All values from index->length are shifted to the left by 1.
      *
@@ -177,6 +193,20 @@ public final class ArrayHelper
         System.arraycopy(orig, 0, answer, 0, index);
         System.arraycopy(orig, index + 1, answer, index, orig.length - index - 1);
         return answer;
+    }
+
+    /**
+     * Creates a copy of orig with one value deleted at index.
+     * All values from index->length are shifted to the left by 1.
+     *
+     * @param orig  array to copy
+     * @param index index where new value should be inserted
+     */
+    @Nonnull
+    public static <T> T[] delete(@Nonnull T[] orig,
+                                 int index)
+    {
+        return delete(ArrayHelper::allocate, orig, index);
     }
 
     /**
@@ -380,5 +410,11 @@ public final class ArrayHelper
         if (index < 0 || index >= values.length) {
             throw new ArrayIndexOutOfBoundsException(index);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T[] allocate(int size)
+    {
+        return (T[])new Object[size];
     }
 }
