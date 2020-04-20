@@ -19,39 +19,30 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 @Immutable
 public class ArrayLeafNode<T>
     extends ArrayNode<T>
-    implements ArrayHelper.Allocator<T>
 {
-    private final int baseIndex;
+    private final int iteratorBaseIndex;
     private final long bitmask;
     private final T[] values;
 
-    private ArrayLeafNode(int baseIndex,
+    private ArrayLeafNode(int iteratorBaseIndex,
                           long bitmask,
                           T[] values)
     {
         assert bitCount(bitmask) == values.length;
-        this.baseIndex = baseIndex;
+        this.iteratorBaseIndex = iteratorBaseIndex;
         this.bitmask = bitmask;
         this.values = values;
-    }
-
-    private ArrayLeafNode(int entryBaseIndex,
-                          int index,
-                          T value)
-    {
-        final int arrayIndex = indexFromHashCode(index);
-        final long bitmask = bitFromIndex(arrayIndex);
-        this.baseIndex = entryBaseIndex + (index - arrayIndex);
-        this.bitmask = bitmask;
-        values = allocate(1);
-        values[0] = value;
     }
 
     static <T> ArrayNode<T> forValue(int entryBaseIndex,
                                      int index,
                                      T value)
     {
-        return new ArrayLeafNode<>(entryBaseIndex, index, value);
+        final int arrayIndex = indexFromHashCode(index);
+        final long bitmask = bitFromIndex(arrayIndex);
+        final int iteratorBaseIndex = entryBaseIndex + (index - arrayIndex);
+        final T[] values = ArrayHelper.newArray(value);
+        return new ArrayLeafNode<>(iteratorBaseIndex, bitmask, values);
     }
 
     @Override
@@ -112,10 +103,10 @@ public class ArrayLeafNode<T>
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         if (bitIsPresent(bitmask, bit)) {
             final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
-            return new ArrayLeafNode<>(baseIndex, bitmask, newValues);
+            return new ArrayLeafNode<>(iteratorBaseIndex, bitmask, newValues);
         } else {
-            final T[] newValues = ArrayHelper.insert(this, values, arrayIndex, value);
-            return new ArrayLeafNode<>(baseIndex, addBit(bitmask, bit), newValues);
+            final T[] newValues = ArrayHelper.insert(values, arrayIndex, value);
+            return new ArrayLeafNode<>(iteratorBaseIndex, addBit(bitmask, bit), newValues);
         }
     }
 
@@ -129,10 +120,9 @@ public class ArrayLeafNode<T>
         final long bit = bitFromIndex(valueIndex);
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            return new ArrayLeafNode<>(baseIndex, removeBit(bitmask, bit), ArrayHelper.delete(this, values, arrayIndex));
-        } else {
-            return this;
+            return new ArrayLeafNode<>(iteratorBaseIndex, removeBit(bitmask, bit), ArrayHelper.delete(values, arrayIndex));
         }
+        return this;
     }
 
     @Nonnull
@@ -141,7 +131,7 @@ public class ArrayLeafNode<T>
         final long bit = bitFromIndex(valueIndex);
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
         final T value = values[arrayIndex];
-        return MapEntry.entry(baseIndex + valueIndex, value);
+        return MapEntry.entry(iteratorBaseIndex + valueIndex, value);
     }
 
     @Nullable
@@ -153,13 +143,5 @@ public class ArrayLeafNode<T>
         final Indexed<Integer> indices = HamtLongMath.indices(bitmask);
         final Indexed<JImmutableMap.Entry<Integer, T>> entries = IndexedHelper.transformed(indices, this::valueEntry);
         return GenericIterator.multiValueState(parent, entries, offset, limit);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    @Override
-    public T[] allocate(int size)
-    {
-        return (T[])new Object[size];
     }
 }

@@ -417,4 +417,20 @@ public final class ArrayHelper
     {
         return (T[])new Object[size];
     }
+
+    public static <T> T[] newArray(T a)
+    {
+        final T[] answer = allocate(1);
+        answer[0] = a;
+        return answer;
+    }
+
+    public static <T> T[] newArray(T a,
+                                   T b)
+    {
+        final T[] answer = allocate(2);
+        answer[0] = a;
+        answer[1] = b;
+        return answer;
+    }
 }
