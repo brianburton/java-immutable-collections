@@ -1,12 +1,14 @@
 package org.javimmutable.collections.array.nodes;
 
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 public abstract class ArrayNode<T>
-    implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
+    implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
+               InvariantCheckable
 {
     public static final int ROOT_SHIFTS = HamtLongMath.maxShiftsForBitCount(30);
     static final int LEAF_SHIFTS = 0;

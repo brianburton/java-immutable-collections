@@ -43,10 +43,9 @@ public class ArrayLeafNode<T>
     {
         final int arrayIndex = indexFromHashCode(index);
         final long bitmask = bitFromIndex(arrayIndex);
-        final int iteratorBaseIndex = entryBaseIndex + (index - arrayIndex);
         final int baseIndex = baseIndexFromHashCode(index);
-        final T[] values = ArrayHelper.newArray(value);
-        return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, values);
+        final int iteratorBaseIndex = entryBaseIndex + baseIndex;
+        return new ArrayLeafNode<>(iteratorBaseIndex, baseIndex, bitmask, ArrayHelper.newArray(value));
     }
 
     @Override
@@ -152,5 +151,13 @@ public class ArrayLeafNode<T>
         final Indexed<Integer> indices = HamtLongMath.indices(bitmask);
         final Indexed<JImmutableMap.Entry<Integer, T>> entries = IndexedHelper.transformed(indices, this::valueEntry);
         return GenericIterator.multiValueState(parent, entries, offset, limit);
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        if (bitCount(bitmask) != values.length) {
+            throw new IllegalStateException(String.format("invalid bitmask for array: bitmask=%s length=%d", Long.toBinaryString(bitmask), values.length));
+        }
     }
 }

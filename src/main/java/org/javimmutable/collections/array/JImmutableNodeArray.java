@@ -247,7 +247,9 @@ public class JImmutableNodeArray<T>
     @Override
     public void checkInvariants()
     {
-
+        for (ArrayNode<T> child : children) {
+            child.checkInvariants();
+        }
     }
 
     @Nonnull

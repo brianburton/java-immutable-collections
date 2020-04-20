@@ -57,13 +57,14 @@ public class ArrayEmptyNode<T>
                                T value)
     {
         assert shiftCount > LEAF_SHIFTS;
-        return ArrayBranchNode.forValue(entryBaseIndex, shiftCount, index, value);
+        return ArrayLeafNode.forValue(entryBaseIndex, index, value);
     }
 
     @Override
     public ArrayNode<T> delete(int shiftCount,
                                int index)
     {
+        assert shiftCount > LEAF_SHIFTS;
         return this;
     }
 
@@ -74,5 +75,10 @@ public class ArrayEmptyNode<T>
                                                                                    int limit)
     {
         return parent;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
     }
 }

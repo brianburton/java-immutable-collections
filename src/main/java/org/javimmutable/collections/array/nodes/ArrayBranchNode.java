@@ -29,6 +29,7 @@ public class ArrayBranchNode<T>
                             int size)
     {
         assert bitCount(bitmask) == children.length;
+        assert children.length >= 2;
         this.shiftCount = shiftCount;
         this.baseIndex = baseIndex;
         this.bitmask = bitmask;
@@ -36,56 +37,6 @@ public class ArrayBranchNode<T>
         this.size = size;
         assert checkChildShifts();
         assert computeSize() == size;
-    }
-
-    private boolean checkChildShifts()
-    {
-        if (shiftCount == PARENT_SHIFTS) {
-            for (ArrayNode<T> child : children) {
-                if (!(child instanceof ArrayLeafNode)) {
-                    return false;
-                }
-            }
-        } else {
-            for (ArrayNode<T> child : children) {
-                if (child instanceof ArrayBranchNode) {
-                    if (shiftCount <= ((ArrayBranchNode)child).shiftCount) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private int computeSize()
-    {
-        int total = 0;
-        for (ArrayNode<T> child : children) {
-            total += child.iterableSize();
-        }
-        return total;
-    }
-
-    static <T> ArrayNode<T> forValue(int entryBaseIndex,
-                                     int shiftCount,
-                                     int index,
-                                     T value)
-    {
-        final ArrayNode<T> leaf = ArrayLeafNode.forValue(entryBaseIndex, index, value);
-        return forChild(shiftCount, index, leaf);
-    }
-
-    static <T> ArrayNode<T> forChild(int shiftCount,
-                                     int index,
-                                     ArrayNode<T> child)
-    {
-        final int childIndex = indexAtShift(shiftCount, index);
-        final int baseIndex = remainderAtShift(shiftCount, index);
-        final long bitmask = bitFromIndex(childIndex);
-        final ArrayNode<T>[] children = allocate(1);
-        children[0] = child;
-        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, children, child.iterableSize());
     }
 
     static <T> ArrayNode<T> forChildren(int index1,
@@ -211,7 +162,11 @@ public class ArrayBranchNode<T>
                     return ArrayEmptyNode.of();
                 } else if (newChild.isEmpty()) {
                     final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, arrayIndex);
-                    return new ArrayBranchNode<>(shiftCount, baseIndex, removeBit(bitmask, bit), newChildren, newSize);
+                    if (newChildren.length == 1) {
+                        return newChildren[0];
+                    } else {
+                        return new ArrayBranchNode<>(shiftCount, baseIndex, removeBit(bitmask, bit), newChildren, newSize);
+                    }
                 } else {
                     final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
                     return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, newSize);
@@ -232,10 +187,56 @@ public class ArrayBranchNode<T>
         return GenericIterator.indexedState(parent, source, offset, limit);
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        if (bitCount(bitmask) != children.length) {
+            throw new IllegalStateException(String.format("invalid bitmask for array: bitmask=%s length=%d", Long.toBinaryString(bitmask), children.length));
+        }
+        if (children.length < 2) {
+            throw new IllegalStateException(String.format("fewer than 2 children in branch: length=%d", children.length));
+        }
+        if (!checkChildShifts()) {
+            throw new IllegalStateException("one or more children invalid for this branch");
+        }
+        if (computeSize() != size) {
+            throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computeSize()));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     private static <T> ArrayNode<T>[] allocate(int size)
     {
         return (ArrayNode<T>[])new ArrayNode[size];
+    }
+
+    private boolean checkChildShifts()
+    {
+        if (shiftCount == PARENT_SHIFTS) {
+            for (ArrayNode<T> child : children) {
+                if (!(child instanceof ArrayLeafNode)) {
+                    return false;
+                }
+            }
+        } else {
+            for (ArrayNode<T> child : children) {
+                if (child instanceof ArrayBranchNode) {
+                    if (shiftCount <= ((ArrayBranchNode<?>)child).shiftCount) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private int computeSize()
+    {
+        int total = 0;
+        for (ArrayNode<T> child : children) {
+            total += child.iterableSize();
+        }
+        return total;
     }
 }
