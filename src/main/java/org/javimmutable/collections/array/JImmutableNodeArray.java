@@ -35,8 +35,6 @@ public class JImmutableNodeArray<T>
     @SuppressWarnings("rawtypes")
     private static final JImmutableNodeArray EMPTY = new JImmutableNodeArray();
 
-    private static final int DIVISOR = 1 << 30;
-
     private final int bitmask;
     private final ArrayNode<T>[] children;
     private final int size;
@@ -77,19 +75,19 @@ public class JImmutableNodeArray<T>
                                                                                    b -> b.build());
     }
 
-    private static int childIndex(int userIndex)
+    static int childIndex(int userIndex)
     {
-        return 2 + Math.floorDiv(userIndex, DIVISOR);
+        return userIndex < 0 ? 0 : 1;
     }
 
-    private static int entryBaseIndex(int userIndex)
+    static int entryBaseIndex(int userIndex)
     {
-        return DIVISOR * Math.floorDiv(userIndex, DIVISOR);
+        return userIndex < 0 ? Integer.MIN_VALUE : 0;
     }
 
-    private static int nodeIndex(int userIndex)
+    static int nodeIndex(int userIndex)
     {
-        return Math.floorMod(userIndex, DIVISOR);
+        return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
     }
 
     @Nullable

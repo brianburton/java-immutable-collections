@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+import static java.lang.Integer.*;
+
 public class JImmutableNodeArrayTest
     extends TestCase
 {
@@ -69,7 +71,7 @@ public class JImmutableNodeArrayTest
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
+            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
         }
         array.checkInvariants();
     }
@@ -99,7 +101,7 @@ public class JImmutableNodeArrayTest
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
+            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
         }
     }
 
@@ -189,16 +191,34 @@ public class JImmutableNodeArrayTest
     public void testSignedOrderIteration()
     {
         final int numLoops = 100000;
-        final int increment = (Integer.MAX_VALUE / numLoops) * 2;
+        final int increment = (MAX_VALUE / numLoops) * 2;
         JImmutableArray<Integer> array = JImmutableNodeArray.of();
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
-        int index = Integer.MIN_VALUE;
+        int index = MIN_VALUE;
         for (int i = 0; i < numLoops; ++i) {
             expected.add(MapEntry.of(index, -index));
             array = array.assign(index, -index);
             index += increment;
         }
         StandardIteratorTests.listIteratorTest(expected, array.iterator());
+    }
+
+    public void testIndexMath()
+    {
+        assertEquals(0, JImmutableNodeArray.childIndex(MIN_VALUE));
+        assertEquals(0, JImmutableNodeArray.childIndex(-1));
+        assertEquals(1, JImmutableNodeArray.childIndex(0));
+        assertEquals(1, JImmutableNodeArray.childIndex(MAX_VALUE));
+
+        assertEquals(0, JImmutableNodeArray.nodeIndex(MIN_VALUE));
+        assertEquals(MAX_VALUE, JImmutableNodeArray.nodeIndex(-1));
+        assertEquals(0, JImmutableNodeArray.nodeIndex(0));
+        assertEquals(MAX_VALUE, JImmutableNodeArray.nodeIndex(MAX_VALUE));
+
+        assertEquals(MIN_VALUE, JImmutableNodeArray.entryBaseIndex(MIN_VALUE) + JImmutableNodeArray.nodeIndex(MIN_VALUE));
+        assertEquals(-1, JImmutableNodeArray.entryBaseIndex(-1) + JImmutableNodeArray.nodeIndex(-1));
+        assertEquals(0, JImmutableNodeArray.entryBaseIndex(0) + JImmutableNodeArray.nodeIndex(0));
+        assertEquals(MAX_VALUE, JImmutableNodeArray.entryBaseIndex(MAX_VALUE) + JImmutableNodeArray.nodeIndex(MAX_VALUE));
     }
 
     public void testVarious()

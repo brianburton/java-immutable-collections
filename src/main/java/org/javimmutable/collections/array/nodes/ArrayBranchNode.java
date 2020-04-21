@@ -46,7 +46,7 @@ public class ArrayBranchNode<T>
     {
         final int shiftCount = findMaxCommonShift(ROOT_SHIFTS, index1, index2);
         assert shiftCount > LEAF_SHIFTS;
-        assert baseIndexAtShift(shiftCount, index1) == baseIndexAtShift(shiftCount, index2);
+        assert shiftCount == ROOT_SHIFTS || baseIndexAtShift(shiftCount, index1) == baseIndexAtShift(shiftCount, index2);
         final int baseIndex = baseIndexAtShift(shiftCount, index1);
         final int childIndex1 = indexAtShift(shiftCount, index1);
         final int childIndex2 = indexAtShift(shiftCount, index2);
