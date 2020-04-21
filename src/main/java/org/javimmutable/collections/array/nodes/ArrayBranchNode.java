@@ -131,7 +131,9 @@ public class ArrayBranchNode<T>
         }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
+        final long bitmask = this.bitmask;
         final int arrayIndex = arrayIndexForBit(bitmask, bit);
+        final ArrayNode<T>[] children = this.children;
         if (bitIsPresent(bitmask, bit)) {
             final ArrayNode<T> child = children[arrayIndex];
             final ArrayNode<T> newChild = child.assign(entryBaseIndex, shiftCount - 1, index, value);
@@ -167,8 +169,10 @@ public class ArrayBranchNode<T>
         }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
+        final long bitmask = this.bitmask;
         if (bitIsPresent(bitmask, bit)) {
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
+            final ArrayNode<T>[] children = this.children;
             final ArrayNode<T> child = children[arrayIndex];
             final ArrayNode<T> newChild = child.delete(shiftCount - 1, index);
             if (newChild != child) {
@@ -186,7 +190,6 @@ public class ArrayBranchNode<T>
                     final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
                     return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, newSize);
                 }
-
             }
         }
         return this;
