@@ -205,11 +205,6 @@ public class JImmutableNodeArrayTest
 
     public void testIndexMath()
     {
-        assertEquals(0, JImmutableNodeArray.childIndex(MIN_VALUE));
-        assertEquals(0, JImmutableNodeArray.childIndex(-1));
-        assertEquals(1, JImmutableNodeArray.childIndex(0));
-        assertEquals(1, JImmutableNodeArray.childIndex(MAX_VALUE));
-
         assertEquals(0, JImmutableNodeArray.nodeIndex(MIN_VALUE));
         assertEquals(MAX_VALUE, JImmutableNodeArray.nodeIndex(-1));
         assertEquals(0, JImmutableNodeArray.nodeIndex(0));

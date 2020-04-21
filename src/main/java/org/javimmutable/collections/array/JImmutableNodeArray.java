@@ -1,18 +1,17 @@
 package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.nodes.ArrayEmptyNode;
 import org.javimmutable.collections.array.nodes.ArrayNode;
-import org.javimmutable.collections.array.nodes.ArraySingleLeafNode;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.indexed.IndexedArray;
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformStreamable;
@@ -25,7 +24,6 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
-import static org.javimmutable.collections.common.HamtIntMath.*;
 
 public class JImmutableNodeArray<T>
     implements Serializable,
@@ -35,23 +33,23 @@ public class JImmutableNodeArray<T>
     @SuppressWarnings("rawtypes")
     private static final JImmutableNodeArray EMPTY = new JImmutableNodeArray();
 
-    private final int bitmask;
-    private final ArrayNode<T>[] children;
+    private final ArrayNode<T> negative;
+    private final ArrayNode<T> positive;
     private final int size;
 
     private JImmutableNodeArray()
     {
-        this.bitmask = 0;
-        this.children = allocate(0);
+        negative = ArrayEmptyNode.of();
+        positive = ArrayEmptyNode.of();
         this.size = 0;
     }
 
-    private JImmutableNodeArray(int bitmask,
-                                ArrayNode<T>[] children,
+    private JImmutableNodeArray(ArrayNode<T> negative,
+                                ArrayNode<T> positive,
                                 int size)
     {
-        this.bitmask = bitmask;
-        this.children = children;
+        this.negative = negative;
+        this.positive = positive;
         this.size = size;
     }
 
@@ -75,9 +73,22 @@ public class JImmutableNodeArray<T>
                                                                                    b -> b.build());
     }
 
-    static int childIndex(int userIndex)
+    @Nonnull
+    private ArrayNode<T> root(int userIndex)
     {
-        return userIndex < 0 ? 0 : 1;
+        return userIndex < 0 ? negative : positive;
+    }
+
+    @Nonnull
+    private JImmutableArray<T> withRoot(int userIndex,
+                                        @Nonnull ArrayNode<T> newRoot,
+                                        int size)
+    {
+        if (userIndex < 0) {
+            return new JImmutableNodeArray<>(newRoot, positive, size);
+        } else {
+            return new JImmutableNodeArray<>(negative, newRoot, size);
+        }
     }
 
     static int entryBaseIndex(int userIndex)
@@ -101,28 +112,16 @@ public class JImmutableNodeArray<T>
     public T getValueOr(int index,
                         @Nullable T defaultValue)
     {
-        final int childIndex = childIndex(index);
-        final int bit = bitFromIndex(childIndex);
-        if (bitIsPresent(bitmask, bit)) {
-            final int nodeIndex = nodeIndex(index);
-            final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            return children[arrayIndex].getValueOr(ArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
-        }
-        return defaultValue;
+        final int nodeIndex = nodeIndex(index);
+        return root(index).getValueOr(ArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<T> find(int index)
     {
-        final int childIndex = childIndex(index);
-        final int bit = bitFromIndex(childIndex);
-        if (bitIsPresent(bitmask, bit)) {
-            final int nodeIndex = nodeIndex(index);
-            final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            return children[arrayIndex].find(ArrayNode.ROOT_SHIFTS, nodeIndex);
-        }
-        return Holders.of();
+        final int nodeIndex = nodeIndex(index);
+        return root(index).find(ArrayNode.ROOT_SHIFTS, nodeIndex);
     }
 
     @Nonnull
@@ -138,45 +137,26 @@ public class JImmutableNodeArray<T>
                                      @Nullable T value)
     {
         final int entryBaseIndex = entryBaseIndex(index);
-        final int childIndex = childIndex(index);
-        final int bit = bitFromIndex(childIndex);
         final int nodeIndex = nodeIndex(index);
-        final int arrayIndex = arrayIndexForBit(bitmask, bit);
-        if (bitIsPresent(bitmask, bit)) {
-            final ArrayNode<T> child = children[arrayIndex];
-            final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
-            final int newSize = size - child.iterableSize() + newChild.iterableSize();
-            final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
-            return new JImmutableNodeArray<>(bitmask, newChildren, newSize);
-        } else {
-            final ArrayNode<T> newChild = ArraySingleLeafNode.forValue(entryBaseIndex, nodeIndex, value);
-            final ArrayNode<T>[] newChildren = ArrayHelper.insert(this, children, arrayIndex, newChild);
-            return new JImmutableNodeArray<>(addBit(bitmask, bit), newChildren, size + 1);
-        }
+        final ArrayNode<T> child = root(index);
+        final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
+        final int newSize = size - child.iterableSize() + newChild.iterableSize();
+        return withRoot(index, newChild, newSize);
     }
 
     @Nonnull
     @Override
     public JImmutableArray<T> delete(int index)
     {
-        final int childIndex = childIndex(index);
-        final int bit = bitFromIndex(childIndex);
         final int nodeIndex = nodeIndex(index);
-        final int arrayIndex = arrayIndexForBit(bitmask, bit);
-        if (bitIsPresent(bitmask, bit)) {
-            final ArrayNode<T> child = children[arrayIndex];
-            final ArrayNode<T> newChild = child.delete(ArrayNode.ROOT_SHIFTS, nodeIndex);
-            if (newChild != child) {
-                final int newSize = size - child.iterableSize() + newChild.iterableSize();
-                if (newSize == 0) {
-                    return of();
-                } else if (newChild.isEmpty()) {
-                    final ArrayNode<T>[] newChildren = ArrayHelper.delete(this, children, arrayIndex);
-                    return new JImmutableNodeArray<>(removeBit(bitmask, bit), newChildren, newSize);
-                } else {
-                    final ArrayNode<T>[] newChildren = ArrayHelper.assign(children, arrayIndex, newChild);
-                    return new JImmutableNodeArray<>(bitmask, newChildren, newSize);
-                }
+        final ArrayNode<T> child = root(index);
+        final ArrayNode<T> newChild = child.delete(ArrayNode.ROOT_SHIFTS, nodeIndex);
+        if (newChild != child) {
+            final int newSize = size - child.iterableSize() + newChild.iterableSize();
+            if (newSize == 0) {
+                return of();
+            } else {
+                return withRoot(index, newChild, newSize);
             }
         }
         return this;
@@ -245,9 +225,8 @@ public class JImmutableNodeArray<T>
     @Override
     public void checkInvariants()
     {
-        for (ArrayNode<T> child : children) {
-            child.checkInvariants();
-        }
+        negative.checkInvariants();
+        positive.checkInvariants();
     }
 
     @Nonnull
@@ -298,7 +277,7 @@ public class JImmutableNodeArray<T>
                                                                                        int offset,
                                                                                        int limit)
         {
-            final Indexed<ArrayNode<T>> source = IndexedArray.retained(children);
+            final Indexed<ArrayNode<T>> source = IndexedHelper.indexed(negative, positive);
             return GenericIterator.indexedState(parent, source, offset, limit);
         }
 
