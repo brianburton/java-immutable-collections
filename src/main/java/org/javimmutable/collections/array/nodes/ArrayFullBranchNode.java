@@ -37,7 +37,6 @@ package org.javimmutable.collections.array.nodes;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
@@ -79,8 +78,8 @@ public class ArrayFullBranchNode<T>
                         int index,
                         T defaultValue)
     {
-        assert shiftCount >= this.shiftCount;
         if (shiftCount != this.shiftCount) {
+            assert shiftCount >= this.shiftCount;
             if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
                 return defaultValue;
             }
@@ -94,8 +93,8 @@ public class ArrayFullBranchNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        assert shiftCount >= this.shiftCount;
         if (shiftCount != this.shiftCount) {
+            assert shiftCount >= this.shiftCount;
             if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
                 return Holders.of();
             }
@@ -113,8 +112,8 @@ public class ArrayFullBranchNode<T>
     {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
-        assert shiftCount >= thisShiftCount;
         if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
             if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 final ArrayNode<T> leaf = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
                 return ArrayBranchNode.forChildren(baseIndex, this, index, leaf);
@@ -137,8 +136,8 @@ public class ArrayFullBranchNode<T>
     {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
-        assert shiftCount >= thisShiftCount;
         if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
             if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return this;
             }
@@ -189,8 +188,7 @@ public class ArrayFullBranchNode<T>
                                                                                    int offset,
                                                                                    int limit)
     {
-        final Indexed<ArrayNode<T>> source = IndexedArray.retained(children);
-        return GenericIterator.indexedState(parent, source, offset, limit);
+        return GenericIterator.indexedState(parent, IndexedArray.retained(children), offset, limit);
     }
 
     @Override
