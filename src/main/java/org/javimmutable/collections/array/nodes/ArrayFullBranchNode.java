@@ -78,12 +78,13 @@ public class ArrayFullBranchNode<T>
                         int index,
                         T defaultValue)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return defaultValue;
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int childIndex = indexAtShift(shiftCount, index);
         return children[childIndex].getValueOr(shiftCount - 1, index, defaultValue);
@@ -93,12 +94,13 @@ public class ArrayFullBranchNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return Holders.of();
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int childIndex = indexAtShift(shiftCount, index);
         return children[childIndex].find(shiftCount - 1, index);

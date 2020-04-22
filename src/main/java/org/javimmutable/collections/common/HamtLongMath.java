@@ -59,6 +59,7 @@ public final class HamtLongMath
     public static final int MAX_FULL_SHIFTS = maxShiftsForBitCount(30);
     public static final int MAX_SHIFT_NUMBER = MAX_SHIFTS - 1;
     public static final int MAX_FULL_SHIFT_NUMBER = MAX_SHIFT_NUMBER - 1;
+    public static final long ALL_BITS = -1L;
 
     private static final int SHIFT = 6;
     private static final int MASK = 0x3f;

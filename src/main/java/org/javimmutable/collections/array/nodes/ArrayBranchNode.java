@@ -42,6 +42,7 @@ import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static org.javimmutable.collections.common.HamtLongMath.*;
@@ -58,7 +59,7 @@ public class ArrayBranchNode<T>
     ArrayBranchNode(int shiftCount,
                     int baseIndex,
                     long bitmask,
-                    ArrayNode<T>[] children,
+                    @Nonnull ArrayNode<T>[] children,
                     int size)
     {
         assert bitCount(bitmask) == children.length;
@@ -125,12 +126,13 @@ public class ArrayBranchNode<T>
                         int index,
                         T defaultValue)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return defaultValue;
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);
@@ -145,12 +147,13 @@ public class ArrayBranchNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return Holders.of();
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int childIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(childIndex);

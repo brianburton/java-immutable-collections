@@ -36,16 +36,21 @@
 package org.javimmutable.collections.array;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.nodes.ArrayBuilder;
+import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -315,50 +320,52 @@ public class JImmutableNodeArrayTest
 //                                                     "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyoEk80sGINEAJEoYGBPLWYAMRiArqZylHqgSyEquAABirp0EewAAAA==");
 //    }
 
-//    public void testBuilder()
-//        throws Exception
-//    {
-//        assertSame(JImmutableNodeArray.of(), JImmutableNodeArray.builder().build());
-//
-//        final List<Integer> expected = new ArrayList<>();
-//        final JImmutableNodeArray.Builder<Integer> builder = JImmutableNodeArray.builder();
-//        JImmutableArray<Integer> manual = JImmutableNodeArray.of();
-//        for (int length = 1; length <= 1024; ++length) {
-//            expected.add(length);
-//            manual = manual.assign(length - 1, length);
-//            JImmutableArray<Integer> array = builder.add(length).build();
-//            assertEquals(array.getMap(), manual.getMap());
-//            assertEquals(length, array.size());
-//            for (int i = 0; i < expected.size(); ++i) {
-//                assertEquals(expected.get(i), array.get(i));
-//            }
-//            array.checkInvariants();
-//        }
-//        assertEquals(manual, builder.build());
-//        for (int length = 1025; length <= 10000; ++length) {
-//            expected.add(length);
-//            manual = manual.assign(length - 1, length);
-//            JImmutableArray<Integer> array = builder.add(length).build();
-//            assertEquals(length, array.size());
-//            for (int i = 0; i < expected.size(); ++i) {
-//                assertEquals(expected.get(i), array.get(i));
-//            }
-//            array.checkInvariants();
-//        }
-//        assertEquals(manual, builder.build());
-//
-//        Func0<JImmutableArray.Builder<Integer>> factory = () -> JImmutableNodeArray.builder();
-//
-//        Func2<List<Integer>, JImmutableArray<Integer>, Boolean> comparator = (list, tree) -> {
-//            for (int i = 0; i < list.size(); ++i) {
-//                assertEquals(list.get(i), tree.get(i));
-//            }
-//            return true;
-//        };
-//
-//        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator, new Integer[0]);
-//        StandardBuilderTests.verifyThreadSafety(this::builder, a -> a.values());
-//    }
+    public void testBuilder()
+        throws Exception
+    {
+        assertSame(JImmutableNodeArray.of(), JImmutableNodeArray.builder().build());
+
+        final List<Integer> expected = new ArrayList<>();
+        final JImmutableArray.Builder<Integer> builder = JImmutableNodeArray.builder();
+        JImmutableArray<Integer> array;
+        JImmutableArray<Integer> manual = JImmutableNodeArray.of();
+        for (int length = 1; length <= 1024; ++length) {
+            expected.add(length);
+            manual = manual.assign(length - 1, length);
+            array = builder.add(length).build();
+            assertEquals(array.getMap(), manual.getMap());
+            assertEquals(length, array.size());
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), array.get(i));
+            }
+            array.checkInvariants();
+        }
+        assertEquals(manual, builder.build());
+        for (int length = 1025; length <= 10000; ++length) {
+            expected.add(length);
+            manual = manual.assign(length - 1, length);
+            array = builder.add(length).build();
+            assertEquals(length, array.size());
+            for (int i = 0; i < expected.size(); ++i) {
+                assertEquals(expected.get(i), array.get(i));
+            }
+            array.checkInvariants();
+        }
+        array = builder.build();
+        assertEquals(manual, array);
+
+        Func0<JImmutableArray.Builder<Integer>> factory = () -> JImmutableNodeArray.builder();
+
+        Func2<List<Integer>, JImmutableArray<Integer>, Boolean> comparator = (list, tree) -> {
+            for (int i = 0; i < list.size(); ++i) {
+                assertEquals(list.get(i), tree.get(i));
+            }
+            return true;
+        };
+
+        StandardBuilderTests.verifyBuilder(expected, this::builder, comparator, new Integer[0]);
+        StandardBuilderTests.verifyThreadSafety(this::builder, a -> a.values());
+    }
 
     static List<Integer> createBranchIndexes()
     {
@@ -378,75 +385,75 @@ public class JImmutableNodeArrayTest
         return answer;
     }
 
-//    private JImmutableTrieArrayTest.BuilderTestAdapter<Integer> builder()
-//    {
-//        return new JImmutableTrieArrayTest.BuilderTestAdapter<>(JImmutableNodeArray.builder());
-//    }
-//
-//    private static class BuilderTestAdapter<T>
-//        implements StandardBuilderTests.BuilderAdapter<T, JImmutableArray<T>>
-//    {
-//        private final JImmutableArray.Builder<T> builder;
-//
-//        public BuilderTestAdapter(JImmutableArray.Builder<T> builder)
-//        {
-//            this.builder = builder;
-//        }
-//
-//        @Override
-//        public JImmutableArray<T> build()
-//        {
-//            return builder.build();
-//        }
-//
-//        @Override
-//        public void clear()
-//        {
-//            builder.clear();
-//        }
-//
-//        @Override
-//        public int size()
-//        {
-//            return builder.size();
-//        }
-//
-//        @Override
-//        public void add(T value)
-//        {
-//            builder.add(value);
-//        }
-//
-//        @Override
-//        public void add(Iterator<? extends T> source)
-//        {
-//            builder.add(source);
-//        }
-//
-//        @Override
-//        public void add(Iterable<? extends T> source)
-//        {
-//            builder.add(source);
-//        }
-//
-//        @Override
-//        public <K extends T> void add(K... source)
-//        {
-//            builder.add(source);
-//        }
-//
-//        @Override
-//        public void add(Indexed<? extends T> source,
-//                        int offset,
-//                        int limit)
-//        {
-//            builder.add(source, offset, limit);
-//        }
-//
-//        @Override
-//        public void add(Indexed<? extends T> source)
-//        {
-//            builder.add(source);
-//        }
-//    }
+    private BuilderTestAdapter<Integer> builder()
+    {
+        return new BuilderTestAdapter<>(JImmutableNodeArray.builder());
+    }
+
+    private static class BuilderTestAdapter<T>
+        implements StandardBuilderTests.BuilderAdapter<T, JImmutableArray<T>>
+    {
+        private final JImmutableArray.Builder<T> builder;
+
+        public BuilderTestAdapter(JImmutableArray.Builder<T> builder)
+        {
+            this.builder = builder;
+        }
+
+        @Override
+        public JImmutableArray<T> build()
+        {
+            return builder.build();
+        }
+
+        @Override
+        public void clear()
+        {
+            builder.clear();
+        }
+
+        @Override
+        public int size()
+        {
+            return builder.size();
+        }
+
+        @Override
+        public void add(T value)
+        {
+            builder.add(value);
+        }
+
+        @Override
+        public void add(Iterator<? extends T> source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public void add(Iterable<? extends T> source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public <K extends T> void add(K... source)
+        {
+            builder.add(source);
+        }
+
+        @Override
+        public void add(Indexed<? extends T> source,
+                        int offset,
+                        int limit)
+        {
+            builder.add(source, offset, limit);
+        }
+
+        @Override
+        public void add(Indexed<? extends T> source)
+        {
+            builder.add(source);
+        }
+    }
 }
