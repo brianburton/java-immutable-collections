@@ -44,13 +44,12 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.array.nodes.ArrayBuilder;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +57,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+import static java.lang.Integer.*;
 import static java.util.Arrays.asList;
 
 public class JImmutableTrieArrayTest
@@ -67,16 +67,18 @@ public class JImmutableTrieArrayTest
     public void testTrimming()
     {
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
-        array = array.assign(0, 0);
+        array = array.assign(0, 2);
 //        array = array.assign(-1, -1);
-        array = array.assign(33, 33);
-        array = array.assign(65, 65);
-        array = array.assign(97, 97);
-        assertEquals("[0=0,33=33,65=65,97=97]", array.toString());
-        assertEquals(33559365, array.hashCode());
-        array = array.delete(-1);
+        array = array.assign(33, 3);
+        array = array.assign(97, 5);
+        array = array.assign(-1234567, 1);
+        array = array.assign(65, 4);
+        assertEquals("[-1234567=1,0=2,33=3,65=4,97=5]", array.toString());
+        assertEquals(-1983045993, array.hashCode());
+        assertSame(array, array.delete(-1));
         array = array.delete(33);
         array = array.delete(97);
+        array = array.delete(-1234567);
         array = array.delete(65);
         array = array.delete(0);
         assertEquals("[]", array.toString());
@@ -89,7 +91,7 @@ public class JImmutableTrieArrayTest
         Map<Integer, Integer> expected = new TreeMap<>();
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
         for (int loop = 1; loop <= 20000; ++loop) {
-            int index = r.nextInt(2000) - 1000;
+            int index = r.nextInt(200000) - 100000;
             int value = r.nextInt();
             switch (r.nextInt(4)) {
                 case 0:
@@ -112,7 +114,7 @@ public class JImmutableTrieArrayTest
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
+            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
         }
         array.checkInvariants();
     }
@@ -142,7 +144,7 @@ public class JImmutableTrieArrayTest
         }
         assertEquals(expected.size(), array.size());
         for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), Integer.MAX_VALUE));
+            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
         }
     }
 
@@ -204,10 +206,10 @@ public class JImmutableTrieArrayTest
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
         array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
 
-        List<Integer> indexes = Arrays.asList(-500, -10, -1, 0, 1, 10, 500);
+        List<Integer> indexes = asList(-500, -10, -1, 0, 1, 10, 500);
         StandardIteratorTests.listIteratorTest(indexes, array.keys().iterator());
 
-        List<Integer> values = Arrays.asList(-5001, -101, -11, 0, 11, 101, 5001);
+        List<Integer> values = asList(-5001, -101, -11, 0, 11, 101, 5001);
         StandardIteratorTests.listIteratorTest(values, array.values().iterator());
 
         List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
@@ -232,16 +234,29 @@ public class JImmutableTrieArrayTest
     public void testSignedOrderIteration()
     {
         final int numLoops = 100000;
-        final int increment = (Integer.MAX_VALUE / numLoops) * 2;
+        final int increment = (MAX_VALUE / numLoops) * 2;
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
         List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
-        int index = Integer.MIN_VALUE;
+        int index = MIN_VALUE;
         for (int i = 0; i < numLoops; ++i) {
             expected.add(MapEntry.of(index, -index));
             array = array.assign(index, -index);
             index += increment;
         }
         StandardIteratorTests.listIteratorTest(expected, array.iterator());
+    }
+
+    public void testIndexMath()
+    {
+        assertEquals(0, ArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(-1));
+        assertEquals(0, ArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(MAX_VALUE));
+
+        assertEquals(MIN_VALUE, ArrayBuilder.rootIndex(MIN_VALUE) + ArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(-1, ArrayBuilder.rootIndex(-1) + ArrayBuilder.nodeIndex(-1));
+        assertEquals(0, ArrayBuilder.rootIndex(0) + ArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, ArrayBuilder.rootIndex(MAX_VALUE) + ArrayBuilder.nodeIndex(MAX_VALUE));
     }
 
     public void testVarious()
@@ -294,28 +309,6 @@ public class JImmutableTrieArrayTest
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public void testIndexedConstructor()
-    {
-        List<Integer> source = new ArrayList<>();
-        for (int length = 1; length <= 1026; ++length) {
-            source.add(length);
-            JImmutableArray<Integer> array = JImmutableTrieArray.of(IndexedList.retained(source), 0, source.size());
-            assertEquals(length, array.size());
-            for (int i = 0; i < source.size(); ++i) {
-                assertEquals(source.get(i), array.get(i));
-            }
-
-            if (length > 1) {
-                array = JImmutableTrieArray.of(IndexedList.retained(source), 1, length);
-                assertEquals(length - 1, array.size());
-                for (int i = 0; i < array.size(); ++i) {
-                    assertEquals(source.get(i + 1), array.get(i));
-                }
-            }
-        }
-    }
-
     public void testSerialization()
         throws Exception
     {
@@ -335,12 +328,13 @@ public class JImmutableTrieArrayTest
         assertSame(JImmutableTrieArray.of(), JImmutableTrieArray.builder().build());
 
         final List<Integer> expected = new ArrayList<>();
-        final JImmutableTrieArray.Builder<Integer> builder = JImmutableTrieArray.builder();
+        final JImmutableArray.Builder<Integer> builder = JImmutableTrieArray.builder();
+        JImmutableArray<Integer> array;
         JImmutableArray<Integer> manual = JImmutableTrieArray.of();
         for (int length = 1; length <= 1024; ++length) {
             expected.add(length);
             manual = manual.assign(length - 1, length);
-            JImmutableArray<Integer> array = builder.add(length).build();
+            array = builder.add(length).build();
             assertEquals(array.getMap(), manual.getMap());
             assertEquals(length, array.size());
             for (int i = 0; i < expected.size(); ++i) {
@@ -352,14 +346,15 @@ public class JImmutableTrieArrayTest
         for (int length = 1025; length <= 10000; ++length) {
             expected.add(length);
             manual = manual.assign(length - 1, length);
-            JImmutableArray<Integer> array = builder.add(length).build();
+            array = builder.add(length).build();
             assertEquals(length, array.size());
             for (int i = 0; i < expected.size(); ++i) {
                 assertEquals(expected.get(i), array.get(i));
             }
             array.checkInvariants();
         }
-        assertEquals(manual, builder.build());
+        array = builder.build();
+        assertEquals(manual, array);
 
         Func0<JImmutableArray.Builder<Integer>> factory = () -> JImmutableTrieArray.builder();
 

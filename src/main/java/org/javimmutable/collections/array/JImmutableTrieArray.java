@@ -36,15 +36,18 @@
 package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.nodes.ArrayBuilder;
+import org.javimmutable.collections.array.nodes.ArrayEmptyNode;
+import org.javimmutable.collections.array.nodes.ArrayNode;
+import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
@@ -53,30 +56,50 @@ import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collector;
 
-@Immutable
+import static org.javimmutable.collections.MapEntry.entry;
+import static org.javimmutable.collections.array.nodes.ArrayBuilder.*;
+
 public class JImmutableTrieArray<T>
     implements Serializable,
-               JImmutableArray<T>
+               JImmutableArray<T>,
+               ArrayHelper.Allocator<ArrayNode<T>>
 {
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of());
-    private static final long serialVersionUID = -121805;
+    @SuppressWarnings("rawtypes")
+    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray();
 
-    private final TrieNode<T> root;
+    private final ArrayNode<T> negative;
+    private final ArrayNode<T> positive;
+    private final int size;
 
-    private JImmutableTrieArray(TrieNode<T> root)
+    private JImmutableTrieArray()
     {
-        this.root = root;
+        negative = ArrayEmptyNode.of();
+        positive = ArrayEmptyNode.of();
+        this.size = 0;
     }
 
-    public static <T> Builder<T> builder()
+    private JImmutableTrieArray(ArrayNode<T> negative,
+                                ArrayNode<T> positive,
+                                int size)
+    {
+        this.negative = negative;
+        this.positive = positive;
+        this.size = size;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> JImmutableArray<T> of()
+    {
+        return (JImmutableArray<T>)EMPTY;
+    }
+
+    public static <T> JImmutableArray.Builder<T> builder()
     {
         return new Builder<>();
     }
@@ -84,134 +107,121 @@ public class JImmutableTrieArray<T>
     @Nonnull
     public static <T> Collector<T, ?, JImmutableArray<T>> collector()
     {
-        return Collector.<T, Builder<T>, JImmutableArray<T>>of(() -> new Builder<>(),
-                                                               (b, v) -> b.add(v),
-                                                               (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
-                                                               b -> b.build());
+        return Collector.<T, JImmutableTrieArray.Builder<T>, JImmutableArray<T>>of(() -> new Builder<>(),
+                                                                                   (b, v) -> b.add(v),
+                                                                                   (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                                                   b -> b.build());
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> JImmutableTrieArray<T> of()
+    @Nonnull
+    private ArrayNode<T> root(int userIndex)
     {
-        return EMPTY;
+        return userIndex < 0 ? negative : positive;
     }
 
-    /**
-     * Efficiently constructs a TrieArray containing the objects from source (in the specified range).
-     * In the constructed TrieArray objects will have array indexes starting at 0 (i.e. indexes
-     * from the source are not carried over) so if offset is 10 then source.get(10) will map to
-     * array.get(0).
-     *
-     * @deprecated use builder() instead
-     */
-    @Deprecated
-    public static <T> JImmutableArray<T> of(Indexed<? extends T> source,
-                                            int offset,
-                                            int limit)
+    @Nonnull
+    private JImmutableArray<T> withRoot(int userIndex,
+                                        @Nonnull ArrayNode<T> newRoot,
+                                        int size)
     {
-        return JImmutableTrieArray.<T>builder().add(source, offset, limit).build();
+        if (userIndex < 0) {
+            return new JImmutableTrieArray<>(newRoot, positive, size);
+        } else {
+            return new JImmutableTrieArray<>(negative, newRoot, size);
+        }
     }
 
-    @Override
     @Nullable
+    @Override
     public T get(int index)
     {
-        return find(index).getValueOrNull();
+        return getValueOr(index, null);
     }
 
     @Override
     public T getValueOr(int index,
                         @Nullable T defaultValue)
     {
-        if (root.getShift() < TrieNode.shiftForIndex(index)) {
-            return defaultValue;
-        } else {
-            return root.getValueOr(root.getShift(), index, defaultValue);
-        }
+        final int nodeIndex = nodeIndex(index);
+        return root(index).getValueOr(ArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<T> find(int index)
     {
-        if (root.getShift() < TrieNode.shiftForIndex(index)) {
-            return Holders.of();
-        } else {
-            return root.find(root.getShift(), index);
+        final int nodeIndex = nodeIndex(index);
+        return root(index).find(ArrayNode.ROOT_SHIFTS, nodeIndex);
+    }
+
+    @Nonnull
+    @Override
+    public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int index)
+    {
+        return find(index).map(v -> entry(index, v));
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArray<T> assign(int index,
+                                     @Nullable T value)
+    {
+        final int entryBaseIndex = rootIndex(index);
+        final int nodeIndex = nodeIndex(index);
+        final ArrayNode<T> child = root(index);
+        final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
+        final int newSize = size - child.iterableSize() + newChild.iterableSize();
+        return withRoot(index, newChild, newSize);
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArray<T> delete(int index)
+    {
+        final int nodeIndex = nodeIndex(index);
+        final ArrayNode<T> child = root(index);
+        final ArrayNode<T> newChild = child.delete(ArrayNode.ROOT_SHIFTS, nodeIndex);
+        if (newChild != child) {
+            final int newSize = size - child.iterableSize() + newChild.iterableSize();
+            if (newSize == 0) {
+                return of();
+            } else {
+                return withRoot(index, newChild, newSize);
+            }
         }
-    }
-
-    @Nonnull
-    @Override
-    public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int key)
-    {
-        Holder<T> value = find(key);
-        return value.isFilled() ? Holders.of(MapEntry.of(key, value.getValue())) : Holders.of();
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableTrieArray<T> assign(int index,
-                                         @Nullable T value)
-    {
-        TrieNode<T> newRoot = root.paddedToMinimumDepthForShift(TrieNode.shiftForIndex(index));
-        newRoot = newRoot.assign(newRoot.getShift(), index, value);
-        return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
-    }
-
-    /**
-     * Adds the key/value pair to this map.  Any value already existing for the specified key
-     * is replaced with the new value.
-     */
-    @Override
-    @Nonnull
-    public JImmutableArray<T> insert(@Nullable JImmutableMap.Entry<Integer, T> e)
-    {
-        return (e == null) ? this : assign(e.getKey(), e.getValue());
-    }
-
-    @Nonnull
-    @Override
-    public JImmutableTrieArray<T> delete(int index)
-    {
-        if (root.getShift() < TrieNode.shiftForIndex(index)) {
-            return this;
-        } else {
-            final TrieNode<T> newRoot = root.delete(root.getShift(), index).trimmedToMinimumDepth();
-            return (newRoot == root) ? this : new JImmutableTrieArray<>(newRoot);
-        }
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return root.isEmpty();
-    }
-
-    @Override
-    public boolean isNonEmpty()
-    {
-        return !root.isEmpty();
+        return this;
     }
 
     @Override
     public int size()
     {
-        return root.valueCount();
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return size == 0;
+    }
+
+    @Override
+    public boolean isNonEmpty()
+    {
+        return size != 0;
     }
 
     @Nonnull
     @Override
-    public JImmutableTrieArray<T> deleteAll()
+    public JImmutableArray<T> deleteAll()
     {
         return of();
     }
 
     @Nonnull
     @Override
-    public JImmutableArray<T> getInsertableSelf()
+    public Map<Integer, T> getMap()
     {
-        return this;
+        return ArrayToMapAdaptor.of(this);
     }
 
     @Nonnull
@@ -228,30 +238,46 @@ public class JImmutableTrieArray<T>
         return TransformStreamable.ofValues(this);
     }
 
+    @Nonnull
     @Override
-    public int getSpliteratorCharacteristics()
+    public JImmutableArray<T> insert(JImmutableMap.Entry<Integer, T> e)
     {
-        return StreamConstants.SPLITERATOR_ORDERED;
+        return (e == null) ? this : assign(e.getKey(), e.getValue());
+    }
+
+    @Nonnull
+    @Override
+    public JImmutableArray<T> getInsertableSelf()
+    {
+        return this;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        negative.checkInvariants();
+        positive.checkInvariants();
     }
 
     @Nonnull
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return new GenericIterator<>(root, 0, root.valueCount());
+        return new GenericIterator<>(new IterableChildren(), 0, size);
     }
 
+    @Override
+    public int getSpliteratorCharacteristics()
+    {
+        return StreamConstants.SPLITERATOR_ORDERED;
+    }
+
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public Map<Integer, T> getMap()
+    public ArrayNode<T>[] allocate(int size)
     {
-        return ArrayToMapAdaptor.of(this);
-    }
-
-    @Override
-    public void checkInvariants()
-    {
-        root.checkInvariants();
+        return (ArrayNode<T>[])new ArrayNode[size];
     }
 
     @SuppressWarnings("rawtypes")
@@ -278,15 +304,35 @@ public class JImmutableTrieArray<T>
         return new JImmutableArrayProxy(this);
     }
 
+    private class IterableChildren
+        implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
+    {
+        @Nullable
+        @Override
+        public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                       int offset,
+                                                                                       int limit)
+        {
+            final Indexed<ArrayNode<T>> source = IndexedHelper.indexed(negative, positive);
+            return GenericIterator.indexedState(parent, source, offset, limit);
+        }
+
+        @Override
+        public int iterableSize()
+        {
+            return JImmutableTrieArray.this.size;
+        }
+    }
+
     @ThreadSafe
     public static class Builder<T>
         implements JImmutableArray.Builder<T>
     {
-        private final TrieArrayBuilder<T> builder;
+        private final ArrayBuilder<T> builder;
 
         private Builder()
         {
-            builder = new TrieArrayBuilder<>();
+            builder = new ArrayBuilder<>();
         }
 
         @Override
@@ -299,13 +345,13 @@ public class JImmutableTrieArray<T>
         @Override
         public synchronized JImmutableArray.Builder<T> clear()
         {
-            builder.clear();
+            builder.reset();
             return this;
         }
 
         @Nonnull
         @Override
-        public synchronized Builder<T> add(T value)
+        public synchronized JImmutableArray.Builder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -313,15 +359,15 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized JImmutableTrieArray<T> build()
+        public synchronized JImmutableArray<T> build()
         {
-            return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build());
+            return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.buildNegativeRoot(), builder.buildPositiveRoot(), builder.size());
         }
 
         @Nonnull
         private synchronized Iterator<T> iterator()
         {
-            return TransformIterator.of(builder.build().iterator(), JImmutableMap.Entry::getValue);
+            return TransformIterator.of(builder.iterator(), JImmutableMap.Entry::getValue);
         }
     }
 }
