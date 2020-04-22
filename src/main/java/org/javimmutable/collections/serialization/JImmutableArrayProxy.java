@@ -36,7 +36,6 @@
 package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 
 import java.io.Externalizable;
@@ -47,21 +46,21 @@ import java.io.ObjectOutput;
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class JImmutableArrayProxy
     implements Externalizable
 {
     private static final long serialVersionUID = -121805;
     private static final int LIST_VERSION = 1001;
 
-    private JImmutableArray list;
+    private JImmutableArray<Object> list;
 
     public JImmutableArrayProxy()
     {
         this.list = JImmutableTrieArray.of();
     }
 
-    public JImmutableArrayProxy(JImmutableTrieArray list)
+    public JImmutableArrayProxy(JImmutableArray list)
     {
         this.list = list;
     }
@@ -72,10 +71,10 @@ public class JImmutableArrayProxy
     {
         out.writeInt(LIST_VERSION);
         out.writeInt(list.size());
-        for (JImmutableMap.Entry entry : (Iterable<JImmutableMap.Entry>)list) {
-            out.writeInt((Integer)entry.getKey());
+        list.forEachThrows(entry -> {
+            out.writeInt(entry.getKey());
             out.writeObject(entry.getValue());
-        }
+        });
     }
 
     @Override
@@ -87,11 +86,13 @@ public class JImmutableArrayProxy
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
         final int size = in.readInt();
+        final JImmutableArray.Builder builder = list.arrayBuilder();
         for (int i = 0; i < size; ++i) {
             final int index = in.readInt();
             final Object value = in.readObject();
-            list = list.assign(index, value);
+            builder.put(index, value);
         }
+        list = builder.build();
     }
 
     private Object readResolve()

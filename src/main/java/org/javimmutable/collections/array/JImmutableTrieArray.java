@@ -299,6 +299,13 @@ public class JImmutableTrieArray<T>
         return IteratorHelper.iteratorToString(iterator());
     }
 
+    @Nonnull
+    @Override
+    public JImmutableArray.Builder<T> arrayBuilder()
+    {
+        return new Builder<>();
+    }
+
     private Object writeReplace()
     {
         return new JImmutableArrayProxy(this);
@@ -354,6 +361,22 @@ public class JImmutableTrieArray<T>
         public synchronized JImmutableArray.Builder<T> add(T value)
         {
             builder.add(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public synchronized JImmutableArray.Builder<T> put(int index,
+                                                           T value)
+        {
+            builder.put(index, value);
+            return this;
+        }
+
+        @Override
+        public synchronized JImmutableArray.Builder<T> setNextIndex(int index)
+        {
+            builder.setNextIndex(index);
             return this;
         }
 

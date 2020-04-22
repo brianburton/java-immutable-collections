@@ -82,7 +82,21 @@ public interface JImmutableArray<T>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
+        Builder<T> put(int index,
+                       T value);
+
+        /**
+         * Adds the specified value to the values included in the collection when build() is called.
+         *
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
         Builder<T> add(T value);
+
+        /**
+         * Sets the index at which next call to add() will insert the value.
+         */
+        Builder<T> setNextIndex(int index);
 
         /**
          * Adds all values in the Iterator to the values included in the collection when build() is called.
@@ -151,6 +165,25 @@ public interface JImmutableArray<T>
         {
             return add(source, 0, source.size());
         }
+
+        /**
+         * Adds all values from the provided Iterator using the entry keys as indexes and the
+         * entry values as values.  Intended to simplify adding all values from an existing
+         * JImmutableArray or JImmutableMap into a new Builder.
+         *
+         * @param source Iterator containing entries to add
+         * @return the builder (convenience for chaining multiple calls)
+         */
+        @Nonnull
+        default Builder<T> putAll(@Nonnull Iterator<JImmutableMap.Entry<Integer, ? extends T>> source)
+        {
+            while (source.hasNext()) {
+                final JImmutableMap.Entry<Integer, ? extends T> entry = source.next();
+                put(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
 
         /**
          * Removes all objects and resets the builder to it's initial post-build state.
@@ -271,4 +304,12 @@ public interface JImmutableArray<T>
      */
     @Nonnull
     IterableStreamable<T> values();
+
+    /**
+     * Creates and returns a new Builder object for the same value type as this array.
+     *
+     * @return An empty Builder object ready for use to create a new JImmutableArray.
+     */
+    @Nonnull
+    Builder<T> arrayBuilder();
 }
