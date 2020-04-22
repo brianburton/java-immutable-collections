@@ -148,4 +148,10 @@ public class ArraySingleLeafNode<T>
     {
         return true;
     }
+
+    @Override
+    int shiftCount()
+    {
+        return LEAF_SHIFTS;
+    }
 }

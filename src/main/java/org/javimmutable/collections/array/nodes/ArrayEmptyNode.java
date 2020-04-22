@@ -122,4 +122,10 @@ public class ArrayEmptyNode<T>
     {
         return false;
     }
+
+    @Override
+    int shiftCount()
+    {
+        return ROOT_SHIFTS;
+    }
 }

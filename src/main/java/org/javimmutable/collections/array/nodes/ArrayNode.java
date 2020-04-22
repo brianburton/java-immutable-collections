@@ -41,6 +41,8 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.iterators.GenericIterator;
 
+import javax.annotation.Nonnull;
+
 public abstract class ArrayNode<T>
     implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
                InvariantCheckable
@@ -67,4 +69,34 @@ public abstract class ArrayNode<T>
                                         int index);
 
     abstract boolean isLeaf();
+
+    abstract int shiftCount();
+
+    static <T> boolean checkChildShifts(int shiftCount,
+                                        @Nonnull ArrayNode<T>[] children)
+    {
+        if (shiftCount == PARENT_SHIFTS) {
+            for (ArrayNode<T> child : children) {
+                if (!child.isLeaf()) {
+                    return false;
+                }
+            }
+        } else {
+            for (ArrayNode<T> child : children) {
+                if (shiftCount <= child.shiftCount()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    static <T> int computeSize(@Nonnull ArrayNode<T>[] children)
+    {
+        int total = 0;
+        for (ArrayNode<T> child : children) {
+            total += child.iterableSize();
+        }
+        return total;
+    }
 }

@@ -222,4 +222,10 @@ public class ArrayLeafNode<T>
     {
         return true;
     }
+
+    @Override
+    int shiftCount()
+    {
+        return LEAF_SHIFTS;
+    }
 }

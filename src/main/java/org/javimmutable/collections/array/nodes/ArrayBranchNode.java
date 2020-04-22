@@ -70,8 +70,20 @@ public class ArrayBranchNode<T>
         this.bitmask = bitmask;
         this.children = children;
         this.size = size;
-        assert checkChildShifts();
-        assert computeSize() == size;
+        assert checkChildShifts(shiftCount, children);
+        assert computeSize(children) == size;
+    }
+
+    static <T> ArrayNode<T> fullWithout(int shiftCount,
+                                        int baseIndex,
+                                        int removeIndex,
+                                        ArrayNode<T>[] children,
+                                        int size)
+    {
+        final long bit = bitFromIndex(removeIndex);
+        final long bitmask = removeBit(-1L, bit);
+        final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, removeIndex);
+        return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, size);
     }
 
     static <T> ArrayNode<T> forChildren(int index1,
@@ -181,7 +193,11 @@ public class ArrayBranchNode<T>
         } else {
             final ArrayNode<T> newChild = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
             final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayBranchNode::allocate, children, arrayIndex, newChild);
-            return new ArrayBranchNode<>(shiftCount, baseIndex, addBit(bitmask, bit), newChildren, size + 1);
+            if (newChildren.length == ARRAY_SIZE) {
+                return new ArrayFullBranchNode<>(shiftCount, baseIndex, newChildren, size + 1);
+            } else {
+                return new ArrayBranchNode<>(shiftCount, baseIndex, addBit(bitmask, bit), newChildren, size + 1);
+            }
         }
     }
 
@@ -245,11 +261,11 @@ public class ArrayBranchNode<T>
         if (children.length < 2) {
             throw new IllegalStateException(String.format("fewer than 2 children in branch: length=%d", children.length));
         }
-        if (!checkChildShifts()) {
+        if (!checkChildShifts(shiftCount, children)) {
             throw new IllegalStateException("one or more children invalid for this branch");
         }
-        if (computeSize() != size) {
-            throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computeSize()));
+        if (computeSize(children) != size) {
+            throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computeSize(children)));
         }
     }
 
@@ -259,39 +275,16 @@ public class ArrayBranchNode<T>
         return false;
     }
 
+    @Override
+    int shiftCount()
+    {
+        return shiftCount;
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     private static <T> ArrayNode<T>[] allocate(int size)
     {
         return (ArrayNode<T>[])new ArrayNode[size];
-    }
-
-    private boolean checkChildShifts()
-    {
-        if (shiftCount == PARENT_SHIFTS) {
-            for (ArrayNode<T> child : children) {
-                if (!child.isLeaf()) {
-                    return false;
-                }
-            }
-        } else {
-            for (ArrayNode<T> child : children) {
-                if (child instanceof ArrayBranchNode) {
-                    if (shiftCount <= ((ArrayBranchNode<?>)child).shiftCount) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private int computeSize()
-    {
-        int total = 0;
-        for (ArrayNode<T> child : children) {
-            total += child.iterableSize();
-        }
-        return total;
     }
 }
