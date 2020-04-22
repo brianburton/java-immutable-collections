@@ -40,6 +40,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.array.nodes.ArrayBuilder;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
@@ -240,15 +241,15 @@ public class JImmutableNodeArrayTest
 
     public void testIndexMath()
     {
-        assertEquals(0, JImmutableNodeArray.nodeIndex(MIN_VALUE));
-        assertEquals(MAX_VALUE, JImmutableNodeArray.nodeIndex(-1));
-        assertEquals(0, JImmutableNodeArray.nodeIndex(0));
-        assertEquals(MAX_VALUE, JImmutableNodeArray.nodeIndex(MAX_VALUE));
+        assertEquals(0, ArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(-1));
+        assertEquals(0, ArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(MAX_VALUE));
 
-        assertEquals(MIN_VALUE, JImmutableNodeArray.entryBaseIndex(MIN_VALUE) + JImmutableNodeArray.nodeIndex(MIN_VALUE));
-        assertEquals(-1, JImmutableNodeArray.entryBaseIndex(-1) + JImmutableNodeArray.nodeIndex(-1));
-        assertEquals(0, JImmutableNodeArray.entryBaseIndex(0) + JImmutableNodeArray.nodeIndex(0));
-        assertEquals(MAX_VALUE, JImmutableNodeArray.entryBaseIndex(MAX_VALUE) + JImmutableNodeArray.nodeIndex(MAX_VALUE));
+        assertEquals(MIN_VALUE, ArrayBuilder.rootIndex(MIN_VALUE) + ArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(-1, ArrayBuilder.rootIndex(-1) + ArrayBuilder.nodeIndex(-1));
+        assertEquals(0, ArrayBuilder.rootIndex(0) + ArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, ArrayBuilder.rootIndex(MAX_VALUE) + ArrayBuilder.nodeIndex(MAX_VALUE));
     }
 
     public void testVarious()

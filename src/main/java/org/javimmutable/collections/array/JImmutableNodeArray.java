@@ -41,6 +41,7 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.nodes.ArrayBuilder;
 import org.javimmutable.collections.array.nodes.ArrayEmptyNode;
 import org.javimmutable.collections.array.nodes.ArrayNode;
 import org.javimmutable.collections.common.ArrayHelper;
@@ -49,16 +50,19 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
+import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
+import static org.javimmutable.collections.array.nodes.ArrayBuilder.*;
 
 public class JImmutableNodeArray<T>
     implements Serializable,
@@ -126,16 +130,6 @@ public class JImmutableNodeArray<T>
         }
     }
 
-    static int entryBaseIndex(int userIndex)
-    {
-        return userIndex < 0 ? Integer.MIN_VALUE : 0;
-    }
-
-    static int nodeIndex(int userIndex)
-    {
-        return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
-    }
-
     @Nullable
     @Override
     public T get(int index)
@@ -171,7 +165,7 @@ public class JImmutableNodeArray<T>
     public JImmutableArray<T> assign(int index,
                                      @Nullable T value)
     {
-        final int entryBaseIndex = entryBaseIndex(index);
+        final int entryBaseIndex = rootIndex(index);
         final int nodeIndex = nodeIndex(index);
         final ArrayNode<T> child = root(index);
         final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
@@ -285,6 +279,7 @@ public class JImmutableNodeArray<T>
         return (ArrayNode<T>[])new ArrayNode[size];
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object o)
     {
@@ -323,49 +318,50 @@ public class JImmutableNodeArray<T>
         }
     }
 
+    @ThreadSafe
     public static class Builder<T>
         implements JImmutableArray.Builder<T>
     {
-        private JImmutableArray<T> array;
+        private final ArrayBuilder<T> builder;
 
         private Builder()
         {
-            array = of();
+            builder = new ArrayBuilder<>();
         }
 
         @Override
-        public int size()
+        public synchronized int size()
         {
-            return array.size();
+            return builder.size();
         }
 
         @Nonnull
         @Override
-        public JImmutableArray.Builder<T> clear()
+        public synchronized JImmutableArray.Builder<T> clear()
         {
-            array = of();
+            builder.reset();
             return this;
         }
 
         @Nonnull
         @Override
-        public JImmutableArray.Builder<T> add(T value)
+        public synchronized JImmutableArray.Builder<T> add(T value)
         {
-            array = array.assign(array.size(), value);
+            builder.add(value);
             return this;
         }
 
         @Nonnull
         @Override
-        public JImmutableArray<T> build()
+        public synchronized JImmutableArray<T> build()
         {
-            return array;
+            return builder.size() == 0 ? of() : new JImmutableNodeArray<>(builder.buildNegativeRoot(), builder.buildPositiveRoot(), builder.size());
         }
 
         @Nonnull
-        private Iterator<T> iterator()
+        private synchronized Iterator<T> iterator()
         {
-            return array.values().iterator();
+            return TransformIterator.of(builder.iterator(), JImmutableMap.Entry::getValue);
         }
     }
 }

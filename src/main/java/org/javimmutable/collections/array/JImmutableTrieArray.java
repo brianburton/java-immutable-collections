@@ -54,6 +54,7 @@ import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class JImmutableTrieArray<T>
     implements Serializable,
                JImmutableArray<T>
 {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieNode.of());
     private static final long serialVersionUID = -121805;
 
@@ -253,6 +254,7 @@ public class JImmutableTrieArray<T>
         root.checkInvariants();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object o)
     {
@@ -276,6 +278,7 @@ public class JImmutableTrieArray<T>
         return new JImmutableArrayProxy(this);
     }
 
+    @ThreadSafe
     public static class Builder<T>
         implements JImmutableArray.Builder<T>
     {
@@ -287,14 +290,14 @@ public class JImmutableTrieArray<T>
         }
 
         @Override
-        public int size()
+        public synchronized int size()
         {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public JImmutableArray.Builder<T> clear()
+        public synchronized JImmutableArray.Builder<T> clear()
         {
             builder.clear();
             return this;
@@ -302,7 +305,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public Builder<T> add(T value)
+        public synchronized Builder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -310,15 +313,15 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public JImmutableTrieArray<T> build()
+        public synchronized JImmutableTrieArray<T> build()
         {
             return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.build());
         }
 
         @Nonnull
-        private Iterator<T> iterator()
+        private synchronized Iterator<T> iterator()
         {
-            return TransformIterator.of(builder.build().iterator(), e -> e.getValue());
+            return TransformIterator.of(builder.build().iterator(), JImmutableMap.Entry::getValue);
         }
     }
 }

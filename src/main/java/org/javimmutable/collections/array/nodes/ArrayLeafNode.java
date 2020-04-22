@@ -60,10 +60,10 @@ public class ArrayLeafNode<T>
     private final long bitmask;
     private final T[] values;
 
-    private ArrayLeafNode(int iteratorBaseIndex,
-                          int baseIndex,
-                          long bitmask,
-                          T[] values)
+    ArrayLeafNode(int iteratorBaseIndex,
+                  int baseIndex,
+                  long bitmask,
+                  T[] values)
     {
         assert bitCount(bitmask) == values.length;
         assert values.length >= 2;

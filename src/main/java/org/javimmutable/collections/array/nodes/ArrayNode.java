@@ -51,6 +51,13 @@ public abstract class ArrayNode<T>
     static final int LEAF_SHIFTS = 0;
     static final int PARENT_SHIFTS = 1;
 
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    static <T> ArrayNode<T>[] allocate(int size)
+    {
+        return (ArrayNode<T>[])new ArrayNode[size];
+    }
+
     public abstract boolean isEmpty();
 
     public abstract T getValueOr(int shiftCount,

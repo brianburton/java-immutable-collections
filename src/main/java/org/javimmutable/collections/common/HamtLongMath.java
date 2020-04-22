@@ -36,8 +36,11 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Temp;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
+import java.util.function.IntConsumer;
 
 /**
  * Utility class that supports math related to Hash Array Mapped Tries
@@ -130,6 +133,11 @@ public final class HamtLongMath
         return bitmask & ~bit;
     }
 
+    public static long leastBit(long bitmask)
+    {
+        return Long.lowestOneBit(bitmask);
+    }
+
     public static int indexForBit(long bit)
     {
         return Long.numberOfTrailingZeros(bit);
@@ -168,6 +176,30 @@ public final class HamtLongMath
     public static Indexed<Integer> indices(long bitmask)
     {
         return new Indexes(bitmask);
+    }
+
+    public static void forEachIndex(long bitmask,
+                                    IntConsumer proc)
+    {
+        while (bitmask != 0) {
+            final long bit = leastBit(bitmask);
+            proc.accept(indexForBit(bit));
+            bitmask = removeBit(bitmask, bit);
+        }
+    }
+
+    public static <S, D> void copyToCompactArrayUsingBitmask(long bitmask,
+                                                             @Nonnull S[] source,
+                                                             @Nonnull D[] dest,
+                                                             @Nonnull Function<S, D> transforminator)
+    {
+        assert dest.length == bitCount(bitmask);
+        final Temp.Int1 destIndex = Temp.intVar(0);
+        forEachIndex(bitmask, sourceIndex -> {
+            dest[destIndex.a] = transforminator.apply(source[sourceIndex]);
+            destIndex.a += 1;
+        });
+        assert destIndex.a == dest.length;
     }
 
     public static int hash(int shift5,

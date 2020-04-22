@@ -42,7 +42,6 @@ import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static org.javimmutable.collections.common.HamtLongMath.*;
@@ -56,11 +55,11 @@ public class ArrayBranchNode<T>
     private final ArrayNode<T>[] children;
     private final int size;
 
-    private ArrayBranchNode(int shiftCount,
-                            int baseIndex,
-                            long bitmask,
-                            ArrayNode<T>[] children,
-                            int size)
+    ArrayBranchNode(int shiftCount,
+                    int baseIndex,
+                    long bitmask,
+                    ArrayNode<T>[] children,
+                    int size)
     {
         assert bitCount(bitmask) == children.length;
         assert children.length >= 2;
@@ -81,7 +80,7 @@ public class ArrayBranchNode<T>
     {
         final long bit = bitFromIndex(removeIndex);
         final long bitmask = removeBit(-1L, bit);
-        final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, removeIndex);
+        final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayNode::allocate, children, removeIndex);
         return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, size);
     }
 
@@ -192,7 +191,7 @@ public class ArrayBranchNode<T>
             return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, newChildren, newSize);
         } else {
             final ArrayNode<T> newChild = ArraySingleLeafNode.forValue(entryBaseIndex, index, value);
-            final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayBranchNode::allocate, children, arrayIndex, newChild);
+            final ArrayNode<T>[] newChildren = ArrayHelper.insert(ArrayNode::allocate, children, arrayIndex, newChild);
             if (newChildren.length == ARRAY_SIZE) {
                 return new ArrayFullBranchNode<>(shiftCount, baseIndex, newChildren, size + 1);
             } else {
@@ -227,7 +226,7 @@ public class ArrayBranchNode<T>
                 if (newSize == 0) {
                     return ArrayEmptyNode.of();
                 } else if (newChild.isEmpty()) {
-                    final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayBranchNode::allocate, children, arrayIndex);
+                    final ArrayNode<T>[] newChildren = ArrayHelper.delete(ArrayNode::allocate, children, arrayIndex);
                     if (newChildren.length == 1) {
                         return newChildren[0];
                     } else {
@@ -278,12 +277,5 @@ public class ArrayBranchNode<T>
     int shiftCount()
     {
         return shiftCount;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    private static <T> ArrayNode<T>[] allocate(int size)
-    {
-        return (ArrayNode<T>[])new ArrayNode[size];
     }
 }
