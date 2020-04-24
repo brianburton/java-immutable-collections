@@ -139,13 +139,15 @@ public class ArraySuperNode<T>
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         if (remainder == 0) {
-            if (bitIsPresent(valuesBitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+            final long bitmask = this.valuesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
                 return values[arrayIndex];
             }
         } else {
-            if (bitIsPresent(nodesBitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
                 return nodes[arrayIndex].getValueOr(shiftCount - 1, index, defaultValue);
             }
         }
@@ -161,13 +163,15 @@ public class ArraySuperNode<T>
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         if (remainder == 0) {
-            if (bitIsPresent(valuesBitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+            final long bitmask = this.valuesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
                 return Holders.of(values[arrayIndex]);
             }
         } else {
-            if (bitIsPresent(nodesBitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
                 return nodes[arrayIndex].find(shiftCount - 1, index);
             }
         }
@@ -185,31 +189,34 @@ public class ArraySuperNode<T>
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         if (remainder == 0) {
-            final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-            final long newValuesBitmask = addBit(this.valuesBitmask, bit);
-            final int newBaseIndex = baseIndexAtShift(shiftCount, index);
-            assert newBaseIndex == baseIndex;
-            if (bitIsPresent(this.valuesBitmask, bit)) {
+            assert baseIndexAtShift(shiftCount, index) == baseIndex;
+            final T[] values = this.values;
+            final long bitmask = this.valuesBitmask;
+            final long newBitmask = addBit(bitmask, bit);
+            final int arrayIndex = arrayIndexForBit(bitmask, bit);
+            if (bitIsPresent(bitmask, bit)) {
                 assert entryBaseIndex == this.entryBaseIndex;
                 final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
-                return new ArraySuperNode<>(shiftCount, entryBaseIndex, newBaseIndex, newValuesBitmask, newValues, nodesBitmask, nodes, size);
+                return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size);
             } else {
                 final T[] newValues = ArrayHelper.insert(ArraySuperNode::allocateValues, values, arrayIndex, value);
-                return new ArraySuperNode<>(shiftCount, entryBaseIndex, newBaseIndex, newValuesBitmask, newValues, nodesBitmask, nodes, size + 1);
+                return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
             }
         } else {
-            final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
-            if (bitIsPresent(nodesBitmask, bit)) {
+            final long bitmask = this.nodesBitmask;
+            final int arrayIndex = arrayIndexForBit(bitmask, bit);
+            if (bitIsPresent(bitmask, bit)) {
                 final ArrayNode<T> node = nodes[arrayIndex];
                 final ArrayNode<T> newNode = node.assign(entryBaseIndex, shiftCount - 1, index, value);
                 assert newNode != node;
                 final ArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                 final int newSize = size - node.iterableSize() + newNode.iterableSize();
-                return new ArraySuperNode<>(shiftCount, this.entryBaseIndex, this.baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                return new ArraySuperNode<>(shiftCount, this.entryBaseIndex, this.baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
             } else {
+                final long newBitmask = addBit(bitmask, bit);
                 final ArrayNode<T> newNode = ArraySuperNode.<T>forAssign(shiftCount - 1, entryBaseIndex, index).assign(entryBaseIndex, shiftCount - 1, index, value);
                 final ArrayNode<T>[] newNodes = ArrayHelper.insert(ArraySuperNode::allocateNodes, nodes, arrayIndex, newNode);
-                return new ArraySuperNode<>(shiftCount, this.entryBaseIndex, this.baseIndex, valuesBitmask, values, addBit(nodesBitmask, bit), newNodes, size + 1);
+                return new ArraySuperNode<>(shiftCount, this.entryBaseIndex, this.baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
             }
         }
     }
@@ -223,19 +230,21 @@ public class ArraySuperNode<T>
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         if (remainder == 0) {
-            if (bitIsPresent(valuesBitmask, bit)) {
+            final long bitmask = this.valuesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
                 if (size == 1) {
                     return empty();
                 } else {
-                    final long newBitmask = removeBit(valuesBitmask, bit);
-                    final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                    final long newBitmask = removeBit(bitmask, bit);
+                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
                     final T[] newValues = ArrayHelper.delete(ArraySuperNode::allocateValues, values, arrayIndex);
                     return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
-            if (bitIsPresent(nodesBitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
                 final ArrayNode<T> node = nodes[arrayIndex];
                 final ArrayNode<T> newNode = node.delete(shiftCount - 1, index);
                 if (newNode != node) {
@@ -243,11 +252,12 @@ public class ArraySuperNode<T>
                     if (newSize == 0) {
                         return empty();
                     } else if (newNode.isEmpty()) {
+                        final long newBitmask = removeBit(bitmask, bit);
                         final ArrayNode<T>[] newNodes = ArrayHelper.delete(ArraySuperNode::allocateNodes, nodes, arrayIndex);
-                        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, removeBit(nodesBitmask, bit), newNodes, newSize);
+                        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                     } else {
                         final ArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
                     }
                 }
             }
