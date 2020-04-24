@@ -165,12 +165,30 @@ public final class HamtLongMath
                                        int hashCode)
     {
         final int bitShift = (1 + shiftCount) * SHIFT;
-        return (hashCode >>> bitShift) << bitShift;
+        return bitShift >= 32 ? 0 : (hashCode >>> bitShift) << bitShift;
+    }
+
+    public static int hashCodeBelowShift(int shiftCount,
+                                         int hashCode)
+    {
+        return hashCode & ((1 << shiftCount * SHIFT) - 1);
+    }
+
+    public static int findMinimumShiftForZeroBelowHashCode(int hashCode)
+    {
+        final int bitNumber = (hashCode == 0) ? 1 : Integer.numberOfTrailingZeros(Integer.lowestOneBit(hashCode));
+        return bitNumber / SHIFT;
     }
 
     public static int bitCount(long bitmask)
     {
         return Long.bitCount(bitmask);
+    }
+
+    public static int shift(int shiftCount,
+                            int value)
+    {
+        return value << shiftCount * SHIFT;
     }
 
     @Nonnull

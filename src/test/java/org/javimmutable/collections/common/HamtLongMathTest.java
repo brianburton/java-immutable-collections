@@ -157,11 +157,33 @@ public class HamtLongMathTest
         verifyEquals(0b101001, indexAtShift(2, hashCode));
         verifyEquals(0b100101, indexAtShift(1, hashCode));
         verifyEquals(0b101011, indexAtShift(0, hashCode));
+        verifyEquals(0, baseIndexAtShift(5, hashCode));
         verifyEquals(hash(3, 0, 0, 0, 0, 0), baseIndexAtShift(4, hashCode));
         verifyEquals(hash(3, 0b110001, 0, 0, 0, 0), baseIndexAtShift(3, hashCode));
         verifyEquals(hash(3, 0b110001, 0b100001, 0, 0, 0), baseIndexAtShift(2, hashCode));
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0, 0), baseIndexAtShift(1, hashCode));
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), baseIndexAtShift(0, hashCode));
+    }
+
+    public void testHashCodeBelowShift()
+    {
+        final int hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
+        assertEquals(0, hashCodeBelowShift(0, hashCode));
+        assertEquals(hash(0, 0, 0, 0, 0, 0b101011), hashCodeBelowShift(1, hashCode));
+        assertEquals(hash(0, 0, 0, 0, 0b100101, 0b101011), hashCodeBelowShift(2, hashCode));
+        assertEquals(hash(0, 0, 0, 0b101001, 0b100101, 0b101011), hashCodeBelowShift(3, hashCode));
+        assertEquals(hash(0, 0, 0b100001, 0b101001, 0b100101, 0b101011), hashCodeBelowShift(4, hashCode));
+        assertEquals(hash(0, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011), hashCodeBelowShift(5, hashCode));
+    }
+
+    public void testFindMinimumShiftForZeroBelowHashCode()
+    {
+        assertEquals(0, findMinimumShiftForZeroBelowHashCode(0));
+        assertEquals(0, findMinimumShiftForZeroBelowHashCode(0b0_100000));
+        assertEquals(1, findMinimumShiftForZeroBelowHashCode(0b1_000000));
+        assertEquals(1, findMinimumShiftForZeroBelowHashCode(0b100000_000000));
+        assertEquals(2, findMinimumShiftForZeroBelowHashCode(0b1_000000_000000));
+        assertEquals(2, findMinimumShiftForZeroBelowHashCode(0b100000_000000_000000));
     }
 
     public void testFindMaxCommonShift()

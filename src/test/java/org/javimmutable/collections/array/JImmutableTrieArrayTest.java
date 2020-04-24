@@ -45,17 +45,20 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.nodes.ArrayBuilder;
+import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.*;
 import static java.util.Arrays.asList;
@@ -83,6 +86,30 @@ public class JImmutableTrieArrayTest
         array = array.delete(0);
         assertEquals("[]", array.toString());
         assertEquals(0, array.hashCode());
+    }
+
+    public void testOrder()
+    {
+        final int hash10 = HamtLongMath.hash(0, 1, 0, 0, 0, 0);
+        final int hash11 = HamtLongMath.hash(0, 1, 0, 0, 0, 1);
+        final int hash12 = HamtLongMath.hash(0, 1, 0, 0, 1, 1);
+        final int hash13 = HamtLongMath.hash(0, 1, 0, 0, 2, 1);
+        final int hash20 = HamtLongMath.hash(0, 2, 0, 0, 0, 0);
+        final int hash21 = HamtLongMath.hash(0, 2, 0, 0, 0, 1);
+        final int hash22 = HamtLongMath.hash(0, 2, 0, 0, 1, 1);
+        final int hash23 = HamtLongMath.hash(0, 2, 0, 0, 2, 1);
+
+        JImmutableArray<Integer> a = JImmutableTrieArray.<Integer>of()
+            .assign(hash10, 10)
+            .assign(hash11, 11)
+            .assign(hash12, 12)
+            .assign(hash13, 13)
+            .assign(hash20, 20)
+            .assign(hash21, 21)
+            .assign(hash22, 22)
+            .assign(hash23, 23);
+        List<Integer> keys = a.keys().stream().collect(Collectors.toList());
+        assertEquals(Arrays.asList(hash10, hash11, hash12, hash13, hash20, hash21, hash22, hash23), keys);
     }
 
     public void testRandom()

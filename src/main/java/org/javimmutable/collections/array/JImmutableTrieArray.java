@@ -42,8 +42,8 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.nodes.ArrayBuilder;
-import org.javimmutable.collections.array.nodes.ArrayEmptyNode;
 import org.javimmutable.collections.array.nodes.ArrayNode;
+import org.javimmutable.collections.array.nodes.ArraySuperNode;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -79,8 +79,8 @@ public class JImmutableTrieArray<T>
 
     private JImmutableTrieArray()
     {
-        negative = ArrayEmptyNode.of();
-        positive = ArrayEmptyNode.of();
+        negative = ArraySuperNode.empty();
+        positive = ArraySuperNode.empty();
         this.size = 0;
     }
 
