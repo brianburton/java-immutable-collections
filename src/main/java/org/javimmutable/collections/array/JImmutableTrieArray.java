@@ -66,20 +66,12 @@ public class JImmutableTrieArray<T>
                JImmutableArray<T>,
                ArrayHelper.Allocator<TrieArrayNode<T>>
 {
-    @SuppressWarnings("rawtypes")
-    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray();
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieArrayNode.empty(), TrieArrayNode.empty(), 0);
 
     private final TrieArrayNode<T> negative;
     private final TrieArrayNode<T> positive;
     private final int size;
-
-    private JImmutableTrieArray()
-    {
-        final TrieArrayNode<T> empty = TrieArrayNode.empty();
-        negative = empty;
-        positive = empty;
-        this.size = 0;
-    }
 
     private JImmutableTrieArray(@Nonnull TrieArrayNode<T> negative,
                                 @Nonnull TrieArrayNode<T> positive,
@@ -91,11 +83,13 @@ public class JImmutableTrieArray<T>
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     public static <T> JImmutableArray<T> of()
     {
         return (JImmutableArray<T>)EMPTY;
     }
 
+    @Nonnull
     public static <T> JImmutableArray.Builder<T> builder()
     {
         return new Builder<>();
@@ -140,7 +134,7 @@ public class JImmutableTrieArray<T>
                         @Nullable T defaultValue)
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
-        return root(index).getValueOr(TrieArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
+        return root(index).getValueOr(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex, defaultValue);
     }
 
     @Nonnull
@@ -148,7 +142,7 @@ public class JImmutableTrieArray<T>
     public Holder<T> find(int index)
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
-        return root(index).find(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
+        return root(index).find(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex);
     }
 
     @Nonnull
@@ -165,7 +159,7 @@ public class JImmutableTrieArray<T>
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
-        final TrieArrayNode<T> newChild = child.assign(TrieArrayNode.ROOT_SHIFTS, nodeIndex, value);
+        final TrieArrayNode<T> newChild = child.assign(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex, value);
         final int newSize = size - child.size() + newChild.size();
         return withRoot(index, newChild, newSize);
     }
@@ -176,7 +170,7 @@ public class JImmutableTrieArray<T>
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
-        final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
+        final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex);
         if (newChild != child) {
             final int newSize = size - child.size() + newChild.size();
             if (newSize == 0) {
@@ -253,6 +247,10 @@ public class JImmutableTrieArray<T>
     {
         negative.checkInvariants();
         positive.checkInvariants();
+        final int computedSize = negative.size() + positive.size();
+        if (computedSize != size) {
+            throw new IllegalStateException(String.format("size mismatch: expected=%d actual=%d", computedSize, this.size));
+        }
     }
 
     @Nonnull

@@ -277,19 +277,6 @@ public class JImmutableTrieArrayTest
         StandardIteratorTests.listIteratorTest(expected, array.iterator());
     }
 
-    public void testIndexMath()
-    {
-        assertEquals(0, TrieArrayNode.nodeIndex(MIN_VALUE));
-        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(-1));
-        assertEquals(0, TrieArrayNode.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(MAX_VALUE));
-
-        assertEquals(MIN_VALUE, TrieArrayNode.rootIndex(MIN_VALUE) + TrieArrayNode.nodeIndex(MIN_VALUE));
-        assertEquals(-1, TrieArrayNode.rootIndex(-1) + TrieArrayNode.nodeIndex(-1));
-        assertEquals(0, TrieArrayNode.rootIndex(0) + TrieArrayNode.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayNode.rootIndex(MAX_VALUE) + TrieArrayNode.nodeIndex(MAX_VALUE));
-    }
-
     public void testVarious()
     {
         List<Integer> indexes = createBranchIndexes();

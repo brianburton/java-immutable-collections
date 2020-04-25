@@ -55,16 +55,16 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 class TrieArrayNode<T>
     implements InvariantCheckable
 {
-    static final int ROOT_SHIFTS = HamtLongMath.maxShiftsForBitCount(30);
-    static final int LEAF_SHIFTS = 0;
-    static final int NEGATIVE_BASE_INDEX = rootIndex(-1);
-    static final int POSITIVE_BASE_INDEX = rootIndex(0);
+    static final int LEAF_SHIFT_COUNT = 0;
+    static final int ROOT_SHIFT_COUNT = HamtLongMath.maxShiftsForBitCount(30);
+    static final int NEGATIVE_BASE_INDEX = Integer.MIN_VALUE;
+    static final int POSITIVE_BASE_INDEX = 0;
 
     private static final Object[] EMPTY_VALUES = new Object[0];
     @SuppressWarnings({"rawtypes"})
     private static final TrieArrayNode[] EMPTY_NODES = new TrieArrayNode[0];
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final TrieArrayNode EMPTY = new TrieArrayNode(ROOT_SHIFTS, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieArrayNode EMPTY = new TrieArrayNode(ROOT_SHIFT_COUNT, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shiftCount;
     private final int baseIndex;
@@ -96,11 +96,13 @@ class TrieArrayNode<T>
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     static <T> TrieArrayNode<T> empty()
     {
         return (TrieArrayNode<T>)EMPTY;
     }
 
+    @Nonnull
     private static <T> TrieArrayNode<T> forValue(int shiftCount,
                                                  int index,
                                                  T value)
@@ -114,9 +116,10 @@ class TrieArrayNode<T>
         return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, 1);
     }
 
+    @Nonnull
     private static <T> TrieArrayNode<T> forNode(int shiftCount,
                                                 int nodeBaseIndex,
-                                                TrieArrayNode<T> node)
+                                                @Nonnull TrieArrayNode<T> node)
     {
         final int baseIndex = baseIndexAtShift(shiftCount, nodeBaseIndex);
         final long valueBitmask = 0L;
@@ -206,7 +209,7 @@ class TrieArrayNode<T>
         final int baseIndex = this.baseIndex;
         if (shiftCount != thisShiftCount) {
             assert shiftCount > thisShiftCount;
-            final int valueShiftCount = findMaxCommonShift(ROOT_SHIFTS, baseIndex, index);
+            final int valueShiftCount = findMaxCommonShift(ROOT_SHIFT_COUNT, baseIndex, index);
             assert valueShiftCount <= shiftCount;
             if (valueShiftCount > thisShiftCount) {
                 final TrieArrayNode<T> ancestor = forNode(valueShiftCount, baseIndex, this);
@@ -360,21 +363,16 @@ class TrieArrayNode<T>
         return (TrieArrayNode<T>[])EMPTY_NODES;
     }
 
-    static int rootIndex(int userIndex)
-    {
-        return userIndex < 0 ? Integer.MIN_VALUE : 0;
-    }
-
     static int nodeIndex(int userIndex)
     {
         return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
     }
 
     private static <T> boolean checkChildShifts(int shiftCount,
-                                                @Nonnull TrieArrayNode<T>[] children)
+                                                @Nonnull TrieArrayNode<T>[] nodes)
     {
-        for (TrieArrayNode<T> child : children) {
-            if (shiftCount <= child.shiftCount && !child.isEmpty()) {
+        for (TrieArrayNode<T> node : nodes) {
+            if (shiftCount <= node.shiftCount || node.isEmpty()) {
                 return false;
             }
         }
@@ -393,7 +391,7 @@ class TrieArrayNode<T>
     static boolean isMyValue(int shiftCount,
                              int index)
     {
-        return index == 0 ? (shiftCount == LEAF_SHIFTS) : (hashCodeBelowShift(shiftCount, index) == 0);
+        return index == 0 ? (shiftCount == LEAF_SHIFT_COUNT) : (hashCodeBelowShift(shiftCount, index) == 0);
     }
 
     private class IterableImpl

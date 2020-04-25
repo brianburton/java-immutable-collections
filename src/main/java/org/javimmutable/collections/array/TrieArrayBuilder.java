@@ -52,8 +52,8 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 class TrieArrayBuilder<T>
 {
 
-    private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
-    private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
+    private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
+    private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private int nextIndex = 0;
 
     @Nonnull
@@ -125,8 +125,8 @@ class TrieArrayBuilder<T>
         private Node(int shiftCount,
                      int index)
         {
-            assert shiftCount <= TrieArrayNode.ROOT_SHIFTS;
-            assert shiftCount >= TrieArrayNode.LEAF_SHIFTS;
+            assert shiftCount <= TrieArrayNode.ROOT_SHIFT_COUNT;
+            assert shiftCount >= TrieArrayNode.LEAF_SHIFT_COUNT;
             this.shiftCount = shiftCount;
             baseIndex = baseIndexAtShift(shiftCount, index);
             valuesBitmask = 0;
