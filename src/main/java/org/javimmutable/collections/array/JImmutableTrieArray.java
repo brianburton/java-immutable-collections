@@ -79,8 +79,9 @@ public class JImmutableTrieArray<T>
 
     private JImmutableTrieArray()
     {
-        negative = ArraySuperNode.empty();
-        positive = ArraySuperNode.empty();
+        final ArrayNode<T> empty = ArraySuperNode.empty();
+        negative = empty;
+        positive = empty;
         this.size = 0;
     }
 
