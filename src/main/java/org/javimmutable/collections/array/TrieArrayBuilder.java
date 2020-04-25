@@ -148,9 +148,8 @@ class TrieArrayBuilder<T>
         {
             assert baseIndexAtShift(shiftCount, index) == baseIndex;
             final int myIndex = indexAtShift(shiftCount, index);
-            final int remainder = hashCodeBelowShift(shiftCount, index);
             final long bit = bitFromIndex(myIndex);
-            if (remainder == 0) {
+            if (TrieArrayNode.isMyValue(shiftCount, index)) {
                 valuesBitmask = addBit(valuesBitmask, bit);
                 values[myIndex] = value;
             } else {

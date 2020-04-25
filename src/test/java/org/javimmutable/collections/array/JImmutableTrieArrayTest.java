@@ -78,10 +78,15 @@ public class JImmutableTrieArrayTest
         assertEquals("[-1234567=1,0=2,33=3,65=4,97=5]", array.toString());
         assertEquals(-1983045993, array.hashCode());
         assertSame(array, array.delete(-1));
+        assertEquals("[-1234567=1,0=2,33=3,65=4,97=5]", array.toString());
         array = array.delete(33);
+        assertEquals("[-1234567=1,0=2,65=4,97=5]", array.toString());
         array = array.delete(97);
+        assertEquals("[-1234567=1,0=2,65=4]", array.toString());
         array = array.delete(-1234567);
+        assertEquals("[0=2,65=4]", array.toString());
         array = array.delete(65);
+        assertEquals("[0=2]", array.toString());
         array = array.delete(0);
         assertEquals("[]", array.toString());
         assertEquals(0, array.hashCode());

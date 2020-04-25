@@ -150,9 +150,8 @@ class TrieArrayNode<T>
             shiftCount = thisShiftCount;
         }
         final int myIndex = indexAtShift(shiftCount, index);
-        final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
-        if (remainder == 0) {
+        if (isMyValue(shiftCount, index)) {
             final long bitmask = this.valuesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -181,9 +180,8 @@ class TrieArrayNode<T>
             shiftCount = thisShiftCount;
         }
         final int myIndex = indexAtShift(shiftCount, index);
-        final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
-        if (remainder == 0) {
+        if (isMyValue(shiftCount, index)) {
             final long bitmask = this.valuesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
@@ -218,10 +216,9 @@ class TrieArrayNode<T>
         }
         assert baseIndexAtShift(shiftCount, index) == baseIndex;
         final int myIndex = indexAtShift(shiftCount, index);
-        final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
-        if (remainder == 0) {
+        if (isMyValue(shiftCount, index)) {
             final T[] values = this.values;
             final long newBitmask = addBit(valuesBitmask, bit);
             final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
@@ -269,11 +266,11 @@ class TrieArrayNode<T>
             }
             shiftCount = thisShiftCount;
         }
+        assert baseIndexAtShift(shiftCount, index) == baseIndex;
         final int myIndex = indexAtShift(shiftCount, index);
-        final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
-        if (remainder == 0) {
+        if (isMyValue(shiftCount, index)) {
             if (bitIsPresent(valuesBitmask, bit)) {
                 if (size == 1) {
                     return empty();
@@ -288,6 +285,7 @@ class TrieArrayNode<T>
             final long bitmask = this.nodesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                final TrieArrayNode<T>[] nodes = this.nodes;
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.delete(shiftCount - 1, index);
                 if (newNode != node) {
@@ -297,7 +295,7 @@ class TrieArrayNode<T>
                     } else if (newNode.isEmpty()) {
                         final long newBitmask = removeBit(bitmask, bit);
                         if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
-                            return newNode;
+                            return nodes[arrayIndexForBit(bitmask, newBitmask)];
                         } else {
                             final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
                             return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
@@ -390,6 +388,12 @@ class TrieArrayNode<T>
             total += child.size();
         }
         return total;
+    }
+
+    static boolean isMyValue(int shiftCount,
+                             int index)
+    {
+        return index == 0 ? (shiftCount == LEAF_SHIFTS) : (hashCodeBelowShift(shiftCount, index) == 0);
     }
 
     private class IterableImpl
