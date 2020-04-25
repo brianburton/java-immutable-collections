@@ -54,8 +54,8 @@ public class ArrayBuilder<T>
     private static final int NEGATIVE_BASE_INDEX = rootIndex(-1);
     private static final int POSITIVE_BASE_INDEX = rootIndex(0);
 
-    private final Branch<T> negative = new Branch<>(ArrayNode.ROOT_SHIFTS, 0);
-    private final Branch<T> positive = new Branch<>(ArrayNode.ROOT_SHIFTS, 0);
+    private final Node<T> negative = new Node<>(ArrayNode.ROOT_SHIFTS, 0);
+    private final Node<T> positive = new Node<>(ArrayNode.ROOT_SHIFTS, 0);
     private int nextIndex = 0;
 
     public static int rootIndex(int userIndex)
@@ -120,151 +120,84 @@ public class ArrayBuilder<T>
     }
 
     @Nonnull
-    private BuilderNode<T> rootForIndex(int index)
+    private Node<T> rootForIndex(int index)
     {
         return index < 0 ? negative : positive;
     }
 
-    private static abstract class BuilderNode<T>
-    {
-        abstract void put(int index,
-                          T value);
-
-        @Nonnull
-        abstract ArrayNode<T> toNode(int rootBaseIndex);
-
-        abstract int size();
-    }
-
-    private static class Leaf<T>
-        extends BuilderNode<T>
-    {
-        private final T[] values;
-        private final int baseIndex;
-        private long bitmask;
-
-        private Leaf(int index)
-        {
-            values = ArrayHelper.allocate(ARRAY_SIZE);
-            baseIndex = baseIndexFromHashCode(index);
-            bitmask = 0;
-        }
-
-        void put(int index,
-                 T value)
-        {
-            assert baseIndexFromHashCode(index) == baseIndex;
-            final int valueIndex = indexFromHashCode(index);
-            bitmask = addBit(bitmask, bitFromIndex(valueIndex));
-            values[valueIndex] = value;
-        }
-
-        @Nonnull
-        ArrayNode<T> toNode(int rootBaseIndex)
-        {
-            assert bitmask != 0;
-            final int valueCount = bitCount(bitmask);
-            if (valueCount == 0) {
-                return ArrayEmptyNode.of();
-            } else if (valueCount == 1) {
-                final int valueIndex = indexForBit(bitmask);
-                final int index = baseIndex + valueIndex;
-                return new ArraySingleLeafNode<>(rootBaseIndex + index, index, values[valueIndex]);
-            } else {
-                final T[] nodeValues = ArrayHelper.allocate(valueCount);
-                copyToCompactArrayUsingBitmask(bitmask, values, nodeValues, x -> x);
-                if (valueCount == ARRAY_SIZE) {
-                    return new ArrayFullLeafNode<>(rootBaseIndex + baseIndex, baseIndex, nodeValues);
-                } else {
-                    return new ArrayLeafNode<>(rootBaseIndex + baseIndex, baseIndex, bitmask, nodeValues);
-                }
-            }
-        }
-
-        @Override
-        int size()
-        {
-            return bitCount(bitmask);
-        }
-    }
-
-    private static class Branch<T>
-        extends BuilderNode<T>
+    private static class Node<T>
     {
         private final int shiftCount;
         private final int baseIndex;
-        private final BuilderNode<T>[] children;
-        private long bitmask;
+        private long valuesBitmask;
+        private final T[] values;
+        private long nodesBitmask;
+        private final Node<T>[] nodes;
 
-        private Branch(int shiftCount,
-                       int index)
+        private Node(int shiftCount,
+                     int index)
         {
-            assert shiftCount > ArrayNode.LEAF_SHIFTS;
+            assert shiftCount <= ArrayNode.ROOT_SHIFTS;
+            assert shiftCount >= ArrayNode.LEAF_SHIFTS;
             this.shiftCount = shiftCount;
-            this.baseIndex = baseIndexAtShift(shiftCount, index);
-            children = allocate();
-            bitmask = 0;
+            baseIndex = baseIndexAtShift(shiftCount, index);
+            valuesBitmask = 0;
+            values = ArrayHelper.allocate(ARRAY_SIZE);
+            nodesBitmask = 0;
+            nodes = allocate();
         }
 
         private void reset()
         {
-            Arrays.fill(children, null);
-            bitmask = 0;
+            Arrays.fill(values, null);
+            Arrays.fill(nodes, null);
+            valuesBitmask = 0;
+            nodesBitmask = 0;
         }
 
-        @Override
-        void put(int index,
-                 T value)
+        private void put(int index,
+                         T value)
         {
-            final int childIndex = indexAtShift(shiftCount, index);
-            BuilderNode<T> child = children[childIndex];
-            if (child == null) {
-                if (shiftCount == ArrayNode.PARENT_SHIFTS) {
-                    child = new Leaf<>(index);
-                } else {
-                    child = new Branch<>(shiftCount - 1, index);
+            assert baseIndexAtShift(shiftCount, index) == baseIndex;
+            final int myIndex = indexAtShift(shiftCount, index);
+            final int remainder = hashCodeBelowShift(shiftCount, index);
+            final long bit = bitFromIndex(myIndex);
+            if (remainder == 0) {
+                valuesBitmask = addBit(valuesBitmask, bit);
+                values[myIndex] = value;
+            } else {
+                Node<T> node = nodes[myIndex];
+                if (node == null) {
+                    nodesBitmask = addBit(nodesBitmask, bit);
+                    node = new Node<>(shiftCount - 1, index);
+                    nodes[myIndex] = node;
                 }
-                children[childIndex] = child;
-                bitmask = addBit(bitmask, bitFromIndex(childIndex));
+                node.put(index, value);
             }
-            child.put(index, value);
         }
 
         @Nonnull
-        @Override
-        ArrayNode<T> toNode(int rootBaseIndex)
+        private ArrayNode<T> toNode(int rootBaseIndex)
         {
-            final int childCount = bitCount(bitmask);
-            if (childCount == 0) {
-                return ArrayEmptyNode.of();
-            } else if (childCount == 1) {
-                final int childIndex = indexForBit(bitmask);
-                return children[childIndex].toNode(rootBaseIndex);
-            } else {
-                final ArrayNode<T>[] nodes = ArrayNode.allocate(childCount);
-                copyToCompactArrayUsingBitmask(bitmask, children, nodes, child -> child.toNode(rootBaseIndex));
-                final int size = ArrayNode.computeSize(nodes);
-                if (childCount == ARRAY_SIZE) {
-                    return new ArrayFullBranchNode<>(shiftCount, baseIndex, nodes, size);
-                } else {
-                    return new ArrayBranchNode<>(shiftCount, baseIndex, bitmask, nodes, size);
-                }
-            }
+            final T[] answerValues = ArraySuperNode.allocateValues(bitCount(valuesBitmask));
+            copyToCompactArrayUsingBitmask(valuesBitmask, values, answerValues, x -> x);
+            final ArrayNode<T>[] answerNodes = ArraySuperNode.allocateNodes(bitCount(nodesBitmask));
+            copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode(rootBaseIndex));
+            return new ArraySuperNode<>(shiftCount, rootBaseIndex, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
         }
 
-        @Override
-        int size()
+        private int size()
         {
             final Temp.Int1 sum = Temp.intVar(0);
-            forEachIndex(bitmask, i -> sum.a += children[i].size());
-            return sum.a;
+            forEachIndex(nodesBitmask, i -> sum.a += nodes[i].size());
+            return sum.a + bitCount(valuesBitmask);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> BuilderNode<T>[] allocate()
+    private static <T> Node<T>[] allocate()
     {
-        return (BuilderNode<T>[])new BuilderNode[ARRAY_SIZE];
+        return (Node<T>[])new Node[ARRAY_SIZE];
     }
 }

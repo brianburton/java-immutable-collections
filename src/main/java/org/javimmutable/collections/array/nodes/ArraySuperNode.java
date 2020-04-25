@@ -68,17 +68,17 @@ public class ArraySuperNode<T>
     private final ArrayNode<T>[] nodes;
     private final int size;
 
-    private ArraySuperNode(int shiftCount,
-                           int entryBaseIndex,
-                           int baseIndex,
-                           long valuesBitmask,
-                           T[] values,
-                           long nodesBitmask,
-                           @Nonnull ArrayNode<T>[] nodes,
-                           int size)
-    {
-        assert bitCount(valuesBitmask) == values.length;
-        assert bitCount(nodesBitmask) == nodes.length;
+     ArraySuperNode(int shiftCount,
+                    int entryBaseIndex,
+                    int baseIndex,
+                    long valuesBitmask,
+                    T[] values,
+                    long nodesBitmask,
+                    @Nonnull ArrayNode<T>[] nodes,
+                    int size)
+     {
+         assert bitCount(valuesBitmask) == values.length;
+         assert bitCount(nodesBitmask) == nodes.length;
         this.shiftCount = shiftCount;
         this.entryBaseIndex = entryBaseIndex;
         this.baseIndex = baseIndex;
@@ -385,13 +385,13 @@ public class ArraySuperNode<T>
     }
 
     @Nonnull
-    private static <T> T[] allocateValues(int size)
+    static <T> T[] allocateValues(int size)
     {
         return size == 0 ? emptyValues() : ArrayHelper.allocate(size);
     }
 
     @Nonnull
-    private static <T> ArrayNode<T>[] allocateNodes(int size)
+    static <T> ArrayNode<T>[] allocateNodes(int size)
     {
         return size == 0 ? emptyNodes() : allocate(size);
     }
