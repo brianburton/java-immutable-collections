@@ -154,12 +154,13 @@ public class ArraySuperNode<T>
                         int index,
                         T defaultValue)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return defaultValue;
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int myIndex = indexAtShift(shiftCount, index);
         final int remainder = hashCodeBelowShift(shiftCount, index);
@@ -184,12 +185,13 @@ public class ArraySuperNode<T>
     public Holder<T> find(int shiftCount,
                           int index)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return Holders.of();
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int myIndex = indexAtShift(shiftCount, index);
         final int remainder = hashCodeBelowShift(shiftCount, index);
@@ -216,26 +218,28 @@ public class ArraySuperNode<T>
                                int index,
                                T value)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount > this.shiftCount;
+        final int thisShiftCount = this.shiftCount;
+        final int baseIndex = this.baseIndex;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount > thisShiftCount;
             final int valueShiftCount = findMaxCommonShift(ROOT_SHIFTS, baseIndex, index);
             assert valueShiftCount <= shiftCount;
-            if (valueShiftCount > this.shiftCount) {
+            if (valueShiftCount > thisShiftCount) {
                 final ArrayNode<T> ancestor = forAssign(valueShiftCount, entryBaseIndex, baseIndex, this);
                 return ancestor.assign(entryBaseIndex, valueShiftCount, index, value);
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         assert baseIndexAtShift(shiftCount, index) == baseIndex;
         final int myIndex = indexAtShift(shiftCount, index);
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
+        final long valuesBitmask = this.valuesBitmask;
         if (remainder == 0) {
             final T[] values = this.values;
-            final long bitmask = this.valuesBitmask;
-            final long newBitmask = addBit(bitmask, bit);
-            final int arrayIndex = arrayIndexForBit(bitmask, bit);
-            if (bitIsPresent(bitmask, bit)) {
+            final long newBitmask = addBit(valuesBitmask, bit);
+            final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+            if (bitIsPresent(valuesBitmask, bit)) {
                 assert entryBaseIndex == this.entryBaseIndex;
                 final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
                 return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size);
@@ -259,10 +263,10 @@ public class ArraySuperNode<T>
                 final int valueShiftCount = findMinimumShiftForZeroBelowHashCode(index);
                 assert valueShiftCount < shiftCount;
                 final ArrayNode<T> newNode = forAssign(valueShiftCount, entryBaseIndex, index, value);
-                final ArrayNode<T>[] newNodes = ArrayHelper.insert(ArraySuperNode::allocateNodes, nodes, arrayIndex, newNode);
-                if (newNodes.length == 1 && valuesBitmask == 0) {
+                if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                     return newNode;
                 } else {
+                    final ArrayNode<T>[] newNodes = ArrayHelper.insert(ArraySuperNode::allocateNodes, nodes, arrayIndex, newNode);
                     return new ArraySuperNode<>(shiftCount, entryBaseIndex, this.baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
@@ -273,24 +277,25 @@ public class ArraySuperNode<T>
     public ArrayNode<T> delete(int shiftCount,
                                int index)
     {
-        if (shiftCount != this.shiftCount) {
-            assert shiftCount >= this.shiftCount;
-            if (baseIndexAtShift(this.shiftCount, index) != baseIndex) {
+        final int thisShiftCount = this.shiftCount;
+        if (shiftCount != thisShiftCount) {
+            assert shiftCount >= thisShiftCount;
+            if (baseIndexAtShift(thisShiftCount, index) != baseIndex) {
                 return this;
             }
-            shiftCount = this.shiftCount;
+            shiftCount = thisShiftCount;
         }
         final int myIndex = indexAtShift(shiftCount, index);
         final int remainder = hashCodeBelowShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
+        final long valuesBitmask = this.valuesBitmask;
         if (remainder == 0) {
-            final long bitmask = this.valuesBitmask;
-            if (bitIsPresent(bitmask, bit)) {
+            if (bitIsPresent(valuesBitmask, bit)) {
                 if (size == 1) {
                     return empty();
                 } else {
-                    final long newBitmask = removeBit(bitmask, bit);
-                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                    final long newBitmask = removeBit(valuesBitmask, bit);
+                    final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
                     final T[] newValues = ArrayHelper.delete(ArraySuperNode::allocateValues, values, arrayIndex);
                     return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
@@ -307,10 +312,10 @@ public class ArraySuperNode<T>
                         return empty();
                     } else if (newNode.isEmpty()) {
                         final long newBitmask = removeBit(bitmask, bit);
-                        final ArrayNode<T>[] newNodes = ArrayHelper.delete(ArraySuperNode::allocateNodes, nodes, arrayIndex);
-                        if (newNodes.length == 1 && valuesBitmask == 0) {
+                        if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                             return newNode;
                         } else {
+                            final ArrayNode<T>[] newNodes = ArrayHelper.delete(ArraySuperNode::allocateNodes, nodes, arrayIndex);
                             return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
