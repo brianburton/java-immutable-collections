@@ -33,13 +33,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.array.nodes;
+package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ArrayHelper;
+import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -50,14 +52,26 @@ import java.util.List;
 
 import static org.javimmutable.collections.common.HamtLongMath.*;
 
-public class ArraySuperNode<T>
-    extends ArrayNode<T>
+class TrieArrayNode<T>
+    implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>,
+               InvariantCheckable
 {
+    static final int ROOT_SHIFTS = HamtLongMath.maxShiftsForBitCount(30);
+    static final int LEAF_SHIFTS = 0;
+    static final int PARENT_SHIFTS = 1;
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    static <T> TrieArrayNode<T>[] allocate(int size)
+    {
+        return (TrieArrayNode<T>[])new TrieArrayNode[size];
+    }
+
     private static final Object[] EMPTY_VALUES = new Object[0];
     @SuppressWarnings({"rawtypes"})
-    private static final ArrayNode[] EMPTY_NODES = new ArrayNode[0];
+    private static final TrieArrayNode[] EMPTY_NODES = new TrieArrayNode[0];
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final ArraySuperNode EMPTY = new ArraySuperNode(ROOT_SHIFTS, 0, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieArrayNode EMPTY = new TrieArrayNode(ROOT_SHIFTS, 0, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shiftCount;
     private final int entryBaseIndex;
@@ -65,20 +79,20 @@ public class ArraySuperNode<T>
     private final long valuesBitmask;
     private final T[] values;
     private final long nodesBitmask;
-    private final ArrayNode<T>[] nodes;
+    private final TrieArrayNode<T>[] nodes;
     private final int size;
 
-     ArraySuperNode(int shiftCount,
-                    int entryBaseIndex,
-                    int baseIndex,
-                    long valuesBitmask,
-                    T[] values,
-                    long nodesBitmask,
-                    @Nonnull ArrayNode<T>[] nodes,
-                    int size)
-     {
-         assert bitCount(valuesBitmask) == values.length;
-         assert bitCount(nodesBitmask) == nodes.length;
+    TrieArrayNode(int shiftCount,
+                  int entryBaseIndex,
+                  int baseIndex,
+                  long valuesBitmask,
+                  T[] values,
+                  long nodesBitmask,
+                  @Nonnull TrieArrayNode<T>[] nodes,
+                  int size)
+    {
+        assert bitCount(valuesBitmask) == values.length;
+        assert bitCount(nodesBitmask) == nodes.length;
         this.shiftCount = shiftCount;
         this.entryBaseIndex = entryBaseIndex;
         this.baseIndex = baseIndex;
@@ -92,37 +106,37 @@ public class ArraySuperNode<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ArrayNode<T> empty()
+    static <T> TrieArrayNode<T> empty()
     {
-        return (ArrayNode<T>)EMPTY;
+        return (TrieArrayNode<T>)EMPTY;
     }
 
-    private static <T> ArrayNode<T> forAssign(int shiftCount,
-                                              int entryBaseIndex,
-                                              int index,
-                                              T value)
+    private static <T> TrieArrayNode<T> forAssign(int shiftCount,
+                                                  int entryBaseIndex,
+                                                  int index,
+                                                  T value)
     {
         assert hashCodeBelowShift(shiftCount, index) == 0;
         final int baseIndex = baseIndexAtShift(shiftCount, index);
         final long valueBitmask = bitFromIndex(indexAtShift(shiftCount, index));
         final T[] values = ArrayHelper.newArray(value);
         final long nodeBitmask = 0L;
-        final ArrayNode<T>[] nodes = emptyNodes();
-        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valueBitmask, values, nodeBitmask, nodes, 1);
+        final TrieArrayNode<T>[] nodes = emptyNodes();
+        return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, valueBitmask, values, nodeBitmask, nodes, 1);
     }
 
-    private static <T> ArrayNode<T> forAssign(int shiftCount,
-                                              int entryBaseIndex,
-                                              int nodeBaseIndex,
-                                              ArrayNode<T> node)
+    private static <T> TrieArrayNode<T> forAssign(int shiftCount,
+                                                  int entryBaseIndex,
+                                                  int nodeBaseIndex,
+                                                  TrieArrayNode<T> node)
     {
         final int baseIndex = baseIndexAtShift(shiftCount, nodeBaseIndex);
         final long valueBitmask = 0L;
         final T[] values = emptyValues();
         final long nodeBitmask = bitFromIndex(indexAtShift(shiftCount, nodeBaseIndex));
-        final ArrayNode<T>[] nodes = allocateNodes(1);
+        final TrieArrayNode<T>[] nodes = allocateNodes(1);
         nodes[0] = node;
-        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
+        return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
     }
 
     @SuppressWarnings("unchecked")
@@ -132,9 +146,9 @@ public class ArraySuperNode<T>
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> ArrayNode<T>[] emptyNodes()
+    private static <T> TrieArrayNode<T>[] emptyNodes()
     {
-        return (ArrayNode<T>[])EMPTY_NODES;
+        return (TrieArrayNode<T>[])EMPTY_NODES;
     }
 
     @Override
@@ -143,16 +157,14 @@ public class ArraySuperNode<T>
         return size;
     }
 
-    @Override
-    public boolean isEmpty()
+    boolean isEmpty()
     {
         return size == 0;
     }
 
-    @Override
-    public T getValueOr(int shiftCount,
-                        int index,
-                        T defaultValue)
+    T getValueOr(int shiftCount,
+                 int index,
+                 T defaultValue)
     {
         final int thisShiftCount = this.shiftCount;
         if (shiftCount != thisShiftCount) {
@@ -181,9 +193,8 @@ public class ArraySuperNode<T>
         return defaultValue;
     }
 
-    @Override
-    public Holder<T> find(int shiftCount,
-                          int index)
+    Holder<T> find(int shiftCount,
+                   int index)
     {
         final int thisShiftCount = this.shiftCount;
         if (shiftCount != thisShiftCount) {
@@ -212,11 +223,10 @@ public class ArraySuperNode<T>
         return Holders.of();
     }
 
-    @Override
-    public ArrayNode<T> assign(int entryBaseIndex,
-                               int shiftCount,
-                               int index,
-                               T value)
+    TrieArrayNode<T> assign(int entryBaseIndex,
+                            int shiftCount,
+                            int index,
+                            T value)
     {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
@@ -225,7 +235,7 @@ public class ArraySuperNode<T>
             final int valueShiftCount = findMaxCommonShift(ROOT_SHIFTS, baseIndex, index);
             assert valueShiftCount <= shiftCount;
             if (valueShiftCount > thisShiftCount) {
-                final ArrayNode<T> ancestor = forAssign(valueShiftCount, entryBaseIndex, baseIndex, this);
+                final TrieArrayNode<T> ancestor = forAssign(valueShiftCount, entryBaseIndex, baseIndex, this);
                 return ancestor.assign(entryBaseIndex, valueShiftCount, index, value);
             }
             shiftCount = thisShiftCount;
@@ -242,40 +252,39 @@ public class ArraySuperNode<T>
             if (bitIsPresent(valuesBitmask, bit)) {
                 assert entryBaseIndex == this.entryBaseIndex;
                 final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
-                return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size);
+                return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size);
             } else {
-                final T[] newValues = ArrayHelper.insert(ArraySuperNode::allocateValues, values, arrayIndex, value);
-                return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
+                final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, value);
+                return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
             }
         } else {
             final long bitmask = this.nodesBitmask;
             final int arrayIndex = arrayIndexForBit(bitmask, bit);
             if (bitIsPresent(bitmask, bit)) {
                 assert entryBaseIndex == this.entryBaseIndex;
-                final ArrayNode<T> node = nodes[arrayIndex];
-                final ArrayNode<T> newNode = node.assign(entryBaseIndex, shiftCount - 1, index, value);
+                final TrieArrayNode<T> node = nodes[arrayIndex];
+                final TrieArrayNode<T> newNode = node.assign(entryBaseIndex, shiftCount - 1, index, value);
                 assert newNode != node;
-                final ArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                 final int newSize = size - node.iterableSize() + newNode.iterableSize();
-                return new ArraySuperNode<>(shiftCount, entryBaseIndex, this.baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
+                return new TrieArrayNode<>(shiftCount, entryBaseIndex, this.baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(bitmask, bit);
                 final int valueShiftCount = findMinimumShiftForZeroBelowHashCode(index);
                 assert valueShiftCount < shiftCount;
-                final ArrayNode<T> newNode = forAssign(valueShiftCount, entryBaseIndex, index, value);
+                final TrieArrayNode<T> newNode = forAssign(valueShiftCount, entryBaseIndex, index, value);
                 if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                     return newNode;
                 } else {
-                    final ArrayNode<T>[] newNodes = ArrayHelper.insert(ArraySuperNode::allocateNodes, nodes, arrayIndex, newNode);
-                    return new ArraySuperNode<>(shiftCount, entryBaseIndex, this.baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    return new TrieArrayNode<>(shiftCount, entryBaseIndex, this.baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
-    @Override
-    public ArrayNode<T> delete(int shiftCount,
-                               int index)
+    TrieArrayNode<T> delete(int shiftCount,
+                            int index)
     {
         final int thisShiftCount = this.shiftCount;
         if (shiftCount != thisShiftCount) {
@@ -296,16 +305,16 @@ public class ArraySuperNode<T>
                 } else {
                     final long newBitmask = removeBit(valuesBitmask, bit);
                     final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                    final T[] newValues = ArrayHelper.delete(ArraySuperNode::allocateValues, values, arrayIndex);
-                    return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                    final T[] newValues = ArrayHelper.delete(TrieArrayNode::allocateValues, values, arrayIndex);
+                    return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
             final long bitmask = this.nodesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                final ArrayNode<T> node = nodes[arrayIndex];
-                final ArrayNode<T> newNode = node.delete(shiftCount - 1, index);
+                final TrieArrayNode<T> node = nodes[arrayIndex];
+                final TrieArrayNode<T> newNode = node.delete(shiftCount - 1, index);
                 if (newNode != node) {
                     final int newSize = size - node.iterableSize() + newNode.iterableSize();
                     if (newSize == 0) {
@@ -315,12 +324,12 @@ public class ArraySuperNode<T>
                         if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                             return newNode;
                         } else {
-                            final ArrayNode<T>[] newNodes = ArrayHelper.delete(ArraySuperNode::allocateNodes, nodes, arrayIndex);
-                            return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
+                            final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
+                            return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
-                        final ArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new ArraySuperNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
+                        final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                        return new TrieArrayNode<>(shiftCount, entryBaseIndex, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
                     }
                 }
             }
@@ -372,18 +381,6 @@ public class ArraySuperNode<T>
         }
     }
 
-    @Override
-    boolean isLeaf()
-    {
-        return false;
-    }
-
-    @Override
-    int shiftCount()
-    {
-        return shiftCount;
-    }
-
     @Nonnull
     static <T> T[] allocateValues(int size)
     {
@@ -391,19 +388,28 @@ public class ArraySuperNode<T>
     }
 
     @Nonnull
-    static <T> ArrayNode<T>[] allocateNodes(int size)
+    static <T> TrieArrayNode<T>[] allocateNodes(int size)
     {
         return size == 0 ? emptyNodes() : allocate(size);
     }
 
-    static <T> boolean checkChildShifts(int shiftCount,
-                                        @Nonnull ArrayNode<T>[] children)
+    private static <T> boolean checkChildShifts(int shiftCount,
+                                                @Nonnull TrieArrayNode<T>[] children)
     {
-        for (ArrayNode<T> child : children) {
-            if (shiftCount <= child.shiftCount() && !child.isEmpty()) {
+        for (TrieArrayNode<T> child : children) {
+            if (shiftCount <= child.shiftCount && !child.isEmpty()) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static <T> int computeSize(@Nonnull TrieArrayNode<T>[] children)
+    {
+        int total = 0;
+        for (TrieArrayNode<T> child : children) {
+            total += child.iterableSize();
+        }
+        return total;
     }
 }

@@ -44,7 +44,6 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.array.nodes.ArrayBuilder;
 import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -275,15 +274,15 @@ public class JImmutableTrieArrayTest
 
     public void testIndexMath()
     {
-        assertEquals(0, ArrayBuilder.nodeIndex(MIN_VALUE));
-        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(-1));
-        assertEquals(0, ArrayBuilder.nodeIndex(0));
-        assertEquals(MAX_VALUE, ArrayBuilder.nodeIndex(MAX_VALUE));
+        assertEquals(0, TrieArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(MAX_VALUE, TrieArrayBuilder.nodeIndex(-1));
+        assertEquals(0, TrieArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, TrieArrayBuilder.nodeIndex(MAX_VALUE));
 
-        assertEquals(MIN_VALUE, ArrayBuilder.rootIndex(MIN_VALUE) + ArrayBuilder.nodeIndex(MIN_VALUE));
-        assertEquals(-1, ArrayBuilder.rootIndex(-1) + ArrayBuilder.nodeIndex(-1));
-        assertEquals(0, ArrayBuilder.rootIndex(0) + ArrayBuilder.nodeIndex(0));
-        assertEquals(MAX_VALUE, ArrayBuilder.rootIndex(MAX_VALUE) + ArrayBuilder.nodeIndex(MAX_VALUE));
+        assertEquals(MIN_VALUE, TrieArrayBuilder.rootIndex(MIN_VALUE) + TrieArrayBuilder.nodeIndex(MIN_VALUE));
+        assertEquals(-1, TrieArrayBuilder.rootIndex(-1) + TrieArrayBuilder.nodeIndex(-1));
+        assertEquals(0, TrieArrayBuilder.rootIndex(0) + TrieArrayBuilder.nodeIndex(0));
+        assertEquals(MAX_VALUE, TrieArrayBuilder.rootIndex(MAX_VALUE) + TrieArrayBuilder.nodeIndex(MAX_VALUE));
     }
 
     public void testVarious()

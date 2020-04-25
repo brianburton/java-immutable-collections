@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.array.nodes;
+package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
@@ -49,64 +49,64 @@ import java.util.Arrays;
 import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @NotThreadSafe
-public class ArrayBuilder<T>
+class TrieArrayBuilder<T>
 {
     private static final int NEGATIVE_BASE_INDEX = rootIndex(-1);
     private static final int POSITIVE_BASE_INDEX = rootIndex(0);
 
-    private final Node<T> negative = new Node<>(ArrayNode.ROOT_SHIFTS, 0);
-    private final Node<T> positive = new Node<>(ArrayNode.ROOT_SHIFTS, 0);
+    private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
+    private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
     private int nextIndex = 0;
 
-    public static int rootIndex(int userIndex)
+    static int rootIndex(int userIndex)
     {
         return userIndex < 0 ? Integer.MIN_VALUE : 0;
     }
 
-    public static int nodeIndex(int userIndex)
+    static int nodeIndex(int userIndex)
     {
         return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
     }
 
     @Nonnull
-    public ArrayNode<T> buildNegativeRoot()
+    TrieArrayNode<T> buildNegativeRoot()
     {
         return negative.toNode(NEGATIVE_BASE_INDEX);
     }
 
     @Nonnull
-    public ArrayNode<T> buildPositiveRoot()
+    TrieArrayNode<T> buildPositiveRoot()
     {
         return positive.toNode(POSITIVE_BASE_INDEX);
     }
 
-    public int getNextIndex()
+    int getNextIndex()
     {
         return nextIndex;
     }
 
-    public void setNextIndex(int nextIndex)
+    void setNextIndex(int nextIndex)
     {
         this.nextIndex = nextIndex;
     }
 
-    public void add(T value)
+    void add(T value)
     {
         put(nextIndex++, value);
     }
 
-    public void put(int index,
-                    T value)
+    void put(int index,
+             T value)
     {
         rootForIndex(index).put(nodeIndex(index), value);
     }
 
-    public int size()
+    int size()
     {
         return negative.size() + positive.size();
     }
 
-    public void reset()
+    void reset()
     {
         nextIndex = 0;
         negative.reset();
@@ -114,7 +114,7 @@ public class ArrayBuilder<T>
     }
 
     @Nonnull
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot(), buildPositiveRoot()));
     }
@@ -137,8 +137,8 @@ public class ArrayBuilder<T>
         private Node(int shiftCount,
                      int index)
         {
-            assert shiftCount <= ArrayNode.ROOT_SHIFTS;
-            assert shiftCount >= ArrayNode.LEAF_SHIFTS;
+            assert shiftCount <= TrieArrayNode.ROOT_SHIFTS;
+            assert shiftCount >= TrieArrayNode.LEAF_SHIFTS;
             this.shiftCount = shiftCount;
             baseIndex = baseIndexAtShift(shiftCount, index);
             valuesBitmask = 0;
@@ -177,13 +177,13 @@ public class ArrayBuilder<T>
         }
 
         @Nonnull
-        private ArrayNode<T> toNode(int rootBaseIndex)
+        private TrieArrayNode<T> toNode(int rootBaseIndex)
         {
-            final T[] answerValues = ArraySuperNode.allocateValues(bitCount(valuesBitmask));
+            final T[] answerValues = TrieArrayNode.allocateValues(bitCount(valuesBitmask));
             copyToCompactArrayUsingBitmask(valuesBitmask, values, answerValues, x -> x);
-            final ArrayNode<T>[] answerNodes = ArraySuperNode.allocateNodes(bitCount(nodesBitmask));
+            final TrieArrayNode<T>[] answerNodes = TrieArrayNode.allocateNodes(bitCount(nodesBitmask));
             copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode(rootBaseIndex));
-            return new ArraySuperNode<>(shiftCount, rootBaseIndex, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
+            return new TrieArrayNode<>(shiftCount, rootBaseIndex, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
         }
 
         private int size()

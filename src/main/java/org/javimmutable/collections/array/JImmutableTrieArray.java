@@ -41,9 +41,6 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.nodes.ArrayBuilder;
-import org.javimmutable.collections.array.nodes.ArrayNode;
-import org.javimmutable.collections.array.nodes.ArraySuperNode;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -63,30 +60,30 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
-import static org.javimmutable.collections.array.nodes.ArrayBuilder.*;
+import static org.javimmutable.collections.array.TrieArrayBuilder.*;
 
 public class JImmutableTrieArray<T>
     implements Serializable,
                JImmutableArray<T>,
-               ArrayHelper.Allocator<ArrayNode<T>>
+               ArrayHelper.Allocator<TrieArrayNode<T>>
 {
     @SuppressWarnings("rawtypes")
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray();
 
-    private final ArrayNode<T> negative;
-    private final ArrayNode<T> positive;
+    private final TrieArrayNode<T> negative;
+    private final TrieArrayNode<T> positive;
     private final int size;
 
     private JImmutableTrieArray()
     {
-        final ArrayNode<T> empty = ArraySuperNode.empty();
+        final TrieArrayNode<T> empty = TrieArrayNode.empty();
         negative = empty;
         positive = empty;
         this.size = 0;
     }
 
-    private JImmutableTrieArray(ArrayNode<T> negative,
-                                ArrayNode<T> positive,
+    private JImmutableTrieArray(TrieArrayNode<T> negative,
+                                TrieArrayNode<T> positive,
                                 int size)
     {
         this.negative = negative;
@@ -115,14 +112,14 @@ public class JImmutableTrieArray<T>
     }
 
     @Nonnull
-    private ArrayNode<T> root(int userIndex)
+    private TrieArrayNode<T> root(int userIndex)
     {
         return userIndex < 0 ? negative : positive;
     }
 
     @Nonnull
     private JImmutableArray<T> withRoot(int userIndex,
-                                        @Nonnull ArrayNode<T> newRoot,
+                                        @Nonnull TrieArrayNode<T> newRoot,
                                         int size)
     {
         if (userIndex < 0) {
@@ -144,7 +141,7 @@ public class JImmutableTrieArray<T>
                         @Nullable T defaultValue)
     {
         final int nodeIndex = nodeIndex(index);
-        return root(index).getValueOr(ArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
+        return root(index).getValueOr(TrieArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
     }
 
     @Nonnull
@@ -152,7 +149,7 @@ public class JImmutableTrieArray<T>
     public Holder<T> find(int index)
     {
         final int nodeIndex = nodeIndex(index);
-        return root(index).find(ArrayNode.ROOT_SHIFTS, nodeIndex);
+        return root(index).find(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
     }
 
     @Nonnull
@@ -169,8 +166,8 @@ public class JImmutableTrieArray<T>
     {
         final int entryBaseIndex = rootIndex(index);
         final int nodeIndex = nodeIndex(index);
-        final ArrayNode<T> child = root(index);
-        final ArrayNode<T> newChild = child.assign(entryBaseIndex, ArrayNode.ROOT_SHIFTS, nodeIndex, value);
+        final TrieArrayNode<T> child = root(index);
+        final TrieArrayNode<T> newChild = child.assign(entryBaseIndex, TrieArrayNode.ROOT_SHIFTS, nodeIndex, value);
         final int newSize = size - child.iterableSize() + newChild.iterableSize();
         return withRoot(index, newChild, newSize);
     }
@@ -180,8 +177,8 @@ public class JImmutableTrieArray<T>
     public JImmutableArray<T> delete(int index)
     {
         final int nodeIndex = nodeIndex(index);
-        final ArrayNode<T> child = root(index);
-        final ArrayNode<T> newChild = child.delete(ArrayNode.ROOT_SHIFTS, nodeIndex);
+        final TrieArrayNode<T> child = root(index);
+        final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
         if (newChild != child) {
             final int newSize = size - child.iterableSize() + newChild.iterableSize();
             if (newSize == 0) {
@@ -276,9 +273,9 @@ public class JImmutableTrieArray<T>
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ArrayNode<T>[] allocate(int size)
+    public TrieArrayNode<T>[] allocate(int size)
     {
-        return (ArrayNode<T>[])new ArrayNode[size];
+        return (TrieArrayNode<T>[])new TrieArrayNode[size];
     }
 
     @SuppressWarnings("rawtypes")
@@ -321,7 +318,7 @@ public class JImmutableTrieArray<T>
                                                                                        int offset,
                                                                                        int limit)
         {
-            final Indexed<ArrayNode<T>> source = IndexedHelper.indexed(negative, positive);
+            final Indexed<TrieArrayNode<T>> source = IndexedHelper.indexed(negative, positive);
             return GenericIterator.indexedState(parent, source, offset, limit);
         }
 
@@ -336,11 +333,11 @@ public class JImmutableTrieArray<T>
     public static class Builder<T>
         implements JImmutableArray.Builder<T>
     {
-        private final ArrayBuilder<T> builder;
+        private final TrieArrayBuilder<T> builder;
 
         private Builder()
         {
-            builder = new ArrayBuilder<>();
+            builder = new TrieArrayBuilder<>();
         }
 
         @Override
