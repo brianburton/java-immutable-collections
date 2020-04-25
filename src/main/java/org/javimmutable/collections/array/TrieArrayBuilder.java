@@ -71,13 +71,13 @@ class TrieArrayBuilder<T>
     @Nonnull
     TrieArrayNode<T> buildNegativeRoot()
     {
-        return negative.toNode(NEGATIVE_BASE_INDEX);
+        return negative.toNode();
     }
 
     @Nonnull
     TrieArrayNode<T> buildPositiveRoot()
     {
-        return positive.toNode(POSITIVE_BASE_INDEX);
+        return positive.toNode();
     }
 
     int getNextIndex()
@@ -116,7 +116,7 @@ class TrieArrayBuilder<T>
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot(), buildPositiveRoot()));
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(POSITIVE_BASE_INDEX)));
     }
 
     @Nonnull
@@ -177,13 +177,13 @@ class TrieArrayBuilder<T>
         }
 
         @Nonnull
-        private TrieArrayNode<T> toNode(int rootBaseIndex)
+        private TrieArrayNode<T> toNode()
         {
             final T[] answerValues = TrieArrayNode.allocateValues(bitCount(valuesBitmask));
             copyToCompactArrayUsingBitmask(valuesBitmask, values, answerValues, x -> x);
             final TrieArrayNode<T>[] answerNodes = TrieArrayNode.allocateNodes(bitCount(nodesBitmask));
-            copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode(rootBaseIndex));
-            return new TrieArrayNode<>(shiftCount, rootBaseIndex, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
+            copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode());
+            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
         }
 
         private int size()

@@ -164,11 +164,10 @@ public class JImmutableTrieArray<T>
     public JImmutableArray<T> assign(int index,
                                      @Nullable T value)
     {
-        final int entryBaseIndex = rootIndex(index);
         final int nodeIndex = nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
-        final TrieArrayNode<T> newChild = child.assign(entryBaseIndex, TrieArrayNode.ROOT_SHIFTS, nodeIndex, value);
-        final int newSize = size - child.iterableSize() + newChild.iterableSize();
+        final TrieArrayNode<T> newChild = child.assign(TrieArrayNode.ROOT_SHIFTS, nodeIndex, value);
+        final int newSize = size - child.size() + newChild.size();
         return withRoot(index, newChild, newSize);
     }
 
@@ -180,7 +179,7 @@ public class JImmutableTrieArray<T>
         final TrieArrayNode<T> child = root(index);
         final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
         if (newChild != child) {
-            final int newSize = size - child.iterableSize() + newChild.iterableSize();
+            final int newSize = size - child.size() + newChild.size();
             if (newSize == 0) {
                 return of();
             } else {
@@ -318,7 +317,7 @@ public class JImmutableTrieArray<T>
                                                                                        int offset,
                                                                                        int limit)
         {
-            final Indexed<TrieArrayNode<T>> source = IndexedHelper.indexed(negative, positive);
+            final Indexed<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> source = IndexedHelper.indexed(negative.iterable(rootIndex(-1)), positive.iterable(rootIndex(0)));
             return GenericIterator.indexedState(parent, source, offset, limit);
         }
 
