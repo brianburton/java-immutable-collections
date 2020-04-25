@@ -101,11 +101,11 @@ class TrieArrayNode<T>
         return (TrieArrayNode<T>)EMPTY;
     }
 
-    private static <T> TrieArrayNode<T> forAssign(int shiftCount,
-                                                  int index,
-                                                  T value)
+    private static <T> TrieArrayNode<T> forValue(int shiftCount,
+                                                 int index,
+                                                 T value)
     {
-        assert hashCodeBelowShift(shiftCount, index) == 0;
+        assert isMyValue(shiftCount, index);
         final int baseIndex = baseIndexAtShift(shiftCount, index);
         final long valueBitmask = bitFromIndex(indexAtShift(shiftCount, index));
         final T[] values = ArrayHelper.newArray(value);
@@ -114,9 +114,9 @@ class TrieArrayNode<T>
         return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, 1);
     }
 
-    private static <T> TrieArrayNode<T> forAssign(int shiftCount,
-                                                  int nodeBaseIndex,
-                                                  TrieArrayNode<T> node)
+    private static <T> TrieArrayNode<T> forNode(int shiftCount,
+                                                int nodeBaseIndex,
+                                                TrieArrayNode<T> node)
     {
         final int baseIndex = baseIndexAtShift(shiftCount, nodeBaseIndex);
         final long valueBitmask = 0L;
@@ -209,7 +209,7 @@ class TrieArrayNode<T>
             final int valueShiftCount = findMaxCommonShift(ROOT_SHIFTS, baseIndex, index);
             assert valueShiftCount <= shiftCount;
             if (valueShiftCount > thisShiftCount) {
-                final TrieArrayNode<T> ancestor = forAssign(valueShiftCount, baseIndex, this);
+                final TrieArrayNode<T> ancestor = forNode(valueShiftCount, baseIndex, this);
                 return ancestor.assign(valueShiftCount, index, value);
             }
             shiftCount = thisShiftCount;
@@ -243,7 +243,7 @@ class TrieArrayNode<T>
                 final long newBitmask = addBit(bitmask, bit);
                 final int valueShiftCount = findMinimumShiftForZeroBelowHashCode(index);
                 assert valueShiftCount < shiftCount;
-                final TrieArrayNode<T> newNode = forAssign(valueShiftCount, index, value);
+                final TrieArrayNode<T> newNode = forValue(valueShiftCount, index, value);
                 if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                     return newNode;
                 } else {
