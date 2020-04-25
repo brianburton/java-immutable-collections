@@ -274,15 +274,15 @@ public class JImmutableTrieArrayTest
 
     public void testIndexMath()
     {
-        assertEquals(0, TrieArrayBuilder.nodeIndex(MIN_VALUE));
-        assertEquals(MAX_VALUE, TrieArrayBuilder.nodeIndex(-1));
-        assertEquals(0, TrieArrayBuilder.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayBuilder.nodeIndex(MAX_VALUE));
+        assertEquals(0, TrieArrayNode.nodeIndex(MIN_VALUE));
+        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(-1));
+        assertEquals(0, TrieArrayNode.nodeIndex(0));
+        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(MAX_VALUE));
 
-        assertEquals(MIN_VALUE, TrieArrayBuilder.rootIndex(MIN_VALUE) + TrieArrayBuilder.nodeIndex(MIN_VALUE));
-        assertEquals(-1, TrieArrayBuilder.rootIndex(-1) + TrieArrayBuilder.nodeIndex(-1));
-        assertEquals(0, TrieArrayBuilder.rootIndex(0) + TrieArrayBuilder.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayBuilder.rootIndex(MAX_VALUE) + TrieArrayBuilder.nodeIndex(MAX_VALUE));
+        assertEquals(MIN_VALUE, TrieArrayNode.rootIndex(MIN_VALUE) + TrieArrayNode.nodeIndex(MIN_VALUE));
+        assertEquals(-1, TrieArrayNode.rootIndex(-1) + TrieArrayNode.nodeIndex(-1));
+        assertEquals(0, TrieArrayNode.rootIndex(0) + TrieArrayNode.nodeIndex(0));
+        assertEquals(MAX_VALUE, TrieArrayNode.rootIndex(MAX_VALUE) + TrieArrayNode.nodeIndex(MAX_VALUE));
     }
 
     public void testVarious()

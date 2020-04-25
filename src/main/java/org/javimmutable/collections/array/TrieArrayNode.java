@@ -57,14 +57,8 @@ class TrieArrayNode<T>
 {
     static final int ROOT_SHIFTS = HamtLongMath.maxShiftsForBitCount(30);
     static final int LEAF_SHIFTS = 0;
-    static final int PARENT_SHIFTS = 1;
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    static <T> TrieArrayNode<T>[] allocate(int size)
-    {
-        return (TrieArrayNode<T>[])new TrieArrayNode[size];
-    }
+    static final int NEGATIVE_BASE_INDEX = rootIndex(-1);
+    static final int POSITIVE_BASE_INDEX = rootIndex(0);
 
     private static final Object[] EMPTY_VALUES = new Object[0];
     @SuppressWarnings({"rawtypes"})
@@ -133,19 +127,7 @@ class TrieArrayNode<T>
         return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T[] emptyValues()
-    {
-        return (T[])EMPTY_VALUES;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> TrieArrayNode<T>[] emptyNodes()
-    {
-        return (TrieArrayNode<T>[])EMPTY_NODES;
-    }
-
-    public int size()
+    int size()
     {
         return size;
     }
@@ -186,6 +168,7 @@ class TrieArrayNode<T>
         return defaultValue;
     }
 
+    @Nonnull
     Holder<T> find(int shiftCount,
                    int index)
     {
@@ -216,6 +199,7 @@ class TrieArrayNode<T>
         return Holders.of();
     }
 
+    @Nonnull
     TrieArrayNode<T> assign(int shiftCount,
                             int index,
                             T value)
@@ -273,6 +257,7 @@ class TrieArrayNode<T>
         }
     }
 
+    @Nonnull
     TrieArrayNode<T> delete(int shiftCount,
                             int index)
     {
@@ -327,45 +312,6 @@ class TrieArrayNode<T>
         return this;
     }
 
-    @Nonnull
-    GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> iterable(int rootBaseIndex)
-    {
-        return new GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>()
-        {
-            @Nullable
-            @Override
-            public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
-                                                                                           int offset,
-                                                                                           int limit)
-            {
-                final List<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> iterables = new ArrayList<>(values.length + nodes.length);
-                long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
-                while (combinedBitmask != 0) {
-                    final long bit = leastBit(combinedBitmask);
-                    if (bitIsPresent(valuesBitmask, bit)) {
-                        final int valueIndex = indexForBit(bit);
-                        final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                        final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
-                        iterables.add(GenericIterator.valueIterable(MapEntry.entry(entryIndex, values[arrayIndex])));
-                    }
-                    if (bitIsPresent(nodesBitmask, bit)) {
-                        final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
-                        iterables.add(nodes[nodeIndex].iterable(rootBaseIndex));
-                    }
-                    combinedBitmask = removeBit(combinedBitmask, bit);
-                }
-                assert iterables.size() == (values.length + nodes.length);
-                return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
-            }
-
-            @Override
-            public int iterableSize()
-            {
-                return size;
-            }
-        };
-    }
-
     @Override
     public void checkInvariants()
     {
@@ -385,15 +331,45 @@ class TrieArrayNode<T>
     }
 
     @Nonnull
-    static <T> T[] allocateValues(int size)
+    GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> iterable(int rootBaseIndex)
     {
-        return size == 0 ? emptyValues() : ArrayHelper.allocate(size);
+        return new IterableImpl(rootBaseIndex);
     }
 
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    static <T> T[] allocateValues(int size)
+    {
+        return size == 0 ? emptyValues() : (T[])new Object[size];
+    }
+
+    @SuppressWarnings("unchecked")
     @Nonnull
     static <T> TrieArrayNode<T>[] allocateNodes(int size)
     {
-        return size == 0 ? emptyNodes() : allocate(size);
+        return size == 0 ? emptyNodes() : (TrieArrayNode<T>[])new TrieArrayNode[size];
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] emptyValues()
+    {
+        return (T[])EMPTY_VALUES;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> TrieArrayNode<T>[] emptyNodes()
+    {
+        return (TrieArrayNode<T>[])EMPTY_NODES;
+    }
+
+    static int rootIndex(int userIndex)
+    {
+        return userIndex < 0 ? Integer.MIN_VALUE : 0;
+    }
+
+    static int nodeIndex(int userIndex)
+    {
+        return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
     }
 
     private static <T> boolean checkChildShifts(int shiftCount,
@@ -414,5 +390,48 @@ class TrieArrayNode<T>
             total += child.size();
         }
         return total;
+    }
+
+    private class IterableImpl
+        implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
+    {
+        private final int rootBaseIndex;
+
+        private IterableImpl(int rootBaseIndex)
+        {
+            this.rootBaseIndex = rootBaseIndex;
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                       int offset,
+                                                                                       int limit)
+        {
+            final List<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> iterables = new ArrayList<>(values.length + nodes.length);
+            long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+            while (combinedBitmask != 0) {
+                final long bit = leastBit(combinedBitmask);
+                if (bitIsPresent(valuesBitmask, bit)) {
+                    final int valueIndex = indexForBit(bit);
+                    final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                    final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
+                    iterables.add(GenericIterator.valueIterable(MapEntry.entry(entryIndex, values[arrayIndex])));
+                }
+                if (bitIsPresent(nodesBitmask, bit)) {
+                    final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                    iterables.add(nodes[nodeIndex].iterable(rootBaseIndex));
+                }
+                combinedBitmask = removeBit(combinedBitmask, bit);
+            }
+            assert iterables.size() == (values.length + nodes.length);
+            return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+        }
+
+        @Override
+        public int iterableSize()
+        {
+            return size;
+        }
     }
 }

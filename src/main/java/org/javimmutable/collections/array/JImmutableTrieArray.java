@@ -60,7 +60,6 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
-import static org.javimmutable.collections.array.TrieArrayBuilder.*;
 
 public class JImmutableTrieArray<T>
     implements Serializable,
@@ -82,8 +81,8 @@ public class JImmutableTrieArray<T>
         this.size = 0;
     }
 
-    private JImmutableTrieArray(TrieArrayNode<T> negative,
-                                TrieArrayNode<T> positive,
+    private JImmutableTrieArray(@Nonnull TrieArrayNode<T> negative,
+                                @Nonnull TrieArrayNode<T> positive,
                                 int size)
     {
         this.negative = negative;
@@ -140,7 +139,7 @@ public class JImmutableTrieArray<T>
     public T getValueOr(int index,
                         @Nullable T defaultValue)
     {
-        final int nodeIndex = nodeIndex(index);
+        final int nodeIndex = TrieArrayNode.nodeIndex(index);
         return root(index).getValueOr(TrieArrayNode.ROOT_SHIFTS, nodeIndex, defaultValue);
     }
 
@@ -148,7 +147,7 @@ public class JImmutableTrieArray<T>
     @Override
     public Holder<T> find(int index)
     {
-        final int nodeIndex = nodeIndex(index);
+        final int nodeIndex = TrieArrayNode.nodeIndex(index);
         return root(index).find(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
     }
 
@@ -164,7 +163,7 @@ public class JImmutableTrieArray<T>
     public JImmutableArray<T> assign(int index,
                                      @Nullable T value)
     {
-        final int nodeIndex = nodeIndex(index);
+        final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
         final TrieArrayNode<T> newChild = child.assign(TrieArrayNode.ROOT_SHIFTS, nodeIndex, value);
         final int newSize = size - child.size() + newChild.size();
@@ -175,7 +174,7 @@ public class JImmutableTrieArray<T>
     @Override
     public JImmutableArray<T> delete(int index)
     {
-        final int nodeIndex = nodeIndex(index);
+        final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
         final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFTS, nodeIndex);
         if (newChild != child) {
@@ -260,7 +259,7 @@ public class JImmutableTrieArray<T>
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return new GenericIterator<>(new IterableChildren(), 0, size);
+        return new GenericIterator<>(new IterableImpl(), 0, size);
     }
 
     @Override
@@ -308,7 +307,7 @@ public class JImmutableTrieArray<T>
         return new JImmutableArrayProxy(this);
     }
 
-    private class IterableChildren
+    private class IterableImpl
         implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
     {
         @Nullable
@@ -317,7 +316,8 @@ public class JImmutableTrieArray<T>
                                                                                        int offset,
                                                                                        int limit)
         {
-            final Indexed<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> source = IndexedHelper.indexed(negative.iterable(rootIndex(-1)), positive.iterable(rootIndex(0)));
+            final Indexed<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> source = IndexedHelper.indexed(negative.iterable(TrieArrayNode.NEGATIVE_BASE_INDEX),
+                                                                                                                    positive.iterable(TrieArrayNode.POSITIVE_BASE_INDEX));
             return GenericIterator.indexedState(parent, source, offset, limit);
         }
 

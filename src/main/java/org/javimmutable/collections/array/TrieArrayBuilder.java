@@ -51,22 +51,10 @@ import static org.javimmutable.collections.common.HamtLongMath.*;
 @NotThreadSafe
 class TrieArrayBuilder<T>
 {
-    private static final int NEGATIVE_BASE_INDEX = rootIndex(-1);
-    private static final int POSITIVE_BASE_INDEX = rootIndex(0);
 
     private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
     private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFTS, 0);
     private int nextIndex = 0;
-
-    static int rootIndex(int userIndex)
-    {
-        return userIndex < 0 ? Integer.MIN_VALUE : 0;
-    }
-
-    static int nodeIndex(int userIndex)
-    {
-        return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
-    }
 
     @Nonnull
     TrieArrayNode<T> buildNegativeRoot()
@@ -98,7 +86,7 @@ class TrieArrayBuilder<T>
     void put(int index,
              T value)
     {
-        rootForIndex(index).put(nodeIndex(index), value);
+        rootForIndex(index).put(TrieArrayNode.nodeIndex(index), value);
     }
 
     int size()
@@ -116,7 +104,7 @@ class TrieArrayBuilder<T>
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(POSITIVE_BASE_INDEX)));
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(TrieArrayNode.NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(TrieArrayNode.POSITIVE_BASE_INDEX)));
     }
 
     @Nonnull
