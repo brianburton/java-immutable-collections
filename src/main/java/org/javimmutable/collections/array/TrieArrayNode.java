@@ -207,13 +207,16 @@ class TrieArrayNode<T>
     {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
+        assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
+        final int shiftCountForValue = findShiftForIndex(index);
+        assert shiftCount >= thisShiftCount;
+        assert shiftCount >= shiftCountForValue;
         if (shiftCount != thisShiftCount) {
-            assert shiftCount > thisShiftCount;
-            final int valueShiftCount = findMaxCommonShift(ROOT_SHIFT_COUNT, baseIndex, index);
-            assert valueShiftCount <= shiftCount;
-            if (valueShiftCount > thisShiftCount) {
-                final TrieArrayNode<T> ancestor = forNode(valueShiftCount, baseIndex, this);
-                return ancestor.assign(valueShiftCount, index, value);
+            final int ancestorShiftCount = findCommonAncestorShift(baseIndex + shift(thisShiftCount, 1), index);
+            assert ancestorShiftCount <= shiftCount;
+            if (ancestorShiftCount > thisShiftCount) {
+                final TrieArrayNode<T> ancestor = forNode(ancestorShiftCount, baseIndex, this);
+                return ancestor.assign(ancestorShiftCount, index, value);
             }
             shiftCount = thisShiftCount;
         }
@@ -221,7 +224,8 @@ class TrieArrayNode<T>
         final int myIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
-        if (isMyValue(shiftCount, index)) {
+        if (shiftCount == shiftCountForValue) {
+            assert findMinimumShiftForZeroBelowHashCode(index) == thisShiftCount;
             final T[] values = this.values;
             final long newBitmask = addBit(valuesBitmask, bit);
             final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
@@ -366,6 +370,25 @@ class TrieArrayNode<T>
     static int nodeIndex(int userIndex)
     {
         return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
+    }
+
+    static int findShiftForIndex(int index)
+    {
+        return index == 0 ? LEAF_SHIFT_COUNT : findMinimumShiftForZeroBelowHashCode(index);
+//        return findMinimumShiftForZeroBelowHashCode(index);
+    }
+
+    static int findCommonAncestorShift(int index1,
+                                       int index2)
+    {
+        final int shift1 = findShiftForIndex(index1);
+        final int shift2 = findShiftForIndex(index2);
+        int shiftCount = Math.max(shift1, shift2);
+        while (baseIndexAtShift(shiftCount, index1) != baseIndexAtShift(shiftCount, index2)) {
+            shiftCount += 1;
+        }
+        assert shiftCount <= ROOT_SHIFT_COUNT;
+        return shiftCount;
     }
 
     private static <T> boolean checkChildShifts(int shiftCount,

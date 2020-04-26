@@ -244,6 +244,19 @@ public final class HamtLongMath
         return answer;
     }
 
+    @Nonnull
+    public static String hashString(int hashCode)
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (int shiftCount = MAX_SHIFT_NUMBER; shiftCount >= 0; shiftCount -= 1) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(indexAtShift(shiftCount, hashCode));
+        }
+        return sb.toString();
+    }
+
     private static class Indexes
         implements Indexed<Integer>
     {
