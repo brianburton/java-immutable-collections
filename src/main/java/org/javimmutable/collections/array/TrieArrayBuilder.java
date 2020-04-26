@@ -149,7 +149,7 @@ class TrieArrayBuilder<T>
             assert baseIndexAtShift(shiftCount, index) == baseIndex;
             final int myIndex = indexAtShift(shiftCount, index);
             final long bit = bitFromIndex(myIndex);
-            if (TrieArrayNode.isMyValue(shiftCount, index)) {
+            if (shiftCount == TrieArrayNode.findShiftForIndex(index)) {
                 valuesBitmask = addBit(valuesBitmask, bit);
                 values[myIndex] = value;
             } else {

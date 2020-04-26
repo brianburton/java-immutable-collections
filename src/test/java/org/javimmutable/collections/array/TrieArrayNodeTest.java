@@ -39,10 +39,10 @@ public class TrieArrayNodeTest
 
         assertEquals(3, TrieArrayNode.findCommonAncestorShift(rootIndex, leafIndex));
         assertEquals(2, TrieArrayNode.findCommonAncestorShift(leafIndex, assignIndex));
-        TrieArrayNode<Integer> node = TrieArrayNode.<Integer>empty().assign(TrieArrayNode.ROOT_SHIFT_COUNT, rootIndex, 1);
-        node = node.assign(TrieArrayNode.ROOT_SHIFT_COUNT, leafIndex, 3);
-        node = node.assign(TrieArrayNode.ROOT_SHIFT_COUNT, assignIndex, 2);
-        assertEquals(Integer.valueOf(2), node.getValueOr(TrieArrayNode.ROOT_SHIFT_COUNT, assignIndex, -1));
+        TrieArrayNode<Integer> node = TrieArrayNode.<Integer>empty().assign(rootIndex, 1);
+        node = node.assign(leafIndex, 3);
+        node = node.assign(assignIndex, 2);
+        assertEquals(Integer.valueOf(2), node.getValueOr(assignIndex, -1));
     }
 
     public void testIndexMath()

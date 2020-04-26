@@ -132,7 +132,7 @@ public class JImmutableTrieArray<T>
                         @Nullable T defaultValue)
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
-        return root(index).getValueOr(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex, defaultValue);
+        return root(index).getValueOr(nodeIndex, defaultValue);
     }
 
     @Nonnull
@@ -140,7 +140,7 @@ public class JImmutableTrieArray<T>
     public Holder<T> find(int index)
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
-        return root(index).find(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex);
+        return root(index).find(nodeIndex);
     }
 
     @Nonnull
@@ -157,7 +157,7 @@ public class JImmutableTrieArray<T>
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
-        final TrieArrayNode<T> newChild = child.assign(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex, value);
+        final TrieArrayNode<T> newChild = child.assign(nodeIndex, value);
         final int newSize = size - child.size() + newChild.size();
         return withRoot(index, newChild, newSize);
     }
@@ -168,7 +168,7 @@ public class JImmutableTrieArray<T>
     {
         final int nodeIndex = TrieArrayNode.nodeIndex(index);
         final TrieArrayNode<T> child = root(index);
-        final TrieArrayNode<T> newChild = child.delete(TrieArrayNode.ROOT_SHIFT_COUNT, nodeIndex);
+        final TrieArrayNode<T> newChild = child.delete(nodeIndex);
         if (newChild != child) {
             final int newSize = size - child.size() + newChild.size();
             if (newSize == 0) {
