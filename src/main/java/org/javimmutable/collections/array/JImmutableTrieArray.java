@@ -41,7 +41,6 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedHelper;
@@ -63,8 +62,7 @@ import static org.javimmutable.collections.MapEntry.entry;
 
 public class JImmutableTrieArray<T>
     implements Serializable,
-               JImmutableArray<T>,
-               ArrayHelper.Allocator<TrieArrayNode<T>>
+               JImmutableArray<T>
 {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieArrayNode.empty(), TrieArrayNode.empty(), 0);
@@ -264,14 +262,6 @@ public class JImmutableTrieArray<T>
     public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_ORDERED;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    @Override
-    public TrieArrayNode<T>[] allocate(int size)
-    {
-        return (TrieArrayNode<T>[])new TrieArrayNode[size];
     }
 
     @SuppressWarnings("rawtypes")
