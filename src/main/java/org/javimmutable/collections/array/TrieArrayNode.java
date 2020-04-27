@@ -174,22 +174,25 @@ class TrieArrayNode<T>
                              T defaultValue)
     {
         final int shiftCount = this.shiftCount;
-        if (baseIndexAtShift(shiftCount, index) == baseIndex) {
-            assert shiftCountForValue <= shiftCount;
-            final int myIndex = indexAtShift(shiftCount, index);
-            final long bit = bitFromIndex(myIndex);
-            if (shiftCountForValue == shiftCount) {
-                final long bitmask = this.valuesBitmask;
-                if (bitIsPresent(bitmask, bit)) {
-                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                    return values[arrayIndex];
-                }
-            } else {
-                final long bitmask = this.nodesBitmask;
-                if (bitIsPresent(bitmask, bit)) {
-                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                    return nodes[arrayIndex].getValueOrImpl(shiftCountForValue, index, defaultValue);
-                }
+        if (shiftCountForValue > shiftCount) {
+            return defaultValue;
+        }
+        if (baseIndexAtShift(shiftCount, index) != baseIndex) {
+            return defaultValue;
+        }
+        final int myIndex = indexAtShift(shiftCount, index);
+        final long bit = bitFromIndex(myIndex);
+        if (shiftCountForValue == shiftCount) {
+            final long bitmask = this.valuesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                return values[arrayIndex];
+            }
+        } else {
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                return nodes[arrayIndex].getValueOrImpl(shiftCountForValue, index, defaultValue);
             }
         }
         return defaultValue;
@@ -200,22 +203,25 @@ class TrieArrayNode<T>
                                int index)
     {
         final int shiftCount = this.shiftCount;
-        if (baseIndexAtShift(shiftCount, index) == baseIndex) {
-            assert shiftCountForValue <= shiftCount;
-            final int myIndex = indexAtShift(shiftCount, index);
-            final long bit = bitFromIndex(myIndex);
-            if (shiftCountForValue == shiftCount) {
-                final long bitmask = this.valuesBitmask;
-                if (bitIsPresent(bitmask, bit)) {
-                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                    return Holders.of(values[arrayIndex]);
-                }
-            } else {
-                final long bitmask = this.nodesBitmask;
-                if (bitIsPresent(bitmask, bit)) {
-                    final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                    return nodes[arrayIndex].findImpl(shiftCountForValue, index);
-                }
+        if (shiftCountForValue > shiftCount) {
+            return Holders.of();
+        }
+        if (baseIndexAtShift(shiftCount, index) != baseIndex) {
+            return Holders.of();
+        }
+        final int myIndex = indexAtShift(shiftCount, index);
+        final long bit = bitFromIndex(myIndex);
+        if (shiftCountForValue == shiftCount) {
+            final long bitmask = this.valuesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                return Holders.of(values[arrayIndex]);
+            }
+        } else {
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                return nodes[arrayIndex].findImpl(shiftCountForValue, index);
             }
         }
         return Holders.of();
