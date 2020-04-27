@@ -375,12 +375,14 @@ class TrieArrayNode<T>
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     private static <T> T[] emptyValues()
     {
         return (T[])EMPTY_VALUES;
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     private static <T> TrieArrayNode<T>[] emptyNodes()
     {
         return (TrieArrayNode<T>[])EMPTY_NODES;
@@ -394,7 +396,6 @@ class TrieArrayNode<T>
     static int findShiftForIndex(int index)
     {
         return index == 0 ? LEAF_SHIFT_COUNT : findMinimumShiftForZeroBelowHashCode(index);
-//        return findMinimumShiftForZeroBelowHashCode(index);
     }
 
     static int findCommonAncestorShift(int index1,
