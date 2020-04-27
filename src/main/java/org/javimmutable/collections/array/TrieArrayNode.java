@@ -287,10 +287,12 @@ class TrieArrayNode<T>
                                         int index)
     {
         final int shiftCount = this.shiftCount;
+        if (shiftCountForValue > shiftCount) {
+            return this;
+        }
         if (baseIndexAtShift(shiftCount, index) != baseIndex) {
             return this;
         }
-        assert shiftCountForValue <= shiftCount;
         final int myIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
