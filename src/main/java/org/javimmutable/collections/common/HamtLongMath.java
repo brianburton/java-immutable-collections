@@ -164,8 +164,7 @@ public final class HamtLongMath
     public static int baseIndexAtShift(int shiftCount,
                                        int hashCode)
     {
-        final int bitShift = (1 + shiftCount) * SHIFT;
-        return bitShift >= 32 ? 0 : (hashCode >>> bitShift) << bitShift;
+        return shiftCount > MAX_FULL_SHIFT_NUMBER ? 0 : hashCode & (-1 << SHIFT * (1 + shiftCount));
     }
 
     public static int hashCodeBelowShift(int shiftCount,
