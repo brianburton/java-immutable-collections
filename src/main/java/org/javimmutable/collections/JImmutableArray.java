@@ -306,6 +306,21 @@ public interface JImmutableArray<T>
     IterableStreamable<T> values();
 
     /**
+     * Visits every element in the array in order by index and passes the index and value to
+     * the provided lambda.  Unlike indexedForEach method the index values passed to the
+     * lambda are the actual key value in the array.
+     */
+    void forEach(@Nonnull IndexedProc1<T> proc);
+
+    /**
+     * Visits every element in the array in order by index and passes the index and value to
+     * the provided lambda.  Unlike indexedForEach method the index values passed to the
+     * lambda are the actual key value in the array.
+     */
+    <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
+        throws E;
+
+    /**
      * Creates and returns a new Builder object for the same value type as this array.
      *
      * @return An empty Builder object ready for use to create a new JImmutableArray.

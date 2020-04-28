@@ -37,9 +37,12 @@ package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.IndexedProc1;
+import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -56,9 +59,11 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collector;
 
 import static org.javimmutable.collections.MapEntry.entry;
+import static org.javimmutable.collections.array.TrieArrayNode.*;
 
 public class JImmutableTrieArray<T>
     implements Serializable,
@@ -264,6 +269,34 @@ public class JImmutableTrieArray<T>
         return StreamConstants.SPLITERATOR_ORDERED;
     }
 
+    @Override
+    public void forEach(Consumer<? super JImmutableMap.Entry<Integer, T>> action)
+    {
+        forEach((i, v) -> action.accept(entry(i, v)));
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<JImmutableMap.Entry<Integer, T>, E> proc)
+        throws E
+    {
+        forEachThrows((i, v) -> proc.apply(entry(i, v)));
+    }
+
+    @Override
+    public void forEach(@Nonnull IndexedProc1<T> proc)
+    {
+        negative.forEach(NEGATIVE_BASE_INDEX, proc);
+        positive.forEach(POSITIVE_BASE_INDEX, proc);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
+        throws E
+    {
+        negative.forEachThrows(NEGATIVE_BASE_INDEX, proc);
+        positive.forEachThrows(POSITIVE_BASE_INDEX, proc);
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object o)
@@ -304,8 +337,8 @@ public class JImmutableTrieArray<T>
                                                                                        int offset,
                                                                                        int limit)
         {
-            final Indexed<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> source = IndexedHelper.indexed(negative.iterable(TrieArrayNode.NEGATIVE_BASE_INDEX),
-                                                                                                                    positive.iterable(TrieArrayNode.POSITIVE_BASE_INDEX));
+            final Indexed<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> source = IndexedHelper.indexed(negative.iterable(NEGATIVE_BASE_INDEX),
+                                                                                                                    positive.iterable(POSITIVE_BASE_INDEX));
             return GenericIterator.indexedState(parent, source, offset, limit);
         }
 

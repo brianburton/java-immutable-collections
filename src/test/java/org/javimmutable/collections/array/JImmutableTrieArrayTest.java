@@ -44,6 +44,7 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.common.HamtLongMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -148,6 +149,30 @@ public class JImmutableTrieArrayTest
             assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
         }
         array.checkInvariants();
+        final Temp.Int1 count = Temp.intVar(0);
+        array.forEach(e -> {
+            assertEquals(e.getValue(), expected.get(e.getKey()));
+            count.a++;
+        });
+        assertEquals(expected.size(), count.a);
+        count.a = 0;
+        array.forEachThrows(e -> {
+            assertEquals(e.getValue(), expected.get(e.getKey()));
+            count.a++;
+        });
+        assertEquals(expected.size(), count.a);
+        count.a = 0;
+        array.forEach((k, v) -> {
+            assertEquals(v, expected.get(k));
+            count.a++;
+        });
+        assertEquals(expected.size(), count.a);
+        count.a = 0;
+        array.forEachThrows((k, v) -> {
+            assertEquals(v, expected.get(k));
+            count.a++;
+        });
+        assertEquals(expected.size(), count.a);
     }
 
     public void testCollector()

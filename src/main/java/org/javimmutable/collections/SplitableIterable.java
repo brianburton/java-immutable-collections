@@ -90,6 +90,10 @@ public interface SplitableIterable<T>
 
     /**
      * Version of forEach that includes an integer index along with each value.
+     * Note the index is based solely on the sequence of calls to the lambda.
+     * It is not based on any key value associated with the collection (i.e.
+     * Integer key in a map or index of an array).  First value is always 0,
+     * second is always 1, etc.
      */
     default void indexedForEach(@Nonnull IndexedProc1<T> proc)
     {
@@ -99,6 +103,10 @@ public interface SplitableIterable<T>
 
     /**
      * Version of forEachThrows that includes an integer index along with each value.
+     * Note the index is based solely on the sequence of calls to the lambda.
+     * It is not based on any key value associated with the collection (i.e.
+     * Integer key in a map or index of an array).  First value is always 0,
+     * second is always 1, etc.
      */
     default <E extends Exception> void indexedForEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
         throws E

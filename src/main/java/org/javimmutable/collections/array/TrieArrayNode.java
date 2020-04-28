@@ -37,6 +37,8 @@ package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IndexedProc1;
+import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
@@ -167,6 +169,47 @@ class TrieArrayNode<T>
     {
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
+    }
+
+    void forEach(int rootBaseIndex,
+                 @Nonnull IndexedProc1<T> proc)
+    {
+        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+        while (combinedBitmask != 0) {
+            final long bit = leastBit(combinedBitmask);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final int valueIndex = indexForBit(bit);
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
+                proc.apply(entryIndex, values[arrayIndex]);
+            }
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                nodes[nodeIndex].forEach(rootBaseIndex, proc);
+            }
+            combinedBitmask = removeBit(combinedBitmask, bit);
+        }
+    }
+
+    <E extends Exception> void forEachThrows(int rootBaseIndex,
+                                             @Nonnull IndexedProc1Throws<T, E> proc)
+        throws E
+    {
+        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+        while (combinedBitmask != 0) {
+            final long bit = leastBit(combinedBitmask);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final int valueIndex = indexForBit(bit);
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
+                proc.apply(entryIndex, values[arrayIndex]);
+            }
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                nodes[nodeIndex].forEachThrows(rootBaseIndex, proc);
+            }
+            combinedBitmask = removeBit(combinedBitmask, bit);
+        }
     }
 
     private T getValueOrImpl(int shiftCountForValue,
