@@ -120,59 +120,64 @@ public class JImmutableTrieArrayTest
     public void testRandom()
     {
         Random r = new Random(20L);
-        Map<Integer, Integer> expected = new TreeMap<>();
-        JImmutableArray<Integer> array = JImmutableTrieArray.of();
-        for (int loop = 1; loop <= 20000; ++loop) {
-            int index = r.nextInt(200000) - 100000;
-            int value = r.nextInt();
-            switch (r.nextInt(4)) {
-                case 0:
-                case 1:
-                    array = array.assign(index, value);
-                    expected.put(index, value);
-                    array.checkInvariants();
-                    break;
-                case 2:
-                    array = array.delete(index);
-                    expected.remove(index);
-                    array.checkInvariants();
-                    break;
-                case 3:
-                    assertEquals(array.find(index).getValueOrNull(), array.get(index));
-                    break;
+        for (int outerLoop = 1; outerLoop <= 10; ++outerLoop) {
+            Map<Integer, Integer> expected = new TreeMap<>();
+            JImmutableArray<Integer> array = JImmutableTrieArray.of();
+            for (int loop = 1; loop <= 30000; ++loop) {
+                int index = r.nextInt(200000) - 100000;
+                int value = r.nextInt();
+                switch (r.nextInt(5)) {
+                    case 0:
+                    case 1:
+                        array = array.assign(index, value);
+                        expected.put(index, value);
+                        array.checkInvariants();
+                        break;
+                    case 2:
+                        array = array.delete(index);
+                        expected.remove(index);
+                        array.checkInvariants();
+                        break;
+                    case 3:
+                        assertEquals(array.find(index).getValueOrNull(), array.get(index));
+                        break;
+                    case 4:
+                        assertEquals(array.getValueOr(index, null), array.get(index));
+                        break;
+                }
+                assertEquals(array.isEmpty(), expected.isEmpty());
+                assertEquals(array.isNonEmpty(), !expected.isEmpty());
             }
-            assertEquals(array.isEmpty(), expected.isEmpty());
-            assertEquals(array.isNonEmpty(), !expected.isEmpty());
+            assertEquals(expected.size(), array.size());
+            for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
+                assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
+            }
+            array.checkInvariants();
+            final Temp.Int1 count = Temp.intVar(0);
+            array.forEach(e -> {
+                assertEquals(e.getValue(), expected.get(e.getKey()));
+                count.a++;
+            });
+            assertEquals(expected.size(), count.a);
+            count.a = 0;
+            array.forEachThrows(e -> {
+                assertEquals(e.getValue(), expected.get(e.getKey()));
+                count.a++;
+            });
+            assertEquals(expected.size(), count.a);
+            count.a = 0;
+            array.forEach((k, v) -> {
+                assertEquals(v, expected.get(k));
+                count.a++;
+            });
+            assertEquals(expected.size(), count.a);
+            count.a = 0;
+            array.forEachThrows((k, v) -> {
+                assertEquals(v, expected.get(k));
+                count.a++;
+            });
+            assertEquals(expected.size(), count.a);
         }
-        assertEquals(expected.size(), array.size());
-        for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), array.getValueOr(entry.getKey(), MAX_VALUE));
-        }
-        array.checkInvariants();
-        final Temp.Int1 count = Temp.intVar(0);
-        array.forEach(e -> {
-            assertEquals(e.getValue(), expected.get(e.getKey()));
-            count.a++;
-        });
-        assertEquals(expected.size(), count.a);
-        count.a = 0;
-        array.forEachThrows(e -> {
-            assertEquals(e.getValue(), expected.get(e.getKey()));
-            count.a++;
-        });
-        assertEquals(expected.size(), count.a);
-        count.a = 0;
-        array.forEach((k, v) -> {
-            assertEquals(v, expected.get(k));
-            count.a++;
-        });
-        assertEquals(expected.size(), count.a);
-        count.a = 0;
-        array.forEachThrows((k, v) -> {
-            assertEquals(v, expected.get(k));
-            count.a++;
-        });
-        assertEquals(expected.size(), count.a);
     }
 
     public void testCollector()
