@@ -46,12 +46,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 
+import static org.javimmutable.collections.array.TrieArrayNode.*;
 import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @NotThreadSafe
 class TrieArrayBuilder<T>
 {
-
     private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private int nextIndex = 0;
@@ -104,7 +104,7 @@ class TrieArrayBuilder<T>
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(TrieArrayNode.NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(TrieArrayNode.POSITIVE_BASE_INDEX)));
+        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(POSITIVE_BASE_INDEX)));
     }
 
     @Nonnull
