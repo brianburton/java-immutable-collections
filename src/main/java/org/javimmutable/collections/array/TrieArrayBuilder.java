@@ -39,33 +39,23 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.indexed.IndexedHelper;
-import org.javimmutable.collections.iterators.LazyMultiIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 
-import static org.javimmutable.collections.array.TrieArrayNode.*;
 import static org.javimmutable.collections.common.HamtLongMath.*;
 
 @NotThreadSafe
 class TrieArrayBuilder<T>
 {
-    private final Node<T> negative = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
-    private final Node<T> positive = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
+    private final Node<T> root = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private int nextIndex = 0;
 
     @Nonnull
-    TrieArrayNode<T> buildNegativeRoot()
+    TrieArrayNode<T> buildRoot()
     {
-        return negative.toNode();
-    }
-
-    @Nonnull
-    TrieArrayNode<T> buildPositiveRoot()
-    {
-        return positive.toNode();
+        return root.toNode();
     }
 
     int getNextIndex()
@@ -86,31 +76,24 @@ class TrieArrayBuilder<T>
     void put(int index,
              T value)
     {
-        rootForIndex(index).put(TrieArrayNode.nodeIndex(index), value);
+        root.put(TrieArrayNode.flip(index), value);
     }
 
     int size()
     {
-        return negative.size() + positive.size();
+        return root.size();
     }
 
     void reset()
     {
         nextIndex = 0;
-        negative.reset();
-        positive.reset();
+        root.reset();
     }
 
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return LazyMultiIterator.iterator(IndexedHelper.indexed(buildNegativeRoot().iterable(NEGATIVE_BASE_INDEX), buildPositiveRoot().iterable(POSITIVE_BASE_INDEX)));
-    }
-
-    @Nonnull
-    private Node<T> rootForIndex(int index)
-    {
-        return index < 0 ? negative : positive;
+        return buildRoot().iterator();
     }
 
     private static class Node<T>

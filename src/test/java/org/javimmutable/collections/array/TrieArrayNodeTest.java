@@ -3,11 +3,30 @@ package org.javimmutable.collections.array;
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.HamtLongMath;
 
+import java.util.Random;
+
 import static java.lang.Integer.*;
+import static org.javimmutable.collections.array.TrieArrayNode.flip;
 
 public class TrieArrayNodeTest
     extends TestCase
 {
+    public void testFlip()
+    {
+        assertEquals(0, flip(Integer.MIN_VALUE));
+        assertEquals(-1, flip(Integer.MAX_VALUE));
+        final Random r = new Random(10000);
+        for (int i = 0; i < 50000; ++i) {
+            final int a = r.nextInt();
+            final int b = r.nextInt();
+            final int sc = compare(a, b);
+            final int uc = compareUnsigned(flip(a), flip(b));
+            assertEquals(sc, uc);
+            assertEquals(a, flip(flip(a)));
+            assertEquals(b, flip(flip(b)));
+        }
+    }
+
     public void testCommonAncestorShift()
     {
         // 352321536 (3)
@@ -43,18 +62,5 @@ public class TrieArrayNodeTest
         node = node.assign(leafIndex, 3);
         node = node.assign(assignIndex, 2);
         assertEquals(Integer.valueOf(2), node.getValueOr(assignIndex, -1));
-    }
-
-    public void testIndexMath()
-    {
-        assertEquals(0, TrieArrayNode.nodeIndex(MIN_VALUE));
-        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(-1));
-        assertEquals(0, TrieArrayNode.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayNode.nodeIndex(MAX_VALUE));
-
-        assertEquals(MIN_VALUE, TrieArrayNode.NEGATIVE_BASE_INDEX + TrieArrayNode.nodeIndex(MIN_VALUE));
-        assertEquals(-1, TrieArrayNode.NEGATIVE_BASE_INDEX + TrieArrayNode.nodeIndex(-1));
-        assertEquals(0, TrieArrayNode.POSITIVE_BASE_INDEX + TrieArrayNode.nodeIndex(0));
-        assertEquals(MAX_VALUE, TrieArrayNode.POSITIVE_BASE_INDEX + TrieArrayNode.nodeIndex(MAX_VALUE));
     }
 }

@@ -54,13 +54,17 @@ import java.util.List;
 
 import static org.javimmutable.collections.common.HamtLongMath.*;
 
+/**
+ * Implements an array mapped trie using integers as keys.  When iterating keys
+ * are visited in signed-integer order.
+ */
 class TrieArrayNode<T>
-    implements InvariantCheckable
+    implements InvariantCheckable,
+               GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
 {
     static final int LEAF_SHIFT_COUNT = 0;
     static final int ROOT_SHIFT_COUNT = HamtLongMath.maxShiftsForBitCount(30);
-    static final int NEGATIVE_BASE_INDEX = Integer.MIN_VALUE;
-    static final int POSITIVE_BASE_INDEX = 0;
+    private static final int SIGN_BIT = 1 << 31;
 
     private static final Object[] EMPTY_VALUES = new Object[0];
     @SuppressWarnings({"rawtypes"})
@@ -129,12 +133,7 @@ class TrieArrayNode<T>
         final long nodeBitmask = bitFromIndex(indexAtShift(shiftCount, nodeBaseIndex));
         final TrieArrayNode<T>[] nodes = allocateNodes(1);
         nodes[0] = node;
-        return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
-    }
-
-    int size()
-    {
-        return size;
+        return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
     }
 
     boolean isEmpty()
@@ -145,6 +144,7 @@ class TrieArrayNode<T>
     T getValueOr(int index,
                  T defaultValue)
     {
+        index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return getValueOrImpl(shiftCountForValue, index, defaultValue);
     }
@@ -152,6 +152,7 @@ class TrieArrayNode<T>
     @Nonnull
     Holder<T> find(int index)
     {
+        index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return findImpl(shiftCountForValue, index);
     }
@@ -160,6 +161,7 @@ class TrieArrayNode<T>
     TrieArrayNode<T> assign(int index,
                             T value)
     {
+        index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return assignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, value);
     }
@@ -167,12 +169,12 @@ class TrieArrayNode<T>
     @Nonnull
     TrieArrayNode<T> delete(int index)
     {
+        index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
     }
 
-    void forEach(int rootBaseIndex,
-                 @Nonnull IndexedProc1<T> proc)
+    void forEach(@Nonnull IndexedProc1<T> proc)
     {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
@@ -180,19 +182,18 @@ class TrieArrayNode<T>
             if (bitIsPresent(valuesBitmask, bit)) {
                 final int valueIndex = indexForBit(bit);
                 final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
-                proc.apply(entryIndex, values[arrayIndex]);
+                final int entryIndex = baseIndex + shift(shiftCount, valueIndex);
+                proc.apply(flip(entryIndex), values[arrayIndex]);
             }
             if (bitIsPresent(nodesBitmask, bit)) {
                 final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
-                nodes[nodeIndex].forEach(rootBaseIndex, proc);
+                nodes[nodeIndex].forEach(proc);
             }
             combinedBitmask = removeBit(combinedBitmask, bit);
         }
     }
 
-    <E extends Exception> void forEachThrows(int rootBaseIndex,
-                                             @Nonnull IndexedProc1Throws<T, E> proc)
+    <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
         throws E
     {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
@@ -201,12 +202,12 @@ class TrieArrayNode<T>
             if (bitIsPresent(valuesBitmask, bit)) {
                 final int valueIndex = indexForBit(bit);
                 final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
-                proc.apply(entryIndex, values[arrayIndex]);
+                final int entryIndex = baseIndex + shift(shiftCount, valueIndex);
+                proc.apply(flip(entryIndex), values[arrayIndex]);
             }
             if (bitIsPresent(nodesBitmask, bit)) {
                 final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
-                nodes[nodeIndex].forEachThrows(rootBaseIndex, proc);
+                nodes[nodeIndex].forEachThrows(proc);
             }
             combinedBitmask = removeBit(combinedBitmask, bit);
         }
@@ -318,7 +319,7 @@ class TrieArrayNode<T>
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.assignImpl(shiftCount - 1, shiftCountForValue, index, value);
                 final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                final int newSize = size - node.size() + newNode.size();
+                final int newSize = size - node.iterableSize() + newNode.iterableSize();
                 return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
@@ -366,7 +367,7 @@ class TrieArrayNode<T>
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.deleteImpl(shiftCountForValue, index);
                 if (newNode != node) {
-                    final int newSize = size - node.size() + newNode.size();
+                    final int newSize = size - node.iterableSize() + newNode.iterableSize();
                     if (newSize == 0) {
                         return empty();
                     } else if (newNode.isEmpty()) {
@@ -406,10 +407,36 @@ class TrieArrayNode<T>
         }
     }
 
-    @Nonnull
-    GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> iterable(int rootBaseIndex)
+    @Nullable
+    @Override
+    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
+                                                                                   int offset,
+                                                                                   int limit)
     {
-        return new IterableImpl(rootBaseIndex);
+        final List<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> iterables = new ArrayList<>(values.length + nodes.length);
+        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+        while (combinedBitmask != 0) {
+            final long bit = leastBit(combinedBitmask);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final int valueIndex = indexForBit(bit);
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                final int entryIndex = baseIndex + shift(shiftCount, valueIndex);
+                iterables.add(GenericIterator.valueIterable(MapEntry.entry(flip(entryIndex), values[arrayIndex])));
+            }
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                iterables.add(nodes[nodeIndex]);
+            }
+            combinedBitmask = removeBit(combinedBitmask, bit);
+        }
+        assert iterables.size() == (values.length + nodes.length);
+        return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+    }
+
+    @Override
+    public int iterableSize()
+    {
+        return size;
     }
 
     @SuppressWarnings("unchecked")
@@ -440,14 +467,9 @@ class TrieArrayNode<T>
         return (TrieArrayNode<T>[])EMPTY_NODES;
     }
 
-    static int nodeIndex(int userIndex)
-    {
-        return userIndex < 0 ? userIndex - Integer.MIN_VALUE : userIndex;
-    }
-
     static int findShiftForIndex(int index)
     {
-        return index == 0 ? LEAF_SHIFT_COUNT : findMinimumShiftForZeroBelowHashCode(index);
+        return findMinimumShiftForZeroBelowHashCode(index);
     }
 
     static int findCommonAncestorShift(int index1,
@@ -461,6 +483,19 @@ class TrieArrayNode<T>
         }
         assert shiftCount <= ROOT_SHIFT_COUNT;
         return shiftCount;
+    }
+
+    /**
+     * Flips the sign bit in the index.  Starting from a userIndex which might be positive or
+     * negative it converts it into a corresponding (but different) unsigned integer such that
+     * for any two incoming integers a and b: compare(a, b)==compareUnsigned(encode(a),encode(b)).
+     * This ensures that iteration order fits the signed order while allowing all of the array
+     * mapping to work with indices as unsigned positive numbers.  Operation is reversable (i.e.
+     * flip(flip(x))==x for all x.
+     */
+    static int flip(int index)
+    {
+        return index ^ SIGN_BIT;
     }
 
     private static <T> boolean checkChildShifts(int shiftCount,
@@ -478,51 +513,8 @@ class TrieArrayNode<T>
     {
         int total = 0;
         for (TrieArrayNode<T> child : children) {
-            total += child.size();
+            total += child.iterableSize();
         }
         return total;
-    }
-
-    private class IterableImpl
-        implements GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
-    {
-        private final int rootBaseIndex;
-
-        private IterableImpl(int rootBaseIndex)
-        {
-            this.rootBaseIndex = rootBaseIndex;
-        }
-
-        @Nullable
-        @Override
-        public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
-                                                                                       int offset,
-                                                                                       int limit)
-        {
-            final List<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> iterables = new ArrayList<>(values.length + nodes.length);
-            long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
-            while (combinedBitmask != 0) {
-                final long bit = leastBit(combinedBitmask);
-                if (bitIsPresent(valuesBitmask, bit)) {
-                    final int valueIndex = indexForBit(bit);
-                    final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                    final int entryIndex = rootBaseIndex + baseIndex + shift(shiftCount, valueIndex);
-                    iterables.add(GenericIterator.valueIterable(MapEntry.entry(entryIndex, values[arrayIndex])));
-                }
-                if (bitIsPresent(nodesBitmask, bit)) {
-                    final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
-                    iterables.add(nodes[nodeIndex].iterable(rootBaseIndex));
-                }
-                combinedBitmask = removeBit(combinedBitmask, bit);
-            }
-            assert iterables.size() == (values.length + nodes.length);
-            return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
-        }
-
-        @Override
-        public int iterableSize()
-        {
-            return size;
-        }
     }
 }
