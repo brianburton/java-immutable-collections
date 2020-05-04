@@ -45,7 +45,7 @@ import org.javimmutable.collections.JImmutableArray;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.common.HamtLongMath;
+import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -95,14 +95,14 @@ public class JImmutableTrieArrayTest
 
     public void testOrder()
     {
-        final int hash10 = HamtLongMath.hash(0, 1, 0, 0, 0, 0);
-        final int hash11 = HamtLongMath.hash(0, 1, 0, 0, 0, 1);
-        final int hash12 = HamtLongMath.hash(0, 1, 0, 0, 1, 1);
-        final int hash13 = HamtLongMath.hash(0, 1, 0, 0, 2, 1);
-        final int hash20 = HamtLongMath.hash(0, 2, 0, 0, 0, 0);
-        final int hash21 = HamtLongMath.hash(0, 2, 0, 0, 0, 1);
-        final int hash22 = HamtLongMath.hash(0, 2, 0, 0, 1, 1);
-        final int hash23 = HamtLongMath.hash(0, 2, 0, 0, 2, 1);
+        final int hash10 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 0, 0);
+        final int hash11 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 0, 1);
+        final int hash12 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 1, 1);
+        final int hash13 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 2, 1);
+        final int hash20 = IntArrayMappedTrieMath.hash(0, 2, 0, 0, 0, 0);
+        final int hash21 = IntArrayMappedTrieMath.hash(0, 2, 0, 0, 0, 1);
+        final int hash22 = IntArrayMappedTrieMath.hash(0, 2, 0, 0, 1, 1);
+        final int hash23 = IntArrayMappedTrieMath.hash(0, 2, 0, 0, 2, 1);
 
         JImmutableArray<Integer> a = JImmutableTrieArray.<Integer>of()
             .assign(hash10, 10)

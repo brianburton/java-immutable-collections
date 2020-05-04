@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.liftedHashCode;
 
 /**
  * HamtNode that stores only one value.  Any assign that would progress down the tree

@@ -44,7 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 
-import static org.javimmutable.collections.common.HamtLongMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe
 class TrieArrayBuilder<T>

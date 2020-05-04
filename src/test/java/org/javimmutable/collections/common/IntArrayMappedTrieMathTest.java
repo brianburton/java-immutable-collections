@@ -38,9 +38,9 @@ package org.javimmutable.collections.common;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-import static org.javimmutable.collections.common.HamtLongMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
-public class HamtLongMathTest
+public class IntArrayMappedTrieMathTest
     extends TestCase
 {
     public void testIndices()

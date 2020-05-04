@@ -1,7 +1,7 @@
 package org.javimmutable.collections.array;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.common.HamtLongMath;
+import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 
 import java.util.Random;
 
@@ -35,14 +35,14 @@ public class TrieArrayNodeTest
         final int leafIndex = 368460608 + 3;
         // 368459776 (2)
         final int assignIndex = 368459776;
-        assertEquals("0,21,0,0,0,1", HamtLongMath.hashString(rootIndex));
-        assertEquals("0,21,61,36,13,3", HamtLongMath.hashString(leafIndex));
-        assertEquals("0,21,61,36,0,0", HamtLongMath.hashString(assignIndex));
+        assertEquals("0,21,0,0,0,1", IntArrayMappedTrieMath.hashString(rootIndex));
+        assertEquals("0,21,61,36,13,3", IntArrayMappedTrieMath.hashString(leafIndex));
+        assertEquals("0,21,61,36,0,0", IntArrayMappedTrieMath.hashString(assignIndex));
         // common says 1 but index says 2
-        assertEquals(0, HamtLongMath.findMinimumShiftForZeroBelowHashCode(leafIndex));
-        assertEquals(2, HamtLongMath.findMinimumShiftForZeroBelowHashCode(assignIndex));
-        assertEquals(0, HamtLongMath.findMinimumShiftForZeroBelowHashCode(rootIndex));
-        assertEquals(1, HamtLongMath.findMaxCommonShift(TrieArrayNode.ROOT_SHIFT_COUNT, leafIndex, assignIndex));
+        assertEquals(0, IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(leafIndex));
+        assertEquals(2, IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(assignIndex));
+        assertEquals(0, IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(rootIndex));
+        assertEquals(1, IntArrayMappedTrieMath.findMaxCommonShift(TrieArrayNode.ROOT_SHIFT_COUNT, leafIndex, assignIndex));
         assertEquals(2, TrieArrayNode.findCommonAncestorShift(leafIndex, assignIndex));
         assertEquals(3, TrieArrayNode.findCommonAncestorShift(rootIndex, assignIndex));
         assertEquals(0, TrieArrayNode.findCommonAncestorShift(1, 2));
@@ -52,7 +52,7 @@ public class TrieArrayNodeTest
                                                               0b11_000001_000001_000000_000000_000000));
         assertEquals(3, TrieArrayNode.findCommonAncestorShift(0b11_000001_000010_000000_000000_000000,
                                                               0b11_000001_000001_000000_000000_000000));
-        assertEquals(1, HamtLongMath.findMinimumShiftForZeroBelowHashCode(0b11_000001_000011_000000_000001_000000));
+        assertEquals(1, IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(0b11_000001_000011_000000_000001_000000));
         assertEquals(2, TrieArrayNode.findCommonAncestorShift(0b11_000001_000011_000000_000000_000001,
                                                               0b11_000001_000011_000001_000000_000000));
 

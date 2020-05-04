@@ -42,7 +42,7 @@ import org.javimmutable.collections.tree.TreeCollisionSet;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.javimmutable.collections.common.HamtLongMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe
 public class SetBuilder<T>

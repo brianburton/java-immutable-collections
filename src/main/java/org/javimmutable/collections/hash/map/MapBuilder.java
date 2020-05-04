@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.javimmutable.collections.common.HamtLongMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe
 public class MapBuilder<K, V>

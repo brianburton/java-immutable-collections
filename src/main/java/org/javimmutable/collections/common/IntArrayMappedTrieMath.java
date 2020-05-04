@@ -43,13 +43,13 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 
 /**
- * Utility class that supports math related to Hash Array Mapped Tries
- * that use 64 element arrays.  All of the methods are static and short
- * so they should wind up being inlined by compiler or jit.
+ * Utility class that supports math related to Array Mapped Tries with
+ * integer hash codes and 64 element arrays.  All of the methods are static
+ * and short so they should wind up being inlined by compiler or jit.
  */
-public final class HamtLongMath
+public final class IntArrayMappedTrieMath
 {
-    private HamtLongMath()
+    private IntArrayMappedTrieMath()
     {
     }
 

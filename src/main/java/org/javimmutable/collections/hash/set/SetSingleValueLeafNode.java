@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
-import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.liftedHashCode;
 
 /**
  * SetNode that stores only one value.  Any assign that would progress down the tree

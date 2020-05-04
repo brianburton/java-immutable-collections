@@ -43,7 +43,7 @@ import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ArrayHelper;
-import org.javimmutable.collections.common.HamtLongMath;
+import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -52,7 +52,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.javimmutable.collections.common.HamtLongMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 /**
  * Implements an array mapped trie using integers as keys.  When iterating keys
@@ -63,7 +63,7 @@ class TrieArrayNode<T>
                GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
 {
     static final int LEAF_SHIFT_COUNT = 0;
-    static final int ROOT_SHIFT_COUNT = HamtLongMath.maxShiftsForBitCount(30);
+    static final int ROOT_SHIFT_COUNT = IntArrayMappedTrieMath.maxShiftsForBitCount(30);
     private static final int SIGN_BIT = 1 << 31;
 
     private static final Object[] EMPTY_VALUES = new Object[0];

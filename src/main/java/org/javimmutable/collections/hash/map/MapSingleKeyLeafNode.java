@@ -52,7 +52,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 import static org.javimmutable.collections.MapEntry.entry;
-import static org.javimmutable.collections.common.HamtLongMath.liftedHashCode;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.liftedHashCode;
 
 /**
  * HamtNode that stores only one key/value pair.  Any assign that would progress down the tree
