@@ -39,7 +39,6 @@ import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.InfiniteKey;
@@ -53,6 +52,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.stream.Collector;
 
+import static org.javimmutable.collections.MapEntry.entry;
 import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
 /**
@@ -69,21 +69,21 @@ public class JImmutableInsertOrderMap<K, V>
     extends AbstractJImmutableMap<K, V>
     implements Serializable
 {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTreeMap.of(), JImmutableHashMap.of(), InfiniteKey.first());
     private static final long serialVersionUID = -121805;
 
-    private final JImmutableMap<InfiniteKey, Node<K, V>> sortedNodes;
-    private final JImmutableMap<K, Node<K, V>> hashedNodes;
+    private final JImmutableMap<InfiniteKey, K> keys;
+    private final JImmutableMap<K, Node<V>> values;
     private final InfiniteKey nextIndex;
 
-    private JImmutableInsertOrderMap(JImmutableMap<InfiniteKey, Node<K, V>> sortedNodes,
-                                     JImmutableMap<K, Node<K, V>> hashedNodes,
-                                     InfiniteKey nextIndex)
+    private JImmutableInsertOrderMap(@Nonnull JImmutableMap<InfiniteKey, K> keys,
+                                     @Nonnull JImmutableMap<K, Node<V>> values,
+                                     @Nonnull InfiniteKey nextIndex)
     {
-        assert sortedNodes.size() == hashedNodes.size();
-        this.sortedNodes = sortedNodes;
-        this.hashedNodes = hashedNodes;
+        assert keys.size() == values.size();
+        this.keys = keys;
+        this.values = values;
         this.nextIndex = nextIndex;
     }
 
@@ -157,24 +157,24 @@ public class JImmutableInsertOrderMap<K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        final Node<K, V> current = hashedNodes.get(key);
-        return (current != null) ? current.getValue() : defaultValue;
+        final Node<V> current = values.get(key);
+        return (current != null) ? current.value : defaultValue;
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        final Node<K, V> current = hashedNodes.get(key);
-        return (current != null) ? current : Holders.of();
+        final Node<V> current = values.get(key);
+        return (current != null) ? Holders.of(current.value) : Holders.of();
     }
 
     @Nonnull
     @Override
     public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
-        final Node<K, V> current = hashedNodes.get(key);
-        return (current != null) ? Holders.of(current) : Holders.of();
+        final Node<V> current = values.get(key);
+        return (current != null) ? Holders.of(entry(key, current.value)) : Holders.of();
     }
 
     @Nonnull
@@ -182,18 +182,18 @@ public class JImmutableInsertOrderMap<K, V>
     public JImmutableInsertOrderMap<K, V> assign(@Nonnull K key,
                                                  V value)
     {
-        final Node<K, V> current = hashedNodes.get(key);
+        final Node<V> current = values.get(key);
         if (current == null) {
-            final Node<K, V> newNode = new Node<>(key, value, nextIndex);
-            return new JImmutableInsertOrderMap<>(sortedNodes.assign(newNode.index, newNode),
-                                                  hashedNodes.assign(key, newNode),
+            final Node<V> newNode = new Node<>(nextIndex, value);
+            return new JImmutableInsertOrderMap<>(keys.assign(newNode.index, key),
+                                                  values.assign(key, newNode),
                                                   nextIndex.next());
-        } else if (current.getValue() == value) {
+        } else if (current.value == value) {
             return this;
         } else {
-            final Node<K, V> newNode = current.withValue(value);
-            return new JImmutableInsertOrderMap<>(sortedNodes.assign(newNode.index, newNode),
-                                                  hashedNodes.assign(key, newNode),
+            final Node<V> newNode = new Node<>(current.index, value);
+            return new JImmutableInsertOrderMap<>(keys,
+                                                  values.assign(key, newNode),
                                                   nextIndex);
         }
     }
@@ -202,10 +202,10 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public JImmutableInsertOrderMap<K, V> delete(@Nonnull K key)
     {
-        final Node<K, V> current = hashedNodes.get(key);
+        final Node<V> current = values.get(key);
         if (current != null) {
-            return new JImmutableInsertOrderMap<>(sortedNodes.delete(current.index),
-                                                  hashedNodes.delete(key),
+            return new JImmutableInsertOrderMap<>(keys.delete(current.index),
+                                                  values.delete(key),
                                                   nextIndex);
         } else {
             return this;
@@ -215,7 +215,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public int size()
     {
-        return hashedNodes.size();
+        return values.size();
     }
 
     @Nonnull
@@ -229,7 +229,14 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return TransformIterator.of(sortedNodes.iterator(), e -> e.getValue());
+        return TransformIterator.of(keys.values().iterator(), this::entryForKey);
+    }
+
+    private JImmutableMap.Entry<K, V> entryForKey(K key)
+    {
+        final Node<V> node = values.get(key);
+        assert node != null;
+        return entry(key, node.value);
     }
 
     @Override
@@ -241,19 +248,16 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public void checkInvariants()
     {
-        if (sortedNodes.size() != hashedNodes.size()) {
-            throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", sortedNodes.size(), hashedNodes.size()));
+        if (keys.size() != values.size()) {
+            throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", keys.size(), values.size()));
         }
-        for (Entry<InfiniteKey, Node<K, V>> e : sortedNodes) {
-            Node<K, V> hashedNode = hashedNodes.get(e.getValue().getKey());
-            if (e.getValue() != hashedNode) {
-                throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e.getValue(), hashedNode));
+        for (Entry<InfiniteKey, K> e : keys) {
+            final Node<V> node = values.get(e.getValue());
+            if (node == null) {
+                throw new IllegalStateException(String.format("node missing: index=%s key=%s", e.getKey(), e.getValue()));
             }
-        }
-        for (Entry<K, Node<K, V>> e : hashedNodes) {
-            Node<K, V> sortedNode = sortedNodes.get(e.getValue().index);
-            if (e.getValue() != sortedNode) {
-                throw new IllegalStateException(String.format("node mismatch: hashed=%s sorted=%s", sortedNode, e.getValue()));
+            if (e.getKey() != node.index) {
+                throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e.getValue(), node));
             }
         }
     }
@@ -267,23 +271,16 @@ public class JImmutableInsertOrderMap<K, V>
      * An Entry implementation that also stores the sortedKeys index corresponding to this node's key.
      */
     @Immutable
-    private static class Node<K, V>
-        extends MapEntry<K, V>
-        implements Holders.Filled<V>
+    private static class Node<V>
     {
         private final InfiniteKey index;
+        private final V value;
 
-        private Node(K key,
-                     V value,
-                     InfiniteKey index)
+        private Node(InfiniteKey index,
+                     V value)
         {
-            super(key, value);
             this.index = index;
-        }
-
-        private Node<K, V> withValue(V value)
-        {
-            return new Node<>(key, value, index);
+            this.value = value;
         }
     }
 }
