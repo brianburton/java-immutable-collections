@@ -5,8 +5,19 @@ import javax.annotation.Nonnull;
 class TokenImpl
     implements TokenList.Token
 {
-    static final TokenImpl ZERO = token(0);
+    private static final TokenImpl[] CACHE;
+    static final TokenImpl ZERO;
+
     private final byte[] values;
+
+    static {
+        CACHE = new TokenImpl[65];
+        for (int i = 0; i < 64; ++i) {
+            CACHE[i] = token(i);
+        }
+        CACHE[64] = token(1, 0);
+        ZERO = CACHE[0];
+    }
 
     TokenImpl(byte[] values)
     {
@@ -109,6 +120,9 @@ class TokenImpl
     @Nonnull
     TokenImpl next()
     {
+        if (values.length == 1) {
+            return CACHE[values[0] + 1];
+        }
         byte[] newValues = values.clone();
         for (int i = newValues.length - 1; i >= 0; --i) {
             assert newValues[i] >= 0;
