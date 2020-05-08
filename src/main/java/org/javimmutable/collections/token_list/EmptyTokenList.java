@@ -4,13 +4,13 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 
 class EmptyTokenList<T>
     implements JImmutableTokenList<T>
 {
-    private static final int CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
     @SuppressWarnings("rawtypes")
     private static final EmptyTokenList EMPTY = new EmptyTokenList();
 
@@ -48,46 +48,18 @@ class EmptyTokenList<T>
         return 0;
     }
 
-    @Nonnull
     @Override
+    @Nonnull
     public IterableStreamable<Token> tokens()
     {
-        return new IterableStreamable<Token>()
-        {
-            @Nonnull
-            @Override
-            public SplitableIterator<Token> iterator()
-            {
-                return EmptyIterator.of();
-            }
-
-            @Override
-            public int getSpliteratorCharacteristics()
-            {
-                return CHARACTERISTICS;
-            }
-        };
+        return TransformStreamable.of(entries(), JImmutableTokenList.Entry::token);
     }
 
-    @Nonnull
     @Override
+    @Nonnull
     public IterableStreamable<T> values()
     {
-        return new IterableStreamable<T>()
-        {
-            @Nonnull
-            @Override
-            public SplitableIterator<T> iterator()
-            {
-                return EmptyIterator.of();
-            }
-
-            @Override
-            public int getSpliteratorCharacteristics()
-            {
-                return CHARACTERISTICS;
-            }
-        };
+        return TransformStreamable.of(entries(), JImmutableTokenList.Entry::value);
     }
 
     @Nonnull
@@ -106,7 +78,7 @@ class EmptyTokenList<T>
             @Override
             public int getSpliteratorCharacteristics()
             {
-                return CHARACTERISTICS;
+                return StreamConstants.SPLITERATOR_ORDERED;
             }
         };
     }
