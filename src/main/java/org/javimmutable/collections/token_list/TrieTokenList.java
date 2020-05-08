@@ -66,7 +66,13 @@ class TrieTokenList<T>
     public JImmutableTokenList<T> delete(@Nonnull Token token)
     {
         final TrieNode<T> newRoot = root.delete((TokenImpl)token);
-        return (newRoot == root) ? this : new TrieTokenList<>(newRoot, lastToken);
+        if (newRoot == root) {
+            return this;
+        } else if (newRoot.isEmpty()) {
+            return EmptyTokenList.instance();
+        } else {
+            return new TrieTokenList<>(newRoot, lastToken);
+        }
     }
 
     @Nonnull
