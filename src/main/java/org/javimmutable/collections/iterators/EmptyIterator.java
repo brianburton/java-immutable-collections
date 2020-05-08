@@ -35,7 +35,9 @@
 
 package org.javimmutable.collections.iterators;
 
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
@@ -45,12 +47,34 @@ import java.util.Spliterators;
 public class EmptyIterator<T>
     implements SplitableIterator<T>
 {
+    @SuppressWarnings("rawtypes")
     private static final SplitableIterator INSTANCE = new EmptyIterator();
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     public static <T> SplitableIterator<T> of()
     {
         return INSTANCE;
+    }
+
+    @Nonnull
+    public static <T> IterableStreamable<T> streamable()
+    {
+        return new IterableStreamable<T>()
+        {
+            @Nonnull
+            @Override
+            public SplitableIterator<T> iterator()
+            {
+                return of();
+            }
+
+            @Override
+            public int getSpliteratorCharacteristics()
+            {
+                return StreamConstants.SPLITERATOR_UNORDERED;
+            }
+        };
     }
 
     @Override
