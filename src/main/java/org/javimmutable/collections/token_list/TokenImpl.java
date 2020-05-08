@@ -3,7 +3,7 @@ package org.javimmutable.collections.token_list;
 import javax.annotation.Nonnull;
 
 class TokenImpl
-    implements TokenList.Token
+    implements JImmutableTokenList.Token
 {
     private static final TokenImpl[] CACHE;
     static final TokenImpl ZERO;

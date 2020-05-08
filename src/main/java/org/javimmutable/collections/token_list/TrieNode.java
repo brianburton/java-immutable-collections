@@ -51,31 +51,31 @@ import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 /**
  * Implements an array mapped trie using TokenImpl as keys.
  */
-class TokenTrieNode<T>
+class TrieNode<T>
     implements InvariantCheckable,
-               GenericIterator.Iterable<TokenList.Entry<T>>
+               GenericIterator.Iterable<JImmutableTokenList.Entry<T>>
 {
     private static final Object[] EMPTY_VALUES = new Object[0];
     @SuppressWarnings({"rawtypes"})
-    private static final TokenTrieNode[] EMPTY_NODES = new TokenTrieNode[0];
+    private static final TrieNode[] EMPTY_NODES = new TrieNode[0];
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final TokenTrieNode EMPTY = new TokenTrieNode(0, TokenImpl.ZERO, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieNode EMPTY = new TrieNode(0, TokenImpl.ZERO, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shift;
     private final TokenImpl baseToken;
     private final long valuesBitmask;
     private final T[] values;
     private final long nodesBitmask;
-    private final TokenTrieNode<T>[] nodes;
+    private final TrieNode<T>[] nodes;
     private final int size;
 
-    TokenTrieNode(int shift,
-                  TokenImpl baseToken,
-                  long valuesBitmask,
-                  T[] values,
-                  long nodesBitmask,
-                  @Nonnull TokenTrieNode<T>[] nodes,
-                  int size)
+    TrieNode(int shift,
+             TokenImpl baseToken,
+             long valuesBitmask,
+             T[] values,
+             long nodesBitmask,
+             @Nonnull TrieNode<T>[] nodes,
+             int size)
     {
         assert bitCount(valuesBitmask) == values.length;
         assert bitCount(nodesBitmask) == nodes.length;
@@ -92,37 +92,37 @@ class TokenTrieNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> TokenTrieNode<T> empty()
+    static <T> TrieNode<T> empty()
     {
-        return (TokenTrieNode<T>)EMPTY;
+        return (TrieNode<T>)EMPTY;
     }
 
     @Nonnull
-    private static <T> TokenTrieNode<T> forValue(int shift,
-                                                 @Nonnull TokenImpl token,
-                                                 T value)
+    private static <T> TrieNode<T> forValue(int shift,
+                                            @Nonnull TokenImpl token,
+                                            T value)
     {
         assert shift == token.trieDepth();
         final TokenImpl baseToken = token.base(shift);
         final long valueBitmask = bitFromIndex(token.indexAt(shift));
         final T[] values = ArrayHelper.newArray(value);
         final long nodeBitmask = 0L;
-        final TokenTrieNode<T>[] nodes = emptyNodes();
-        return new TokenTrieNode<>(shift, baseToken, valueBitmask, values, nodeBitmask, nodes, 1);
+        final TrieNode<T>[] nodes = emptyNodes();
+        return new TrieNode<>(shift, baseToken, valueBitmask, values, nodeBitmask, nodes, 1);
     }
 
     @Nonnull
-    private static <T> TokenTrieNode<T> forNode(int shift,
-                                                @Nonnull TokenImpl nodeBaseToken,
-                                                @Nonnull TokenTrieNode<T> node)
+    private static <T> TrieNode<T> forNode(int shift,
+                                           @Nonnull TokenImpl nodeBaseToken,
+                                           @Nonnull TrieNode<T> node)
     {
         final TokenImpl baseToken = nodeBaseToken.base(shift);
         final long valueBitmask = 0L;
         final T[] values = emptyValues();
         final long nodeBitmask = bitFromIndex(nodeBaseToken.indexAt(shift));
-        final TokenTrieNode<T>[] nodes = allocateNodes(1);
+        final TrieNode<T>[] nodes = allocateNodes(1);
         nodes[0] = node;
-        return new TokenTrieNode<>(shift, baseToken, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
+        return new TrieNode<>(shift, baseToken, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
     }
 
     boolean isEmpty()
@@ -138,8 +138,8 @@ class TokenTrieNode<T>
     }
 
     @Nonnull
-    TokenTrieNode<T> assign(@Nonnull TokenImpl token,
-                            T value)
+    TrieNode<T> assign(@Nonnull TokenImpl token,
+                       T value)
     {
         final int shiftForValue = token.trieDepth();
         final int maxShift = Math.max(baseToken.maxShift(), shiftForValue) + 1;
@@ -147,7 +147,7 @@ class TokenTrieNode<T>
     }
 
     @Nonnull
-    TokenTrieNode<T> delete(@Nonnull TokenImpl token)
+    TrieNode<T> delete(@Nonnull TokenImpl token)
     {
         final int shiftForValue = token.trieDepth();
         return deleteImpl(shiftForValue, token);
@@ -183,10 +183,10 @@ class TokenTrieNode<T>
     }
 
     @Nonnull
-    private TokenTrieNode<T> assignImpl(int shift,
-                                        int shiftForValue,
-                                        @Nonnull TokenImpl token,
-                                        T value)
+    private TrieNode<T> assignImpl(int shift,
+                                   int shiftForValue,
+                                   @Nonnull TokenImpl token,
+                                   T value)
     {
         final int thisShift = this.shift;
         final TokenImpl baseToken = this.baseToken;
@@ -200,7 +200,7 @@ class TokenTrieNode<T>
             final int ancestorShiftCount = TokenImpl.commonAncestorShift(baseToken.withIndexAt(thisShift, 1), token);
             assert ancestorShiftCount <= shift;
             if (ancestorShiftCount > thisShift) {
-                final TokenTrieNode<T> ancestor = forNode(ancestorShiftCount, baseToken, this);
+                final TrieNode<T> ancestor = forNode(ancestorShiftCount, baseToken, this);
                 return ancestor.assignImpl(ancestorShiftCount, shiftForValue, token, value);
             }
             shift = thisShift;
@@ -218,36 +218,36 @@ class TokenTrieNode<T>
             final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
             if (bitIsPresent(valuesBitmask, bit)) {
                 final T[] newValues = ArrayHelper.assign(values, arrayIndex, value);
-                return new TokenTrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size);
+                return new TrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size);
             } else {
-                final T[] newValues = ArrayHelper.insert(TokenTrieNode::allocateValues, values, arrayIndex, value);
-                return new TokenTrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size + 1);
+                final T[] newValues = ArrayHelper.insert(TrieNode::allocateValues, values, arrayIndex, value);
+                return new TrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size + 1);
             }
         } else {
             // Store the value in a descendent node.
             final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
             if (bitIsPresent(nodesBitmask, bit)) {
-                final TokenTrieNode<T> node = nodes[arrayIndex];
-                final TokenTrieNode<T> newNode = node.assignImpl(shift - 1, shiftForValue, token, value);
-                final TokenTrieNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                final TrieNode<T> node = nodes[arrayIndex];
+                final TrieNode<T> newNode = node.assignImpl(shift - 1, shiftForValue, token, value);
+                final TrieNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                 final int newSize = size - node.iterableSize() + newNode.iterableSize();
-                return new TokenTrieNode<>(shift, baseToken, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                return new TrieNode<>(shift, baseToken, valuesBitmask, values, nodesBitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
-                final TokenTrieNode<T> newNode = forValue(shiftForValue, token, value);
+                final TrieNode<T> newNode = forValue(shiftForValue, token, value);
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;
                 } else {
-                    final TokenTrieNode<T>[] newNodes = ArrayHelper.insert(TokenTrieNode::allocateNodes, nodes, arrayIndex, newNode);
-                    return new TokenTrieNode<>(shift, baseToken, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    final TrieNode<T>[] newNodes = ArrayHelper.insert(TrieNode::allocateNodes, nodes, arrayIndex, newNode);
+                    return new TrieNode<>(shift, baseToken, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
     @Nonnull
-    private TokenTrieNode<T> deleteImpl(int shiftForValue,
-                                        @Nonnull TokenImpl token)
+    private TrieNode<T> deleteImpl(int shiftForValue,
+                                   @Nonnull TokenImpl token)
     {
         final int shift = this.shift;
         if (shiftForValue > shift) {
@@ -266,17 +266,17 @@ class TokenTrieNode<T>
                 } else {
                     final long newBitmask = removeBit(valuesBitmask, bit);
                     final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                    final T[] newValues = ArrayHelper.delete(TokenTrieNode::allocateValues, values, arrayIndex);
-                    return new TokenTrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                    final T[] newValues = ArrayHelper.delete(TrieNode::allocateValues, values, arrayIndex);
+                    return new TrieNode<>(shift, baseToken, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
             final long bitmask = this.nodesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                final TokenTrieNode<T>[] nodes = this.nodes;
-                final TokenTrieNode<T> node = nodes[arrayIndex];
-                final TokenTrieNode<T> newNode = node.deleteImpl(shiftForValue, token);
+                final TrieNode<T>[] nodes = this.nodes;
+                final TrieNode<T> node = nodes[arrayIndex];
+                final TrieNode<T> newNode = node.deleteImpl(shiftForValue, token);
                 if (newNode != node) {
                     final int newSize = size - node.iterableSize() + newNode.iterableSize();
                     if (newSize == 0) {
@@ -287,12 +287,12 @@ class TokenTrieNode<T>
                             // return the unaffected single remaining node to minimize height of the tree
                             return nodes[arrayIndexForBit(bitmask, newBitmask)];
                         } else {
-                            final TokenTrieNode<T>[] newNodes = ArrayHelper.delete(TokenTrieNode::allocateNodes, nodes, arrayIndex);
-                            return new TokenTrieNode<>(shift, baseToken, valuesBitmask, values, newBitmask, newNodes, newSize);
+                            final TrieNode<T>[] newNodes = ArrayHelper.delete(TrieNode::allocateNodes, nodes, arrayIndex);
+                            return new TrieNode<>(shift, baseToken, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
-                        final TokenTrieNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new TokenTrieNode<>(shift, baseToken, valuesBitmask, values, bitmask, newNodes, newSize);
+                        final TrieNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                        return new TrieNode<>(shift, baseToken, valuesBitmask, values, bitmask, newNodes, newSize);
                     }
                 }
             }
@@ -320,11 +320,11 @@ class TokenTrieNode<T>
 
     @Nullable
     @Override
-    public GenericIterator.State<TokenList.Entry<T>> iterateOverRange(@Nullable GenericIterator.State<TokenList.Entry<T>> parent,
-                                                                      int offset,
-                                                                      int limit)
+    public GenericIterator.State<JImmutableTokenList.Entry<T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableTokenList.Entry<T>> parent,
+                                                                                int offset,
+                                                                                int limit)
     {
-        final List<GenericIterator.Iterable<TokenList.Entry<T>>> iterables = new ArrayList<>(values.length + nodes.length);
+        final List<GenericIterator.Iterable<JImmutableTokenList.Entry<T>>> iterables = new ArrayList<>(values.length + nodes.length);
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
             final long bit = leastBit(combinedBitmask);
@@ -364,9 +364,9 @@ class TokenTrieNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> TokenTrieNode<T>[] allocateNodes(int size)
+    static <T> TrieNode<T>[] allocateNodes(int size)
     {
-        return size == 0 ? emptyNodes() : (TokenTrieNode<T>[])new TokenTrieNode[size];
+        return size == 0 ? emptyNodes() : (TrieNode<T>[])new TrieNode[size];
     }
 
     @SuppressWarnings("unchecked")
@@ -378,15 +378,15 @@ class TokenTrieNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> TokenTrieNode<T>[] emptyNodes()
+    private static <T> TrieNode<T>[] emptyNodes()
     {
-        return (TokenTrieNode<T>[])EMPTY_NODES;
+        return (TrieNode<T>[])EMPTY_NODES;
     }
 
     private static <T> boolean checkChildShifts(int shiftCount,
-                                                @Nonnull TokenTrieNode<T>[] nodes)
+                                                @Nonnull TrieNode<T>[] nodes)
     {
-        for (TokenTrieNode<T> node : nodes) {
+        for (TrieNode<T> node : nodes) {
             if (shiftCount <= node.shift || node.isEmpty()) {
                 return false;
             }
@@ -394,17 +394,17 @@ class TokenTrieNode<T>
         return true;
     }
 
-    private static <T> int computeSize(@Nonnull TokenTrieNode<T>[] children)
+    private static <T> int computeSize(@Nonnull TrieNode<T>[] children)
     {
         int total = 0;
-        for (TokenTrieNode<T> child : children) {
+        for (TrieNode<T> child : children) {
             total += child.iterableSize();
         }
         return total;
     }
 
     private static class Entry<T>
-        implements TokenList.Entry<T>
+        implements JImmutableTokenList.Entry<T>
     {
         private final TokenImpl token;
         private final T value;
@@ -418,7 +418,7 @@ class TokenTrieNode<T>
 
         @Nonnull
         @Override
-        public TokenList.Token token()
+        public JImmutableTokenList.Token token()
         {
             return token;
         }

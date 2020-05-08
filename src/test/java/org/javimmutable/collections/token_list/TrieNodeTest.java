@@ -8,12 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class TokenTrieNodeTest
+public class TrieNodeTest
     extends TestCase
 {
     public void testBasics()
     {
-        TokenTrieNode<Integer> root = TokenTrieNode.empty();
+        TrieNode<Integer> root = TrieNode.empty();
         assertEquals("[]", root);
         root = root.assign(TokenImpl.token(0), 0);
         assertEquals("[[0,0]]", root);
@@ -36,14 +36,14 @@ public class TokenTrieNodeTest
         assertEquals("[[2.0,200]]", root);
         root = root.delete(TokenImpl.token(2, 0));
         assertEquals("[]", root);
-        assertSame(TokenTrieNode.empty(), root);
+        assertSame(TrieNode.empty(), root);
     }
 
     public void testRandom()
     {
         final Random r = new Random(1000);
         final Map<TokenImpl, Integer> map = new LinkedHashMap<>();
-        TokenTrieNode<Integer> root = TokenTrieNode.empty();
+        TrieNode<Integer> root = TrieNode.empty();
         TokenImpl nextToken = TokenImpl.ZERO;
         int nextValue = 1;
         for (int loop = 1; loop <= 40000; ++loop) {
@@ -75,7 +75,7 @@ public class TokenTrieNodeTest
             }
         }
         assertEquals("[]", root);
-        assertSame(TokenTrieNode.empty(), root);
+        assertSame(TrieNode.empty(), root);
     }
 
     private TokenImpl randomKey(Random r,
@@ -92,7 +92,7 @@ public class TokenTrieNodeTest
     }
 
     private void assertEquals(String expected,
-                              TokenTrieNode<Integer> actual)
+                              TrieNode<Integer> actual)
     {
         assertEquals(expected, actual.toString());
     }

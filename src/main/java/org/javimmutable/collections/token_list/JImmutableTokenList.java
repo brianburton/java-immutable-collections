@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  * 2. Remove a value from the list using the token provided earlier.
  * 3. Iterate through token/value pairs in the order of insertion.
  */
-public interface TokenList<T>
+public interface JImmutableTokenList<T>
 {
     interface Token
     {
@@ -24,6 +24,26 @@ public interface TokenList<T>
         T value();
     }
 
+    static <T> JImmutableTokenList<T> of()
+    {
+        return EmptyTokenList.instance();
+    }
+
+    /**
+     * Adds the specified value and return a new list containing that value.
+     * The new list's lastToken() method will return the newly added token.
+     */
+    @Nonnull
+    JImmutableTokenList<T> insertLast(T value);
+
+    /**
+     * Remove the specified token from this list.
+     * If this list contains the token returns a new one that does not.
+     * If this list does not contain the token returns this list unmodified.
+     */
+    @Nonnull
+    JImmutableTokenList<T> delete(@Nonnull Token token);
+
     /**
      * Returns the most recently added token.
      * The token may or may not actually be present in this list.
@@ -32,20 +52,11 @@ public interface TokenList<T>
     Token lastToken();
 
     @Nonnull
+    IterableStreamable<Token> tokens();
+
+    @Nonnull
+    IterableStreamable<T> values();
+
+    @Nonnull
     IterableStreamable<Entry<T>> entries();
-
-    /**
-     * Adds the specified value and return a new list containing that value.
-     * The new list's lastToken() method will return the newly added token.
-     */
-    @Nonnull
-    TokenList<T> insertLast(T value);
-
-    /**
-     * Remove the specified token from this list.
-     * If this list contains the token returns a new one that does not.
-     * If this list does not contain the token returns this list unmodified.
-     */
-    @Nonnull
-    TokenList<T> delete(@Nonnull Token token);
 }
