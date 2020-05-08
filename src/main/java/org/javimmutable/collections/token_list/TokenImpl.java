@@ -35,17 +35,11 @@ class TokenImpl
         return new TokenImpl(tokenValues);
     }
 
-    static boolean sameBaseAt(int shift,
-                              @Nonnull TokenImpl a,
-                              @Nonnull TokenImpl b)
+    static boolean sameBaseAt(@Nonnull TokenImpl a,
+                              @Nonnull TokenImpl b,
+                              int shift)
     {
-        final int maxShift = Math.max(a.maxShift(), b.maxShift());
-        for (int s = maxShift; s > shift; --s) {
-            if (a.indexAt(s) != b.indexAt(s)) {
-                return false;
-            }
-        }
-        return true;
+        return basesMatch(a, b, Math.max(a.maxShift(), b.maxShift()), shift + 1);
     }
 
     static boolean equivalentTo(@Nonnull TokenImpl a,
@@ -60,6 +54,47 @@ class TokenImpl
         return true;
     }
 
+    private static boolean basesMatch(@Nonnull TokenImpl a,
+                                      @Nonnull TokenImpl b,
+                                      int maxShift,
+                                      int shift)
+    {
+        while (maxShift >= shift) {
+            if (a.indexAt(maxShift) != b.indexAt(maxShift)) {
+                return false;
+            }
+            maxShift -= 1;
+        }
+        return true;
+    }
+
+    static int maxCommonShift(@Nonnull TokenImpl a,
+                              @Nonnull TokenImpl b)
+    {
+        int shift = Math.max(a.maxShift(), b.maxShift());
+        while (shift > 0) {
+            final int index1 = a.indexAt(shift);
+            final int index2 = b.indexAt(shift);
+            if (index1 != index2) {
+                return shift;
+            }
+            shift -= 1;
+        }
+        return 0;
+    }
+
+    static int commonAncestorShift(@Nonnull TokenImpl a,
+                                   @Nonnull TokenImpl b)
+    {
+        int shift = Math.max(a.trieDepth(), b.trieDepth());
+        final int maxShift = Math.max(maxCommonShift(a, b), shift);
+        while (shift < maxShift && !basesMatch(a, b, maxShift, shift)) {
+            shift += 1;
+        }
+        assert shift <= maxShift;
+        return shift;
+    }
+
     @Nonnull
     TokenImpl base(int shift)
     {
@@ -72,49 +107,6 @@ class TokenImpl
             System.arraycopy(values, 0, newValues, myStartIndex, copyLength);
         }
         return new TokenImpl(newValues);
-    }
-
-    @Nonnull
-    private static TokenImpl commonBase(byte[] a,
-                                        byte[] b)
-    {
-        assert a.length >= b.length;
-        if (a.length == b.length && a[0] != b[0]) {
-            return new TokenImpl(new byte[a.length + 1]);
-        } else if (a.length == b.length) {
-            final byte[] newValues = new byte[a.length];
-            for (int i = 0; i < a.length - 1; ++i) {
-                if (a[i] == b[i]) {
-                    newValues[i] = a[i];
-                }
-            }
-            return new TokenImpl(newValues);
-        } else {
-            final int prefix = a.length - b.length;
-            for (int i = 0; i < prefix; ++i) {
-                if (a[i] != 0) {
-                    return new TokenImpl(new byte[a.length + 1]);
-                }
-            }
-            final byte[] newValues = new byte[a.length];
-            for (int i = 0; i < b.length - 1; ++i) {
-                if (a[prefix + i] != b[i]) {
-                    break;
-                }
-                newValues[prefix + i] = b[i];
-            }
-            return new TokenImpl(newValues);
-        }
-    }
-
-    @Nonnull
-    TokenImpl commonBaseWith(@Nonnull TokenImpl other)
-    {
-        if (values.length >= other.values.length) {
-            return commonBase(values, other.values);
-        } else {
-            return commonBase(other.values, values);
-        }
     }
 
     @Nonnull

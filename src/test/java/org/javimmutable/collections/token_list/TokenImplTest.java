@@ -2,7 +2,7 @@ package org.javimmutable.collections.token_list;
 
 import junit.framework.TestCase;
 
-import static org.javimmutable.collections.token_list.TokenImpl.token;
+import static org.javimmutable.collections.token_list.TokenImpl.*;
 
 public class TokenImplTest
     extends TestCase
@@ -42,24 +42,6 @@ public class TokenImplTest
         assertEquals("0.0.0.0", t.base(3));
     }
 
-    public void testCommonBase()
-    {
-        assertEquals("0.0", token(1).commonBaseWith(token(2)));
-        assertEquals("0.0.0", token(2, 1).commonBaseWith(token(1)));
-        assertEquals("0.0.0", token(1).commonBaseWith(token(2, 1)));
-        assertEquals("0.0.0", token(1, 2).commonBaseWith(token(2, 1)));
-
-        assertEquals("3.2.0", token(3, 2, 1).commonBaseWith(token(3, 2, 2)));
-        assertEquals("0.3.2.0", token(0, 3, 2, 1).commonBaseWith(token(3, 2, 2)));
-        assertEquals("0.3.2.0", token(3, 2, 1).commonBaseWith(token(0, 3, 2, 2)));
-
-        assertEquals("3.0.0", token(3, 2, 1).commonBaseWith(token(3, 4, 2)));
-        assertEquals("0.3.0.0", token(0, 3, 2, 1).commonBaseWith(token(3, 4, 2)));
-        assertEquals("0.3.0.0", token(3, 2, 1).commonBaseWith(token(0, 3, 4, 2)));
-
-        assertEquals("4.3.0.0", token(4, 3, 2, 1).commonBaseWith(token(4, 3, 6, 1)));
-    }
-
     public void testNext()
     {
         assertEquals("1", token(0).next());
@@ -71,17 +53,17 @@ public class TokenImplTest
 
     public void testSameBaseAt()
     {
-        assertEquals(true, TokenImpl.sameBaseAt(0, token(0), token(1)));
-        assertEquals(true, TokenImpl.sameBaseAt(0, token(0), token(0, 1)));
+        assertEquals(true, TokenImpl.sameBaseAt(token(0), token(1), 0));
+        assertEquals(true, TokenImpl.sameBaseAt(token(0), token(0, 1), 0));
 
-        assertEquals(true, TokenImpl.sameBaseAt(0, token(1, 3), token(1, 2)));
-        assertEquals(true, TokenImpl.sameBaseAt(1, token(1, 3), token(1, 2)));
+        assertEquals(true, TokenImpl.sameBaseAt(token(1, 3), token(1, 2), 0));
+        assertEquals(true, TokenImpl.sameBaseAt(token(1, 3), token(1, 2), 1));
 
-        assertEquals(true, TokenImpl.sameBaseAt(0, token(1, 2, 3, 1), token(1, 2, 3, 2)));
-        assertEquals(true, TokenImpl.sameBaseAt(1, token(1, 2, 3, 1), token(1, 2, 3, 2)));
+        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 0));
+        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 1));
 
-        assertEquals(false, TokenImpl.sameBaseAt(0, token(1, 2, 3, 1), token(1, 2, 4, 1)));
-        assertEquals(true, TokenImpl.sameBaseAt(1, token(1, 2, 3, 1), token(1, 2, 4, 1)));
+        assertEquals(false, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 0));
+        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 1));
     }
 
     public void testEquivalentTo()
@@ -115,6 +97,38 @@ public class TokenImplTest
         assertEquals(0, token(0).trieDepth());
         assertEquals(0, token(0, 0).trieDepth());
         assertEquals(0, token(0, 0, 0).trieDepth());
+    }
+
+    public void testCommonAncestorShift()
+    {
+        final TokenImpl root = token(0, 21, 0, 0, 0, 1);
+        final TokenImpl leaf = token(0, 21, 61, 36, 13, 3);
+        final TokenImpl assign = token(0, 21, 61, 36, 0, 0);
+        assertEquals(0, leaf.trieDepth());
+        assertEquals(2, assign.trieDepth());
+        assertEquals(0, root.trieDepth());
+        assertEquals(1, maxCommonShift(leaf, assign));
+        assertEquals(2, commonAncestorShift(leaf, assign));
+        assertEquals(3, commonAncestorShift(root, assign));
+        assertEquals(0, commonAncestorShift(token(1), token(2)));
+        assertEquals(5, commonAncestorShift(token(3, 0, 0, 0, 0, 0), token(1, 0, 0, 0, 0, 0)));
+        assertEquals(4, commonAncestorShift(token(3, 1, 0, 0, 0, 0), token(3, 1, 1, 0, 0, 0)));
+        assertEquals(3, commonAncestorShift(token(3, 1, 2, 0, 0, 0), token(3, 1, 1, 0, 0, 0)));
+        assertEquals(1, token(3, 1, 3, 0, 1, 0).trieDepth());
+        assertEquals(2, commonAncestorShift(token(3, 1, 3, 0, 0, 1), token(3, 1, 3, 1, 0, 0)));
+        assertEquals(3, commonAncestorShift(root, leaf));
+        assertEquals(2, commonAncestorShift(leaf, assign));
+    }
+
+    public void testCache()
+    {
+        TokenImpl token = ZERO;
+        for (int i = 0; i <= 63; ++i) {
+            assertSame(token.next(), token.next());
+            token = token.next();
+        }
+        assertNotSame(token.next(), token.next());
+        assertEquals(token.next(), token.next());
     }
 
     private void assertEquals(String strValue,

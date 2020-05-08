@@ -161,7 +161,7 @@ class TokenTrieNode<T>
         if (shiftForValue > shift) {
             return defaultValue;
         }
-        if (!TokenImpl.sameBaseAt(shift, baseToken, token)) {
+        if (!TokenImpl.sameBaseAt(baseToken, token, shift)) {
             return defaultValue;
         }
         final int myIndex = token.indexAt(shift);
@@ -190,15 +190,14 @@ class TokenTrieNode<T>
     {
         final int thisShift = this.shift;
         final TokenImpl baseToken = this.baseToken;
-        assert TokenImpl.sameBaseAt(shift, baseToken, token);
+        assert TokenImpl.sameBaseAt(baseToken, token, shift);
         assert shift >= thisShift;
         assert shift >= shiftForValue;
         if (shift != thisShift) {
             // We are lower in tree than our parent expects, see if we need to create an ancestor to hold the value.
             // This happens when we've skipped intermediate nodes for efficiency and one of those nodes needs to be
             // inserted now because we are assigning a value that goes down a different branch than this node.
-            final TokenImpl ancestorToken = baseToken.withIndexAt(thisShift, 1).commonBaseWith(token);
-            final int ancestorShiftCount = Math.max(token.trieDepth(), ancestorToken.trieDepth());
+            final int ancestorShiftCount = TokenImpl.commonAncestorShift(baseToken.withIndexAt(thisShift, 1), token);
             assert ancestorShiftCount <= shift;
             if (ancestorShiftCount > thisShift) {
                 final TokenTrieNode<T> ancestor = forNode(ancestorShiftCount, baseToken, this);
@@ -254,7 +253,7 @@ class TokenTrieNode<T>
         if (shiftForValue > shift) {
             return this;
         }
-        if (!TokenImpl.sameBaseAt(shift, baseToken, token)) {
+        if (!TokenImpl.sameBaseAt(baseToken, token, shift)) {
             return this;
         }
         final int myIndex = token.indexAt(shift);
