@@ -37,6 +37,7 @@ package org.javimmutable.collections.iterators;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
@@ -83,6 +84,26 @@ public class GenericIterator<T>
         default SplitableIterator<T> iterator()
         {
             return new GenericIterator<>(this, 0, iterableSize());
+        }
+
+        @Nonnull
+        default IterableStreamable<T> streamable(int characteristics)
+        {
+            return new IterableStreamable<T>()
+            {
+                @Nonnull
+                @Override
+                public SplitableIterator<T> iterator()
+                {
+                    return Iterable.this.iterator();
+                }
+
+                @Override
+                public int getSpliteratorCharacteristics()
+                {
+                    return characteristics;
+                }
+            };
         }
     }
 

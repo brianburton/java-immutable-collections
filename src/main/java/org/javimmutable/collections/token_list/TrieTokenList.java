@@ -36,9 +36,7 @@
 package org.javimmutable.collections.token_list;
 
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 
@@ -88,34 +86,20 @@ class TrieTokenList<T>
     @Nonnull
     public IterableStreamable<Token> tokens()
     {
-        return TransformStreamable.of(entries(), JImmutableTokenList.Entry::token);
+        return root.tokens().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Override
     @Nonnull
     public IterableStreamable<T> values()
     {
-        return TransformStreamable.of(entries(), JImmutableTokenList.Entry::value);
+        return root.values().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Nonnull
     @Override
     public IterableStreamable<Entry<T>> entries()
     {
-        return new IterableStreamable<Entry<T>>()
-        {
-            @Nonnull
-            @Override
-            public SplitableIterator<Entry<T>> iterator()
-            {
-                return root.iterator();
-            }
-
-            @Override
-            public int getSpliteratorCharacteristics()
-            {
-                return StreamConstants.SPLITERATOR_ORDERED;
-            }
-        };
+        return root.entries().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 }
