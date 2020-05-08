@@ -196,10 +196,12 @@ public class JImmutableInsertOrderMap<K, V>
     public JImmutableInsertOrderMap<K, V> delete(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        if (current != null) {
-            return new JImmutableInsertOrderMap<>(keys.delete(current.index), values.delete(key));
-        } else {
+        if (current == null) {
             return this;
+        } else if (values.size() == 1) {
+            return of();
+        } else {
+            return new JImmutableInsertOrderMap<>(keys.delete(current.index), values.delete(key));
         }
     }
 
