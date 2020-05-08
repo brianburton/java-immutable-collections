@@ -42,6 +42,12 @@ class EmptyTokenList<T>
         return TokenImpl.ZERO;
     }
 
+    @Override
+    public int size()
+    {
+        return 0;
+    }
+
     @Nonnull
     @Override
     public IterableStreamable<Token> tokens()

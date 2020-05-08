@@ -45,6 +45,12 @@ class TrieTokenList<T>
     }
 
     @Override
+    public int size()
+    {
+        return root.size();
+    }
+
+    @Override
     @Nonnull
     public IterableStreamable<Token> tokens()
     {

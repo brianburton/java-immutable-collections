@@ -125,6 +125,11 @@ class TrieNode<T>
         return new TrieNode<>(shift, baseToken, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
     }
 
+    int size()
+    {
+        return size;
+    }
+
     boolean isEmpty()
     {
         return size == 0;

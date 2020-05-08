@@ -51,6 +51,8 @@ public interface JImmutableTokenList<T>
     @Nonnull
     Token lastToken();
 
+    int size();
+
     @Nonnull
     IterableStreamable<Token> tokens();
 
