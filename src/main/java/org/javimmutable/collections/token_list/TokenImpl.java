@@ -80,13 +80,7 @@ class TokenImpl
     static boolean equivalentTo(@Nonnull TokenImpl a,
                                 @Nonnull TokenImpl b)
     {
-        final int maxShift = Math.max(a.maxShift(), b.maxShift());
-        for (int s = 0; s <= maxShift; ++s) {
-            if (a.indexAt(s) != b.indexAt(s)) {
-                return false;
-            }
-        }
-        return true;
+        return basesMatch(a, b, Math.max(a.maxShift(), b.maxShift()), 0);
     }
 
     private static boolean basesMatch(@Nonnull TokenImpl a,

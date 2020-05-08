@@ -113,6 +113,8 @@ public class TokenImplTest
 
         assertEquals(false, TokenImpl.equivalentTo(token(1, 1), token(2, 1)));
         assertEquals(false, TokenImpl.equivalentTo(token(2, 1), token(1, 1)));
+        assertEquals(false, TokenImpl.equivalentTo(token(1, 2, 1), token(2, 1)));
+        assertEquals(false, TokenImpl.equivalentTo(token(2, 1), token(1, 2, 1)));
         assertEquals(false, TokenImpl.equivalentTo(token(1, 2, 1), token(1, 1, 1)));
         assertEquals(false, TokenImpl.equivalentTo(token(1, 1, 1), token(1, 2, 1)));
         assertEquals(false, TokenImpl.equivalentTo(token(1, 1, 1), token(1, 1, 2)));
