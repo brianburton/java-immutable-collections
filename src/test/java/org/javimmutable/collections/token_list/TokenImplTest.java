@@ -168,6 +168,14 @@ public class TokenImplTest
         assertEquals(token.next(), token.next());
     }
 
+    public void testHashCode()
+    {
+        assertEquals(1, token(1).hashCode());
+        assertEquals(1, token(0, 0, 1).hashCode());
+        assertEquals(33, token(1, 2).hashCode());
+        assertEquals(33, token(0, 0, 1, 2).hashCode());
+    }
+
     private void assertEquals(String strValue,
                               TokenImpl token)
     {

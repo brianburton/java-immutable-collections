@@ -65,7 +65,7 @@ class TokenImpl
     {
         final byte[] tokenValues = new byte[values.length];
         for (int i = 0; i < values.length; ++i) {
-            tokenValues[i] = (byte)values[i];
+            tokenValues[i] = (byte)values[values.length - i - 1];
         }
         return new TokenImpl(tokenValues);
     }
@@ -130,10 +130,9 @@ class TokenImpl
         final int myLength = values.length;
         final int resultLength = Math.max(shift + 1, myLength);
         final byte[] newValues = new byte[resultLength];
-        final int myStartIndex = resultLength - myLength;
         final int copyLength = myLength - shift - 1;
         if (copyLength > 0) {
-            System.arraycopy(values, 0, newValues, myStartIndex, copyLength);
+            System.arraycopy(values, shift + 1, newValues, shift + 1, copyLength);
         }
         return new TokenImpl(newValues);
     }
@@ -141,22 +140,24 @@ class TokenImpl
     @Nonnull
     TokenImpl next()
     {
-        if (values.length == 1) {
+        final int length = values.length;
+        if (length == 1) {
             return CACHE[values[0] + 1];
         }
         byte[] newValues = values.clone();
-        for (int i = newValues.length - 1; i >= 0; --i) {
-            assert newValues[i] >= 0;
-            assert newValues[i] < 64;
-            newValues[i] += 1;
-            if (newValues[i] < 64) {
+        for (int i = 0, last = length - 1; i <= last; ++i) {
+            final byte value = newValues[i];
+            assert value >= 0;
+            assert value < 64;
+            if (value < 63) {
+                newValues[i] = (byte)(value + 1);
                 break;
             }
             newValues[i] = 0;
-            if (i == 0) {
-                byte[] extendedValues = new byte[newValues.length + 1];
-                extendedValues[0] = 1;
-                System.arraycopy(newValues, 0, extendedValues, 1, newValues.length);
+            if (i == last) {
+                byte[] extendedValues = new byte[last + 2];
+                extendedValues[last + 1] = 1;
+                System.arraycopy(newValues, 0, extendedValues, 0, length);
                 newValues = extendedValues;
             }
         }
@@ -165,7 +166,7 @@ class TokenImpl
 
     int indexAt(int shift)
     {
-        return shift >= values.length ? 0 : (int)values[values.length - shift - 1];
+        return shift >= values.length ? 0 : (int)values[shift];
     }
 
     int maxShift()
@@ -175,8 +176,8 @@ class TokenImpl
 
     int trieDepth()
     {
-        for (int i = 0, index = values.length - 1; i < values.length; ++i, --index) {
-            if (values[index] != 0) {
+        for (int i = 0, limit = values.length; i < limit; ++i) {
+            if (values[i] != 0) {
                 return i;
             }
         }
@@ -191,7 +192,7 @@ class TokenImpl
         assert index < 64;
         assert shift < values.length;
         byte[] newValues = values.clone();
-        newValues[values.length - 1 - shift] = (byte)index;
+        newValues[shift] = (byte)index;
         return new TokenImpl(newValues);
     }
 
@@ -205,8 +206,8 @@ class TokenImpl
     public int hashCode()
     {
         int result = 0;
-        for (byte value : values) {
-            result = result * 31 + (int)value;
+        for (int i = values.length - 1; i >= 0; --i) {
+            result = result * 31 + (int)values[i];
         }
         return result;
     }
@@ -216,11 +217,11 @@ class TokenImpl
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
-        for (byte value : values) {
+        for (int i = values.length - 1; i >= 0; --i) {
             if (sb.length() > 0) {
                 sb.append(".");
             }
-            sb.append(value);
+            sb.append(values[i]);
         }
         return sb.toString();
     }
