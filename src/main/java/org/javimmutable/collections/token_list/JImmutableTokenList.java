@@ -40,7 +40,7 @@ import org.javimmutable.collections.IterableStreamable;
 import javax.annotation.Nonnull;
 
 /**
- * Immutable data structure supporting only three operations:
+ * Immutable data structure supporting these operations:
  * 1. Add a value to the list and receive a token in return.
  * 2. Remove a value from the list using the token provided earlier.
  * 3. Iterate through token/value pairs in the order of insertion.
@@ -65,7 +65,7 @@ public interface JImmutableTokenList<T>
     }
 
     /**
-     * Adds the specified value and return a new list containing that value.
+     * Add the specified value and return a new list containing that value.
      * The new list's lastToken() method will return the newly added token.
      */
     @Nonnull
@@ -80,12 +80,15 @@ public interface JImmutableTokenList<T>
     JImmutableTokenList<T> delete(@Nonnull Token token);
 
     /**
-     * Returns the most recently added token.
-     * The token may or may not actually be present in this list.
+     * Returns the token from the most recent insertLast() call.
+     * The token may or may not still be present in this list (if delete() has been called).
      */
     @Nonnull
     Token lastToken();
 
+    /**
+     * Returns number of tokens/values in the list.
+     */
     int size();
 
     @Nonnull

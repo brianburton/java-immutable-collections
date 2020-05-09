@@ -58,10 +58,7 @@ import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_OR
  * JImmutableMap implementation that allows iteration over members in the order in which they
  * were inserted into the map.  Maintains two parallel data structures, one for sorting and
  * the other for storing entries.  Gets are approximately as fast as hash map gets but updates
- * are significantly slower.   Iteration is comparable to sorted map iteration.
- * <p>
- * Use a hash or tree map whenever possible but this class performs well enough for most cases
- * where insertion order is important to an algorithm.
+ * are significantly slower.
  */
 @Immutable
 public class JImmutableInsertOrderMap<K, V>
@@ -186,7 +183,7 @@ public class JImmutableInsertOrderMap<K, V>
         } else if (current.value == value) {
             return this;
         } else {
-            final Node<V> newNode = new Node<>(current.index, value);
+            final Node<V> newNode = new Node<>(current.token, value);
             return new JImmutableInsertOrderMap<>(keys, values.assign(key, newNode));
         }
     }
@@ -201,7 +198,7 @@ public class JImmutableInsertOrderMap<K, V>
         } else if (values.size() == 1) {
             return of();
         } else {
-            return new JImmutableInsertOrderMap<>(keys.delete(current.index), values.delete(key));
+            return new JImmutableInsertOrderMap<>(keys.delete(current.token), values.delete(key));
         }
     }
 
@@ -247,9 +244,9 @@ public class JImmutableInsertOrderMap<K, V>
         for (JImmutableTokenList.Entry<K> e : keys.entries()) {
             final Node<V> node = values.get(e.value());
             if (node == null) {
-                throw new IllegalStateException(String.format("node missing: index=%s key=%s", e.token(), e.value()));
+                throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.token(), e.value()));
             }
-            if (!e.token().equals(node.index)) {
+            if (!e.token().equals(node.token)) {
                 throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e, node));
             }
         }
@@ -260,19 +257,16 @@ public class JImmutableInsertOrderMap<K, V>
         return new JImmutableInsertOrderMapProxy(this);
     }
 
-    /**
-     * An Entry implementation that also stores the sortedKeys index corresponding to this node's key.
-     */
     @Immutable
     private static class Node<V>
     {
-        private final JImmutableTokenList.Token index;
+        private final JImmutableTokenList.Token token;
         private final V value;
 
-        private Node(JImmutableTokenList.Token index,
+        private Node(JImmutableTokenList.Token token,
                      V value)
         {
-            this.index = index;
+            this.token = token;
             this.value = value;
         }
     }
