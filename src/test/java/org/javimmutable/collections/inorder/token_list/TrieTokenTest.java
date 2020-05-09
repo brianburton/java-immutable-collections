@@ -33,11 +33,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import junit.framework.TestCase;
 
-import static org.javimmutable.collections.token_list.TrieToken.*;
+import static org.javimmutable.collections.inorder.token_list.TrieToken.*;
 
 public class TrieTokenTest
     extends TestCase

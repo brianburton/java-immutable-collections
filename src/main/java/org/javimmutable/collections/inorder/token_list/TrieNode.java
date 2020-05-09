@@ -33,7 +33,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
@@ -334,7 +334,7 @@ class TrieNode<T>
     }
 
     @Nonnull
-    GenericIterator.Iterable<JImmutableTokenList.Token> tokens()
+    GenericIterator.Iterable<TokenList.Token> tokens()
     {
         return iterable((valueIndex, arrayIndex) -> baseToken.withIndexAt(shift, valueIndex),
                         nodeIndex -> nodes[nodeIndex].tokens());
@@ -348,7 +348,7 @@ class TrieNode<T>
     }
 
     @Nonnull
-    GenericIterator.Iterable<JImmutableTokenList.Entry<T>> entries()
+    GenericIterator.Iterable<TokenList.Entry<T>> entries()
     {
         return iterable((valueIndex, arrayIndex) -> new Entry<>(baseToken.withIndexAt(shift, valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());
@@ -448,7 +448,7 @@ class TrieNode<T>
     }
 
     private static class Entry<T>
-        implements JImmutableTokenList.Entry<T>
+        implements TokenList.Entry<T>
     {
         private final TrieToken token;
         private final T value;
@@ -462,7 +462,7 @@ class TrieNode<T>
 
         @Nonnull
         @Override
-        public JImmutableTokenList.Token token()
+        public TokenList.Token token()
         {
             return token;
         }

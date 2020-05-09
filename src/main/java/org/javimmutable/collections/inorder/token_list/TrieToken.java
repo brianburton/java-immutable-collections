@@ -33,14 +33,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
 class TrieToken
-    implements JImmutableTokenList.Token
+    implements TokenList.Token
 {
     private static final TrieToken[] CACHE;
     static final TrieToken ZERO;

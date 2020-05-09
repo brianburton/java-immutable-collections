@@ -42,9 +42,9 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.inorder.token_list.TokenList;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
-import org.javimmutable.collections.token_list.JImmutableTokenList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -66,13 +66,13 @@ public class JImmutableInsertOrderMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(JImmutableTokenList.of(), JImmutableHashMap.of());
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TokenList.of(), JImmutableHashMap.of());
     private static final long serialVersionUID = -121805;
 
-    private final JImmutableTokenList<K> keys;
+    private final TokenList<K> keys;
     private final JImmutableMap<K, Node<V>> values;
 
-    private JImmutableInsertOrderMap(@Nonnull JImmutableTokenList<K> keys,
+    private JImmutableInsertOrderMap(@Nonnull TokenList<K> keys,
                                      @Nonnull JImmutableMap<K, Node<V>> values)
     {
         assert keys.size() == values.size();
@@ -177,7 +177,7 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Node<V> current = values.get(key);
         if (current == null) {
-            final JImmutableTokenList<K> newKeys = keys.insertLast(key);
+            final TokenList<K> newKeys = keys.insertLast(key);
             final Node<V> newNode = new Node<>(newKeys.lastToken(), value);
             return new JImmutableInsertOrderMap<>(newKeys, values.assign(key, newNode));
         } else if (current.value == value) {
@@ -241,7 +241,7 @@ public class JImmutableInsertOrderMap<K, V>
         if (keys.size() != values.size()) {
             throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", keys.size(), values.size()));
         }
-        for (JImmutableTokenList.Entry<K> e : keys.entries()) {
+        for (TokenList.Entry<K> e : keys.entries()) {
             final Node<V> node = values.get(e.value());
             if (node == null) {
                 throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.token(), e.value()));
@@ -260,10 +260,10 @@ public class JImmutableInsertOrderMap<K, V>
     @Immutable
     private static class Node<V>
     {
-        private final JImmutableTokenList.Token token;
+        private final TokenList.Token token;
         private final V value;
 
-        private Node(JImmutableTokenList.Token token,
+        private Node(TokenList.Token token,
                      V value)
         {
             this.token = token;

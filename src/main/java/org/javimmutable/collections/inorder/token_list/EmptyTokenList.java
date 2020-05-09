@@ -33,70 +33,73 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-/**
- * Immutable data structure supporting these operations:
- * 1. Add a value to the list and receive a token in return.
- * 2. Remove a value from the list using the token provided earlier.
- * 3. Iterate through token/value pairs in the order of insertion.
- */
-public interface JImmutableTokenList<T>
+@Immutable
+class EmptyTokenList<T>
+    implements TokenList<T>
 {
-    interface Token
+    @SuppressWarnings("rawtypes")
+    private static final EmptyTokenList EMPTY = new EmptyTokenList();
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    static <T> TokenList<T> instance()
     {
+        return (TokenList<T>)EMPTY;
     }
 
-    interface Entry<T>
+    @Nonnull
+    @Override
+    public TokenList<T> insertLast(T value)
     {
-        @Nonnull
-        Token token();
-
-        T value();
+        return new TrieTokenList<>(TrieNode.create(TrieToken.ZERO, value), TrieToken.ZERO);
     }
 
-    static <T> JImmutableTokenList<T> of()
+    @Nonnull
+    @Override
+    public TokenList<T> delete(@Nonnull Token token)
     {
-        return EmptyTokenList.instance();
+        return this;
     }
 
-    /**
-     * Add the specified value and return a new list containing that value.
-     * The new list's lastToken() method will return the newly added token.
-     */
     @Nonnull
-    JImmutableTokenList<T> insertLast(T value);
+    @Override
+    public Token lastToken()
+    {
+        return TrieToken.ZERO;
+    }
 
-    /**
-     * Remove the specified token from this list.
-     * If this list contains the token returns a new one that does not.
-     * If this list does not contain the token returns this list unmodified.
-     */
+    @Override
+    public int size()
+    {
+        return 0;
+    }
+
+    @Override
     @Nonnull
-    JImmutableTokenList<T> delete(@Nonnull Token token);
+    public IterableStreamable<Token> tokens()
+    {
+        return EmptyIterator.streamable();
+    }
 
-    /**
-     * Returns the token from the most recent insertLast() call.
-     * The token may or may not still be present in this list (if delete() has been called).
-     */
+    @Override
     @Nonnull
-    Token lastToken();
-
-    /**
-     * Returns number of tokens/values in the list.
-     */
-    int size();
-
-    @Nonnull
-    IterableStreamable<Token> tokens();
+    public IterableStreamable<T> values()
+    {
+        return EmptyIterator.streamable();
+    }
 
     @Nonnull
-    IterableStreamable<T> values();
-
-    @Nonnull
-    IterableStreamable<Entry<T>> entries();
+    @Override
+    public IterableStreamable<Entry<T>> entries()
+    {
+        return EmptyIterator.streamable();
+    }
 }

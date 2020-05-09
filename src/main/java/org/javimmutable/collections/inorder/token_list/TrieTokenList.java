@@ -33,73 +33,81 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-class EmptyTokenList<T>
-    implements JImmutableTokenList<T>
+class TrieTokenList<T>
+    implements TokenList<T>
 {
-    @SuppressWarnings("rawtypes")
-    private static final EmptyTokenList EMPTY = new EmptyTokenList();
+    private final TrieNode<T> root;
+    private final TrieToken lastToken;
 
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    static <T> JImmutableTokenList<T> instance()
+    TrieTokenList(@Nonnull TrieNode<T> root,
+                  @Nonnull TrieToken lastToken)
     {
-        return (JImmutableTokenList<T>)EMPTY;
+        this.root = root;
+        this.lastToken = lastToken;
     }
 
     @Nonnull
     @Override
-    public JImmutableTokenList<T> insertLast(T value)
+    public TokenList<T> insertLast(T value)
     {
-        return new TrieTokenList<>(TrieNode.create(TrieToken.ZERO, value), TrieToken.ZERO);
+        final TrieToken token = lastToken.next();
+        return new TrieTokenList<>(root.assign(token, value), token);
     }
 
     @Nonnull
     @Override
-    public JImmutableTokenList<T> delete(@Nonnull Token token)
+    public TokenList<T> delete(@Nonnull Token token)
     {
-        return this;
+        final TrieNode<T> newRoot = root.delete((TrieToken)token);
+        if (newRoot == root) {
+            return this;
+        } else if (newRoot.isEmpty()) {
+            return EmptyTokenList.instance();
+        } else {
+            return new TrieTokenList<>(newRoot, lastToken);
+        }
     }
 
     @Nonnull
     @Override
     public Token lastToken()
     {
-        return TrieToken.ZERO;
+        return lastToken;
     }
 
     @Override
     public int size()
     {
-        return 0;
+        return root.size();
     }
 
     @Override
     @Nonnull
     public IterableStreamable<Token> tokens()
     {
-        return EmptyIterator.streamable();
+        return root.tokens().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Override
     @Nonnull
     public IterableStreamable<T> values()
     {
-        return EmptyIterator.streamable();
+        return root.values().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     @Nonnull
     @Override
     public IterableStreamable<Entry<T>> entries()
     {
-        return EmptyIterator.streamable();
+        return root.entries().streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 }

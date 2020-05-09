@@ -1,17 +1,17 @@
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import junit.framework.TestCase;
 
 import java.util.stream.Collectors;
 
-import static org.javimmutable.collections.token_list.TrieToken.ZERO;
+import static org.javimmutable.collections.inorder.token_list.TrieToken.ZERO;
 
 public class TrieTokenListTest
     extends TestCase
 {
     public void testVarious()
     {
-        JImmutableTokenList<Integer> list = JImmutableTokenList.of();
+        TokenList<Integer> list = TokenList.of();
         assertSame(EmptyTokenList.instance(), list);
         list = list.insertLast(1);
         assertEquals(TrieTokenList.class, list.getClass());

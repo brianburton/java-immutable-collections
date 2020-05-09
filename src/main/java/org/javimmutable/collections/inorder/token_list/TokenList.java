@@ -33,81 +33,70 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.javimmutable.collections.token_list;
+package org.javimmutable.collections.inorder.token_list;
 
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
-@Immutable
-class TrieTokenList<T>
-    implements JImmutableTokenList<T>
+/**
+ * Immutable data structure supporting these operations:
+ * 1. Add a value to the list and receive a token in return.
+ * 2. Remove a value from the list using the token provided earlier.
+ * 3. Iterate through token/value pairs in the order of insertion.
+ */
+public interface TokenList<T>
 {
-    private final TrieNode<T> root;
-    private final TrieToken lastToken;
-
-    TrieTokenList(@Nonnull TrieNode<T> root,
-                  @Nonnull TrieToken lastToken)
+    interface Token
     {
-        this.root = root;
-        this.lastToken = lastToken;
     }
+
+    interface Entry<T>
+    {
+        @Nonnull
+        Token token();
+
+        T value();
+    }
+
+    static <T> TokenList<T> of()
+    {
+        return EmptyTokenList.instance();
+    }
+
+    /**
+     * Add the specified value and return a new list containing that value.
+     * The new list's lastToken() method will return the newly added token.
+     */
+    @Nonnull
+    TokenList<T> insertLast(T value);
+
+    /**
+     * Remove the specified token from this list.
+     * If this list contains the token returns a new one that does not.
+     * If this list does not contain the token returns this list unmodified.
+     */
+    @Nonnull
+    TokenList<T> delete(@Nonnull Token token);
+
+    /**
+     * Returns the token from the most recent insertLast() call.
+     * The token may or may not still be present in this list (if delete() has been called).
+     */
+    @Nonnull
+    Token lastToken();
+
+    /**
+     * Returns number of tokens/values in the list.
+     */
+    int size();
 
     @Nonnull
-    @Override
-    public JImmutableTokenList<T> insertLast(T value)
-    {
-        final TrieToken token = lastToken.next();
-        return new TrieTokenList<>(root.assign(token, value), token);
-    }
+    IterableStreamable<Token> tokens();
 
     @Nonnull
-    @Override
-    public JImmutableTokenList<T> delete(@Nonnull Token token)
-    {
-        final TrieNode<T> newRoot = root.delete((TrieToken)token);
-        if (newRoot == root) {
-            return this;
-        } else if (newRoot.isEmpty()) {
-            return EmptyTokenList.instance();
-        } else {
-            return new TrieTokenList<>(newRoot, lastToken);
-        }
-    }
+    IterableStreamable<T> values();
 
     @Nonnull
-    @Override
-    public Token lastToken()
-    {
-        return lastToken;
-    }
-
-    @Override
-    public int size()
-    {
-        return root.size();
-    }
-
-    @Override
-    @Nonnull
-    public IterableStreamable<Token> tokens()
-    {
-        return root.tokens().streamable(StreamConstants.SPLITERATOR_ORDERED);
-    }
-
-    @Override
-    @Nonnull
-    public IterableStreamable<T> values()
-    {
-        return root.values().streamable(StreamConstants.SPLITERATOR_ORDERED);
-    }
-
-    @Nonnull
-    @Override
-    public IterableStreamable<Entry<T>> entries()
-    {
-        return root.entries().streamable(StreamConstants.SPLITERATOR_ORDERED);
-    }
+    IterableStreamable<Entry<T>> entries();
 }
