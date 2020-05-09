@@ -68,7 +68,7 @@ public class JImmutableTreeSetTest
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableTreeSet.of());
+        StandardJImmutableSetTests.verifySet(JImmutableTreeSet.of(), false);
         StandardIteratorTests.emptyIteratorTest(JImmutableTreeSet.<Integer>of().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), JImmutableTreeSet.<Integer>of().union(Arrays.asList(1, 2, 3)).iterator());
     }

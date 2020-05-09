@@ -98,7 +98,7 @@ public class JImmutableInsertOrderSet<T>
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return new JImmutableInsertOrderSet<>(map);
+        return map.isEmpty() ? of() : new JImmutableInsertOrderSet<>(map);
     }
 
     @Override

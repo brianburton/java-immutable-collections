@@ -61,7 +61,7 @@ public class JImmutableInsertOrderMultisetTest
 {
     public void testStandard()
     {
-        StandardJImmutableMultisetTests.verifyMultiset(JImmutableInsertOrderMultiset.of());
+        StandardJImmutableMultisetTests.verifyMultiset(JImmutableInsertOrderMultiset.of(), true);
         StandardJImmutableMultisetTests.testRandom(JImmutableInsertOrderMultiset.of(),
                                                    LinkedHashMultiset.create());
     }

@@ -62,12 +62,13 @@ import static junit.framework.Assert.*;
 
 public class StandardJImmutableMultisetTests
 {
-    public static void verifyMultiset(JImmutableMultiset<Integer> empty)
+    public static void verifyMultiset(JImmutableMultiset<Integer> empty,
+                                      boolean emptyIsUnique)
     {
         StandardIteratorTests.emptyIteratorTest(empty.iterator());
         StandardIteratorTests.emptyIteratorTest(empty.entries().iterator());
         StandardIteratorTests.emptyIteratorTest(empty.occurrences().iterator());
-        StandardJImmutableSetTests.verifySet(empty);
+        StandardJImmutableSetTests.verifySet(empty, emptyIsUnique);
         testVarious(empty);
         testEquals(empty);
         testCollector(empty.insert(1).insert(1));

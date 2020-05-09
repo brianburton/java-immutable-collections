@@ -64,7 +64,7 @@ public class JImmutableInsertOrderSetTest
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.of());
+        StandardJImmutableSetTests.verifySet(JImmutableInsertOrderSet.of(), true);
         StandardIteratorTests.emptyIteratorTest(JImmutableInsertOrderSet.<Integer>of().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), JImmutableInsertOrderSet.<Integer>of().union(Arrays.asList(1, 2, 3)).iterator());
     }

@@ -62,7 +62,7 @@ public class JImmutableTreeMultisetTest
 {
     public void testStandard()
     {
-        StandardJImmutableMultisetTests.verifyMultiset(JImmutableTreeMultiset.of());
+        StandardJImmutableMultisetTests.verifyMultiset(JImmutableTreeMultiset.of(), false);
         StandardJImmutableMultisetTests.testRandom(JImmutableTreeMultiset.of(),
                                                    TreeMultiset.create());
     }

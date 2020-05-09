@@ -61,7 +61,8 @@ public final class StandardJImmutableSetTests
     {
     }
 
-    public static void verifySet(JImmutableSet<Integer> template)
+    public static void verifySet(JImmutableSet<Integer> template,
+                                 boolean emptyIsUnique)
     {
         testVarious(template);
         testWithMultiset(template);
@@ -94,6 +95,9 @@ public final class StandardJImmutableSetTests
         assertEquals(true, template.isEmpty());
         assertEquals(false, template.isNonEmpty());
         assertEquals(false, jet.contains(10));
+        if (emptyIsUnique) {
+            assertSame(template, jet);
+        }
 
         assertEquals(null, jet.get(10));
         assertEquals((Integer)25, jet.getValueOr(10, 25));

@@ -232,7 +232,7 @@ public class JImmutableHashSet<T>
     {
         if (root == newRoot) {
             return this;
-        } else if (root.isEmpty(collisionSet)) {
+        } else if (newRoot.isEmpty(collisionSet)) {
             return of();
         } else {
             return new JImmutableHashSet<>(newRoot, collisionSet);

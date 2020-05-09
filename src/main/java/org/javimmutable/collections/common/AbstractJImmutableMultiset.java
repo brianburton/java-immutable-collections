@@ -649,7 +649,13 @@ public abstract class AbstractJImmutableMultiset<T>
 
         private JImmutableMultiset<T> build()
         {
-            return (map == newMap) ? AbstractJImmutableMultiset.this : create(newMap, newOccurrences);
+            if (newMap == map) {
+                return AbstractJImmutableMultiset.this;
+            } else if (newMap.isEmpty()) {
+                return deleteAll();
+            } else {
+                return create(newMap, newOccurrences);
+            }
         }
     }
 

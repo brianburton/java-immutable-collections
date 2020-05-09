@@ -67,7 +67,7 @@ public class JImmutableHashSetTest
 {
     public void testStandard()
     {
-        StandardJImmutableSetTests.verifySet(JImmutableHashSet.of());
+        StandardJImmutableSetTests.verifySet(JImmutableHashSet.of(), true);
         StandardIteratorTests.emptyIteratorTest(JImmutableHashSet.<Integer>of().iterator());
         StandardIteratorTests.listIteratorTest(asList(1, 2, 3), JImmutableHashSet.<Integer>of().union(asList(1, 2, 3)).iterator());
     }

@@ -107,7 +107,7 @@ public class JImmutableTreeSet<T>
     @Override
     protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
     {
-        return new JImmutableTreeSet<>(map, comparator);
+        return map.isEmpty() ? of(comparator) : new JImmutableTreeSet<>(map, comparator);
     }
 
     @Override
