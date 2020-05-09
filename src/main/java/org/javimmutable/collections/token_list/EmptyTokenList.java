@@ -57,7 +57,7 @@ class EmptyTokenList<T>
     @Override
     public JImmutableTokenList<T> insertLast(T value)
     {
-        return new TrieTokenList<>(TrieNode.<T>empty().assign(TokenImpl.ZERO, value), TokenImpl.ZERO);
+        return new TrieTokenList<>(TrieNode.<T>empty().assign(TrieToken.ZERO, value), TrieToken.ZERO);
     }
 
     @Nonnull
@@ -71,7 +71,7 @@ class EmptyTokenList<T>
     @Override
     public Token lastToken()
     {
-        return TokenImpl.ZERO;
+        return TrieToken.ZERO;
     }
 
     @Override

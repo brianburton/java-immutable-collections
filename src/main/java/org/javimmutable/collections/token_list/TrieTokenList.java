@@ -44,10 +44,10 @@ class TrieTokenList<T>
     implements JImmutableTokenList<T>
 {
     private final TrieNode<T> root;
-    private final TokenImpl lastToken;
+    private final TrieToken lastToken;
 
     TrieTokenList(@Nonnull TrieNode<T> root,
-                  @Nonnull TokenImpl lastToken)
+                  @Nonnull TrieToken lastToken)
     {
         this.root = root;
         this.lastToken = lastToken;
@@ -57,7 +57,7 @@ class TrieTokenList<T>
     @Override
     public JImmutableTokenList<T> insertLast(T value)
     {
-        final TokenImpl token = lastToken.next();
+        final TrieToken token = lastToken.next();
         return new TrieTokenList<>(root.assign(token, value), token);
     }
 
@@ -65,7 +65,7 @@ class TrieTokenList<T>
     @Override
     public JImmutableTokenList<T> delete(@Nonnull Token token)
     {
-        final TrieNode<T> newRoot = root.delete((TokenImpl)token);
+        final TrieNode<T> newRoot = root.delete((TrieToken)token);
         if (newRoot == root) {
             return this;
         } else if (newRoot.isEmpty()) {

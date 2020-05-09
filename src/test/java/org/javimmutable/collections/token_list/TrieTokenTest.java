@@ -37,9 +37,9 @@ package org.javimmutable.collections.token_list;
 
 import junit.framework.TestCase;
 
-import static org.javimmutable.collections.token_list.TokenImpl.*;
+import static org.javimmutable.collections.token_list.TrieToken.*;
 
-public class TokenImplTest
+public class TrieTokenTest
     extends TestCase
 {
     public void testVarious()
@@ -65,7 +65,7 @@ public class TokenImplTest
 
     public void testBase()
     {
-        TokenImpl t = token(1);
+        TrieToken t = token(1);
         assertEquals("0", t.base(0));
         assertEquals("0.0", t.base(1));
         assertEquals("0.0.0", t.base(2));
@@ -88,37 +88,37 @@ public class TokenImplTest
 
     public void testSameBaseAt()
     {
-        assertEquals(true, TokenImpl.sameBaseAt(token(0), token(1), 0));
-        assertEquals(true, TokenImpl.sameBaseAt(token(0), token(0, 1), 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(0), token(1), 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(0), token(0, 1), 0));
 
-        assertEquals(true, TokenImpl.sameBaseAt(token(1, 3), token(1, 2), 0));
-        assertEquals(true, TokenImpl.sameBaseAt(token(1, 3), token(1, 2), 1));
+        assertEquals(true, TrieToken.sameBaseAt(token(1, 3), token(1, 2), 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(1, 3), token(1, 2), 1));
 
-        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 0));
-        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 1));
+        assertEquals(true, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 3, 2), 1));
 
-        assertEquals(false, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 0));
-        assertEquals(true, TokenImpl.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 1));
+        assertEquals(false, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 1));
     }
 
     public void testEquivalentTo()
     {
-        assertEquals(true, TokenImpl.equivalentTo(token(0), token(0)));
-        assertEquals(true, TokenImpl.equivalentTo(token(0, 0), token(0)));
-        assertEquals(true, TokenImpl.equivalentTo(token(0), token(0, 0)));
+        assertEquals(true, TrieToken.equivalentTo(token(0), token(0)));
+        assertEquals(true, TrieToken.equivalentTo(token(0, 0), token(0)));
+        assertEquals(true, TrieToken.equivalentTo(token(0), token(0, 0)));
 
-        assertEquals(true, TokenImpl.equivalentTo(token(1, 1), token(1, 1)));
-        assertEquals(true, TokenImpl.equivalentTo(token(1, 1), token(0, 1, 1)));
-        assertEquals(true, TokenImpl.equivalentTo(token(0, 0, 0, 1, 1), token(1, 1)));
+        assertEquals(true, TrieToken.equivalentTo(token(1, 1), token(1, 1)));
+        assertEquals(true, TrieToken.equivalentTo(token(1, 1), token(0, 1, 1)));
+        assertEquals(true, TrieToken.equivalentTo(token(0, 0, 0, 1, 1), token(1, 1)));
 
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 1), token(2, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(2, 1), token(1, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 2, 1), token(2, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(2, 1), token(1, 2, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 2, 1), token(1, 1, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 1, 1), token(1, 2, 1)));
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 1, 1), token(1, 1, 2)));
-        assertEquals(false, TokenImpl.equivalentTo(token(1, 1, 2), token(1, 1, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 1), token(2, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(2, 1), token(1, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 2, 1), token(2, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(2, 1), token(1, 2, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 2, 1), token(1, 1, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 1, 1), token(1, 2, 1)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 1, 1), token(1, 1, 2)));
+        assertEquals(false, TrieToken.equivalentTo(token(1, 1, 2), token(1, 1, 1)));
     }
 
     public void testTrieDepth()
@@ -138,9 +138,9 @@ public class TokenImplTest
 
     public void testCommonAncestorShift()
     {
-        final TokenImpl root = token(0, 21, 0, 0, 0, 1);
-        final TokenImpl leaf = token(0, 21, 61, 36, 13, 3);
-        final TokenImpl assign = token(0, 21, 61, 36, 0, 0);
+        final TrieToken root = token(0, 21, 0, 0, 0, 1);
+        final TrieToken leaf = token(0, 21, 61, 36, 13, 3);
+        final TrieToken assign = token(0, 21, 61, 36, 0, 0);
         assertEquals(0, leaf.trieDepth());
         assertEquals(2, assign.trieDepth());
         assertEquals(0, root.trieDepth());
@@ -159,7 +159,7 @@ public class TokenImplTest
 
     public void testCache()
     {
-        TokenImpl token = ZERO;
+        TrieToken token = ZERO;
         for (int i = 0; i <= 63; ++i) {
             assertSame(token.next(), token.next());
             token = token.next();
@@ -177,7 +177,7 @@ public class TokenImplTest
     }
 
     private void assertEquals(String strValue,
-                              TokenImpl token)
+                              TrieToken token)
     {
         assertEquals(strValue, token.toString());
     }

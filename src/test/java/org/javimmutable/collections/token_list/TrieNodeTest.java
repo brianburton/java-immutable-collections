@@ -50,26 +50,26 @@ public class TrieNodeTest
     {
         TrieNode<Integer> root = TrieNode.empty();
         assertEquals("[]", root);
-        root = root.assign(TokenImpl.token(0), 0);
+        root = root.assign(TrieToken.token(0), 0);
         assertEquals("[[0,0]]", root);
-        root = root.assign(TokenImpl.token(1), 1);
+        root = root.assign(TrieToken.token(1), 1);
         assertEquals("[[0,0],[1,1]]", root);
-        root = root.assign(TokenImpl.token(63), 63);
+        root = root.assign(TrieToken.token(63), 63);
         assertEquals("[[0,0],[1,1],[63,63]]", root);
-        root = root.assign(TokenImpl.token(63).next(), 100);
+        root = root.assign(TrieToken.token(63).next(), 100);
         assertEquals("[[0,0],[1,1],[63,63],[1.0,100]]", root);
-        root = root.assign(TokenImpl.token(1, 63).next(), 200);
+        root = root.assign(TrieToken.token(1, 63).next(), 200);
         assertEquals("[[0,0],[1,1],[63,63],[1.0,100],[2.0,200]]", root);
 
-        root = root.delete(TokenImpl.token(63));
+        root = root.delete(TrieToken.token(63));
         assertEquals("[[0,0],[1,1],[1.0,100],[2.0,200]]", root);
-        root = root.delete(TokenImpl.token(1, 0));
+        root = root.delete(TrieToken.token(1, 0));
         assertEquals("[[0,0],[1,1],[2.0,200]]", root);
-        root = root.delete(TokenImpl.token(0));
+        root = root.delete(TrieToken.token(0));
         assertEquals("[[1,1],[2.0,200]]", root);
-        root = root.delete(TokenImpl.token(1));
+        root = root.delete(TrieToken.token(1));
         assertEquals("[[2.0,200]]", root);
-        root = root.delete(TokenImpl.token(2, 0));
+        root = root.delete(TrieToken.token(2, 0));
         assertEquals("[]", root);
         assertSame(TrieNode.empty(), root);
     }
@@ -77,9 +77,9 @@ public class TrieNodeTest
     public void testRandom()
     {
         final Random r = new Random(1000);
-        final Map<TokenImpl, Integer> map = new LinkedHashMap<>();
+        final Map<TrieToken, Integer> map = new LinkedHashMap<>();
         TrieNode<Integer> root = TrieNode.empty();
-        TokenImpl nextToken = TokenImpl.ZERO;
+        TrieToken nextToken = TrieToken.ZERO;
         int nextValue = 1;
         for (int loop = 1; loop <= 40000; ++loop) {
             final int command = r.nextInt(6);
@@ -89,11 +89,11 @@ public class TrieNodeTest
                 nextToken = nextToken.next();
                 nextValue += 1;
             } else if (command <= 5 && map.size() > 0) {
-                final TokenImpl token = randomKey(r, map.keySet());
+                final TrieToken token = randomKey(r, map.keySet());
                 map.remove(token);
                 root = root.delete(token);
             } else if (map.size() > 0) {
-                final TokenImpl token = randomKey(r, map.keySet());
+                final TrieToken token = randomKey(r, map.keySet());
                 assertEquals(map.get(token), root.getValueOr(token, null));
             }
             if (loop % 1000 == 0) {
@@ -101,7 +101,7 @@ public class TrieNodeTest
             }
         }
         while (map.size() > 0) {
-            final TokenImpl token = randomKey(r, map.keySet());
+            final TrieToken token = randomKey(r, map.keySet());
             assertEquals(map.get(token), root.getValueOr(token, null));
             map.remove(token);
             root = root.delete(token);
@@ -113,12 +113,12 @@ public class TrieNodeTest
         assertSame(TrieNode.empty(), root);
     }
 
-    private TokenImpl randomKey(Random r,
-                                Collection<TokenImpl> keys)
+    private TrieToken randomKey(Random r,
+                                Collection<TrieToken> keys)
     {
         final int size = keys.size();
         for (; ; ) {
-            for (TokenImpl key : keys) {
+            for (TrieToken key : keys) {
                 if (r.nextInt(size) == 0) {
                     return key;
                 }
@@ -133,11 +133,11 @@ public class TrieNodeTest
     }
 
     @Nonnull
-    private String expected(@Nonnull Map<TokenImpl, Integer> map)
+    private String expected(@Nonnull Map<TrieToken, Integer> map)
     {
         final StringBuilder sb = new StringBuilder("[");
         boolean subsequent = false;
-        for (Map.Entry<TokenImpl, Integer> e : map.entrySet()) {
+        for (Map.Entry<TrieToken, Integer> e : map.entrySet()) {
             if (subsequent) {
                 sb.append(",");
             } else {

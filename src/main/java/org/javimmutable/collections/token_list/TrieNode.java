@@ -60,10 +60,10 @@ class TrieNode<T>
     @SuppressWarnings({"rawtypes"})
     private static final TrieNode[] EMPTY_NODES = new TrieNode[0];
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final TrieNode EMPTY = new TrieNode(0, TokenImpl.ZERO, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieNode EMPTY = new TrieNode(0, TrieToken.ZERO, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shift;
-    private final TokenImpl baseToken;
+    private final TrieToken baseToken;
     private final long valuesBitmask;
     private final T[] values;
     private final long nodesBitmask;
@@ -71,7 +71,7 @@ class TrieNode<T>
     private final int size;
 
     TrieNode(int shift,
-             TokenImpl baseToken,
+             TrieToken baseToken,
              long valuesBitmask,
              T[] values,
              long nodesBitmask,
@@ -100,11 +100,11 @@ class TrieNode<T>
 
     @Nonnull
     private static <T> TrieNode<T> forValue(int shift,
-                                            @Nonnull TokenImpl token,
+                                            @Nonnull TrieToken token,
                                             T value)
     {
         assert shift == token.trieDepth();
-        final TokenImpl baseToken = token.base(shift);
+        final TrieToken baseToken = token.base(shift);
         final long valueBitmask = bitFromIndex(token.indexAt(shift));
         final T[] values = ArrayHelper.newArray(value);
         final long nodeBitmask = 0L;
@@ -114,10 +114,10 @@ class TrieNode<T>
 
     @Nonnull
     private static <T> TrieNode<T> forNode(int shift,
-                                           @Nonnull TokenImpl nodeBaseToken,
+                                           @Nonnull TrieToken nodeBaseToken,
                                            @Nonnull TrieNode<T> node)
     {
-        final TokenImpl baseToken = nodeBaseToken.base(shift);
+        final TrieToken baseToken = nodeBaseToken.base(shift);
         final long valueBitmask = 0L;
         final T[] values = emptyValues();
         final long nodeBitmask = bitFromIndex(nodeBaseToken.indexAt(shift));
@@ -136,7 +136,7 @@ class TrieNode<T>
         return size == 0;
     }
 
-    T getValueOr(@Nonnull TokenImpl token,
+    T getValueOr(@Nonnull TrieToken token,
                  T defaultValue)
     {
         final int shiftForValue = token.trieDepth();
@@ -144,7 +144,7 @@ class TrieNode<T>
     }
 
     @Nonnull
-    TrieNode<T> assign(@Nonnull TokenImpl token,
+    TrieNode<T> assign(@Nonnull TrieToken token,
                        T value)
     {
         final int shiftForValue = token.trieDepth();
@@ -153,21 +153,21 @@ class TrieNode<T>
     }
 
     @Nonnull
-    TrieNode<T> delete(@Nonnull TokenImpl token)
+    TrieNode<T> delete(@Nonnull TrieToken token)
     {
         final int shiftForValue = token.trieDepth();
         return deleteImpl(shiftForValue, token);
     }
 
     private T getValueOrImpl(int shiftForValue,
-                             @Nonnull TokenImpl token,
+                             @Nonnull TrieToken token,
                              T defaultValue)
     {
         final int shift = this.shift;
         if (shiftForValue > shift) {
             return defaultValue;
         }
-        if (!TokenImpl.sameBaseAt(baseToken, token, shift)) {
+        if (!TrieToken.sameBaseAt(baseToken, token, shift)) {
             return defaultValue;
         }
         final int myIndex = token.indexAt(shift);
@@ -191,19 +191,19 @@ class TrieNode<T>
     @Nonnull
     private TrieNode<T> assignImpl(int shift,
                                    int shiftForValue,
-                                   @Nonnull TokenImpl token,
+                                   @Nonnull TrieToken token,
                                    T value)
     {
         final int thisShift = this.shift;
-        final TokenImpl baseToken = this.baseToken;
-        assert TokenImpl.sameBaseAt(baseToken, token, shift);
+        final TrieToken baseToken = this.baseToken;
+        assert TrieToken.sameBaseAt(baseToken, token, shift);
         assert shift >= thisShift;
         assert shift >= shiftForValue;
         if (shift != thisShift) {
             // We are lower in tree than our parent expects, see if we need to create an ancestor to hold the value.
             // This happens when we've skipped intermediate nodes for efficiency and one of those nodes needs to be
             // inserted now because we are assigning a value that goes down a different branch than this node.
-            final int ancestorShiftCount = TokenImpl.commonAncestorShift(baseToken.withIndexAt(thisShift, 1), token);
+            final int ancestorShiftCount = TrieToken.commonAncestorShift(baseToken.withIndexAt(thisShift, 1), token);
             assert ancestorShiftCount <= shift;
             if (ancestorShiftCount > thisShift) {
                 final TrieNode<T> ancestor = forNode(ancestorShiftCount, baseToken, this);
@@ -212,7 +212,7 @@ class TrieNode<T>
             shift = thisShift;
         }
         // If we've gotten here we know the value belongs either in this node or in one of our descendent nodes.
-        assert TokenImpl.equivalentTo(token.base(shift), baseToken);
+        assert TrieToken.equivalentTo(token.base(shift), baseToken);
         final int myIndex = token.indexAt(shift);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
@@ -253,13 +253,13 @@ class TrieNode<T>
 
     @Nonnull
     private TrieNode<T> deleteImpl(int shiftForValue,
-                                   @Nonnull TokenImpl token)
+                                   @Nonnull TrieToken token)
     {
         final int shift = this.shift;
         if (shiftForValue > shift) {
             return this;
         }
-        if (!TokenImpl.sameBaseAt(baseToken, token, shift)) {
+        if (!TrieToken.sameBaseAt(baseToken, token, shift)) {
             return this;
         }
         final int myIndex = token.indexAt(shift);
@@ -441,10 +441,10 @@ class TrieNode<T>
     private static class Entry<T>
         implements JImmutableTokenList.Entry<T>
     {
-        private final TokenImpl token;
+        private final TrieToken token;
         private final T value;
 
-        private Entry(TokenImpl token,
+        private Entry(TrieToken token,
                       T value)
         {
             this.token = token;

@@ -36,17 +36,19 @@
 package org.javimmutable.collections.token_list;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-class TokenImpl
+@Immutable
+class TrieToken
     implements JImmutableTokenList.Token
 {
-    private static final TokenImpl[] CACHE;
-    static final TokenImpl ZERO;
+    private static final TrieToken[] CACHE;
+    static final TrieToken ZERO;
 
     private final byte[] values;
 
     static {
-        CACHE = new TokenImpl[65];
+        CACHE = new TrieToken[65];
         for (int i = 0; i < 64; ++i) {
             CACHE[i] = token(i);
         }
@@ -54,57 +56,41 @@ class TokenImpl
         ZERO = CACHE[0];
     }
 
-    TokenImpl(byte[] values)
+    TrieToken(byte[] values)
     {
         assert values.length > 0;
         this.values = values;
     }
 
     @Nonnull
-    static TokenImpl token(int... values)
+    static TrieToken token(int... values)
     {
         final byte[] tokenValues = new byte[values.length];
         for (int i = 0; i < values.length; ++i) {
             tokenValues[i] = (byte)values[values.length - i - 1];
         }
-        return new TokenImpl(tokenValues);
+        return new TrieToken(tokenValues);
     }
 
-    static boolean sameBaseAt(@Nonnull TokenImpl a,
-                              @Nonnull TokenImpl b,
+    static boolean sameBaseAt(@Nonnull TrieToken a,
+                              @Nonnull TrieToken b,
                               int shift)
     {
         return basesMatch(a, b, Math.max(a.maxShift(), b.maxShift()), shift + 1);
     }
 
-    static boolean equivalentTo(@Nonnull TokenImpl a,
-                                @Nonnull TokenImpl b)
+    static boolean equivalentTo(@Nonnull TrieToken a,
+                                @Nonnull TrieToken b)
     {
         return basesMatch(a, b, Math.max(a.maxShift(), b.maxShift()), 0);
     }
 
-    private static boolean basesMatch(@Nonnull TokenImpl a,
-                                      @Nonnull TokenImpl b,
-                                      int maxShift,
-                                      int shift)
-    {
-        while (maxShift >= shift) {
-            if (a.indexAt(maxShift) != b.indexAt(maxShift)) {
-                return false;
-            }
-            maxShift -= 1;
-        }
-        return true;
-    }
-
-    static int maxCommonShift(@Nonnull TokenImpl a,
-                              @Nonnull TokenImpl b)
+    static int maxCommonShift(@Nonnull TrieToken a,
+                              @Nonnull TrieToken b)
     {
         int shift = Math.max(a.maxShift(), b.maxShift());
         while (shift > 0) {
-            final int index1 = a.indexAt(shift);
-            final int index2 = b.indexAt(shift);
-            if (index1 != index2) {
+            if (a.indexAt(shift) != b.indexAt(shift)) {
                 return shift;
             }
             shift -= 1;
@@ -112,8 +98,8 @@ class TokenImpl
         return 0;
     }
 
-    static int commonAncestorShift(@Nonnull TokenImpl a,
-                                   @Nonnull TokenImpl b)
+    static int commonAncestorShift(@Nonnull TrieToken a,
+                                   @Nonnull TrieToken b)
     {
         int shift = Math.max(a.trieDepth(), b.trieDepth());
         final int maxShift = Math.max(maxCommonShift(a, b), shift);
@@ -125,7 +111,7 @@ class TokenImpl
     }
 
     @Nonnull
-    TokenImpl base(int shift)
+    TrieToken base(int shift)
     {
         final int myLength = values.length;
         final int resultLength = Math.max(shift + 1, myLength);
@@ -134,11 +120,11 @@ class TokenImpl
         if (copyLength > 0) {
             System.arraycopy(values, shift + 1, newValues, shift + 1, copyLength);
         }
-        return new TokenImpl(newValues);
+        return new TrieToken(newValues);
     }
 
     @Nonnull
-    TokenImpl next()
+    TrieToken next()
     {
         final int length = values.length;
         if (length == 1) {
@@ -161,7 +147,7 @@ class TokenImpl
                 newValues = extendedValues;
             }
         }
-        return new TokenImpl(newValues);
+        return new TrieToken(newValues);
     }
 
     int indexAt(int shift)
@@ -185,7 +171,7 @@ class TokenImpl
     }
 
     @Nonnull
-    TokenImpl withIndexAt(int shift,
+    TrieToken withIndexAt(int shift,
                           int index)
     {
         assert index >= 0;
@@ -193,13 +179,13 @@ class TokenImpl
         assert shift < values.length;
         byte[] newValues = values.clone();
         newValues[shift] = (byte)index;
-        return new TokenImpl(newValues);
+        return new TrieToken(newValues);
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return (obj == this) || ((obj instanceof TokenImpl) && equivalentTo(this, (TokenImpl)obj));
+        return (obj == this) || ((obj instanceof TrieToken) && equivalentTo(this, (TrieToken)obj));
     }
 
     @Override
@@ -224,5 +210,19 @@ class TokenImpl
             sb.append(values[i]);
         }
         return sb.toString();
+    }
+
+    private static boolean basesMatch(@Nonnull TrieToken a,
+                                      @Nonnull TrieToken b,
+                                      int maxShift,
+                                      int shift)
+    {
+        while (maxShift >= shift) {
+            if (a.indexAt(maxShift) != b.indexAt(maxShift)) {
+                return false;
+            }
+            maxShift -= 1;
+        }
+        return true;
     }
 }
