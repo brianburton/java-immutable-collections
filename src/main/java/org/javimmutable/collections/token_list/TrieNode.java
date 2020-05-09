@@ -99,6 +99,13 @@ class TrieNode<T>
     }
 
     @Nonnull
+    static <T> TrieNode<T> create(@Nonnull TrieToken token,
+                                  T value)
+    {
+        return forValue(token.trieDepth(), token, value);
+    }
+
+    @Nonnull
     private static <T> TrieNode<T> forValue(int shift,
                                             @Nonnull TrieToken token,
                                             T value)
