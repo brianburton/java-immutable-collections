@@ -39,7 +39,9 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 class EmptyTokenList<T>
     implements JImmutableTokenList<T>
 {

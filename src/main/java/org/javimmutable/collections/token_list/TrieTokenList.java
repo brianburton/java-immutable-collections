@@ -39,7 +39,9 @@ import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.common.StreamConstants;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 class TrieTokenList<T>
     implements JImmutableTokenList<T>
 {

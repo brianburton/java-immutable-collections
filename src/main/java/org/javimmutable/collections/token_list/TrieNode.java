@@ -45,6 +45,7 @@ import org.javimmutable.collections.iterators.IteratorHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 /**
  * Implements an array mapped trie using TokenImpl as keys.
  */
+@Immutable
 class TrieNode<T>
     implements InvariantCheckable
 {
