@@ -47,6 +47,7 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -297,14 +298,23 @@ public class JImmutableTrieArrayTest
         final int numLoops = 100000;
         final int increment = (MAX_VALUE / numLoops) * 2;
         JImmutableArray<Integer> array = JImmutableTrieArray.of();
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
+        List<Integer> keys = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
         int index = MIN_VALUE;
         for (int i = 0; i < numLoops; ++i) {
-            expected.add(MapEntry.of(index, -index));
+            keys.add(index);
+            values.add(-index);
+            entries.add(MapEntry.of(index, -index));
             array = array.assign(index, -index);
             index += increment;
         }
-        StandardIteratorTests.listIteratorTest(expected, array.iterator());
+        StandardIteratorTests.listIteratorTest(keys, array.keys().iterator());
+        StandardIteratorTests.listIteratorTest(values, array.values().iterator());
+        StandardIteratorTests.listIteratorTest(entries, array.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, array.keys());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, array.values());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
     public void testVarious()

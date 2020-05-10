@@ -42,6 +42,7 @@ import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -56,6 +57,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static org.javimmutable.collections.MapEntry.entry;
 
 public class JImmutableInsertOrderMapTest
     extends TestCase
@@ -280,14 +282,21 @@ public class JImmutableInsertOrderMapTest
         assertEquals(asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
 
         List<Integer> keys = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
         JImmutableMap<Integer, Integer> map = inOrderMap;
         Random r = new Random();
         for (int i = 1; i <= 1000; ++i) {
             final int key = r.nextInt();
             keys.add(key);
+            values.add(i);
+            entries.add(entry(key, i));
             map = map.assign(key, i);
         }
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, map.keys());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, map.values());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, map);
 
         map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
