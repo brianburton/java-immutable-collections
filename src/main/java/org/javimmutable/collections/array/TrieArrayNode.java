@@ -488,7 +488,7 @@ class TrieArrayNode<T>
     /**
      * Flips the sign bit in the index.  Starting from a userIndex which might be positive or
      * negative it converts it into a corresponding (but different) unsigned integer such that
-     * for any two incoming integers a and b: compare(a, b)==compareUnsigned(encode(a),encode(b)).
+     * for any two incoming integers a and b: compare(a, b)==compareUnsigned(flip(a),flip(b)).
      * This ensures that iteration order fits the signed order while allowing all of the array
      * mapping to work with indices as unsigned positive numbers.  Operation is reversable (i.e.
      * flip(flip(x))==x for all x.
