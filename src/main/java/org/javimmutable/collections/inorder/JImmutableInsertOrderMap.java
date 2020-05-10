@@ -38,12 +38,13 @@ package org.javimmutable.collections.inorder;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.inorder.token_list.TokenList;
-import org.javimmutable.collections.iterators.TransformIterator;
+import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
 
 import javax.annotation.Nonnull;
@@ -219,14 +220,28 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return TransformIterator.of(keys.values().iterator(), this::entryForKey);
+        return TransformStreamable.of(keys.values(), k -> entry(k, valueForKey(k))).iterator();
     }
 
-    private JImmutableMap.Entry<K, V> entryForKey(K key)
+    @Nonnull
+    @Override
+    public IterableStreamable<K> keys()
+    {
+        return keys.values();
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<V> values()
+    {
+        return TransformStreamable.of(keys.values(), k -> valueForKey(k));
+    }
+
+    private V valueForKey(K key)
     {
         final Node<V> node = values.get(key);
         assert node != null;
-        return entry(key, node.value);
+        return node.value;
     }
 
     @Override
