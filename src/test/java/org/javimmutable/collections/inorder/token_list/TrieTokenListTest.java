@@ -36,7 +36,10 @@
 package org.javimmutable.collections.inorder.token_list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.javimmutable.collections.inorder.token_list.TrieToken.ZERO;
@@ -63,5 +66,22 @@ public class TrieTokenListTest
         assertEquals("0,1,2", list.tokens().stream().map(Object::toString).collect(Collectors.joining(",")));
         assertEquals("1,2,3", list.values().stream().map(Object::toString).collect(Collectors.joining(",")));
         assertEquals("[0,1],[1,2],[2,3]", list.entries().stream().map(Object::toString).collect(Collectors.joining(",")));
+    }
+
+    public void testIteration()
+    {
+        List<TokenList.Token> tokens = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+        List<TokenList.Entry<Integer>> entries = new ArrayList<>();
+        TokenList<Integer> list = TokenList.of();
+        for (int i = 0; i <= 10000; ++i) {
+            list = list.insertLast(i);
+            tokens.add(list.lastToken());
+            values.add(i);
+            entries.add(new TokenListEntry<>(list.lastToken(), i));
+        }
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(tokens, list.tokens());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, list.values());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, list.entries());
     }
 }

@@ -350,7 +350,7 @@ class TrieNode<T>
     @Nonnull
     GenericIterator.Iterable<TokenList.Entry<T>> entries()
     {
-        return iterable((valueIndex, arrayIndex) -> new Entry<>(baseToken.withIndexAt(shift, valueIndex), values[arrayIndex]),
+        return iterable((valueIndex, arrayIndex) -> new TokenListEntry<>(baseToken.withIndexAt(shift, valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());
     }
 
@@ -445,38 +445,5 @@ class TrieNode<T>
             total += child.size;
         }
         return total;
-    }
-
-    private static class Entry<T>
-        implements TokenList.Entry<T>
-    {
-        private final TrieToken token;
-        private final T value;
-
-        private Entry(TrieToken token,
-                      T value)
-        {
-            this.token = token;
-            this.value = value;
-        }
-
-        @Nonnull
-        @Override
-        public TokenList.Token token()
-        {
-            return token;
-        }
-
-        @Override
-        public T value()
-        {
-            return value;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "[" + token + "," + value + "]";
-        }
     }
 }
