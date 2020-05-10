@@ -35,8 +35,7 @@
 
 package org.javimmutable.collections.inorder.token_list;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.IntFunc2;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -48,6 +47,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
@@ -361,8 +361,8 @@ class TrieNode<T>
     }
 
     @Nonnull
-    private <V> GenericIterator.Iterable<V> iterable(Func2<Integer, Integer, V> valueFunction,
-                                                     Func1<Integer, GenericIterator.Iterable<V>> nodeFunction)
+    private <V> GenericIterator.Iterable<V> iterable(IntFunc2<V> valueFunction,
+                                                     IntFunction<GenericIterator.Iterable<V>> nodeFunction)
     {
         return new GenericIterator.Iterable<V>()
         {

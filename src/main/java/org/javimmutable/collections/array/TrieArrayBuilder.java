@@ -93,7 +93,7 @@ class TrieArrayBuilder<T>
     @Nonnull
     SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return buildRoot().iterator();
+        return buildRoot().entries().iterator();
     }
 
     private static class Node<T>

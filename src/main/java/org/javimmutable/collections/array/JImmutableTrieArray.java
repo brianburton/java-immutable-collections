@@ -45,10 +45,8 @@ import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
-import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
 import javax.annotation.Nonnull;
@@ -68,6 +66,7 @@ public class JImmutableTrieArray<T>
 {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieArrayNode.empty());
+    private static final int SPLITERATOR_CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
 
     private final TrieArrayNode<T> root;
     private final int size;
@@ -75,7 +74,7 @@ public class JImmutableTrieArray<T>
     private JImmutableTrieArray(@Nonnull TrieArrayNode<T> root)
     {
         this.root = root;
-        this.size = root.iterableSize();
+        this.size = root.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -186,20 +185,6 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public IterableStreamable<Integer> keys()
-    {
-        return TransformStreamable.ofKeys(this);
-    }
-
-    @Nonnull
-    @Override
-    public IterableStreamable<T> values()
-    {
-        return TransformStreamable.ofValues(this);
-    }
-
-    @Nonnull
-    @Override
     public JImmutableArray<T> insert(JImmutableMap.Entry<Integer, T> e)
     {
         return (e == null) ? this : assign(e.getKey(), e.getValue());
@@ -216,7 +201,7 @@ public class JImmutableTrieArray<T>
     public void checkInvariants()
     {
         root.checkInvariants();
-        final int computedSize = root.iterableSize();
+        final int computedSize = root.size();
         if (computedSize != size) {
             throw new IllegalStateException(String.format("size mismatch: expected=%d actual=%d", computedSize, this.size));
         }
@@ -226,13 +211,27 @@ public class JImmutableTrieArray<T>
     @Override
     public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
-        return new GenericIterator<>(root, 0, size);
+        return root.entries().iterator();
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<Integer> keys()
+    {
+        return root.keys().streamable(SPLITERATOR_CHARACTERISTICS);
+    }
+
+    @Nonnull
+    @Override
+    public IterableStreamable<T> values()
+    {
+        return root.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Override
     public int getSpliteratorCharacteristics()
     {
-        return StreamConstants.SPLITERATOR_ORDERED;
+        return SPLITERATOR_CHARACTERISTICS;
     }
 
     @Override

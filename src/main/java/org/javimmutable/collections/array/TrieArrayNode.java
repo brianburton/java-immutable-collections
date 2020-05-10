@@ -39,6 +39,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
+import org.javimmutable.collections.IntFunc2;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
@@ -51,6 +52,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
@@ -59,8 +61,7 @@ import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
  * are visited in signed-integer order.
  */
 class TrieArrayNode<T>
-    implements InvariantCheckable,
-               GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>
+    implements InvariantCheckable
 {
     static final int LEAF_SHIFT_COUNT = 0;
     static final int ROOT_SHIFT_COUNT = IntArrayMappedTrieMath.maxShiftsForBitCount(30);
@@ -133,7 +134,7 @@ class TrieArrayNode<T>
         final long nodeBitmask = bitFromIndex(indexAtShift(shiftCount, nodeBaseIndex));
         final TrieArrayNode<T>[] nodes = allocateNodes(1);
         nodes[0] = node;
-        return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.iterableSize());
+        return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
     }
 
     boolean isEmpty()
@@ -319,7 +320,7 @@ class TrieArrayNode<T>
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.assignImpl(shiftCount - 1, shiftCountForValue, index, value);
                 final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                final int newSize = size - node.iterableSize() + newNode.iterableSize();
+                final int newSize = size - node.size() + newNode.size();
                 return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
@@ -367,7 +368,7 @@ class TrieArrayNode<T>
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.deleteImpl(shiftCountForValue, index);
                 if (newNode != node) {
-                    final int newSize = size - node.iterableSize() + newNode.iterableSize();
+                    final int newSize = size - node.size() + newNode.size();
                     if (newSize == 0) {
                         return empty();
                     } else if (newNode.isEmpty()) {
@@ -407,36 +408,74 @@ class TrieArrayNode<T>
         }
     }
 
-    @Nullable
-    @Override
-    public GenericIterator.State<JImmutableMap.Entry<Integer, T>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<Integer, T>> parent,
-                                                                                   int offset,
-                                                                                   int limit)
+    @Nonnull
+    GenericIterator.Iterable<Integer> keys()
     {
-        final List<GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>>> iterables = new ArrayList<>(values.length + nodes.length);
-        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
-        while (combinedBitmask != 0) {
-            final long bit = leastBit(combinedBitmask);
-            if (bitIsPresent(valuesBitmask, bit)) {
-                final int valueIndex = indexForBit(bit);
-                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                final int entryIndex = baseIndex + shift(shiftCount, valueIndex);
-                iterables.add(GenericIterator.valueIterable(MapEntry.entry(flip(entryIndex), values[arrayIndex])));
-            }
-            if (bitIsPresent(nodesBitmask, bit)) {
-                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
-                iterables.add(nodes[nodeIndex]);
-            }
-            combinedBitmask = removeBit(combinedBitmask, bit);
-        }
-        assert iterables.size() == (values.length + nodes.length);
-        return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+        return iterable((valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex),
+                        nodeIndex -> nodes[nodeIndex].keys());
     }
 
-    @Override
-    public int iterableSize()
+    @Nonnull
+    GenericIterator.Iterable<T> values()
+    {
+        return iterable((valueIndex, arrayIndex) -> values[arrayIndex],
+                        nodeIndex -> nodes[nodeIndex].values());
+    }
+
+    @Nonnull
+    GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> entries()
+    {
+        return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
+                        nodeIndex -> nodes[nodeIndex].entries());
+    }
+
+    int size()
     {
         return size;
+    }
+
+    private int computeUserIndexForValue(Integer valueIndex)
+    {
+        return flip(baseIndex + shift(shiftCount, valueIndex));
+    }
+
+    private <V> GenericIterator.Iterable<V> iterable(@Nonnull IntFunc2<V> valueFunction,
+                                                     @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
+    {
+        return new GenericIterator.Iterable<V>()
+        {
+            @Nullable
+            @Override
+            public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,
+                                                             int offset,
+                                                             int limit)
+            {
+                final List<GenericIterator.Iterable<V>> iterables = new ArrayList<>(values.length + nodes.length);
+                long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+                while (combinedBitmask != 0) {
+                    final long bit = leastBit(combinedBitmask);
+                    if (bitIsPresent(valuesBitmask, bit)) {
+                        final int valueIndex = indexForBit(bit);
+                        final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                        final int entryIndex = baseIndex + shift(shiftCount, valueIndex);
+                        iterables.add(GenericIterator.valueIterable(valueFunction.apply(valueIndex, arrayIndex)));
+                    }
+                    if (bitIsPresent(nodesBitmask, bit)) {
+                        final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                        iterables.add(nodeFunction.apply(nodeIndex));
+                    }
+                    combinedBitmask = removeBit(combinedBitmask, bit);
+                }
+                assert iterables.size() == (values.length + nodes.length);
+                return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+            }
+
+            @Override
+            public int iterableSize()
+            {
+                return size;
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -513,7 +552,7 @@ class TrieArrayNode<T>
     {
         int total = 0;
         for (TrieArrayNode<T> child : children) {
-            total += child.iterableSize();
+            total += child.size();
         }
         return total;
     }
