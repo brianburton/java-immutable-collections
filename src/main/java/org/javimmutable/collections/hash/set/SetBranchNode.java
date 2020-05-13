@@ -51,6 +51,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @Immutable

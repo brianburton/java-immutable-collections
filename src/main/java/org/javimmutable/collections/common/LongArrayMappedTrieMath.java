@@ -39,45 +39,45 @@ import javax.annotation.Nonnull;
 
 /**
  * Utility class that supports math related to Array Mapped Tries with
- * integer hash codes and 64 element arrays.  All of the methods are static
+ * long hash codes and 64 element arrays.  All of the methods are static
  * and short so they should wind up being inlined by compiler or jit.
  */
-public final class IntArrayMappedTrieMath
+public final class LongArrayMappedTrieMath
 {
-    private IntArrayMappedTrieMath()
+    private LongArrayMappedTrieMath()
     {
     }
 
-    public static final int MAX_SHIFTS = maxShiftsForBitCount(32);
-    public static final int MAX_FULL_SHIFTS = maxShiftsForBitCount(30);
+    public static final int MAX_SHIFTS = maxShiftsForBitCount(64);
+    public static final int MAX_FULL_SHIFTS = maxShiftsForBitCount(60);
     public static final int MAX_SHIFT_NUMBER = MAX_SHIFTS - 1;
     public static final int MAX_FULL_SHIFT_NUMBER = MAX_SHIFT_NUMBER - 1;
 
     private static final int SHIFT = 6;
-    private static final int MASK = 0x3f;
-    private static final int BASE_INDEX_MASK = ~MASK;
+    private static final long MASK = 0x3f;
+    private static final long BASE_INDEX_MASK = ~MASK;
 
-    public static int baseIndexFromHashCode(int hashCode)
+    public static long baseIndexFromHashCode(long hashCode)
     {
         return hashCode & BASE_INDEX_MASK;
     }
 
-    public static int remainderFromHashCode(int hashCode)
+    public static long remainderFromHashCode(long hashCode)
     {
         return hashCode >>> SHIFT;
     }
 
     public static int findMaxCommonShift(int maxAllowedShift,
-                                         int hashCode1,
-                                         int hashCode2)
+                                         long hashCode1,
+                                         long hashCode2)
     {
         assert maxAllowedShift >= 0;
         assert maxAllowedShift < MAX_SHIFTS;
 
         int shift = maxAllowedShift;
         while (shift > 0) {
-            final int index1 = indexAtShift(shift, hashCode1);
-            final int index2 = indexAtShift(shift, hashCode2);
+            final long index1 = indexAtShift(shift, hashCode1);
+            final long index2 = indexAtShift(shift, hashCode2);
             if (index1 != index2) {
                 return shift;
             }
@@ -86,13 +86,13 @@ public final class IntArrayMappedTrieMath
         return 0;
     }
 
-    public static int indexFromHashCode(int hashCode)
+    public static int indexFromHashCode(long hashCode)
     {
-        return hashCode & MASK;
+        return (int)(hashCode & MASK);
     }
 
-    public static int liftedHashCode(int hashCode,
-                                     int index)
+    public static long liftedHashCode(long hashCode,
+                                      int index)
     {
         return hashCode << SHIFT | index;
     }
@@ -103,51 +103,67 @@ public final class IntArrayMappedTrieMath
     }
 
     public static int indexAtShift(int shiftCount,
-                                   int hashCode)
+                                   long hashCode)
     {
-        return (hashCode >>> (shiftCount * SHIFT)) & MASK;
+        return (int)((hashCode >>> (shiftCount * SHIFT)) & MASK);
     }
 
-    public static int baseIndexAtShift(int shiftCount,
-                                       int hashCode)
+    public static long baseIndexAtShift(int shiftCount,
+                                        long hashCode)
     {
-        return shiftCount > MAX_FULL_SHIFT_NUMBER ? 0 : hashCode & (-1 << SHIFT * (1 + shiftCount));
+        return shiftCount > MAX_FULL_SHIFT_NUMBER ? 0L : hashCode & (-1L << SHIFT * (1 + shiftCount));
     }
 
-    public static int hashCodeBelowShift(int shiftCount,
-                                         int hashCode)
+    public static long withIndexAtShift(int shiftCount,
+                                        long hashCode,
+                                        int index)
     {
-        return hashCode & ((1 << shiftCount * SHIFT) - 1);
+        final int shift = shiftCount * SHIFT;
+        final long mask = MASK << shift;
+        final long bits = ((long)index) << shift;
+        return (hashCode & ~mask) | bits;
     }
 
-    public static int findMinimumShiftForZeroBelowHashCode(int hashCode)
+    public static long hashCodeBelowShift(int shiftCount,
+                                          long hashCode)
     {
-        final int bitNumber = (hashCode == 0) ? 1 : Integer.numberOfTrailingZeros(Integer.lowestOneBit(hashCode));
+        return hashCode & ((1L << shiftCount * SHIFT) - 1);
+    }
+
+    public static int findMinimumShiftForZeroBelowHashCode(long hashCode)
+    {
+        final int bitNumber = (hashCode == 0) ? 1 : Long.numberOfTrailingZeros(Long.lowestOneBit(hashCode));
         return bitNumber / SHIFT;
     }
 
-    public static int shift(int shiftCount,
-                            int value)
+    public static int findMaxShiftForHashCode(long hashCode)
+    {
+        final int bitNumber = (hashCode == 0) ? 1 : Long.numberOfTrailingZeros(Long.highestOneBit(hashCode));
+        return bitNumber / SHIFT;
+    }
+
+    public static long shift(int shiftCount,
+                             long value)
     {
         return value << shiftCount * SHIFT;
     }
 
-    public static int hash(int shift5,
-                           int shift4,
-                           int shift3,
-                           int shift2,
-                           int shift1,
-                           int shift0)
+    public static long hash(int... values)
     {
-        int answer = (shift5 << SHIFT) | shift4;
-        answer = (answer << SHIFT) | shift3;
-        answer = (answer << SHIFT) | shift2;
-        answer = (answer << SHIFT) | shift1;
-        return (answer << SHIFT) | shift0;
+        assert values.length <= MAX_SHIFTS;
+        long value = 0;
+        boolean started = false;
+        for (int v : values) {
+            if (started || v != 0) {
+                value = liftedHashCode(value, v);
+                started = true;
+            }
+        }
+        return value;
     }
 
     @Nonnull
-    public static String hashString(int hashCode)
+    public static String hashString(long hashCode)
     {
         final StringBuilder sb = new StringBuilder();
         for (int shiftCount = MAX_SHIFT_NUMBER; shiftCount >= 0; shiftCount -= 1) {

@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
+import static org.javimmutable.collections.common.BitmaskMath.*;
 
 /**
  * Implements an array mapped trie using TokenImpl as keys.

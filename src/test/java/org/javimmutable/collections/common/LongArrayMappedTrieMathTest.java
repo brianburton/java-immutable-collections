@@ -38,47 +38,47 @@ package org.javimmutable.collections.common;
 import junit.framework.TestCase;
 
 import static org.javimmutable.collections.common.BitmaskMath.MAX_INDEX;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.*;
 
-public class IntArrayMappedTrieMathTest
+public class LongArrayMappedTrieMathTest
     extends TestCase
 {
     public void testVarious()
     {
-        assertEquals(6, MAX_SHIFTS);
-        assertEquals(5, MAX_FULL_SHIFTS);
-        final int hashCode = hash(1, 2, 3, 4, 5, 6);
+        assertEquals(11, MAX_SHIFTS);
+        assertEquals(10, MAX_FULL_SHIFTS);
+        final long hashCode = hash(1, 2, 3, 4, 5, 6);
         verifyEquals(hash(1, 2, 3, 4, 5, 0), baseIndexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(hash(1, 2, 3, 4, 5, 0), baseIndexFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
         verifyEquals(hash(0, 1, 2, 3, 4, 5), remainderFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(hash(0, 1, 2, 3, 4, 5), remainderFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
         verifyEquals(hash(0, 1, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(1, 2, 3, 4, MAX_INDEX, 6)));
-        verifyEquals(hash(0, 3, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, 2, 3, 4, MAX_INDEX, 6)));
-        verifyEquals(hash(0, 3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
+        verifyEquals(hash(0, MAX_INDEX, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, 2, 3, 4, MAX_INDEX, 6)));
+        verifyEquals(hash(0, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
         verifyEquals(hash(1, 2, 3, 4, 5, 0), baseIndexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(6, indexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(MAX_INDEX, indexFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
-        verifyEquals(hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
-        verifyEquals(hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
+        verifyEquals(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
+        verifyEquals(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
         assertEquals(11, maxShiftsForBitCount(64));
         assertEquals(10, maxShiftsForBitCount(60));
     }
 
     public void testHash()
     {
-        verifyEquals(0b01000010000011000100000101000110, hash(1, 2, 3, 4, 5, 6));
-        verifyEquals(0b01000010000011000100000101111111, hash(1, 2, 3, 4, 5, MAX_INDEX));
-        verifyEquals(0b11000010000011000100000101000110, hash(MAX_INDEX, 2, 3, 4, 5, 6));
-        verifyEquals(0b11111111111111111111111111111111, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
+        verifyEquals(0b000001000010000011000100000101000110L, hash(1, 2, 3, 4, 5, 6));
+        verifyEquals(0b000001000010000011000100000101111111L, hash(1, 2, 3, 4, 5, MAX_INDEX));
+        verifyEquals(0b0111111000010000011000100000101000110L, hash(MAX_INDEX, 2, 3, 4, 5, 6));
+        verifyEquals(0b0111111111111111111111111111111111111L, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
     }
 
     public void testShifts()
     {
         assertEquals(MAX_INDEX, indexAtShift(0, MAX_INDEX));
         assertEquals(MAX_INDEX, indexAtShift(0, -1));
-        assertEquals(3, indexAtShift(MAX_SHIFT_NUMBER, -1));
+        assertEquals(15, indexAtShift(MAX_SHIFT_NUMBER, -1));
         assertEquals(MAX_INDEX, indexAtShift(MAX_FULL_SHIFT_NUMBER, -1));
-        final int hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
+        final long hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
         verifyEquals(3, indexAtShift(5, hashCode));
         verifyEquals(0b110001, indexAtShift(4, hashCode));
         verifyEquals(0b100001, indexAtShift(3, hashCode));
@@ -91,11 +91,19 @@ public class IntArrayMappedTrieMathTest
         verifyEquals(hash(3, 0b110001, 0b100001, 0, 0, 0), baseIndexAtShift(2, hashCode));
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0, 0), baseIndexAtShift(1, hashCode));
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), baseIndexAtShift(0, hashCode));
+        assertEquals(0, findMaxShiftForHashCode(0L));
+        assertEquals(0, findMaxShiftForHashCode(MAX_INDEX));
+        assertEquals(1, findMaxShiftForHashCode(hash(1, 0)));
+        assertEquals(1, findMaxShiftForHashCode(hash(1, MAX_INDEX)));
+        assertEquals(2, findMaxShiftForHashCode(hash(32, 0, 0)));
+        assertEquals(2, findMaxShiftForHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX)));
+        assertEquals(3, findMaxShiftForHashCode(hash(32, 0, 0, 0)));
+        assertEquals(3, findMaxShiftForHashCode(hash(1, MAX_INDEX, MAX_INDEX, MAX_INDEX)));
     }
 
     public void testHashCodeBelowShift()
     {
-        final int hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
+        final long hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
         assertEquals(0, hashCodeBelowShift(0, hashCode));
         assertEquals(hash(0, 0, 0, 0, 0, 0b101011), hashCodeBelowShift(1, hashCode));
         assertEquals(hash(0, 0, 0, 0, 0b100101, 0b101011), hashCodeBelowShift(2, hashCode));
@@ -138,9 +146,18 @@ public class IntArrayMappedTrieMathTest
                                            hash(6, 5, 4, 3, 2, 9)));
     }
 
-    private void verifyEquals(int a,
-                              int b)
+    public void testWithIndexAtShift()
     {
-        assertEquals(Integer.toBinaryString(a), Integer.toBinaryString(b));
+        verifyEquals(hash(1), withIndexAtShift(0, 0, 1));
+        verifyEquals(hash(MAX_INDEX), withIndexAtShift(0, 0, MAX_INDEX));
+        verifyEquals(hash(1), withIndexAtShift(0, MAX_INDEX, 1));
+        verifyEquals(hash(MAX_INDEX, MAX_INDEX, 10, MAX_INDEX), withIndexAtShift(1, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 10));
+        verifyEquals(hash(2, 0, 0, 0, 0, 0), withIndexAtShift(5, 0, 2));
+    }
+
+    private void verifyEquals(long a,
+                              long b)
+    {
+        assertEquals(Long.toBinaryString(a), Long.toBinaryString(b));
     }
 }

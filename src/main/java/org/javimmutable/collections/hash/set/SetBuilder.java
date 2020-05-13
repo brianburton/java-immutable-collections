@@ -42,6 +42,7 @@ import org.javimmutable.collections.tree.TreeCollisionSet;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe

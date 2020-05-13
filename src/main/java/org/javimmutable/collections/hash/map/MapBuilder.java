@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import static org.javimmutable.collections.common.BitmaskMath.ARRAY_SIZE;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe

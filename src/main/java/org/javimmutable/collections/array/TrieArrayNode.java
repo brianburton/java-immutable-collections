@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 /**
