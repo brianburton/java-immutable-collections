@@ -200,7 +200,7 @@ public class JImmutableTrieArray<T>
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants();
+        root.checkInvariants(null);
         final int computedSize = root.size();
         if (computedSize != size) {
             throw new IllegalStateException(String.format("size mismatch: expected=%d actual=%d", computedSize, this.size));

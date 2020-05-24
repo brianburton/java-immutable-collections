@@ -35,26 +35,25 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Proc2;
-import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Sum2;
-import org.javimmutable.collections.Sum2Throws;
+import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.TrieArrayBuilder;
+import org.javimmutable.collections.array.TrieArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.CollisionMap;
-import org.javimmutable.collections.hash.map.MapBuilder;
-import org.javimmutable.collections.hash.map.MapEmptyNode;
-import org.javimmutable.collections.hash.map.MapNode;
+import org.javimmutable.collections.hash.map.ArrayMapNode;
+import org.javimmutable.collections.hash.map.ArraySingleValueMapNode;
+import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
@@ -63,7 +62,8 @@ import java.util.stream.Collector;
 @Immutable
 public class JImmutableHashMap<T, K, V>
     extends AbstractJImmutableMap<K, V>
-    implements Serializable
+    implements ArrayValueMapper<K, V, ArrayMapNode<K, V>>,
+               Serializable
 {
     // we only need one instance of the transformations object
     @SuppressWarnings({"rawtypes"})
@@ -75,18 +75,18 @@ public class JImmutableHashMap<T, K, V>
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(MapEmptyNode.of(), LIST_COLLISION_MAP);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), LIST_COLLISION_MAP);
 
     // this is safe since the transformations object works for any possible K and V
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(MapEmptyNode.of(), TREE_COLLISION_MAP);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), TREE_COLLISION_MAP);
 
     private static final long serialVersionUID = -121805;
 
-    private final MapNode<K, V> root;
+    private final TrieArrayNode<ArrayMapNode<K, V>> root;
     private final CollisionMap<K, V> collisionMap;
 
-    private JImmutableHashMap(MapNode<K, V> root,
+    private JImmutableHashMap(TrieArrayNode<ArrayMapNode<K, V>> root,
                               CollisionMap<K, V> collisionMap)
     {
         this.root = root;
@@ -176,14 +176,16 @@ public class JImmutableHashMap<T, K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        return root.getValueOr(collisionMap, key.hashCode(), key, defaultValue);
+        final ArrayMapNode<K, V> node = root.mappedGet(this, key);
+        return node == null ? defaultValue : node.getValueOr(collisionMap, key, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        return root.find(collisionMap, key.hashCode(), key);
+        final ArrayMapNode<K, V> node = root.mappedGet(this, key);
+        return node == null ? Holders.of() : node.find(collisionMap, key);
     }
 
     @Nonnull
@@ -203,7 +205,7 @@ public class JImmutableHashMap<T, K, V>
     public JImmutableMap<K, V> assign(@Nonnull K key,
                                       V value)
     {
-        final MapNode<K, V> newRoot = root.assign(collisionMap, key.hashCode(), key, value);
+        final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedAssign(this, key, value);
         if (newRoot == root) {
             return this;
         } else {
@@ -211,27 +213,27 @@ public class JImmutableHashMap<T, K, V>
         }
     }
 
-    @Nonnull
-    @Override
-    public JImmutableMap<K, V> update(@Nonnull K key,
-                                      @Nonnull Func1<Holder<V>, V> generator)
-    {
-        final MapNode<K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator);
-        if (newRoot == root) {
-            return this;
-        } else {
-            return new JImmutableHashMap<>(newRoot, collisionMap);
-        }
-    }
+//    @Nonnull
+//    @Override
+//    public JImmutableMap<K, V> update(@Nonnull K key,
+//                                      @Nonnull Func1<Holder<V>, V> generator)
+//    {
+//        final MapNode<K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator);
+//        if (newRoot == root) {
+//            return this;
+//        } else {
+//            return new JImmutableHashMap<>(newRoot, collisionMap);
+//        }
+//    }
 
     @Nonnull
     @Override
     public JImmutableMap<K, V> delete(@Nonnull K key)
     {
-        final MapNode<K, V> newRoot = root.delete(collisionMap, key.hashCode(), key);
+        final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedDelete(this, key);
         if (newRoot == root) {
             return this;
-        } else if (newRoot.isEmpty(collisionMap)) {
+        } else if (newRoot.isEmpty()) {
             return of();
         } else {
             return new JImmutableHashMap<>(newRoot, collisionMap);
@@ -241,7 +243,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public int size()
     {
-        return root.size(collisionMap);
+        return root.size();
     }
 
     @Nonnull
@@ -255,41 +257,94 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return root.iterator(collisionMap);
+        return root.mappedEntries(this).iterator();
     }
 
-    @Override
-    public void forEach(@Nonnull Proc2<K, V> proc)
-    {
-        root.forEach(collisionMap, proc);
-    }
+//    @Override
+//    public void forEach(@Nonnull Proc2<K, V> proc)
+//    {
+//        //TODO improve this
+//        root.mappedEntries(this).forEach(e -> proc.apply(e.getKey(), e.getValue()));
+//    }
 
-    @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
-        root.forEachThrows(collisionMap, proc);
-    }
+//    @Override
+//    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
+//        throws E
+//    {
+//        root.mappedEntries(this).forEachThrows(e -> proc.apply(e.getKey(), e.getValue()));
+//    }
 
-    @Override
-    public <R> R reduce(R sum,
-                        @Nonnull Sum2<K, V, R> proc)
-    {
-        return root.reduce(collisionMap, sum, proc);
-    }
+//    @Override
+//    public <R> R reduce(R sum,
+//                        @Nonnull Sum2<K, V, R> proc)
+//    {
+//        return root.reduce(collisionMap, sum, proc);
+//    }
 
-    @Override
-    public <R, E extends Exception> R reduceThrows(R sum,
-                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E
-    {
-        return root.reduceThrows(collisionMap, sum, proc);
-    }
+//    @Override
+//    public <R, E extends Exception> R reduceThrows(R sum,
+//                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+//        throws E
+//    {
+//        return root.reduceThrows(collisionMap, sum, proc);
+//    }
 
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants(collisionMap);
+        root.checkInvariants(this);
+    }
+
+    @Nonnull
+    @Override
+    public ArrayMapNode<K, V> mappedAssign(@Nonnull K key,
+                                           V value)
+    {
+        return new ArraySingleValueMapNode<>(key, value);
+    }
+
+    @Nonnull
+    @Override
+    public ArrayMapNode<K, V> mappedAssign(@Nonnull ArrayMapNode<K, V> current,
+                                           @Nonnull K key,
+                                           V value)
+    {
+        return current.assign(collisionMap, key, value);
+    }
+
+    @Nullable
+    @Override
+    public ArrayMapNode<K, V> mappedDelete(@Nonnull ArrayMapNode<K, V> current,
+                                           @Nonnull K key)
+    {
+        return current.delete(collisionMap, key);
+    }
+
+    @Override
+    public int mappedSize(@Nonnull ArrayMapNode<K, V> mapping)
+    {
+        return mapping.size(collisionMap);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayMapNode<K, V> mapping)
+    {
+        return mapping.keys(collisionMap);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayMapNode<K, V> mapping)
+    {
+        return mapping.values(collisionMap);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<Entry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
+    {
+        return mapping.entries(collisionMap);
     }
 
     // for unit test to verify proper transforms selected
@@ -305,17 +360,19 @@ public class JImmutableHashMap<T, K, V>
 
     @ThreadSafe
     public static class Builder<K, V>
-        implements JImmutableMap.Builder<K, V>
+        implements JImmutableMap.Builder<K, V>,
+                   ArrayValueMapper<K, V, ArrayMapNode<K, V>>
+
     {
-        private final MapBuilder<K, V> builder = new MapBuilder<>();
+        private final TrieArrayBuilder<ArrayMapNode<K, V>> builder = new TrieArrayBuilder<>();
+        private CollisionMap<K, V> collisionMap = ListCollisionMap.instance();
 
         @Nonnull
         @Override
         public synchronized JImmutableMap<K, V> build()
         {
-            final MapNode<K, V> root = builder.build();
-            final CollisionMap<K, V> collisionMap = builder.getCollisionMap();
-            if (root.isEmpty(collisionMap)) {
+            final TrieArrayNode<ArrayMapNode<K, V>> root = builder.buildRoot();
+            if (root.isEmpty()) {
                 return of();
             } else {
                 return new JImmutableHashMap<>(root, collisionMap);
@@ -326,7 +383,8 @@ public class JImmutableHashMap<T, K, V>
         @Override
         public synchronized JImmutableMap.Builder<K, V> clear()
         {
-            builder.clear();
+            builder.reset();
+            collisionMap = ListCollisionMap.instance();
             return this;
         }
 
@@ -335,7 +393,14 @@ public class JImmutableHashMap<T, K, V>
         public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
                                                             V value)
         {
-            builder.add(key, value);
+            if (builder.size() == 0) {
+                if (key instanceof Comparable) {
+                    collisionMap = TreeCollisionMap.instance();
+                } else {
+                    collisionMap = ListCollisionMap.instance();
+                }
+            }
+            builder.assign(this, key, value);
             return this;
         }
 
@@ -343,6 +408,58 @@ public class JImmutableHashMap<T, K, V>
         public synchronized int size()
         {
             return builder.size();
+        }
+
+        @Nonnull
+        @Override
+        public synchronized ArrayMapNode<K, V> mappedAssign(@Nonnull K key,
+                                                            V value)
+        {
+            return new ArraySingleValueMapNode<>(key, value);
+        }
+
+        @Nonnull
+        @Override
+        public synchronized ArrayMapNode<K, V> mappedAssign(@Nonnull ArrayMapNode<K, V> current,
+                                                            @Nonnull K key,
+                                                            V value)
+        {
+            return current.assign(collisionMap, key, value);
+        }
+
+        @Nullable
+        @Override
+        public synchronized ArrayMapNode<K, V> mappedDelete(@Nonnull ArrayMapNode<K, V> current,
+                                                            @Nonnull K key)
+        {
+            return current.delete(collisionMap, key);
+        }
+
+        @Override
+        public synchronized int mappedSize(@Nonnull ArrayMapNode<K, V> mapping)
+        {
+            return mapping.size(collisionMap);
+        }
+
+        @Nonnull
+        @Override
+        public synchronized GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayMapNode<K, V> mapping)
+        {
+            return mapping.keys(collisionMap);
+        }
+
+        @Nonnull
+        @Override
+        public synchronized GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayMapNode<K, V> mapping)
+        {
+            return mapping.values(collisionMap);
+        }
+
+        @Nonnull
+        @Override
+        public synchronized GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
+        {
+            return mapping.entries(collisionMap);
         }
     }
 }

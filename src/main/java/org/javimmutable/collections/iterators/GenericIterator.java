@@ -239,6 +239,28 @@ public class GenericIterator<T>
         }
     }
 
+    public static <A, B> Iterable<B> transformIterable(@Nonnull Iterable<A> source,
+                                                       @Nonnull Func1<A, B> transforminator)
+    {
+        return new Iterable<B>()
+        {
+            @Nullable
+            @Override
+            public State<B> iterateOverRange(@Nullable State<B> parent,
+                                             int offset,
+                                             int limit)
+            {
+                return transformState(parent, source.iterateOverRange(null, offset, limit), transforminator);
+            }
+
+            @Override
+            public int iterableSize()
+            {
+                return source.iterableSize();
+            }
+        };
+    }
+
     private static class SingleValueState<T>
         implements State<T>
     {

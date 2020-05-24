@@ -121,6 +121,7 @@ public class JImmutableHashMapTest
                                 merged = expected.get(key) ^ value;
                             }
                             expected.put(key, merged);
+                            assertEquals(expected.size(), map.size());
                             break;
                         }
                         case 1: {
@@ -128,6 +129,7 @@ public class JImmutableHashMapTest
                             Integer value = random.nextInt(1000000);
                             expected.put(key, value);
                             map = map.assign(key, value);
+                            assertEquals(expected.size(), map.size());
                             break;
                         }
                         case 2: {
@@ -140,12 +142,14 @@ public class JImmutableHashMapTest
                             }
                             expected.putAll(col.getMap());
                             map = (random.nextBoolean()) ? map.assignAll(col) : map.assignAll(col.getMap());
+                            assertEquals(expected.size(), map.size());
                             break;
                         }
                         case 3: {
                             ManualHashKey key = createManualHashKey(maxKey, random);
                             expected.remove(key);
                             map = map.delete(key);
+                            assertEquals(expected.size(), map.size());
                             break;
                         }
                         case 4: {
@@ -165,6 +169,7 @@ public class JImmutableHashMapTest
                                 map = map.update(key, h -> h.isEmpty() ? -value : value);
                             }
                             expected.put(key, value);
+                            assertEquals(expected.size(), map.size());
                             break;
                         }
                     }

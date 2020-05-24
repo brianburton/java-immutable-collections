@@ -48,51 +48,58 @@ import static org.javimmutable.collections.common.BitmaskMath.*;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe
-class TrieArrayBuilder<T>
+public class TrieArrayBuilder<T>
 {
     private final Node<T> root = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private int nextIndex = 0;
 
     @Nonnull
-    TrieArrayNode<T> buildRoot()
+    public TrieArrayNode<T> buildRoot()
     {
         return root.toNode();
     }
 
-    int getNextIndex()
+    public int getNextIndex()
     {
         return nextIndex;
     }
 
-    void setNextIndex(int nextIndex)
+    public void setNextIndex(int nextIndex)
     {
         this.nextIndex = nextIndex;
     }
 
-    void add(T value)
+    public void add(T value)
     {
         put(nextIndex++, value);
     }
 
-    void put(int index,
-             T value)
+    public void put(int index,
+                    T value)
     {
         root.put(TrieArrayNode.flip(index), value);
     }
 
-    int size()
+    public <K, V> void assign(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                              @Nonnull K key,
+                              V value)
+    {
+        root.mappedPut(mapper, key.hashCode(), key, value);
+    }
+
+    public int size()
     {
         return root.size();
     }
 
-    void reset()
+    public void reset()
     {
         nextIndex = 0;
         root.reset();
     }
 
     @Nonnull
-    SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
     {
         return buildRoot().entries().iterator();
     }
@@ -144,6 +151,32 @@ class TrieArrayBuilder<T>
                     nodes[myIndex] = node;
                 }
                 node.put(index, value);
+            }
+        }
+
+        private <K, V> void mappedPut(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                                      int index,
+                                      @Nonnull K key,
+                                      V value)
+        {
+            assert baseIndexAtShift(shiftCount, index) == baseIndex;
+            final int myIndex = indexAtShift(shiftCount, index);
+            final long bit = bitFromIndex(myIndex);
+            if (shiftCount == TrieArrayNode.findShiftForIndex(index)) {
+                if (bitIsPresent(valuesBitmask, bit)) {
+                    values[myIndex] = mapper.mappedAssign(values[myIndex], key, value);
+                } else {
+                    valuesBitmask = addBit(valuesBitmask, bit);
+                    values[myIndex] = mapper.mappedAssign(key, value);
+                }
+            } else {
+                Node<T> node = nodes[myIndex];
+                if (node == null) {
+                    nodesBitmask = addBit(nodesBitmask, bit);
+                    node = new Node<>(shiftCount - 1, index);
+                    nodes[myIndex] = node;
+                }
+                node.mappedPut(mapper, index, key, value);
             }
         }
 

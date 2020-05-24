@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.array;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IntFunc2;
-import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ArrayHelper;
@@ -62,7 +62,6 @@ import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
  * are visited in signed-integer order.
  */
 public class TrieArrayNode<T>
-    implements InvariantCheckable
 {
     static final int LEAF_SHIFT_COUNT = 0;
     static final int ROOT_SHIFT_COUNT = IntArrayMappedTrieMath.maxShiftsForBitCount(30);
@@ -100,7 +99,7 @@ public class TrieArrayNode<T>
         this.nodes = nodes;
         this.size = size;
         assert checkChildShifts(shiftCount, nodes);
-        assert computeSize(nodes) + values.length == size;
+//        assert computeSize(nodes) + values.length == size;
     }
 
     @SuppressWarnings("unchecked")
@@ -174,6 +173,34 @@ public class TrieArrayNode<T>
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
+    }
+
+    @Nullable
+    public <K> T mappedGet(@Nonnull ArrayValueMapper<K, ?, T> mapper,
+                           @Nonnull K key)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        return getValueOrImpl(shiftCountForValue, index, null);
+    }
+
+    @Nonnull
+    public <K, V> TrieArrayNode<T> mappedAssign(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                @Nonnull K key,
+                                                V value)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        return mappedAssignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, value);
+    }
+
+    @Nonnull
+    public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayValueMapper<K, ?, T> mapper,
+                                             @Nonnull K key)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        return mappedDeleteImpl(shiftCountForValue, index, mapper, key);
     }
 
     public void forEach(@Nonnull IndexedProc1<T> proc)
@@ -337,6 +364,89 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
+    private <K, V> TrieArrayNode<T> mappedAssignImpl(int shiftCount,
+                                                     int shiftCountForValue,
+                                                     int index,
+                                                     @Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                     @Nonnull K key,
+                                                     V value)
+    {
+        final int thisShiftCount = this.shiftCount;
+        final int baseIndex = this.baseIndex;
+        assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
+        assert shiftCount >= thisShiftCount;
+        assert shiftCount >= shiftCountForValue;
+        if (shiftCount != thisShiftCount) {
+            // We are lower in tree than our parent expects, see if we need to create an ancestor to hold the value.
+            // This happens when we've skipped intermediate nodes for efficiency and one of those nodes needs to be
+            // inserted now because we are assigning a value that goes down a different branch than this node.
+            final int ancestorShiftCount = findCommonAncestorShift(baseIndex + shift(thisShiftCount, 1), index);
+            assert ancestorShiftCount <= shiftCount;
+            if (ancestorShiftCount > thisShiftCount) {
+                final TrieArrayNode<T> ancestor = forNode(ancestorShiftCount, baseIndex, this);
+                return ancestor.mappedAssignImpl(ancestorShiftCount, shiftCountForValue, index, mapper, key, value);
+            }
+            shiftCount = thisShiftCount;
+        }
+        // If we've gotten here we know the value belongs either in this node or in one of our descendent nodes.
+        assert baseIndexAtShift(shiftCount, index) == baseIndex;
+        final int myIndex = indexAtShift(shiftCount, index);
+        final long bit = bitFromIndex(myIndex);
+        final long valuesBitmask = this.valuesBitmask;
+        final long nodesBitmask = this.nodesBitmask;
+        if (shiftCount == shiftCountForValue) {
+            // Store the value in this node.
+            final T[] values = this.values;
+            final long newBitmask = addBit(valuesBitmask, bit);
+            final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final T oldValue = values[arrayIndex];
+                final T newValue = mapper.mappedAssign(oldValue, key, value);
+                if (newValue == oldValue) {
+                    return this;
+                } else {
+                    final int newSize = size - mapper.mappedSize(oldValue) + mapper.mappedSize(newValue);
+                    assert (newSize == size) || (newSize == size + 1);
+                    final T[] newValues = ArrayHelper.assign(values, arrayIndex, newValue);
+                    assert newSize == computeSize(mapper, nodes, newValues);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
+                }
+            } else {
+                final T newValue = mapper.mappedAssign(key, value);
+                assert mapper.mappedSize(newValue) == 1;
+                final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, newValue);
+                assert (size + 1) == computeSize(mapper, nodes, newValues);
+                return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
+            }
+        } else {
+            // Store the value in a descendent node.
+            final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final TrieArrayNode<T> node = nodes[arrayIndex];
+                final TrieArrayNode<T> newNode = node.mappedAssignImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, value);
+                if (newNode == node) {
+                    return this;
+                } else {
+                    final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                    final int newSize = size - node.size() + newNode.size();
+                    assert newSize == computeSize(mapper, newNodes, values);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                }
+            } else {
+                final long newBitmask = addBit(nodesBitmask, bit);
+                final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, mapper.mappedAssign(key, value));
+                if (valuesBitmask == 0 && nodesBitmask == 0) {
+                    return newNode;
+                } else {
+                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    assert (size + 1) == computeSize(mapper, newNodes, values);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                }
+            }
+        }
+    }
+
+    @Nonnull
     private TrieArrayNode<T> deleteImpl(int shiftCountForValue,
                                         int index)
     {
@@ -391,8 +501,78 @@ public class TrieArrayNode<T>
         return this;
     }
 
-    @Override
-    public void checkInvariants()
+    @Nonnull
+    private <K> TrieArrayNode<T> mappedDeleteImpl(int shiftCountForValue,
+                                                  int index,
+                                                  @Nonnull ArrayValueMapper<K, ?, T> mapper,
+                                                  @Nonnull K key)
+    {
+        final int shiftCount = this.shiftCount;
+        if (shiftCountForValue > shiftCount) {
+            return this;
+        }
+        if (baseIndexAtShift(shiftCount, index) != baseIndex) {
+            return this;
+        }
+        final int myIndex = indexAtShift(shiftCount, index);
+        final long bit = bitFromIndex(myIndex);
+        final long valuesBitmask = this.valuesBitmask;
+        final T[] values = this.values;
+        if (shiftCountForValue == shiftCount) {
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final long newBitmask;
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                final T mapping = values[arrayIndex];
+                final T newMapping = mapper.mappedDelete(mapping, key);
+                if (newMapping != mapping) {
+                    final T[] newValues;
+                    if (newMapping == null) {
+                        if (size == 1) {
+                            return empty();
+                        }
+                        newBitmask = removeBit(valuesBitmask, bit);
+                        newValues = ArrayHelper.delete(TrieArrayNode::allocateValues, values, arrayIndex);
+                    } else {
+                        newBitmask = valuesBitmask;
+                        newValues = ArrayHelper.assign(values, arrayIndex, newMapping);
+                    }
+                    assert (size - 1) == computeSize(mapper, nodes, newValues);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                }
+            }
+        } else {
+            final long bitmask = this.nodesBitmask;
+            if (bitIsPresent(bitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(bitmask, bit);
+                final TrieArrayNode<T>[] nodes = this.nodes;
+                final TrieArrayNode<T> node = nodes[arrayIndex];
+                final TrieArrayNode<T> newNode = node.mappedDeleteImpl(shiftCountForValue, index, mapper, key);
+                if (newNode != node) {
+                    final int newSize = size - node.size() + newNode.size();
+                    if (newSize == 0) {
+                        return empty();
+                    } else if (newNode.isEmpty()) {
+                        final long newBitmask = removeBit(bitmask, bit);
+                        if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
+                            // return the unaffected single remaining node to minimize height of the tree
+                            return nodes[arrayIndexForBit(bitmask, newBitmask)];
+                        } else {
+                            final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
+                            assert newSize == computeSize(mapper, newNodes, values);
+                            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
+                        }
+                    } else {
+                        final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                        assert newSize == computeSize(mapper, newNodes, values);
+                        return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    public void checkInvariants(@Nullable ArrayValueMapper<?, ?, T> mapper)
     {
         if (bitCount(valuesBitmask) != values.length) {
             throw new IllegalStateException(String.format("invalid bitmask for values array: bitmask=%s length=%d", Long.toBinaryString(valuesBitmask), values.length));
@@ -403,7 +583,7 @@ public class TrieArrayNode<T>
         if (!checkChildShifts(shiftCount, nodes)) {
             throw new IllegalStateException("one or more nodes invalid for this branch");
         }
-        final int computedSize = computeSize(nodes) + values.length;
+        final int computedSize = mapper != null ? computeSize(mapper, nodes, values) : computeSize(nodes) + values.length;
         if (computedSize != size) {
             throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computedSize));
         }
@@ -428,6 +608,24 @@ public class TrieArrayNode<T>
     {
         return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());
+    }
+
+    @Nonnull
+    public <K> GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayValueMapper<K, ?, T> mapper)
+    {
+        return mappedIterable(mapper::mappedKeys);
+    }
+
+    @Nonnull
+    public <V> GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayValueMapper<?, V, T> mapper)
+    {
+        return mappedIterable(mapper::mappedValues);
+    }
+
+    @Nonnull
+    public <K, V> GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayValueMapper<K, V, T> mapper)
+    {
+        return mappedIterable(mapper::mappedEntries);
     }
 
     public int size()
@@ -464,6 +662,43 @@ public class TrieArrayNode<T>
                     if (bitIsPresent(nodesBitmask, bit)) {
                         final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
                         iterables.add(nodeFunction.apply(nodeIndex));
+                    }
+                    combinedBitmask = removeBit(combinedBitmask, bit);
+                }
+                assert iterables.size() == (values.length + nodes.length);
+                return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+            }
+
+            @Override
+            public int iterableSize()
+            {
+                return size;
+            }
+        };
+    }
+
+    @Nonnull
+    private <V> GenericIterator.Iterable<V> mappedIterable(@Nonnull Func1<T, GenericIterator.Iterable<V>> valueFunction)
+    {
+        return new GenericIterator.Iterable<V>()
+        {
+            @Nullable
+            @Override
+            public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,
+                                                             int offset,
+                                                             int limit)
+            {
+                final List<GenericIterator.Iterable<V>> iterables = new ArrayList<>(values.length + nodes.length);
+                long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+                while (combinedBitmask != 0) {
+                    final long bit = leastBit(combinedBitmask);
+                    if (bitIsPresent(valuesBitmask, bit)) {
+                        final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                        iterables.add(valueFunction.apply(values[arrayIndex]));
+                    }
+                    if (bitIsPresent(nodesBitmask, bit)) {
+                        final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                        iterables.add(nodes[nodeIndex].mappedIterable(valueFunction));
                     }
                     combinedBitmask = removeBit(combinedBitmask, bit);
                 }
@@ -547,6 +782,20 @@ public class TrieArrayNode<T>
             }
         }
         return true;
+    }
+
+    private static <K, T> int computeSize(@Nonnull ArrayValueMapper<K, ?, T> mapper,
+                                          @Nonnull TrieArrayNode<T>[] children,
+                                          @Nonnull T[] values)
+    {
+        int total = 0;
+        for (TrieArrayNode<T> child : children) {
+            total += child.size();
+        }
+        for (T value : values) {
+            total += mapper.mappedSize(value);
+        }
+        return total;
     }
 
     private static <T> int computeSize(@Nonnull TrieArrayNode<T>[] children)
