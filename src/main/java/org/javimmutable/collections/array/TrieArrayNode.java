@@ -61,7 +61,7 @@ import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
  * Implements an array mapped trie using integers as keys.  When iterating keys
  * are visited in signed-integer order.
  */
-class TrieArrayNode<T>
+public class TrieArrayNode<T>
     implements InvariantCheckable
 {
     static final int LEAF_SHIFT_COUNT = 0;
@@ -105,7 +105,7 @@ class TrieArrayNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> TrieArrayNode<T> empty()
+    public static <T> TrieArrayNode<T> empty()
     {
         return (TrieArrayNode<T>)EMPTY;
     }
@@ -138,13 +138,13 @@ class TrieArrayNode<T>
         return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
     }
 
-    boolean isEmpty()
+    public boolean isEmpty()
     {
         return size == 0;
     }
 
-    T getValueOr(int index,
-                 T defaultValue)
+    public T getValueOr(int index,
+                        T defaultValue)
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
@@ -152,7 +152,7 @@ class TrieArrayNode<T>
     }
 
     @Nonnull
-    Holder<T> find(int index)
+    public Holder<T> find(int index)
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
@@ -160,8 +160,8 @@ class TrieArrayNode<T>
     }
 
     @Nonnull
-    TrieArrayNode<T> assign(int index,
-                            T value)
+    public TrieArrayNode<T> assign(int index,
+                                   T value)
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
@@ -169,14 +169,14 @@ class TrieArrayNode<T>
     }
 
     @Nonnull
-    TrieArrayNode<T> delete(int index)
+    public TrieArrayNode<T> delete(int index)
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
     }
 
-    void forEach(@Nonnull IndexedProc1<T> proc)
+    public void forEach(@Nonnull IndexedProc1<T> proc)
     {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
@@ -195,7 +195,7 @@ class TrieArrayNode<T>
         }
     }
 
-    <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
         throws E
     {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
@@ -410,27 +410,27 @@ class TrieArrayNode<T>
     }
 
     @Nonnull
-    GenericIterator.Iterable<Integer> keys()
+    public GenericIterator.Iterable<Integer> keys()
     {
         return iterable((valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex),
                         nodeIndex -> nodes[nodeIndex].keys());
     }
 
     @Nonnull
-    GenericIterator.Iterable<T> values()
+    public GenericIterator.Iterable<T> values()
     {
         return iterable((valueIndex, arrayIndex) -> values[arrayIndex],
                         nodeIndex -> nodes[nodeIndex].values());
     }
 
     @Nonnull
-    GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> entries()
+    public GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> entries()
     {
         return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());
     }
 
-    int size()
+    public int size()
     {
         return size;
     }
