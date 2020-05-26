@@ -7,7 +7,9 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class ArraySingleValueSetNode<T>
     implements ArraySetNode<T>
 {
@@ -60,14 +62,14 @@ public class ArraySingleValueSetNode<T>
     }
 
     @Override
-    public void forEach(@Nonnull CollisionSet<T> collisionMap,
+    public void forEach(@Nonnull CollisionSet<T> collisionSet,
                         @Nonnull Proc1<T> proc)
     {
         proc.apply(value);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionMap,
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionSet,
                                                     @Nonnull Proc1Throws<T, E> proc)
         throws E
     {
