@@ -53,12 +53,14 @@ public class ArraySingleValueMapNode<K, V>
                                      @Nonnull K key,
                                      V value)
     {
-        if (!key.equals(this.key)) {
-            return new ArrayMultiValueMapNode<>(collisionMap.update(collisionMap.single(this.key, this.value), key, value));
-        } else if (value == this.value) {
+        final K thisKey = this.key;
+        final V thisValue = this.value;
+        if (!key.equals(thisKey)) {
+            return new ArrayMultiValueMapNode<>(collisionMap.update(collisionMap.single(thisKey, thisValue), key, value));
+        } else if (value == thisValue) {
             return this;
         } else {
-            return new ArraySingleValueMapNode<>(this.key, value);
+            return new ArraySingleValueMapNode<>(thisKey, value);
         }
     }
 

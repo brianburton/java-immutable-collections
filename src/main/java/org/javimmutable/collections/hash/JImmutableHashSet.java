@@ -35,15 +35,20 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.TrieArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.hash.set.SetBuilder;
-import org.javimmutable.collections.hash.set.SetEmptyNode;
-import org.javimmutable.collections.hash.set.SetNode;
+import org.javimmutable.collections.hash.set.ArraySetNode;
+import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
+import org.javimmutable.collections.iterators.GenericIterator;
+import org.javimmutable.collections.list.ListCollisionSet;
 import org.javimmutable.collections.serialization.JImmutableHashSetProxy;
+import org.javimmutable.collections.tree.TreeCollisionSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,40 +58,50 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
 @Immutable
 public class JImmutableHashSet<T>
     extends AbstractJImmutableSet<T>
-    implements Serializable
+    implements ArrayValueMapper<T, T, ArraySetNode<T>>,
+               Serializable
 {
     private static final long serialVersionUID = -121805;
 
-    private final SetNode<T> root;
+    private final TrieArrayNode<ArraySetNode<T>> root;
     private final CollisionSet<T> collisionSet;
 
-    JImmutableHashSet(@Nonnull SetNode<T> root,
+    JImmutableHashSet(@Nonnull TrieArrayNode<ArraySetNode<T>> root,
                       @Nonnull CollisionSet<T> collisionSet)
     {
         this.root = root;
         this.collisionSet = collisionSet;
     }
 
-    @SuppressWarnings("unchecked")
+    JImmutableHashSet(@Nonnull T value)
+    {
+        root = TrieArrayNode.<ArraySetNode<T>>empty().mappedAssign(this, value, value);
+        collisionSet = selectCollisionSetForValue(value);
+    }
+
     public static <T> JImmutableSet<T> of()
     {
         return EmptyHashSet.instance();
-    }
-
-    public static <T> JImmutableSet<T> of(@Nonnull T value)
-    {
-        final CollisionSet<T> collisionSet = SetBuilder.selectCollisionSetForValue(value);
-        final SetNode<T> root = SetEmptyNode.<T>of().insert(collisionSet, value.hashCode(), value);
-        return new JImmutableHashSet<>(root, collisionSet);
     }
 
     @Nonnull
     public static <T> JImmutableSet.Builder<T> builder()
     {
         return new HashSetBuilder<>();
+    }
+
+    static <T> CollisionSet<T> selectCollisionSetForValue(@Nonnull T value)
+    {
+        if (value instanceof Comparable) {
+            return TreeCollisionSet.instance();
+        } else {
+            return ListCollisionSet.instance();
+        }
     }
 
     @Nonnull
@@ -106,30 +121,35 @@ public class JImmutableHashSet<T>
     @Override
     public JImmutableSet<T> insert(@Nonnull T value)
     {
-        return createForUpdate(root.insert(collisionSet, value.hashCode(), value));
+        return createForUpdate(root.mappedAssign(this, value, value));
     }
 
     @Override
     public boolean contains(@Nullable T value)
     {
-        return (value != null) && root.contains(collisionSet, value.hashCode(), value);
+        if (value == null) {
+            return false;
+        } else {
+            final ArraySetNode<T> node = root.mappedGet(this, value);
+            return node != null && node.contains(collisionSet, value);
+        }
     }
 
     @Nonnull
     @Override
     public JImmutableSet<T> delete(T value)
     {
-        return createForDelete(root.delete(collisionSet, value.hashCode(), value));
+        return createForDelete(root.mappedDelete(this, value));
     }
 
     @Nonnull
     @Override
     public JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> other)
     {
-        SetNode<T> newRoot = root;
+        TrieArrayNode<ArraySetNode<T>> newRoot = root;
         while (other.hasNext()) {
             T value = other.next();
-            newRoot = newRoot.delete(collisionSet, value.hashCode(), value);
+            newRoot = newRoot.mappedDelete(this, value);
         }
         return createForDelete(newRoot);
     }
@@ -138,10 +158,10 @@ public class JImmutableHashSet<T>
     @Override
     public JImmutableSet<T> union(@Nonnull Iterator<? extends T> other)
     {
-        SetNode<T> newRoot = root;
+        TrieArrayNode<ArraySetNode<T>> newRoot = root;
         while (other.hasNext()) {
             T value = other.next();
-            newRoot = newRoot.insert(collisionSet, value.hashCode(), value);
+            newRoot = newRoot.mappedAssign(this, value, value);
         }
         return createForUpdate(newRoot);
     }
@@ -173,10 +193,10 @@ public class JImmutableHashSet<T>
     @Override
     public JImmutableSet<T> intersection(@Nonnull Set<? extends T> otherSet)
     {
-        SetNode<T> newRoot = root;
-        for (T value : root.genericIterable(collisionSet)) {
+        TrieArrayNode<ArraySetNode<T>> newRoot = root;
+        for (T value : root.mappedKeys(this)) {
             if (!otherSet.contains(value)) {
-                newRoot = newRoot.delete(collisionSet, value.hashCode(), value);
+                newRoot = newRoot.mappedDelete(this, value);
             }
         }
         return createForDelete(newRoot);
@@ -185,26 +205,26 @@ public class JImmutableHashSet<T>
     @Override
     public int size()
     {
-        return root.size(collisionSet);
+        return root.size();
     }
 
     @Override
     public boolean isEmpty()
     {
-        return root.isEmpty(collisionSet);
+        return root.isEmpty();
     }
 
     @Override
     public void checkInvariants()
     {
-        root.checkInvariants(collisionSet);
+        root.checkInvariants(this);
     }
 
     @Nonnull
     @Override
     public SplitableIterator<T> iterator()
     {
-        return root.iterator(collisionSet);
+        return root.mappedKeys(this).iterator();
     }
 
     @Override
@@ -213,26 +233,80 @@ public class JImmutableHashSet<T>
         return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
+    @Nonnull
+    @Override
+    public ArraySetNode<T> mappedAssign(@Nonnull T key,
+                                        T ignored)
+    {
+        assert key == ignored;
+        return new ArraySingleValueSetNode<>(key);
+    }
+
+    @Nonnull
+    @Override
+    public ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current,
+                                        @Nonnull T key,
+                                        T ignored)
+    {
+        assert key == ignored;
+        return current.insert(collisionSet, key);
+    }
+
+    @Nullable
+    @Override
+    public ArraySetNode<T> mappedDelete(@Nonnull ArraySetNode<T> current,
+                                        @Nonnull T key)
+    {
+        return current.delete(collisionSet, key);
+    }
+
+    @Override
+    public int mappedSize(@Nonnull ArraySetNode<T> mapping)
+    {
+        return mapping.size(collisionSet);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<T> mappedKeys(@Nonnull ArraySetNode<T> mapping)
+    {
+        return mapping.values(collisionSet);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<T> mappedValues(@Nonnull ArraySetNode<T> mapping)
+    {
+        return mapping.values(collisionSet);
+    }
+
+    @Nonnull
+    @Override
+    public GenericIterator.Iterable<JImmutableMap.Entry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping)
+    {
+        return GenericIterator.transformIterable(mapping.values(collisionSet), k -> entry(k, k));
+    }
+
     private Object writeReplace()
     {
         return new JImmutableHashSetProxy(this);
     }
 
-    private JImmutableSet<T> createForUpdate(@Nonnull SetNode<T> newRoot)
+    private JImmutableSet<T> createForUpdate(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot)
     {
         if (root == newRoot) {
             return this;
         } else {
-            assert newRoot.size(collisionSet) > 0;
+            assert newRoot.size() > 0;
             return new JImmutableHashSet<>(newRoot, collisionSet);
         }
     }
 
-    private JImmutableSet<T> createForDelete(@Nonnull SetNode<T> newRoot)
+    private JImmutableSet<T> createForDelete(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot)
     {
         if (root == newRoot) {
             return this;
-        } else if (newRoot.isEmpty(collisionSet)) {
+        } else if (newRoot.isEmpty()) {
             return of();
         } else {
             return new JImmutableHashSet<>(newRoot, collisionSet);

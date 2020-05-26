@@ -62,8 +62,9 @@ public class ArrayMultiValueMapNode<K, V>
     public ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                                      @Nonnull K key)
     {
-        final CollisionMap.Node newNode = collisionMap.delete(node, key);
-        if (newNode == node) {
+        final CollisionMap.Node thisNode = this.node;
+        final CollisionMap.Node newNode = collisionMap.delete(thisNode, key);
+        if (newNode == thisNode) {
             return this;
         } else if (collisionMap.size(newNode) == 0) {
             return null;

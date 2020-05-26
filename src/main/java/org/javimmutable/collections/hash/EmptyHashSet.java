@@ -71,7 +71,7 @@ public class EmptyHashSet<T>
     @Override
     public JImmutableSet<T> insert(@Nonnull T value)
     {
-        return JImmutableHashSet.of(value);
+        return new JImmutableHashSet<>(value);
     }
 
     @Override

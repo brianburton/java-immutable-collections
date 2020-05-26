@@ -394,9 +394,10 @@ public class TrieArrayNode<T>
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
         final long nodesBitmask = this.nodesBitmask;
+        final T[] values = this.values;
+        final TrieArrayNode<T>[] nodes = this.nodes;
         if (shiftCount == shiftCountForValue) {
             // Store the value in this node.
-            final T[] values = this.values;
             final long newBitmask = addBit(valuesBitmask, bit);
             final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
             if (bitIsPresent(valuesBitmask, bit)) {
@@ -460,6 +461,9 @@ public class TrieArrayNode<T>
         final int myIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
         final long valuesBitmask = this.valuesBitmask;
+        final long nodesBitmask = this.nodesBitmask;
+        final T[] values = this.values;
+        final TrieArrayNode<T>[] nodes = this.nodes;
         if (shiftCountForValue == shiftCount) {
             if (bitIsPresent(valuesBitmask, bit)) {
                 if (size == 1) {
@@ -472,10 +476,8 @@ public class TrieArrayNode<T>
                 }
             }
         } else {
-            final long bitmask = this.nodesBitmask;
-            if (bitIsPresent(bitmask, bit)) {
-                final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                final TrieArrayNode<T>[] nodes = this.nodes;
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
                 final TrieArrayNode<T> node = nodes[arrayIndex];
                 final TrieArrayNode<T> newNode = node.deleteImpl(shiftCountForValue, index);
                 if (newNode != node) {
@@ -483,17 +485,17 @@ public class TrieArrayNode<T>
                     if (newSize == 0) {
                         return empty();
                     } else if (newNode.isEmpty()) {
-                        final long newBitmask = removeBit(bitmask, bit);
+                        final long newBitmask = removeBit(nodesBitmask, bit);
                         if (valuesBitmask == 0 && bitCount(newBitmask) == 1) {
                             // return the unaffected single remaining node to minimize height of the tree
-                            return nodes[arrayIndexForBit(bitmask, newBitmask)];
+                            return nodes[arrayIndexForBit(nodesBitmask, newBitmask)];
                         } else {
                             final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
                             return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
                         final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
+                        return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
                     }
                 }
             }

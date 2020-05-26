@@ -35,17 +35,27 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.hash.set.SetBuilder;
+import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.TrieArrayBuilder;
+import org.javimmutable.collections.common.CollisionSet;
+import org.javimmutable.collections.hash.set.ArraySetNode;
+import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
+import org.javimmutable.collections.iterators.GenericIterator;
+import org.javimmutable.collections.list.ListCollisionSet;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 class HashSetBuilder<T>
-    implements JImmutableSet.Builder<T>
+    implements JImmutableSet.Builder<T>,
+               ArrayValueMapper<T, T, ArraySetNode<T>>
 {
-    private final SetBuilder<T> builder = new SetBuilder<>();
+    private final TrieArrayBuilder<ArraySetNode<T>> builder = new TrieArrayBuilder<>();
+    private CollisionSet<T> collisionSet = ListCollisionSet.instance();
 
     @Nonnull
     @Override
@@ -54,7 +64,7 @@ class HashSetBuilder<T>
         if (builder.size() == 0) {
             return JImmutableHashSet.of();
         } else {
-            return new JImmutableHashSet<>(builder.build(), builder.getCollisionSet());
+            return new JImmutableHashSet<>(builder.buildRoot(), collisionSet);
         }
     }
 
@@ -68,7 +78,10 @@ class HashSetBuilder<T>
     @Override
     public synchronized JImmutableSet.Builder<T> add(T value)
     {
-        builder.add(value);
+        if (builder.size() == 0) {
+            collisionSet = JImmutableHashSet.selectCollisionSetForValue(value);
+        }
+        builder.assign(this, value, value);
         return this;
     }
 
@@ -76,7 +89,62 @@ class HashSetBuilder<T>
     @Override
     public synchronized JImmutableSet.Builder<T> clear()
     {
-        builder.clear();
+        collisionSet = ListCollisionSet.instance();
+        builder.reset();
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public synchronized ArraySetNode<T> mappedAssign(@Nonnull T key,
+                                                     T ignored)
+    {
+        assert key == ignored;
+        return new ArraySingleValueSetNode<>(key);
+    }
+
+    @Nonnull
+    @Override
+    public synchronized ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current,
+                                                     @Nonnull T key,
+                                                     T ignored)
+    {
+        assert key == ignored;
+        return current.insert(collisionSet, key);
+    }
+
+    @Nullable
+    @Override
+    public synchronized ArraySetNode<T> mappedDelete(@Nonnull ArraySetNode<T> current,
+                                                     @Nonnull T key)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public synchronized int mappedSize(@Nonnull ArraySetNode<T> mapping)
+    {
+        return mapping.size(collisionSet);
+    }
+
+    @Nonnull
+    @Override
+    public synchronized GenericIterator.Iterable<T> mappedKeys(@Nonnull ArraySetNode<T> mapping)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public synchronized GenericIterator.Iterable<T> mappedValues(@Nonnull ArraySetNode<T> mapping)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public synchronized GenericIterator.Iterable<JImmutableMap.Entry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping)
+    {
+        throw new UnsupportedOperationException();
     }
 }
