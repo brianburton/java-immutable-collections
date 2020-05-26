@@ -1,5 +1,6 @@
 package org.javimmutable.collections.array;
 
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -12,6 +13,14 @@ import javax.annotation.Nullable;
  */
 public interface ArrayValueMapper<K, V, T>
 {
+    V mappedGetValueOr(@Nonnull T mapping,
+                       @Nonnull K key,
+                       V defaultValue);
+
+    @Nonnull
+    Holder<V> mappedFind(@Nonnull T mapping,
+                         @Nonnull K key);
+
     /**
      * Called during assign operation to create a new mapping
      * for the given key and value.

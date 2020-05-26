@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.SplitableIterator;
@@ -130,8 +132,7 @@ public class JImmutableHashSet<T>
         if (value == null) {
             return false;
         } else {
-            final ArraySetNode<T> node = root.mappedGet(this, value);
-            return node != null && node.contains(collisionSet, value);
+            return root.mappedGetValueOr(this, value, null) != null;
         }
     }
 
@@ -231,6 +232,22 @@ public class JImmutableHashSet<T>
     public int getSpliteratorCharacteristics()
     {
         return StreamConstants.SPLITERATOR_UNORDERED;
+    }
+
+    @Override
+    public T mappedGetValueOr(@Nonnull ArraySetNode<T> mapping,
+                              @Nonnull T key,
+                              T defaultValue)
+    {
+        return mapping.contains(collisionSet, key) ? key : defaultValue;
+    }
+
+    @Nonnull
+    @Override
+    public Holder<T> mappedFind(@Nonnull ArraySetNode<T> mapping,
+                                @Nonnull T key)
+    {
+        return mapping.contains(collisionSet, key) ? Holders.of(key) : Holders.of();
     }
 
     @Nonnull

@@ -175,13 +175,24 @@ public class TrieArrayNode<T>
         return deleteImpl(shiftCountForValue, index);
     }
 
-    @Nullable
-    public <K> T mappedGet(@Nonnull ArrayValueMapper<K, ?, T> mapper,
-                           @Nonnull K key)
+    public <K, V> V mappedGetValueOr(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                                     @Nonnull K key,
+                                     V defaultValue)
     {
         final int index = key.hashCode();
         final int shiftCountForValue = findShiftForIndex(index);
-        return getValueOrImpl(shiftCountForValue, index, null);
+        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        return node != null ? mapper.mappedGetValueOr(node, key, defaultValue) : defaultValue;
+    }
+
+    @Nonnull
+    public <K, V> Holder<V> mappedFind(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                                       @Nonnull K key)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        return node != null ? mapper.mappedFind(node, key) : Holders.of();
     }
 
     @Nonnull

@@ -176,16 +176,14 @@ public class JImmutableHashMap<T, K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        final ArrayMapNode<K, V> node = root.mappedGet(this, key);
-        return node == null ? defaultValue : node.getValueOr(collisionMap, key, defaultValue);
+        return root.mappedGetValueOr(this, key, defaultValue);
     }
 
     @Nonnull
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        final ArrayMapNode<K, V> node = root.mappedGet(this, key);
-        return node == null ? Holders.of() : node.find(collisionMap, key);
+        return root.mappedFind(this, key);
     }
 
     @Nonnull
@@ -293,6 +291,22 @@ public class JImmutableHashMap<T, K, V>
     public void checkInvariants()
     {
         root.checkInvariants(this);
+    }
+
+    @Override
+    public V mappedGetValueOr(@Nonnull ArrayMapNode<K, V> mapping,
+                              @Nonnull K key,
+                              V defaultValue)
+    {
+        return mapping.getValueOr(collisionMap, key, defaultValue);
+    }
+
+    @Nonnull
+    @Override
+    public Holder<V> mappedFind(@Nonnull ArrayMapNode<K, V> mapping,
+                                @Nonnull K key)
+    {
+        return mapping.find(collisionMap, key);
     }
 
     @Nonnull
@@ -410,6 +424,22 @@ public class JImmutableHashMap<T, K, V>
             return builder.size();
         }
 
+        @Override
+        public V mappedGetValueOr(@Nonnull ArrayMapNode<K, V> mapping,
+                                  @Nonnull K key,
+                                  V defaultValue)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Nonnull
+        @Override
+        public Holder<V> mappedFind(@Nonnull ArrayMapNode<K, V> mapping,
+                                    @Nonnull K key)
+        {
+            throw new UnsupportedOperationException();
+        }
+
         @Nonnull
         @Override
         public synchronized ArrayMapNode<K, V> mappedAssign(@Nonnull K key,
@@ -432,7 +462,7 @@ public class JImmutableHashMap<T, K, V>
         public synchronized ArrayMapNode<K, V> mappedDelete(@Nonnull ArrayMapNode<K, V> current,
                                                             @Nonnull K key)
         {
-            return current.delete(collisionMap, key);
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -445,21 +475,21 @@ public class JImmutableHashMap<T, K, V>
         @Override
         public synchronized GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayMapNode<K, V> mapping)
         {
-            return mapping.keys(collisionMap);
+            throw new UnsupportedOperationException();
         }
 
         @Nonnull
         @Override
         public synchronized GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayMapNode<K, V> mapping)
         {
-            return mapping.values(collisionMap);
+            throw new UnsupportedOperationException();
         }
 
         @Nonnull
         @Override
         public synchronized GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
         {
-            return mapping.entries(collisionMap);
+            throw new UnsupportedOperationException();
         }
     }
 }

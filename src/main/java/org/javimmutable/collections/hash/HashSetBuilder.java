@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.array.ArrayValueMapper;
@@ -92,6 +93,22 @@ class HashSetBuilder<T>
         collisionSet = ListCollisionSet.instance();
         builder.reset();
         return this;
+    }
+
+    @Override
+    public T mappedGetValueOr(@Nonnull ArraySetNode<T> mapping,
+                              @Nonnull T key,
+                              T defaultValue)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public Holder<T> mappedFind(@Nonnull ArraySetNode<T> mapping,
+                                @Nonnull T key)
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Nonnull
