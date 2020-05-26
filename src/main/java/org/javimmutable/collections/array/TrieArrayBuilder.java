@@ -37,7 +37,6 @@ package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.common.ArrayHelper;
 
 import javax.annotation.Nonnull;
@@ -112,6 +111,7 @@ public class TrieArrayBuilder<T>
         private final T[] values;
         private long nodesBitmask;
         private final Node<T>[] nodes;
+        private int size;
 
         private Node(int shiftCount,
                      int index)
@@ -132,6 +132,7 @@ public class TrieArrayBuilder<T>
             Arrays.fill(nodes, null);
             valuesBitmask = 0;
             nodesBitmask = 0;
+            size = 0;
         }
 
         private void put(int index,
@@ -141,16 +142,22 @@ public class TrieArrayBuilder<T>
             final int myIndex = indexAtShift(shiftCount, index);
             final long bit = bitFromIndex(myIndex);
             if (shiftCount == TrieArrayNode.findShiftForIndex(index)) {
-                valuesBitmask = addBit(valuesBitmask, bit);
                 values[myIndex] = value;
+                if (bitIsAbsent(valuesBitmask, bit)) {
+                    valuesBitmask = addBit(valuesBitmask, bit);
+                    size += 1;
+                }
             } else {
                 Node<T> node = nodes[myIndex];
                 if (node == null) {
                     nodesBitmask = addBit(nodesBitmask, bit);
                     node = new Node<>(shiftCount - 1, index);
                     nodes[myIndex] = node;
+                } else {
+                    size -= node.size;
                 }
                 node.put(index, value);
+                size += node.size;
             }
         }
 
@@ -164,19 +171,24 @@ public class TrieArrayBuilder<T>
             final long bit = bitFromIndex(myIndex);
             if (shiftCount == TrieArrayNode.findShiftForIndex(index)) {
                 if (bitIsPresent(valuesBitmask, bit)) {
+                    size -= mapper.mappedSize(values[myIndex]);
                     values[myIndex] = mapper.mappedAssign(values[myIndex], key, value);
                 } else {
                     valuesBitmask = addBit(valuesBitmask, bit);
                     values[myIndex] = mapper.mappedAssign(key, value);
                 }
+                size += mapper.mappedSize(values[myIndex]);
             } else {
                 Node<T> node = nodes[myIndex];
                 if (node == null) {
                     nodesBitmask = addBit(nodesBitmask, bit);
                     node = new Node<>(shiftCount - 1, index);
                     nodes[myIndex] = node;
+                } else {
+                    size -= node.size;
                 }
                 node.mappedPut(mapper, index, key, value);
+                size += node.size;
             }
         }
 
@@ -187,14 +199,12 @@ public class TrieArrayBuilder<T>
             copyToCompactArrayUsingBitmask(valuesBitmask, values, answerValues, x -> x);
             final TrieArrayNode<T>[] answerNodes = TrieArrayNode.allocateNodes(bitCount(nodesBitmask));
             copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode());
-            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size());
+            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size);
         }
 
         private int size()
         {
-            final Temp.Int1 sum = Temp.intVar(0);
-            forEachIndex(nodesBitmask, i -> sum.a += nodes[i].size());
-            return sum.a + bitCount(valuesBitmask);
+            return size;
         }
     }
 
