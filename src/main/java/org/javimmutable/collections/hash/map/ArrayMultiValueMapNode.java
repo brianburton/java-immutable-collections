@@ -2,6 +2,8 @@ package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -92,5 +94,20 @@ public class ArrayMultiValueMapNode<K, V>
     public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return collisionMap.genericIterable(node);
+    }
+
+    @Override
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                        @Nonnull Proc2<K, V> proc)
+    {
+        collisionMap.forEach(node, proc);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                    @Nonnull Proc2Throws<K, V, E> proc)
+        throws E
+    {
+        collisionMap.forEachThrows(node, proc);
     }
 }

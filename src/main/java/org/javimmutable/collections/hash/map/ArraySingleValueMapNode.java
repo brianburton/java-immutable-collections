@@ -4,6 +4,8 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -91,5 +93,20 @@ public class ArraySingleValueMapNode<K, V>
     public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return GenericIterator.valueIterable(MapEntry.entry(key, value));
+    }
+
+    @Override
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
+                        @Nonnull Proc2<K, V> proc)
+    {
+        proc.apply(key, value);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
+                                                    @Nonnull Proc2Throws<K, V, E> proc)
+        throws E
+    {
+        proc.apply(key, value);
     }
 }

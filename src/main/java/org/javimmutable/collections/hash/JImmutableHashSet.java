@@ -39,6 +39,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
+import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.ArrayValueMapper;
 import org.javimmutable.collections.array.TrieArrayNode;
@@ -59,6 +60,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.javimmutable.collections.MapEntry.entry;
 
@@ -219,6 +221,19 @@ public class JImmutableHashSet<T>
     public void checkInvariants()
     {
         root.checkInvariants(this);
+    }
+
+    @Override
+    public void forEach(@Nonnull Consumer<? super T> action)
+    {
+        root.forEach(node -> node.forEach(collisionSet, action::accept));
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
+        throws E
+    {
+        root.forEachThrows(node -> node.forEachThrows(collisionSet, proc));
     }
 
     @Nonnull

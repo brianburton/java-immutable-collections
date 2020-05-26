@@ -1,5 +1,7 @@
 package org.javimmutable.collections.hash.set;
 
+import org.javimmutable.collections.Proc1;
+import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -64,5 +66,20 @@ public class ArrayMultiValueSetNode<T>
     public GenericIterator.Iterable<T> values(@Nonnull CollisionSet<T> collisionSet)
     {
         return collisionSet.genericIterable(node);
+    }
+
+    @Override
+    public void forEach(@Nonnull CollisionSet<T> collisionMap,
+                        @Nonnull Proc1<T> proc)
+    {
+        collisionMap.forEach(node, proc);
+    }
+
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionMap,
+                                                    @Nonnull Proc1Throws<T, E> proc)
+        throws E
+    {
+        collisionMap.forEachThrows(node, proc);
     }
 }

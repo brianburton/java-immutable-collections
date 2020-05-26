@@ -39,7 +39,12 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.array.ArrayValueMapper;
 import org.javimmutable.collections.array.TrieArrayBuilder;
 import org.javimmutable.collections.array.TrieArrayNode;
@@ -258,34 +263,37 @@ public class JImmutableHashMap<T, K, V>
         return root.mappedEntries(this).iterator();
     }
 
-//    @Override
-//    public void forEach(@Nonnull Proc2<K, V> proc)
-//    {
-//        //TODO improve this
-//        root.mappedEntries(this).forEach(e -> proc.apply(e.getKey(), e.getValue()));
-//    }
+    @Override
+    public void forEach(@Nonnull Proc2<K, V> proc)
+    {
+        root.forEach(node -> node.forEach(collisionMap, proc));
+    }
 
-//    @Override
-//    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-//        throws E
-//    {
-//        root.mappedEntries(this).forEachThrows(e -> proc.apply(e.getKey(), e.getValue()));
-//    }
+    @Override
+    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
+        throws E
+    {
+        root.forEachThrows(node -> node.forEachThrows(collisionMap, proc));
+    }
 
-//    @Override
-//    public <R> R reduce(R sum,
-//                        @Nonnull Sum2<K, V, R> proc)
-//    {
-//        return root.reduce(collisionMap, sum, proc);
-//    }
+    @Override
+    public <R> R reduce(R startingSum,
+                        @Nonnull Sum2<K, V, R> proc)
+    {
+        final Temp.Var1<R> sum = Temp.var(startingSum);
+        forEach((k, v) -> sum.x = proc.apply(sum.x, k, v));
+        return sum.x;
+    }
 
-//    @Override
-//    public <R, E extends Exception> R reduceThrows(R sum,
-//                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
-//        throws E
-//    {
-//        return root.reduceThrows(collisionMap, sum, proc);
-//    }
+    @Override
+    public <R, E extends Exception> R reduceThrows(R startingSum,
+                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
+        throws E
+    {
+        final Temp.Var1<R> sum = Temp.var(startingSum);
+        forEachThrows((k, v) -> sum.x = proc.apply(sum.x, k, v));
+        return sum.x;
+    }
 
     @Override
     public void checkInvariants()
@@ -362,6 +370,7 @@ public class JImmutableHashMap<T, K, V>
     }
 
     // for unit test to verify proper transforms selected
+    @SuppressWarnings("rawtypes")
     CollisionMap getCollisionMap()
     {
         return collisionMap;

@@ -70,22 +70,18 @@ public interface SplitableIterable<T>
     default <V> V reduce(V initialValue,
                          Func2<V, T, V> accumulator)
     {
-        V answer = initialValue;
-        for (T value : this) {
-            answer = accumulator.apply(answer, value);
-        }
-        return answer;
+        final Temp.Var1<V> sum = Temp.var(initialValue);
+        forEach(x -> sum.x = accumulator.apply(sum.x, x));
+        return sum.x;
     }
 
     default <V, E extends Exception> V reduceThrows(V initialValue,
                                                     Sum1Throws<T, V, E> accumulator)
         throws E
     {
-        V answer = initialValue;
-        for (T value : this) {
-            answer = accumulator.apply(answer, value);
-        }
-        return answer;
+        final Temp.Var1<V> sum = Temp.var(initialValue);
+        forEachThrows(x -> sum.x = accumulator.apply(sum.x, x));
+        return sum.x;
     }
 
     /**

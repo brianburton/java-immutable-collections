@@ -43,6 +43,8 @@ import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IntFunc2;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Proc1;
+import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -212,6 +214,41 @@ public class TrieArrayNode<T>
         final int index = key.hashCode();
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedDeleteImpl(shiftCountForValue, index, mapper, key);
+    }
+
+    public void forEach(@Nonnull Proc1<T> proc)
+    {
+        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+        while (combinedBitmask != 0) {
+            final long bit = leastBit(combinedBitmask);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                proc.apply(values[arrayIndex]);
+            }
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                nodes[nodeIndex].forEach(proc);
+            }
+            combinedBitmask = removeBit(combinedBitmask, bit);
+        }
+    }
+
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
+        throws E
+    {
+        long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
+        while (combinedBitmask != 0) {
+            final long bit = leastBit(combinedBitmask);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+                proc.apply(values[arrayIndex]);
+            }
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
+                nodes[nodeIndex].forEachThrows(proc);
+            }
+            combinedBitmask = removeBit(combinedBitmask, bit);
+        }
     }
 
     public void forEach(@Nonnull IndexedProc1<T> proc)
