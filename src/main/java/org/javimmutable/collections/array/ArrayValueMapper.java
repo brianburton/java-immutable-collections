@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.array;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.iterators.GenericIterator;
@@ -81,6 +82,11 @@ public interface ArrayValueMapper<K, V, T>
     T mappedAssign(@Nonnull T current,
                    @Nonnull K key,
                    V value);
+
+    @Nonnull
+    T mappedUpdate(@Nonnull T current,
+                   @Nonnull K key,
+                   @Nonnull Func1<Holder<V>, V> generator);
 
     /**
      * Called during delete operation to delete a key from a mapping.

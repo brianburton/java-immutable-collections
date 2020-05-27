@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -216,18 +217,18 @@ public class JImmutableHashMap<T, K, V>
         }
     }
 
-//    @Nonnull
-//    @Override
-//    public JImmutableMap<K, V> update(@Nonnull K key,
-//                                      @Nonnull Func1<Holder<V>, V> generator)
-//    {
-//        final MapNode<K, V> newRoot = root.update(collisionMap, key.hashCode(), key, generator);
-//        if (newRoot == root) {
-//            return this;
-//        } else {
-//            return new JImmutableHashMap<>(newRoot, collisionMap);
-//        }
-//    }
+    @Nonnull
+    @Override
+    public JImmutableMap<K, V> update(@Nonnull K key,
+                                      @Nonnull Func1<Holder<V>, V> generator)
+    {
+        final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedUpdate(this, key, generator);
+        if (newRoot == root) {
+            return this;
+        } else {
+            return new JImmutableHashMap<>(newRoot, collisionMap);
+        }
+    }
 
     @Nonnull
     @Override
@@ -332,6 +333,15 @@ public class JImmutableHashMap<T, K, V>
                                            V value)
     {
         return current.assign(collisionMap, key, value);
+    }
+
+    @Nonnull
+    @Override
+    public ArrayMapNode<K, V> mappedUpdate(@Nonnull ArrayMapNode<K, V> current,
+                                           @Nonnull K key,
+                                           @Nonnull Func1<Holder<V>, V> generator)
+    {
+        return current.update(collisionMap, key, generator);
     }
 
     @Nullable
@@ -464,6 +474,15 @@ public class JImmutableHashMap<T, K, V>
                                                             V value)
         {
             return current.assign(collisionMap, key, value);
+        }
+
+        @Nonnull
+        @Override
+        public ArrayMapNode<K, V> mappedUpdate(@Nonnull ArrayMapNode<K, V> current,
+                                               @Nonnull K key,
+                                               @Nonnull Func1<Holder<V>, V> generator)
+        {
+            throw new UnsupportedOperationException();
         }
 
         @Nullable

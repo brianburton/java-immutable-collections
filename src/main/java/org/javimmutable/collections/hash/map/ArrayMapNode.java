@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash.map;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.Proc2;
@@ -65,6 +66,11 @@ public interface ArrayMapNode<K, V>
     @Nullable
     ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
                               @Nonnull K key);
+
+    @Nonnull
+    ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
+                              @Nonnull K key,
+                              @Nonnull Func1<Holder<V>, V> generator);
 
     @Nonnull
     GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap);

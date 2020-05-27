@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
@@ -282,6 +283,15 @@ public class JImmutableHashSet<T>
     {
         assert key == ignored;
         return current.insert(collisionSet, key);
+    }
+
+    @Nonnull
+    @Override
+    public ArraySetNode<T> mappedUpdate(@Nonnull ArraySetNode<T> current,
+                                        @Nonnull T key,
+                                        @Nonnull Func1<Holder<T>, T> generator)
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Nullable

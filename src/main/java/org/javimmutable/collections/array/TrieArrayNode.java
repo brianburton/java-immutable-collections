@@ -208,6 +208,16 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
+    public <K, V> TrieArrayNode<T> mappedUpdate(@Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                @Nonnull K key,
+                                                @Nonnull Func1<Holder<V>, V> generator)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        return mappedUpdateImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, generator);
+    }
+
+    @Nonnull
     public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayValueMapper<K, ?, T> mapper,
                                              @Nonnull K key)
     {
@@ -483,6 +493,91 @@ public class TrieArrayNode<T>
                 }
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
+                final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, mapper.mappedAssign(key, value));
+                if (valuesBitmask == 0 && nodesBitmask == 0) {
+                    return newNode;
+                } else {
+                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    assert (size + 1) == computeSize(mapper, newNodes, values);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                }
+            }
+        }
+    }
+
+    @Nonnull
+    private <K, V> TrieArrayNode<T> mappedUpdateImpl(int shiftCount,
+                                                     int shiftCountForValue,
+                                                     int index,
+                                                     @Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                     @Nonnull K key,
+                                                     @Nonnull Func1<Holder<V>, V> generator)
+    {
+        final int thisShiftCount = this.shiftCount;
+        final int baseIndex = this.baseIndex;
+        assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
+        assert shiftCount >= thisShiftCount;
+        assert shiftCount >= shiftCountForValue;
+        if (shiftCount != thisShiftCount) {
+            // We are lower in tree than our parent expects, see if we need to create an ancestor to hold the value.
+            // This happens when we've skipped intermediate nodes for efficiency and one of those nodes needs to be
+            // inserted now because we are assigning a value that goes down a different branch than this node.
+            final int ancestorShiftCount = findCommonAncestorShift(baseIndex + shift(thisShiftCount, 1), index);
+            assert ancestorShiftCount <= shiftCount;
+            if (ancestorShiftCount > thisShiftCount) {
+                final TrieArrayNode<T> ancestor = forNode(ancestorShiftCount, baseIndex, this);
+                return ancestor.mappedUpdateImpl(ancestorShiftCount, shiftCountForValue, index, mapper, key, generator);
+            }
+            shiftCount = thisShiftCount;
+        }
+        // If we've gotten here we know the value belongs either in this node or in one of our descendent nodes.
+        assert baseIndexAtShift(shiftCount, index) == baseIndex;
+        final int myIndex = indexAtShift(shiftCount, index);
+        final long bit = bitFromIndex(myIndex);
+        final long valuesBitmask = this.valuesBitmask;
+        final long nodesBitmask = this.nodesBitmask;
+        final T[] values = this.values;
+        final TrieArrayNode<T>[] nodes = this.nodes;
+        if (shiftCount == shiftCountForValue) {
+            // Store the value in this node.
+            final long newBitmask = addBit(valuesBitmask, bit);
+            final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
+            if (bitIsPresent(valuesBitmask, bit)) {
+                final T oldValue = values[arrayIndex];
+                final T newValue = mapper.mappedUpdate(oldValue, key, generator);
+                if (newValue == oldValue) {
+                    return this;
+                } else {
+                    final int newSize = size - mapper.mappedSize(oldValue) + mapper.mappedSize(newValue);
+                    assert (newSize == size) || (newSize == size + 1);
+                    final T[] newValues = ArrayHelper.assign(values, arrayIndex, newValue);
+                    assert newSize == computeSize(mapper, nodes, newValues);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
+                }
+            } else {
+                final T newValue = mapper.mappedAssign(key, generator.apply(Holders.of()));
+                assert mapper.mappedSize(newValue) == 1;
+                final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, newValue);
+                assert (size + 1) == computeSize(mapper, nodes, newValues);
+                return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
+            }
+        } else {
+            // Store the value in a descendent node.
+            final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
+            if (bitIsPresent(nodesBitmask, bit)) {
+                final TrieArrayNode<T> node = nodes[arrayIndex];
+                final TrieArrayNode<T> newNode = node.mappedUpdateImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, generator);
+                if (newNode == node) {
+                    return this;
+                } else {
+                    final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
+                    final int newSize = size - node.size() + newNode.size();
+                    assert newSize == computeSize(mapper, newNodes, values);
+                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                }
+            } else {
+                final long newBitmask = addBit(nodesBitmask, bit);
+                final V value = generator.apply(Holders.of());
                 final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, mapper.mappedAssign(key, value));
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;

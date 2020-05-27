@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.hash.map;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.Proc2;
@@ -86,8 +87,24 @@ public class ArrayMultiValueMapNode<K, V>
                                      @Nonnull K key,
                                      V value)
     {
-        final CollisionMap.Node newNode = collisionMap.update(node, key, value);
-        if (newNode == value) {
+        final CollisionMap.Node thisNode = this.node;
+        final CollisionMap.Node newNode = collisionMap.update(thisNode, key, value);
+        if (newNode == thisNode) {
+            return this;
+        } else {
+            return new ArrayMultiValueMapNode<>(newNode);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
+                                     @Nonnull K key,
+                                     @Nonnull Func1<Holder<V>, V> generator)
+    {
+        final CollisionMap.Node thisNode = this.node;
+        final CollisionMap.Node newNode = collisionMap.update(thisNode, key, generator);
+        if (newNode == thisNode) {
             return this;
         } else {
             return new ArrayMultiValueMapNode<>(newNode);
