@@ -114,7 +114,7 @@ public class MapAdaptor<K, V>
     @Override
     public V get(Object o)
     {
-        return map.find((K)o).getValueOrNull();
+        return map.getValueOr((K)o, null);
     }
 
     @Override
