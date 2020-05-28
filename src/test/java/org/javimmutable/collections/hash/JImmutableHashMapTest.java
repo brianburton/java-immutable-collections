@@ -48,6 +48,7 @@ import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -86,6 +87,18 @@ public class JImmutableHashMapTest
 
         StandardJImmutableMapTests.verifyMiscellaneous(JImmutableHashMap.usingList());
         StandardJImmutableMapTests.verifyMiscellaneous(JImmutableHashMap.usingTree());
+    }
+
+    public void testCollisionMapAssignment()
+    {
+        assertSame(JImmutableHashMap.usingList(), JImmutableHashMap.of(Object.class));
+        assertSame(JImmutableHashMap.usingTree(), JImmutableHashMap.of(String.class));
+
+        assertSame(JImmutableHashMap.usingList(), JImmutableHashMap.forKey(new Object()));
+        assertSame(JImmutableHashMap.usingTree(), JImmutableHashMap.forKey("able"));
+
+        assertSame(((JImmutableHashMap)JImmutableHashMap.usingList()).getCollisionMap(), ((JImmutableHashMap)JImmutableHashMap.of().assign(new Object(), new Object())).getCollisionMap());
+        assertSame(((JImmutableHashMap)JImmutableHashMap.usingTree()).getCollisionMap(), ((JImmutableHashMap)JImmutableHashMap.of().assign("able", "baker")).getCollisionMap());
     }
 
     public void testValueIdentity()
@@ -257,7 +270,7 @@ public class JImmutableHashMapTest
         assertEquals(expected, map);
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((JImmutableHashMap)map).getCollisionMap());
 
         assertEquals(map, map.assignAll(empty));
 
@@ -266,7 +279,7 @@ public class JImmutableHashMapTest
         assertEquals(expected, map);
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((JImmutableHashMap)map).getCollisionMap());
 
         //assignAll(Map)
         map = empty;
@@ -280,7 +293,7 @@ public class JImmutableHashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((JImmutableHashMap)map).getCollisionMap());
 
         assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
 
@@ -291,7 +304,7 @@ public class JImmutableHashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(JImmutableHashMap.TREE_COLLISION_MAP, ((JImmutableHashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((JImmutableHashMap)map).getCollisionMap());
 
     }
 

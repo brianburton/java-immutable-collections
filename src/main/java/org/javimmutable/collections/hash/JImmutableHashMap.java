@@ -78,21 +78,13 @@ public class JImmutableHashMap<T, K, V>
                ArrayDeleteMapper<K, ArrayMapNode<K, V>>,
                Serializable
 {
-    // we only need one instance of the transformations object
-    @SuppressWarnings({"rawtypes"})
-    static final CollisionMap LIST_COLLISION_MAP = ListCollisionMap.instance();
-
-    // we only need one instance of the transformations object
-    @SuppressWarnings({"rawtypes"})
-    static final CollisionMap TREE_COLLISION_MAP = TreeCollisionMap.instance();
-
-    // this is safe since the transformations object works for any possible K and V
+    // this is safe since CollisionMap works for any possible K and V
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), LIST_COLLISION_MAP);
+    static final JImmutableHashMap LIST_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), ListCollisionMap.instance());
 
-    // this is safe since the transformations object works for any possible K and V
+    // this is safe since CollisionMap works for any possible K and V
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), TREE_COLLISION_MAP);
+    static final JImmutableHashMap TREE_EMPTY = new JImmutableHashMap(TrieArrayNode.empty(), TreeCollisionMap.instance());
 
     private static final long serialVersionUID = -121805;
 
@@ -127,7 +119,7 @@ public class JImmutableHashMap<T, K, V>
     @SuppressWarnings("unchecked")
     public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
     {
-        return klass.isAssignableFrom(Comparable.class) ? TREE_EMPTY : LIST_EMPTY;
+        return Comparable.class.isAssignableFrom(klass) ? TREE_EMPTY : LIST_EMPTY;
     }
 
     /**
