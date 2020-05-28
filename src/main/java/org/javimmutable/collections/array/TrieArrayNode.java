@@ -180,7 +180,7 @@ public class TrieArrayNode<T>
     public <K> boolean mappedContains(@Nonnull ArrayContainsMapper<K, T> mapper,
                                       @Nonnull K key)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         final T node = getValueOrImpl(shiftCountForValue, index, null);
         return node != null && mapper.mappedContains(node, key);
@@ -190,7 +190,7 @@ public class TrieArrayNode<T>
                                      @Nonnull K key,
                                      V defaultValue)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         final T node = getValueOrImpl(shiftCountForValue, index, null);
         return node != null ? mapper.mappedGetValueOr(node, key, defaultValue) : defaultValue;
@@ -200,7 +200,7 @@ public class TrieArrayNode<T>
     public <K, V> Holder<V> mappedFind(@Nonnull ArrayGetMapper<K, V, T> mapper,
                                        @Nonnull K key)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         final T node = getValueOrImpl(shiftCountForValue, index, null);
         return node != null ? mapper.mappedFind(node, key) : Holders.of();
@@ -211,7 +211,7 @@ public class TrieArrayNode<T>
                                                 @Nonnull K key,
                                                 V value)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedAssignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, value);
     }
@@ -221,7 +221,7 @@ public class TrieArrayNode<T>
                                                 @Nonnull K key,
                                                 @Nonnull Func1<Holder<V>, V> generator)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedUpdateImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, generator);
     }
@@ -230,7 +230,7 @@ public class TrieArrayNode<T>
     public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayDeleteMapper<K, T> mapper,
                                              @Nonnull K key)
     {
-        final int index = key.hashCode();
+        final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedDeleteImpl(shiftCountForValue, index, mapper, key);
     }

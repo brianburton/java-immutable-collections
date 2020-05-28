@@ -83,7 +83,7 @@ public class TrieArrayBuilder<T>
                               @Nonnull K key,
                               V value)
     {
-        root.mappedPut(mapper, key.hashCode(), key, value);
+        root.mappedPut(mapper, TrieArrayNode.flip(key.hashCode()), key, value);
     }
 
     public int size()
