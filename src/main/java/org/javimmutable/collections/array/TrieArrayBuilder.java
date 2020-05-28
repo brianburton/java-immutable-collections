@@ -79,7 +79,7 @@ public class TrieArrayBuilder<T>
         root.put(TrieArrayNode.flip(index), value);
     }
 
-    public <K, V> void assign(@Nonnull ArrayValueMapper<K, V, T> mapper,
+    public <K, V> void assign(@Nonnull ArrayAssignMapper<K, V, T> mapper,
                               @Nonnull K key,
                               V value)
     {
@@ -161,7 +161,7 @@ public class TrieArrayBuilder<T>
             }
         }
 
-        private <K, V> void mappedPut(@Nonnull ArrayValueMapper<K, V, T> mapper,
+        private <K, V> void mappedPut(@Nonnull ArrayAssignMapper<K, V, T> mapper,
                                       int index,
                                       @Nonnull K key,
                                       V value)

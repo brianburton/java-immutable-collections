@@ -46,7 +46,11 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.ArrayAssignMapper;
+import org.javimmutable.collections.array.ArrayDeleteMapper;
+import org.javimmutable.collections.array.ArrayGetMapper;
+import org.javimmutable.collections.array.ArrayIterationMapper;
+import org.javimmutable.collections.array.ArrayUpdateMapper;
 import org.javimmutable.collections.array.TrieArrayBuilder;
 import org.javimmutable.collections.array.TrieArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
@@ -68,7 +72,10 @@ import java.util.stream.Collector;
 @Immutable
 public class JImmutableHashMap<T, K, V>
     extends AbstractJImmutableMap<K, V>
-    implements ArrayValueMapper<K, V, ArrayMapNode<K, V>>,
+    implements ArrayUpdateMapper<K, V, ArrayMapNode<K, V>>,
+               ArrayGetMapper<K, V, ArrayMapNode<K, V>>,
+               ArrayIterationMapper<K, V, ArrayMapNode<K, V>>,
+               ArrayDeleteMapper<K, ArrayMapNode<K, V>>,
                Serializable
 {
     // we only need one instance of the transformations object
@@ -394,7 +401,7 @@ public class JImmutableHashMap<T, K, V>
     @ThreadSafe
     public static class Builder<K, V>
         implements JImmutableMap.Builder<K, V>,
-                   ArrayValueMapper<K, V, ArrayMapNode<K, V>>
+                   ArrayAssignMapper<K, V, ArrayMapNode<K, V>>
 
     {
         private final TrieArrayBuilder<ArrayMapNode<K, V>> builder = new TrieArrayBuilder<>();
@@ -443,22 +450,6 @@ public class JImmutableHashMap<T, K, V>
             return builder.size();
         }
 
-        @Override
-        public V mappedGetValueOr(@Nonnull ArrayMapNode<K, V> mapping,
-                                  @Nonnull K key,
-                                  V defaultValue)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Nonnull
-        @Override
-        public Holder<V> mappedFind(@Nonnull ArrayMapNode<K, V> mapping,
-                                    @Nonnull K key)
-        {
-            throw new UnsupportedOperationException();
-        }
-
         @Nonnull
         @Override
         public synchronized ArrayMapNode<K, V> mappedAssign(@Nonnull K key,
@@ -476,48 +467,10 @@ public class JImmutableHashMap<T, K, V>
             return current.assign(collisionMap, key, value);
         }
 
-        @Nonnull
-        @Override
-        public ArrayMapNode<K, V> mappedUpdate(@Nonnull ArrayMapNode<K, V> current,
-                                               @Nonnull K key,
-                                               @Nonnull Func1<Holder<V>, V> generator)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Nullable
-        @Override
-        public synchronized ArrayMapNode<K, V> mappedDelete(@Nonnull ArrayMapNode<K, V> current,
-                                                            @Nonnull K key)
-        {
-            throw new UnsupportedOperationException();
-        }
-
         @Override
         public synchronized int mappedSize(@Nonnull ArrayMapNode<K, V> mapping)
         {
             return mapping.size(collisionMap);
-        }
-
-        @Nonnull
-        @Override
-        public synchronized GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayMapNode<K, V> mapping)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Nonnull
-        @Override
-        public synchronized GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayMapNode<K, V> mapping)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Nonnull
-        @Override
-        public synchronized GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
-        {
-            throw new UnsupportedOperationException();
         }
     }
 }

@@ -35,26 +35,21 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.ArrayAssignMapper;
 import org.javimmutable.collections.array.TrieArrayBuilder;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.hash.set.ArraySetNode;
 import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
-import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionSet;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 class HashSetBuilder<T>
     implements JImmutableSet.Builder<T>,
-               ArrayValueMapper<T, T, ArraySetNode<T>>
+               ArrayAssignMapper<T, T, ArraySetNode<T>>
 {
     private final TrieArrayBuilder<ArraySetNode<T>> builder = new TrieArrayBuilder<>();
     private CollisionSet<T> collisionSet = ListCollisionSet.instance();
@@ -96,22 +91,6 @@ class HashSetBuilder<T>
         return this;
     }
 
-    @Override
-    public T mappedGetValueOr(@Nonnull ArraySetNode<T> mapping,
-                              @Nonnull T key,
-                              T defaultValue)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public Holder<T> mappedFind(@Nonnull ArraySetNode<T> mapping,
-                                @Nonnull T key)
-    {
-        throw new UnsupportedOperationException();
-    }
-
     @Nonnull
     @Override
     public synchronized ArraySetNode<T> mappedAssign(@Nonnull T key,
@@ -131,47 +110,9 @@ class HashSetBuilder<T>
         return current.insert(collisionSet, key);
     }
 
-    @Nonnull
-    @Override
-    public ArraySetNode<T> mappedUpdate(@Nonnull ArraySetNode<T> current,
-                                        @Nonnull T key,
-                                        @Nonnull Func1<Holder<T>, T> generator)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nullable
-    @Override
-    public synchronized ArraySetNode<T> mappedDelete(@Nonnull ArraySetNode<T> current,
-                                                     @Nonnull T key)
-    {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public synchronized int mappedSize(@Nonnull ArraySetNode<T> mapping)
     {
         return mapping.size(collisionSet);
-    }
-
-    @Nonnull
-    @Override
-    public synchronized GenericIterator.Iterable<T> mappedKeys(@Nonnull ArraySetNode<T> mapping)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public synchronized GenericIterator.Iterable<T> mappedValues(@Nonnull ArraySetNode<T> mapping)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public synchronized GenericIterator.Iterable<JImmutableMap.Entry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping)
-    {
-        throw new UnsupportedOperationException();
     }
 }

@@ -35,14 +35,16 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.array.ArrayValueMapper;
+import org.javimmutable.collections.array.ArrayAssignMapper;
+import org.javimmutable.collections.array.ArrayDeleteMapper;
+import org.javimmutable.collections.array.ArrayGetMapper;
+import org.javimmutable.collections.array.ArrayIterationMapper;
 import org.javimmutable.collections.array.TrieArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
 import org.javimmutable.collections.common.CollisionSet;
@@ -68,7 +70,10 @@ import static org.javimmutable.collections.MapEntry.entry;
 @Immutable
 public class JImmutableHashSet<T>
     extends AbstractJImmutableSet<T>
-    implements ArrayValueMapper<T, T, ArraySetNode<T>>,
+    implements ArrayAssignMapper<T, T, ArraySetNode<T>>,
+               ArrayGetMapper<T, T, ArraySetNode<T>>,
+               ArrayIterationMapper<T, T, ArraySetNode<T>>,
+               ArrayDeleteMapper<T, ArraySetNode<T>>,
                Serializable
 {
     private static final long serialVersionUID = -121805;
@@ -283,15 +288,6 @@ public class JImmutableHashSet<T>
     {
         assert key == ignored;
         return current.insert(collisionSet, key);
-    }
-
-    @Nonnull
-    @Override
-    public ArraySetNode<T> mappedUpdate(@Nonnull ArraySetNode<T> current,
-                                        @Nonnull T key,
-                                        @Nonnull Func1<Holder<T>, T> generator)
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Nullable

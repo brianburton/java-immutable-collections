@@ -177,7 +177,7 @@ public class TrieArrayNode<T>
         return deleteImpl(shiftCountForValue, index);
     }
 
-    public <K, V> V mappedGetValueOr(@Nonnull ArrayValueMapper<K, V, T> mapper,
+    public <K, V> V mappedGetValueOr(@Nonnull ArrayGetMapper<K, V, T> mapper,
                                      @Nonnull K key,
                                      V defaultValue)
     {
@@ -188,7 +188,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K, V> Holder<V> mappedFind(@Nonnull ArrayValueMapper<K, V, T> mapper,
+    public <K, V> Holder<V> mappedFind(@Nonnull ArrayGetMapper<K, V, T> mapper,
                                        @Nonnull K key)
     {
         final int index = key.hashCode();
@@ -198,7 +198,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K, V> TrieArrayNode<T> mappedAssign(@Nonnull ArrayValueMapper<K, V, T> mapper,
+    public <K, V> TrieArrayNode<T> mappedAssign(@Nonnull ArrayAssignMapper<K, V, T> mapper,
                                                 @Nonnull K key,
                                                 V value)
     {
@@ -208,7 +208,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K, V> TrieArrayNode<T> mappedUpdate(@Nonnull ArrayValueMapper<K, V, T> mapper,
+    public <K, V> TrieArrayNode<T> mappedUpdate(@Nonnull ArrayUpdateMapper<K, V, T> mapper,
                                                 @Nonnull K key,
                                                 @Nonnull Func1<Holder<V>, V> generator)
     {
@@ -218,7 +218,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayValueMapper<K, ?, T> mapper,
+    public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayDeleteMapper<K, T> mapper,
                                              @Nonnull K key)
     {
         final int index = key.hashCode();
@@ -425,7 +425,7 @@ public class TrieArrayNode<T>
     private <K, V> TrieArrayNode<T> mappedAssignImpl(int shiftCount,
                                                      int shiftCountForValue,
                                                      int index,
-                                                     @Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                     @Nonnull ArrayAssignMapper<K, V, T> mapper,
                                                      @Nonnull K key,
                                                      V value)
     {
@@ -509,7 +509,7 @@ public class TrieArrayNode<T>
     private <K, V> TrieArrayNode<T> mappedUpdateImpl(int shiftCount,
                                                      int shiftCountForValue,
                                                      int index,
-                                                     @Nonnull ArrayValueMapper<K, V, T> mapper,
+                                                     @Nonnull ArrayUpdateMapper<K, V, T> mapper,
                                                      @Nonnull K key,
                                                      @Nonnull Func1<Holder<V>, V> generator)
     {
@@ -649,7 +649,7 @@ public class TrieArrayNode<T>
     @Nonnull
     private <K> TrieArrayNode<T> mappedDeleteImpl(int shiftCountForValue,
                                                   int index,
-                                                  @Nonnull ArrayValueMapper<K, ?, T> mapper,
+                                                  @Nonnull ArrayDeleteMapper<K, T> mapper,
                                                   @Nonnull K key)
     {
         final int shiftCount = this.shiftCount;
@@ -717,7 +717,7 @@ public class TrieArrayNode<T>
         return this;
     }
 
-    public void checkInvariants(@Nullable ArrayValueMapper<?, ?, T> mapper)
+    public void checkInvariants(@Nullable ArraySizeMapper<T> mapper)
     {
         if (bitCount(valuesBitmask) != values.length) {
             throw new IllegalStateException(String.format("invalid bitmask for values array: bitmask=%s length=%d", Long.toBinaryString(valuesBitmask), values.length));
@@ -756,19 +756,19 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K> GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayValueMapper<K, ?, T> mapper)
+    public <K> GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayIterationMapper<K, ?, T> mapper)
     {
         return mappedIterable(mapper::mappedKeys);
     }
 
     @Nonnull
-    public <V> GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayValueMapper<?, V, T> mapper)
+    public <V> GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayIterationMapper<?, V, T> mapper)
     {
         return mappedIterable(mapper::mappedValues);
     }
 
     @Nonnull
-    public <K, V> GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayValueMapper<K, V, T> mapper)
+    public <K, V> GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayIterationMapper<K, V, T> mapper)
     {
         return mappedIterable(mapper::mappedEntries);
     }
@@ -929,7 +929,7 @@ public class TrieArrayNode<T>
         return true;
     }
 
-    private static <K, T> int computeSize(@Nonnull ArrayValueMapper<K, ?, T> mapper,
+    private static <K, T> int computeSize(@Nonnull ArraySizeMapper<T> mapper,
                                           @Nonnull TrieArrayNode<T>[] children,
                                           @Nonnull T[] values)
     {
