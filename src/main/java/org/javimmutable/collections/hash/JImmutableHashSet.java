@@ -35,15 +35,13 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.ArrayAssignMapper;
+import org.javimmutable.collections.array.ArrayContainsMapper;
 import org.javimmutable.collections.array.ArrayDeleteMapper;
-import org.javimmutable.collections.array.ArrayGetMapper;
 import org.javimmutable.collections.array.ArrayIterationMapper;
 import org.javimmutable.collections.array.TrieArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableSet;
@@ -71,7 +69,7 @@ import static org.javimmutable.collections.MapEntry.entry;
 public class JImmutableHashSet<T>
     extends AbstractJImmutableSet<T>
     implements ArrayAssignMapper<T, T, ArraySetNode<T>>,
-               ArrayGetMapper<T, T, ArraySetNode<T>>,
+               ArrayContainsMapper<T, ArraySetNode<T>>,
                ArrayIterationMapper<T, T, ArraySetNode<T>>,
                ArrayDeleteMapper<T, ArraySetNode<T>>,
                Serializable
@@ -140,7 +138,7 @@ public class JImmutableHashSet<T>
         if (value == null) {
             return false;
         } else {
-            return root.mappedGetValueOr(this, value, null) != null;
+            return root.mappedContains(this, value);
         }
     }
 
@@ -256,19 +254,10 @@ public class JImmutableHashSet<T>
     }
 
     @Override
-    public T mappedGetValueOr(@Nonnull ArraySetNode<T> mapping,
-                              @Nonnull T key,
-                              T defaultValue)
+    public boolean mappedContains(@Nonnull ArraySetNode<T> mapping,
+                                  @Nonnull T key)
     {
-        return mapping.contains(collisionSet, key) ? key : defaultValue;
-    }
-
-    @Nonnull
-    @Override
-    public Holder<T> mappedFind(@Nonnull ArraySetNode<T> mapping,
-                                @Nonnull T key)
-    {
-        return mapping.contains(collisionSet, key) ? Holders.of(key) : Holders.of();
+        return mapping.contains(collisionSet, key);
     }
 
     @Nonnull

@@ -177,6 +177,15 @@ public class TrieArrayNode<T>
         return deleteImpl(shiftCountForValue, index);
     }
 
+    public <K> boolean mappedContains(@Nonnull ArrayContainsMapper<K, T> mapper,
+                                      @Nonnull K key)
+    {
+        final int index = key.hashCode();
+        final int shiftCountForValue = findShiftForIndex(index);
+        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        return node != null && mapper.mappedContains(node, key);
+    }
+
     public <K, V> V mappedGetValueOr(@Nonnull ArrayGetMapper<K, V, T> mapper,
                                      @Nonnull K key,
                                      V defaultValue)
