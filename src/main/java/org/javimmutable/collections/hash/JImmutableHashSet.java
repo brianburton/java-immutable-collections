@@ -135,11 +135,7 @@ public class JImmutableHashSet<T>
     @Override
     public boolean contains(@Nullable T value)
     {
-        if (value == null) {
-            return false;
-        } else {
-            return root.mappedContains(this, value);
-        }
+        return value != null && root.mappedContains(this, value);
     }
 
     @Nonnull
