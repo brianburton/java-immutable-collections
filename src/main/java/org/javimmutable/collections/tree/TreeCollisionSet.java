@@ -94,6 +94,14 @@ public class TreeCollisionSet<T>
         return ValueNode.instance(value, TRUE);
     }
 
+    @Nonnull
+    @Override
+    public Node dual(@Nonnull T value1,
+                     @Nonnull T value2)
+    {
+        return ValueNode.instance(comparator, value1, TRUE, value2, TRUE);
+    }
+
     @Override
     public int size(@Nonnull Node node)
     {

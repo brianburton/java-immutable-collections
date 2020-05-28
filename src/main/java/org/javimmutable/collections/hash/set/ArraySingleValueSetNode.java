@@ -77,7 +77,7 @@ public class ArraySingleValueSetNode<T>
         if (thisValue.equals(value)) {
             return this;
         } else {
-            return new ArrayMultiValueSetNode<>(collisionSet.insert(collisionSet.single(thisValue), value));
+            return new ArrayMultiValueSetNode<>(collisionSet.dual(thisValue, value));
         }
     }
 

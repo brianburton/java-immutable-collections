@@ -89,6 +89,16 @@ public class ListCollisionMap<K, V>
         return new OneValueNode<>(entry(key, value));
     }
 
+    @Nonnull
+    @Override
+    public Node dual(@Nonnull K key1,
+                     @Nullable V value1,
+                     @Nonnull K key2,
+                     @Nullable V value2)
+    {
+        return new MultiValueNode<>(entry(key1, value1), entry(key2, value2));
+    }
+
     @Override
     public int size(@Nonnull Node node)
     {

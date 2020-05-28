@@ -66,6 +66,12 @@ public interface CollisionMap<K, V>
     Node single(@Nonnull K key,
                 @Nullable V value);
 
+    @Nonnull
+    Node dual(@Nonnull K key1,
+              @Nullable V value1,
+              @Nonnull K key2,
+              @Nullable V value2);
+
     int size(@Nonnull Node node);
 
     @Nonnull

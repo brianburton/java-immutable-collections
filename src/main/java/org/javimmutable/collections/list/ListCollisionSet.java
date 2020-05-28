@@ -83,6 +83,14 @@ public class ListCollisionSet<T>
         return new OneValueNode<>(value);
     }
 
+    @Nonnull
+    @Override
+    public Node dual(@Nonnull T value1,
+                     @Nonnull T value2)
+    {
+        return new MultiValueNode<>(value1, value2);
+    }
+
     @Override
     public int size(@Nonnull Node node)
     {

@@ -94,7 +94,7 @@ public class ArraySingleValueMapNode<K, V>
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
-            return new ArrayMultiValueMapNode<>(collisionMap.update(collisionMap.single(thisKey, thisValue), key, value));
+            return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else if (value == thisValue) {
             return this;
         } else {
@@ -112,7 +112,7 @@ public class ArraySingleValueMapNode<K, V>
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
             final V value = generator.apply(Holders.of());
-            return new ArrayMultiValueMapNode<>(collisionMap.update(collisionMap.single(thisKey, thisValue), key, value));
+            return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else {
             final V value = generator.apply(Holders.of(thisValue));
             if (value == thisValue) {

@@ -96,6 +96,16 @@ public class TreeCollisionMap<K, V>
         return ValueNode.instance(key, value);
     }
 
+    @Nonnull
+    @Override
+    public Node dual(@Nonnull K key1,
+                     @Nullable V value1,
+                     @Nonnull K key2,
+                     @Nullable V value2)
+    {
+        return ValueNode.instance(comparator, key1, value1, key2, value2);
+    }
+
     @Override
     public int size(@Nonnull Node node)
     {

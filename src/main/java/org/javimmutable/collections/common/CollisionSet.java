@@ -62,6 +62,10 @@ public interface CollisionSet<T>
     @Nonnull
     Node single(@Nonnull T value);
 
+    @Nonnull
+    Node dual(@Nonnull T value1,
+              @Nonnull T value2);
+
     int size(@Nonnull Node node);
 
     boolean contains(@Nonnull Node node,
