@@ -178,6 +178,13 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
+    AbstractNode<K, V> leftMost()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
     AbstractNode<K, V> left()
     {
         throw new UnsupportedOperationException();

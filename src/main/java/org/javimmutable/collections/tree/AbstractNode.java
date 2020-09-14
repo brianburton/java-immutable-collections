@@ -107,6 +107,9 @@ abstract class AbstractNode<K, V>
     abstract V value();
 
     @Nonnull
+    abstract AbstractNode<K, V> leftMost();
+
+    @Nonnull
     abstract AbstractNode<K, V> left();
 
     @Nonnull

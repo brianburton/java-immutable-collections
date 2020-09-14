@@ -202,6 +202,13 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
+    AbstractNode<K, V> leftMost()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
     AbstractNode<K, V> left()
     {
         return FringeNode.instance();

@@ -100,6 +100,9 @@ public interface CollisionMap<K, V>
     Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node node,
                                                 @Nonnull K key);
 
+    @Nonnull
+    JImmutableMap.Entry<K, V> first(@Nonnull Node node);
+
     @Nullable
     GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull Node node,
                                                                       @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,

@@ -120,10 +120,16 @@ public class ArrayMultiValueMapNode<K, V>
         final CollisionMap.Node newNode = collisionMap.delete(thisNode, key);
         if (newNode == thisNode) {
             return this;
-        } else if (collisionMap.size(newNode) == 0) {
-            return null;
         } else {
-            return new ArrayMultiValueMapNode<>(newNode);
+            final int newSize = collisionMap.size(newNode);
+            switch (newSize) {
+                case 0:
+                    return null;
+                case 1:
+                    return new ArraySingleValueMapNode<>(collisionMap.first(newNode));
+                default:
+                    return new ArrayMultiValueMapNode<>(newNode);
+            }
         }
     }
 

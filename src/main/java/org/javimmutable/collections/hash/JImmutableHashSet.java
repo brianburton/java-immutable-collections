@@ -97,6 +97,16 @@ public class JImmutableHashSet<T>
         return EmptyHashSet.instance();
     }
 
+    static <T> JImmutableSet<T> usingList()
+    {
+        return new JImmutableHashSet<>(TrieArrayNode.empty(), ListCollisionSet.instance());
+    }
+
+    static <T> JImmutableSet<T> usingTree()
+    {
+        return new JImmutableHashSet<>(TrieArrayNode.empty(), TreeCollisionSet.instance());
+    }
+
     @Nonnull
     public static <T> JImmutableSet.Builder<T> builder()
     {

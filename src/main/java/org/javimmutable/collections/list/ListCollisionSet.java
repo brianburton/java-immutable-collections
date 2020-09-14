@@ -141,6 +141,13 @@ public class ListCollisionSet<T>
         return root;
     }
 
+    @Nonnull
+    @Override
+    public T first(@Nonnull Node node)
+    {
+        return root(node).get(0);
+    }
+
     @Nullable
     @Override
     public GenericIterator.State<T> iterateOverRange(@Nonnull Node node,

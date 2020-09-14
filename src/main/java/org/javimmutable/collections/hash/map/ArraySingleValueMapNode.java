@@ -63,6 +63,11 @@ public class ArraySingleValueMapNode<K, V>
         this.value = value;
     }
 
+    public ArraySingleValueMapNode(JImmutableMap.Entry<K, V> entry)
+    {
+        this(entry.getKey(), entry.getValue());
+    }
+
     @Override
     public int size(@Nonnull CollisionMap<K, V> collisionMap)
     {

@@ -406,6 +406,21 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
+    AbstractNode<K, V> leftMost()
+    {
+        if (left.isEmpty()) {
+            if (right.isEmpty()) {
+                return this;
+            } else {
+                return right.leftMost();
+            }
+        } else {
+            return left.leftMost();
+        }
+    }
+
+    @Nonnull
+    @Override
     AbstractNode<K, V> left()
     {
         return left;

@@ -207,6 +207,13 @@ public class ListCollisionMap<K, V>
         return Holders.of();
     }
 
+    @Nonnull
+    @Override
+    public Entry<K, V> first(@Nonnull Node node)
+    {
+        return root(node).get(0);
+    }
+
     @Nullable
     @Override
     public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nonnull Node node,

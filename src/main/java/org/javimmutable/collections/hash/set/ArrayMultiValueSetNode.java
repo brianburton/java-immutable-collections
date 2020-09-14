@@ -91,10 +91,16 @@ public class ArrayMultiValueSetNode<T>
         final CollisionSet.Node newNode = collisionSet.delete(oldNode, value);
         if (newNode == oldNode) {
             return this;
-        } else if (collisionSet.size(newNode) == 0) {
-            return null;
         } else {
-            return new ArrayMultiValueSetNode<>(newNode);
+            final int newSize = collisionSet.size(newNode);
+            switch (newSize) {
+                case 0:
+                    return null;
+                case 1:
+                    return new ArraySingleValueSetNode<>(collisionSet.first(newNode));
+                default:
+                    return new ArrayMultiValueSetNode<>(newNode);
+            }
         }
     }
 

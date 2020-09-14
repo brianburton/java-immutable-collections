@@ -79,6 +79,9 @@ public interface CollisionSet<T>
     Node delete(@Nonnull Node node,
                 @Nonnull T value);
 
+    @Nonnull
+    T first(@Nonnull Node node);
+
     @Nullable
     GenericIterator.State<T> iterateOverRange(@Nonnull Node node,
                                               @Nullable GenericIterator.State<T> parent,

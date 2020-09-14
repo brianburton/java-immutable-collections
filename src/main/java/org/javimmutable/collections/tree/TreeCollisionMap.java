@@ -50,6 +50,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Comparator;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
 /**
  * CollisionMap implementation that stores values in Node objects (balanced trees).
  * Usable with keys that implement Comparable.  Will fail with any other
@@ -160,6 +162,14 @@ public class TreeCollisionMap<K, V>
                                          @Nonnull K key)
     {
         return root(node).findEntry(comparator, key);
+    }
+
+    @Nonnull
+    @Override
+    public Entry<K, V> first(@Nonnull Node node)
+    {
+        final AbstractNode<K, V> first = root(node).leftMost();
+        return entry(first.key(), first.value());
     }
 
     @Nullable

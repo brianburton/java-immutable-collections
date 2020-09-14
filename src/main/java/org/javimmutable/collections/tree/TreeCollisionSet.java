@@ -131,6 +131,13 @@ public class TreeCollisionSet<T>
         return root(node).delete(comparator, value);
     }
 
+    @Nonnull
+    @Override
+    public T first(@Nonnull Node node)
+    {
+        return root(node).leftMost().key();
+    }
+
     @Nullable
     @Override
     public GenericIterator.State<T> iterateOverRange(@Nonnull Node node,
