@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -49,7 +50,8 @@ public interface JImmutableStack<T>
     extends Insertable<T, JImmutableStack<T>>,
             Sequence<T>,
             IterableStreamable<T>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Accesses the first value in the List.

@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,8 @@ public interface JImmutableList<T>
     extends Insertable<T, JImmutableList<T>>,
             Indexed<T>,
             IterableStreamable<T>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     interface Builder<T>
     {

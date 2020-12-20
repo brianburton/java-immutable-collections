@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -48,7 +49,8 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface JImmutableMultiset<T>
-    extends JImmutableSet<T>
+    extends JImmutableSet<T>,
+            Serializable
 {
     /**
      * Adds one occurrence of value to the multiset.

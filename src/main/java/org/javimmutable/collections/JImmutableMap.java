@@ -37,6 +37,7 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,7 +54,8 @@ public interface JImmutableMap<K, V>
     extends Insertable<JImmutableMap.Entry<? extends K, ? extends V>, JImmutableMap<K, V>>,
             Mapped<K, V>,
             IterableStreamable<JImmutableMap.Entry<K, V>>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * An immutable entry in the map.  Contains the key and value for that entry.

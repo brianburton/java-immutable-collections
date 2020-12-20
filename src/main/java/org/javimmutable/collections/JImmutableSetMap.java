@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -50,7 +51,8 @@ public interface JImmutableSetMap<K, V>
     extends Insertable<JImmutableMap.Entry<K, V>, JImmutableSetMap<K, V>>,
             Mapped<K, JImmutableSet<V>>,
             IterableStreamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Return the set associated with key, or an empty set if no list is associated.
