@@ -47,17 +47,25 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.NoSuchElementException;
 
+/**
+ * A mutable class implementing the SplitableIterator interface in a reusable way.
+ * Maintains a current position in the collection it iterates over and delegates
+ * to a "state" object provided by the collection to move forward inside the collection.
+ * To implement spliterator functionality for parallel streams it limits itself to
+ * a specific subset of the collection by way of an offset (current position) and
+ * limit (stopping position).
+ */
 @ThreadSafe
 public class GenericIterator<T>
     extends AbstractSplitableIterator<T>
 {
     static final int MIN_SIZE_FOR_SPLIT = 32;
 
-    private final Iterable<T> root;
-    private final int limit;
-    private int offset;
-    private boolean uninitialized;
-    private State<T> state;
+    private final Iterable<T> root;   // the collection we are iterating over
+    private final int limit;          // stopping position in our allowed range                                     
+    private int offset;               // current position in our allowed range
+    private boolean uninitialized;    // true until next or hasNext has been called first time
+    private State<T> state;           // tracks the next available position in the collection
 
     public GenericIterator(@Nonnull Iterable<T> root,
                            int offset,
@@ -70,9 +78,24 @@ public class GenericIterator<T>
         uninitialized = true;
     }
 
+    /**
+     * Interface for collections that can be iterated over by GenericIterator using State objects
+     * to track the progress of the iteration.  These do not need to be thread safe.
+     */
     public interface Iterable<T>
         extends SplitableIterable<T>
     {
+        /**
+         * Create a State to iterate over the specified range of values if possible.
+         * Can return null if no more values are available.  The range must be valid
+         * for the collection being iterated over.  The returned State will return the
+         * parent as its result when iteration over the range is completed.
+         *
+         * @param parent State to return to once the request iteration completes
+         * @param offset starting point for iteration
+         * @param limit  stopping point for iteration
+         * @return null or a valid state
+         */
         @Nullable
         State<T> iterateOverRange(@Nullable State<T> parent,
                                   int offset,
@@ -107,6 +130,13 @@ public class GenericIterator<T>
         }
     }
 
+    /**
+     * Interface for objects that track the current position of an iteration in progress.
+     * Unlike an Iterator which "looks ahead" to the next position (hasNext/next) a
+     * State object "lives in the moment" and knows the current position (hasValue/value)
+     * and doesn't know if a next value exists until told to go there (advance).
+     * These do not need to be thread safe.
+     */
     public interface State<T>
     {
         default boolean hasValue()
@@ -119,19 +149,26 @@ public class GenericIterator<T>
             throw new NoSuchElementException();
         }
 
+        /**
+         * Try to move forward to the next position.  Returns either a valid state (if next position exists)
+         * or null (if there is no next position).  The returned State might be this State object or a new
+         * State, or null.  The returned State might have a value or it might be empty.
+         */
         State<T> advance();
     }
 
     @Override
     public synchronized boolean hasNext()
     {
-        return prepare();
+        advanceStateToStartingPositionIfNecessary();
+        return stateHasValue();
     }
 
     @Override
     public synchronized T next()
     {
-        if (!prepare()) {
+        advanceStateToStartingPositionIfNecessary();
+        if (!stateHasValue()) {
             throw new NoSuchElementException();
         }
         final T answer = state.value();
@@ -160,28 +197,40 @@ public class GenericIterator<T>
                                    new GenericIterator<>(root, splitIndex, limit));
     }
 
-    private boolean prepare()
+    /**
+     * Ensures that state is on a valid position if possible.  Gets a starting state if we are
+     * starting a new iteration otherwise it calls advance if necessary to move to the first
+     * available position.
+     */
+    private void advanceStateToStartingPositionIfNecessary()
     {
         if (uninitialized) {
             state = root.iterateOverRange(null, offset, limit);
             uninitialized = false;
         }
-        while (state != null) {
-            if (state.hasValue()) {
-                return true;
-            }
+        while (state != null && !state.hasValue()) {
             state = state.advance();
         }
-        return false;
     }
 
-    public static <T> State<T> valueState(State<T> parent,
-                                          T value)
+    private boolean stateHasValue()
+    {
+        return state != null && state.hasValue();
+    }
+
+    /**
+     * Returns a State for iterating a single value.
+     */
+    public static <T> State<T> singleValueState(State<T> parent,
+                                                T value)
     {
         return new SingleValueState<>(parent, value);
     }
 
-    public static <T> Iterable<T> valueIterable(T value)
+    /**
+     * Returns an Iterable for iterating a single value.
+     */
+    public static <T> Iterable<T> singleValueIterable(T value)
     {
         return new Iterable<T>()
         {
@@ -194,7 +243,7 @@ public class GenericIterator<T>
                 if (offset == limit) {
                     return parent;
                 } else {
-                    return new SingleValueState<T>(parent, value);
+                    return new SingleValueState<>(parent, value);
                 }
             }
 
@@ -206,6 +255,9 @@ public class GenericIterator<T>
         };
     }
 
+    /**
+     * Returns a State for iterating multiple values stored in an Indexed collection.
+     */
     public static <T> State<T> multiValueState(@Nullable State<T> parent,
                                                @Nonnull Indexed<T> values,
                                                int offset,
@@ -215,22 +267,30 @@ public class GenericIterator<T>
         return new MultiValueState<>(parent, values, offset, limit);
     }
 
-    public static <T> State<T> indexedState(State<T> parent,
-                                            Indexed<? extends Iterable<T>> children,
-                                            int offset,
-                                            int limit)
+    /**
+     * Returns a State for iterating multiple collections (Iterables) that are themselves
+     * stored in an Indexed collection.
+     */
+    public static <T> State<T> multiIterableState(@Nullable State<T> parent,
+                                                  @Nonnull Indexed<? extends Iterable<T>> children,
+                                                  int offset,
+                                                  int limit)
     {
         assert 0 <= offset && offset <= limit;
         if (offset == limit) {
             return parent;
         } else {
-            return new IndexedState<>(parent, children, offset, limit);
+            return new MultiIterableState<>(parent, children, offset, limit);
         }
     }
 
-    public static <A, B> State<B> transformState(State<B> parent,
-                                                 State<A> source,
-                                                 Func1<A, B> transforminator)
+    /**
+     * Returns a State for iterating over another State's values but transforming each of
+     * those values using a function before returning to its caller.
+     */
+    public static <A, B> State<B> transformState(@Nullable State<B> parent,
+                                                 @Nullable State<A> source,
+                                                 @Nonnull Func1<A, B> transforminator)
     {
         if (source == null) {
             return parent;
@@ -239,6 +299,10 @@ public class GenericIterator<T>
         }
     }
 
+    /**
+     * Returns an Iterable for iterating over another Iterable's values but transforming each of
+     * those values using a function before returning to its caller.
+     */
     public static <A, B> Iterable<B> transformIterable(@Nonnull Iterable<A> source,
                                                        @Nonnull Func1<A, B> transforminator)
     {
@@ -268,7 +332,7 @@ public class GenericIterator<T>
         private final T value;
         private boolean available;
 
-        private SingleValueState(State<T> parent,
+        private SingleValueState(@Nullable State<T> parent,
                                  T value)
         {
             this.parent = parent;
@@ -342,22 +406,22 @@ public class GenericIterator<T>
         }
     }
 
-    private static class IndexedState<T>
+    private static class MultiIterableState<T>
         implements State<T>
     {
         private final State<T> parent;
-        private final Indexed<? extends Iterable<T>> children;
+        private final Indexed<? extends Iterable<T>> collections;
         private int offset;
         private int limit;
         private int index;
 
-        public IndexedState(State<T> parent,
-                            Indexed<? extends Iterable<T>> children,
-                            int offset,
-                            int limit)
+        private MultiIterableState(@Nullable State<T> parent,
+                                   @Nonnull Indexed<? extends Iterable<T>> collections,
+                                   int offset,
+                                   int limit)
         {
             this.parent = parent;
-            this.children = children;
+            this.collections = collections;
             this.limit = limit;
             this.offset = offset;
             index = 0;
@@ -366,17 +430,25 @@ public class GenericIterator<T>
         @Override
         public State<T> advance()
         {
-            final Iterable<T> child = children.get(index);
-            final int size = child.iterableSize();
+            final Iterable<T> collection = collections.get(index);
+            final int size = collection.iterableSize();
             if (offset >= size) {
+                // Starting point for iteration is somewhere beyond this collection.
+                // Advance to the next collection to try again.  Offset and limit have
+                // to be adjusted accordingly for the next collection.
                 index += 1;
                 offset -= size;
                 limit -= size;
                 return this;
             } else if (limit <= size) {
-                return child.iterateOverRange(parent, offset, limit);
+                // this collection contains all remaining values so pass control to it forever
+                return collection.iterateOverRange(parent, offset, limit);
             } else {
-                final State<T> answer = child.iterateOverRange(this, offset, size);
+                // This collection contains at least one value.  Transfer control to it
+                // passing us as parent so we can resume control once it's exhausted.
+                // Offset and limit have to be adjusted to resume at the next collection
+                // when we get control again.
+                final State<T> answer = collection.iterateOverRange(this, offset, size);
                 index += 1;
                 offset = 0;
                 limit -= size;

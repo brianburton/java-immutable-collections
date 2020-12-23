@@ -245,7 +245,7 @@ class OneValueNode<T>
                                                      int offset,
                                                      int limit)
     {
-        return GenericIterator.valueState(parent, value);
+        return GenericIterator.singleValueState(parent, value);
     }
 
     @Override

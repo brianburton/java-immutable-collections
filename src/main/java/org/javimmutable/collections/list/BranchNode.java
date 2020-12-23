@@ -427,7 +427,7 @@ class BranchNode<T>
                                                      int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        return GenericIterator.indexedState(parent, IndexedHelper.indexed(left, right), offset, limit);
+        return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, right), offset, limit);
     }
 
     @Override

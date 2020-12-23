@@ -465,7 +465,7 @@ class ValueNode<K, V>
                                                                              int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        return GenericIterator.indexedState(parent, IndexedHelper.indexed(left, GenericIterator.valueIterable(MapEntry.of(key, value)), right), offset, limit);
+        return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, GenericIterator.singleValueIterable(MapEntry.of(key, value)), right), offset, limit);
     }
 
     @Override

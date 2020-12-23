@@ -207,7 +207,7 @@ public class GenericIteratorTest
                                                                int offset,
                                                                int limit)
         {
-            return GenericIterator.valueState(parent, value);
+            return GenericIterator.singleValueState(parent, value);
         }
     }
 
@@ -266,7 +266,7 @@ public class GenericIteratorTest
                                                                int offset,
                                                                int limit)
         {
-            return GenericIterator.indexedState(parent, IndexedArray.retained(nodes), offset, limit);
+            return GenericIterator.multiIterableState(parent, IndexedArray.retained(nodes), offset, limit);
         }
     }
 

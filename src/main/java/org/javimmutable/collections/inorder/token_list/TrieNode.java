@@ -379,7 +379,7 @@ class TrieNode<T>
                     if (bitIsPresent(valuesBitmask, bit)) {
                         final int valueIndex = indexForBit(bit);
                         final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
-                        iterables.add(GenericIterator.valueIterable(valueFunction.apply(valueIndex, arrayIndex)));
+                        iterables.add(GenericIterator.singleValueIterable(valueFunction.apply(valueIndex, arrayIndex)));
                     }
                     if (bitIsPresent(nodesBitmask, bit)) {
                         final int nodeIndex = arrayIndexForBit(nodesBitmask, bit);
@@ -388,7 +388,7 @@ class TrieNode<T>
                     combinedBitmask = removeBit(combinedBitmask, bit);
                 }
                 assert iterables.size() == (values.length + nodes.length);
-                return GenericIterator.indexedState(parent, IndexedList.retained(iterables), offset, limit);
+                return GenericIterator.multiIterableState(parent, IndexedList.retained(iterables), offset, limit);
             }
 
             @Override

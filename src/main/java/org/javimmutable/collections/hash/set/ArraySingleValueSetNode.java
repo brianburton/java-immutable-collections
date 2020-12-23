@@ -93,7 +93,7 @@ public class ArraySingleValueSetNode<T>
     @Override
     public GenericIterator.Iterable<T> values(@Nonnull CollisionSet<T> collisionSet)
     {
-        return GenericIterator.valueIterable(value);
+        return GenericIterator.singleValueIterable(value);
     }
 
     @Override

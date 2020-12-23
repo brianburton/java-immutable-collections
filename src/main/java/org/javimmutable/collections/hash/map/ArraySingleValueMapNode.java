@@ -140,21 +140,21 @@ public class ArraySingleValueMapNode<K, V>
     @Override
     public GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.valueIterable(key);
+        return GenericIterator.singleValueIterable(key);
     }
 
     @Nonnull
     @Override
     public GenericIterator.Iterable<V> values(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.valueIterable(value);
+        return GenericIterator.singleValueIterable(value);
     }
 
     @Nonnull
     @Override
     public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.valueIterable(MapEntry.entry(key, value));
+        return GenericIterator.singleValueIterable(MapEntry.entry(key, value));
     }
 
     @Override
