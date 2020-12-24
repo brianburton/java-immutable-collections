@@ -1,14 +1,10 @@
 org.javimmutable.collections
 org.javimmutable.collections.array
-org.javimmutable.collections.btree_list
 org.javimmutable.collections.common
-org.javimmutable.collections.cursors
 org.javimmutable.collections.hash
-org.javimmutable.collections.hash.collision_map
-org.javimmutable.collections.hash.hamt
 org.javimmutable.collections.indexed
 org.javimmutable.collections.inorder
-org.javimmutable.collections.iocursors
+org.javimmutable.collections.inorder.token_list
 org.javimmutable.collections.iterators
 org.javimmutable.collections.list
 org.javimmutable.collections.listmap
