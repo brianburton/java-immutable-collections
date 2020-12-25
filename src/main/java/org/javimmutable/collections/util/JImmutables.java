@@ -1109,6 +1109,30 @@ public final class JImmutables
         return JImmutableTreeListMap.of(comparator);
     }
 
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> listMapCollector()
+    {
+        return JImmutables.<K, V>listMap().listMapCollector();
+    }
+
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> insertOrderListMapCollector()
+    {
+        return JImmutables.<K, V>insertOrderListMap().listMapCollector();
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> sortedListMapCollector()
+    {
+        return JImmutables.<K, V>sortedListMap().listMapCollector();
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> sortedListMapCollector(@Nonnull Comparator<K> comparator)
+    {
+        return JImmutables.<K, V>sortedListMap(comparator).listMapCollector();
+    }
+
     /**
      * Creates a set map with higher performance but no specific ordering of keys.
      * Sets for each key are equivalent to one created by JImmutables.set().
@@ -1142,6 +1166,30 @@ public final class JImmutables
         return new JImmutableSetMapFactory<>();
     }
 
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> setMapCollector()
+    {
+        return JImmutables.<K, V>setMap().setMapCollector();
+    }
+
+    @Nonnull
+    public static <K, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> insertOrderSetMapCollector()
+    {
+        return JImmutables.<K, V>insertOrderSetMap().setMapCollector();
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> sortedSetMapCollector()
+    {
+        return JImmutables.<K, V>sortedSetMap().setMapCollector();
+    }
+
+    @Nonnull
+    public static <K extends Comparable<K>, V> Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> sortedSetMapCollector(@Nonnull Comparator<K> comparator)
+    {
+        return JImmutables.<K, V>sortedSetMap(comparator).setMapCollector();
+    }
+    
     /**
      * Creates a set map with keys sorted by order they are inserted.
      * Sets for each value are equivalent to one created by JImmutables.set().
