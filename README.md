@@ -72,6 +72,13 @@ container class names or Hibernate's persistent container class names.
 
 # Examples
 
+The examples in this section highlight some of the features of the library. All of them use a static import of all of
+the factory methods from the `JImmutables` utility class:
+
+````
+import static org.javimmutable.collections.util.JImmutables.*;
+````
+
 Streams and Collectors
 ---
 
@@ -157,6 +164,30 @@ Inserting entire lists will always reuse structure from both lists as much as po
 from within a large list will produce a new list that shares most of its structure with the original list. This means
 building a large list by successively appending other lists to it can be faster than inserting the individual values
 into a builder.
+
+SetMaps
+---
+
+The `JImmutableSetMap` makes it easy to index values or accumulate values related to a key. The `JImmutableListMap`
+works similarly but accumulates lists of values by key so it can preserve the order in which they are added and track
+duplicates. The example below shows a trivial example of indexing a sequence of sentences by the words they contain.
+
+````
+        JImmutableList<String> source = list("Now is our time.",
+                                             "Our moment has arrived.",
+                                             "Shall we embrace immutable collections?",
+                                             "Or tread in dangerous synchronized waters forever?");
+        JImmutableSetMap<String, String> index = source
+            .stream()
+            .flatMap(line -> Stream.of(line
+                                           .toLowerCase()
+                                           .replace(".", "")
+                                           .replace("?", "")
+                                           .split(" "))
+                .map(word -> MapEntry.entry(word, line)))
+            .collect(setMapCollector());
+        assertThat(index.get("our")).isEqualTo(set("Now is our time.", "Our moment has arrived."));
+````
 
 Wiki Pages
 ---

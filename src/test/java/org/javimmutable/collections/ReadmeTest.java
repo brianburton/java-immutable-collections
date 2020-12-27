@@ -3,6 +3,7 @@ package org.javimmutable.collections;
 import org.junit.Test;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.util.JImmutables.*;
@@ -73,6 +74,25 @@ public class ReadmeTest
         assertThat(changed).isEqualTo(list(17, 18, 19, 20));
         changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9, 12)));
         assertThat(changed).isEqualTo(list(17, 18, 1, 2, 3, 10, 11, 12, 19, 20));
+    }
+
+    @Test
+    public void indexingWithSetMap()
+    {
+        JImmutableList<String> source = list("Now is our time.",
+                                             "Our moment has arrived.",
+                                             "Shall we embrace immutable collections?",
+                                             "Or tread in dangerous synchronized waters forever?");
+        JImmutableSetMap<String, String> index = source
+            .stream()
+            .flatMap(line -> Stream.of(line
+                                           .toLowerCase()
+                                           .replace(".", "")
+                                           .replace("?", "")
+                                           .split(" "))
+                .map(word -> MapEntry.entry(word, line)))
+            .collect(setMapCollector());
+        assertThat(index.get("our")).isEqualTo(set("Now is our time.", "Our moment has arrived."));
     }
 
     private JImmutableList<Integer> factorsOf(int number)
