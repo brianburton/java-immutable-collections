@@ -41,6 +41,40 @@ public class ReadmeTest
         assertThat(onesAndThrees.middle(3, 10)).isEqualTo(list(43, 53, 73, 83, 11, 31, 41));
     }
 
+    @Test
+    public void forEach()
+    {
+        JImmutableSet<Integer> numbers = IntStream.range(1, 20).boxed().collect(setCollector());
+        numbers.forEach(i -> System.out.println(i));
+
+        numbers = numbers.reject(i -> i % 3 != 2);
+        numbers.forEach(i -> System.out.println(i));
+    }
+
+    @Test
+    public void filtering()
+    {
+        JImmutableSet<Integer> numbers = IntStream.range(1, 20).boxed().collect(setCollector());
+        JImmutableSet<Integer> changed = numbers.reject(i -> i % 3 != 2);
+        assertThat(changed).isEqualTo(set(2, 5, 8, 11, 14, 17));
+        changed = numbers.select(i -> i % 3 == 1);
+        assertThat(changed).isEqualTo(set(1, 4, 7, 10, 13, 16, 19));
+        JImmutableList<Integer> transformed = changed.collect(list());
+        assertThat(transformed).isEqualTo(list(1, 4, 7, 10, 13, 16, 19));
+    }
+
+    @Test
+    public void slicingAndDicing()
+    {
+        JImmutableList<Integer> numbers = IntStream.range(1, 21).boxed().collect(listCollector());
+        JImmutableList<Integer> changed = numbers.prefix(6);
+        assertThat(changed).isEqualTo(list(1, 2, 3, 4, 5, 6));
+        changed = numbers.suffix(16);
+        assertThat(changed).isEqualTo(list(17, 18, 19, 20));
+        changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9, 12)));
+        assertThat(changed).isEqualTo(list(17, 18, 1, 2, 3, 10, 11, 12, 19, 20));
+    }
+
     private JImmutableList<Integer> factorsOf(int number)
     {
         final int maxPossibleFactor = (int)Math.sqrt(number);
