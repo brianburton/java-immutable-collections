@@ -45,18 +45,17 @@ Immutability/Persistence
 
 The collections are all [immutable](https://en.wikipedia.org/wiki/Immutable_object)
 and [persistent](https://en.wikipedia.org/wiki/Persistent_data_structure). Any method that adds or removes an item in a
-collection actually creates a new collection. The old and new collections share almost of their structure in common with
-only the minimum number of new objects needed to implement the change in the new version. The process of creating a new
-collection from an old one is extremely fast and involves very little copying. For large collections the old and new
-versions of the collection will share well over 90% of their structure in common.
+collection actually creates a new collection. The old and new collections share almost all of their structure in common
+with only the minimum number of new objects needed to implement the change in the new version. The process of creating a
+new collection from an old one is extremely fast.
 
 Since the collections are immutable they can be safely shared throughout a program without the need for synchronization
-or defensive copying. In fact structure sharing is a theme throughout the library. For example, you never actually "
-create" a JImmutableList instance. The `JImmutables.list()` always returns a single, shared, empty list instance. The
-other factory methods work the same way.
+or defensive copying. In fact structure sharing is a theme throughout the library. For example, you never actually
+create an empty JImmutableList instance. The `JImmutables.list()` factory method always returns a single, shared, empty
+list instance. The other factory methods work the same way.
 
-Notice that the collections are still highly dynamic and fully support addition, deletion, and replacement of elements
-via efficient creation of modified versions of themselves. This sets them apart from the static immutable collections in
+The collections are still highly dynamic and fully support addition, deletion, and replacement of elements via efficient
+creation of modified versions of themselves. This sets them apart from the static immutable collections in
 the [Guava](https://github.com/google/guava) collections library.
 
 **Note:** Keep in mind that while the JImmutables themselves are immutable the values you choose to store in them might
@@ -67,14 +66,14 @@ JImmutable and when you retrieve them later.
 Dependencies
 ---
 
-The library is designed to have no dependencies on other libraries but it should interact well with others. Standard
+The library is designed to have no dependencies on other libraries, but it should interact well with others. Standard
 java interfaces are used where appropriate. Class names were chosen so as not to conflict with Guava's immutable
 container class names or Hibernate's persistent container class names.
 
 # Examples
 
-The examples in this section highlight some of the features of the library. All of them use a static import of all of
-the factory methods from the `JImmutables` utility class:
+The examples in this section highlight some features of the library. All of them use a static import of the factory
+methods in the `JImmutables` utility class:
 
 ````
 import static org.javimmutable.collections.util.JImmutables.*;
@@ -105,7 +104,7 @@ This code creates a lookup table of all the factors of the first 1000 integers i
             .collect(mapCollector());
 ````
 
-This code shows how the lookup table could be used to get a list of the prime numbers:
+This code shows how the lookup table could be used to get a list of the prime numbers in the map:
 
 ````
         JImmutableList<Integer> primes = factorMap.stream()
