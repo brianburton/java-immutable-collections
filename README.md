@@ -9,24 +9,24 @@ for each of the most commonly used collections:
 
 Java Class | JImmutable Interface | Factory Method
 --- | --- | ---
-`ArrayList` | `JImmutableList` | `JImmutables.list()`
-`LinkedList` | `JImmutableList` | `JImmutables.list()`
-`HashMap` | `JImmutableMap` | `JImmutables.map()`
-`TreeMap` | `JImmutableMap` | `JImmutables.sortedMap()`
-`LinkedHashMap` | `JImmutableMap` | `JImmutables.insertOrderMap()`
-`HashSet` | `JImmutableSet` | `JImmutables.set()`
-`TreeSet` | `JImmutableSet` | `JImmutables.sortedSet()`
-`LinkedHashSet` | `JImmutableSet` | `JImmutables.insertOrderSet()`
+ArrayList | JImmutableList | `JImmutables.list()`
+LinkedList | JImmutableList | `JImmutables.list()`
+HashMap | JImmutableMap | `JImmutables.map()`
+TreeMap | JImmutableMap | `JImmutables.sortedMap()` `JImmutables.sortedMap(Comparator)`
+LinkedHashMap | JImmutableMap | `JImmutables.insertOrderMap()`
+HashSet | JImmutableSet | `JImmutables.set()`
+TreeSet | JImmutableSet | `JImmutables.sortedSet()` `JImmutables.sortedSet(Comparator)`
+LinkedHashSet | JImmutableSet | `JImmutables.insertOrderSet()`
 
 There are also a number of highly useful collections with no equivalent in the standard Java library.
 
 Description | JImmutable Interface | Factory Method
 --- | --- | ---
-Map of lists of items related by a key. | `JImmutableListMap` | `JImmutables.listMap()`
-Map of sets of items related by a key. | `JImmutableSetMap` | `JImmutables.setMap()`
-Set that tracks number of times any given element was added. | `JImmutableMultiset` | `JImmutables.multiset()`  `JImmutables.sortedMultiset()` `JImmutables.insertOrderMultiset()`
-Sparse array of elements indexed by an Integer. | `JImmutableArray` | `JImmutables.array()`
-Stack implemtented using a Lisp style head/tail list. | `JImmutableStack` | `JImmutables.stack()`
+Map of lists of items related by a key. | JImmutableListMap | `JImmutables.listMap()` `JImmutables.sortedListMap()`  `JImmutables.sortedListMap(Comparator)`  `JImmutables.insertOrderListMap()`
+Map of sets of items related by a key. | JImmutableSetMap | `JImmutables.setMap()` `JImmutables.sortedSetMap()`  `JImmutables.sortedSetMap(Comparator)`  `JImmutables.insertOrderSetMap()`
+Set that tracks number of times any given element was added. | JImmutableMultiset | `JImmutables.multiset()`  `JImmutables.sortedMultiset()` `JImmutables.sortedMultiset(Comparator)` `JImmutables.insertOrderMultiset()`
+Sparse array of elements indexed by an Integer. | JImmutableArray | `JImmutables.array()`
+Stack implemented using a Lisp style head/tail list. | JImmutableStack | `JImmutables.stack()`
 
 The collections support these standard Java features:
 
@@ -43,11 +43,12 @@ The collections support these standard Java features:
 Immutability/Persistence
 ---
 
-The collections are all immutable and persistent. Any method that adds or removes an item in a collection actually
-creates a new collection. The old and new collections share almost of their structure in common with only the minimum
-number of new objects needed to implement the change in the new version. The process of creating a new collection from
-an old one is extremely fast and involves very little copying. For large collections the old and new versions of the
-collection will share well over 90% of their structure in common.
+The collections are all [immutable](https://en.wikipedia.org/wiki/Immutable_object)
+and [persistent](https://en.wikipedia.org/wiki/Persistent_data_structure). Any method that adds or removes an item in a
+collection actually creates a new collection. The old and new collections share almost of their structure in common with
+only the minimum number of new objects needed to implement the change in the new version. The process of creating a new
+collection from an old one is extremely fast and involves very little copying. For large collections the old and new
+versions of the collection will share well over 90% of their structure in common.
 
 Since the collections are immutable they can be safely shared throughout a program without the need for synchronization
 or defensive copying. In fact structure sharing is a theme throughout the library. For example, you never actually "
@@ -165,18 +166,20 @@ from within a large list will produce a new list that shares most of its structu
 building a large list by successively appending other lists to it can be faster than inserting the individual values
 into a builder.
 
-SetMaps
+Maps of Sets and Lists
 ---
 
 The `JImmutableSetMap` makes it easy to index values or accumulate values related to a key. The `JImmutableListMap`
 works similarly but accumulates lists of values by key so it can preserve the order in which they are added and track
-duplicates. The example below shows a trivial example of indexing a sequence of sentences by the words they contain.
+duplicates.
+
+The example below shows a trivial example of indexing a sequence of sentences by the words they contain.
 
 ````
         JImmutableList<String> source = list("Now is our time.",
                                              "Our moment has arrived.",
                                              "Shall we embrace immutable collections?",
-                                             "Or tread in dangerous synchronized waters forever?");
+                                             "Or tread in dangerous synchronized bogs forever?");
         JImmutableSetMap<String, String> index = source
             .stream()
             .flatMap(line -> Stream.of(line
@@ -188,6 +191,27 @@ duplicates. The example below shows a trivial example of indexing a sequence of 
             .collect(setMapCollector());
         assertThat(index.get("our")).isEqualTo(set("Now is our time.", "Our moment has arrived."));
 ````
+
+These classes offer a variety of methods for adding elements individually or in groups as well as iterating over all the
+values for a given key as well as over the entire collection.
+
+````
+        JImmutableListMap<String, Integer> index = JImmutables.<String, Integer>sortedListMap()
+            .insert("c", 2)
+            .insert("a", 1)
+            .insert("d", 640)
+            .insert("b", 3)
+            .insert("d", 512)
+            .insertAll("a", list(-4, 40, 18)); // could be any Iterable not just list
+        // keys are sorted in the map
+        assertThat(list(index.keys())).isEqualTo(list("a", "b", "c", "d"));
+        // values appear in the list in order they are added
+        assertThat(index.getList("a")).isEqualTo(list(1, -4, 40, 18));
+        assertThat(index.getList("d")).isEqualTo(list(640, 512));
+        assertThat(index.getList("x")).isEqualTo(list());
+````
+
+# Resources
 
 Wiki Pages
 ---
@@ -206,17 +230,25 @@ Wiki Pages
 
 Project Status
 ---
-All production releases undergo stress testing and pass all junit tests.  Of course you should evaluate the collections for yourself and perform your own tests before deploying the collections to production systems.
+All production releases undergo stress testing and pass all junit tests. Of course, you should evaluate the collections
+for yourself and perform your own tests before deploying the collections to production systems.
 
-All releases are uploaded to the [releases section](https://github.com/brianburton/java-immutable-collections/releases) on GitHub and are also available via Maven in [Maven Central](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22).  You can add JImmutable Collections to your Maven project by adding a dependency like this to your pom.xml.  The maven releases include source jars for easy reference in your IDE.
+All releases are uploaded to the [releases section](https://github.com/brianburton/java-immutable-collections/releases)
+on GitHub and are also available via Maven
+in [Maven Central](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22)
+. You can add JImmutable Collections to your Maven project by adding a dependency like this to your pom.xml. The maven
+releases include source jars for easy reference in your IDE.
 
+````
     <dependency>
         <groupId>org.javimmutable</groupId>
         <artifactId>javimmutable-collections</artifactId>
         <version>insert-desired-version</version>
     </dependency>
+````
 
-**Project Members:**
+Project Members:
+---
 
 - [Brian Burton](https://github.com/brianburton) (admin)
 - [Angela Burton](https://github.com/anjbur)

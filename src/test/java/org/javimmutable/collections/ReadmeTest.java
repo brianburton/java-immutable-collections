@@ -1,5 +1,6 @@
 package org.javimmutable.collections;
 
+import org.javimmutable.collections.util.JImmutables;
 import org.junit.Test;
 
 import java.util.stream.IntStream;
@@ -93,6 +94,24 @@ public class ReadmeTest
                 .map(word -> MapEntry.entry(word, line)))
             .collect(setMapCollector());
         assertThat(index.get("our")).isEqualTo(set("Now is our time.", "Our moment has arrived."));
+    }
+
+    @Test
+    public void listMaps()
+    {
+        JImmutableListMap<String, Integer> index = JImmutables.<String, Integer>sortedListMap()
+            .insert("c", 2)
+            .insert("a", 1)
+            .insert("d", 640)
+            .insert("b", 3)
+            .insert("d", 512)
+            .insertAll("a", list(-4, 40, 18)); // could be any Iterable not just list
+        // keys are sorted in the map
+        assertThat(list(index.keys())).isEqualTo(list("a", "b", "c", "d"));
+        // values appear in the list in order they are added
+        assertThat(index.getList("a")).isEqualTo(list(1, -4, 40, 18));
+        assertThat(index.getList("d")).isEqualTo(list(640, 512));
+        assertThat(index.getList("x")).isEqualTo(list());
     }
 
     private JImmutableList<Integer> factorsOf(int number)
