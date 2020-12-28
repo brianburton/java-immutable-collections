@@ -45,8 +45,15 @@ public class TrieTokenTest
     public void testVarious()
     {
         assertEquals(2, token(1, 2, 3).maxShift());
+        assertEquals(14, token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).maxShift());
+        assertEquals(7, token(7, 6, 5, 4, 3, 2, 1, 0).maxShift());
+        assertEquals(6, token(6, 5, 4, 3, 2, 1, 0).maxShift());
+
         assertEquals(2, token(2).indexAt(0));
         assertEquals(0, token(5, 4, 3, 2, 1).indexAt(5));
+        assertEquals(14, token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).indexAt(14));
+        assertEquals(7, token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).indexAt(7));
+        assertEquals(6, token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).indexAt(6));
         assertEquals(0, token(2, 1).indexAt(5));
         assertEquals(0, token(2, 1).indexAt(2));
         assertEquals(2, token(2, 1).indexAt(1));
@@ -54,6 +61,9 @@ public class TrieTokenTest
         assertEquals("2", token(1).withIndexAt(0, 2));
         assertEquals("1.2", token(1, 1).withIndexAt(0, 2));
         assertEquals("2.1", token(1, 1).withIndexAt(1, 2));
+        assertEquals("63.13.12.11.10.9.8.7.6.5.4.3.2.1.0", token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).withIndexAt(14, 63));
+        assertEquals("14.13.12.11.10.9.8.63.6.5.4.3.2.1.0", token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).withIndexAt(7, 63));
+        assertEquals("14.13.12.11.10.9.8.7.54.5.4.3.2.1.0", token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).withIndexAt(6, 54));
     }
 
     public void testToString()
@@ -61,6 +71,7 @@ public class TrieTokenTest
         assertEquals("0", token(0));
         assertEquals("1.0", token(1, 0));
         assertEquals("2.1.0", token(2, 1, 0));
+        assertEquals("14.13.12.11.10.9.8.7.6.5.4.3.2.1.0", token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0));
     }
 
     public void testBase()
@@ -75,6 +86,13 @@ public class TrieTokenTest
         assertEquals("3.0.0", t.base(1));
         assertEquals("0.0.0", t.base(2));
         assertEquals("0.0.0.0", t.base(3));
+
+        t = token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+        assertEquals("14.13.12.11.10.9.8.7.6.5.4.3.2.1.0", t.base(0));
+        assertEquals("14.13.12.11.10.9.8.7.0.0.0.0.0.0.0", t.base(6));
+        assertEquals("14.13.12.11.10.9.8.0.0.0.0.0.0.0.0", t.base(7));
+        assertEquals("14.13.0.0.0.0.0.0.0.0.0.0.0.0.0", t.base(12));
+
     }
 
     public void testNext()
@@ -84,6 +102,8 @@ public class TrieTokenTest
         assertEquals("1.1", token(1, 0).next());
         assertEquals("2.0", token(1, 63).next());
         assertEquals("2.0.0", token(1, 63, 63).next());
+        assertEquals("1.0.0.0.0.0.0", token(0, 63, 63, 63, 63, 63, 63).next());
+        assertEquals("6.0.0.0.0.0.0.0", token(5, 63, 63, 63, 63, 63, 63, 63).next());
     }
 
     public void testSameBaseAt()
@@ -99,6 +119,38 @@ public class TrieTokenTest
 
         assertEquals(false, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 0));
         assertEquals(true, TrieToken.sameBaseAt(token(1, 2, 3, 1), token(1, 2, 4, 1), 1));
+
+        assertEquals(true, TrieToken.sameBaseAt(token(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                token(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                0));
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                0));
+        assertEquals(false, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
+                                                 token(14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                 0));
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 0, 0, 0, 0),
+                                                5));
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 0, 0, 0, 0),
+                                                4));
+        assertEquals(false, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
+                                                 token(14, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 0, 0, 0, 0),
+                                                 3));
+
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 7, 6, 5, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 7, 6, 5, 4, 0, 0, 0, 0),
+                                                4));
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 7, 6, 0, 0, 0, 0, 0, 0),
+                                                6));
+        assertEquals(true, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 8, 7, 0, 0, 0, 0, 0, 0, 0),
+                                                token(14, 0, 0, 0, 0, 0, 0, 7, 6, 0, 0, 0, 0, 0, 0),
+                                                8));
+        assertEquals(false, TrieToken.sameBaseAt(token(14, 0, 0, 0, 0, 0, 8, 7, 0, 0, 0, 0, 0, 0, 0),
+                                                 token(14, 0, 0, 0, 0, 0, 0, 7, 6, 0, 0, 0, 0, 0, 0),
+                                                 7));
     }
 
     public void testEquivalentTo()
@@ -119,6 +171,13 @@ public class TrieTokenTest
         assertEquals(false, TrieToken.equivalentTo(token(1, 1, 1), token(1, 2, 1)));
         assertEquals(false, TrieToken.equivalentTo(token(1, 1, 1), token(1, 1, 2)));
         assertEquals(false, TrieToken.equivalentTo(token(1, 1, 2), token(1, 1, 1)));
+
+        assertEquals(true, TrieToken.equivalentTo(token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                                  token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(false, TrieToken.equivalentTo(token(0, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                                   token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(false, TrieToken.equivalentTo(token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                                   token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 0, 2, 1, 0)));
     }
 
     public void testTrieDepth()
@@ -134,6 +193,13 @@ public class TrieTokenTest
         assertEquals(0, token(0).trieDepth());
         assertEquals(0, token(0, 0).trieDepth());
         assertEquals(0, token(0, 0, 0).trieDepth());
+
+        assertEquals(0, token(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).trieDepth());
+        assertEquals(4, token(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0).trieDepth());
+        assertEquals(4, token(0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 4, 0, 0, 0, 0).trieDepth());
+        assertEquals(4, token(14, 0, 0, 0, 0, 9, 0, 0, 0, 0, 4, 0, 0, 0, 0).trieDepth());
+        assertEquals(9, token(14, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0).trieDepth());
+        assertEquals(14, token(14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).trieDepth());
     }
 
     public void testCommonAncestorShift()
@@ -155,6 +221,18 @@ public class TrieTokenTest
         assertEquals(2, commonAncestorShift(token(3, 1, 3, 0, 0, 1), token(3, 1, 3, 1, 0, 0)));
         assertEquals(3, commonAncestorShift(root, leaf));
         assertEquals(2, commonAncestorShift(leaf, assign));
+        assertEquals(1, commonAncestorShift(token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                            token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(14, commonAncestorShift(token(0, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                             token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(13, commonAncestorShift(token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                             token(14, 0, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(7, commonAncestorShift(token(14, 13, 12, 11, 10, 9, 8, 0, 6, 5, 4, 3, 2, 1, 0),
+                                            token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(6, commonAncestorShift(token(14, 13, 12, 11, 10, 9, 8, 7, 0, 5, 4, 3, 2, 1, 0),
+                                            token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)));
+        assertEquals(5, commonAncestorShift(token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+                                            token(14, 13, 12, 11, 10, 9, 8, 7, 6, 0, 4, 3, 2, 1, 0)));
     }
 
     public void testCache()
@@ -174,6 +252,7 @@ public class TrieTokenTest
         assertEquals(1, token(0, 0, 1).hashCode());
         assertEquals(33, token(1, 2).hashCode());
         assertEquals(33, token(0, 0, 1, 2).hashCode());
+        assertEquals(201359079, token(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0).hashCode());
     }
 
     private void assertEquals(String strValue,
