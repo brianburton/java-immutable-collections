@@ -210,6 +210,45 @@ values for a given key as well as over the entire collection.
         assertThat(index.getList("x")).isEqualTo(list());
 ````
 
+ConcurrentModificationException
+---
+
+Immutable collections never throw these. The example below is contrived, but it illustrates the problem of updating a
+mutable collection while iterating over its contents. Since immutable collections are persistent you are always
+modifying a different version of the collection, and the iterator doesn't become confused.
+
+````
+        assertThatThrownBy(() -> {
+            Map<Integer, Integer> ints = IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
+            for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
+                ints.put(2 * entry.getKey(), 2 * entry.getValue());
+            }
+        }).isInstanceOf(ConcurrentModificationException.class);
+
+        JImmutableMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());
+        for (JImmutableMap.Entry<Integer, Integer> entry : myMap) {
+            myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
+        }
+        assertThat(list(myMap.values())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+````
+
+The static collector factory methods create collectors that add elements from the stream to an empty collection.
+Instances of the collection classes also provide an instance method to create a collector based on that instance (rather
+than an empty instance). This can be used with a Stream to add entries to the collection. The example below adds entries
+to the map. Some keys update existing entries while others are new keys to be added to the collection.
+
+````
+        myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());  // uses empty map collector
+        JImmutableMap<Integer, Integer> changed = myMap.stream()
+            .map(entry -> MapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+            .collect(myMap.mapCollector());   // uses an instance based collector
+        // 6-10 were updated, 11-15 were added
+        assertThat(list(changed.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        assertThat(list(changed.values())).isEqualTo(list(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        // original map is unchanged 
+        assertThat(list(myMap.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+````
+
 # Resources
 
 Wiki Pages

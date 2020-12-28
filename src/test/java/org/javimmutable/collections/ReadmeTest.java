@@ -3,6 +3,9 @@ package org.javimmutable.collections;
 import org.javimmutable.collections.util.JImmutables;
 import org.junit.Test;
 
+import java.util.ConcurrentModificationException;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -112,6 +115,34 @@ public class ReadmeTest
         assertThat(index.getList("a")).isEqualTo(list(1, -4, 40, 18));
         assertThat(index.getList("d")).isEqualTo(list(640, 512));
         assertThat(index.getList("x")).isEqualTo(list());
+    }
+
+    @Test
+    public void changesInLoop()
+    {
+        assertThatThrownBy(() -> {
+            Map<Integer, Integer> ints = IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
+            for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
+                ints.put(2 * entry.getKey(), 2 * entry.getValue());
+            }
+        }).isInstanceOf(ConcurrentModificationException.class);
+
+        JImmutableMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());
+        for (JImmutableMap.Entry<Integer, Integer> entry : myMap) {
+            myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
+        }
+        assertThat(list(myMap.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+        assertThat(list(myMap.values())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+
+        myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());
+        JImmutableMap<Integer, Integer> changed = myMap.stream()
+            .map(entry -> MapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+            .collect(myMap.mapCollector());
+        // 6-10 were updated, 11-15 were added
+        assertThat(list(changed.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        assertThat(list(changed.values())).isEqualTo(list(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        // original map is unchanged 
+        assertThat(list(myMap.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     private JImmutableList<Integer> factorsOf(int number)
