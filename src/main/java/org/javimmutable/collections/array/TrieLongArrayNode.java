@@ -54,7 +54,7 @@ public class TrieLongArrayNode<T>
         this.nodes = nodes;
         this.size = size;
         assert checkChildShifts(shiftCount, nodes);
-        assert computeSize(nodes) + values.length == size;
+//        assert computeSize(nodes) + values.length == size;
     }
 
     @SuppressWarnings("unchecked")
