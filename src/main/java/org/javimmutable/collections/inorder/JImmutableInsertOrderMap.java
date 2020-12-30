@@ -41,9 +41,10 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.array.TrieLongArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.inorder.token_list.TokenList;
 import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
 
@@ -67,18 +68,22 @@ public class JImmutableInsertOrderMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TokenList.of(), JImmutableHashMap.of());
+    public static final JImmutableInsertOrderMap EMPTY = new JImmutableInsertOrderMap(TrieLongArrayNode.empty(), JImmutableHashMap.of(), Long.MIN_VALUE);
     private static final long serialVersionUID = -121805;
+    private static final int SPLITERATOR_CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
 
-    private final TokenList<K> keys;
+    private final TrieLongArrayNode<K> keys;
     private final JImmutableMap<K, Node<V>> values;
+    private final long nextToken;
 
-    private JImmutableInsertOrderMap(@Nonnull TokenList<K> keys,
-                                     @Nonnull JImmutableMap<K, Node<V>> values)
+    private JImmutableInsertOrderMap(@Nonnull TrieLongArrayNode<K> keys,
+                                     @Nonnull JImmutableMap<K, Node<V>> values,
+                                     long nextToken)
     {
         assert keys.size() == values.size();
         this.keys = keys;
         this.values = values;
+        this.nextToken = nextToken;
     }
 
     @SuppressWarnings("unchecked")
@@ -178,14 +183,14 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Node<V> current = values.get(key);
         if (current == null) {
-            final TokenList<K> newKeys = keys.insertLast(key);
-            final Node<V> newNode = new Node<>(newKeys.lastToken(), value);
-            return new JImmutableInsertOrderMap<>(newKeys, values.assign(key, newNode));
+            final TrieLongArrayNode<K> newKeys = keys.assign(nextToken, key);
+            final Node<V> newNode = new Node<>(nextToken, value);
+            return new JImmutableInsertOrderMap<>(newKeys, values.assign(key, newNode), nextToken + 1);
         } else if (current.value == value) {
             return this;
         } else {
             final Node<V> newNode = new Node<>(current.token, value);
-            return new JImmutableInsertOrderMap<>(keys, values.assign(key, newNode));
+            return new JImmutableInsertOrderMap<>(keys, values.assign(key, newNode), nextToken);
         }
     }
 
@@ -199,7 +204,7 @@ public class JImmutableInsertOrderMap<K, V>
         } else if (values.size() == 1) {
             return of();
         } else {
-            return new JImmutableInsertOrderMap<>(keys.delete(current.token), values.delete(key));
+            return new JImmutableInsertOrderMap<>(keys.delete(current.token), values.delete(key), nextToken);
         }
     }
 
@@ -220,21 +225,21 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public SplitableIterator<Entry<K, V>> iterator()
     {
-        return TransformStreamable.of(keys.values(), k -> entry(k, valueForKey(k))).iterator();
+        return TransformStreamable.of(keys(), k -> entry(k, valueForKey(k))).iterator();
     }
 
     @Nonnull
     @Override
     public IterableStreamable<K> keys()
     {
-        return keys.values();
+        return keys.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Nonnull
     @Override
     public IterableStreamable<V> values()
     {
-        return TransformStreamable.of(keys.values(), k -> valueForKey(k));
+        return TransformStreamable.of(keys(), this::valueForKey);
     }
 
     private V valueForKey(K key)
@@ -256,12 +261,12 @@ public class JImmutableInsertOrderMap<K, V>
         if (keys.size() != values.size()) {
             throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", keys.size(), values.size()));
         }
-        for (TokenList.Entry<K> e : keys.entries()) {
-            final Node<V> node = values.get(e.value());
+        for (JImmutableMap.Entry<Long, K> e : keys.entries()) {
+            final Node<V> node = values.get(e.getValue());
             if (node == null) {
-                throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.token(), e.value()));
+                throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.getKey(), e.getValue()));
             }
-            if (!e.token().equals(node.token)) {
+            if (!e.getKey().equals(node.token)) {
                 throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e, node));
             }
         }
@@ -275,10 +280,10 @@ public class JImmutableInsertOrderMap<K, V>
     @Immutable
     private static class Node<V>
     {
-        private final TokenList.Token token;
+        private final long token;
         private final V value;
 
-        private Node(TokenList.Token token,
+        private Node(long token,
                      V value)
         {
             this.token = token;
