@@ -41,6 +41,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.array.TrieLongArrayNode;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.StreamConstants;
@@ -181,16 +182,23 @@ public class JImmutableInsertOrderMap<K, V>
     public JImmutableInsertOrderMap<K, V> assign(@Nonnull K key,
                                                  V value)
     {
-        final Node<V> current = values.get(key);
-        if (current == null) {
+        final Temp.Var1<Boolean> inserted = new Temp.Var1<>(false);
+        final JImmutableMap<K, Node<V>> newValues = values.update(key, hv -> {
+            if (hv.isEmpty()) {
+                inserted.x = true;
+                return new Node<>(nextToken, value);
+            } else {
+                final Node<V> node = hv.getValue();
+                return node.withValue(value);
+            }
+        });
+        if (inserted.x) {
             final TrieLongArrayNode<K> newKeys = keys.assign(nextToken, key);
-            final Node<V> newNode = new Node<>(nextToken, value);
-            return new JImmutableInsertOrderMap<>(newKeys, values.assign(key, newNode), nextToken + 1);
-        } else if (current.value == value) {
-            return this;
+            return new JImmutableInsertOrderMap<>(newKeys, newValues, nextToken + 1);
+        } else if (newValues != values) {
+            return new JImmutableInsertOrderMap<>(keys, newValues, nextToken);
         } else {
-            final Node<V> newNode = new Node<>(current.token, value);
-            return new JImmutableInsertOrderMap<>(keys, values.assign(key, newNode), nextToken);
+            return this;
         }
     }
 
@@ -288,6 +296,11 @@ public class JImmutableInsertOrderMap<K, V>
         {
             this.token = token;
             this.value = value;
+        }
+
+        private Node<V> withValue(V value)
+        {
+            return (value == this.value) ? this : new Node<>(token, value);
         }
     }
 }
