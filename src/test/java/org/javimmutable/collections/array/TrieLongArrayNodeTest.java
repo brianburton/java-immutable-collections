@@ -2,8 +2,14 @@ package org.javimmutable.collections.array;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.LongArrayMappedTrieMath;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import static java.lang.Long.*;
 import static org.javimmutable.collections.array.TrieLongArrayNode.flip;
@@ -11,6 +17,52 @@ import static org.javimmutable.collections.array.TrieLongArrayNode.flip;
 public class TrieLongArrayNodeTest
     extends TestCase
 {
+    public void testRandom()
+    {
+        final Random r = new Random(234567);
+        final Map<Long, Integer> known = new TreeMap<>();
+        final List<Long> indexes = new ArrayList<>();
+        final List<Integer> values = new ArrayList<>();
+        TrieLongArrayNode<Integer> array = TrieLongArrayNode.empty();
+        int length = 7;
+        for (int loop = 1; loop <= 5; ++loop) {
+            for (Long index : new ArrayList<>(known.keySet())) {
+                if (r.nextInt(3) == 1) {
+                    known.put(index, r.nextInt());
+                }
+            }
+            for (int i = known.size(); i < length; ++i) {
+                known.put(r.nextLong(), r.nextInt());
+            }
+            indexes.clear();
+            indexes.addAll(known.keySet());
+            for (Long index : indexes) {
+                array = array.assign(index, known.get(index));
+            }
+            values.clear();
+            values.addAll(known.values());
+
+            array.checkInvariants();
+            StandardIteratorTests.listIteratorTest(indexes, array.keys().iterator());
+            StandardIteratorTests.listIteratorTest(values, array.values().iterator());
+            length = 17 * length;
+            values.clear();
+        }
+
+        Collections.shuffle(indexes, r);
+        final int checkInterval = indexes.size() / 7;
+        for (Long index : indexes) {
+            known.remove(index);
+            array = array.delete(index);
+            if (known.size() % checkInterval == 0) {
+                array.checkInvariants();
+                StandardIteratorTests.listIteratorTest(new ArrayList<>(known.keySet()), array.keys().iterator());
+                StandardIteratorTests.listIteratorTest(new ArrayList<>(known.values()), array.values().iterator());
+            }
+        }
+        assertEquals(0, array.size());
+    }
+
     public void testFlip()
     {
         assertEquals(0L, flip(Long.MIN_VALUE));

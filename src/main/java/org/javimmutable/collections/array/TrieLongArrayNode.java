@@ -120,6 +120,23 @@ public class TrieLongArrayNode<T>
                         nodeIndex -> nodes[nodeIndex].entries());
     }
 
+    public void checkInvariants()
+    {
+        if (bitCount(valuesBitmask) != values.length) {
+            throw new IllegalStateException(String.format("invalid bitmask for values array: bitmask=%s length=%d", Long.toBinaryString(valuesBitmask), values.length));
+        }
+        if (bitCount(nodesBitmask) != nodes.length) {
+            throw new IllegalStateException(String.format("invalid bitmask for nodes array: bitmask=%s length=%d", Long.toBinaryString(nodesBitmask), nodes.length));
+        }
+        if (!checkChildShifts(shiftCount, nodes)) {
+            throw new IllegalStateException("one or more nodes invalid for this branch");
+        }
+        final int computedSize = computeSize(nodes) + values.length;
+        if (computedSize != size) {
+            throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computedSize));
+        }
+    }
+
     private T getValueOrImpl(int shiftCountForValue,
                              long index,
                              T defaultValue)
