@@ -79,6 +79,47 @@ methods in the `JImmutables` utility class:
 import static org.javimmutable.collections.util.JImmutables.*;
 ````
 
+Factory Methods
+---
+
+The `JImmutables` class has static factory methods to make it easy to create new instances. Here are various ways to
+create the same basic list. Similar factory methods exist for the other collections.
+
+````
+        List<String> sourceList = Arrays.asList("these", "are", "some", "strings");
+        JImmutableList<String> empty = list();
+        JImmutableList<String> aList = empty
+            .insert("these")
+            .insert("are")
+            .insert("some")
+            .insert("strings");
+        JImmutableList<String> literal = list("these", "are", "some", "strings");
+        JImmutableList<String> fromJavaList = list(sourceList);
+        JImmutableList<String> fromBuilder = JImmutables.<String>listBuilder()
+            .add("these")
+            .add("are")
+            .add("some", "strings")
+            .build();
+        assertThat(aList).isEqualTo(literal);
+        assertThat(fromJavaList).isEqualTo(literal);
+        assertThat(fromBuilder).isEqualTo(literal);
+````
+
+Iterators
+---
+
+The collections are all `Iterable` so they can be used in standard `for` loops.
+
+````
+        int eWordCount = 0;
+        for (String word : fromBuilder) {
+            if (word.contains("e")) {
+                eWordCount += 1;
+            }
+        }
+        assertThat(eWordCount).isEqualTo(3);
+````
+
 Streams and Collectors
 ---
 

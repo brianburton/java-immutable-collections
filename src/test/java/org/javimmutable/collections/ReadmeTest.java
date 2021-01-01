@@ -38,7 +38,9 @@ package org.javimmutable.collections;
 import org.javimmutable.collections.util.JImmutables;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,6 +54,32 @@ public class ReadmeTest
     @Test
     public void creation()
     {
+        List<String> sourceList = Arrays.asList("these", "are", "some", "strings");
+        JImmutableList<String> empty = list();
+        JImmutableList<String> aList = empty
+            .insert("these")
+            .insert("are")
+            .insert("some")
+            .insert("strings");
+        JImmutableList<String> literal = list("these", "are", "some", "strings");
+        JImmutableList<String> fromJavaList = list(sourceList);
+        JImmutableList<String> fromBuilder = JImmutables.<String>listBuilder()
+            .add("these")
+            .add("are")
+            .add("some", "strings")
+            .build();
+        assertThat(aList).isEqualTo(literal);
+        assertThat(fromJavaList).isEqualTo(literal);
+        assertThat(fromBuilder).isEqualTo(literal);
+
+        int eWordCount = 0;
+        for (String word : fromBuilder) {
+            if (word.contains("e")) {
+                eWordCount += 1;
+            }
+        }
+        assertThat(eWordCount).isEqualTo(3);
+
         // use a stream to build a map of numbers to lists of the number's factors
         JImmutableMap<Integer, JImmutableList<Integer>> factorMap =
             IntStream.range(2, 100).boxed()
