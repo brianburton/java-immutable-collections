@@ -4,7 +4,6 @@ org.javimmutable.collections.common
 org.javimmutable.collections.hash
 org.javimmutable.collections.indexed
 org.javimmutable.collections.inorder
-org.javimmutable.collections.inorder.token_list
 org.javimmutable.collections.iterators
 org.javimmutable.collections.list
 org.javimmutable.collections.listmap
