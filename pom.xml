@@ -3,7 +3,7 @@
 
     <groupId>org.javimmutable</groupId>
     <artifactId>javimmutable-collections</artifactId>
-    <version>3.2.1-SNAPSHOT</version>
+    <version>3.2.1</version>
     <packaging>jar</packaging>
 
     <name>JImmutable Collections</name>
@@ -72,7 +72,7 @@
     <scm>
         <connection>scm:git:git://github.com/brianburton/java-immutable-collections.git</connection>
         <developerConnection>scm:git:git@github.com:brianburton/java-immutable-collections.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v3.2.1</tag>
         <url>https://github.com/brianburton/java-immutable-collections</url>
     </scm>
 
@@ -218,10 +218,10 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath/>
+                        <classpath />
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
-                        <argument>&#45;&#45;test</argument>
+                        <argument>--test</argument>
                         <argument>insertordermap</argument>
                         <!--
                                                 <argument>&#45;&#45;test</argument>
