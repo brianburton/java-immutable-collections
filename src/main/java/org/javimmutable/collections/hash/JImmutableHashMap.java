@@ -37,7 +37,6 @@ package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
@@ -195,12 +194,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
-        final Holder<V> value = find(key);
-        if (value.isEmpty()) {
-            return Holders.of();
-        } else {
-            return Holders.of(MapEntry.of(key, value.getValue()));
-        }
+        return find(key).map(value -> MapEntry.entry(key, value));
     }
 
     @Nonnull
