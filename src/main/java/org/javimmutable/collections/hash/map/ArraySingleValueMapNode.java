@@ -39,7 +39,6 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
@@ -48,10 +47,13 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 
 @Immutable
 public class ArraySingleValueMapNode<K, V>
-    implements ArrayMapNode<K, V>
+    implements ArrayMapNode<K, V>,
+               Holders.Filled<V>,
+               JImmutableMap.Entry<K, V>
 {
     private final K key;
     private final V value;
@@ -87,7 +89,7 @@ public class ArraySingleValueMapNode<K, V>
     public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
                           @Nonnull K key)
     {
-        return key.equals(this.key) ? Holders.of(value) : Holders.of();
+        return key.equals(this.key) ? this : Holders.of();
     }
 
     @Nonnull
@@ -119,7 +121,7 @@ public class ArraySingleValueMapNode<K, V>
             final V value = generator.apply(Holders.of());
             return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else {
-            final V value = generator.apply(Holders.of(thisValue));
+            final V value = generator.apply(this);
             if (value == thisValue) {
                 return this;
             } else {
@@ -154,7 +156,7 @@ public class ArraySingleValueMapNode<K, V>
     @Override
     public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.singleValueIterable(MapEntry.entry(key, value));
+        return GenericIterator.singleValueIterable(this);
     }
 
     @Override
@@ -170,5 +172,37 @@ public class ArraySingleValueMapNode<K, V>
         throws E
     {
         proc.apply(key, value);
+    }
+
+    @Override
+    public V getValue()
+    {
+        return value;
+    }
+
+    @Nonnull
+    @Override
+    public K getKey()
+    {
+        return key;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ArraySingleValueMapNode)) {
+            return false;
+        }
+        ArraySingleValueMapNode<?, ?> that = (ArraySingleValueMapNode<?, ?>)o;
+        return key.equals(that.key) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(key, value);
     }
 }
