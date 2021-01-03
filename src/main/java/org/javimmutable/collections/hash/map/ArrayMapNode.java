@@ -59,6 +59,10 @@ public interface ArrayMapNode<K, V>
                    @Nonnull K key);
 
     @Nonnull
+    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                                @Nonnull K key);
+
+    @Nonnull
     ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                               @Nonnull K key,
                               V value);

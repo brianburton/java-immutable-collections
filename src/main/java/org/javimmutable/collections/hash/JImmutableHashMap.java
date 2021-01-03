@@ -38,7 +38,6 @@ package org.javimmutable.collections.hash;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -47,7 +46,7 @@ import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.array.ArrayAssignMapper;
 import org.javimmutable.collections.array.ArrayDeleteMapper;
-import org.javimmutable.collections.array.ArrayGetMapper;
+import org.javimmutable.collections.array.ArrayFindEntryMapper;
 import org.javimmutable.collections.array.ArrayIterationMapper;
 import org.javimmutable.collections.array.ArrayUpdateMapper;
 import org.javimmutable.collections.array.TrieArrayBuilder;
@@ -72,7 +71,7 @@ import java.util.stream.Collector;
 public class JImmutableHashMap<T, K, V>
     extends AbstractJImmutableMap<K, V>
     implements ArrayUpdateMapper<K, V, ArrayMapNode<K, V>>,
-               ArrayGetMapper<K, V, ArrayMapNode<K, V>>,
+               ArrayFindEntryMapper<K, V, ArrayMapNode<K, V>>,
                ArrayIterationMapper<K, V, ArrayMapNode<K, V>>,
                ArrayDeleteMapper<K, ArrayMapNode<K, V>>,
                Serializable
@@ -194,7 +193,7 @@ public class JImmutableHashMap<T, K, V>
     @Override
     public Holder<Entry<K, V>> findEntry(@Nonnull K key)
     {
-        return find(key).map(value -> MapEntry.entry(key, value));
+        return root.mappedFindEntry(this, key);
     }
 
     @Nonnull
@@ -309,6 +308,14 @@ public class JImmutableHashMap<T, K, V>
                                 @Nonnull K key)
     {
         return mapping.find(collisionMap, key);
+    }
+
+    @Nonnull
+    @Override
+    public Holder<Entry<K, V>> mappedFindEntry(@Nonnull ArrayMapNode<K, V> mapping,
+                                               @Nonnull K key)
+    {
+        return mapping.findEntry(collisionMap, key);
     }
 
     @Nonnull

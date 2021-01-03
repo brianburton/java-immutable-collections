@@ -83,6 +83,14 @@ public class ArrayMultiValueMapNode<K, V>
 
     @Nonnull
     @Override
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                                       @Nonnull K key)
+    {
+        return collisionMap.findEntry(node, key);
+    }
+
+    @Nonnull
+    @Override
     public ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                      @Nonnull K key,
                                      V value)

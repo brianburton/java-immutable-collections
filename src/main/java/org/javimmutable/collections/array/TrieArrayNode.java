@@ -180,9 +180,7 @@ public class TrieArrayNode<T>
     public <K> boolean mappedContains(@Nonnull ArrayContainsMapper<K, T> mapper,
                                       @Nonnull K key)
     {
-        final int index = flip(key.hashCode());
-        final int shiftCountForValue = findShiftForIndex(index);
-        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        final T node = getNodeFofHashKey(key);
         return node != null && mapper.mappedContains(node, key);
     }
 
@@ -190,9 +188,7 @@ public class TrieArrayNode<T>
                                      @Nonnull K key,
                                      V defaultValue)
     {
-        final int index = flip(key.hashCode());
-        final int shiftCountForValue = findShiftForIndex(index);
-        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedGetValueOr(node, key, defaultValue) : defaultValue;
     }
 
@@ -200,10 +196,16 @@ public class TrieArrayNode<T>
     public <K, V> Holder<V> mappedFind(@Nonnull ArrayGetMapper<K, V, T> mapper,
                                        @Nonnull K key)
     {
-        final int index = flip(key.hashCode());
-        final int shiftCountForValue = findShiftForIndex(index);
-        final T node = getValueOrImpl(shiftCountForValue, index, null);
+        final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedFind(node, key) : Holders.of();
+    }
+
+    @Nonnull
+    public <K, V> Holder<JImmutableMap.Entry<K, V>> mappedFindEntry(@Nonnull ArrayFindEntryMapper<K, V, T> mapper,
+                                                                    @Nonnull K key)
+    {
+        final T node = getNodeFofHashKey(key);
+        return node != null ? mapper.mappedFindEntry(node, key) : Holders.of();
     }
 
     @Nonnull
@@ -307,6 +309,14 @@ public class TrieArrayNode<T>
             }
             combinedBitmask = removeBit(combinedBitmask, bit);
         }
+    }
+
+    @Nullable
+    private <K> T getNodeFofHashKey(@Nonnull K key)
+    {
+        final int index = flip(key.hashCode());
+        final int shiftCountForValue = findShiftForIndex(index);
+        return getValueOrImpl(shiftCountForValue, index, null);
     }
 
     private T getValueOrImpl(int shiftCountForValue,

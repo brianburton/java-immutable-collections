@@ -94,6 +94,14 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nonnull
     @Override
+    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                                       @Nonnull K key)
+    {
+        return key.equals(this.key) ? Holders.of(this) : Holders.of();
+    }
+
+    @Nonnull
+    @Override
     public ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
                                      @Nonnull K key,
                                      V value)
