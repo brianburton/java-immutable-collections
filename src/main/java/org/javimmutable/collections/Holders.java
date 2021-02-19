@@ -41,6 +41,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static org.javimmutable.collections.Option.none;
+
 /**
  * Provides static utility methods for constructing Holder instances.
  */
@@ -163,6 +165,13 @@ public class Holders<V>
             return defaultValue;
         }
 
+        @Nonnull
+        @Override
+        public Option<V> toOption()
+        {
+            return none();
+        }
+
         @Override
         public void ifPresent(@Nonnull Consumer<? super V> consumer)
         {
@@ -254,6 +263,13 @@ public class Holders<V>
         default V getValueOr(V defaultValue)
         {
             return getValue();
+        }
+
+        @Nonnull
+        @Override
+        default Option<V> toOption()
+        {
+            return Option.option(getValue());
         }
 
         @Override

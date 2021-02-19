@@ -88,6 +88,9 @@ public interface Holder<T>
      */
     T getValueOr(T defaultValue);
 
+    @Nonnull
+    Option<T> toOption();
+
     /**
      * Call consumer with my value if I am filled.  Otherwise do nothing.
      */
