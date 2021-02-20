@@ -66,31 +66,31 @@ public abstract class Option<T>
     public abstract Option<T> reject(@Nonnull Predicate<? super T> predicate);
 
     @Nonnull
-    public abstract Option<T> apply(@Nonnull Proc0 action);
+    public abstract Option<T> apply(@Nonnull Proc0 noneAction);
 
     @Nonnull
-    public abstract Option<T> apply(@Nonnull Proc1<? super T> action);
+    public abstract Option<T> apply(@Nonnull Proc1<? super T> someAction);
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
         throws E;
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> action)
+    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
         throws E;
 
     @Nonnull
     public abstract T unsafeGet();
 
     @Nonnull
-    public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> factory)
+    public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
         throws E;
 
     @Nonnull
-    public abstract T get(@Nonnull T defaultValue);
+    public abstract T get(@Nonnull T noneValue);
 
     @Nonnull
-    public abstract T getOr(@Nonnull Func0<? extends T> defaultValue);
+    public abstract T getOr(@Nonnull Func0<? extends T> noneMapping);
 
     public abstract <U> U match(U noneValue,
                                 @Nonnull Func1<? super T, U> someMapping);
@@ -288,31 +288,31 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc0 action)
+        public Option<T> apply(@Nonnull Proc0 noneAction)
         {
-            action.apply();
+            noneAction.apply();
             return this;
         }
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc1<? super T> action)
+        public Option<T> apply(@Nonnull Proc1<? super T> someAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
             throws E
         {
-            action.apply();
+            noneAction.apply();
             return this;
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> action)
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
             throws E
         {
             return this;
@@ -327,24 +327,24 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> factory)
+        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
             throws E
         {
-            throw factory.apply();
+            throw noneExceptionMapping.apply();
         }
 
         @Nonnull
         @Override
-        public T get(@Nonnull T defaultValue)
+        public T get(@Nonnull T noneValue)
         {
-            return defaultValue;
+            return noneValue;
         }
 
         @Nonnull
         @Override
-        public T getOr(@Nonnull Func0<? extends T> defaultValue)
+        public T getOr(@Nonnull Func0<? extends T> noneMapping)
         {
-            return defaultValue.apply();
+            return noneMapping.apply();
         }
 
         @Override
@@ -548,22 +548,22 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc0 action)
+        public Option<T> apply(@Nonnull Proc0 noneAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc1<? super T> action)
+        public Option<T> apply(@Nonnull Proc1<? super T> someAction)
         {
-            action.apply(value);
+            someAction.apply(value);
             return this;
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
             throws E
         {
             return this;
@@ -571,10 +571,10 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> action)
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
             throws E
         {
-            action.apply(value);
+            someAction.apply(value);
             return this;
         }
 
@@ -587,7 +587,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> factory)
+        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
             throws E
         {
             return value;
@@ -595,14 +595,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public T get(@Nonnull T defaultValue)
+        public T get(@Nonnull T noneValue)
         {
             return value;
         }
 
         @Nonnull
         @Override
-        public T getOr(@Nonnull Func0<? extends T> defaultValue)
+        public T getOr(@Nonnull Func0<? extends T> noneMapping)
         {
             return value;
         }
