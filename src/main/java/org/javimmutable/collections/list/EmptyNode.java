@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
@@ -84,6 +86,14 @@ class EmptyNode<T>
     T get(int index)
     {
         throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    <C> C seekImpl(int index,
+                   Func0<C> defaultMapping,
+                   Func1<T, C> valueMapping)
+    {
+        return defaultMapping.apply();
     }
 
     @Nonnull

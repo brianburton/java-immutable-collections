@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 /**
@@ -53,6 +54,26 @@ public interface Indexed<T>
      * Retrieve the number of values available in the container.
      */
     int size();
+
+    @Nonnull
+    default Holder<T> find(int index)
+    {
+        try {
+            return Holders.of(get(index));
+        } catch (IndexOutOfBoundsException ignored) {
+            return Holders.of();
+        }
+    }
+
+    @Nonnull
+    default Maybe<T> seek(int index)
+    {
+        try {
+            return Maybe.of(get(index));
+        } catch (IndexOutOfBoundsException ignored) {
+            return Maybe.of();
+        }
+    }
 
     @SuppressWarnings("unchecked")
     default T[] subArray(int offset,

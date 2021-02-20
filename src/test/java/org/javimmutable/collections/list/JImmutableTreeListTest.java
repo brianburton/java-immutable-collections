@@ -38,7 +38,9 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
@@ -1311,6 +1313,33 @@ public class JImmutableTreeListTest
         } catch (IOException ex) {
             // pass
         }
+    }
+
+    public void testSeek()
+    {
+        JImmutableList<Integer> list = JImmutableTreeList.of();
+        assertEquals(Holders.of(), list.find(0));
+        assertEquals(Maybe.none(), list.seek(0));
+
+        list = rangeList(0, 0);
+        assertEquals(Holders.of(), list.find(-1));
+        assertEquals(Holders.of(0), list.find(0));
+        assertEquals(Holders.of(), list.find(1));
+        assertEquals(Maybe.none(), list.seek(-1));
+        assertEquals(Maybe.some(0), list.seek(0));
+        assertEquals(Maybe.none(), list.seek(1));
+
+        list = rangeList(0, 24999);
+        assertEquals(Holders.of(), list.find(-1));
+        assertEquals(Holders.of(0), list.find(0));
+        assertEquals(Holders.of(12500), list.find(12500));
+        assertEquals(Holders.of(24999), list.find(24999));
+        assertEquals(Holders.of(), list.find(25000));
+        assertEquals(Maybe.of(), list.seek(-1));
+        assertEquals(Maybe.of(0), list.seek(0));
+        assertEquals(Maybe.of(12500), list.seek(12500));
+        assertEquals(Maybe.of(24999), list.seek(24999));
+        assertEquals(Maybe.of(), list.seek(25000));
     }
 
     private JImmutableList<Integer> list(Integer... values)

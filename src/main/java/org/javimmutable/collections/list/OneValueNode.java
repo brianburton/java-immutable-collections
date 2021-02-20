@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
@@ -80,6 +82,14 @@ class OneValueNode<T>
             throw new IndexOutOfBoundsException();
         }
         return value;
+    }
+
+    @Override
+    <C> C seekImpl(int index,
+                   Func0<C> defaultMapping,
+                   Func1<T, C> valueMapping)
+    {
+        return index == 0 ? valueMapping.apply(value) : defaultMapping.apply();
     }
 
     @Nonnull

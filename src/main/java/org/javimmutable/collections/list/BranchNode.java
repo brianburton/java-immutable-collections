@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
@@ -138,6 +140,19 @@ class BranchNode<T>
             return left.get(index);
         } else {
             return right.get(index - leftSize);
+        }
+    }
+
+    @Override
+    <C> C seekImpl(int index,
+                   Func0<C> defaultMapping,
+                   Func1<T, C> valueMapping)
+    {
+        final int leftSize = left.size();
+        if (index < leftSize) {
+            return left.seekImpl(index, defaultMapping, valueMapping);
+        } else {
+            return right.seekImpl(index - leftSize, defaultMapping, valueMapping);
         }
     }
 

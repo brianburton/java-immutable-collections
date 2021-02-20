@@ -38,8 +38,10 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum1Throws;
@@ -311,6 +313,20 @@ public class JImmutableTreeList<T>
     public T get(int index)
     {
         return root.get(index);
+    }
+
+    @Nonnull
+    @Override
+    public Holder<T> find(int index)
+    {
+        return root.seekImpl(index, Holders::of, Holders::of);
+    }
+
+    @Nonnull
+    @Override
+    public Maybe<T> seek(int index)
+    {
+        return root.seekImpl(index, Maybe::of, Maybe::of);
     }
 
     @Override

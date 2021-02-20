@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
 
 import static org.assertj.core.api.Assertions.*;
@@ -72,5 +73,12 @@ public class EmptyNodeTest
         assertThat(values).isEqualTo(new Integer[]{1});
         TestUtil.verifyUnsupported(() -> node.left());
         TestUtil.verifyUnsupported(() -> node.right());
+    }
+
+    public void testSeek()
+    {
+        assertEquals(Maybe.of(), node.seekImpl(-1, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(), node.seekImpl(0, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(), node.seekImpl(node.size(), Maybe::of, Maybe::of));
     }
 }

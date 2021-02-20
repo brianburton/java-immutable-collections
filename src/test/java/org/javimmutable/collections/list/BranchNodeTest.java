@@ -36,6 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 
@@ -47,6 +48,22 @@ import static org.javimmutable.collections.list.MultiValueNodeTest.*;
 public class BranchNodeTest
     extends TestCase
 {
+    public void testSeek()
+    {
+        AbstractNode<Integer> root = branch(branch(leaf(0, MAX_SIZE),
+                                                   leaf(MAX_SIZE, 2 * MAX_SIZE)),
+                                            branch(leaf(2 * MAX_SIZE, 2 * MAX_SIZE + SPLIT_SIZE),
+                                                   leaf(2 * MAX_SIZE + SPLIT_SIZE, 3 * MAX_SIZE + 1)));
+        assertThat(root.get(0)).isEqualTo(0);
+        assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
+        assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
+        assertEquals(Maybe.of(), root.seekImpl(-1, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(0), root.seekImpl(0, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(MAX_SIZE), root.seekImpl(MAX_SIZE, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Maybe::of, Maybe::of));
+        assertEquals(Maybe.of(), root.seekImpl(root.size(), Maybe::of, Maybe::of));
+    }
+
     public void testRotateLeft()
     {
         AbstractNode<Integer> expected = branch(branch(leaf(0, MAX_SIZE),

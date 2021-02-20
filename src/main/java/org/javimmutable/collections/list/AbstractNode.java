@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.CollisionMap;
@@ -57,6 +59,10 @@ abstract class AbstractNode<T>
     abstract int depth();
 
     abstract T get(int index);
+
+    abstract <C> C seekImpl(int index,
+                            Func0<C> defaultMapping,
+                            Func1<T, C> valueMapping);
 
     @Nonnull
     abstract AbstractNode<T> append(T value);
