@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
 public abstract class Option<T>
     implements IterableStreamable<T>
@@ -25,6 +26,12 @@ public abstract class Option<T>
     @Nonnull
     public abstract <A, E extends Exception> Option<A> bindThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
         throws E;
+
+    @Nonnull
+    public abstract Option<T> select(@Nonnull Predicate<? super T> predicate);
+
+    @Nonnull
+    public abstract Option<T> reject(@Nonnull Predicate<? super T> predicate);
 
     @Nonnull
     public abstract Option<T> apply(@Nonnull Proc1<? super T> action);
@@ -145,6 +152,20 @@ public abstract class Option<T>
         @Override
         public <A, E extends Exception> Option<A> bindThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
             throws E
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public Option<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public Option<T> reject(@Nonnull Predicate<? super T> predicate)
         {
             return none();
         }
@@ -312,6 +333,20 @@ public abstract class Option<T>
             throws E
         {
             return transforminator.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public Option<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return predicate.test(value) ? this : none();
+        }
+
+        @Nonnull
+        @Override
+        public Option<T> reject(@Nonnull Predicate<? super T> predicate)
+        {
+            return predicate.test(value) ? none() : this;
         }
 
         @Nonnull
