@@ -24,6 +24,8 @@ public class OptionTest
         assertSame(o, Option.option(null));
         assertEquals(o, o);
         assertEquals("None", o.toString());
+        assertEquals(some(4), o.map(() -> 4));
+        assertEquals(some(7), o.mapThrows(() -> 4));
         assertSame(o, o.map(x -> dontCallMe(1, "map")));
         assertSame(o, o.mapThrows(x -> dontCallMe(1, "mapThrows")));
         assertSame(o, o.flatMap(x -> dontCallMe(some(1), "bind")));
@@ -64,6 +66,8 @@ public class OptionTest
         assertThat(some(1)).isEqualTo(o);
         assertThat(Option.option(3)).isNotEqualTo(o);
         assertEquals("Some(1)", o.toString());
+        assertSame(o, o.map(() -> dontCallMe(22, "map0")));
+        assertSame(o, o.mapThrows(() -> dontCallMe(30, "mapThrows0")));
         assertEquals(some(12), o.map(x -> 12));
         assertEquals(some(12), o.mapThrows(x -> 12));
         assertEquals(some(15), o.flatMap(x -> some(15)));

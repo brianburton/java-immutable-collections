@@ -14,7 +14,14 @@ public abstract class Option<T>
     implements IterableStreamable<T>
 {
     @Nonnull
+    public abstract <U> Option<T> map(@Nonnull Func0<? extends T> transforminator);
+
+    @Nonnull
     public abstract <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator);
+
+    @Nonnull
+    public abstract <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+        throws E;
 
     @Nonnull
     public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
@@ -135,9 +142,24 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
+        public <U> Option<T> map(@Nonnull Func0<? extends T> transforminator)
+        {
+            return some(transforminator.apply());
+        }
+
+        @Nonnull
+        @Override
         public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator)
         {
             return none();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+            throws E
+        {
+            return some(transforminator.apply());
         }
 
         @Nonnull
@@ -331,9 +353,24 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
+        public <U> Option<T> map(@Nonnull Func0<? extends T> transforminator)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator)
         {
             return some(transforminator.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+            throws E
+        {
+            return this;
         }
 
         @Nonnull
