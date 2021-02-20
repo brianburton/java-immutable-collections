@@ -118,6 +118,18 @@ public abstract class Maybe<T>
     }
 
     @Nonnull
+    public static <T> Maybe<T> of()
+    {
+        return none();
+    }
+
+    @Nonnull
+    public static <T> Maybe<T> of(@Nullable T value)
+    {
+        return value != null ? some(value) : none();
+    }
+
+    @Nonnull
     public static <T> Maybe<T> maybe(@Nullable T value)
     {
         return value != null ? some(value) : none();

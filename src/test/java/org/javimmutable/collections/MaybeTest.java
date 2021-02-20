@@ -22,6 +22,9 @@ public class MaybeTest
         final Maybe<Integer> o = none();
         assertSame(o, none());
         assertSame(o, Maybe.maybe(null));
+        assertSame(o, Maybe.of());
+        assertThat(none()).isEqualTo(none());
+        assertThat(none()).isNotEqualTo(some(4));
         assertEquals(o, o);
         assertEquals("None", o.toString());
         assertEquals(some(4), o.map(() -> 4));
@@ -69,6 +72,7 @@ public class MaybeTest
     {
         final Maybe<Integer> o = some(1);
         assertEquals(o, o);
+        assertEquals(o, Maybe.of(1));
         assertThat(some(1)).isEqualTo(o);
         assertThat(Maybe.maybe(3)).isNotEqualTo(o);
         assertEquals("Some(1)", o.toString());

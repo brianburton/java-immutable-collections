@@ -80,6 +80,8 @@ public class HoldersTest
         } catch (RuntimeException ex) {
             assertEquals("threw", ex.getMessage());
         }
+        assertSame(Maybe.none(), e1.toMaybe());
+        assertSame(e1, Maybe.none().toHolder());
     }
 
     public void testFilled()
@@ -149,6 +151,9 @@ public class HoldersTest
         assertEquals("ABC", filled4.orElse("ZZZ"));
         assertEquals("ABC", filled4.orElseGet(() -> "ZZZ"));
         assertEquals("ABC", filled4.orElseThrow(() -> new RuntimeException("threw")));
+
+        assertEquals(Maybe.some("abc"), Holders.of("abc").toMaybe());
+        assertEquals(Holders.of("abc"), Maybe.some("abc").toHolder());
     }
 
     public void testAreEquals()
