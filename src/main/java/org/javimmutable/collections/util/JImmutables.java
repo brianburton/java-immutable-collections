@@ -1189,7 +1189,7 @@ public final class JImmutables
     {
         return JImmutables.<K, V>sortedSetMap(comparator).setMapCollector();
     }
-    
+
     /**
      * Creates a set map with keys sorted by order they are inserted.
      * Sets for each value are equivalent to one created by JImmutables.set().

@@ -6,6 +6,7 @@ import org.javimmutable.collections.iterators.SingleValueIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public abstract class Option<T>
@@ -70,20 +71,42 @@ public abstract class Option<T>
     {
     }
 
+    @Nonnull
     public static <T> Option<T> option(@Nullable T value)
     {
         return value != null ? some(value) : none();
     }
 
     @SuppressWarnings("unchecked")
+    @Nonnull
     public static <T> Option<T> none()
     {
         return (Option<T>)None.NONE;
     }
 
+    @Nonnull
     public static <T> Option<T> some(@Nonnull T value)
     {
         return new Some<>(value);
+    }
+
+    @Nonnull
+    public static <T> Option<T> first(@Nonnull Iterable<? extends T> collection)
+    {
+        final Iterator<? extends T> i = collection.iterator();
+        return i.hasNext() ? some(i.next()) : none();
+    }
+
+    @Nonnull
+    public static <T> Option<T> first(@Nonnull Iterable<? extends T> collection,
+                                      @Nonnull Func1<? super T, Boolean> predicate)
+    {
+        for (T value : collection) {
+            if (predicate.apply(value)) {
+                return some(value);
+            }
+        }
+        return none();
     }
 
     private static class None<T>
