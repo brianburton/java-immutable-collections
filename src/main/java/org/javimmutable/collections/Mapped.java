@@ -40,9 +40,6 @@ import javax.annotation.Nullable;
 
 /**
  * Interface for containers that associate keys with values.
- *
- * @param <K>
- * @param <V>
  */
 public interface Mapped<K, V>
 {
@@ -89,6 +86,6 @@ public interface Mapped<K, V>
     @Nonnull
     default Maybe<V> seek(K key)
     {
-        return find(key).toMaybe();
+        return Maybe.maybe(get(key));
     }
 }

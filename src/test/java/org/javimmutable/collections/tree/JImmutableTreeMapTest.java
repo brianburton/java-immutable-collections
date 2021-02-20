@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -95,7 +96,9 @@ public class JImmutableTreeMapTest
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
 
         map = JImmutableTreeMap.of();
+        assertSame(Maybe.none(), map.seek(10));
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
+        assertEquals(Maybe.some(11), map.seek(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
         final List<JImmutableMap.Entry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));

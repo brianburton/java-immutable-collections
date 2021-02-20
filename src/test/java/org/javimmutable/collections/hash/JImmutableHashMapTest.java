@@ -40,6 +40,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -71,6 +72,7 @@ public class JImmutableHashMapTest
     public void test()
     {
         JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
+        assertSame(Maybe.none(), map.seek(10));
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
@@ -78,6 +80,7 @@ public class JImmutableHashMapTest
         assertEquals(1, map.size());
         assertEquals(false, map.isEmpty());
         assertEquals(false, map.find(10).isEmpty());
+        assertEquals(Maybe.some(20), map.seek(10));
         assertEquals(20, (int)map.find(10).getValue());
         assertEquals(20, (int)map.getValueOr(10, -99));
         assertEquals(-99, (int)map.getValueOr(72, -99));
