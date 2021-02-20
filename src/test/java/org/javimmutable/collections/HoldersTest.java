@@ -152,6 +152,7 @@ public class HoldersTest
         assertEquals("ABC", filled4.orElseGet(() -> "ZZZ"));
         assertEquals("ABC", filled4.orElseThrow(() -> new RuntimeException("threw")));
 
+        assertSame(Maybe.none(), Holders.of(null).toMaybe());
         assertEquals(Maybe.some("abc"), Holders.of("abc").toMaybe());
         assertEquals(Holders.of("abc"), Maybe.some("abc").toHolder());
     }
