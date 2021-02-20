@@ -10,106 +10,310 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
+/**
+ * Similar to Holder but implemented as a concrete ADT rather than an interface.
+ * Used to handle cases when a value may or may not be present and to eliminate
+ * the use of null values.  Unlike a Holder, the value of a Maybe can never be null.
+ * Provides a variety of utility methods to allow call chaining.
+ */
 public abstract class Maybe<T>
     implements IterableStreamable<T>
 {
+    /**
+     * Produce a Maybe that is guaranteed not to be empty.  If this Maybe is non-empty
+     * it is returned.  Otherwise the noneMapping function is called to provide a value
+     * for the result Maybe.
+     *
+     * @param noneMapping produces value if this is empty
+     * @return a non-empty Maybe
+     */
     @Nonnull
     public abstract <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping);
 
+    /**
+     * Produce a Maybe that is empty if this is empty or else contains the result
+     * of passing this value to the given mapping function.
+     *
+     * @param someMapping maps this value to new value
+     * @return a possibly empty Maybe
+     */
     @Nonnull
     public abstract <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> someMapping);
 
+    /**
+     * Produce a non-empty Maybe.  If this is empty the noneMapping function is called
+     * to provide a value.  Otherwise the someMapping function is called to produce a
+     * new value based on this value.
+     *
+     * @param noneMapping produces value when this is empty
+     * @param someMapping maps this value to new value
+     * @return a non-empty Maybe
+     */
     @Nonnull
     public abstract <U> Maybe<U> map(@Nonnull Func0<? extends U> noneMapping,
                                      @Nonnull Func1<? super T, ? extends U> someMapping);
 
+    /**
+     * Produce a Maybe that is guaranteed not to be empty.  If this Maybe is non-empty
+     * it is returned.  Otherwise the noneMapping function is called to provide a value
+     * for the result Maybe.
+     *
+     * @param noneMapping produces value if this is empty
+     * @return a non-empty Maybe
+     */
     @Nonnull
     public abstract <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
         throws E;
 
+    /**
+     * Produce a Maybe that is empty if this is empty or else contains the result
+     * of passing this value to the given mapping function.
+     *
+     * @param someMapping maps this value to new value
+     * @return a possibly empty Maybe
+     */
     @Nonnull
     public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
         throws E;
 
+    /**
+     * Produce a non-empty Maybe.  If this is empty the noneMapping function is called
+     * to provide a value.  Otherwise the someMapping function is called to produce a
+     * new value based on this value.
+     *
+     * @param noneMapping produces value when this is empty
+     * @param someMapping maps this value to new value
+     * @return a non-empty Maybe
+     */
     @Nonnull
     public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
                                                                 @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
         throws E;
 
+    /**
+     * Produce a Maybe based on this one.  If this is empty noneMapping is called
+     * to produce a new Maybe. Otherwise this is returned.
+     *
+     * @param noneMapping produce new Maybe if this is empty
+     * @return a Maybe
+     */
     @Nonnull
     public abstract Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> noneMapping);
 
+    /**
+     * Produce a Maybe based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Maybe.  Otherwise this is returned.
+     *
+     * @param someMapping produce a new Maybe from this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> someMapping);
 
+    /**
+     * Produce a Maybe based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Maybe.  Otherwise noneMapping is
+     * called to produce a new Maybe..
+     *
+     * @param noneMapping produce a new Maybe when this is empty
+     * @param someMapping produce a new Maybe from this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> noneMapping,
                                          @Nonnull Func1<? super T, Maybe<A>> someMapping);
 
+    /**
+     * Produce a Maybe based on this one.  If this is empty noneMapping is called
+     * to produce a new Maybe. Otherwise this is returned.
+     *
+     * @param noneMapping produce new Maybe if this is empty
+     * @return a Maybe
+     */
     @Nonnull
     public abstract <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> noneMapping)
         throws E;
 
+    /**
+     * Produce a Maybe based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Maybe.  Otherwise this is returned.
+     *
+     * @param someMapping produce a new Maybe from this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
         throws E;
 
+    /**
+     * Produce a Maybe based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Maybe.  Otherwise noneMapping is
+     * called to produce a new Maybe..
+     *
+     * @param noneMapping produce a new Maybe when this is empty
+     * @param someMapping produce a new Maybe from this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> noneMapping,
                                                                     @Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
         throws E;
 
+    /**
+     * Returns this is this is non-empty and predicate returns true.
+     * Otherwise an empty Maybe is returned.
+     *
+     * @param predicate determines whether to accept this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract Maybe<T> select(@Nonnull Predicate<? super T> predicate);
 
+    /**
+     * Returns this is this is non-empty and predicate returns false.
+     * Otherwise an empty Maybe is returned.
+     *
+     * @param predicate determines whether to reject this value
+     * @return a Maybe
+     */
     @Nonnull
     public abstract Maybe<T> reject(@Nonnull Predicate<? super T> predicate);
 
+    /**
+     * Invokes noneAction is this is empty.
+     *
+     * @param noneAction action to call if this is empty
+     * @return this
+     */
     @Nonnull
     public abstract Maybe<T> apply(@Nonnull Proc0 noneAction);
 
+    /**
+     * Invokes someAction with this value is this is non-empty.
+     *
+     * @param someAction action to call if this is non-empty
+     * @return this
+     */
     @Nonnull
     public abstract Maybe<T> apply(@Nonnull Proc1<? super T> someAction);
 
+    /**
+     * Invokes noneAction is this is empty.
+     *
+     * @param noneAction action to call if this is empty
+     * @return this
+     */
     @Nonnull
     public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
         throws E;
 
+    /**
+     * Invokes someAction with this value is this is non-empty.
+     *
+     * @param someAction action to call if this is non-empty
+     * @return this
+     */
     @Nonnull
     public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
         throws E;
 
+    /**
+     * Gets this value.  Throws NoSuchElementException if this is empty.
+     *
+     * @return this value
+     * @throw NoSuchElementException if this is empty
+     */
     @Nonnull
     public abstract T unsafeGet();
 
+    /**
+     * Gets this value.  Calls noneExceptionMapping to get an exception
+     * to throw if this is empty.
+     *
+     * @return this value
+     * @throw an exception produced by mapping if this is empty
+     */
     @Nonnull
     public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
         throws E;
 
+    /**
+     * Gets this value.  If this is empty returns noneValue instead.
+     *
+     * @param noneValue value to return if this is empty
+     */
     @Nonnull
     public abstract T get(@Nonnull T noneValue);
 
+    /**
+     * Gets this value.  If this is empty returns result of calling noneMapping instead.
+     *
+     * @param noneMapping function to generate value to return if this is empty
+     */
     @Nonnull
     public abstract T getOr(@Nonnull Func0<? extends T> noneMapping);
 
+    /**
+     * Gets a value based on this value.  If this is empty noneValue is returned.
+     * Otherwise this value is passed to someMapping to obtain a return value.
+     *
+     * @param noneValue   value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
     public abstract <U> U match(U noneValue,
                                 @Nonnull Func1<? super T, U> someMapping);
 
+    /**
+     * Gets a value based on this value.  If this is empty noneMapping is called
+     * to obain a return value.  Otherwise this value is passed to someMapping to
+     * obtain a return value.
+     *
+     * @param noneMapping function to produce a value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
     public abstract <U> U matchOr(@Nonnull Func0<U> noneMapping,
                                   @Nonnull Func1<? super T, U> someMapping);
 
+    /**
+     * Gets a value based on this value.  If this is empty noneValue is returned.
+     * Otherwise this value is passed to someMapping to obtain a return value.
+     *
+     * @param noneValue   value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
     public abstract <U, E extends Exception> U matchThrows(U noneValue,
                                                            @Nonnull Func1Throws<? super T, U, E> someMapping)
         throws E;
 
+    /**
+     * Gets a value based on this value.  If this is empty noneMapping is called
+     * to obain a return value.  Otherwise this value is passed to someMapping to
+     * obtain a return value.
+     *
+     * @param noneMapping function to produce a value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
     public abstract <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
                                                              @Nonnull Func1Throws<? super T, U, E> someMapping)
         throws E;
 
+    /**
+     * Returns true if this has no value
+     */
     public abstract boolean isNone();
 
+    /**
+     * Returns true if this has a value
+     */
     public abstract boolean isSome();
 
+    /**
+     * Returns empty holder if this is empty, otherwise a holder containing this value.
+     */
     @Nonnull
     public abstract Holder<T> toHolder();
 
@@ -117,24 +321,38 @@ public abstract class Maybe<T>
     {
     }
 
+    /**
+     * Returns an empty Maybe. All empty Maybes share a common instance.
+     */
     @Nonnull
     public static <T> Maybe<T> of()
     {
         return none();
     }
 
+    /**
+     * Returns an empty Maybe if value is null, otherwise a Maybe containing
+     * the value is returned.
+     */
     @Nonnull
     public static <T> Maybe<T> of(@Nullable T value)
     {
         return value != null ? some(value) : none();
     }
 
+    /**
+     * Returns an empty Maybe if value is null, otherwise a Maybe containing
+     * the value is returned.
+     */
     @Nonnull
     public static <T> Maybe<T> maybe(@Nullable T value)
     {
         return value != null ? some(value) : none();
     }
 
+    /**
+     * Returns an empty Maybe. All empty Maybes share a common instance.
+     */
     @SuppressWarnings("unchecked")
     @Nonnull
     public static <T> Maybe<T> none()
@@ -142,26 +360,39 @@ public abstract class Maybe<T>
         return (Maybe<T>)None.NONE;
     }
 
+    /**
+     * Returns a Maybe containing the value.  The value must be non-null.
+     */
     @Nonnull
     public static <T> Maybe<T> some(@Nonnull T value)
     {
         return new Some<>(value);
     }
 
+    /**
+     * Returns a Maybe containing the first value of the collection.  If the collection
+     * is empty or the first value is null an empty Maybe is returned.
+     */
     @Nonnull
     public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection)
     {
         final Iterator<? extends T> i = collection.iterator();
-        return i.hasNext() ? some(i.next()) : none();
+        return i.hasNext() ? maybe(i.next()) : none();
     }
 
+    /**
+     * Returns a Maybe containing the first non-null value of the collection
+     * for which the predicate returns true.  If the collection
+     * is empty, there are no non-null values, or predicate always
+     * returns false an empty Maybe is returned.
+     */
     @Nonnull
     public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection,
                                      @Nonnull Func1<? super T, Boolean> predicate)
     {
         for (T value : collection) {
-            if (predicate.apply(value)) {
-                return some(value);
+            if (value != null && predicate.apply(value)) {
+                return maybe(value);
             }
         }
         return none();

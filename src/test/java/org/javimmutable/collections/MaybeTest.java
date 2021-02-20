@@ -63,6 +63,7 @@ public class MaybeTest
         assertSame(o, o.toHolder().toMaybe());
         assertSame(o, first(Collections.emptyList()));
         assertSame(o, first(Collections.emptyList(), x -> true));
+        assertSame(o, first(Collections.singleton(null)));
         StandardIteratorTests.emptyIteratorTest(o.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(Collections.emptyList(), o);
     }
