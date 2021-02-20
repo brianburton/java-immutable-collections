@@ -25,11 +25,17 @@ public class OptionTest
         assertEquals(o, o);
         assertEquals("None", o.toString());
         assertEquals(some(4), o.map(() -> 4));
-        assertEquals(some(7), o.mapThrows(() -> 4));
+        assertEquals(some(7), o.mapThrows(() -> 7));
         assertSame(o, o.map(x -> dontCallMe(1, "map")));
         assertSame(o, o.mapThrows(x -> dontCallMe(1, "mapThrows")));
-        assertSame(o, o.flatMap(x -> dontCallMe(some(1), "bind")));
-        assertSame(o, o.flatMapThrows(x -> dontCallMe(some(1), "bindThrows")));
+        assertEquals(some(4), o.map(() -> 4, x -> dontCallMe(some(1), "map2")));
+        assertEquals(some(7), o.mapThrows(() -> 7, x -> dontCallMe(some(1), "mapThrows2")));
+        assertEquals(some(6), o.flatMap(() -> some(6)));
+        assertEquals(some(-1), o.flatMapThrows(() -> some(-1)));
+        assertSame(o, o.flatMap(x -> dontCallMe(some(1), "flatMap")));
+        assertSame(o, o.flatMapThrows(x -> dontCallMe(some(1), "flatMapThrows")));
+        assertEquals(some(6), o.flatMap(() -> some(6), x -> dontCallMe(some(1), "flatMap2")));
+        assertEquals(some(-1), o.flatMapThrows(() -> some(-1), x -> dontCallMe(some(1), "flatMapThrows2")));
         assertSame(o, o.select(x -> dontCallMe(true, "select")));
         assertSame(o, o.select(x -> dontCallMe(false, "select")));
         assertSame(o, o.reject(x -> dontCallMe(true, "reject")));
@@ -70,8 +76,14 @@ public class OptionTest
         assertSame(o, o.mapThrows(() -> dontCallMe(30, "mapThrows0")));
         assertEquals(some(12), o.map(x -> 12));
         assertEquals(some(12), o.mapThrows(x -> 12));
+        assertEquals(some(2), o.map(() -> dontCallMe(22, "map0"), x -> x + 1));
+        assertEquals(some(8), o.mapThrows(() -> dontCallMe(30, "mapThrows0"), x -> x + 7));
+        assertSame(o, o.flatMap(() -> dontCallMe(some(22), "flatMap2")));
+        assertSame(o, o.flatMapThrows(() -> dontCallMe(some(30), "flatMap2")));
         assertEquals(some(15), o.flatMap(x -> some(15)));
         assertEquals(some(15), o.flatMapThrows(x -> some(15)));
+        assertEquals(some(13), o.flatMap(() -> dontCallMe(some(22), "flatMap2"), x -> some(x + 12)));
+        assertEquals(some(-4), o.flatMapThrows(() -> dontCallMe(some(30), "flatMap2"), x -> some(x - 5)));
         assertSame(o, o.select(x -> true));
         assertSame(none(), o.select(x -> false));
         assertSame(none(), o.reject(x -> true));
@@ -97,6 +109,9 @@ public class OptionTest
         assertEquals(option("y"), first(Arrays.asList("x", "y", "z"), x -> x.equals("y")));
         StandardIteratorTests.listIteratorTest(Collections.singletonList(1), o.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(Collections.singleton(1), o);
+        assertThat(some(4)).isEqualTo(some(4));
+        assertThat(some(7)).isNotEqualTo(some(4));
+        assertThat(some(5)).isNotEqualTo(none());
     }
 
     private static void dontCallMe(String message)

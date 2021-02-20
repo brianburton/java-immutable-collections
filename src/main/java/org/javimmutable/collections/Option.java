@@ -14,24 +14,49 @@ public abstract class Option<T>
     implements IterableStreamable<T>
 {
     @Nonnull
-    public abstract <U> Option<T> map(@Nonnull Func0<? extends T> transforminator);
+    public abstract <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping);
 
     @Nonnull
-    public abstract <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator);
+    public abstract <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping);
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+    public abstract <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                      @Nonnull Func1<? super T, ? extends U> someMapping);
+
+    @Nonnull
+    public abstract <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
         throws E;
 
     @Nonnull
-    public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
+    public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
         throws E;
 
     @Nonnull
-    public abstract <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator);
+    public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                                 @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+        throws E;
 
     @Nonnull
-    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+    public abstract Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping);
+
+    @Nonnull
+    public abstract <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping);
+
+    @Nonnull
+    public abstract <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
+                                          @Nonnull Func1<? super T, Option<A>> someMapping);
+
+    @Nonnull
+    public abstract <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
+        throws E;
+
+    @Nonnull
+    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+        throws E;
+
+    @Nonnull
+    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
+                                                                     @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
         throws E;
 
     @Nonnull
@@ -67,18 +92,18 @@ public abstract class Option<T>
     @Nonnull
     public abstract T getOr(@Nonnull Func0<? extends T> defaultValue);
 
-    public abstract <U> U match(U defaultValue,
-                                @Nonnull Func1<? super T, U> transforminator);
+    public abstract <U> U match(U noneValue,
+                                @Nonnull Func1<? super T, U> someMapping);
 
-    public abstract <U> U matchOr(@Nonnull Func0<U> defaultValue,
-                                  @Nonnull Func1<? super T, U> transforminator);
+    public abstract <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                                  @Nonnull Func1<? super T, U> someMapping);
 
-    public abstract <U, E extends Exception> U matchThrows(U defaultValue,
-                                                           @Nonnull Func1Throws<? super T, U, E> transforminator)
+    public abstract <U, E extends Exception> U matchThrows(U noneValue,
+                                                           @Nonnull Func1Throws<? super T, U, E> someMapping)
         throws E;
 
-    public abstract <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
-                                                             @Nonnull Func1Throws<? super T, U, E> transforminator)
+    public abstract <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                             @Nonnull Func1Throws<? super T, U, E> someMapping)
         throws E;
 
     public abstract boolean isNone();
@@ -142,47 +167,96 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <U> Option<T> map(@Nonnull Func0<? extends T> transforminator)
+        public <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
-            return some(transforminator.apply());
+            return some(noneMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator)
+        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
         {
             return none();
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+        public <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
             throws E
         {
-            return some(transforminator.apply());
+            return some(noneMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
-            throws E
-        {
-            return none();
-        }
-
-        @Nonnull
-        @Override
-        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator)
-        {
-            return none();
-        }
-
-        @Nonnull
-        @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
             throws E
         {
             return none();
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+            throws E
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
+                                     @Nonnull Func1<? super T, Option<A>> someMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
+                                                                @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+            throws E
+        {
+            return noneMapping.apply();
         }
 
         @Nonnull
@@ -274,33 +348,33 @@ public abstract class Option<T>
         }
 
         @Override
-        public <U> U match(U defaultValue,
-                           @Nonnull Func1<? super T, U> transforminator)
+        public <U> U match(U noneValue,
+                           @Nonnull Func1<? super T, U> someMapping)
         {
-            return defaultValue;
+            return noneValue;
         }
 
         @Override
-        public <U> U matchOr(@Nonnull Func0<U> defaultValue,
-                             @Nonnull Func1<? super T, U> transforminator)
+        public <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                             @Nonnull Func1<? super T, U> someMapping)
         {
-            return defaultValue.apply();
+            return noneMapping.apply();
         }
 
         @Override
-        public <U, E extends Exception> U matchThrows(U defaultValue,
-                                                      @Nonnull Func1Throws<? super T, U, E> transforminator)
+        public <U, E extends Exception> U matchThrows(U noneValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> someMapping)
             throws E
         {
-            return defaultValue;
+            return noneValue;
         }
 
         @Override
-        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
-                                                        @Nonnull Func1Throws<? super T, U, E> transforminator)
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                        @Nonnull Func1Throws<? super T, U, E> someMapping)
             throws E
         {
-            return defaultValue.apply();
+            return noneMapping.apply();
         }
 
         @Override
@@ -353,21 +427,29 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <U> Option<T> map(@Nonnull Func0<? extends T> transforminator)
+        public <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> transforminator)
+        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
         {
-            return some(transforminator.apply(value));
+            return some(someMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> transforminator)
+        public <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
             throws E
         {
             return this;
@@ -375,25 +457,66 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
+        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
             throws E
         {
-            return some(transforminator.apply(value));
+            return some(someMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator)
+        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
         {
-            return transforminator.apply(value);
+            return some(someMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+        public Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
             throws E
         {
-            return transforminator.apply(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
+                                     @Nonnull Func1<? super T, Option<A>> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
+                                                                @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
         }
 
         @Nonnull
@@ -485,33 +608,33 @@ public abstract class Option<T>
         }
 
         @Override
-        public <U> U match(U defaultValue,
-                           @Nonnull Func1<? super T, U> transforminator)
+        public <U> U match(U noneValue,
+                           @Nonnull Func1<? super T, U> someMapping)
         {
-            return transforminator.apply(value);
+            return someMapping.apply(value);
         }
 
         @Override
-        public <U> U matchOr(@Nonnull Func0<U> defaultValue,
-                             @Nonnull Func1<? super T, U> transforminator)
+        public <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                             @Nonnull Func1<? super T, U> someMapping)
         {
-            return transforminator.apply(value);
+            return someMapping.apply(value);
         }
 
         @Override
-        public <U, E extends Exception> U matchThrows(U defaultValue,
-                                                      @Nonnull Func1Throws<? super T, U, E> transforminator)
+        public <U, E extends Exception> U matchThrows(U noneValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> someMapping)
             throws E
         {
-            return transforminator.apply(value);
+            return someMapping.apply(value);
         }
 
         @Override
-        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
-                                                        @Nonnull Func1Throws<? super T, U, E> transforminator)
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                        @Nonnull Func1Throws<? super T, U, E> someMapping)
             throws E
         {
-            return transforminator.apply(value);
+            return someMapping.apply(value);
         }
 
         @Override
