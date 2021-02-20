@@ -43,7 +43,21 @@ public abstract class Option<T>
     public abstract T get(@Nonnull T defaultValue);
 
     @Nonnull
-    public abstract T get(@Nonnull Func0<? extends T> defaultValue);
+    public abstract T getOr(@Nonnull Func0<? extends T> defaultValue);
+
+    public abstract <U> U match(U defaultValue,
+                                @Nonnull Func1<? super T, U> transforminator);
+
+    public abstract <U> U matchOr(@Nonnull Func0<U> defaultValue,
+                                  @Nonnull Func1<? super T, U> transforminator);
+
+    public abstract <U, E extends Exception> U matchThrows(U defaultValue,
+                                                           @Nonnull Func1Throws<? super T, U, E> transforminator)
+        throws E;
+
+    public abstract <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
+                                                             @Nonnull Func1Throws<? super T, U, E> transforminator)
+        throws E;
 
     public abstract boolean isNone();
 
@@ -164,7 +178,37 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public T get(@Nonnull Func0<? extends T> defaultValue)
+        public T getOr(@Nonnull Func0<? extends T> defaultValue)
+        {
+            return defaultValue.apply();
+        }
+
+        @Override
+        public <U> U match(U defaultValue,
+                           @Nonnull Func1<? super T, U> transforminator)
+        {
+            return defaultValue;
+        }
+
+        @Override
+        public <U> U matchOr(@Nonnull Func0<U> defaultValue,
+                             @Nonnull Func1<? super T, U> transforminator)
+        {
+            return defaultValue.apply();
+        }
+
+        @Override
+        public <U, E extends Exception> U matchThrows(U defaultValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> transforminator)
+            throws E
+        {
+            return defaultValue;
+        }
+
+        @Override
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
+                                                        @Nonnull Func1Throws<? super T, U, E> transforminator)
+            throws E
         {
             return defaultValue.apply();
         }
@@ -301,9 +345,39 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public T get(@Nonnull Func0<? extends T> defaultValue)
+        public T getOr(@Nonnull Func0<? extends T> defaultValue)
         {
             return value;
+        }
+
+        @Override
+        public <U> U match(U defaultValue,
+                           @Nonnull Func1<? super T, U> transforminator)
+        {
+            return transforminator.apply(value);
+        }
+
+        @Override
+        public <U> U matchOr(@Nonnull Func0<U> defaultValue,
+                             @Nonnull Func1<? super T, U> transforminator)
+        {
+            return transforminator.apply(value);
+        }
+
+        @Override
+        public <U, E extends Exception> U matchThrows(U defaultValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> transforminator)
+            throws E
+        {
+            return transforminator.apply(value);
+        }
+
+        @Override
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> defaultValue,
+                                                        @Nonnull Func1Throws<? super T, U, E> transforminator)
+            throws E
+        {
+            return transforminator.apply(value);
         }
 
         @Override

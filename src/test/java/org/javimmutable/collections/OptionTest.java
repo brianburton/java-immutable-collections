@@ -16,6 +16,7 @@ public class OptionTest
         assertSame(o, Option.none());
         assertSame(o, Option.option(null));
         assertEquals(o, o);
+        assertEquals("None", o.toString());
         assertSame(o, o.map(x -> dontCallMe(1, "map")));
         assertSame(o, o.mapThrows(x -> dontCallMe(1, "mapThrows")));
         assertSame(o, o.bind(x -> dontCallMe(Option.some(1), "bind")));
@@ -25,7 +26,11 @@ public class OptionTest
         assertThatThrownBy(() -> o.unsafeGet()).isInstanceOf(NoSuchElementException.class);
         assertThatThrownBy(() -> o.unsafeGet(() -> new IOException())).isInstanceOf(IOException.class);
         assertEquals(Integer.valueOf(-1), o.get(-1));
-        assertEquals(Integer.valueOf(-5), o.get(() -> -5));
+        assertEquals(Integer.valueOf(-5), o.getOr(() -> -5));
+        assertEquals("a", o.match("a", x -> "b"));
+        assertEquals("a", o.matchOr(() -> "a", x -> "b"));
+        assertEquals("a", o.matchThrows("a", x -> "b"));
+        assertEquals("a", o.matchOrThrows(() -> "a", x -> "b"));
         assertEquals(true, o.isNone());
         assertEquals(false, o.isSome());
         assertSame(Holders.of(), o.toHolder());
@@ -39,6 +44,7 @@ public class OptionTest
         assertEquals(o, o);
         assertThat(Option.some(1)).isEqualTo(o);
         assertThat(Option.option(3)).isNotEqualTo(o);
+        assertEquals("Some(1)", o.toString());
         assertEquals(Option.some(12), o.map(x -> 12));
         assertEquals(Option.some(12), o.mapThrows(x -> 12));
         assertEquals(Option.some(15), o.bind(x -> Option.some(15)));
@@ -50,7 +56,11 @@ public class OptionTest
         assertEquals(Integer.valueOf(1), o.unsafeGet());
         assertEquals(Integer.valueOf(1), o.unsafeGet(() -> new IOException()));
         assertEquals(Integer.valueOf(1), o.get(-1));
-        assertEquals(Integer.valueOf(1), o.get(() -> -5));
+        assertEquals(Integer.valueOf(1), o.getOr(() -> -5));
+        assertEquals("b", o.match("a", x -> "b"));
+        assertEquals("b", o.matchOr(() -> "a", x -> "b"));
+        assertEquals("b", o.matchThrows("a", x -> "b"));
+        assertEquals("b", o.matchOrThrows(() -> "a", x -> "b"));
         assertEquals(false, o.isNone());
         assertEquals(true, o.isSome());
         assertEquals(Holders.of(1), o.toHolder());
