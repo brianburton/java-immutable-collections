@@ -5,7 +5,10 @@ import javax.annotation.Nonnull;
 public abstract class Calc<T>
 {
     @Nonnull
-    public abstract <U> Calc<U> next(@Nonnull Func1Throws<T, U, ? super Exception> func);
+    public abstract <U> Calc<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func);
+
+    @Nonnull
+    public abstract <U> Calc<U> flatMap(@Nonnull Func1<T, Calc<U>> func);
 
     @Nonnull
     public abstract Calc<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
@@ -26,7 +29,7 @@ public abstract class Calc<T>
     @Nonnull
     public static <T> Calc<T> lazy(@Nonnull Func0Throws<T, ? super Exception> func)
     {
-        return new LazyStart<T>(func);
+        return new LazyStart<>(func);
     }
 
     private static class EagerSuccess<T>
@@ -41,10 +44,21 @@ public abstract class Calc<T>
 
         @Nonnull
         @Override
-        public <U> Calc<U> next(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        public <U> Calc<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
         {
             try {
                 return new EagerSuccess<>(func.apply(value));
+            } catch (Exception ex) {
+                return new EagerFailure<>(ex);
+            }
+        }
+
+        @Nonnull
+        @Override
+        public <U> Calc<U> flatMap(@Nonnull Func1<T, Calc<U>> func)
+        {
+            try {
+                return func.apply(value);
             } catch (Exception ex) {
                 return new EagerFailure<>(ex);
             }
@@ -83,7 +97,15 @@ public abstract class Calc<T>
         @SuppressWarnings("unchecked")
         @Nonnull
         @Override
-        public <U> Calc<U> next(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        public <U> Calc<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        {
+            return (Calc<U>)this;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Nonnull
+        @Override
+        public <U> Calc<U> flatMap(@Nonnull Func1<T, Calc<U>> func)
         {
             return (Calc<U>)this;
         }
@@ -115,19 +137,23 @@ public abstract class Calc<T>
 
         @Nonnull
         @Override
-        public <U> Calc<U> next(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        public <U> Calc<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
         {
             return new LazyStep<>(func, this);
         }
 
         @Nonnull
         @Override
+        public <U> Calc<U> flatMap(@Nonnull Func1<T, Calc<U>> func)
+        {
+            return lazy(() -> func.apply(this.func.apply()).get());
+        }
+
+        @Nonnull
+        @Override
         public Calc<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
         {
-            return next(value -> {
-                proc.apply(value);
-                return value;
-            });
+            return map(mapProc(proc));
         }
 
         @Override
@@ -153,19 +179,23 @@ public abstract class Calc<T>
 
         @Nonnull
         @Override
-        public <V> Calc<V> next(@Nonnull Func1Throws<U, V, ? super Exception> func)
+        public <V> Calc<V> map(@Nonnull Func1Throws<U, V, ? super Exception> func)
         {
             return new LazyStep<>(func, this);
         }
 
         @Nonnull
         @Override
+        public <U1> Calc<U1> flatMap(@Nonnull Func1<U, Calc<U1>> func)
+        {
+            return lazy(() -> func.apply(this.func.apply(source.get())).get());
+        }
+
+        @Nonnull
+        @Override
         public Calc<U> apply(@Nonnull Proc1Throws<U, ? super Exception> proc)
         {
-            return next(value -> {
-                proc.apply(value);
-                return value;
-            });
+            return map(mapProc(proc));
         }
 
         @Override
@@ -174,5 +204,13 @@ public abstract class Calc<T>
         {
             return func.apply(source.get());
         }
+    }
+
+    private static <T> Func1Throws<T, T, Exception> mapProc(@Nonnull Proc1Throws<T, ? super Exception> proc)
+    {
+        return x -> {
+            proc.apply(x);
+            return x;
+        };
     }
 }
