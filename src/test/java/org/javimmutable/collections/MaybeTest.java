@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.Option.*;
+import static org.javimmutable.collections.Maybe.*;
 
-public class OptionTest
+public class MaybeTest
     extends TestCase
 {
     public void testNone()
     {
-        final Option<Integer> o = none();
+        final Maybe<Integer> o = none();
         assertSame(o, none());
-        assertSame(o, Option.option(null));
+        assertSame(o, Maybe.maybe(null));
         assertEquals(o, o);
         assertEquals("None", o.toString());
         assertEquals(some(4), o.map(() -> 4));
@@ -57,7 +57,7 @@ public class OptionTest
         assertEquals(true, o.isNone());
         assertEquals(false, o.isSome());
         assertSame(Holders.of(), o.toHolder());
-        assertSame(o, o.toHolder().toOption());
+        assertSame(o, o.toHolder().toMaybe());
         assertSame(o, first(Collections.emptyList()));
         assertSame(o, first(Collections.emptyList(), x -> true));
         StandardIteratorTests.emptyIteratorTest(o.iterator());
@@ -67,10 +67,10 @@ public class OptionTest
     public void testSome()
         throws IOException
     {
-        final Option<Integer> o = some(1);
+        final Maybe<Integer> o = some(1);
         assertEquals(o, o);
         assertThat(some(1)).isEqualTo(o);
-        assertThat(Option.option(3)).isNotEqualTo(o);
+        assertThat(Maybe.maybe(3)).isNotEqualTo(o);
         assertEquals("Some(1)", o.toString());
         assertSame(o, o.map(() -> dontCallMe(22, "map0")));
         assertSame(o, o.mapThrows(() -> dontCallMe(30, "mapThrows0")));
@@ -105,8 +105,8 @@ public class OptionTest
         assertEquals(false, o.isNone());
         assertEquals(true, o.isSome());
         assertEquals(Holders.of(1), o.toHolder());
-        assertEquals(o, o.toHolder().toOption());
-        assertEquals(option("y"), first(Arrays.asList("x", "y", "z"), x -> x.equals("y")));
+        assertEquals(o, o.toHolder().toMaybe());
+        assertEquals(maybe("y"), first(Arrays.asList("x", "y", "z"), x -> x.equals("y")));
         StandardIteratorTests.listIteratorTest(Collections.singletonList(1), o.iterator());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(Collections.singleton(1), o);
         assertThat(some(4)).isEqualTo(some(4));

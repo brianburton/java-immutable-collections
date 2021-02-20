@@ -89,7 +89,7 @@ public interface Holder<T>
     T getValueOr(T defaultValue);
 
     @Nonnull
-    Option<T> toOption();
+    Maybe<T> toMaybe();
 
     /**
      * Call consumer with my value if I am filled.  Otherwise do nothing.

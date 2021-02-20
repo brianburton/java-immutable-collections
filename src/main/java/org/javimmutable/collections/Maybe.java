@@ -10,73 +10,73 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public abstract class Option<T>
+public abstract class Maybe<T>
     implements IterableStreamable<T>
 {
     @Nonnull
-    public abstract <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping);
+    public abstract <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping);
 
     @Nonnull
-    public abstract <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping);
+    public abstract <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> someMapping);
 
     @Nonnull
-    public abstract <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
-                                      @Nonnull Func1<? super T, ? extends U> someMapping);
+    public abstract <U> Maybe<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                     @Nonnull Func1<? super T, ? extends U> someMapping);
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
+    public abstract <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
         throws E;
 
     @Nonnull
-    public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+    public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
         throws E;
 
     @Nonnull
-    public abstract <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
-                                                                 @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+    public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                                @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
         throws E;
 
     @Nonnull
-    public abstract Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping);
+    public abstract Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> noneMapping);
 
     @Nonnull
-    public abstract <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping);
+    public abstract <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> someMapping);
 
     @Nonnull
-    public abstract <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
-                                          @Nonnull Func1<? super T, Option<A>> someMapping);
+    public abstract <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> noneMapping,
+                                         @Nonnull Func1<? super T, Maybe<A>> someMapping);
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
+    public abstract <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> noneMapping)
         throws E;
 
     @Nonnull
-    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+    public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
         throws E;
 
     @Nonnull
-    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
-                                                                     @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+    public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> noneMapping,
+                                                                    @Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
         throws E;
 
     @Nonnull
-    public abstract Option<T> select(@Nonnull Predicate<? super T> predicate);
+    public abstract Maybe<T> select(@Nonnull Predicate<? super T> predicate);
 
     @Nonnull
-    public abstract Option<T> reject(@Nonnull Predicate<? super T> predicate);
+    public abstract Maybe<T> reject(@Nonnull Predicate<? super T> predicate);
 
     @Nonnull
-    public abstract Option<T> apply(@Nonnull Proc0 noneAction);
+    public abstract Maybe<T> apply(@Nonnull Proc0 noneAction);
 
     @Nonnull
-    public abstract Option<T> apply(@Nonnull Proc1<? super T> someAction);
+    public abstract Maybe<T> apply(@Nonnull Proc1<? super T> someAction);
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+    public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
         throws E;
 
     @Nonnull
-    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+    public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
         throws E;
 
     @Nonnull
@@ -113,39 +113,39 @@ public abstract class Option<T>
     @Nonnull
     public abstract Holder<T> toHolder();
 
-    private Option()
+    private Maybe()
     {
     }
 
     @Nonnull
-    public static <T> Option<T> option(@Nullable T value)
+    public static <T> Maybe<T> maybe(@Nullable T value)
     {
         return value != null ? some(value) : none();
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> Option<T> none()
+    public static <T> Maybe<T> none()
     {
-        return (Option<T>)None.NONE;
+        return (Maybe<T>)None.NONE;
     }
 
     @Nonnull
-    public static <T> Option<T> some(@Nonnull T value)
+    public static <T> Maybe<T> some(@Nonnull T value)
     {
         return new Some<>(value);
     }
 
     @Nonnull
-    public static <T> Option<T> first(@Nonnull Iterable<? extends T> collection)
+    public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection)
     {
         final Iterator<? extends T> i = collection.iterator();
         return i.hasNext() ? some(i.next()) : none();
     }
 
     @Nonnull
-    public static <T> Option<T> first(@Nonnull Iterable<? extends T> collection,
-                                      @Nonnull Func1<? super T, Boolean> predicate)
+    public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection,
+                                     @Nonnull Func1<? super T, Boolean> predicate)
     {
         for (T value : collection) {
             if (predicate.apply(value)) {
@@ -156,7 +156,7 @@ public abstract class Option<T>
     }
 
     private static class None<T>
-        extends Option<T>
+        extends Maybe<T>
     {
         @SuppressWarnings("rawtypes")
         private static final None NONE = new None();
@@ -167,46 +167,29 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping)
+        public <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
             return some(noneMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
+        public <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
         {
             return none();
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
-                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        public <U> Maybe<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                @Nonnull Func1<? super T, ? extends U> someMapping)
         {
             return some(noneMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
-            throws E
-        {
-            return some(noneMapping.apply());
-        }
-
-        @Nonnull
-        @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
-            throws E
-        {
-            return none();
-        }
-
-        @Nonnull
-        @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
-                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+        public <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
             throws E
         {
             return some(noneMapping.apply());
@@ -214,21 +197,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping)
-        {
-            return noneMapping.apply();
-        }
-
-        @Nonnull
-        @Override
-        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping)
-        {
-            return none();
-        }
-
-        @Nonnull
-        @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
             throws E
         {
             return none();
@@ -236,39 +205,70 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
-                                     @Nonnull Func1<? super T, Option<A>> someMapping)
-        {
-            return noneMapping.apply();
-        }
-
-        @Nonnull
-        @Override
-        public <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
+        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                           @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
             throws E
         {
-            return noneMapping.apply();
+            return some(noneMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
-                                                                @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
-            throws E
+        public Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> noneMapping)
         {
             return noneMapping.apply();
         }
 
         @Nonnull
         @Override
-        public Option<T> select(@Nonnull Predicate<? super T> predicate)
+        public <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> someMapping)
         {
             return none();
         }
 
         @Nonnull
         @Override
-        public Option<T> reject(@Nonnull Predicate<? super T> predicate)
+        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
+            throws E
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> noneMapping,
+                                    @Nonnull Func1<? super T, Maybe<A>> someMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> noneMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> noneMapping,
+                                                               @Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public Maybe<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public Maybe<T> reject(@Nonnull Predicate<? super T> predicate)
         {
             return none();
         }
@@ -288,7 +288,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc0 noneAction)
+        public Maybe<T> apply(@Nonnull Proc0 noneAction)
         {
             noneAction.apply();
             return this;
@@ -296,14 +296,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc1<? super T> someAction)
+        public Maybe<T> apply(@Nonnull Proc1<? super T> someAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
             throws E
         {
             noneAction.apply();
@@ -312,7 +312,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
             throws E
         {
             return this;
@@ -416,7 +416,7 @@ public abstract class Option<T>
     }
 
     private static class Some<T>
-        extends Option<T>
+        extends Maybe<T>
     {
         private final T value;
 
@@ -427,68 +427,29 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <U> Option<T> map(@Nonnull Func0<? extends T> noneMapping)
+        public <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
+        public <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
         {
             return some(someMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <U> Option<U> map(@Nonnull Func0<? extends U> noneMapping,
-                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        public <U> Maybe<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                @Nonnull Func1<? super T, ? extends U> someMapping)
         {
             return some(someMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
-            throws E
-        {
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
-            throws E
-        {
-            return some(someMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
-        public <U, E extends Exception> Option<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
-                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
-            throws E
-        {
-            return some(someMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
-        public Option<T> flatMap(@Nonnull Func0<Option<T>> noneMapping)
-        {
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> someMapping)
-        {
-            return someMapping.apply(value);
-        }
-
-        @Nonnull
-        @Override
-        public <E extends Exception> Option<T> flatMapThrows(@Nonnull Func0Throws<Option<T>, E> noneMapping)
+        public <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
             throws E
         {
             return this;
@@ -496,7 +457,46 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                           @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> noneMapping)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> noneMapping)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
             throws E
         {
             return someMapping.apply(value);
@@ -504,16 +504,16 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <A> Option<A> flatMap(@Nonnull Func0<Option<A>> noneMapping,
-                                     @Nonnull Func1<? super T, Option<A>> someMapping)
+        public <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> noneMapping,
+                                    @Nonnull Func1<? super T, Maybe<A>> someMapping)
         {
             return someMapping.apply(value);
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func0Throws<Option<A>, E> noneMapping,
-                                                                @Nonnull Func1Throws<? super T, Option<A>, E> someMapping)
+        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> noneMapping,
+                                                               @Nonnull Func1Throws<? super T, Maybe<A>, E> someMapping)
             throws E
         {
             return someMapping.apply(value);
@@ -521,14 +521,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> select(@Nonnull Predicate<? super T> predicate)
+        public Maybe<T> select(@Nonnull Predicate<? super T> predicate)
         {
             return predicate.test(value) ? this : none();
         }
 
         @Nonnull
         @Override
-        public Option<T> reject(@Nonnull Predicate<? super T> predicate)
+        public Maybe<T> reject(@Nonnull Predicate<? super T> predicate)
         {
             return predicate.test(value) ? none() : this;
         }
@@ -548,14 +548,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc0 noneAction)
+        public Maybe<T> apply(@Nonnull Proc0 noneAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public Option<T> apply(@Nonnull Proc1<? super T> someAction)
+        public Maybe<T> apply(@Nonnull Proc1<? super T> someAction)
         {
             someAction.apply(value);
             return this;
@@ -563,7 +563,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
             throws E
         {
             return this;
@@ -571,7 +571,7 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
             throws E
         {
             someAction.apply(value);

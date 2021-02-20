@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.javimmutable.collections.Option.none;
+import static org.javimmutable.collections.Maybe.none;
 
 /**
  * Provides static utility methods for constructing Holder instances.
@@ -167,7 +167,7 @@ public class Holders<V>
 
         @Nonnull
         @Override
-        public Option<V> toOption()
+        public Maybe<V> toMaybe()
         {
             return none();
         }
@@ -267,9 +267,9 @@ public class Holders<V>
 
         @Nonnull
         @Override
-        default Option<V> toOption()
+        default Maybe<V> toMaybe()
         {
-            return Option.option(getValue());
+            return Maybe.maybe(getValue());
         }
 
         @Override
