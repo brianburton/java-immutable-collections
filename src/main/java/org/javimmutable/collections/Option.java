@@ -34,7 +34,14 @@ public abstract class Option<T>
     public abstract Option<T> reject(@Nonnull Predicate<? super T> predicate);
 
     @Nonnull
+    public abstract Option<T> apply(@Nonnull Proc0 action);
+
+    @Nonnull
     public abstract Option<T> apply(@Nonnull Proc1<? super T> action);
+
+    @Nonnull
+    public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+        throws E;
 
     @Nonnull
     public abstract <E extends Exception> Option<T> applyThrows(@Nonnull Proc1Throws<? super T, E> action)
@@ -185,8 +192,25 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
+        public Option<T> apply(@Nonnull Proc0 action)
+        {
+            action.apply();
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public Option<T> apply(@Nonnull Proc1<? super T> action)
         {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+            throws E
+        {
+            action.apply();
             return this;
         }
 
@@ -364,9 +388,24 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
+        public Option<T> apply(@Nonnull Proc0 action)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public Option<T> apply(@Nonnull Proc1<? super T> action)
         {
             action.apply(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Option<T> applyThrows(@Nonnull Proc0Throws<E> action)
+            throws E
+        {
             return this;
         }
 

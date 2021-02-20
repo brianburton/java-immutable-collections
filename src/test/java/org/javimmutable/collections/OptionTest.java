@@ -5,8 +5,10 @@ import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -30,6 +32,10 @@ public class OptionTest
         assertSame(o, o.select(x -> dontCallMe(false, "select")));
         assertSame(o, o.reject(x -> dontCallMe(true, "reject")));
         assertSame(o, o.reject(x -> dontCallMe(false, "reject")));
+        List<Integer> values = new ArrayList<>();
+        assertSame(o, o.apply(() -> values.add(1)));
+        assertSame(o, o.applyThrows(() -> values.add(2)));
+        assertEquals(Arrays.asList(1, 2), values);
         assertSame(o, o.apply(x -> dontCallMe("apply")));
         assertSame(o, o.applyThrows(x -> dontCallMe("applyThrows")));
         assertThatThrownBy(() -> o.unsafeGet()).isInstanceOf(NoSuchElementException.class);
@@ -66,6 +72,8 @@ public class OptionTest
         assertSame(none(), o.select(x -> false));
         assertSame(none(), o.reject(x -> true));
         assertSame(o, o.reject(x -> false));
+        assertSame(o, o.apply(() -> dontCallMe("apply")));
+        assertSame(o, o.applyThrows(() -> dontCallMe("applyThrows")));
         final Temp.Int1 called = Temp.intVar(0);
         assertSame(o, o.apply(x -> called.a += 1));
         assertSame(o, o.applyThrows(x -> called.a += 1));
