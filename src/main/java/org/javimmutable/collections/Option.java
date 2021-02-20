@@ -21,10 +21,10 @@ public abstract class Option<T>
         throws E;
 
     @Nonnull
-    public abstract <A> Option<A> bind(@Nonnull Func1<? super T, Option<A>> transforminator);
+    public abstract <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator);
 
     @Nonnull
-    public abstract <A, E extends Exception> Option<A> bindThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+    public abstract <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
         throws E;
 
     @Nonnull
@@ -143,14 +143,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <A> Option<A> bind(@Nonnull Func1<? super T, Option<A>> transforminator)
+        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator)
         {
             return none();
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> bindThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
             throws E
         {
             return none();
@@ -322,14 +322,14 @@ public abstract class Option<T>
 
         @Nonnull
         @Override
-        public <A> Option<A> bind(@Nonnull Func1<? super T, Option<A>> transforminator)
+        public <A> Option<A> flatMap(@Nonnull Func1<? super T, Option<A>> transforminator)
         {
             return transforminator.apply(value);
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Option<A> bindThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
+        public <A, E extends Exception> Option<A> flatMapThrows(@Nonnull Func1Throws<? super T, Option<A>, E> transforminator)
             throws E
         {
             return transforminator.apply(value);

@@ -1,6 +1,8 @@
 package org.javimmutable.collections;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,8 +24,8 @@ public class OptionTest
         assertEquals("None", o.toString());
         assertSame(o, o.map(x -> dontCallMe(1, "map")));
         assertSame(o, o.mapThrows(x -> dontCallMe(1, "mapThrows")));
-        assertSame(o, o.bind(x -> dontCallMe(some(1), "bind")));
-        assertSame(o, o.bindThrows(x -> dontCallMe(some(1), "bindThrows")));
+        assertSame(o, o.flatMap(x -> dontCallMe(some(1), "bind")));
+        assertSame(o, o.flatMapThrows(x -> dontCallMe(some(1), "bindThrows")));
         assertSame(o, o.select(x -> dontCallMe(true, "select")));
         assertSame(o, o.select(x -> dontCallMe(false, "select")));
         assertSame(o, o.reject(x -> dontCallMe(true, "reject")));
@@ -44,6 +46,8 @@ public class OptionTest
         assertSame(o, o.toHolder().toOption());
         assertSame(o, first(Collections.emptyList()));
         assertSame(o, first(Collections.emptyList(), x -> true));
+        StandardIteratorTests.emptyIteratorTest(o.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(Collections.emptyList(), o);
     }
 
     public void testSome()
@@ -56,8 +60,8 @@ public class OptionTest
         assertEquals("Some(1)", o.toString());
         assertEquals(some(12), o.map(x -> 12));
         assertEquals(some(12), o.mapThrows(x -> 12));
-        assertEquals(some(15), o.bind(x -> some(15)));
-        assertEquals(some(15), o.bindThrows(x -> some(15)));
+        assertEquals(some(15), o.flatMap(x -> some(15)));
+        assertEquals(some(15), o.flatMapThrows(x -> some(15)));
         assertSame(o, o.select(x -> true));
         assertSame(none(), o.select(x -> false));
         assertSame(none(), o.reject(x -> true));
@@ -79,6 +83,8 @@ public class OptionTest
         assertEquals(Holders.of(1), o.toHolder());
         assertEquals(o, o.toHolder().toOption());
         assertEquals(option("y"), first(Arrays.asList("x", "y", "z"), x -> x.equals("y")));
+        StandardIteratorTests.listIteratorTest(Collections.singletonList(1), o.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(Collections.singleton(1), o);
     }
 
     private static void dontCallMe(String message)
