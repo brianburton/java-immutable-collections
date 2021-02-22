@@ -38,9 +38,11 @@ package org.javimmutable.collections;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.serialization.MaybeProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
@@ -52,10 +54,11 @@ import java.util.function.Predicate;
  * Provides a variety of utility methods to allow call chaining.
  */
 public abstract class Maybe<T>
-    implements IterableStreamable<T>
+    implements IterableStreamable<T>,
+               Serializable
 {
     /**
-     * Produce a non-empty Maybe.  If this Maybe is non-empty it is returned.  
+     * Produce a non-empty Maybe.  If this Maybe is non-empty it is returned.
      * Otherwise the noneMapping function is called to provide a value
      * for the result Maybe.
      *
@@ -89,7 +92,7 @@ public abstract class Maybe<T>
                                      @Nonnull Func1<? super T, ? extends U> someMapping);
 
     /**
-     * Produce a non-empty Maybe.  If this Maybe is non-empty it is returned.  
+     * Produce a non-empty Maybe.  If this Maybe is non-empty it is returned.
      * Otherwise the noneMapping function is called to provide a value
      * for the result Maybe.
      *
@@ -693,6 +696,11 @@ public abstract class Maybe<T>
         {
             return "None";
         }
+
+        private Object writeReplace()
+        {
+            return new MaybeProxy(this);
+        }
     }
 
     private static class Some<T>
@@ -959,6 +967,11 @@ public abstract class Maybe<T>
         public String toString()
         {
             return "Some(" + value + ")";
+        }
+
+        private Object writeReplace()
+        {
+            return new MaybeProxy(this);
         }
     }
 }

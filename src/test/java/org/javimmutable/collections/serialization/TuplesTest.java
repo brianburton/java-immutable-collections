@@ -57,6 +57,5 @@ public class TuplesTest
 
         StandardSerializableTests.verifySerializable(Tuple4.of(null, null, null, null), "H4sIAAAAAAAAAFvzloG1uIhBOb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1gvpLQgJ9XkPwj8UzFmYmDxYWBNyywqLilhEPIB6krUz0nMS9f3T8oC6rD2YWBLyy8tKskoZKhjYATyilOT8/NSoDzWkozMIginogAEAPqxYOuCAAAA");
         StandardSerializableTests.verifySerializable(Tuple4.of(10, "ten", 23.0, Arrays.asList(18, 72)), "H4sIAAAAAAAAAFvzloG1uIhBOb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1gvpLQgJ9XkPwj8UzFmYmDxYWBNyywqLilhEPIB6krUz0nMS9f3T8oC6rD2YWBLyy8tKskoZKhjYATyilOT8/NSoDzWkozMIginogBosyBIvx5Iv55nXklqemqR0KMFS743tlswMTB6MrCWJeaUplYUMQgg1PmV5ialFrWtmSrLPeVBNxMDQ0UBAwMDF9AwKbCi0pLMHD3HoqLEymIVMOWTWVxyc4nNvrMdbJeApkYzMCaWMAhHYzq9oqC0iEEEIoHiJut/09cuYGx+JA2zjakY5AVmIEsIzvIoYWAuSc0rRnGsS34pMDgbNh/y0sz+zQK03QXmJ5A2FgdzBjAAAEMrICKIAQAA");
-
     }
 }

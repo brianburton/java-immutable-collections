@@ -37,6 +37,7 @@ package org.javimmutable.collections;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.io.IOException;
@@ -152,6 +153,13 @@ public class MaybeTest
         assertThat(some(4)).isEqualTo(some(4));
         assertThat(some(7)).isNotEqualTo(some(4));
         assertThat(some(5)).isNotEqualTo(none());
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        StandardSerializableTests.verifySerializable(Maybe.none(), "H4sIAAAAAAAAAFvzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAGt3se9TAAAA");
+        StandardSerializableTests.verifySerializable(Maybe.some(10), "H4sIAAAAAAAAAFvzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65ezfQNEGgSYl6OYl56XqeeSWp6alFQo8WLPne2G7BxMDoycBalphTmlpRxCCAUOdXmpuUWtS2Zqos95QH3UwgAxkYGLgqAGYEj7CgAAAA");
     }
 
     private static void dontCallMe(String message)
