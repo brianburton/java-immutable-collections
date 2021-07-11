@@ -35,17 +35,16 @@
 
 package org.javimmutable.collections;
 
-import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.EmptyIterator;
-import org.javimmutable.collections.iterators.SingleValueIterator;
-import org.javimmutable.collections.serialization.MaybeProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.serialization.MaybeProxy;
 
 /**
  * Similar to Holder but implemented as a concrete ADT rather than an interface.
@@ -66,7 +65,7 @@ public abstract class Maybe<T>
      * @return a non-empty Maybe
      */
     @Nonnull
-    public abstract <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping);
+    public abstract Maybe<T> map(@Nonnull Func0<? extends T> noneMapping);
 
     /**
      * Produce a Maybe that is empty if this is empty or else contains the result
@@ -259,7 +258,7 @@ public abstract class Maybe<T>
      * Gets this value.  Throws NoSuchElementException if this is empty.
      *
      * @return this value
-     * @throw NoSuchElementException if this is empty
+     * @throws NoSuchElementException if this is empty
      */
     @Nonnull
     public abstract T unsafeGet();
@@ -269,7 +268,7 @@ public abstract class Maybe<T>
      * to throw if this is empty.
      *
      * @return this value
-     * @throw an exception produced by mapping if this is empty
+     * @throws E an exception produced by mapping if this is empty
      */
     @Nonnull
     public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
@@ -304,7 +303,7 @@ public abstract class Maybe<T>
 
     /**
      * Gets a value based on this value.  If this is empty noneMapping is called
-     * to obain a return value.  Otherwise this value is passed to someMapping to
+     * to obtain a return value.  Otherwise this value is passed to someMapping to
      * obtain a return value.
      *
      * @param noneMapping function to produce a value to return if this is empty
@@ -328,7 +327,7 @@ public abstract class Maybe<T>
 
     /**
      * Gets a value based on this value.  If this is empty noneMapping is called
-     * to obain a return value.  Otherwise this value is passed to someMapping to
+     * to obtain a return value.  Otherwise this value is passed to someMapping to
      * obtain a return value.
      *
      * @param noneMapping function to produce a value to return if this is empty
@@ -450,7 +449,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
+        public Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
             return some(noneMapping.apply());
         }
@@ -715,7 +714,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <U> Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
+        public Maybe<T> map(@Nonnull Func0<? extends T> noneMapping)
         {
             return this;
         }
