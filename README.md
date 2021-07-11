@@ -290,6 +290,48 @@ to the map. Some keys update existing entries while others are new keys to be ad
         assertThat(list(myMap.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 ````
 
+Maybe - Avoiding null
+---
+
+The use of null has been controversial. The JImmutable collections are mostly indifferent to null. Nulls are not
+permitted as keys to maps or values in sets. However, they can be stored as values in lists and maps. Holders returned
+by the `find()` method permit nulls as well.
+
+There are many disadvantages to nulls though. In particular, they cannot be used in call chains. The `Maybe` class
+provides an alternative to null that can be easily chained in a functional style.  `Maybe` is similar to `Holder` but
+does not allow nulls and provides more monadic functionality. It is meant to be used in sequences of method calls.
+
+There are two possible states for a `Maybe` object:
+
+- `None` indicates no value is stored within the `Maybe`. The `unsafeGet` methods cannot be called on these objects but
+  all others can be called safely.
+- `Some` indicates a non-null value is stored within the `Maybe`. All methods can be called on these objects.
+
+Maybe should be used when a value might not exist. For example as the result of a database query for a single object.
+Once you have a Maybe value you can call the `map` method with a lambda that transforms the value (if one exists). The
+transformed value can be of the same or another type. If your lambda returns another Maybe you should use the
+`flatMap` method to "unwrap" the resulting value.
+
+````java
+// simplified class for illustration - normally you'd use getters
+class Person
+{
+  final String emailAddress;
+  final Maybe<PhoneNumber> homePhone;
+  final Maybe<PhoneNumber> mobilePhone;
+}
+  
+  Maybe<Person> customer = customers.lookupCustomerByName("Jones", "Patrick");
+  Maybe<String> email = customer.map(c -> c.emailAddress);
+  // get the area code from the home phone number if we have one, "" otherwise
+  String areaCode = customer.flatMap(c -> c.homePhone)
+          .map(phone -> phone.getAreaCode())
+          .get("");
+// another way to do the same - using match
+areaCode=customer.flatMap(c->c.homePhone)
+        .match("",phone->phone.getAreaCode());
+````
+
 # Resources
 
 Wiki Pages
