@@ -35,11 +35,9 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -50,11 +48,11 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
-import static org.assertj.core.api.Assertions.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.Func1;
 
 public class StandardSerializableTests
-    extends TestCase
 {
     /**
      * Iterator factory for Iterable objects that just calls iterator() method.
