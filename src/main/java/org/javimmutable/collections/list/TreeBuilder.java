@@ -35,14 +35,13 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Indexed;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import org.javimmutable.collections.Indexed;
 
 @NotThreadSafe
 class TreeBuilder<T>
@@ -183,6 +182,10 @@ class TreeBuilder<T>
         final int sourceSize = limit - offset;
         if (sourceSize == 0) {
             return EmptyNode.instance();
+        } else if (sourceSize == 1) {
+            return new OneValueNode<>(source.get(offset));
+        } else if (sourceSize <= MultiValueNode.MAX_SIZE) {
+            return new MultiValueNode<>(source.subArray(offset, limit), sourceSize);
         }
 
         final List<AbstractNode<T>> nodes = new ArrayList<>(1 + sourceSize / MultiValueNode.MAX_SIZE);
