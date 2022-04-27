@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.Assert;
+import static org.javimmutable.collections.util.JImmutables.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.JImmutableList;
 
@@ -47,6 +50,7 @@ public class StandardJImmutableListTests
         verifyInsertAllLast(empty);
         verifyTransform(empty);
         verifyAssign(empty);
+        verifySingle(empty);
     }
 
     public static void verifyInsertAllFirst(JImmutableList<Integer> empty)
@@ -59,7 +63,7 @@ public class StandardJImmutableListTests
             final int last = actual.size() + addSize;
             actual = actual.insertAllFirst(appendAll(empty, first, last));
             expected = prependAll(expected, first, last);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -73,7 +77,7 @@ public class StandardJImmutableListTests
             final int last = actual.size() + addSize;
             actual = actual.insertAllLast(appendAll(empty, first, last));
             expected = appendAll(expected, first, last);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -85,7 +89,7 @@ public class StandardJImmutableListTests
             for (int i = 0; i < size; i++) {
                 actual = actual.assign(i, 1 + i);
             }
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -93,12 +97,20 @@ public class StandardJImmutableListTests
     {
         JImmutableList<Integer> orig = appendAll(empty, 1, 20);
         JImmutableList<Integer> transformed = orig.transform(i -> i + 10);
-        Assert.assertSame(orig.getClass(), transformed.getClass());
-        Assert.assertEquals(appendAll(empty, 11, 30), transformed);
+        assertSame(orig.getClass(), transformed.getClass());
+        assertEquals(appendAll(empty, 11, 30), transformed);
 
         transformed = orig.transformSome(i -> i < 11 ? Holders.of(i) : Holders.of());
-        Assert.assertSame(orig.getClass(), transformed.getClass());
-        Assert.assertEquals(appendAll(empty, 1, 10), transformed);
+        assertSame(orig.getClass(), transformed.getClass());
+        assertEquals(appendAll(empty, 1, 10), transformed);
+    }
+
+    private static void verifySingle(JImmutableList<Integer> empty)
+    {
+        assertEquals(none(), empty.single());
+        assertEquals(some(1), empty.insert(1).single());
+        assertEquals(none(), empty.insert(null).single());
+        assertEquals(none(), empty.insert(1).insert(2).single());
     }
 
     private static JImmutableList<Integer> appendAll(JImmutableList<Integer> answer,

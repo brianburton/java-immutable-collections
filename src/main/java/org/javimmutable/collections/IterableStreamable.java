@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections;
 
+import static org.javimmutable.collections.Maybe.maybe;
+import static org.javimmutable.collections.Maybe.none;
+
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
@@ -162,22 +165,19 @@ public interface IterableStreamable<T>
     }
 
     /**
-     * Returns a Maybe containing a value if this iterable contains only a single value and that value is non-null.
+     * Returns a Maybe containing a value if this IterableStreamable contains only a single value and that value is non-null.
      * Otherwise returns and empty Maybe.
      *
      * @return Maybe possibly containing the single non-null value in this iterable
      */
     default Maybe<T> single()
     {
-        Maybe<T> answer = Maybe.none();
         final Iterator<T> iter = iterator();
-        if (iter.hasNext()) {
-            final T value = iter.next();
-            if (value != null && !iter.hasNext()) {
-                answer = Maybe.some(value);
-            }
+        if (!iter.hasNext()) {
+            return none();
         }
-        return answer;
+        final T value = iter.next();
+        return iter.hasNext() ? none() : maybe(value);
     }
 
     /**

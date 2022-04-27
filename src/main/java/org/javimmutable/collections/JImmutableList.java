@@ -35,15 +35,15 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for containers that store items in list form with individual items available
@@ -443,4 +443,15 @@ public interface JImmutableList<T>
     @Nonnull
     JImmutableList<T> slice(int offset,
                             int limit);
+
+    /**
+     * Returns a Maybe containing a value if this list contains only a single value and that value is non-null.
+     * Otherwise returns and empty Maybe.  i.e. empty unless size() == 1 and get(0) returns a non-null value.
+     *
+     * @return Maybe possibly containing the single non-null value in this list
+     */
+    default Maybe<T> single()
+    {
+        return size() == 1 ? Maybe.maybe(get(0)) : Maybe.none();
+    }
 }
