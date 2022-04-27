@@ -35,6 +35,14 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.JImmutableArray;
@@ -46,6 +54,7 @@ import org.javimmutable.collections.JImmutableSet;
 import org.javimmutable.collections.JImmutableSetMap;
 import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -72,14 +81,6 @@ import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
-
 /**
  * This class contains static factory methods to create instances of each of the collection interfaces.
  * Overloaded variants are provided for each to pre-populate the created collection with existing values.
@@ -92,6 +93,52 @@ public final class JImmutables
 {
     private JImmutables()
     {
+    }
+
+    /**
+     * Returns an empty Maybe. All empty Maybes share a common instance.
+     */
+    @Nonnull
+    public static <T> Maybe<T> none()
+    {
+        return Maybe.none();
+    }
+
+    /**
+     * Returns a Maybe containing the value.  The value must be non-null.
+     */
+    @Nonnull
+    public static <T> Maybe<T> some(@Nonnull T value)
+    {
+        return Maybe.some(value);
+    }
+
+    /**
+     * Returns an empty Maybe if value is null, otherwise a Maybe containing
+     * the value is returned.
+     */
+    @Nonnull
+    static <T> Maybe<T> maybe(@Nullable T valueOrNull)
+    {
+        return Maybe.maybe(valueOrNull);
+    }
+
+    /**
+     * Determine if the object is an instance of the specified Class or a subclass.
+     * If that is the case returns a Maybe containing the object case to the class.
+     * If that is not the case returns an empty Maybe.  Note that this is generally
+     * only useful for classes with simple (non-generic) types.
+     *
+     * @param klass       class to cast the object to
+     * @param valueOrNull object to be case
+     * @param <T>         type of the class
+     * @return a Maybe
+     */
+    @Nonnull
+    static <T> Maybe<T> cast(@Nonnull Class<T> klass,
+                             @Nullable T valueOrNull)
+    {
+        return Maybe.cast(klass, valueOrNull);
     }
 
     /**
