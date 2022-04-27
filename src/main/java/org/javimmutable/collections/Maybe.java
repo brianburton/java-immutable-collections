@@ -197,7 +197,7 @@ public abstract class Maybe<T>
         throws E;
 
     /**
-     * Returns this is this is non-empty and predicate returns true.
+     * Returns this if this is non-empty and predicate returns true.
      * Otherwise an empty Maybe is returned.
      *
      * @param predicate determines whether to accept this value
@@ -207,7 +207,7 @@ public abstract class Maybe<T>
     public abstract Maybe<T> select(@Nonnull Predicate<? super T> predicate);
 
     /**
-     * Returns this is this is non-empty and predicate returns false.
+     * Returns this if this is non-empty and predicate returns false.
      * Otherwise an empty Maybe is returned.
      *
      * @param predicate determines whether to reject this value
@@ -217,7 +217,7 @@ public abstract class Maybe<T>
     public abstract Maybe<T> reject(@Nonnull Predicate<? super T> predicate);
 
     /**
-     * Invokes noneAction is this is empty.
+     * Invokes noneAction if this is empty.
      *
      * @param noneAction action to call if this is empty
      * @return this
@@ -226,7 +226,7 @@ public abstract class Maybe<T>
     public abstract Maybe<T> apply(@Nonnull Proc0 noneAction);
 
     /**
-     * Invokes someAction with this value is this is non-empty.
+     * Invokes someAction with this value if this is non-empty.
      *
      * @param someAction action to call if this is non-empty
      * @return this
@@ -235,7 +235,7 @@ public abstract class Maybe<T>
     public abstract Maybe<T> apply(@Nonnull Proc1<? super T> someAction);
 
     /**
-     * Invokes noneAction is this is empty.
+     * Invokes noneAction if this is empty.
      *
      * @param noneAction action to call if this is empty
      * @return this
@@ -245,7 +245,7 @@ public abstract class Maybe<T>
         throws E;
 
     /**
-     * Invokes someAction with this value is this is non-empty.
+     * Invokes someAction with this value if this is non-empty.
      *
      * @param someAction action to call if this is non-empty
      * @return this
@@ -385,6 +385,24 @@ public abstract class Maybe<T>
     public static <T> Maybe<T> maybe(@Nullable T value)
     {
         return value != null ? some(value) : none();
+    }
+
+    /**
+     * Determine if the object is an instance of the specified Class or a subclass.
+     * If that is the case returns a Maybe containing the object case to the class.
+     * If that is not the case returns an empty Maybe.  Note that this is generally
+     * only useful for classes with simple (non-generic) types.
+     *
+     * @param klass       class to cast the object to
+     * @param valueOrNull object to be case
+     * @param <T>         type of the class
+     * @return a Maybe
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <T> Maybe<T> cast(@Nonnull Class<T> klass,
+                                    @Nullable Object valueOrNull)
+    {
+        return klass.isInstance(valueOrNull) ? new Some(valueOrNull) : none();
     }
 
     /**

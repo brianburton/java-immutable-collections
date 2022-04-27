@@ -35,10 +35,12 @@
 
 package org.javimmutable.collections;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.Maybe.cast;
+import static org.javimmutable.collections.Maybe.first;
+import static org.javimmutable.collections.Maybe.maybe;
+import static org.javimmutable.collections.Maybe.none;
+import static org.javimmutable.collections.Maybe.some;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,9 +48,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.Maybe.*;
+import junit.framework.TestCase;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class MaybeTest
     extends TestCase
@@ -160,6 +163,15 @@ public class MaybeTest
     {
         StandardSerializableTests.verifySerializable(Maybe.none(), "H4sIAAAAAAAAAFvzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAGt3se9TAAAA");
         StandardSerializableTests.verifySerializable(Maybe.some(10), "H4sIAAAAAAAAAFvzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65ezfQNEGgSYl6OYl56XqeeSWp6alFQo8WLPne2G7BxMDoycBalphTmlpRxCCAUOdXmpuUWtS2Zqos95QH3UwgAxkYGLgqAGYEj7CgAAAA");
+    }
+
+    public void testCast()
+    {
+        assertThat(cast(Integer.class, 10)).isEqualTo(some(10));
+        assertThat(cast(String.class, 10)).isEqualTo(none());
+        assertThat(cast(Iterable.class, Arrays.asList(1, 2))).isEqualTo(some(Arrays.asList(1, 2)));
+        assertThat(cast(String.class, "abcd")).isEqualTo(some("abcd"));
+        assertThat(cast(String.class, null)).isEqualTo(none());
     }
 
     private static void dontCallMe(String message)
