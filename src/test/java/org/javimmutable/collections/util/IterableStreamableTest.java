@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.util;
 
+import static org.javimmutable.collections.util.JImmutables.*;
+
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
@@ -42,11 +44,21 @@ import org.javimmutable.collections.IterableStreamable.Partitions;
 import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MapEntry;
 
-import static org.javimmutable.collections.util.JImmutables.*;
-
 public class IterableStreamableTest
     extends TestCase
 {
+    public void testSingle()
+    {
+        assertEquals(none(), set().single());
+        assertEquals(some("a"), set("a").single());
+        assertEquals(none(), set("a", "b").single());
+
+        assertEquals(none(), stack().single());
+        assertEquals(some("a"), stack("a").single());
+        assertEquals(none(), stack((String)null).single());
+        assertEquals(none(), stack("a", "b").single());
+    }
+
     public void testCount()
     {
         assertEquals(0, list().count());

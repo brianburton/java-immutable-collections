@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 /**
  * Interface for classes that can produce java.util.Streams and are also Iterable.   The default stream
@@ -159,6 +159,25 @@ public interface IterableStreamable<T>
             }
         }
         return Holders.of();
+    }
+
+    /**
+     * Returns a Maybe containing a value if this iterable contains only a single value and that value is non-null.
+     * Otherwise returns and empty Maybe.
+     *
+     * @return Maybe possibly containing the single non-null value in this iterable
+     */
+    default Maybe<T> single()
+    {
+        Maybe<T> answer = Maybe.none();
+        final Iterator<T> iter = iterator();
+        if (iter.hasNext()) {
+            final T value = iter.next();
+            if (value != null && !iter.hasNext()) {
+                answer = Maybe.some(value);
+            }
+        }
+        return answer;
     }
 
     /**
