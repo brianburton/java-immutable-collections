@@ -35,6 +35,25 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.common.BitmaskMath.addBit;
+import static org.javimmutable.collections.common.BitmaskMath.arrayIndexForBit;
+import static org.javimmutable.collections.common.BitmaskMath.bitCount;
+import static org.javimmutable.collections.common.BitmaskMath.bitFromIndex;
+import static org.javimmutable.collections.common.BitmaskMath.bitIsPresent;
+import static org.javimmutable.collections.common.BitmaskMath.indexForBit;
+import static org.javimmutable.collections.common.BitmaskMath.leastBit;
+import static org.javimmutable.collections.common.BitmaskMath.removeBit;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.baseIndexAtShift;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.indexAtShift;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.shift;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntFunction;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -43,21 +62,13 @@ import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IntFunc2;
 import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntFunction;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 /**
  * Implements an array mapped trie using integers as keys.  When iterating keys
@@ -157,7 +168,15 @@ public class TrieArrayNode<T>
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index);
+        return findImpl(shiftCountForValue, index, Holders::holder, Holders::holder);
+    }
+
+    @Nonnull
+    public Maybe<T> seek(int index)
+    {
+        index = flip(index);
+        final int shiftCountForValue = findShiftForIndex(index);
+        return findImpl(shiftCountForValue, index, Maybe::none, Maybe::maybe);
     }
 
     @Nonnull
@@ -349,15 +368,17 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    private Holder<T> findImpl(int shiftCountForValue,
-                               int index)
+    private <C> C findImpl(int shiftCountForValue,
+                           int index,
+                           Func0<C> notFound,
+                           Func1<T, C> found)
     {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
-            return Holders.of();
+            return notFound.apply();
         }
         if (baseIndexAtShift(shiftCount, index) != baseIndex) {
-            return Holders.of();
+            return notFound.apply();
         }
         final int myIndex = indexAtShift(shiftCount, index);
         final long bit = bitFromIndex(myIndex);
@@ -365,16 +386,16 @@ public class TrieArrayNode<T>
             final long bitmask = this.valuesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                return Holders.of(values[arrayIndex]);
+                return found.apply(values[arrayIndex]);
             }
         } else {
             final long bitmask = this.nodesBitmask;
             if (bitIsPresent(bitmask, bit)) {
                 final int arrayIndex = arrayIndexForBit(bitmask, bit);
-                return nodes[arrayIndex].findImpl(shiftCountForValue, index);
+                return nodes[arrayIndex].findImpl(shiftCountForValue, index, notFound, found);
             }
         }
-        return Holders.of();
+        return notFound.apply();
     }
 
     @Nonnull

@@ -35,12 +35,19 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Temp;
+import static org.javimmutable.collections.Holders.holder;
+import static org.javimmutable.collections.Maybe.maybe;
+import static org.javimmutable.collections.Maybe.none;
+import static org.javimmutable.collections.Maybe.some;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.Temp;
 
 /**
  * Helper class with static methods to manipulate long bitmasks.
@@ -159,22 +166,52 @@ public final class BitmaskMath
         @Override
         public Integer get(int index)
         {
-            long remaining = bitmask;
-            while (index > 0) {
-                remaining = remaining & ~Long.lowestOneBit(remaining);
-                index -= 1;
-            }
-            long bit = Long.lowestOneBit(remaining);
+            long bit = findBit(index);
             if (bit == 0) {
                 throw new ArrayIndexOutOfBoundsException(index);
+            } else {
+                return indexForBit(bit);
             }
-            return indexForBit(bit);
+        }
+
+        @Nonnull
+        @Override
+        public Holder<Integer> find(int index)
+        {
+            long bit = findBit(index);
+            if (bit == 0) {
+                return holder();
+            } else {
+                return holder(indexForBit(bit));
+            }
+        }
+
+        @Nonnull
+        @Override
+        public Maybe<Integer> seek(int index)
+        {
+            long bit = findBit(index);
+            if (bit == 0) {
+                return none();
+            } else {
+                return some(indexForBit(bit));
+            }
         }
 
         @Override
         public int size()
         {
             return bitCount(bitmask);
+        }
+
+        private long findBit(int index)
+        {
+            long remaining = bitmask;
+            while (index > 0) {
+                remaining = remaining & ~Long.lowestOneBit(remaining);
+                index -= 1;
+            }
+            return Long.lowestOneBit(remaining);
         }
     }
 }

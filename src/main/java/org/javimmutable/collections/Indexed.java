@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 
 /**
  * Interface for containers that allow access to values by an integer index.
@@ -55,25 +55,19 @@ public interface Indexed<T>
      */
     int size();
 
+    /**
+     * Retrieves a Holder containing the (possibly null) value at the specified index if it exists.
+     * If no such value exists returns an empty Holder.
+     */
     @Nonnull
-    default Holder<T> find(int index)
-    {
-        try {
-            return Holders.of(get(index));
-        } catch (IndexOutOfBoundsException ignored) {
-            return Holders.of();
-        }
-    }
+    Holder<T> find(int index);
 
+    /**
+     * Retrieves a {@link Maybe} containing the value at the specified index if it exists and is non-null.
+     * If no such value exists or the value is null returns none().
+     */
     @Nonnull
-    default Maybe<T> seek(int index)
-    {
-        try {
-            return Maybe.of(get(index));
-        } catch (IndexOutOfBoundsException ignored) {
-            return Maybe.of();
-        }
-    }
+    Maybe<T> seek(int index);
 
     @SuppressWarnings("unchecked")
     default T[] subArray(int offset,
@@ -95,6 +89,20 @@ public interface Indexed<T>
             public T get(int index)
             {
                 return transforminator.apply(source.get(index));
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                return source.find(index).map(transforminator);
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                return source.seek(index).map(transforminator::apply);
             }
 
             @Override

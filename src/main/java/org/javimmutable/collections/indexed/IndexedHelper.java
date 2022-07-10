@@ -35,12 +35,17 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Indexed;
+import static org.javimmutable.collections.Holders.holder;
+import static org.javimmutable.collections.Maybe.maybe;
+import static org.javimmutable.collections.Maybe.none;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects
@@ -64,6 +69,20 @@ public class IndexedHelper
                 throw new ArrayIndexOutOfBoundsException();
             }
 
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                return holder();
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                return none();
+            }
+
             @Override
             public int size()
             {
@@ -84,12 +103,30 @@ public class IndexedHelper
             @Override
             public T get(int index)
             {
-                switch (index) {
-                    case 0:
-                        return a;
-                    default:
-                        throw new ArrayIndexOutOfBoundsException();
+                if (index == 0) {
+                    return a;
                 }
+                throw new ArrayIndexOutOfBoundsException();
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                if (index == 0) {
+                    return holder(a);
+                }
+                return holder();
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                if (index == 0) {
+                    return maybe(a);
+                }
+                return none();
             }
 
             @Override
@@ -120,6 +157,34 @@ public class IndexedHelper
                         return b;
                     default:
                         throw new ArrayIndexOutOfBoundsException();
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return holder(a);
+                    case 1:
+                        return holder(b);
+                    default:
+                        return holder();
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return maybe(a);
+                    case 1:
+                        return maybe(b);
+                    default:
+                        return none();
                 }
             }
 
@@ -154,6 +219,38 @@ public class IndexedHelper
                         return c;
                     default:
                         throw new ArrayIndexOutOfBoundsException();
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return holder(a);
+                    case 1:
+                        return holder(b);
+                    case 2:
+                        return holder(c);
+                    default:
+                        return holder();
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return maybe(a);
+                    case 1:
+                        return maybe(b);
+                    case 2:
+                        return maybe(c);
+                    default:
+                        return none();
                 }
             }
 
@@ -193,6 +290,46 @@ public class IndexedHelper
                 }
             }
 
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return holder(a);
+                    case 1:
+                        return holder(b);
+                    case 2:
+                        return holder(c);
+                    default:
+                        index -= 3;
+                        if (index >= 0 && index < others.length) {
+                            return holder(others[index]);
+                        }
+                        return holder();
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                switch (index) {
+                    case 0:
+                        return maybe(a);
+                    case 1:
+                        return maybe(b);
+                    case 2:
+                        return maybe(c);
+                    default:
+                        index -= 3;
+                        if (index >= 0 && index < others.length) {
+                            return maybe(others[index]);
+                        }
+                        return none();
+                }
+            }
+
             @Override
             public int size()
             {
@@ -214,6 +351,28 @@ public class IndexedHelper
                     throw new ArrayIndexOutOfBoundsException();
                 } else {
                     return value;
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                if (index < 0 || index >= count) {
+                    return holder();
+                } else {
+                    return holder(value);
+                }
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                if (index < 0 || index >= count) {
+                    return none();
+                } else {
+                    return maybe(value);
                 }
             }
 
@@ -239,6 +398,26 @@ public class IndexedHelper
                     throw new ArrayIndexOutOfBoundsException();
                 }
                 return low + index;
+            }
+
+            @Nonnull
+            @Override
+            public Holder<Integer> find(int index)
+            {
+                if (index < 0 || index >= size) {
+                    return holder();
+                }
+                return holder(low + index);
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<Integer> seek(int index)
+            {
+                if (index < 0 || index >= size) {
+                    return none();
+                }
+                return maybe(low + index);
             }
 
             @Override
@@ -272,6 +451,20 @@ public class IndexedHelper
             public T get(int index)
             {
                 return transforminator.apply(indexed.get(index));
+            }
+
+            @Nonnull
+            @Override
+            public Holder<T> find(int index)
+            {
+                return indexed.find(index).map(transforminator);
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> seek(int index)
+            {
+                return indexed.seek(index).map(transforminator::apply);
             }
 
             @Override
