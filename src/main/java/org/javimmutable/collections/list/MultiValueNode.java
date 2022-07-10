@@ -35,19 +35,20 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Arrays;
-import java.util.function.Consumer;
 
 @Immutable
 class MultiValueNode<T>
@@ -131,6 +132,13 @@ class MultiValueNode<T>
     T get(int index)
     {
         return values[index];
+    }
+
+    @Nonnull
+    @Override
+    Holder<T> find(int index)
+    {
+        return (index >= 0 && index < values.length) ? Holders.of(values[index]) : Holders.of();
     }
 
     @Nonnull

@@ -35,17 +35,17 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.StringJoiner;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 @Immutable
 class BranchNode<T>
@@ -138,6 +138,18 @@ class BranchNode<T>
             return left.get(index);
         } else {
             return right.get(index - leftSize);
+        }
+    }
+
+    @Nonnull
+    @Override
+    Holder<T> find(int index)
+    {
+        final int leftSize = left.size();
+        if (index < leftSize) {
+            return left.find(index);
+        } else {
+            return right.find(index - leftSize);
         }
     }
 

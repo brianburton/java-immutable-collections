@@ -40,9 +40,6 @@ import javax.annotation.Nullable;
 
 /**
  * Interface for containers that associate keys with values.
- *
- * @param <K>
- * @param <V>
  */
 public interface Mapped<K, V>
 {
@@ -70,12 +67,24 @@ public interface Mapped<K, V>
                  V defaultValue);
 
     /**
-     * Return a Holder containing the value associated wth the key or an empty
+     * Return a {@link Holder} containing the value associated wth the key or an empty
      * Holder if no value is associated with the key.
      *
      * @param key identifies the value to retrieve
-     * @return possibly empty Holder containing any value associated with the key
+     * @return possibly empty {@link Holder} containing any value associated with the key
      */
     @Nonnull
     Holder<V> find(K key);
+
+    /**
+     * Return a {@link Option} containing the value associated wth the key or an empty
+     * {@link Option} if no non-null value is associated with the key.
+     *
+     * @param key identifies the value to retrieve
+     * @return possibly empty {@link Option} containing any non-null value associated with the key
+     */
+    default Option<V> seek(K key)
+    {
+        return find(key).toOption();
+    }
 }

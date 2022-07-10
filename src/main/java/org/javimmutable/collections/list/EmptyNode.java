@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.function.Consumer;
 
 @Immutable
 class EmptyNode<T>
@@ -84,6 +85,13 @@ class EmptyNode<T>
     T get(int index)
     {
         throw new IndexOutOfBoundsException();
+    }
+
+    @Nonnull
+    @Override
+    Holder<T> find(int index)
+    {
+        return Holders.of();
     }
 
     @Nonnull

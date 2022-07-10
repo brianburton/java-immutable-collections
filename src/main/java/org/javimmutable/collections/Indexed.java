@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 
 /**
  * Interface for containers that allow access to values by an integer index.
@@ -48,6 +49,32 @@ public interface Indexed<T>
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     T get(int index);
+
+    /**
+     * Return a {@link Holder} containing the value associated wth the index or an empty
+     * {@link Holder} if no value is associated with the index.
+     *
+     * @param index identifies the value to retrieve
+     * @return possibly empty {@link Holder} containing any value associated with the index
+     */
+    @Nonnull
+    default Holder<T> find(int index)
+    {
+        return (index >= 0 && index < size()) ? Holders.of(get(index)) : Holders.of();
+    }
+
+    /**
+     * Return a {@link Option} containing the non-null value associated wth the index or an empty
+     * {@link Option} if no non-null value is associated with the index.
+     *
+     * @param index identifies the value to retrieve
+     * @return possibly empty {@link Option} containing any non-null value associated with the index
+     */
+    @Nonnull
+    default Option<T> seek(int index)
+    {
+        return find(index).toOption();
+    }
 
     /**
      * Retrieve the number of values available in the container.

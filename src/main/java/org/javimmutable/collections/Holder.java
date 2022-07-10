@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Instances are immutable containers for at most a single object.  A Holder is either empty or filled
@@ -50,6 +50,12 @@ import java.util.function.Supplier;
 @Immutable
 public interface Holder<T>
 {
+    @Nonnull
+    default Option<T> toOption()
+    {
+        return Option.of(getValueOrNull());
+    }
+
     /**
      * @return true iff this Holder has no value to return
      */

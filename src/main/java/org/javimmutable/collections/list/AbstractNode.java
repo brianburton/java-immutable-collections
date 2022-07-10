@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections.list;
 
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
 
 abstract class AbstractNode<T>
     implements SplitableIterable<T>,
@@ -57,6 +57,9 @@ abstract class AbstractNode<T>
     abstract int depth();
 
     abstract T get(int index);
+
+    @Nonnull
+    abstract Holder<T> find(int index);
 
     @Nonnull
     abstract AbstractNode<T> append(T value);

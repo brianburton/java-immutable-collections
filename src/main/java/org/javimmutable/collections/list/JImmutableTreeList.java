@@ -35,6 +35,19 @@
 
 package org.javimmutable.collections.list;
 
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
@@ -49,19 +62,6 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-
-import static org.javimmutable.collections.list.TreeBuilder.*;
 
 @Immutable
 public class JImmutableTreeList<T>
@@ -311,6 +311,13 @@ public class JImmutableTreeList<T>
     public T get(int index)
     {
         return root.get(index);
+    }
+
+    @Nonnull
+    @Override
+    public Holder<T> find(int index)
+    {
+        return root.find(index);
     }
 
     @Override

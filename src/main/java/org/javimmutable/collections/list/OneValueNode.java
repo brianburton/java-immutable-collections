@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.StringJoiner;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 class OneValueNode<T>
     extends AbstractNode<T>
@@ -80,6 +81,13 @@ class OneValueNode<T>
             throw new IndexOutOfBoundsException();
         }
         return value;
+    }
+
+    @Nonnull
+    @Override
+    Holder<T> find(int index)
+    {
+        return index == 0 ? Holders.of(value) : Holders.of();
     }
 
     @Nonnull
