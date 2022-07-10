@@ -119,6 +119,7 @@ public interface Holder<T>
      * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
      * If I am empty return an empty Holder.
      */
+    @Nonnull
     default <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> transforminator)
     {
         return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
@@ -128,10 +129,32 @@ public interface Holder<T>
      * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
      * If I am empty return an empty Holder.
      */
+    @Nonnull
     default <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
         throws E
     {
         return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
+    }
+
+    /**
+     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
+     * If I am empty return an empty Holder.
+     */
+    @Nonnull
+    default <U> Holder<U> flatMap(@Nonnull Function<? super T, Holder<U>> transforminator)
+    {
+        return isFilled() ? transforminator.apply(getValue()) : Holders.of();
+    }
+
+    /**
+     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
+     * If I am empty return an empty Holder.
+     */
+    @Nonnull
+    default <U, E extends Exception> Holder<U> flatMapThrows(@Nonnull Func1Throws<? super T, Holder<U>, E> transforminator)
+        throws E
+    {
+        return isFilled() ? transforminator.apply(getValue()) : Holders.of();
     }
 
     /**

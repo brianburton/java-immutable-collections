@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Provides static utility methods for constructing Holder instances.
@@ -173,14 +173,31 @@ public class Holders<V>
         {
         }
 
+        @Nonnull
         @Override
         public <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
         {
             return of();
         }
 
+        @Nonnull
         @Override
         public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super V, ? extends U, E> transforminator)
+            throws E
+        {
+            return of();
+        }
+
+        @Nonnull
+        @Override
+        public <U> Holder<U> flatMap(@Nonnull Function<? super V, Holder<U>> transforminator)
+        {
+            return of();
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Holder<U> flatMapThrows(@Nonnull Func1Throws<? super V, Holder<U>, E> transforminator)
             throws E
         {
             return of();
@@ -269,17 +286,34 @@ public class Holders<V>
             consumer.apply(getValue());
         }
 
+        @Nonnull
         @Override
         default <U> Holder<U> map(@Nonnull Function<? super V, ? extends U> transforminator)
         {
             return of(transforminator.apply(getValue()));
         }
 
+        @Nonnull
         @Override
         default <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super V, ? extends U, E> transforminator)
             throws E
         {
             return of(transforminator.apply(getValue()));
+        }
+
+        @Nonnull
+        @Override
+        default <U> Holder<U> flatMap(@Nonnull Function<? super V, Holder<U>> transforminator)
+        {
+            return transforminator.apply(getValue());
+        }
+
+        @Nonnull
+        @Override
+        default <U, E extends Exception> Holder<U> flatMapThrows(@Nonnull Func1Throws<? super V, Holder<U>, E> transforminator)
+            throws E
+        {
+            return transforminator.apply(getValue());
         }
 
         @Override

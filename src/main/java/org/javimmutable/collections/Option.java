@@ -101,6 +101,21 @@ public abstract class Option<T>
         throws E;
 
     /**
+     * Apply the transform function to my value (if I am filled) and return a new {@link Option} containing the result.
+     * If I am empty return an empty {@link Option}.
+     */
+    @Nonnull
+    public abstract <U> Option<U> flatMap(@Nonnull Function<? super T, Option<U>> transforminator);
+
+    /**
+     * Apply the transform function to my value (if I am filled) and return a new {@link Option} containing the result.
+     * If I am empty return an empty {@link Option}.
+     */
+    @Nonnull
+    public abstract <U, E extends Exception> Option<U> flatMapThrows(@Nonnull Func1Throws<? super T, Option<U>, E> transforminator)
+        throws E;
+
+    /**
      * Return my value if I am filled.  Otherwise return defaultValue.
      */
     public abstract T orElse(T defaultValue);
@@ -196,6 +211,21 @@ public abstract class Option<T>
             return of();
         }
 
+        @Nonnull
+        @Override
+        public <U> Option<U> flatMap(@Nonnull Function<? super T, Option<U>> transforminator)
+        {
+            return of();
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Option<U> flatMapThrows(@Nonnull Func1Throws<? super T, Option<U>, E> transforminator)
+            throws E
+        {
+            return of();
+        }
+
         @Override
         public T orElse(T defaultValue)
         {
@@ -220,9 +250,10 @@ public abstract class Option<T>
     private static class Filled<T>
         extends Option<T>
     {
+        @Nonnull
         private final T value;
 
-        private Filled(T value)
+        private Filled(@Nonnull T value)
         {
             assert value != null;
             this.value = value;
@@ -298,6 +329,21 @@ public abstract class Option<T>
             throws E
         {
             return of(transforminator.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <U> Option<U> flatMap(@Nonnull Function<? super T, Option<U>> transforminator)
+        {
+            return transforminator.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Option<U> flatMapThrows(@Nonnull Func1Throws<? super T, Option<U>, E> transforminator)
+            throws E
+        {
+            return transforminator.apply(value);
         }
 
         @Override
