@@ -1,5 +1,6 @@
 package org.javimmutable.collections;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -245,6 +246,24 @@ public abstract class Option<T>
         {
             throw supplier.get();
         }
+
+        @Override
+        public int hashCode()
+        {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return obj instanceof Empty;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "[]";
+        }
     }
 
     private static class Filled<T>
@@ -364,6 +383,31 @@ public abstract class Option<T>
             throws X
         {
             return value;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Filled)) {
+                return false;
+            }
+            Filled<?> filled = (Filled<?>)o;
+            return value.equals(filled.value);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(value);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "[" + value + "]";
         }
     }
 }
