@@ -1,10 +1,12 @@
 package org.javimmutable.collections;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import org.javimmutable.collections.serialization.OptionProxy;
 
 /**
  * Equivalent to {@link Holder} except that only two classes exist, one holding a non-null value and the other holding nothing.
@@ -14,6 +16,7 @@ import javax.annotation.Nonnull;
  * @param <T> Type of value being stored
  */
 public abstract class Option<T>
+    implements Serializable
 {
     @Nonnull
     @SuppressWarnings("unchecked")
@@ -264,6 +267,11 @@ public abstract class Option<T>
         {
             return "[]";
         }
+
+        private Object writeReplace()
+        {
+            return new OptionProxy(this);
+        }
     }
 
     private static class Filled<T>
@@ -408,6 +416,11 @@ public abstract class Option<T>
         public String toString()
         {
             return "[" + value + "]";
+        }
+
+        private Object writeReplace()
+        {
+            return new OptionProxy(this);
         }
     }
 }

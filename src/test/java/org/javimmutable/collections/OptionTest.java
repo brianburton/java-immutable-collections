@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.junit.Test;
 
 public class OptionTest
@@ -68,5 +69,14 @@ public class OptionTest
         assertEquals(Integer.valueOf(1), opt.orElse(2));
         assertEquals(Integer.valueOf(1), opt.orElseGet(() -> 2));
         assertEquals(Integer.valueOf(1), opt.orElseThrow(() -> error1));
+    }
+
+    @Test
+    public void testSerialization()
+        throws Exception
+    {
+        final Option<String> empty = Option.of();
+        StandardSerializableTests.verifySerializable(empty, "H4sIAAAAAAAAAFvzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzLwBRAUX5FZX/QeDfq0k8DAwVBeVM6nwVAN7G+05QAAAA");
+        StandardSerializableTests.verifySerializable(Option.of("a"), "H4sIAAAAAAAAAFvzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzLwBRAUX5FZX/QeDfq0k8DAwVBeVM6vwlDIyJFQDeWJc5VAAAAA==");
     }
 }
