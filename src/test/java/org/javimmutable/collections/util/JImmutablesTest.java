@@ -35,20 +35,38 @@
 
 package org.javimmutable.collections.util;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.util.JImmutables.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMap.Entry;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.JImmutableStack;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.EmptyHashMap;
@@ -80,50 +98,31 @@ import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.util.JImmutables.*;
-
 @SuppressWarnings("unchecked")
 public class JImmutablesTest
     extends TestCase
 {
-    private final Predicate<JImmutableArray> isArray = x -> x instanceof JImmutableTrieArray;
-    private final Predicate<JImmutableStack> isStack = x -> x instanceof JImmutableLinkedStack;
-    private final Predicate<JImmutableList> isList = x -> x instanceof JImmutableTreeList;
-    private final Predicate<JImmutableMap> isEmptyMap = x -> x instanceof EmptyHashMap;
-    private final Predicate<JImmutableMap> isMap = x -> x instanceof JImmutableHashMap;
-    private final Predicate<JImmutableMap> isSortedMap = x -> x instanceof JImmutableTreeMap;
-    private final Predicate<JImmutableMap> isInsertOrderMap = x -> x instanceof JImmutableInsertOrderMap;
-    private final Predicate<JImmutableSet> isSet = x -> x instanceof JImmutableHashSet;
-    private final Predicate<JImmutableSet> isEmptySet = x -> x instanceof EmptyHashSet;
-    private final Predicate<JImmutableSet> isSortedSet = x -> x instanceof JImmutableTreeSet;
-    private final Predicate<JImmutableSet> isInsertOrderSet = x -> x instanceof JImmutableInsertOrderSet;
-    private final Predicate<JImmutableMultiset> isMultiset = x -> x instanceof JImmutableHashMultiset;
-    private final Predicate<JImmutableMultiset> isSortedMultiset = x -> x instanceof JImmutableTreeMultiset;
-    private final Predicate<JImmutableMultiset> isInsertOrderMultiset = x -> x instanceof JImmutableInsertOrderMultiset;
-    private final Predicate<JImmutableListMap> isListMap = x -> x instanceof JImmutableHashListMap;
-    private final Predicate<JImmutableListMap> isSortedListMap = x -> x instanceof JImmutableTreeListMap;
-    private final Predicate<JImmutableListMap> isInsertOrderListMap = x -> x instanceof JImmutableInsertOrderListMap;
-    private final Predicate<JImmutableSetMap> isSetMap = x -> x instanceof JImmutableHashSetMap;
-    private final Predicate<JImmutableSetMap> isSortedSetMap = x -> x instanceof JImmutableTreeSetMap;
-    private final Predicate<JImmutableSetMap> isInsertOrderSetMap = x -> x instanceof JImmutableInsertOrderSetMap;
-    private final Predicate<JImmutableSetMap> isTemplateSetMap = x -> x instanceof JImmutableTemplateSetMap;
+    private final Predicate<IArray> isArray = x -> x instanceof JImmutableTrieArray;
+    private final Predicate<IStack> isStack = x -> x instanceof JImmutableLinkedStack;
+    private final Predicate<IList> isList = x -> x instanceof JImmutableTreeList;
+    private final Predicate<IMap> isEmptyMap = x -> x instanceof EmptyHashMap;
+    private final Predicate<IMap> isMap = x -> x instanceof JImmutableHashMap;
+    private final Predicate<IMap> isSortedMap = x -> x instanceof JImmutableTreeMap;
+    private final Predicate<IMap> isInsertOrderMap = x -> x instanceof JImmutableInsertOrderMap;
+    private final Predicate<ISet> isSet = x -> x instanceof JImmutableHashSet;
+    private final Predicate<ISet> isEmptySet = x -> x instanceof EmptyHashSet;
+    private final Predicate<ISet> isSortedSet = x -> x instanceof JImmutableTreeSet;
+    private final Predicate<ISet> isInsertOrderSet = x -> x instanceof JImmutableInsertOrderSet;
+    private final Predicate<IMultiset> isMultiset = x -> x instanceof JImmutableHashMultiset;
+    private final Predicate<IMultiset> isSortedMultiset = x -> x instanceof JImmutableTreeMultiset;
+    private final Predicate<IMultiset> isInsertOrderMultiset = x -> x instanceof JImmutableInsertOrderMultiset;
+    private final Predicate<IListMap> isListMap = x -> x instanceof JImmutableHashListMap;
+    private final Predicate<IListMap> isSortedListMap = x -> x instanceof JImmutableTreeListMap;
+    private final Predicate<IListMap> isInsertOrderListMap = x -> x instanceof JImmutableInsertOrderListMap;
+    private final Predicate<ISetMap> isSetMap = x -> x instanceof JImmutableHashSetMap;
+    private final Predicate<ISetMap> isSortedSetMap = x -> x instanceof JImmutableTreeSetMap;
+    private final Predicate<ISetMap> isInsertOrderSetMap = x -> x instanceof JImmutableInsertOrderSetMap;
+    private final Predicate<ISetMap> isTemplateSetMap = x -> x instanceof JImmutableTemplateSetMap;
     private final Predicate<InsertableSequence> isEmptyInsertableSequence = x -> x instanceof EmptySequenceNode;
     private final Predicate<InsertableSequence> isInsertableSequence = x -> x instanceof FilledSequenceNode;
 
@@ -160,11 +159,11 @@ public class JImmutablesTest
         List<Integer> input = asList(1, 2, 3);
         List<Integer> expected = asList(3, 2, 1);
 
-        JImmutableStack<Integer> stack = JImmutables.stack();
+        IStack<Integer> stack = JImmutables.stack();
         stack = stack.insert(1).insert(2).insert(3);
         assertEquals(expected, list(stack.iterator()).getList());
 
-        JImmutableList<Integer> inlist = JImmutableTreeList.of();
+        IList<Integer> inlist = JImmutableTreeList.of();
         inlist = inlist.insert(1).insert(2).insert(3);
         assertEquals(stack, JImmutables.stack(inlist));
         assertEquals(stack, JImmutables.stack((inlist.iterator())));
@@ -182,7 +181,7 @@ public class JImmutablesTest
     {
         List<Integer> input = asList(1, 2, 3);
 
-        JImmutableList<Integer> list = list(input);
+        IList<Integer> list = list(input);
         assertEquals(input, list.getList());
         assertEquals(list, list(input.iterator()));
         assertEquals(list, list(list));
@@ -209,7 +208,7 @@ public class JImmutablesTest
         for (int i = 0; i < 2000; ++i) {
             input.add(i);
         }
-        JImmutableList<Integer> list = list(input);
+        IList<Integer> list = list(input);
         assertEquals(input, list.getList());
     }
 
@@ -220,7 +219,7 @@ public class JImmutablesTest
         input.put(2, 4);
         input.put(3, 5);
 
-        JImmutableMap<Integer, Integer> map = JImmutables.map(input);
+        IMap<Integer, Integer> map = JImmutables.map(input);
         assertEquals(input, map.getMap());
         assertSame(map, JImmutables.map(map));
         assertEquals(map, JImmutables.map(map));
@@ -228,7 +227,7 @@ public class JImmutablesTest
         assertEquals(map, JImmutables.sortedMap(input));
 
         verifyUnordered(isEmptyMap, asList(), () -> JImmutables.map());
-        final List<Entry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
+        final List<IMapEntry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
         verifyUnordered(isMap, entries, () -> JImmutables.map(map(entries)));
         verifyUnordered(isMap, entries, () -> JImmutables.<String, String>mapBuilder().add(entries).build());
     }
@@ -240,13 +239,13 @@ public class JImmutablesTest
         input.put(2, 4);
         input.put(3, 5);
 
-        JImmutableMap<Integer, Integer> map = JImmutables.sortedMap(input);
+        IMap<Integer, Integer> map = JImmutables.sortedMap(input);
         assertEquals(input, map.getMap());
         assertSame(map, JImmutables.sortedMap(map));
         assertEquals(map, JImmutables.map(map));
 
         final Comparator<Integer> comparator = (a, b) -> -b.compareTo(a);
-        JImmutableMap<Integer, Integer> map2 = JImmutables.sortedMap(comparator, input);
+        IMap<Integer, Integer> map2 = JImmutables.sortedMap(comparator, input);
         assertEquals(input, map2.getMap());
         assertEquals(map, JImmutables.sortedMap(map2));
         assertNotSame(map, JImmutables.sortedMap(map2));
@@ -255,9 +254,9 @@ public class JImmutablesTest
         assertNotSame(map, JImmutables.map(map2));
 
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
-        final List<Entry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
-        final List<Entry<String, String>> sorted = asList(entry("w", "3"), entry("x", "2"), entry("y", "4"), entry("z", "1"));
-        final List<Entry<String, String>> reversed = asList(entry("z", "1"), entry("y", "4"), entry("x", "2"), entry("w", "3"));
+        final List<IMapEntry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
+        final List<IMapEntry<String, String>> sorted = asList(entry("w", "3"), entry("x", "2"), entry("y", "4"), entry("z", "1"));
+        final List<IMapEntry<String, String>> reversed = asList(entry("z", "1"), entry("y", "4"), entry("x", "2"), entry("w", "3"));
 
         verifyOrdered(isSortedMap, asList(), () -> JImmutables.sortedMap());
         verifyOrdered(isSortedMap, sorted, () -> JImmutables.sortedMap(map(entries)));
@@ -272,15 +271,15 @@ public class JImmutablesTest
 
     public void testInsertOrderMap()
     {
-        final List<Entry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
-        final List<Entry<String, String>> sorted = asList(entry("w", "3"), entry("x", "2"), entry("y", "4"), entry("z", "1"));
-        final List<Entry<String, String>> reversed = asList(entry("z", "1"), entry("y", "4"), entry("x", "2"), entry("w", "3"));
+        final List<IMapEntry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
+        final List<IMapEntry<String, String>> sorted = asList(entry("w", "3"), entry("x", "2"), entry("y", "4"), entry("z", "1"));
+        final List<IMapEntry<String, String>> reversed = asList(entry("z", "1"), entry("y", "4"), entry("x", "2"), entry("w", "3"));
 
         verifyOrdered(isInsertOrderMap, asList(), () -> JImmutables.insertOrderMap());
         verifyOrdered(isInsertOrderMap, entries, () -> JImmutables.insertOrderMap(map(entries)));
         verifyOrdered(isInsertOrderMap, sorted, () -> JImmutables.insertOrderMap(JImmutables.sortedMap(map(reversed))));
 
-        JImmutableMap<String, String> iomap = JImmutables.insertOrderMap(map(entries));
+        IMap<String, String> iomap = JImmutables.insertOrderMap(map(entries));
         assertSame(iomap, JImmutables.insertOrderMap(iomap));
 
         assertEquals(JImmutables.insertOrderMap().insertAll(entries), JImmutables.insertOrderMapBuilder().add(entries).build());
@@ -290,7 +289,7 @@ public class JImmutablesTest
     {
         List<Integer> input = asList(1, 87, 100, 1, 45);
 
-        JImmutableSet<Integer> set = set(input);
+        ISet<Integer> set = set(input);
         assertEquals(new HashSet<>(input), set.getSet());
         assertEquals(set, set(input.iterator()));
         assertEquals(set, set(set));
@@ -308,7 +307,7 @@ public class JImmutablesTest
     {
         List<Integer> input = asList(1, 87, 100, 1, 45);
 
-        JImmutableSet<Integer> set = JImmutables.sortedSet(input);
+        ISet<Integer> set = JImmutables.sortedSet(input);
         assertEquals(new HashSet<>(input), set.getSet());
         assertEquals(set, JImmutables.sortedSet(input.iterator()));
         assertEquals(set, JImmutables.sortedSet(set));
@@ -357,7 +356,7 @@ public class JImmutablesTest
 
     public void testMultiset()
     {
-        final Func1<JImmutableMultiset, Iterator<Entry<String, Integer>>> occurrences = x -> x.entries().iterator();
+        final Func1<IMultiset, Iterator<IMapEntry<String, Integer>>> occurrences = x -> x.entries().iterator();
         verifyUnordered(isMultiset, entryList(), () -> JImmutables.<String>multiset(), occurrences);
         verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset("y", "x", "y", "x", "y"), occurrences);
         verifyUnordered(isMultiset, entryList(entry("x", 2), entry("y", 3)), () -> JImmutables.multiset(iterable("y", "x", "y", "x", "y")), occurrences);
@@ -368,9 +367,9 @@ public class JImmutablesTest
     public void testSortedMultiset()
     {
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
-        final List<Entry<String, Integer>> sorted = asList(entry("x", 2), entry("y", 3));
-        final List<Entry<String, Integer>> reversed = asList(entry("y", 3), entry("x", 2));
-        final Func1<JImmutableMultiset, Iterator<Entry<String, Integer>>> occurrences = x -> x.entries().iterator();
+        final List<IMapEntry<String, Integer>> sorted = asList(entry("x", 2), entry("y", 3));
+        final List<IMapEntry<String, Integer>> reversed = asList(entry("y", 3), entry("x", 2));
+        final Func1<IMultiset, Iterator<IMapEntry<String, Integer>>> occurrences = x -> x.entries().iterator();
 
         verifyOrdered(isSortedMultiset, entryList(), () -> JImmutables.<String>sortedMultiset(), occurrences);
         verifyOrdered(isSortedMultiset, sorted, () -> JImmutables.sortedMultiset("y", "x", "y", "x", "y"), occurrences);
@@ -387,8 +386,8 @@ public class JImmutablesTest
 
     public void testInsertOrderMultiset()
     {
-        final List<Entry<String, Integer>> entered = asList(entry("y", 3), entry("x", 2));
-        final Func1<JImmutableMultiset, Iterator<Entry<String, Integer>>> occurrences = x -> x.entries().iterator();
+        final List<IMapEntry<String, Integer>> entered = asList(entry("y", 3), entry("x", 2));
+        final Func1<IMultiset, Iterator<IMapEntry<String, Integer>>> occurrences = x -> x.entries().iterator();
 
         verifyOrdered(isInsertOrderMultiset, entryList(), () -> JImmutables.<String>insertOrderMultiset(), occurrences);
         verifyOrdered(isInsertOrderMultiset, entered, () -> JImmutables.insertOrderMultiset("y", "x", "y", "x", "y"), occurrences);
@@ -433,7 +432,7 @@ public class JImmutablesTest
 
     public void testTemplateSetMap()
     {
-        final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.map(), JImmutables.set());
+        final ISetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.map(), JImmutables.set());
         verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
         final JImmutableSetMapFactory<String, Integer> factory1 = JImmutables.<String, Integer>setMapFactory().withMap(JImmutables.map()).withSet(JImmutables.set());
         verifyUnordered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> factory1.create().insert("y", 1).insert("z", 2).insert("x", 3));
@@ -444,17 +443,17 @@ public class JImmutablesTest
     public void testTemplateSortedSetMap()
     {
         final Comparator<String> reversedComparator = ComparableComparator.<String>of().reversed();
-        final JImmutableSetMap<String, Integer> forward = JImmutables.setMap(JImmutables.<String, JImmutableSet<Integer>>sortedMap(), JImmutables.set());
-        final JImmutableSetMap<String, Integer> reverse = JImmutables.setMap(JImmutables.sortedMap(reversedComparator), JImmutables.set());
+        final ISetMap<String, Integer> forward = JImmutables.setMap(JImmutables.<String, ISet<Integer>>sortedMap(), JImmutables.set());
+        final ISetMap<String, Integer> reverse = JImmutables.setMap(JImmutables.sortedMap(reversedComparator), JImmutables.set());
         verifyOrdered(isTemplateSetMap, entryList(entry("x", set(3)), entry("y", set(1)), entry("z", set(2))), () -> forward.insert("y", 1).insert("z", 2).insert("x", 3));
         verifyOrdered(isTemplateSetMap, entryList(entry("z", set(2)), entry("y", set(1)), entry("x", set(3))), () -> reverse.insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testTemplateInsertOrderSetMap()
     {
-        final JImmutableSetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.insertOrderMap(), JImmutables.set());
+        final ISetMap<String, Integer> setmap = JImmutables.setMap(JImmutables.insertOrderMap(), JImmutables.set());
         verifyOrdered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
-        final JImmutableSetMap<String, Integer> setmap2 = JImmutables.<String, Integer>setMapFactory().withMap(JImmutables.insertOrderMap()).withSet(JImmutables.set()).create();
+        final ISetMap<String, Integer> setmap2 = JImmutables.<String, Integer>setMapFactory().withMap(JImmutables.insertOrderMap()).withSet(JImmutables.set()).create();
         verifyOrdered(isTemplateSetMap, entryList(entry("y", set(1)), entry("z", set(2)), entry("x", set(3))), () -> setmap2.insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
@@ -464,7 +463,7 @@ public class JImmutablesTest
         verifyOrdered(isInsertableSequence, asList("x"), () -> JImmutables.sequence("x"), x -> SequenceIterator.iterator(x));
     }
 
-    private <K, V> List<Entry<K, V>> entryList(Entry<K, V>... values)
+    private <K, V> List<IMapEntry<K, V>> entryList(IMapEntry<K, V>... values)
     {
         return asList(values);
     }
@@ -477,13 +476,13 @@ public class JImmutablesTest
 
     public void testListTutorialCode()
     {
-        JImmutableList<Integer> list = list();
+        IList<Integer> list = list();
         list = list.insert(10).insert(20).insert(30);
         assertEquals(10, list.get(0));
         assertEquals(20, list.get(1));
         assertEquals(30, list.get(2));
 
-        JImmutableList<Integer> changed = list.deleteLast().insert(45);
+        IList<Integer> changed = list.deleteLast().insert(45);
         assertEquals(10, list.get(0));
         assertEquals(20, list.get(1));
         assertEquals(30, list.get(2));
@@ -494,12 +493,12 @@ public class JImmutablesTest
         assertEquals(asList(10, 20, 30), list.getList());
         assertEquals(asList(10, 20, 45), changed.getList());
 
-        JImmutableList<Integer> ralist = list();
+        IList<Integer> ralist = list();
         ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
         assertEquals(10, ralist.get(0));
         assertEquals(20, ralist.get(1));
         assertEquals(30, ralist.get(2));
-        JImmutableList<Integer> ralist2 = ralist;
+        IList<Integer> ralist2 = ralist;
         ralist2 = ralist2.delete(1).insert(1, 87);
         assertEquals(10, ralist.get(0));
         assertEquals(20, ralist.get(1));
@@ -510,7 +509,7 @@ public class JImmutablesTest
         assertEquals(asList(10, 20, 30), ralist.getList());
         assertEquals(asList(10, 87, 30), ralist2.getList());
 
-        JImmutableList<String> source = JImmutables.list("able", "baker", "charlie", "delta", "echo");
+        IList<String> source = JImmutables.list("able", "baker", "charlie", "delta", "echo");
         assertEquals(JImmutables.list("baker", "charlie"), source.select(str -> str.contains("r")));
         assertEquals(JImmutables.list("able", "baker", "delta"), source.reject(str -> str.contains("h")));
         assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
@@ -522,10 +521,10 @@ public class JImmutablesTest
 
     public void testMapTutorialCode()
     {
-        JImmutableMap<Integer, Integer> hmap = JImmutables.map();
+        IMap<Integer, Integer> hmap = JImmutables.map();
         hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
 
-        JImmutableMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18, 19);
+        IMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18, 19);
 
         assertEquals(11, hmap.get(10));
         assertEquals(19, hmap.get(20));
@@ -545,7 +544,7 @@ public class JImmutablesTest
         assertEquals(false, hmap2.find(80).isEmpty());
         assertEquals(null, hmap2.find(80).getValue());
 
-        JImmutableMap<Integer, Integer> smap = JImmutables.sortedMap();
+        IMap<Integer, Integer> smap = JImmutables.sortedMap();
         smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
         assertEquals(asList(10, 20, 30), new ArrayList<>(smap.getMap().keySet()));
         assertEquals(asList(80, 19, 31), new ArrayList<>(smap.getMap().values()));
@@ -553,13 +552,13 @@ public class JImmutablesTest
 
     public void testEntry()
     {
-        JImmutableMap<Integer, Integer> m = JImmutables.<Integer, Integer>map().assign(1, 1).assign(2, 2);
-        JImmutableMap<Number, Number> n = m.stream().map(JImmutables::<Number, Number>entry).collect(JImmutables.mapCollector());
+        IMap<Integer, Integer> m = JImmutables.<Integer, Integer>map().assign(1, 1).assign(2, 2);
+        IMap<Number, Number> n = m.stream().map(JImmutables::<Number, Number>entry).collect(JImmutables.mapCollector());
         assertEquals(JImmutables.<Number, Number>map().assign(1, 1).assign(2, 2), n);
 
-        JImmutableList<Integer> il = JImmutables.list(4, 2, 3, 1);
-        final Function<Integer, Entry<String, Number>> mapper = i -> JImmutables.entry(String.valueOf(i), i);
-        JImmutableMap<String, Number> im = il.stream().map(mapper).collect(JImmutables.sortedMapCollector());
+        IList<Integer> il = JImmutables.list(4, 2, 3, 1);
+        final Function<Integer, IMapEntry<String, Number>> mapper = i -> JImmutables.entry(String.valueOf(i), i);
+        IMap<String, Number> im = il.stream().map(mapper).collect(JImmutables.sortedMapCollector());
         assertEquals("{1=1, 2=2, 3=3, 4=4}", im.toString());
         im = il.stream().map(mapper).collect(JImmutables.insertOrderMapCollector());
         assertEquals("{4=4, 2=2, 3=3, 1=1}", im.toString());
@@ -569,7 +568,7 @@ public class JImmutablesTest
         m1.put(2, 2);
         m1.put(3, 3);
         m1.put(1, 1);
-        JImmutableMap<Integer, Integer> m2 = m1.entrySet().stream().map(JImmutables::entry).collect(JImmutables.insertOrderMapCollector());
+        IMap<Integer, Integer> m2 = m1.entrySet().stream().map(JImmutables::entry).collect(JImmutables.insertOrderMapCollector());
         assertEquals("{4=4, 2=2, 3=3, 1=1}", m2.toString());
     }
 
@@ -616,8 +615,8 @@ public class JImmutablesTest
         Iterator<T> actualIter = iterator.apply(collection);
         while (actualIter.hasNext()) {
             T x = actualIter.next();
-            if (x instanceof Entry) {
-                actualSet.add(MapEntry.of((Entry)x));
+            if (x instanceof IMapEntry) {
+                actualSet.add(MapEntry.of((IMapEntry)x));
             } else {
                 actualSet.add(x);
             }
@@ -628,17 +627,17 @@ public class JImmutablesTest
         }
     }
 
-    private <K, V> Map<K, V> map(Iterable<Entry<K, V>> values)
+    private <K, V> Map<K, V> map(Iterable<IMapEntry<K, V>> values)
     {
         Map<K, V> answer = new LinkedHashMap<>();
-        for (Entry<K, V> e : values) {
+        for (IMapEntry<K, V> e : values) {
             answer.put(e.getKey(), e.getValue());
         }
         return answer;
     }
 
-    private <K, V> Entry<K, V> entry(K key,
-                                     V value)
+    private <K, V> IMapEntry<K, V> entry(K key,
+                                         V value)
     {
         return MapEntry.of(key, value);
     }

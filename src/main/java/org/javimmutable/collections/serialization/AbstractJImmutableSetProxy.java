@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableSet;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.ISet;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableSetProxy
@@ -49,9 +48,9 @@ abstract class AbstractJImmutableSetProxy
     private static final int SET_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
-    protected JImmutableSet set;
+    protected ISet set;
 
-    protected AbstractJImmutableSetProxy(JImmutableSet set)
+    protected AbstractJImmutableSetProxy(ISet set)
     {
         this.set = set;
     }
@@ -88,7 +87,7 @@ abstract class AbstractJImmutableSetProxy
         return set;
     }
 
-    protected JImmutableSet readSet(ObjectInput in)
+    protected ISet readSet(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         return set;

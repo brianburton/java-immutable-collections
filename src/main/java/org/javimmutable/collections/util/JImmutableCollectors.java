@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.GenericCollector;
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableSet;
-
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.GenericCollector;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.ISet;
 
 /**
  * Utility class providing static methods for collecting various immutable collections using streams.
@@ -60,7 +59,7 @@ public final class JImmutableCollectors
      */
     @Deprecated
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableList<T>> toList()
+    public static <T> Collector<T, ?, IList<T>> toList()
     {
         return JImmutables.listCollector();
     }
@@ -70,7 +69,7 @@ public final class JImmutableCollectors
      */
     @Deprecated
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableArray<T>> toArray()
+    public static <T> Collector<T, ?, IArray<T>> toArray()
     {
         return JImmutables.arrayCollector();
     }
@@ -80,7 +79,7 @@ public final class JImmutableCollectors
      */
     @Deprecated
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableSet<T>> toSet()
+    public static <T> Collector<T, ?, ISet<T>> toSet()
     {
         return JImmutables.<T>set().setCollector();
     }
@@ -90,7 +89,7 @@ public final class JImmutableCollectors
      */
     @Deprecated
     @Nonnull
-    public static <T extends Comparable<T>> Collector<T, ?, JImmutableSet<T>> toSortedSet()
+    public static <T extends Comparable<T>> Collector<T, ?, ISet<T>> toSortedSet()
     {
         return JImmutables.<T>sortedSet().setCollector();
     }
@@ -100,7 +99,7 @@ public final class JImmutableCollectors
      */
     @Deprecated
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableSet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
+    public static <T> Collector<T, ?, ISet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {
         return JImmutables.sortedSet(comparator).setCollector();
     }
@@ -110,7 +109,7 @@ public final class JImmutableCollectors
      * to generate keys from the encountered elements.
      */
     @Nonnull
-    public static <T, K> Collector<T, ?, JImmutableListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
+    public static <T, K> Collector<T, ?, IListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {
         return GenericCollector.ordered(JImmutables.listMap(),
                                         JImmutables.listMap(),

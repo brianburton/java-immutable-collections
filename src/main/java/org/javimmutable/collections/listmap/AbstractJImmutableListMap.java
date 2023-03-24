@@ -35,29 +35,29 @@
 
 package org.javimmutable.collections.listmap;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EntryIterableStreamable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 @Immutable
 abstract class AbstractJImmutableListMap<K, V>
-    implements JImmutableListMap<K, V>
+    implements IListMap<K, V>
 {
-    protected final JImmutableList<V> emptyList;
-    protected final JImmutableMap<K, JImmutableList<V>> contents;
+    protected final IList<V> emptyList;
+    protected final IMap<K, IList<V>> contents;
 
-    protected AbstractJImmutableListMap(JImmutableMap<K, JImmutableList<V>> contents,
-                                        JImmutableList<V> emptyList)
+    protected AbstractJImmutableListMap(IMap<K, IList<V>> contents,
+                                        IList<V> emptyList)
     {
         this.emptyList = emptyList;
         this.contents = contents;
@@ -65,17 +65,17 @@ abstract class AbstractJImmutableListMap<K, V>
 
     @Nonnull
     @Override
-    public JImmutableList<V> getList(@Nonnull K key)
+    public IList<V> getList(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        Holder<JImmutableList<V>> current = contents.find(key);
+        Holder<IList<V>> current = contents.find(key);
         return current.isFilled() ? current.getValue() : emptyList;
     }
 
     @Nonnull
     @Override
-    public JImmutableListMap<K, V> assign(@Nonnull K key,
-                                          @Nonnull JImmutableList<V> value)
+    public IListMap<K, V> assign(@Nonnull K key,
+                                 @Nonnull IList<V> value)
     {
         Conditions.stopNull(key, value);
         return create(contents.assign(key, copyList(value)));
@@ -83,22 +83,22 @@ abstract class AbstractJImmutableListMap<K, V>
 
     @Nonnull
     @Override
-    public JImmutableListMap<K, V> insert(@Nonnull K key,
-                                          @Nullable V value)
+    public IListMap<K, V> insert(@Nonnull K key,
+                                 @Nullable V value)
     {
         return create(contents.update(key, h -> h.getValueOr(emptyList).insertLast(value)));
     }
 
     @Nonnull
     @Override
-    public JImmutableListMap<K, V> getInsertableSelf()
+    public IListMap<K, V> getInsertableSelf()
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableListMap<K, V> delete(@Nonnull K key)
+    public IListMap<K, V> delete(@Nonnull K key)
     {
         return create(contents.delete(key));
     }
@@ -131,21 +131,21 @@ abstract class AbstractJImmutableListMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<JImmutableMap.Entry<K, V>> entries()
+    public IterableStreamable<IMapEntry<K, V>> entries()
     {
         return new EntryIterableStreamable<>(this);
     }
 
     @Override
     @Nonnull
-    public JImmutableListMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> e)
+    public IListMap<K, V> insert(@Nonnull IMapEntry<K, V> e)
     {
         return insert(e.getKey(), e.getValue());
     }
 
     @Override
     @Nonnull
-    public SplitableIterator<JImmutableMap.Entry<K, JImmutableList<V>>> iterator()
+    public SplitableIterator<IMapEntry<K, IList<V>>> iterator()
     {
         return contents.iterator();
     }
@@ -158,28 +158,28 @@ abstract class AbstractJImmutableListMap<K, V>
 
     @Nullable
     @Override
-    public JImmutableList<V> get(K key)
+    public IList<V> get(K key)
     {
         return contents.get(key);
     }
 
     @Override
-    public JImmutableList<V> getValueOr(K key,
-                                        JImmutableList<V> defaultValue)
+    public IList<V> getValueOr(K key,
+                               IList<V> defaultValue)
     {
         return contents.getValueOr(key, defaultValue);
     }
 
     @Nonnull
     @Override
-    public Holder<JImmutableList<V>> find(K key)
+    public Holder<IList<V>> find(K key)
     {
         return contents.find(key);
     }
 
     @Nonnull
     @Override
-    public JImmutableListMap<K, V> deleteAll()
+    public IListMap<K, V> deleteAll()
     {
         return create(contents.deleteAll());
     }
@@ -205,7 +205,7 @@ abstract class AbstractJImmutableListMap<K, V>
     protected void checkListMapInvariants()
     {
         contents.checkInvariants();
-        for (JImmutableMap.Entry<K, JImmutableList<V>> entry : contents) {
+        for (IMapEntry<K, IList<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
     }
@@ -213,13 +213,13 @@ abstract class AbstractJImmutableListMap<K, V>
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      */
-    protected abstract JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map);
+    protected abstract IListMap<K, V> create(IMap<K, IList<V>> map);
 
     /**
      * Overridable by derived classes to create a compatible copy of the specified list.
      * Default implementation simply returns the original.
      */
-    protected JImmutableList<V> copyList(JImmutableList<V> original)
+    protected IList<V> copyList(IList<V> original)
     {
         return original;
     }

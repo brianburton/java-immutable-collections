@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.hash.map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface ArrayMapNode<K, V>
 {
@@ -59,8 +58,8 @@ public interface ArrayMapNode<K, V>
                    @Nonnull K key);
 
     @Nonnull
-    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                                @Nonnull K key);
+    Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                      @Nonnull K key);
 
     @Nonnull
     ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
@@ -83,7 +82,7 @@ public interface ArrayMapNode<K, V>
     GenericIterator.Iterable<V> values(@Nonnull CollisionMap<K, V> collisionMap);
 
     @Nonnull
-    GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap);
+    GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap);
 
     void forEach(@Nonnull CollisionMap<K, V> collisionMap,
                  @Nonnull Proc2<K, V> proc);

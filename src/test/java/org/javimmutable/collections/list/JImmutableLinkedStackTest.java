@@ -35,29 +35,28 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.IndexedIterator;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IStack;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.IndexedIterator;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableLinkedStackTest
     extends TestCase
 {
     public void test()
     {
-        JImmutableStack<Integer> list = JImmutableLinkedStack.of();
+        IStack<Integer> list = JImmutableLinkedStack.of();
         assertEquals(true, list.isEmpty());
         assertEquals(false, list.isNonEmpty());
         try {
@@ -69,14 +68,14 @@ public class JImmutableLinkedStackTest
         assertSame(list, list.getTail());
         StandardIteratorTests.emptyIteratorTest(list.iterator());
 
-        JImmutableStack<Integer> list2 = list.insert(10);
+        IStack<Integer> list2 = list.insert(10);
         assertEquals(false, list2.isEmpty());
         assertEquals(true, list2.isNonEmpty());
         assertEquals(10, (int)list2.getHead());
         assertEquals(list, list2.getTail());
         StandardIteratorTests.listIteratorTest(Arrays.asList(10), list2.iterator());
 
-        JImmutableStack<Integer> list3 = list2.insert(30);
+        IStack<Integer> list3 = list2.insert(30);
         assertEquals(false, list3.isEmpty());
         assertEquals(true, list3.isNonEmpty());
         assertEquals(30, (int)list3.getHead());
@@ -97,7 +96,7 @@ public class JImmutableLinkedStackTest
     @SuppressWarnings("SimplifyStreamApiCallChains")
     public void testStreams()
     {
-        JImmutableStack<Integer> list = JImmutableLinkedStack.of(1, 2, 3, 4, 5, 6, 7);
+        IStack<Integer> list = JImmutableLinkedStack.of(1, 2, 3, 4, 5, 6, 7);
         assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(4, 3, 2, 1), list.stream().filter(x -> x < 5).collect(toList()));
 
@@ -113,7 +112,7 @@ public class JImmutableLinkedStackTest
 
     public void testParallelStreams()
     {
-        final JImmutableStack<Integer> original = JImmutableLinkedStack.of(TestUtil.makeList(IndexedIterator.forRange(1, 10000)));
+        final IStack<Integer> original = JImmutableLinkedStack.of(TestUtil.makeList(IndexedIterator.forRange(1, 10000)));
         final List<Integer> collected = original.stream().parallel().collect(toList());
         assertEquals(TestUtil.makeList(original.iterator()), collected);
     }
@@ -121,8 +120,8 @@ public class JImmutableLinkedStackTest
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableStack)a).iterator();
-        final JImmutableStack<String> empty = JImmutableLinkedStack.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IStack)a).iterator();
+        final IStack<String> empty = JImmutableLinkedStack.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCi5JTM4OKMqvqPwPAv9UjHkYGCoKylkZGJhfMlQAAGBF3jRcAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),

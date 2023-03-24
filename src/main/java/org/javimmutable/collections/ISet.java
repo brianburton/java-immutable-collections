@@ -35,23 +35,23 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for immutable sets.
  */
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
-public interface JImmutableSet<T>
-    extends Insertable<T, JImmutableSet<T>>,
+public interface ISet<T>
+    extends Insertable<T, ISet<T>>,
             IterableStreamable<T>,
             Mapped<T, T>,
             InvariantCheckable,
@@ -67,7 +67,7 @@ public interface JImmutableSet<T>
          * @return the collection
          */
         @Nonnull
-        JImmutableSet<T> build();
+        ISet<T> build();
 
         /**
          * Determines how many values will be in the collection if build() is called now.
@@ -166,7 +166,7 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     @Override
-    JImmutableSet<T> insert(@Nonnull T value);
+    ISet<T> insert(@Nonnull T value);
 
     /**
      * Adds all of the elements of the specified collection to the set.
@@ -175,7 +175,7 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     @Override
-    JImmutableSet<T> insertAll(@Nonnull Iterable<? extends T> values);
+    ISet<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds all of the elements of the specified collection to the set.
@@ -184,7 +184,7 @@ public interface JImmutableSet<T>
      */
     @Nonnull
     @Override
-    JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values);
+    ISet<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Determines if the Set contains the specified value.
@@ -227,7 +227,7 @@ public interface JImmutableSet<T>
      * @return instance of set without the value
      */
     @Nonnull
-    JImmutableSet<T> delete(T value);
+    ISet<T> delete(T value);
 
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
@@ -235,7 +235,7 @@ public interface JImmutableSet<T>
      * @return instance of set without the values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other);
+    ISet<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
@@ -243,7 +243,7 @@ public interface JImmutableSet<T>
      * @return instance of set without the values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> other);
+    ISet<T> deleteAll(@Nonnull Iterator<? extends T> other);
 
     /**
      * Adds all values from other to the Set.
@@ -252,7 +252,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the values
      */
     @Nonnull
-    JImmutableSet<T> union(@Nonnull Iterable<? extends T> other);
+    ISet<T> union(@Nonnull Iterable<? extends T> other);
 
     /**
      * Adds all values from other to the Set.
@@ -261,7 +261,7 @@ public interface JImmutableSet<T>
      * @return instance of set containing the values
      */
     @Nonnull
-    JImmutableSet<T> union(@Nonnull Iterator<? extends T> values);
+    ISet<T> union(@Nonnull Iterator<? extends T> values);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -269,7 +269,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other);
+    ISet<T> intersection(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -277,7 +277,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values);
+    ISet<T> intersection(@Nonnull Iterator<? extends T> values);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -285,7 +285,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other);
+    ISet<T> intersection(@Nonnull ISet<? extends T> other);
 
     /**
      * Removes all values from the Set that are not contained in the other collection.
@@ -293,7 +293,7 @@ public interface JImmutableSet<T>
      * @return instance of set with unmatched values removed
      */
     @Nonnull
-    JImmutableSet<T> intersection(@Nonnull Set<? extends T> other);
+    ISet<T> intersection(@Nonnull Set<? extends T> other);
 
     /**
      * Determines the number of values in the Set.
@@ -319,7 +319,7 @@ public interface JImmutableSet<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableSet<T> deleteAll();
+    ISet<T> deleteAll();
 
     /**
      * @return an unmodifiable Set implementation backed by this set.
@@ -375,9 +375,9 @@ public interface JImmutableSet<T>
      * @return the new collection after all elements have been processed
      */
     @SuppressWarnings("unchecked")
-    default <A> JImmutableSet<A> transform(@Nonnull Func1<T, A> transform)
+    default <A> ISet<A> transform(@Nonnull Func1<T, A> transform)
     {
-        return transform((JImmutableSet)deleteAll(), transform);
+        return transform((ISet)deleteAll(), transform);
     }
 
     /**
@@ -389,9 +389,9 @@ public interface JImmutableSet<T>
      * @return set of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default JImmutableSet<T> select(@Nonnull Predicate<T> predicate)
+    default ISet<T> select(@Nonnull Predicate<T> predicate)
     {
-        JImmutableSet<T> answer = deleteAll();
+        ISet<T> answer = deleteAll();
         for (T value : this) {
             if (predicate.test(value)) {
                 answer = answer.insert(value);
@@ -409,9 +409,9 @@ public interface JImmutableSet<T>
      * @return set of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default JImmutableSet<T> reject(@Nonnull Predicate<T> predicate)
+    default ISet<T> reject(@Nonnull Predicate<T> predicate)
     {
-        JImmutableSet<T> answer = this;
+        ISet<T> answer = this;
         for (T value : this) {
             if (predicate.test(value)) {
                 answer = answer.delete(value);
@@ -425,7 +425,7 @@ public interface JImmutableSet<T>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, JImmutableSet<T>> setCollector()
+    default Collector<T, ?, ISet<T>> setCollector()
     {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }

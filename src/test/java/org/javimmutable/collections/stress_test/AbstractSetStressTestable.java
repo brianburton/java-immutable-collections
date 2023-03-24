@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import org.javimmutable.collections.IList;
 
 
 abstract class AbstractSetStressTestable
@@ -57,7 +56,7 @@ abstract class AbstractSetStressTestable
         return (list.isEmpty()) ? "" : list.get(random.nextInt(list.size()));
     }
 
-    protected String notContainedValue(JImmutableList<String> tokens,
+    protected String notContainedValue(IList<String> tokens,
                                        Random random,
                                        Collection<String> expected)
     {
@@ -68,7 +67,7 @@ abstract class AbstractSetStressTestable
         return value;
     }
 
-    protected String makeInsertValue(JImmutableList<String> tokens,
+    protected String makeInsertValue(IList<String> tokens,
                                      Random random,
                                      List<String> list,
                                      Collection<String> expected)
@@ -76,7 +75,7 @@ abstract class AbstractSetStressTestable
         return random.nextBoolean() ? containedValue(list, random) : notContainedValue(tokens, random, expected);
     }
 
-    protected String makeDeleteValue(JImmutableList<String> tokens,
+    protected String makeDeleteValue(IList<String> tokens,
                                      Random random,
                                      List<String> list,
                                      Collection<String> expected)
@@ -92,7 +91,7 @@ abstract class AbstractSetStressTestable
         return value;
     }
 
-    protected List<String> makeContainsList(JImmutableList<String> tokens,
+    protected List<String> makeContainsList(IList<String> tokens,
                                             Random random,
                                             List<String> list,
                                             Collection<String> expected)

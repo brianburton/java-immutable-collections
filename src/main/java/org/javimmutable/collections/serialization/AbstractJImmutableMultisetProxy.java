@@ -35,14 +35,13 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMultiset;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableMultisetProxy
@@ -51,9 +50,9 @@ abstract class AbstractJImmutableMultisetProxy
     private static final int MULTISET_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
-    protected JImmutableMultiset set;
+    protected IMultiset set;
 
-    protected AbstractJImmutableMultisetProxy(JImmutableMultiset set)
+    protected AbstractJImmutableMultisetProxy(IMultiset set)
     {
         this.set = set;
     }
@@ -65,9 +64,9 @@ abstract class AbstractJImmutableMultisetProxy
         out.writeInt(MULTISET_VERSION);
         writeSet(out);
         out.writeInt(set.size());
-        final Iterator<JImmutableMap.Entry> iterator = set.entries().iterator();
+        final Iterator<IMapEntry> iterator = set.entries().iterator();
         while (iterator.hasNext()) {
-            JImmutableMap.Entry e = iterator.next();
+            IMapEntry e = iterator.next();
             out.writeObject(e.getKey());
             out.writeInt((Integer)e.getValue());
         }
@@ -95,7 +94,7 @@ abstract class AbstractJImmutableMultisetProxy
         return set;
     }
 
-    protected JImmutableMultiset readSet(ObjectInput in)
+    protected IMultiset readSet(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         return set;

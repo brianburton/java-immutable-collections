@@ -35,17 +35,16 @@
 
 package org.javimmutable.collections.hash.map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class ArrayMultiValueMapNode<K, V>
@@ -83,8 +82,8 @@ public class ArrayMultiValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                                       @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                             @Nonnull K key)
     {
         return collisionMap.findEntry(node, key);
     }
@@ -145,19 +144,19 @@ public class ArrayMultiValueMapNode<K, V>
     @Override
     public GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.transformIterable(collisionMap.genericIterable(node), JImmutableMap.Entry::getKey);
+        return GenericIterator.transformIterable(collisionMap.genericIterable(node), IMapEntry::getKey);
     }
 
     @Nonnull
     @Override
     public GenericIterator.Iterable<V> values(@Nonnull CollisionMap<K, V> collisionMap)
     {
-        return GenericIterator.transformIterable(collisionMap.genericIterable(node), JImmutableMap.Entry::getValue);
+        return GenericIterator.transformIterable(collisionMap.genericIterable(node), IMapEntry::getValue);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
+    public GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return collisionMap.genericIterable(node);
     }

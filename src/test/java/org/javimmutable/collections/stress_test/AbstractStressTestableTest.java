@@ -36,13 +36,12 @@
 package org.javimmutable.collections.stress_test;
 
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.util.JImmutables;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import junit.framework.TestCase;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.util.JImmutables;
 
 public class AbstractStressTestableTest
     extends TestCase
@@ -50,11 +49,11 @@ public class AbstractStressTestableTest
     public void test()
         throws IOException
     {
-        JImmutableList<String> tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
+        IList<String> tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
         testStandard(tokens);
     }
 
-    private void testStandard(JImmutableList<String> tokens)
+    private void testStandard(IList<String> tokens)
     {
         Random random = new Random();
         StressTester testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
@@ -63,7 +62,7 @@ public class AbstractStressTestableTest
     }
 
     private void testMakeInsertList(StressTester testable,
-                                    JImmutableList<String> tokens,
+                                    IList<String> tokens,
                                     Random random)
     {
         int times = 100000;
@@ -78,13 +77,13 @@ public class AbstractStressTestableTest
     }
 
     private void testMakeInsertJList(StressTester testable,
-                                     JImmutableList<String> tokens,
+                                     IList<String> tokens,
                                      Random random)
     {
         int times = 100000;
         int total = 0;
         for (int i = 0; i < times; ++i) {
-            JImmutableList<String> list = testable.makeInsertJList(tokens, random);
+            IList<String> list = testable.makeInsertJList(tokens, random);
             total = total + list.size();
         }
         double average = (double)total / (double)times;

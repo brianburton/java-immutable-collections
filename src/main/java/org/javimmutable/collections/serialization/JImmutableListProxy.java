@@ -35,10 +35,9 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.list.JImmutableTreeList;
-
 import java.util.function.Supplier;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.list.JImmutableTreeList;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -46,7 +45,7 @@ import java.util.function.Supplier;
 public class JImmutableListProxy
     extends AbstractJImmutableListProxy
 {
-    private static final Supplier<JImmutableList.Builder> BUILDER_FACTORY = () -> JImmutableTreeList.listBuilder();
+    private static final Supplier<IList.Builder> BUILDER_FACTORY = () -> JImmutableTreeList.listBuilder();
     private static final long serialVersionUID = -121805;
 
     public JImmutableListProxy()

@@ -35,14 +35,6 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.iterators.TransformStreamable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -51,6 +43,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Spliterator;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 /**
  * An immutable Map implementation backed by a JImmutableMap.
@@ -60,14 +60,14 @@ import java.util.Spliterator;
 public class MapAdaptor<K, V>
     extends AbstractMap<K, V>
 {
-    private final JImmutableMap<K, V> map;
+    private final IMap<K, V> map;
 
-    public MapAdaptor(JImmutableMap<K, V> map)
+    public MapAdaptor(IMap<K, V> map)
     {
         this.map = map;
     }
 
-    public static <K, V> MapAdaptor<K, V> of(JImmutableMap<K, V> map)
+    public static <K, V> MapAdaptor<K, V> of(IMap<K, V> map)
     {
         return new MapAdaptor<>(map);
     }
@@ -96,7 +96,7 @@ public class MapAdaptor<K, V>
     @Override
     public boolean containsValue(Object o)
     {
-        for (JImmutableMap.Entry<K, V> entry : map) {
+        for (IMapEntry<K, V> entry : map) {
             V value = entry.getValue();
             if (o == null) {
                 if (value == null) {
@@ -222,7 +222,7 @@ public class MapAdaptor<K, V>
                     return false;
                 }
                 Entry<K, V> oEntry = (Entry<K, V>)o;
-                Holder<JImmutableMap.Entry<K, V>> eHolder = map.findEntry(oEntry.getKey());
+                Holder<IMapEntry<K, V>> eHolder = map.findEntry(oEntry.getKey());
                 return eHolder.isFilled() && new MapEntry(eHolder.getValue()).equals(oEntry);
             }
 

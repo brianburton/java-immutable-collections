@@ -35,13 +35,10 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,8 +49,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
-import static junit.framework.Assert.*;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.util.JImmutables;
 
 public final class StandardJImmutableSetTests
 {
@@ -61,7 +63,7 @@ public final class StandardJImmutableSetTests
     {
     }
 
-    public static void verifySet(JImmutableSet<Integer> template,
+    public static void verifySet(ISet<Integer> template,
                                  boolean emptyIsUnique)
     {
         testVarious(template);
@@ -77,7 +79,7 @@ public final class StandardJImmutableSetTests
         assertEquals(template, new HashSet<Integer>());
         assertEquals(template.getSet(), new HashSet<Integer>());
 
-        JImmutableSet<Integer> jet = template;
+        ISet<Integer> jet = template;
         assertEquals(false, jet.contains(10));
         jet = jet.insert(10);
         assertEquals(true, jet != template);
@@ -111,7 +113,7 @@ public final class StandardJImmutableSetTests
         jet = template.union(values);
         final List<Integer> withExtra = Arrays.asList(0, 1, 2, 3, 4, 5);
         Set<Integer> intersectionSet = new HashSet<>(withExtra);
-        JImmutableSet<Integer> intersectionJet = template.union(withExtra);
+        ISet<Integer> intersectionJet = template.union(withExtra);
         verifyContents(jet.intersection(withExtra), values);
         verifyContents(jet.intersection(withExtra.iterator()), values);
         verifyContents(jet.intersection(intersectionJet), values);
@@ -170,7 +172,7 @@ public final class StandardJImmutableSetTests
         assertSame(jet, jet.insertAll(template.iterator()));
 
         // union with self should yield same set (no changes)
-        if (!(template instanceof JImmutableMultiset)) {
+        if (!(template instanceof IMultiset)) {
             assertSame(jet, jet.insertAll(plainIterable(jet)));
             assertSame(jet, jet.insertAll(jet));
             assertSame(jet, jet.insertAll(jet.iterator()));
@@ -195,7 +197,7 @@ public final class StandardJImmutableSetTests
         return () -> source.iterator();
     }
 
-    private static void testCollector(JImmutableSet<Integer> template)
+    private static void testCollector(ISet<Integer> template)
     {
         Collection<Integer> values = new ArrayList<>();
         for (int i = 1; i <= 10; ++i) {
@@ -205,19 +207,19 @@ public final class StandardJImmutableSetTests
             }
         }
 
-        if (template instanceof JImmutableMultiset) {
+        if (template instanceof IMultiset) {
             values = new LinkedHashSet<>(values);
         }
-        JImmutableSet<Integer> expected = template.insertAll(values);
-        JImmutableSet<Integer> actual = values.parallelStream().collect(template.setCollector());
+        ISet<Integer> expected = template.insertAll(values);
+        ISet<Integer> actual = values.parallelStream().collect(template.setCollector());
         assertEquals(expected, actual);
     }
 
-    private static void testVarious(JImmutableSet<Integer> template)
+    private static void testVarious(ISet<Integer> template)
     {
         List<Integer> expected = Arrays.asList(100, 200, 300, 400);
 
-        JImmutableSet<Integer> set = JImmutableHashSet.of();
+        ISet<Integer> set = JImmutableHashSet.of();
         assertTrue(set.isEmpty());
         assertEquals(0, set.size());
         assertEquals(false, set.contains(100));
@@ -250,7 +252,7 @@ public final class StandardJImmutableSetTests
         assertSame(set, set.insert(100));
         assertSame(set, set.insert(200));
 
-        JImmutableSet<Integer> set2 = set.union(expected);
+        ISet<Integer> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains(100));
@@ -291,7 +293,7 @@ public final class StandardJImmutableSetTests
 
         set2 = set2.deleteAll(set);
 
-        JImmutableSet<Integer> set3 = set.union(expected).insert(500).insert(600);
+        ISet<Integer> set3 = set.union(expected).insert(500).insert(600);
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains(100));
@@ -316,14 +318,14 @@ public final class StandardJImmutableSetTests
         assertEquals(template, set3.deleteAll(set3));
     }
 
-    private static void verifyIntersectionOrder(JImmutableSet<Integer> template)
+    private static void verifyIntersectionOrder(ISet<Integer> template)
     {
-        JImmutableSet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+        ISet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
         final List<Integer> expected = new ArrayList<>();
         expected.addAll(jet.getSet());
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
 
-        JImmutableSet<Integer> diffOrder = JImmutableInsertOrderSet.<Integer>of().insert(400).insert(0).insert(600)
+        ISet<Integer> diffOrder = JImmutableInsertOrderSet.<Integer>of().insert(400).insert(0).insert(600)
             .insert(100).insert(50).insert(100);
         //Iterable
         jet = jet.intersection(iterable(diffOrder));
@@ -339,10 +341,10 @@ public final class StandardJImmutableSetTests
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
     }
 
-    private static void testWithMultiset(JImmutableSet<Integer> template)
+    private static void testWithMultiset(ISet<Integer> template)
     {
-        JImmutableSet<Integer> multi = JImmutables.multiset();
-        JImmutableSet<Integer> jet = template;
+        ISet<Integer> multi = JImmutables.multiset();
+        ISet<Integer> jet = template;
 
         //intersection(Jet)
         //empty into empty
@@ -373,13 +375,13 @@ public final class StandardJImmutableSetTests
         assertTrue(jet.equals(multi.getSet()));
     }
 
-    private static void testRandom(JImmutableSet<Integer> template)
+    private static void testRandom(ISet<Integer> template)
     {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
             Set<Integer> expected = new HashSet<>();
-            JImmutableSet<Integer> set = template;
+            ISet<Integer> set = template;
 
             for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(5);
@@ -400,14 +402,14 @@ public final class StandardJImmutableSetTests
                         assertEquals(false, set.contains(value));
                         break;
                     case 4:
-                        JImmutableSet<Integer> values = template;
+                        ISet<Integer> values = template;
                         int times = random.nextInt(4);
                         for (int rep = 0; rep < times; ++rep) {
                             int num = random.nextInt(size);
                             expected.add(num);
                             values = values.insert(num);
                         }
-                        JImmutableSet<Integer> newSet = set.insertAll(values);
+                        ISet<Integer> newSet = set.insertAll(values);
                         set = set.insertAll(values);
                         assertEquals(true, newSet.containsAll(values));
                         break;
@@ -415,7 +417,7 @@ public final class StandardJImmutableSetTests
                 assertEquals(expected.size(), set.size());
             }
             assertEquals(expected, set.getSet());
-            if (!(set instanceof JImmutableMultiset)) {
+            if (!(set instanceof IMultiset)) {
                 for (Integer value : set) {
                     assertSame(set, set.insert(value));
                 }
@@ -428,10 +430,10 @@ public final class StandardJImmutableSetTests
         }
     }
 
-    private static void testTransform(JImmutableSet<Integer> template)
+    private static void testTransform(ISet<Integer> template)
     {
-        JImmutableSet<Integer> ints = template;
-        JImmutableSet<String> strings = template.transform(String::valueOf);
+        ISet<Integer> ints = template;
+        ISet<String> strings = template.transform(String::valueOf);
         List<String> expected = new ArrayList<>();
         verifyContents(strings, expected);
         for (int i = 1; i <= 100; ++i) {
@@ -449,7 +451,7 @@ public final class StandardJImmutableSetTests
         return collection;
     }
 
-    private static <T> void verifyContents(JImmutableSet<T> jet,
+    private static <T> void verifyContents(ISet<T> jet,
                                            List<T> expected)
     {
         assertEquals(expected.isEmpty(), jet.isEmpty());

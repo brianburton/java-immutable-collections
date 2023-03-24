@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.tree.JImmutableTreeMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -63,7 +62,7 @@ public class JImmutableTreeMapProxy
     }
 
     @Override
-    protected JImmutableMap readMap(ObjectInput in)
+    protected IMap readMap(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();

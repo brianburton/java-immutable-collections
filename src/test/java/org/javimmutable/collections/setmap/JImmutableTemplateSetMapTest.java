@@ -35,9 +35,16 @@
 
 package org.javimmutable.collections.setmap;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeMap;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -47,29 +54,21 @@ import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 import org.javimmutable.collections.tree.JImmutableTreeSetTest;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.TreeMap;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-
 public class JImmutableTemplateSetMapTest
     extends AbstractJImmutableSetMapTestCase
 {
     public void testVarious()
     {
         final Comparator<Integer> reverse = ComparableComparator.<Integer>of().reversed();
-        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableTreeMap<Integer, ISet<Integer>> emptyMap = JImmutableTreeMap.of();
         final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of(reverse);
-        final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
-                                                                                     emptySet.insert(8).insert(25));
+        final ISetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
+                                                                            emptySet.insert(8).insert(25));
         assertEquals(true, empty.isEmpty());
         assertEquals(0, empty.count());
         assertEquals(0, empty.keys().count());
         assertNull(empty.get(1));
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
+        ISetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
         verifyRandom(JImmutableTreeSetMap.of(), new TreeMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
@@ -92,12 +91,12 @@ public class JImmutableTemplateSetMapTest
 
     public void testEquals()
     {
-        final JImmutableTreeMap<Integer, JImmutableSet<Integer>> emptyMap = JImmutableTreeMap.of();
+        final JImmutableTreeMap<Integer, ISet<Integer>> emptyMap = JImmutableTreeMap.of();
         final JImmutableTreeSet<Integer> emptySet = JImmutableTreeSet.of();
-        final JImmutableSetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
-                                                                                     emptySet.insert(8).insert(25));
-        JImmutableSetMap<Integer, Integer> a = empty;
-        JImmutableSetMap<Integer, Integer> b = empty;
+        final ISetMap<Integer, Integer> empty = JImmutableTemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
+                                                                            emptySet.insert(8).insert(25));
+        ISetMap<Integer, Integer> a = empty;
+        ISetMap<Integer, Integer> b = empty;
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -117,7 +116,7 @@ public class JImmutableTemplateSetMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableTemplateSetMap)a).iterator();
-        JImmutableSetMap<String, String> empty = JImmutableTemplateSetMap.of(JImmutableTreeMap.<String, JImmutableSet<String>>of(), JImmutableTreeSet.of());
+        ISetMap<String, String> empty = JImmutableTemplateSetMap.of(JImmutableTreeMap.<String, ISet<String>>of(), JImmutableTreeSet.of());
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTemplateSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6lAIrlf6p0AgAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTemplateSetMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),

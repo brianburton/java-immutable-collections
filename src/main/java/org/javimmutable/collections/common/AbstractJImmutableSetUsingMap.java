@@ -35,30 +35,30 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.SplitableIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.SplitableIterator;
 
 public abstract class AbstractJImmutableSetUsingMap<T>
     extends AbstractJImmutableSet<T>
 {
-    protected final JImmutableMap<T, Boolean> map;
+    protected final IMap<T, Boolean> map;
 
-    public AbstractJImmutableSetUsingMap(@Nonnull JImmutableMap<T, Boolean> map)
+    public AbstractJImmutableSetUsingMap(@Nonnull IMap<T, Boolean> map)
     {
         this.map = map;
     }
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insert(@Nonnull T value)
+    public ISet<T> insert(@Nonnull T value)
     {
-        final JImmutableMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
+        final IMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
     }
 
@@ -70,17 +70,17 @@ public abstract class AbstractJImmutableSetUsingMap<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> delete(T value)
+    public ISet<T> delete(T value)
     {
-        JImmutableMap<T, Boolean> newMap = map.delete(value);
+        IMap<T, Boolean> newMap = map.delete(value);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> values)
+    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> values)
     {
-        JImmutableMap<T, Boolean> newMap = map;
+        IMap<T, Boolean> newMap = map;
         while (values.hasNext()) {
             final T value = values.next();
             if (value != null) {
@@ -92,9 +92,9 @@ public abstract class AbstractJImmutableSetUsingMap<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Iterator<? extends T> values)
+    public ISet<T> union(@Nonnull Iterator<? extends T> values)
     {
-        JImmutableMap<T, Boolean> newMap = map;
+        IMap<T, Boolean> newMap = map;
         while (values.hasNext()) {
             final T value = values.next();
             if (value != null) {
@@ -106,7 +106,7 @@ public abstract class AbstractJImmutableSetUsingMap<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values)
+    public ISet<T> intersection(@Nonnull Iterator<? extends T> values)
     {
         if (isEmpty()) {
             return this;
@@ -124,8 +124,8 @@ public abstract class AbstractJImmutableSetUsingMap<T>
             }
         }
 
-        JImmutableMap<T, Boolean> newMap = map;
-        for (JImmutableMap.Entry<T, Boolean> entry : map) {
+        IMap<T, Boolean> newMap = map;
+        for (IMapEntry<T, Boolean> entry : map) {
             if (!otherSet.contains(entry.getKey())) {
                 newMap = newMap.delete(entry.getKey());
             }
@@ -136,14 +136,14 @@ public abstract class AbstractJImmutableSetUsingMap<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Set<? extends T> other)
+    public ISet<T> intersection(@Nonnull Set<? extends T> other)
     {
         if (isEmpty()) {
             return this;
         } else if (other.isEmpty()) {
             return deleteAll();
         } else {
-            JImmutableMap<T, Boolean> newMap = map;
+            IMap<T, Boolean> newMap = map;
             for (T value : map.keys()) {
                 if (!other.contains(value)) {
                     newMap = newMap.delete(value);
@@ -187,7 +187,7 @@ public abstract class AbstractJImmutableSetUsingMap<T>
     protected void checkSetInvariants()
     {
         map.checkInvariants();
-        for (JImmutableMap.Entry<T, Boolean> entry : map) {
+        for (IMapEntry<T, Boolean> entry : map) {
             if (!entry.getValue()) {
                 throw new RuntimeException();
             }
@@ -197,5 +197,5 @@ public abstract class AbstractJImmutableSetUsingMap<T>
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      */
-    protected abstract JImmutableSet<T> create(JImmutableMap<T, Boolean> map);
+    protected abstract ISet<T> create(IMap<T, Boolean> map);
 }

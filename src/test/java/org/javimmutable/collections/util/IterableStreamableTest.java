@@ -40,8 +40,8 @@ import static org.javimmutable.collections.util.JImmutables.*;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IterableStreamable.Partitions;
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.MapEntry;
 
 public class IterableStreamableTest
@@ -166,7 +166,7 @@ public class IterableStreamableTest
         assertEquals(new Partitions<>(list(1, 2, 3, 4, 5), list()), list(1, 2, 3, 4, 5).partition(list(), list(), x -> true));
         assertEquals(new Partitions<>(list(), list(1, 2, 3, 4, 5)), list(1, 2, 3, 4, 5).partition(list(), list(), x -> false));
         assertEquals(new Partitions<>(list(999, 1, 3, 5), list(888, 2, 4)), list(1, 2, 3, 4, 5).partition(list(999), list(888), x -> x % 2 == 1));
-        Partitions<JImmutableList<Integer>> p = list(1, 2, 3, 4, 5).partition(list(999), list(888), x -> x % 2 == 1);
+        Partitions<IList<Integer>> p = list(1, 2, 3, 4, 5).partition(list(999), list(888), x -> x % 2 == 1);
         assertEquals(list(999, 1, 3, 5), p.getMatched());
         assertEquals(list(888, 2, 4), p.getUnmatched());
     }

@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IStack;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for implementations of JImmutableStack. Divided into three
@@ -56,25 +55,25 @@ import static org.javimmutable.collections.common.StandardSerializableTests.veri
 public class JImmutableStackStressTester
     extends StressTester
 {
-    private final JImmutableStack<String> stack;
+    private final IStack<String> stack;
 
-    public JImmutableStackStressTester(JImmutableStack<String> stack)
+    public JImmutableStackStressTester(IStack<String> stack)
     {
         super(getName(stack));
         this.stack = stack;
     }
 
     @Override
-    public JImmutableList<String> getOptions()
+    public IList<String> getOptions()
     {
         return JImmutables.list("stack");
     }
 
     @Override
     public void execute(Random random,
-                        JImmutableList<String> tokens)
+                        IList<String> tokens)
     {
-        JImmutableStack<String> stack = this.stack;
+        IStack<String> stack = this.stack;
         LinkedList<String> expected = new LinkedList<>();
         int size = 1 + random.nextInt(100000);
 
@@ -109,7 +108,7 @@ public class JImmutableStackStressTester
         System.out.printf("JImmutableStackStressTest on %s completed without errors%n", "JImmutableStack");
     }
 
-    private void verifyIteration(JImmutableStack<String> stack,
+    private void verifyIteration(IStack<String> stack,
                                  List<String> expected)
     {
         System.out.printf("checking iterator of size %d%n", expected.size());
@@ -118,14 +117,14 @@ public class JImmutableStackStressTester
         StandardIterableStreamableTests.verifyOrderedUsingCollection(list, stack);
     }
 
-    private void verifyContents(JImmutableStack<String> stack,
+    private void verifyContents(IStack<String> stack,
                                 List<String> expected)
     {
         if (stack.isEmpty() != expected.isEmpty()) {
             throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), stack.isEmpty()));
         }
 
-        JImmutableStack<String> checkStack = stack;
+        IStack<String> checkStack = stack;
         for (String value : expected) {
             if (!value.equals(checkStack.getHead())) {
                 throw new RuntimeException(String.format("value mismatch - expected %s found %s", value, checkStack.getHead()));
@@ -137,6 +136,6 @@ public class JImmutableStackStressTester
             throw new RuntimeException("makeList() method call failed\n");
         }
         stack.checkInvariants();
-        verifySerializable(null, stack, JImmutableStack.class);
+        verifySerializable(null, stack, IStack.class);
     }
 }

@@ -35,20 +35,19 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-
 import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
 
 public class GenericSetBuilder<T>
-    implements JImmutableSet.Builder<T>
+    implements ISet.Builder<T>
 {
-    private final JImmutableMap.Builder<T, Boolean> mapBuilder;
-    private final Func1<JImmutableMap<T, Boolean>, JImmutableSet<T>> setFactory;
+    private final IMap.Builder<T, Boolean> mapBuilder;
+    private final Func1<IMap<T, Boolean>, ISet<T>> setFactory;
 
-    public GenericSetBuilder(JImmutableMap.Builder<T, Boolean> mapBuilder,
-                             Func1<JImmutableMap<T, Boolean>, JImmutableSet<T>> setFactory)
+    public GenericSetBuilder(IMap.Builder<T, Boolean> mapBuilder,
+                             Func1<IMap<T, Boolean>, ISet<T>> setFactory)
     {
         this.mapBuilder = mapBuilder;
         this.setFactory = setFactory;
@@ -56,14 +55,14 @@ public class GenericSetBuilder<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> build()
+    public ISet<T> build()
     {
         return setFactory.apply(mapBuilder.build());
     }
 
     @Nonnull
     @Override
-    public JImmutableSet.Builder<T> clear()
+    public ISet.Builder<T> clear()
     {
         mapBuilder.clear();
         return this;
@@ -77,7 +76,7 @@ public class GenericSetBuilder<T>
 
     @Nonnull
     @Override
-    public JImmutableSet.Builder<T> add(T value)
+    public ISet.Builder<T> add(T value)
     {
         mapBuilder.add(value, Boolean.TRUE);
         return this;

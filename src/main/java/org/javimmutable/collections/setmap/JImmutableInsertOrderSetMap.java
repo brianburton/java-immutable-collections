@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetMapProxy;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in the same order as they
@@ -58,8 +57,8 @@ public class JImmutableInsertOrderSetMap<K, V>
     private static final JImmutableInsertOrderSetMap EMPTY = new JImmutableInsertOrderSetMap(JImmutableInsertOrderMap.of(), JImmutableHashSet.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableInsertOrderSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
-                                        JImmutableSet<V> emptySet)
+    private JImmutableInsertOrderSetMap(IMap<K, ISet<V>> contents,
+                                        ISet<V> emptySet)
     {
         super(contents, emptySet);
     }
@@ -77,7 +76,7 @@ public class JImmutableInsertOrderSetMap<K, V>
     }
 
     @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
     {
         return new JImmutableInsertOrderSetMap<K, V>(map, emptySet);
     }

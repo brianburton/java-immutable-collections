@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -66,11 +65,11 @@ public class JImmutableTemplateSetMapProxy
     }
 
     @Override
-    protected JImmutableSetMap readMap(ObjectInput in)
+    protected ISetMap readMap(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
-        JImmutableMap emptyMap = (JImmutableMap)in.readObject();
-        JImmutableSet emptySet = (JImmutableSet)in.readObject();
+        IMap emptyMap = (IMap)in.readObject();
+        ISet emptySet = (ISet)in.readObject();
         return JImmutableTemplateSetMap.of(emptyMap, emptySet);
     }
 

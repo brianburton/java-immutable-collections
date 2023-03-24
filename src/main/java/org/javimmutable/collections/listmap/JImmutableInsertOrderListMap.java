@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
 import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 
 /**
  * JImmutableListMap implementation that allows keys to be traversed in the same order as they
@@ -58,8 +57,8 @@ public class JImmutableInsertOrderListMap<K, V>
     private static final JImmutableInsertOrderListMap EMPTY = new JImmutableInsertOrderListMap(JImmutableInsertOrderMap.of(), JImmutableTreeList.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableInsertOrderListMap(JImmutableMap<K, JImmutableList<V>> contents,
-                                         JImmutableList<V> emptyList)
+    private JImmutableInsertOrderListMap(IMap<K, IList<V>> contents,
+                                         IList<V> emptyList)
     {
         super(contents, emptyList);
     }
@@ -77,7 +76,7 @@ public class JImmutableInsertOrderListMap<K, V>
     }
 
     @Override
-    protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
+    protected IListMap<K, V> create(IMap<K, IList<V>> map)
     {
         return (map == contents) ? this : new JImmutableInsertOrderListMap<>(map, emptyList);
     }

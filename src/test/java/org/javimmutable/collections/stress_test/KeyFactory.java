@@ -35,20 +35,22 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
+import static org.javimmutable.collections.stress_test.KeyWrapper.BadHashKey;
+import static org.javimmutable.collections.stress_test.KeyWrapper.ComparableBadHashKey;
+import static org.javimmutable.collections.stress_test.KeyWrapper.ComparableRegularKey;
+import static org.javimmutable.collections.stress_test.KeyWrapper.RegularKey;
 
 import java.util.Random;
-
-import static org.javimmutable.collections.stress_test.KeyWrapper.*;
+import org.javimmutable.collections.IList;
 
 public abstract class KeyFactory<T>
 {
-    abstract T newKey(JImmutableList<String> tokens,
+    abstract T newKey(IList<String> tokens,
                       Random random);
 
     abstract T makeKey(String value);
 
-    protected String makeKey(JImmutableList<String> tokens,
+    protected String makeKey(IList<String> tokens,
                              Random random)
     {
         int length = 1 + random.nextInt(250);
@@ -63,7 +65,7 @@ public abstract class KeyFactory<T>
             extends KeyFactory<RegularKey<String>>
     {
         @Override
-        public RegularKey<String> newKey(JImmutableList<String> tokens,
+        public RegularKey<String> newKey(IList<String> tokens,
                                          Random random)
         {
             return new RegularKey<String>(makeKey(tokens, random));
@@ -80,7 +82,7 @@ public abstract class KeyFactory<T>
             extends KeyFactory<ComparableRegularKey<String>>
     {
         @Override
-        public ComparableRegularKey<String> newKey(JImmutableList<String> tokens,
+        public ComparableRegularKey<String> newKey(IList<String> tokens,
                                                    Random random)
         {
             return new ComparableRegularKey<String>(makeKey(tokens, random));
@@ -98,7 +100,7 @@ public abstract class KeyFactory<T>
             extends KeyFactory<BadHashKey<String>>
     {
         @Override
-        public BadHashKey<String> newKey(JImmutableList<String> tokens,
+        public BadHashKey<String> newKey(IList<String> tokens,
                                          Random random)
         {
             return new BadHashKey<String>(makeKey(tokens, random));
@@ -115,7 +117,7 @@ public abstract class KeyFactory<T>
             extends KeyFactory<ComparableBadHashKey<String>>
     {
         @Override
-        public ComparableBadHashKey<String> newKey(JImmutableList<String> tokens,
+        public ComparableBadHashKey<String> newKey(IList<String> tokens,
                                                    Random random)
         {
             return new ComparableBadHashKey<String>(makeKey(tokens, random));

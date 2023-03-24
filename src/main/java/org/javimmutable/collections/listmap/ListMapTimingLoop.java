@@ -35,9 +35,8 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.JImmutableListMap;
-
 import java.util.Random;
+import org.javimmutable.collections.IListMap;
 
 public final class ListMapTimingLoop
 {
@@ -55,7 +54,7 @@ public final class ListMapTimingLoop
         int removes = 0;
         int gets = 0;
         long startPer = System.currentTimeMillis();
-        JImmutableListMap<Integer, Integer> map = JImmutableHashListMap.of();
+        IListMap<Integer, Integer> map = JImmutableHashListMap.of();
         for (int i = 1; i <= maxLoops; ++i) {
             int command = 1 + random.nextInt(12);
             if (command <= 6) {

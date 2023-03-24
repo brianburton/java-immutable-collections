@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.iterators;
 
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-
-public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D extends IterableStreamable<JImmutableMap.Entry<K, C>>>
-    implements IterableStreamable<JImmutableMap.Entry<K, V>>
+public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D extends IterableStreamable<IMapEntry<K, C>>>
+    implements IterableStreamable<IMapEntry<K, V>>
 {
     private final D source;
 
@@ -54,7 +53,7 @@ public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D ex
 
     @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<K, V>> iterator()
+    public SplitableIterator<IMapEntry<K, V>> iterator()
     {
         return LazyMultiIterator.transformed(source.iterator(), e -> () -> TransformIterator.of(e.getValue().iterator(), v -> MapEntry.of(e.getKey(), v)));
     }

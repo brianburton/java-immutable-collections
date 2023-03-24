@@ -35,19 +35,10 @@
 
 package org.javimmutable.collections.tree;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.Proc2;
-import org.javimmutable.collections.Proc2Throws;
-import org.javimmutable.collections.Sum2;
-import org.javimmutable.collections.Sum2Throws;
-import org.javimmutable.collections.common.StandardJImmutableMapTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEmptyEnumeration;
+import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEnumeration;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,10 +52,20 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardJImmutableMapTests.*;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
+import org.javimmutable.collections.common.StandardJImmutableMapTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableTreeMapTest
     extends TestCase
@@ -101,7 +102,7 @@ public class JImmutableTreeMapTest
         assertEquals(Maybe.some(11), map.seek(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
-        final List<JImmutableMap.Entry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));
+        final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));
         StandardIteratorTests.listIteratorTest(expectedEntries, map.iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
@@ -137,7 +138,7 @@ public class JImmutableTreeMapTest
             assertEquals(expected, map.getMap().keySet());
 
             // test value identity at all levels
-            for (JImmutableMap.Entry<Integer, Integer> entry : map) {
+            for (IMapEntry<Integer, Integer> entry : map) {
                 assertSame(map, map.assign(entry.getKey(), entry.getValue()));
             }
 
@@ -158,7 +159,7 @@ public class JImmutableTreeMapTest
         Random random = new Random();
         for (int loop = 0; loop < 10; ++loop) {
             Map<Integer, Integer> expected = new TreeMap<>();
-            JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
+            IMap<Integer, Integer> map = JImmutableTreeMap.of();
             for (int i = 1; i <= 25 * maxKey; ++i) {
                 int command = random.nextInt(5);
                 switch (command) {
@@ -260,9 +261,9 @@ public class JImmutableTreeMapTest
     public void testAssignAll()
     {
         //assignAll(JImmutableMap)
-        JImmutableMap<String, Number> empty = JImmutableTreeMap.of();
-        JImmutableMap<String, Number> map = empty;
-        JImmutableMap<String, Integer> expected = JImmutableTreeMap.of();
+        IMap<String, Number> empty = JImmutableTreeMap.of();
+        IMap<String, Number> map = empty;
+        IMap<String, Integer> expected = JImmutableTreeMap.of();
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());
@@ -309,8 +310,8 @@ public class JImmutableTreeMapTest
 
     public void testIterator()
     {
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
-        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
+        List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
+        IMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = -1000; i <= 1000; ++i) {
             expected.add(MapEntry.of(i, 1000 + i));
             map = map.assign(i, 1000 + i);
@@ -320,7 +321,7 @@ public class JImmutableTreeMapTest
 
     public void testStreams()
     {
-        final JImmutableMap<Integer, Integer> treeMap = JImmutableTreeMap.of();
+        final IMap<Integer, Integer> treeMap = JImmutableTreeMap.of();
         assertEquals(asList(), treeMap.stream().collect(Collectors.toList()));
         assertEquals(asList(MapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
         assertEquals(asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
@@ -334,7 +335,7 @@ public class JImmutableTreeMapTest
         assertEquals(asList(10, 40), treeMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
 
         List<Integer> keys = new ArrayList<>();
-        JImmutableMap<Integer, Integer> map = treeMap;
+        IMap<Integer, Integer> map = treeMap;
         Random r = new Random();
         for (int i = 1; i <= 1000; ++i) {
             final int key = r.nextInt();
@@ -349,8 +350,8 @@ public class JImmutableTreeMapTest
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
-        JImmutableMap<String, String> empty = JImmutableTreeMap.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+        IMap<String, String> empty = JImmutableTreeMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhQBoAwRi6T/4AAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
@@ -379,8 +380,8 @@ public class JImmutableTreeMapTest
     {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 1000; ++i) {
-            JImmutableMap.Builder<Integer, Integer> builder = JImmutableTreeMap.builder();
-            JImmutableMap<Integer, Integer> expected = JImmutableTreeMap.of();
+            IMap.Builder<Integer, Integer> builder = JImmutableTreeMap.builder();
+            IMap<Integer, Integer> expected = JImmutableTreeMap.of();
             final int size = 1 + r.nextInt(4000);
             for (int k = 1; k <= size; ++k) {
                 final Integer key = r.nextInt(2 * size);
@@ -388,7 +389,7 @@ public class JImmutableTreeMapTest
                 builder.add(key, value);
                 expected = expected.assign(key, value);
             }
-            JImmutableMap<Integer, Integer> actual = builder.build();
+            IMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
 
@@ -460,13 +461,13 @@ public class JImmutableTreeMapTest
         }
     }
 
-    private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> add(IMap<Integer, Integer> map,
                                                     Integer value)
     {
         return add(map, value, value);
     }
 
-    private JImmutableTreeMap<Integer, Integer> update(JImmutableMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> update(IMap<Integer, Integer> map,
                                                        Integer key,
                                                        Integer value,
                                                        Integer merged)
@@ -479,7 +480,7 @@ public class JImmutableTreeMapTest
         return treeMap;
     }
 
-    private JImmutableTreeMap<Integer, Integer> add(JImmutableMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> add(IMap<Integer, Integer> map,
                                                     Integer key,
                                                     Integer value)
     {
@@ -491,20 +492,20 @@ public class JImmutableTreeMapTest
         return treeMap;
     }
 
-    private JImmutableTreeMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
-                                                       JImmutableMap<Integer, Integer> extra)
+    private JImmutableTreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
+                                                       IMap<Integer, Integer> extra)
     {
         map = map.assignAll(extra);
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap.checkInvariants();
-        for (JImmutableMap.Entry<Integer, Integer> entry : extra) {
+        for (IMapEntry<Integer, Integer> entry : extra) {
             assertEquals(true, treeMap.find(entry.getKey()).isFilled());
             assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
         }
         return treeMap;
     }
 
-    private JImmutableTreeMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
                                                        Map<Integer, Integer> extra)
     {
         map = map.assignAll(extra);
@@ -517,7 +518,7 @@ public class JImmutableTreeMapTest
         return treeMap;
     }
 
-    private JImmutableTreeMap<Integer, Integer> remove(JImmutableMap<Integer, Integer> map,
+    private JImmutableTreeMap<Integer, Integer> remove(IMap<Integer, Integer> map,
                                                        Integer value)
     {
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;

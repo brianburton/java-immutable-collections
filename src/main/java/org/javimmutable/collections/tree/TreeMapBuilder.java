@@ -35,20 +35,19 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.JImmutableMap;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
+import org.javimmutable.collections.IMap;
 
 @ThreadSafe
 class TreeMapBuilder<K, V>
-    implements JImmutableMap.Builder<K, V>
+    implements IMap.Builder<K, V>
 {
     private final Comparator<K> comparator;
     private final Map<K, V> values;
@@ -61,7 +60,7 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized JImmutableMap<K, V> build()
+    public synchronized IMap<K, V> build()
     {
         if (values.isEmpty()) {
             return JImmutableTreeMap.of(comparator);
@@ -74,7 +73,7 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized JImmutableMap.Builder<K, V> clear()
+    public synchronized IMap.Builder<K, V> clear()
     {
         values.clear();
         return this;
@@ -82,8 +81,8 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
-                                                        V value)
+    public synchronized IMap.Builder<K, V> add(@Nonnull K key,
+                                               V value)
     {
         values.put(key, value);
         return this;

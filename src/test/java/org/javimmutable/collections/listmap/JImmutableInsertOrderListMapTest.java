@@ -35,17 +35,16 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableInsertOrderListMapTest
     extends AbstractJImmutableListMapTestCase
@@ -53,7 +52,7 @@ public class JImmutableInsertOrderListMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of(), Ordering.INORDER);
+        IListMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderListMap.of(), Ordering.INORDER);
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
                                                              MapEntry.of(3, map.getList(3)),
@@ -63,8 +62,8 @@ public class JImmutableInsertOrderListMapTest
 
     public void testEquals()
     {
-        JImmutableListMap<Integer, Integer> a = JImmutableInsertOrderListMap.of();
-        JImmutableListMap<Integer, Integer> b = JImmutableInsertOrderListMap.of();
+        IListMap<Integer, Integer> a = JImmutableInsertOrderListMap.of();
+        IListMap<Integer, Integer> b = JImmutableInsertOrderListMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -82,7 +81,7 @@ public class JImmutableInsertOrderListMapTest
 
     public void testStreams()
     {
-        JImmutableListMap<Integer, Integer> listMap = JImmutableInsertOrderListMap.<Integer, Integer>of()
+        IListMap<Integer, Integer> listMap = JImmutableInsertOrderListMap.<Integer, Integer>of()
             .insert(4, 40)
             .insert(2, 20)
             .insert(3, 30)
@@ -98,7 +97,7 @@ public class JImmutableInsertOrderListMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderListMap)a).iterator();
-        JImmutableListMap<String, String> empty = JImmutableInsertOrderListMap.of();
+        IListMap<String, String> empty = JImmutableInsertOrderListMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGYCgAgCgsGMpxAAAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),

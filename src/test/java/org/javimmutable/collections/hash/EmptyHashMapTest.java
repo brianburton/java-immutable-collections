@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.hash;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.list.ListCollisionMap;
-import org.javimmutable.collections.tree.TreeCollisionMap;
-
 import java.util.HashMap;
 import java.util.Map;
+import junit.framework.TestCase;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.list.ListCollisionMap;
+import org.javimmutable.collections.tree.TreeCollisionMap;
 
 public class EmptyHashMapTest
     extends TestCase
@@ -49,12 +48,12 @@ public class EmptyHashMapTest
     @SuppressWarnings("ConstantConditions")
     public void testAssign()
     {
-        JImmutableMap<String, Integer> comparableMap = JImmutableHashMap.of();
+        IMap<String, Integer> comparableMap = JImmutableHashMap.of();
         comparableMap = comparableMap.assign("a", 100);
         assertTrue(comparableMap instanceof JImmutableHashMap);
         assertSame(TreeCollisionMap.instance(), ((JImmutableHashMap)comparableMap).getCollisionMap());
 
-        JImmutableMap<Object, Integer> otherMap = JImmutableHashMap.of();
+        IMap<Object, Integer> otherMap = JImmutableHashMap.of();
         otherMap = otherMap.assign(new Object(), 100);
         assertTrue(otherMap instanceof JImmutableHashMap);
         assertSame(ListCollisionMap.instance(), ((JImmutableHashMap)otherMap).getCollisionMap());
@@ -62,8 +61,8 @@ public class EmptyHashMapTest
 
     public void testAssignAll()
     {
-        JImmutableMap<String, Number> map = JImmutableHashMap.of();
-        JImmutableMap<String, Integer> expected = JImmutableHashMap.of();
+        IMap<String, Number> map = JImmutableHashMap.of();
+        IMap<String, Integer> expected = JImmutableHashMap.of();
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());

@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
-import org.javimmutable.collections.serialization.JImmutableHashMultisetProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.serialization.JImmutableHashMultisetProxy;
 
 @Immutable
 public class JImmutableHashMultiset<T>
@@ -55,15 +54,15 @@ public class JImmutableHashMultiset<T>
     private static final JImmutableHashMultiset EMPTY = new JImmutableHashMultiset(JImmutableHashMap.of(), 0);
     private static final long serialVersionUID = -121805;
 
-    private JImmutableHashMultiset(JImmutableMap<T, Integer> map,
+    private JImmutableHashMultiset(IMap<T, Integer> map,
                                    int occurrences)
     {
         super(map, occurrences);
     }
 
     @Override
-    protected JImmutableMultiset<T> create(JImmutableMap<T, Integer> map,
-                                           int occurrences)
+    protected IMultiset<T> create(IMap<T, Integer> map,
+                                  int occurrences)
     {
         return new JImmutableHashMultiset<>(map, occurrences);
     }
@@ -76,7 +75,7 @@ public class JImmutableHashMultiset<T>
 
     @Nonnull
     @Override
-    public JImmutableMultiset<T> deleteAll()
+    public IMultiset<T> deleteAll()
     {
         return of();
     }

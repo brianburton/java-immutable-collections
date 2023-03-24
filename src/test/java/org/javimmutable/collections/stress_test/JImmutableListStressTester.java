@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.util.JImmutables;
+import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableList.
@@ -60,12 +59,12 @@ import static org.javimmutable.collections.iterators.IteratorHelper.plainIterabl
 public class JImmutableListStressTester
     extends AbstractListStressTestable
 {
-    private final Collector<String, ?, ? extends JImmutableList<String>> collector;
+    private final Collector<String, ?, ? extends IList<String>> collector;
 
-    private final JImmutableList<String> list;
+    private final IList<String> list;
 
-    public JImmutableListStressTester(JImmutableList<String> list,
-                                      Collector<String, ?, ? extends JImmutableList<String>> collector)
+    public JImmutableListStressTester(IList<String> list,
+                                      Collector<String, ?, ? extends IList<String>> collector)
     {
         super(getName(list));
         this.collector = collector;
@@ -73,16 +72,16 @@ public class JImmutableListStressTester
     }
 
     @Override
-    public JImmutableList<String> getOptions()
+    public IList<String> getOptions()
     {
         return JImmutables.list("list", getNameOption(list));
     }
 
     @Override
     public void execute(Random random,
-                        JImmutableList<String> tokens)
+                        IList<String> tokens)
     {
-        JImmutableList<String> list = this.list;
+        IList<String> list = this.list;
         List<String> expected = new ArrayList<>();
         int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
@@ -207,7 +206,7 @@ public class JImmutableListStressTester
                     }
                     case 18: { //insertAll(int, JImmutableList)
                         int index = random.nextInt(Math.max(1, list.size()));
-                        JImmutableList<String> values = makeInsertJList(tokens, random, maxToAdd);
+                        IList<String> values = makeInsertJList(tokens, random, maxToAdd);
                         list = list.insertAll(index, values);
                         expected.addAll(index, values.getList());
                         break;

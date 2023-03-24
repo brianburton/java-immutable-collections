@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class MapEntry<K, V>
-    implements JImmutableMap.Entry<K, V>,
+    implements IMapEntry<K, V>,
                Map.Entry<K, V>
 {
     @Nonnull
@@ -60,7 +60,7 @@ public class MapEntry<K, V>
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(@Nonnull JImmutableMap.Entry<K, V> entry)
+    public MapEntry(@Nonnull IMapEntry<K, V> entry)
     {
         this(entry.getKey(), entry.getValue());
     }
@@ -79,7 +79,7 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> of(@Nonnull JImmutableMap.Entry<K, V> entry)
+    public static <K, V> MapEntry<K, V> of(@Nonnull IMapEntry<K, V> entry)
     {
         return new MapEntry<K, V>(entry);
     }
@@ -92,8 +92,8 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
-    public static <K, V> JImmutableMap.Entry<K, V> entry(@Nonnull K key,
-                                                         V value)
+    public static <K, V> IMapEntry<K, V> entry(@Nonnull K key,
+                                               V value)
     {
         return new MapEntry<K, V>(key, value);
     }
@@ -105,8 +105,8 @@ public class MapEntry<K, V>
         return new MapEntry<K, V>(key, value);
     }
 
-    public static <K extends Comparable<K>, V> int compareKeys(@Nonnull JImmutableMap.Entry<K, V> a,
-                                                               @Nonnull JImmutableMap.Entry<K, V> b)
+    public static <K extends Comparable<K>, V> int compareKeys(@Nonnull IMapEntry<K, V> a,
+                                                               @Nonnull IMapEntry<K, V> b)
     {
         return a.getKey().compareTo(b.getKey());
     }
@@ -130,7 +130,7 @@ public class MapEntry<K, V>
         throw new UnsupportedOperationException();
     }
 
-    public JImmutableMap.Entry<K, V> asEntry()
+    public IMapEntry<K, V> asEntry()
     {
         return this;
     }
@@ -150,8 +150,8 @@ public class MapEntry<K, V>
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof JImmutableMap.Entry) {
-            JImmutableMap.Entry jentry = (JImmutableMap.Entry)o;
+        if (o instanceof IMapEntry) {
+            IMapEntry jentry = (IMapEntry)o;
             //noinspection ConstantConditions
             return ((key == null) ? (jentry.getKey() == null) : key.equals(jentry.getKey())) &&
                    ((value == null) ? (jentry.getValue() == null) : value.equals(jentry.getValue()));
@@ -182,7 +182,7 @@ public class MapEntry<K, V>
         }
     }
 
-    public static String makeToString(JImmutableMap.Entry entry)
+    public static String makeToString(IMapEntry entry)
     {
         StringBuilder sb = new StringBuilder();
         addToString(sb, entry);
@@ -190,7 +190,7 @@ public class MapEntry<K, V>
     }
 
     public static void addToString(StringBuilder sb,
-                                   JImmutableMap.Entry entry)
+                                   IMapEntry entry)
     {
         addToString(sb, entry.getKey(), entry.getValue());
     }
@@ -204,12 +204,12 @@ public class MapEntry<K, V>
         addToString(sb, value);
     }
 
-    public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<JImmutableMap.Entry<K, V>> source)
+    public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<IMapEntry<K, V>> source)
     {
         return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
     }
 
-    public static <K, V> List<JImmutableMap.Entry<K, V>> toImmutableEntries(@Nonnull Collection<Map.Entry<K, V>> source)
+    public static <K, V> List<IMapEntry<K, V>> toImmutableEntries(@Nonnull Collection<Map.Entry<K, V>> source)
     {
         return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
     }

@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.fail;
+import static org.javimmutable.collections.common.StandardIterableStreamableTests.verifyOrderedUsingCollection;
+import static org.javimmutable.collections.common.StandardIterableStreamableTests.verifyUnorderedUsingCollection;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,15 +49,18 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static junit.framework.Assert.*;
-import static org.javimmutable.collections.common.StandardIterableStreamableTests.*;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
 
 public class StandardJImmutableMapTests
 {
-    public static void verifyMiscellaneous(@Nonnull JImmutableMap<Integer, Integer> map)
+    public static void verifyMiscellaneous(@Nonnull IMap<Integer, Integer> map)
     {
-        JImmutableMap<Integer, Integer> x = map.deleteAll();
+        IMap<Integer, Integer> x = map.deleteAll();
 
         assertEquals(true, x.isEmpty());
         assertEquals(false, x.isNonEmpty());
@@ -87,13 +90,13 @@ public class StandardJImmutableMapTests
         verifySelectReject(map.deleteAll());
     }
 
-    public static <K, V> void verifyEmptyEnumeration(@Nonnull JImmutableMap<K, V> map)
+    public static <K, V> void verifyEmptyEnumeration(@Nonnull IMap<K, V> map)
     {
         verifyOrderedUsingCollection(Collections.emptyList(), map);
     }
 
     public static <K, V> void verifyEnumeration(@Nonnull Map<K, V> expectedMap,
-                                                @Nonnull JImmutableMap<K, V> map)
+                                                @Nonnull IMap<K, V> map)
     {
         verifyOrderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyOrderedUsingCollection(expectedMap.keySet(), map.keys());
@@ -105,8 +108,8 @@ public class StandardJImmutableMapTests
         testCollector(map.assignAll(expectedMap), map);
     }
 
-    public static <K, V> void verifyEnumeration(@Nonnull List<JImmutableMap.Entry<K, V>> expectedEntries,
-                                                @Nonnull JImmutableMap<K, V> map)
+    public static <K, V> void verifyEnumeration(@Nonnull List<IMapEntry<K, V>> expectedEntries,
+                                                @Nonnull IMap<K, V> map)
     {
         final List<K> expectedKeys = expectedEntries.stream().map(e -> e.getKey()).collect(Collectors.toList());
         final List<V> expectedValues = expectedEntries.stream().map(e -> e.getValue()).collect(Collectors.toList());
@@ -121,7 +124,7 @@ public class StandardJImmutableMapTests
     }
 
     public static <K, V> void verifyEnumeration(@Nonnull HashMap<K, V> expectedMap,
-                                                @Nonnull JImmutableMap<K, V> map)
+                                                @Nonnull IMap<K, V> map)
     {
         verifyUnorderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyUnorderedUsingCollection(expectedMap.keySet(), map.keys());
@@ -133,12 +136,12 @@ public class StandardJImmutableMapTests
         testCollector(map.assignAll(expectedMap), map);
     }
 
-    private static void verifyReduce(@Nonnull JImmutableMap<Integer, Integer> empty)
+    private static void verifyReduce(@Nonnull IMap<Integer, Integer> empty)
     {
         assertEquals(Integer.valueOf(0), empty.reduce(0, (s, k, v) -> s + k - v));
 
         final Integer expected = 2 * IntStream.range(1, 1001).sum();
-        @Nonnull JImmutableMap<Integer, Integer> map = IntStream.range(1, 1001)
+        @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
             .collect(empty.mapCollector());
@@ -169,10 +172,10 @@ public class StandardJImmutableMapTests
         }
     }
 
-    private static void verifyForEach(@Nonnull JImmutableMap<Integer, Integer> empty)
+    private static void verifyForEach(@Nonnull IMap<Integer, Integer> empty)
     {
         final int sum = IntStream.range(1, 1001).sum();
-        @Nonnull JImmutableMap<Integer, Integer> map = IntStream.range(1, 1001)
+        @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
             .collect(empty.mapCollector());
@@ -192,18 +195,18 @@ public class StandardJImmutableMapTests
         }
     }
 
-    private static void verifySelectReject(@Nonnull JImmutableMap<Integer, Integer> empty)
+    private static void verifySelectReject(@Nonnull IMap<Integer, Integer> empty)
     {
-        final JImmutableMap<Integer, Integer> all = IntStream.range(1, 50)
+        final IMap<Integer, Integer> all = IntStream.range(1, 50)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
             .collect(empty.mapCollector());
 
-        final JImmutableMap<Integer, Integer> evens = all.stream()
+        final IMap<Integer, Integer> evens = all.stream()
             .filter(e -> e.getKey() % 2 == 0)
             .collect(empty.mapCollector());
 
-        final JImmutableMap<Integer, Integer> odds = all.stream()
+        final IMap<Integer, Integer> odds = all.stream()
             .filter(e -> e.getKey() % 2 == 1)
             .collect(empty.mapCollector());
 
@@ -219,20 +222,20 @@ public class StandardJImmutableMapTests
         return h -> h.isEmpty() ? newValue : h.getValue() * 10 + 1;
     }
 
-    private static <K, V> void testCollector(JImmutableMap<K, V> values,
-                                             JImmutableMap<K, V> template)
+    private static <K, V> void testCollector(IMap<K, V> values,
+                                             IMap<K, V> template)
     {
-        JImmutableMap<K, V> expected = template.insertAll(values);
-        JImmutableMap<K, V> actual = values.parallelStream().collect(template.mapCollector());
+        IMap<K, V> expected = template.insertAll(values);
+        IMap<K, V> actual = values.parallelStream().collect(template.mapCollector());
         assertEquals(expected, actual);
     }
 
-    private static <K, V> Function<JImmutableMap.Entry<K, V>, Map.Entry<K, V>> entries()
+    private static <K, V> Function<IMapEntry<K, V>, Map.Entry<K, V>> entries()
     {
         return ie -> MapEntry.of(ie);
     }
 
-    private static <K, V> Function<Map.Entry<K, V>, JImmutableMap.Entry<K, V>> reverseEntries()
+    private static <K, V> Function<Map.Entry<K, V>, IMapEntry<K, V>> reverseEntries()
     {
         return ie -> MapEntry.of(ie);
     }

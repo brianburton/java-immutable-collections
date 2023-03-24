@@ -35,10 +35,6 @@
 
 package org.javimmutable.collections.util;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -46,6 +42,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import junit.framework.TestCase;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class MutableMapAdaptorTest
     extends TestCase
@@ -53,16 +53,16 @@ public class MutableMapAdaptorTest
     private static class TestAdaptor<K extends Comparable<K>, V>
         extends MutableMapAdaptor<K, V>
     {
-        private JImmutableMap<K, V> myMap = JImmutables.sortedMap();
+        private IMap<K, V> myMap = JImmutables.sortedMap();
 
         @Override
-        protected JImmutableMap<K, V> accessMap()
+        protected IMap<K, V> accessMap()
         {
             return myMap;
         }
 
         @Override
-        protected void replaceMap(JImmutableMap<K, V> newMap)
+        protected void replaceMap(IMap<K, V> newMap)
         {
             myMap = newMap;
         }
@@ -197,7 +197,7 @@ public class MutableMapAdaptorTest
                 assertEquals(expected.put(i + k, i - k), adaptor.put(i + k, i - k));
             }
         }
-        for (JImmutableMap.Entry<Integer, Integer> entry : adaptor.myMap) {
+        for (IMapEntry<Integer, Integer> entry : adaptor.myMap) {
             assertEquals(expected.remove(entry.getKey()), adaptor.remove(entry.getKey()));
             assertEquals(expected, adaptor);
         }

@@ -35,10 +35,20 @@
 
 package org.javimmutable.collections.stress_test;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import static org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
@@ -47,14 +57,6 @@ import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 import org.javimmutable.collections.util.JImmutables;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-import static org.javimmutable.collections.stress_test.KeyFactory.*;
 
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:
@@ -73,11 +75,11 @@ import static org.javimmutable.collections.stress_test.KeyFactory.*;
 public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     extends StressTester
 {
-    private final JImmutableMap<K, String> map;
+    private final IMap<K, String> map;
     private final Class<? extends Map> expectedClass;
     private final KeyFactory<K> factory;
 
-    public JImmutableMapStressTester(JImmutableMap<K, String> map,
+    public JImmutableMapStressTester(IMap<K, String> map,
                                      Class<? extends Map> expectedClass,
                                      KeyFactory<K> factory)
     {
@@ -88,10 +90,10 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     }
 
     @Override
-    public JImmutableList<String> getOptions()
+    public IList<String> getOptions()
     {
         final String option = getNameOption(map);
-        final JImmutableList.Builder<String> options = JImmutables.listBuilder();
+        final IList.Builder<String> options = JImmutables.listBuilder();
         options.add("map");
         options.add(option);
         if (map instanceof JImmutableHashMap) {
@@ -107,7 +109,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         return options.build();
     }
 
-    private String getName(JImmutableMap<K, String> map,
+    private String getName(IMap<K, String> map,
                            KeyFactory factory)
     {
         if (map instanceof JImmutableHashMap) {
@@ -125,12 +127,12 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     }
 
     public void execute(Random random,
-                        JImmutableList<String> tokens)
+                        IList<String> tokens)
         throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Map<K, String> expected = expectedClass.newInstance();
         List<K> keysList = new ArrayList<>();
-        JImmutableMap<K, String> map = this.map;
+        IMap<K, String> map = this.map;
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
@@ -153,21 +155,21 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     }
                     case 2: { //insert(Entry<K, V>)
                         K key = unusedKey(tokens, random, expected);
-                        JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, key.getValue());
+                        IMapEntry<K, String> entry = new MapEntry<>(key, key.getValue());
                         keysList.add(key);
                         map = map.insert(entry);
                         expected.put(key, key.getValue());
                         break;
                     }
                     case 3: { //assignAll(JImmutableMap)
-                        JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
+                        IMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
                     case 4: { //assignAll(Map)
-                        JImmutableMap<K, String> values = makeInsertValues(tokens, random, expected);
+                        IMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values.getMap());
                         expected.putAll(values.getMap());
@@ -200,19 +202,19 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     case 2: { //insert(Entry<K, V>)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        JImmutableMap.Entry<K, String> entry = new MapEntry<>(key, value);
+                        IMapEntry<K, String> entry = new MapEntry<>(key, value);
                         map = map.insert(entry);
                         expected.put(key, value);
                         break;
                     }
                     case 3: { //assignAll(JImmutableMap)
-                        JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
+                        IMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
                     case 4: { //assignAll(Map)
-                        JImmutableMap<K, String> values = makeUpdateValues(tokens, random, keysList);
+                        IMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values.getMap());
                         expected.putAll(values.getMap());
                         break;
@@ -263,8 +265,8 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         break;
                     }
                     case 3: { //findEntry(K)
-                        Holder<JImmutableMap.Entry<K, String>> holder = map.findEntry(key);
-                        Holder<JImmutableMap.Entry<K, String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(new MapEntry<>(key, expected.get(key))) : Holders.of();
+                        Holder<IMapEntry<K, String>> holder = map.findEntry(key);
+                        Holder<IMapEntry<K, String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(new MapEntry<>(key, expected.get(key))) : Holders.of();
                         if (!equivalentEntryHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, holder, holder));
                         }
@@ -299,7 +301,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         System.out.printf("JImmutableMapStressTest on %s completed without errors%n", getName(map, factory));
     }
 
-    private void verifyContents(final JImmutableMap<K, String> map,
+    private void verifyContents(final IMap<K, String> map,
                                 final Map<K, String> expected)
     {
         System.out.printf("checking contents with size %d%n", map.size());
@@ -328,16 +330,16 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         System.out.printf("checking invariants with size %d%n", map.size());
         map.checkInvariants();
         System.out.printf("checking serializable with size %d%n", map.size());
-        verifySerializable(this::extraSerializationChecks, map, JImmutableMap.class);
+        verifySerializable(this::extraSerializationChecks, map, IMap.class);
         System.out.printf("done checking contents with size %d%n", map.size());
     }
 
-    private void verifyIteration(JImmutableMap<K, String> map,
+    private void verifyIteration(IMap<K, String> map,
                                  Map<K, String> expected)
     {
         System.out.printf("checking cursor with size %d%n", map.size());
 
-        List<JImmutableMap.Entry<K, String>> entries = makeEntriesList(expected);
+        List<IMapEntry<K, String>> entries = makeEntriesList(expected);
         if (map instanceof JImmutableHashMap) {
             final ExpectedOrderSorter<K> ordering = new ExpectedOrderSorter<>(map.keys().iterator());
             entries = ordering.sort(entries, e -> e.getKey());
@@ -360,11 +362,11 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         StandardJImmutableMapTests.verifyEnumeration(entries, map);
     }
 
-    private JImmutableMap<K, String> makeUpdateValues(JImmutableList<String> tokens,
-                                                      Random random,
-                                                      List<K> keys)
+    private IMap<K, String> makeUpdateValues(IList<String> tokens,
+                                             Random random,
+                                             List<K> keys)
     {
-        JImmutableMap<K, String> values = JImmutables.map();
+        IMap<K, String> values = JImmutables.map();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = containedKey(keys, random);
             String value = RandomKeyManager.makeValue(tokens, random);
@@ -373,11 +375,11 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         return values;
     }
 
-    private JImmutableMap<K, String> makeInsertValues(JImmutableList<String> tokens,
-                                                      Random random,
-                                                      Map<K, String> expected)
+    private IMap<K, String> makeInsertValues(IList<String> tokens,
+                                             Random random,
+                                             Map<K, String> expected)
     {
-        JImmutableMap<K, String> values = JImmutables.map();
+        IMap<K, String> values = JImmutables.map();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = unusedKey(tokens, random, expected);
             values = values.assign(key, key.getValue());
@@ -385,7 +387,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         return values;
     }
 
-    protected K unusedKey(JImmutableList<String> tokens,
+    protected K unusedKey(IList<String> tokens,
                           Random random,
                           Map<K, String> expected)
     {
@@ -402,7 +404,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
         return (keysList.isEmpty()) ? factory.makeKey("") : keysList.get(random.nextInt(keysList.size()));
     }
 
-    protected K makeDeleteKey(JImmutableList<String> tokens,
+    protected K makeDeleteKey(IList<String> tokens,
                               Random random,
                               List<K> keysList,
                               Map<K, String> expected)

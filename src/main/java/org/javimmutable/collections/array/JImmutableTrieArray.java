@@ -35,12 +35,22 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -50,20 +60,9 @@ import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collector;
-
-import static org.javimmutable.collections.MapEntry.entry;
-
 public class JImmutableTrieArray<T>
     implements Serializable,
-               JImmutableArray<T>
+               IArray<T>
 {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static final JImmutableTrieArray EMPTY = new JImmutableTrieArray(TrieArrayNode.empty());
@@ -80,24 +79,24 @@ public class JImmutableTrieArray<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> JImmutableArray<T> of()
+    public static <T> IArray<T> of()
     {
-        return (JImmutableArray<T>)EMPTY;
+        return (IArray<T>)EMPTY;
     }
 
     @Nonnull
-    public static <T> JImmutableArray.Builder<T> builder()
+    public static <T> IArray.Builder<T> builder()
     {
         return new Builder<>();
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableArray<T>> collector()
+    public static <T> Collector<T, ?, IArray<T>> collector()
     {
-        return Collector.<T, JImmutableTrieArray.Builder<T>, JImmutableArray<T>>of(() -> new Builder<>(),
-                                                                                   (b, v) -> b.add(v),
-                                                                                   (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
-                                                                                   b -> b.build());
+        return Collector.<T, JImmutableTrieArray.Builder<T>, IArray<T>>of(() -> new Builder<>(),
+                                                                          (b, v) -> b.add(v),
+                                                                          (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                                          b -> b.build());
     }
 
     @Nullable
@@ -130,15 +129,15 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<Integer, T>> findEntry(int index)
+    public Holder<IMapEntry<Integer, T>> findEntry(int index)
     {
         return find(index).map(v -> entry(index, v));
     }
 
     @Nonnull
     @Override
-    public JImmutableArray<T> assign(int index,
-                                     @Nullable T value)
+    public IArray<T> assign(int index,
+                            @Nullable T value)
     {
         final TrieArrayNode<T> newChild = root.assign(index, value);
         return new JImmutableTrieArray<>(newChild);
@@ -146,7 +145,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> delete(int index)
+    public IArray<T> delete(int index)
     {
         final TrieArrayNode<T> child = root;
         final TrieArrayNode<T> newChild = child.delete(index);
@@ -179,7 +178,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> deleteAll()
+    public IArray<T> deleteAll()
     {
         return of();
     }
@@ -193,14 +192,14 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray<T> insert(JImmutableMap.Entry<Integer, T> e)
+    public IArray<T> insert(IMapEntry<Integer, T> e)
     {
         return (e == null) ? this : assign(e.getKey(), e.getValue());
     }
 
     @Nonnull
     @Override
-    public JImmutableArray<T> getInsertableSelf()
+    public IArray<T> getInsertableSelf()
     {
         return this;
     }
@@ -217,7 +216,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public SplitableIterator<IMapEntry<Integer, T>> iterator()
     {
         return root.entries().iterator();
     }
@@ -243,13 +242,13 @@ public class JImmutableTrieArray<T>
     }
 
     @Override
-    public void forEach(Consumer<? super JImmutableMap.Entry<Integer, T>> action)
+    public void forEach(Consumer<? super IMapEntry<Integer, T>> action)
     {
         forEach((i, v) -> action.accept(entry(i, v)));
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<JImmutableMap.Entry<Integer, T>, E> proc)
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<IMapEntry<Integer, T>, E> proc)
         throws E
     {
         forEachThrows((i, v) -> proc.apply(entry(i, v)));
@@ -272,7 +271,7 @@ public class JImmutableTrieArray<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || ((o instanceof JImmutableArray) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableArray)o).iterator()));
+        return (o == this) || ((o instanceof IArray) && IteratorHelper.iteratorEquals(iterator(), ((IArray)o).iterator()));
     }
 
     @Override
@@ -289,7 +288,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public JImmutableArray.Builder<T> arrayBuilder()
+    public IArray.Builder<T> arrayBuilder()
     {
         return new Builder<>();
     }
@@ -301,7 +300,7 @@ public class JImmutableTrieArray<T>
 
     @ThreadSafe
     public static class Builder<T>
-        implements JImmutableArray.Builder<T>
+        implements IArray.Builder<T>
     {
         private final TrieArrayBuilder<T> builder;
 
@@ -318,7 +317,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized JImmutableArray.Builder<T> clear()
+        public synchronized IArray.Builder<T> clear()
         {
             builder.reset();
             return this;
@@ -326,7 +325,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized JImmutableArray.Builder<T> add(T value)
+        public synchronized IArray.Builder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -334,15 +333,15 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized JImmutableArray.Builder<T> put(int index,
-                                                           T value)
+        public synchronized IArray.Builder<T> put(int index,
+                                                  T value)
         {
             builder.put(index, value);
             return this;
         }
 
         @Override
-        public synchronized JImmutableArray.Builder<T> setNextIndex(int index)
+        public synchronized IArray.Builder<T> setNextIndex(int index)
         {
             builder.setNextIndex(index);
             return this;
@@ -350,7 +349,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized JImmutableArray<T> build()
+        public synchronized IArray<T> build()
         {
             return builder.size() == 0 ? of() : new JImmutableTrieArray<>(builder.buildRoot());
         }
@@ -358,7 +357,7 @@ public class JImmutableTrieArray<T>
         @Nonnull
         private synchronized Iterator<T> iterator()
         {
-            return TransformIterator.of(builder.iterator(), JImmutableMap.Entry::getValue);
+            return TransformIterator.of(builder.iterator(), IMapEntry::getValue);
         }
     }
 }

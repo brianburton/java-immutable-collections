@@ -52,8 +52,8 @@ import javax.annotation.concurrent.Immutable;
  * the range 0 through size() - 1.
  */
 @Immutable
-public interface JImmutableList<T>
-    extends Insertable<T, JImmutableList<T>>,
+public interface IList<T>
+    extends Insertable<T, IList<T>>,
             Indexed<T>,
             IterableStreamable<T>,
             InvariantCheckable,
@@ -69,7 +69,7 @@ public interface JImmutableList<T>
          * @return the collection
          */
         @Nonnull
-        JImmutableList<T> build();
+        IList<T> build();
 
         /**
          * Determines how many values will be in the collection if build() is called now.
@@ -182,15 +182,15 @@ public interface JImmutableList<T>
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
-    JImmutableList<T> assign(int index,
-                             @Nullable T value);
+    IList<T> assign(int index,
+                    @Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      */
     @Nonnull
     @Override
-    JImmutableList<T> insert(@Nullable T value);
+    IList<T> insert(@Nullable T value);
 
     /**
      * Insert value at index (which must be within 0 to size).
@@ -198,22 +198,22 @@ public interface JImmutableList<T>
      * to size of the list.
      */
     @Nonnull
-    JImmutableList<T> insert(int index,
-                             @Nullable T value);
+    IList<T> insert(int index,
+                    @Nullable T value);
 
     /**
      * Adds a value to the front of the list.  May be invoked on an empty list.
      * Synonym for insert()
      */
     @Nonnull
-    JImmutableList<T> insertFirst(@Nullable T value);
+    IList<T> insertFirst(@Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.
      * Synonym for insert().
      */
     @Nonnull
-    JImmutableList<T> insertLast(@Nullable T value);
+    IList<T> insertLast(@Nullable T value);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -222,7 +222,7 @@ public interface JImmutableList<T>
      */
     @Nonnull
     @Override
-    JImmutableList<T> insertAll(@Nonnull Iterable<? extends T> values);
+    IList<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -231,7 +231,7 @@ public interface JImmutableList<T>
      */
     @Nonnull
     @Override
-    JImmutableList<T> insertAll(@Nonnull Iterator<? extends T> values);
+    IList<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Inserts all elements at index (which must be within 0 to size) in the same
@@ -242,8 +242,8 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(int index,
-                                @Nonnull Iterable<? extends T> values);
+    IList<T> insertAll(int index,
+                       @Nonnull Iterable<? extends T> values);
 
     /**
      * Inserts all elements at index (which must be within 0 to size) in the same
@@ -254,8 +254,8 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAll(int index,
-                                @Nonnull Iterator<? extends T> values);
+    IList<T> insertAll(int index,
+                       @Nonnull Iterator<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -263,7 +263,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
+    IList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -271,7 +271,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
+    IList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -280,7 +280,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
+    IList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
@@ -289,7 +289,7 @@ public interface JImmutableList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
-    JImmutableList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
+    IList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
@@ -298,7 +298,7 @@ public interface JImmutableList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
-    JImmutableList<T> deleteFirst();
+    IList<T> deleteFirst();
 
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
@@ -307,7 +307,7 @@ public interface JImmutableList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
-    JImmutableList<T> deleteLast();
+    IList<T> deleteLast();
 
     /**
      * @return true only if list contains no values
@@ -325,13 +325,13 @@ public interface JImmutableList<T>
      * from size of the list.
      */
     @Nonnull
-    JImmutableList<T> delete(int index);
+    IList<T> delete(int index);
 
     /**
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableList<T> deleteAll();
+    IList<T> deleteAll();
 
     /**
      * Returns an unmodifiable List implementation backed by this list.
@@ -344,7 +344,7 @@ public interface JImmutableList<T>
      * so that first in this list is last in returned list etc.
      */
     @Nonnull
-    JImmutableList<T> reverse();
+    IList<T> reverse();
 
     /**
      * Returns a list of the same type as this containing only those elements for which
@@ -355,7 +355,7 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    JImmutableList<T> select(@Nonnull Predicate<T> predicate);
+    IList<T> select(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a list of the same type as this containing all those elements for which
@@ -366,14 +366,14 @@ public interface JImmutableList<T>
      * @return list of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    JImmutableList<T> reject(@Nonnull Predicate<T> predicate);
+    IList<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
      * Returns a Collector that creates a list of the same type as this containing all
      * of the collected values inserted after whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, JImmutableList<T>> listCollector()
+    default Collector<T, ?, IList<T>> listCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
@@ -385,7 +385,7 @@ public interface JImmutableList<T>
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    <A> JImmutableList<A> transform(@Nonnull Func1<T, A> transform);
+    <A> IList<A> transform(@Nonnull Func1<T, A> transform);
 
     /**
      * Apply the transform function to all elements in iterator order and add the contents of
@@ -394,7 +394,7 @@ public interface JImmutableList<T>
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    <A> JImmutableList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
+    <A> IList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
 
     /**
      * Return the (possibly empty) list containing the first limit values.
@@ -403,7 +403,7 @@ public interface JImmutableList<T>
      * @return a possibly empty list containing the values
      */
     @Nonnull
-    JImmutableList<T> prefix(int limit);
+    IList<T> prefix(int limit);
 
     /**
      * Return the (possibly empty) list containing the values starting at offset (inclusive)
@@ -413,7 +413,7 @@ public interface JImmutableList<T>
      * @return a possibly empty list containing the values
      */
     @Nonnull
-    JImmutableList<T> suffix(int offset);
+    IList<T> suffix(int offset);
 
     /**
      * Return the (possibly empty) list containing the values starting at offset (inclusive)
@@ -424,8 +424,8 @@ public interface JImmutableList<T>
      * @return a possibly empty list containing the values
      */
     @Nonnull
-    JImmutableList<T> middle(int offset,
-                             int limit);
+    IList<T> middle(int offset,
+                    int limit);
 
     /**
      * Return the (possibly empty) list containing the values starting at offset (inclusive)
@@ -441,8 +441,8 @@ public interface JImmutableList<T>
      * @return a possibly empty list containing the values
      */
     @Nonnull
-    JImmutableList<T> slice(int offset,
-                            int limit);
+    IList<T> slice(int offset,
+                   int limit);
 
     /**
      * Returns a Maybe containing a value if this list contains only a single value and that value is non-null.

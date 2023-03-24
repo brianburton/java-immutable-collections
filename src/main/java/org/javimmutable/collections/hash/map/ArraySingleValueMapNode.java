@@ -35,25 +35,24 @@
 
 package org.javimmutable.collections.hash.map;
 
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Objects;
-
 @Immutable
 public class ArraySingleValueMapNode<K, V>
     implements ArrayMapNode<K, V>,
                Holders.Filled<V>,
-               JImmutableMap.Entry<K, V>
+               IMapEntry<K, V>
 {
     private final K key;
     private final V value;
@@ -65,7 +64,7 @@ public class ArraySingleValueMapNode<K, V>
         this.value = value;
     }
 
-    public ArraySingleValueMapNode(JImmutableMap.Entry<K, V> entry)
+    public ArraySingleValueMapNode(IMapEntry<K, V> entry)
     {
         this(entry.getKey(), entry.getValue());
     }
@@ -94,8 +93,8 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                                       @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                             @Nonnull K key)
     {
         return key.equals(this.key) ? Holders.of(this) : Holders.of();
     }
@@ -162,7 +161,7 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<JImmutableMap.Entry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
+    public GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
     {
         return GenericIterator.singleValueIterable(this);
     }

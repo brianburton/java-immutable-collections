@@ -35,9 +35,16 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -59,13 +66,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 import org.javimmutable.collections.tree.TreeCollisionMap;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-import java.io.Serializable;
-import java.util.stream.Collector;
 
 @Immutable
 public class JImmutableHashMap<T, K, V>
@@ -115,7 +115,7 @@ public class JImmutableHashMap<T, K, V>
      * problems with incompatible keys.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableMap<K, V> of(Class<K> klass)
+    public static <K, V> IMap<K, V> of(Class<K> klass)
     {
         return Comparable.class.isAssignableFrom(klass) ? TREE_EMPTY : LIST_EMPTY;
     }
@@ -126,7 +126,7 @@ public class JImmutableHashMap<T, K, V>
      * problems with incompatible keys.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableMap<K, V> forKey(K key)
+    public static <K, V> IMap<K, V> forKey(K key)
     {
         return (key instanceof Comparable) ? TREE_EMPTY : LIST_EMPTY;
     }
@@ -136,9 +136,9 @@ public class JImmutableHashMap<T, K, V>
      * for any type of key but is slower when many keys have the same hash code.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> JImmutableMap<K, V> usingList()
+    public static <K, V> IMap<K, V> usingList()
     {
-        return (JImmutableMap<K, V>)LIST_EMPTY;
+        return (IMap<K, V>)LIST_EMPTY;
     }
 
     /**
@@ -147,32 +147,32 @@ public class JImmutableHashMap<T, K, V>
      * being able to compare themselves to all other keys.
      */
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> JImmutableMap<K, V> usingTree()
+    public static <K extends Comparable<K>, V> IMap<K, V> usingTree()
     {
-        return (JImmutableMap<K, V>)TREE_EMPTY;
+        return (IMap<K, V>)TREE_EMPTY;
     }
 
-    public static <K, V> JImmutableMap.Builder<K, V> builder()
+    public static <K, V> IMap.Builder<K, V> builder()
     {
         return new Builder<>();
     }
 
     @Nonnull
     @Override
-    public JImmutableMap.Builder<K, V> mapBuilder()
+    public IMap.Builder<K, V> mapBuilder()
     {
         return builder();
     }
 
     @Nonnull
-    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector()
     {
-        return Collector.<Entry<K, V>, JImmutableMap.Builder<K, V>, JImmutableMap<K, V>>of(JImmutableHashMap::builder,
-                                                                                           (b, v) -> b.add(v),
-                                                                                           (b1, b2) -> b1.add(b2),
-                                                                                           b -> b.build(),
-                                                                                           Collector.Characteristics.UNORDERED,
-                                                                                           Collector.Characteristics.CONCURRENT);
+        return Collector.<IMapEntry<K, V>, IMap.Builder<K, V>, IMap<K, V>>of(JImmutableHashMap::builder,
+                                                                             (b, v) -> b.add(v),
+                                                                             (b1, b2) -> b1.add(b2),
+                                                                             b -> b.build(),
+                                                                             Collector.Characteristics.UNORDERED,
+                                                                             Collector.Characteristics.CONCURRENT);
     }
 
     @Override
@@ -191,15 +191,15 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         return root.mappedFindEntry(this, key);
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> assign(@Nonnull K key,
-                                      V value)
+    public IMap<K, V> assign(@Nonnull K key,
+                             V value)
     {
         final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedAssign(this, key, value);
         if (newRoot == root) {
@@ -211,8 +211,8 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> update(@Nonnull K key,
-                                      @Nonnull Func1<Holder<V>, V> generator)
+    public IMap<K, V> update(@Nonnull K key,
+                             @Nonnull Func1<Holder<V>, V> generator)
     {
         final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedUpdate(this, key, generator);
         if (newRoot == root) {
@@ -224,7 +224,7 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> delete(@Nonnull K key)
+    public IMap<K, V> delete(@Nonnull K key)
     {
         final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedDelete(this, key);
         if (newRoot == root) {
@@ -244,14 +244,14 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> deleteAll()
+    public IMap<K, V> deleteAll()
     {
         return of();
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public SplitableIterator<IMapEntry<K, V>> iterator()
     {
         return root.mappedEntries(this).iterator();
     }
@@ -312,8 +312,8 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> mappedFindEntry(@Nonnull ArrayMapNode<K, V> mapping,
-                                               @Nonnull K key)
+    public Holder<IMapEntry<K, V>> mappedFindEntry(@Nonnull ArrayMapNode<K, V> mapping,
+                                                   @Nonnull K key)
     {
         return mapping.findEntry(collisionMap, key);
     }
@@ -374,7 +374,7 @@ public class JImmutableHashMap<T, K, V>
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<Entry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
+    public GenericIterator.Iterable<IMapEntry<K, V>> mappedEntries(@Nonnull ArrayMapNode<K, V> mapping)
     {
         return mapping.entries(collisionMap);
     }
@@ -393,7 +393,7 @@ public class JImmutableHashMap<T, K, V>
 
     @ThreadSafe
     public static class Builder<K, V>
-        implements JImmutableMap.Builder<K, V>,
+        implements IMap.Builder<K, V>,
                    ArrayAssignMapper<K, V, ArrayMapNode<K, V>>
 
     {
@@ -402,7 +402,7 @@ public class JImmutableHashMap<T, K, V>
 
         @Nonnull
         @Override
-        public synchronized JImmutableMap<K, V> build()
+        public synchronized IMap<K, V> build()
         {
             final TrieArrayNode<ArrayMapNode<K, V>> root = builder.buildRoot();
             if (root.isEmpty()) {
@@ -414,7 +414,7 @@ public class JImmutableHashMap<T, K, V>
 
         @Nonnull
         @Override
-        public synchronized JImmutableMap.Builder<K, V> clear()
+        public synchronized IMap.Builder<K, V> clear()
         {
             builder.reset();
             collisionMap = ListCollisionMap.instance();
@@ -423,8 +423,8 @@ public class JImmutableHashMap<T, K, V>
 
         @Nonnull
         @Override
-        public synchronized JImmutableMap.Builder<K, V> add(@Nonnull K key,
-                                                            V value)
+        public synchronized IMap.Builder<K, V> add(@Nonnull K key,
+                                                   V value)
         {
             if (builder.size() == 0) {
                 if (key instanceof Comparable) {

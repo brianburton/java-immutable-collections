@@ -35,9 +35,11 @@
 
 package org.javimmutable.collections.common;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterable;
@@ -45,9 +47,6 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.
@@ -97,28 +96,28 @@ public interface CollisionMap<K, V>
                         @Nonnull K key);
 
     @Nonnull
-    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Node node,
-                                                @Nonnull K key);
+    Holder<IMapEntry<K, V>> findEntry(@Nonnull Node node,
+                                      @Nonnull K key);
 
     @Nonnull
-    JImmutableMap.Entry<K, V> first(@Nonnull Node node);
+    IMapEntry<K, V> first(@Nonnull Node node);
 
     @Nullable
-    GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nonnull Node node,
-                                                                      @Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                      int offset,
-                                                                      int limit);
+    GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                            @Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                            int offset,
+                                                            int limit);
 
     @Nonnull
-    default GenericIterator.Iterable<JImmutableMap.Entry<K, V>> genericIterable(@Nonnull Node node)
+    default GenericIterator.Iterable<IMapEntry<K, V>> genericIterable(@Nonnull Node node)
     {
-        return new GenericIterator.Iterable<JImmutableMap.Entry<K, V>>()
+        return new GenericIterator.Iterable<IMapEntry<K, V>>()
         {
             @Nullable
             @Override
-            public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                                     int offset,
-                                                                                     int limit)
+            public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                           int offset,
+                                                                           int limit)
             {
                 return CollisionMap.this.iterateOverRange(node, parent, offset, limit);
             }
@@ -132,13 +131,13 @@ public interface CollisionMap<K, V>
     }
 
     @Nonnull
-    default SplitableIterable<JImmutableMap.Entry<K, V>> iterable(@Nonnull CollisionMap.Node node)
+    default SplitableIterable<IMapEntry<K, V>> iterable(@Nonnull CollisionMap.Node node)
     {
         return genericIterable(node);
     }
 
     @Nonnull
-    default SplitableIterator<JImmutableMap.Entry<K, V>> iterator(@Nonnull Node node)
+    default SplitableIterator<IMapEntry<K, V>> iterator(@Nonnull Node node)
     {
         return genericIterable(node).iterator();
     }

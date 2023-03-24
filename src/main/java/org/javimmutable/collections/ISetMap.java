@@ -35,22 +35,22 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for maps that map keys to sets of values.
  */
 @Immutable
-public interface JImmutableSetMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableSetMap<K, V>>,
-            Mapped<K, JImmutableSet<V>>,
-            IterableStreamable<JImmutableMap.Entry<K, JImmutableSet<V>>>,
+public interface ISetMap<K, V>
+    extends Insertable<IMapEntry<K, V>, ISetMap<K, V>>,
+            Mapped<K, ISet<V>>,
+            IterableStreamable<IMapEntry<K, ISet<V>>>,
             InvariantCheckable,
             Serializable
 {
@@ -58,7 +58,7 @@ public interface JImmutableSetMap<K, V>
      * Return the set associated with key, or an empty set if no list is associated.
      */
     @Nonnull
-    JImmutableSet<V> getSet(@Nonnull K key);
+    ISet<V> getSet(@Nonnull K key);
 
     /**
      * Sets the set associated with a specific key. Key and value must be non-null.
@@ -67,8 +67,8 @@ public interface JImmutableSetMap<K, V>
      * any changes. The original map is always left unchanged.
      */
     @Nonnull
-    JImmutableSetMap<K, V> assign(@Nonnull K key,
-                                  @Nonnull JImmutableSet<V> value);
+    ISetMap<K, V> assign(@Nonnull K key,
+                         @Nonnull ISet<V> value);
 
     /**
      * Add value to the Set for the specified key. Note that if the value has already been
@@ -76,29 +76,29 @@ public interface JImmutableSetMap<K, V>
      */
     @Nonnull
     @Override
-    JImmutableSetMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> value);
+    ISetMap<K, V> insert(@Nonnull IMapEntry<K, V> value);
 
     /**
      * Add value to the Set for the specified key. Note that if the value has already been
      * added, it will not be added again.
      */
     @Nonnull
-    JImmutableSetMap<K, V> insert(@Nonnull K key,
-                                  @Nonnull V value);
+    ISetMap<K, V> insert(@Nonnull K key,
+                         @Nonnull V value);
 
     /**
      * Adds all of the elements of the specified Iterable to the Set for the specified key.
      */
     @Nonnull
-    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                     @Nonnull Iterable<? extends V> values);
+    ISetMap<K, V> insertAll(@Nonnull K key,
+                            @Nonnull Iterable<? extends V> values);
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
      */
     @Nonnull
-    JImmutableSetMap<K, V> insertAll(@Nonnull K key,
-                                     @Nonnull Iterator<? extends V> values);
+    ISetMap<K, V> insertAll(@Nonnull K key,
+                            @Nonnull Iterator<? extends V> values);
 
     /**
      * Determines if the setmap contains the specified key.
@@ -151,45 +151,45 @@ public interface JImmutableSetMap<K, V>
      * was deleted or the current map if the key was not contained in the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> delete(@Nonnull K key);
+    ISetMap<K, V> delete(@Nonnull K key);
 
     /**
      * Deletes the specified value from the specified key's set. Returns a new map if the value
      * was deleted or the current map if the key was not contained in the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> delete(@Nonnull K key,
-                                  @Nonnull V value);
+    ISetMap<K, V> delete(@Nonnull K key,
+                         @Nonnull V value);
 
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                     @Nonnull Iterable<? extends V> other);
+    ISetMap<K, V> deleteAll(@Nonnull K key,
+                            @Nonnull Iterable<? extends V> other);
 
     /**
      * Deletes the elements in other at the specified key. Returns a new map if the
      * values were deleted or the current map if the key was not contained in the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> deleteAll(@Nonnull K key,
-                                     @Nonnull Iterator<? extends V> other);
+    ISetMap<K, V> deleteAll(@Nonnull K key,
+                            @Nonnull Iterator<? extends V> other);
 
     /**
      * Adds all values from other to the Set at key
      */
     @Nonnull
-    JImmutableSetMap<K, V> union(@Nonnull K key,
-                                 @Nonnull Iterable<? extends V> other);
+    ISetMap<K, V> union(@Nonnull K key,
+                        @Nonnull Iterable<? extends V> other);
 
     /**
      * Adds all values from other to the Set at key
      */
     @Nonnull
-    JImmutableSetMap<K, V> union(@Nonnull K key,
-                                 @Nonnull Iterator<? extends V> other);
+    ISetMap<K, V> union(@Nonnull K key,
+                        @Nonnull Iterator<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other
@@ -197,8 +197,8 @@ public interface JImmutableSetMap<K, V>
      * to the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Iterable<? extends V> other);
+    ISetMap<K, V> intersection(@Nonnull K key,
+                               @Nonnull Iterable<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other
@@ -206,8 +206,8 @@ public interface JImmutableSetMap<K, V>
      * to the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Iterator<? extends V> other);
+    ISetMap<K, V> intersection(@Nonnull K key,
+                               @Nonnull Iterator<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other
@@ -215,8 +215,8 @@ public interface JImmutableSetMap<K, V>
      * to the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull JImmutableSet<? extends V> other);
+    ISetMap<K, V> intersection(@Nonnull K key,
+                               @Nonnull ISet<? extends V> other);
 
     /**
      * Removes all values from the Set at key that are not contained in the other
@@ -224,8 +224,8 @@ public interface JImmutableSetMap<K, V>
      * to the map.
      */
     @Nonnull
-    JImmutableSetMap<K, V> intersection(@Nonnull K key,
-                                        @Nonnull Set<? extends V> other);
+    ISetMap<K, V> intersection(@Nonnull K key,
+                               @Nonnull Set<? extends V> other);
 
     /**
      * Apply the specified transform function to the Set assigned to the specified key and assign the result
@@ -236,11 +236,11 @@ public interface JImmutableSetMap<K, V>
      * @param transform function to update the set
      * @return new map with update applied to set associated with key
      */
-    default JImmutableSetMap<K, V> transform(@Nonnull K key,
-                                             @Nonnull Func1<JImmutableSet<V>, JImmutableSet<V>> transform)
+    default ISetMap<K, V> transform(@Nonnull K key,
+                                    @Nonnull Func1<ISet<V>, ISet<V>> transform)
     {
-        final JImmutableSet<V> current = getSet(key);
-        final JImmutableSet<V> transformed = transform.apply(current);
+        final ISet<V> current = getSet(key);
+        final ISet<V> transformed = transform.apply(current);
         return (transformed == current) ? this : assign(key, transformed);
     }
 
@@ -253,12 +253,12 @@ public interface JImmutableSetMap<K, V>
      * @param transform function to update the set
      * @return new map with update applied to set associated with key
      */
-    default JImmutableSetMap<K, V> transformIfPresent(@Nonnull K key,
-                                                      @Nonnull Func1<JImmutableSet<V>, JImmutableSet<V>> transform)
+    default ISetMap<K, V> transformIfPresent(@Nonnull K key,
+                                             @Nonnull Func1<ISet<V>, ISet<V>> transform)
     {
-        final JImmutableSet<V> current = get(key);
+        final ISet<V> current = get(key);
         if (current != null) {
-            final JImmutableSet<V> transformed = transform.apply(current);
+            final ISet<V> transformed = transform.apply(current);
             if (transformed != current) {
                 return assign(key, transformed);
             }
@@ -288,7 +288,7 @@ public interface JImmutableSetMap<K, V>
      * @return an equivalent collectin with no values
      */
     @Nonnull
-    JImmutableSetMap<K, V> deleteAll();
+    ISetMap<K, V> deleteAll();
 
     /**
      * Creates a Streamable to access all of the Map's keys.
@@ -309,14 +309,14 @@ public interface JImmutableSetMap<K, V>
      * Creates a Streamable to access all of the Map's entries.
      */
     @Nonnull
-    IterableStreamable<JImmutableMap.Entry<K, V>> entries();
+    IterableStreamable<IMapEntry<K, V>> entries();
 
     /**
      * Processes every key/set pair in this map using the provided function.
      */
-    default void forEach(@Nonnull Proc2<K, JImmutableSet<V>> proc)
+    default void forEach(@Nonnull Proc2<K, ISet<V>> proc)
     {
-        for (JImmutableMap.Entry<K, JImmutableSet<V>> e : this) {
+        for (IMapEntry<K, ISet<V>> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -324,10 +324,10 @@ public interface JImmutableSetMap<K, V>
     /**
      * Processes every key/set pair in this map using the provided function.
      */
-    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, JImmutableSet<V>, E> proc)
+    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, ISet<V>, E> proc)
         throws E
     {
-        for (JImmutableMap.Entry<K, JImmutableSet<V>> e : this) {
+        for (IMapEntry<K, ISet<V>> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -337,7 +337,7 @@ public interface JImmutableSetMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<JImmutableMap.Entry<K, V>, ?, JImmutableSetMap<K, V>> setMapCollector()
+    default Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> setMapCollector()
     {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
     }

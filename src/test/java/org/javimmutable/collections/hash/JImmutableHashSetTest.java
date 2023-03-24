@@ -35,11 +35,22 @@
 
 package org.javimmutable.collections.hash;
 
+import static java.util.Arrays.asList;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.common.SetBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -49,18 +60,6 @@ import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.tree.ComparableComparator;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.util.Arrays.asList;
 
 public class JImmutableHashSetTest
     extends TestCase
@@ -76,10 +75,10 @@ public class JImmutableHashSetTest
 
     public void test()
     {
-        JImmutableStack<String> expected = JImmutableLinkedStack.of();
+        IStack<String> expected = JImmutableLinkedStack.of();
         expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
 
-        JImmutableSet<String> set = JImmutableHashSet.of();
+        ISet<String> set = JImmutableHashSet.of();
         assertTrue(set.isEmpty());
         assertEquals(0, set.size());
         assertEquals(false, set.contains("fred"));
@@ -112,7 +111,7 @@ public class JImmutableHashSetTest
         assertSame(set, set.insert("fred"));
         assertSame(set, set.insert("wilma"));
 
-        JImmutableSet<String> set2 = set.union(expected);
+        ISet<String> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -138,7 +137,7 @@ public class JImmutableHashSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        JImmutableSet<String> set3 = set.union(expected).insert("homer").insert("marge");
+        ISet<String> set3 = set.union(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));
@@ -199,7 +198,7 @@ public class JImmutableHashSetTest
         // Collection intersection uses Iterator internally
         tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
-        JImmutableSet<String> jet = JImmutableHashSet.<String>of().insert("Hello");
+        ISet<String> jet = JImmutableHashSet.<String>of().insert("Hello");
         // same as Set
         assertEquals(true, jet.contains("Hello"));
         assertEquals(false, jet.contains("HELLO"));
@@ -213,15 +212,15 @@ public class JImmutableHashSetTest
 
     public void testStreams()
     {
-        JImmutableSet<Integer> mset = JImmutableHashSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        ISet<Integer> mset = JImmutableHashSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
     }
 
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
-        final JImmutableSet<String> empty = JImmutableHashSet.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet)a).iterator();
+        final ISet<String> empty = JImmutableHashSet.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFADwPF+xhAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
@@ -233,7 +232,7 @@ public class JImmutableHashSetTest
     public void testBuilder()
         throws InterruptedException
     {
-        final Func2<List<Integer>, JImmutableSet<Integer>, Boolean> comparator = (list, set) -> {
+        final Func2<List<Integer>, ISet<Integer>, Boolean> comparator = (list, set) -> {
             set.checkInvariants();
             final List<Integer> sortedExpected = list.stream().sorted().collect(Collectors.toList());
             final List<Integer> sortedActual = set.stream().sorted().collect(Collectors.toList());

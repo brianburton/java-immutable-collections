@@ -35,17 +35,8 @@
 
 package org.javimmutable.collections.inorder;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MapBuilderTestAdapter;
-import org.javimmutable.collections.common.StandardBuilderTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardJImmutableMapTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.MapEntry.entry;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +46,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.MapEntry.entry;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.MapBuilderTestAdapter;
+import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableMapTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableInsertOrderMapTest
     extends TestCase
@@ -69,7 +69,7 @@ public class JImmutableInsertOrderMapTest
 
     public void testIterators()
     {
-        List<JImmutableMap.Entry<String, String>> expectedEntries = new ArrayList<>();
+        List<IMapEntry<String, String>> expectedEntries = new ArrayList<>();
         List<String> expectedKeys = new ArrayList<>();
         List<String> expectedValues = new ArrayList<>();
         JImmutableInsertOrderMap<String, String> map = JImmutableInsertOrderMap.of();
@@ -137,7 +137,7 @@ public class JImmutableInsertOrderMapTest
     {
         Random r = new Random(0L);
         for (int loop = 1; loop <= 20; ++loop) {
-            JImmutableMap<Integer, Integer> map = JImmutableInsertOrderMap.of();
+            IMap<Integer, Integer> map = JImmutableInsertOrderMap.of();
             Map<Integer, Integer> expected = new LinkedHashMap<>();
             for (int i = 0; i < 2500; ++i) {
                 int command = r.nextInt(3);
@@ -190,7 +190,7 @@ public class JImmutableInsertOrderMapTest
             map.checkInvariants();
 
             assertEquals(expected, map.getMap());
-            List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
+            List<IMapEntry<Integer, Integer>> entries = new ArrayList<>();
             List<Integer> keys = new ArrayList<>();
             List<Integer> values = new ArrayList<>();
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
@@ -219,9 +219,9 @@ public class JImmutableInsertOrderMapTest
     public void testAssignAll()
     {
         //assignAll(JImmutableMap)
-        JImmutableMap<String, Number> empty = JImmutableInsertOrderMap.of();
-        JImmutableMap<String, Number> map = empty;
-        JImmutableMap<String, Integer> expected = JImmutableInsertOrderMap.of();
+        IMap<String, Number> empty = JImmutableInsertOrderMap.of();
+        IMap<String, Number> map = empty;
+        IMap<String, Integer> expected = JImmutableInsertOrderMap.of();
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());
@@ -268,7 +268,7 @@ public class JImmutableInsertOrderMapTest
 
     public void testStreams()
     {
-        final JImmutableMap<Integer, Integer> inOrderMap = JImmutableInsertOrderMap.of();
+        final IMap<Integer, Integer> inOrderMap = JImmutableInsertOrderMap.of();
         assertEquals(asList(), inOrderMap.stream().collect(Collectors.toList()));
         assertEquals(asList(MapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
         assertEquals(asList(MapEntry.of(4, 40), MapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
@@ -283,8 +283,8 @@ public class JImmutableInsertOrderMapTest
 
         List<Integer> keys = new ArrayList<>();
         List<Integer> values = new ArrayList<>();
-        List<JImmutableMap.Entry<Integer, Integer>> entries = new ArrayList<>();
-        JImmutableMap<Integer, Integer> map = inOrderMap;
+        List<IMapEntry<Integer, Integer>> entries = new ArrayList<>();
+        IMap<Integer, Integer> map = inOrderMap;
         Random r = new Random();
         for (int i = 1; i <= 1000; ++i) {
             final int key = r.nextInt();
@@ -306,8 +306,8 @@ public class JImmutableInsertOrderMapTest
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
-        final JImmutableMap<Integer, String> empty = JImmutableInsertOrderMap.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+        final IMap<Integer, String> empty = JImmutableInsertOrderMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgKACANcYyRO8AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of(1, "a")),
@@ -320,8 +320,8 @@ public class JImmutableInsertOrderMapTest
     {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 100; ++i) {
-            JImmutableMap.Builder<Integer, Integer> builder = JImmutableInsertOrderMap.builder();
-            JImmutableMap<Integer, Integer> expected = JImmutableInsertOrderMap.of();
+            IMap.Builder<Integer, Integer> builder = JImmutableInsertOrderMap.builder();
+            IMap<Integer, Integer> expected = JImmutableInsertOrderMap.of();
             final int size = 1 + r.nextInt(2000);
             for (int k = 1; k <= size; ++k) {
                 final Integer key = r.nextInt(5 * size);
@@ -329,7 +329,7 @@ public class JImmutableInsertOrderMapTest
                 builder.add(key, value);
                 expected = expected.assign(key, value);
             }
-            JImmutableMap<Integer, Integer> actual = builder.build();
+            IMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
 
@@ -340,12 +340,12 @@ public class JImmutableInsertOrderMapTest
     public void testStandardBuilderTests()
         throws InterruptedException
     {
-        final List<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
             values.add(MapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
-        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new IMapEntry[0]);
         values.sort(MapEntry::compareKeys);
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdapter, a -> a);
     }
@@ -355,18 +355,18 @@ public class JImmutableInsertOrderMapTest
         return new MapBuilderTestAdapter<>(JImmutableInsertOrderMap.builder());
     }
 
-    private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,
-                                             JImmutableMap<Integer, Integer> actual)
+    private Boolean stdBuilderTestComparator(List<IMapEntry<Integer, Integer>> expected,
+                                             IMap<Integer, Integer> actual)
     {
         assertEquals(expected, actual.stream().collect(Collectors.toList()));
         return true;
     }
 
-    private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
-                                                   JImmutableMap<Integer, Integer> extra)
+    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
+                                          IMap<Integer, Integer> extra)
     {
         map = map.assignAll(extra);
-        for (JImmutableMap.Entry<Integer, Integer> entry : extra) {
+        for (IMapEntry<Integer, Integer> entry : extra) {
             assertEquals(entry.getValue(), map.get(entry.getKey()));
             assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
             assertEquals(entry.getValue(), map.find(entry.getKey()).getValueOrNull());
@@ -376,8 +376,8 @@ public class JImmutableInsertOrderMapTest
         return map;
     }
 
-    private JImmutableMap<Integer, Integer> addAll(JImmutableMap<Integer, Integer> map,
-                                                   Map<Integer, Integer> extra)
+    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
+                                          Map<Integer, Integer> extra)
     {
         map = map.assignAll(extra);
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {

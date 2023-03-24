@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-
-import javax.annotation.Nonnull;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.SplitableIterator;
 
 public class TransformStreamable<S, T>
     implements IterableStreamable<T>
@@ -61,14 +60,14 @@ public class TransformStreamable<S, T>
         return new TransformStreamable<>(source, transforminator);
     }
 
-    public static <K, V> IterableStreamable<K> ofKeys(@Nonnull IterableStreamable<JImmutableMap.Entry<K, V>> source)
+    public static <K, V> IterableStreamable<K> ofKeys(@Nonnull IterableStreamable<IMapEntry<K, V>> source)
     {
-        return of(source, JImmutableMap.Entry::getKey);
+        return of(source, IMapEntry::getKey);
     }
 
-    public static <K, V> IterableStreamable<V> ofValues(@Nonnull IterableStreamable<JImmutableMap.Entry<K, V>> source)
+    public static <K, V> IterableStreamable<V> ofValues(@Nonnull IterableStreamable<IMapEntry<K, V>> source)
     {
-        return of(source, JImmutableMap.Entry::getValue);
+        return of(source, IMapEntry::getValue);
     }
 
     @Nonnull

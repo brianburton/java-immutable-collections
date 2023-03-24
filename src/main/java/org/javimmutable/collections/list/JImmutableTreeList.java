@@ -35,12 +35,25 @@
 
 package org.javimmutable.collections.list;
 
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -52,22 +65,9 @@ import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-
-import static org.javimmutable.collections.list.TreeBuilder.*;
-
 @Immutable
 public class JImmutableTreeList<T>
-    implements JImmutableList<T>,
+    implements IList<T>,
                Serializable
 {
     @SuppressWarnings("unchecked")
@@ -115,12 +115,12 @@ public class JImmutableTreeList<T>
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, JImmutableList<T>> createListCollector()
+    public static <T> Collector<T, ?, IList<T>> createListCollector()
     {
-        return Collector.<T, ListBuilder<T>, JImmutableList<T>>of(() -> new ListBuilder<>(),
-                                                                  (b, v) -> b.add(v),
-                                                                  (b1, b2) -> b1.combineWith(b2),
-                                                                  b -> b.build());
+        return Collector.<T, ListBuilder<T>, IList<T>>of(() -> new ListBuilder<>(),
+                                                         (b, v) -> b.add(v),
+                                                         (b1, b2) -> b1.combineWith(b2),
+                                                         b -> b.build());
     }
 
     @Nonnull
@@ -277,7 +277,7 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> reverse()
+    public IList<T> reverse()
     {
         final AbstractNode<T> newRoot = root.reverse();
         if (newRoot == root) {
@@ -401,8 +401,8 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> slice(int offset,
-                                   int limit)
+    public IList<T> slice(int offset,
+                          int limit)
     {
         final int size = root.size();
         if (offset < 0) {
@@ -433,7 +433,7 @@ public class JImmutableTreeList<T>
 
     @Nonnull
     @Override
-    public JImmutableList<T> getInsertableSelf()
+    public IList<T> getInsertableSelf()
     {
         return this;
     }
@@ -460,7 +460,7 @@ public class JImmutableTreeList<T>
     @Override
     public boolean equals(Object o)
     {
-        return (o == this) || ((o instanceof JImmutableList) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableList)o).iterator()));
+        return (o == this) || ((o instanceof IList) && IteratorHelper.iteratorEquals(iterator(), ((IList)o).iterator()));
     }
 
     @Override
@@ -525,7 +525,7 @@ public class JImmutableTreeList<T>
 
     @ThreadSafe
     public static class ListBuilder<T>
-        implements JImmutableList.Builder<T>
+        implements IList.Builder<T>
     {
         private final TreeBuilder<T> builder = new TreeBuilder<>();
 

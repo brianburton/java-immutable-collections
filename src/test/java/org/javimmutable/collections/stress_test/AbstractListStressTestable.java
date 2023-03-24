@@ -36,13 +36,12 @@
 package org.javimmutable.collections.stress_test;
 
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 import java.util.List;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 abstract class AbstractListStressTestable
     extends StressTester
@@ -52,7 +51,7 @@ abstract class AbstractListStressTestable
         super(testName);
     }
 
-    protected void verifyContents(JImmutableList<String> list,
+    protected void verifyContents(IList<String> list,
                                   List<String> expected)
     {
         System.out.printf("checking contents with size %d%n", list.size());
@@ -75,10 +74,10 @@ abstract class AbstractListStressTestable
             throw new RuntimeException("method call failed - getList()\n");
         }
         list.checkInvariants();
-        verifySerializable(null, list, JImmutableList.class);
+        verifySerializable(null, list, IList.class);
     }
 
-    protected void verifyIterator(JImmutableList<String> list,
+    protected void verifyIterator(IList<String> list,
                                   List<String> expected)
     {
         System.out.printf("checking cursor with size %d%n", list.size());

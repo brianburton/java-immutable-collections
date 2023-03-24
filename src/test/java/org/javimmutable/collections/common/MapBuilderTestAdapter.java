@@ -35,24 +35,24 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableMap;
-
-import javax.annotation.Nonnull;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Indexed;
 
 public class MapBuilderTestAdapter<K, V>
-    implements StandardBuilderTests.BuilderAdapter<JImmutableMap.Entry<K, V>, JImmutableMap<K, V>>
+    implements StandardBuilderTests.BuilderAdapter<IMapEntry<K, V>, IMap<K, V>>
 {
-    private final JImmutableMap.Builder<K, V> builder;
+    private final IMap.Builder<K, V> builder;
 
-    public MapBuilderTestAdapter(@Nonnull JImmutableMap.Builder<K, V> builder)
+    public MapBuilderTestAdapter(@Nonnull IMap.Builder<K, V> builder)
     {
         this.builder = builder;
     }
 
     @Override
-    public JImmutableMap<K, V> build()
+    public IMap<K, V> build()
     {
         return builder.build();
     }
@@ -70,33 +70,33 @@ public class MapBuilderTestAdapter<K, V>
     }
 
     @Override
-    public void add(JImmutableMap.Entry<K, V> value)
+    public void add(IMapEntry<K, V> value)
     {
         builder.add(value);
     }
 
     @Override
-    public void add(Iterator<? extends JImmutableMap.Entry<K, V>> source)
+    public void add(Iterator<? extends IMapEntry<K, V>> source)
     {
         builder.add(source);
     }
 
     @Override
-    public void add(Iterable<? extends JImmutableMap.Entry<K, V>> source)
+    public void add(Iterable<? extends IMapEntry<K, V>> source)
     {
         builder.add(source);
     }
 
     @Override
-    public <T extends JImmutableMap.Entry<K, V>> void add(T... source)
+    public <T extends IMapEntry<K, V>> void add(T... source)
     {
-        JImmutableMap.Entry<K, V>[] entries = new JImmutableMap.Entry[source.length];
+        IMapEntry<K, V>[] entries = new IMapEntry[source.length];
         System.arraycopy(source, 0, entries, 0, source.length);
         builder.add(entries);
     }
 
     @Override
-    public void add(Indexed<? extends JImmutableMap.Entry<K, V>> source,
+    public void add(Indexed<? extends IMapEntry<K, V>> source,
                     int offset,
                     int limit)
     {
@@ -104,7 +104,7 @@ public class MapBuilderTestAdapter<K, V>
     }
 
     @Override
-    public void add(Indexed<? extends JImmutableMap.Entry<K, V>> source)
+    public void add(Indexed<? extends IMapEntry<K, V>> source)
     {
         builder.add(source);
     }

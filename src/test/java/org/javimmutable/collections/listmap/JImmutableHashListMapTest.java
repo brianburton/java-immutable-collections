@@ -35,17 +35,16 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableHashListMapTest
     extends AbstractJImmutableListMapTestCase
@@ -53,7 +52,7 @@ public class JImmutableHashListMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableHashListMap.of(), Ordering.HASH);
+        IListMap<Integer, Integer> map = verifyOperations(JImmutableHashListMap.of(), Ordering.HASH);
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
                                                              MapEntry.of(2, map.getList(2)),
@@ -63,8 +62,8 @@ public class JImmutableHashListMapTest
 
     public void testEquals()
     {
-        JImmutableListMap<Integer, Integer> a = JImmutableHashListMap.of();
-        JImmutableListMap<Integer, Integer> b = JImmutableHashListMap.of();
+        IListMap<Integer, Integer> a = JImmutableHashListMap.of();
+        IListMap<Integer, Integer> b = JImmutableHashListMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -82,7 +81,7 @@ public class JImmutableHashListMapTest
 
     public void testStreams()
     {
-        JImmutableListMap<Integer, Integer> listMap = JImmutableHashListMap.<Integer, Integer>of()
+        IListMap<Integer, Integer> listMap = JImmutableHashListMap.<Integer, Integer>of()
             .insert(4, 40)
             .insert(3, 30)
             .insert(2, 20)
@@ -105,7 +104,7 @@ public class JImmutableHashListMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableHashListMap)a).iterator();
-        JImmutableListMap<String, String> empty = JImmutableHashListMap.of();
+        IListMap<String, String> empty = JImmutableHashListMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvDJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLyjkYGJhfMgBBBQDom7StvQAAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),

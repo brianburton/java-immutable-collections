@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.array.JImmutableTrieArray;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.array.JImmutableTrieArray;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -53,14 +52,14 @@ public class JImmutableArrayProxy
     private static final long serialVersionUID = -121805;
     private static final int LIST_VERSION = 1001;
 
-    private JImmutableArray<Object> list;
+    private IArray<Object> list;
 
     public JImmutableArrayProxy()
     {
         this.list = JImmutableTrieArray.of();
     }
 
-    public JImmutableArrayProxy(JImmutableArray list)
+    public JImmutableArrayProxy(IArray list)
     {
         this.list = list;
     }
@@ -86,7 +85,7 @@ public class JImmutableArrayProxy
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
         final int size = in.readInt();
-        final JImmutableArray.Builder builder = list.arrayBuilder();
+        final IArray.Builder builder = list.arrayBuilder();
         for (int i = 0; i < size; ++i) {
             final int index = in.readInt();
             final Object value = in.readObject();

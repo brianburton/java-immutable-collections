@@ -35,10 +35,26 @@
 
 package org.javimmutable.collections.hash;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEnumeration;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.iteratorTest;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.listIteratorTest;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
@@ -51,27 +67,12 @@ import org.javimmutable.collections.common.StandardJImmutableMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardJImmutableMapTests.verifyEnumeration;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
-
 public class JImmutableHashMapTest
     extends TestCase
 {
     public void test()
     {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
+        IMap<Integer, Integer> map = JImmutableHashMap.usingList();
         assertSame(Maybe.none(), map.seek(10));
         assertEquals(true, map.find(10).isEmpty());
         assertEquals(0, map.size());
@@ -106,7 +107,7 @@ public class JImmutableHashMapTest
 
     public void testValueIdentity()
     {
-        JImmutableMap<Integer, String> map = JImmutableHashMap.usingList();
+        IMap<Integer, String> map = JImmutableHashMap.usingList();
         map = map.assign(10, "ab");
         assertSame(map, map.assign(10, "ab"));
         for (int i = 100; i <= 15000; ++i) {
@@ -123,7 +124,7 @@ public class JImmutableHashMapTest
             final int maxKey = (maxKeyLoop == 0) ? 10000 : 99999999;
             for (int loop = 0; loop < 1000; ++loop) {
                 HashMap<ManualHashKey, Integer> expected = new HashMap<>();
-                JImmutableMap<ManualHashKey, Integer> map = (loop % 2 == 0) ? JImmutableHashMap.usingTree() : JImmutableHashMap.usingList();
+                IMap<ManualHashKey, Integer> map = (loop % 2 == 0) ? JImmutableHashMap.usingTree() : JImmutableHashMap.usingList();
                 final int size = 250 + random.nextInt(250);
                 for (int i = 1; i <= size; ++i) {
                     int command = random.nextInt(6);
@@ -149,7 +150,7 @@ public class JImmutableHashMapTest
                             break;
                         }
                         case 2: {
-                            JImmutableMap<ManualHashKey, Integer> col = JImmutableHashMap.usingTree();
+                            IMap<ManualHashKey, Integer> col = JImmutableHashMap.usingTree();
                             int times = random.nextInt(3);
                             for (int rep = 0; rep < times; rep++) {
                                 ManualHashKey key = createManualHashKey(maxKey, random);
@@ -201,9 +202,9 @@ public class JImmutableHashMapTest
                 }
 
                 // verify the iterator worked properly
-                final List<JImmutableMap.Entry<ManualHashKey, Integer>> entries = new ArrayList<>();
+                final List<IMapEntry<ManualHashKey, Integer>> entries = new ArrayList<>();
                 Map<ManualHashKey, Integer> fromIterator = new HashMap<>();
-                for (JImmutableMap.Entry<ManualHashKey, Integer> entry : map) {
+                for (IMapEntry<ManualHashKey, Integer> entry : map) {
                     entries.add(entry);
                     fromIterator.put(entry.getKey(), entry.getValue());
                 }
@@ -245,24 +246,24 @@ public class JImmutableHashMapTest
 
     public void testEquals()
     {
-        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
-        JImmutableMap<Integer, Integer> map2 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        IMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        IMap<Integer, Integer> map2 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }
 
     public void testDeleteAll()
     {
-        JImmutableMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        IMap<Integer, Integer> map1 = JImmutableHashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertSame(JImmutableHashMap.of(), map1.deleteAll());
     }
 
     public void testAssignAll()
     {
         //assignAll(JImmutableMap)
-        JImmutableMap<String, Number> empty = JImmutableHashMap.of();
-        JImmutableMap<String, Number> map = empty;
-        JImmutableMap<String, Integer> expected = JImmutableHashMap.usingList();
+        IMap<String, Number> empty = JImmutableHashMap.of();
+        IMap<String, Number> map = empty;
+        IMap<String, Integer> expected = JImmutableHashMap.usingList();
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertEquals(0, map.size());
@@ -313,7 +314,7 @@ public class JImmutableHashMapTest
 
     public void testEnumeration()
     {
-        JImmutableMap<Integer, Integer> map = JImmutableHashMap.usingList();
+        IMap<Integer, Integer> map = JImmutableHashMap.usingList();
         HashMap<Integer, Integer> expected = new HashMap<>();
         for (int i = 0; i < 100000; ++i) {
             map = map.assign(i, 2 * i);
@@ -328,7 +329,7 @@ public class JImmutableHashMapTest
         ManualHashKey key1 = new ManualHashKey(1000, "a");
         ManualHashKey key2 = new ManualHashKey(1000, "b");
         ManualHashKey key3 = new ManualHashKey(1000, "c");
-        JImmutableMap<ManualHashKey, String> map = JImmutableHashMap.usingList();
+        IMap<ManualHashKey, String> map = JImmutableHashMap.usingList();
         map = map.assign(key1, "1").assign(key2, "2").assign(key3, "3");
         assertEquals(3, map.size());
         assertEquals("1", map.get(key1));
@@ -402,8 +403,8 @@ public class JImmutableHashMapTest
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMap)a).iterator();
-        final JImmutableMap<Integer, String> empty = JImmutableHashMap.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+        final IMap<Integer, String> empty = JImmutableHashMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAEEFAO752S21AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of(1, "a")),
@@ -416,8 +417,8 @@ public class JImmutableHashMapTest
     {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 2000; ++i) {
-            JImmutableMap.Builder<Integer, Integer> builder = JImmutableHashMap.builder();
-            JImmutableMap<Integer, Integer> expected = JImmutableHashMap.of();
+            IMap.Builder<Integer, Integer> builder = JImmutableHashMap.builder();
+            IMap<Integer, Integer> expected = JImmutableHashMap.of();
             final int size = 1 + r.nextInt(5000);
             for (int k = 1; k <= size; ++k) {
                 final Integer key = r.nextInt(5 * size);
@@ -425,7 +426,7 @@ public class JImmutableHashMapTest
                 builder.add(key, value);
                 expected = expected.assign(key, value);
             }
-            JImmutableMap<Integer, Integer> actual = builder.build();
+            IMap<Integer, Integer> actual = builder.build();
             actual.checkInvariants();
             assertEquals(expected, actual);
             assertEquals(actual, actual.parallelStream().collect(JImmutableHashMap.createMapCollector()));
@@ -437,12 +438,12 @@ public class JImmutableHashMapTest
     public void testStandardBuilderTests()
         throws InterruptedException
     {
-        final List<JImmutableMap.Entry<Integer, Integer>> values = new ArrayList<>();
+        final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
             values.add(MapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
-        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new JImmutableMap.Entry[0]);
+        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new IMapEntry[0]);
         values.sort(MapEntry::compareKeys);
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
     }
@@ -457,11 +458,11 @@ public class JImmutableHashMapTest
             sb.append(v);
             sb.append("]");
         };
-        final JImmutableMap<String, String> empty = JImmutableHashMap.of();
+        final IMap<String, String> empty = JImmutableHashMap.of();
         empty.forEach(append);
         assertEquals("", sb.toString());
 
-        final JImmutableMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        final IMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
         map.forEach(append);
         assertEquals("[a,A][b,B][c,C]", sb.toString());
 
@@ -489,10 +490,10 @@ public class JImmutableHashMapTest
         final Sum2<String, String, String> append = (s, k, v) -> {
             return s + "[" + k + "," + v + "]";
         };
-        final JImmutableMap<String, String> empty = JImmutableHashMap.of();
+        final IMap<String, String> empty = JImmutableHashMap.of();
         assertEquals("", empty.reduce("", append));
 
-        final JImmutableMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        final IMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
         assertEquals("[a,A][b,B][c,C]", map.reduce("", append));
 
         final Sum2Throws<String, String, String, IOException> appendThrows = (s, k, v) -> {
@@ -515,10 +516,10 @@ public class JImmutableHashMapTest
         return new MapBuilderTestAdapter<>(JImmutableHashMap.builder());
     }
 
-    private Boolean stdBuilderTestComparator(List<JImmutableMap.Entry<Integer, Integer>> expected,
-                                             JImmutableMap<Integer, Integer> actual)
+    private Boolean stdBuilderTestComparator(List<IMapEntry<Integer, Integer>> expected,
+                                             IMap<Integer, Integer> actual)
     {
-        List<JImmutableMap.Entry<Integer, Integer>> sorted = new ArrayList<>(expected);
+        List<IMapEntry<Integer, Integer>> sorted = new ArrayList<>(expected);
         sorted.sort(MapEntry::compareKeys);
         assertEquals(sorted, actual.stream().sorted(MapEntry::compareKeys).collect(Collectors.toList()));
         return true;

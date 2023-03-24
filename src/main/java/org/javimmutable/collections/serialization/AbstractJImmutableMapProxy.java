@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableMapProxy
@@ -49,10 +49,10 @@ abstract class AbstractJImmutableMapProxy
 {
     private static final int MAP_VERSION = 1001;
     private static final long serialVersionUID = -121805;
-        
-    protected JImmutableMap map;
 
-    protected AbstractJImmutableMapProxy(JImmutableMap map)
+    protected IMap map;
+
+    protected AbstractJImmutableMapProxy(IMap map)
     {
         this.map = map;
     }
@@ -64,9 +64,9 @@ abstract class AbstractJImmutableMapProxy
         out.writeInt(MAP_VERSION);
         writeMap(out);
         out.writeInt(map.size());
-        final Iterator<JImmutableMap.Entry> iterator = map.iterator();
+        final Iterator<IMapEntry> iterator = map.iterator();
         while (iterator.hasNext()) {
-            final JImmutableMap.Entry entry = iterator.next();
+            final IMapEntry entry = iterator.next();
             out.writeObject(entry.getKey());
             out.writeObject(entry.getValue());
         }
@@ -94,7 +94,7 @@ abstract class AbstractJImmutableMapProxy
         return map;
     }
 
-    protected JImmutableMap readMap(ObjectInput in)
+    protected IMap readMap(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         return map;

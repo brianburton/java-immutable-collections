@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.JImmutableSet;
-
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.ISet;
 
 /**
  * Adaptor that implements an unmodifiable Set backed by a JImmutableSet.
@@ -50,14 +49,14 @@ import java.util.Set;
 public class SetAdaptor<T>
     extends AbstractSet<T>
 {
-    private final JImmutableSet<T> pset;
+    private final ISet<T> pset;
 
-    public SetAdaptor(JImmutableSet<T> pset)
+    public SetAdaptor(ISet<T> pset)
     {
         this.pset = pset;
     }
 
-    public static <T> SetAdaptor<T> of(JImmutableSet<T> pset)
+    public static <T> SetAdaptor<T> of(ISet<T> pset)
     {
         return new SetAdaptor<T>(pset);
     }

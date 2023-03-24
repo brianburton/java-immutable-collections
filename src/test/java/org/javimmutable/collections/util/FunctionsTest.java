@@ -35,29 +35,28 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.Arrays;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableStack;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
-
-import java.util.Arrays;
 
 public class FunctionsTest
     extends TestCase
 {
     public void testFoldLeft()
     {
-        JImmutableStack<Integer> list = JImmutables.stack(1, 2, 3);
+        IStack<Integer> list = JImmutables.stack(1, 2, 3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
     public void testFoldRight()
     {
-        JImmutableStack<Integer> list = JImmutables.stack(1, 2, 3);
+        IStack<Integer> list = JImmutables.stack(1, 2, 3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
@@ -69,15 +68,15 @@ public class FunctionsTest
 
     public void testCollectAll()
     {
-        JImmutableList<Integer> expected = JImmutables.list(2, 3, 4);
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        IList<Integer> expected = JImmutables.list(2, 3, 4);
+        IList<Integer> list = JImmutables.list(1, 2, 3);
         assertEquals(expected, Functions.collectAll(list.iterator(), JImmutables.list(), value -> value + 1));
     }
 
     public void testCollectSome()
     {
-        JImmutableList<Integer> expected = JImmutables.list(2, 4);
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3);
+        IList<Integer> expected = JImmutables.list(2, 4);
+        IList<Integer> list = JImmutables.list(1, 2, 3);
         assertEquals(expected, Functions.collectSome(list.iterator(), JImmutables.list(), value -> {
             if (value % 2 == 0) {
                 return Holders.of();
@@ -91,7 +90,7 @@ public class FunctionsTest
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
+        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
         assertEquals(Holders.of(2), Functions.find(list.iterator(), func));
 
         list = JImmutables.list(1, 5, 7);
@@ -102,8 +101,8 @@ public class FunctionsTest
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
-        JImmutableList<Integer> expected = JImmutables.list(1, 3);
+        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
+        IList<Integer> expected = JImmutables.list(1, 3);
         assertEquals(expected, Functions.reject(list.iterator(), JImmutables.list(), func));
         list = JImmutables.list(1, 5, 7);
         assertEquals(list, Functions.reject(list.iterator(), JImmutables.list(), func));
@@ -116,8 +115,8 @@ public class FunctionsTest
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        JImmutableList<Integer> list = JImmutables.list(1, 2, 3, 4);
-        JImmutableList<Integer> expected = JImmutables.list(2, 4);
+        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
+        IList<Integer> expected = JImmutables.list(2, 4);
         assertEquals(expected, Functions.select(list.iterator(), JImmutables.list(), func));
         list = JImmutables.list(2, 6, 12);
         assertEquals(list, Functions.select(list.iterator(), JImmutables.list(), func));
@@ -128,7 +127,7 @@ public class FunctionsTest
     
     public void testAssignAll()
     {
-        final JImmutableMap<String, String> expected = JImmutableTreeMap.<String, String>of().assign("a", "A").assign("b", "B");
+        final IMap<String, String> expected = JImmutableTreeMap.<String, String>of().assign("a", "A").assign("b", "B");
         assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected));
         assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected.getMap()));
     }

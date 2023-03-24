@@ -35,16 +35,7 @@
 
 package org.javimmutable.collections.inorder;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardJImmutableSetTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +47,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static java.util.Arrays.asList;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.IStack;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardJImmutableSetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class JImmutableInsertOrderSetTest
     extends TestCase
@@ -71,10 +70,10 @@ public class JImmutableInsertOrderSetTest
 
     public void test()
     {
-        JImmutableStack<String> expected = JImmutableLinkedStack.of();
+        IStack<String> expected = JImmutableLinkedStack.of();
         expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
 
-        JImmutableSet<String> set = JImmutableInsertOrderSet.of();
+        ISet<String> set = JImmutableInsertOrderSet.of();
         assertTrue(set.isEmpty());
         assertEquals(0, set.size());
         assertEquals(false, set.contains("fred"));
@@ -107,7 +106,7 @@ public class JImmutableInsertOrderSetTest
         assertSame(set, set.insert("fred"));
         assertSame(set, set.insert("wilma"));
 
-        JImmutableSet<String> set2 = set.union(expected);
+        ISet<String> set2 = set.union(expected);
         assertFalse(set2.isEmpty());
         assertEquals(4, set2.size());
         assertEquals(true, set2.contains("fred"));
@@ -133,7 +132,7 @@ public class JImmutableInsertOrderSetTest
         assertEquals(false, set2.containsAny(set));
         assertEquals(false, set2.containsAll(expected));
 
-        JImmutableSet<String> set3 = set.union(expected).insert("homer").insert("marge");
+        ISet<String> set3 = set.union(expected).insert("homer").insert("marge");
         assertFalse(set3.isEmpty());
         assertEquals(6, set3.size());
         assertEquals(true, set3.contains("fred"));
@@ -164,7 +163,7 @@ public class JImmutableInsertOrderSetTest
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
             Set<Integer> expected = new LinkedHashSet<>();
-            JImmutableSet<Integer> set = JImmutableInsertOrderSet.of();
+            ISet<Integer> set = JImmutableInsertOrderSet.of();
             for (int loops = 0; loops < (4 * size); ++loops) {
                 int command = random.nextInt(4);
                 int value = random.nextInt(size);
@@ -203,7 +202,7 @@ public class JImmutableInsertOrderSetTest
 
     public void testDeleteAll()
     {
-        JImmutableSet<String> set = JImmutableInsertOrderSet.<String>of().insert("FRED").insert("WILMA");
+        ISet<String> set = JImmutableInsertOrderSet.<String>of().insert("FRED").insert("WILMA");
         assertSame(JImmutableInsertOrderSet.of(), set.deleteAll());
     }
 
@@ -243,7 +242,7 @@ public class JImmutableInsertOrderSetTest
         // Collection intersection uses Iterator internally
         tset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         tset.add("HELLO");
-        JImmutableSet<String> jet = JImmutableInsertOrderSet.<String>of().insert("Hello");
+        ISet<String> jet = JImmutableInsertOrderSet.<String>of().insert("Hello");
         // same as Set
         assertEquals(true, jet.contains("Hello"));
         assertEquals(false, jet.contains("HELLO"));
@@ -257,15 +256,15 @@ public class JImmutableInsertOrderSetTest
 
     public void testStreams()
     {
-        JImmutableSet<Integer> mset = JImmutableInsertOrderSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        ISet<Integer> mset = JImmutableInsertOrderSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(4, 3, 2, 1), mset);
     }
 
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableSet)a).iterator();
-        final JImmutableSet<String> empty = JImmutableInsertOrderSet.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet)a).iterator();
+        final ISet<String> empty = JImmutableInsertOrderSet.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgKACACVhgIq8AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),

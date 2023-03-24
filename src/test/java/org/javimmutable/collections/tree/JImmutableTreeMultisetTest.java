@@ -35,17 +35,10 @@
 
 package org.javimmutable.collections.tree;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultiset;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,8 +47,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toList;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableTreeMultisetTest
     extends TestCase
@@ -77,7 +76,7 @@ public class JImmutableTreeMultisetTest
         final Set<String> valueSet = values.elementSet();
         final List<String> valueList = new ArrayList<>(values);
 
-        JImmutableMultiset<String> jmet = JImmutableTreeMultiset.of();
+        IMultiset<String> jmet = JImmutableTreeMultiset.of();
         Multiset<String> expected = TreeMultiset.create();
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
@@ -133,7 +132,7 @@ public class JImmutableTreeMultisetTest
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
         StandardJImmutableMultisetTests.verifyIterators(jmet.union(Arrays.asList("tennant", "smith")), expected);
 
-        JImmutableMultiset<String> jmet2 = jmet.union(valueSet);
+        IMultiset<String> jmet2 = jmet.union(valueSet);
         jmet2.checkInvariants();
         Multiset<String> expected2 = TreeMultiset.create();
         expected2.addAll(values);
@@ -192,7 +191,7 @@ public class JImmutableTreeMultisetTest
         StandardJImmutableMultisetTests.verifyIterators(jmet2.deleteAll(extra), expected);
         StandardJImmutableMultisetTests.verifyIterators(jmet.insertAll(extra), expected2);
 
-        JImmutableMultiset<String> jmet3 = asJMet(valueSet).insert("davison").insert("baker");
+        IMultiset<String> jmet3 = asJMet(valueSet).insert("davison").insert("baker");
         jmet3.checkInvariants();
         Multiset<String> expected3 = TreeMultiset.create(Arrays.asList("tennant", "smith", "capaldi", "eccleston", "davison", "baker"));
         assertFalse(jmet3.isEmpty());
@@ -215,7 +214,7 @@ public class JImmutableTreeMultisetTest
         assertEquals(false, jmet3.containsAllOccurrences(jmet2));
         StandardJImmutableMultisetTests.verifyIterators(jmet3, expected3);
 
-        JImmutableMultiset<String> jmet4 = asJMet(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
+        IMultiset<String> jmet4 = asJMet(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
         jmet4.checkInvariants();
         assertEquals(jmet4, jmet3.intersection(valueSet));
         assertEquals(jmet4, jmet3.intersection(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston")));
@@ -229,7 +228,7 @@ public class JImmutableTreeMultisetTest
         Comparator<Integer> reverser = (a, b) -> -a.compareTo(b);
 
         Multiset<Integer> expected = TreeMultiset.create(reverser);
-        JImmutableMultiset<Integer> jmet = JImmutableTreeMultiset.of(reverser);
+        IMultiset<Integer> jmet = JImmutableTreeMultiset.of(reverser);
         Random random = new Random(2500L);
         for (int i = 0; i < 10000; ++i) {
             int value = random.nextInt(100000) - 50000;
@@ -269,15 +268,15 @@ public class JImmutableTreeMultisetTest
 
     public void testStreams()
     {
-        JImmutableMultiset<Integer> mset = JImmutableTreeMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        IMultiset<Integer> mset = JImmutableTreeMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(Arrays.asList(1, 2, 3, 4), mset.stream().collect(toList()));
     }
 
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
-        JImmutableMultiset<String> empty = JImmutableTreeMultiset.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMultiset)a).entries().iterator();
+        IMultiset<String> empty = JImmutableTreeMultiset.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBLb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfUtzSnJLE4tCSjKr6j8DwL/VIx5GBgqihi8SDDUMam4pCgxuQRhOE6DC8pZGBiYXwJdbYbXghKg6/Sc83MLEotAclBWSX4RzDAmmGFAGgAiIJUFCAEAAA==");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeMultisetTest::extraSerializationChecks, empty.insert("a"),
@@ -303,31 +302,31 @@ public class JImmutableTreeMultisetTest
         JImmutableTreeMapTest.extraSerializationChecks(setA.getMap(), setB.getMap());
     }
 
-    private JImmutableSet<String> asJSet(String... args)
+    private ISet<String> asJSet(String... args)
     {
-        JImmutableSet<String> jet = JImmutableTreeSet.of();
+        ISet<String> jet = JImmutableTreeSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
         }
         return jet;
     }
 
-    private JImmutableMultiset<String> asJMet(String... args)
+    private IMultiset<String> asJMet(String... args)
     {
-        JImmutableMultiset<String> jmet = JImmutableTreeMultiset.of();
+        IMultiset<String> jmet = JImmutableTreeMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
         }
         return jmet;
     }
 
-    private JImmutableMultiset<String> asJMet(Collection<String> collect)
+    private IMultiset<String> asJMet(Collection<String> collect)
     {
-        JImmutableMultiset<String> jmet = JImmutableTreeMultiset.of();
+        IMultiset<String> jmet = JImmutableTreeMultiset.of();
         return jmet.insertAll(collect);
     }
 
-    private ArrayList<Integer> asList(JImmutableMultiset<Integer> jmet)
+    private ArrayList<Integer> asList(IMultiset<Integer> jmet)
     {
         ArrayList<Integer> list = new ArrayList<>();
         for (Integer value : jmet.occurrences()) {

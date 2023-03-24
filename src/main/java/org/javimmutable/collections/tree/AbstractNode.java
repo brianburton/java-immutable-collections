@@ -35,9 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterable;
@@ -49,13 +52,9 @@ import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Comparator;
-
 abstract class AbstractNode<K, V>
-    implements SplitableIterable<Entry<K, V>>,
-               GenericIterator.Iterable<Entry<K, V>>,
+    implements SplitableIterable<IMapEntry<K, V>>,
+               GenericIterator.Iterable<IMapEntry<K, V>>,
                CollisionMap.Node,
                CollisionSet.Node
 {
@@ -71,8 +70,8 @@ abstract class AbstractNode<K, V>
                             @Nonnull K key);
 
     @Nonnull
-    abstract Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                           @Nonnull K key);
+    abstract Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                               @Nonnull K key);
 
     abstract boolean isEmpty();
 

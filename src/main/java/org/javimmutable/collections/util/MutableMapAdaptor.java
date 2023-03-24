@@ -35,15 +35,15 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.JImmutableMap;
-
-import javax.annotation.Nonnull;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 
 /**
  * When converting legacy code to use JImmutableMap there are sometimes objects that shared the mutable
@@ -70,12 +70,12 @@ public abstract class MutableMapAdaptor<K, V>
     /**
      * Implemented by derived classes to allow this adaptor to access their JImmutableMap instance.
      */
-    protected abstract JImmutableMap<K, V> accessMap();
+    protected abstract IMap<K, V> accessMap();
 
     /**
      * Implemented by derived classes to allow this adaptor to replace their JImmutableMap instance.
      */
-    protected abstract void replaceMap(JImmutableMap<K, V> newMap);
+    protected abstract void replaceMap(IMap<K, V> newMap);
 
     @Nonnull
     @Override
@@ -149,8 +149,8 @@ public abstract class MutableMapAdaptor<K, V>
     private class MutableEntryIterator
         implements Iterator<Map.Entry<K, V>>
     {
-        private JImmutableMap<K, V> startingMap;
-        private Iterator<JImmutableMap.Entry<K, V>> iter;
+        private IMap<K, V> startingMap;
+        private Iterator<IMapEntry<K, V>> iter;
         private K currentKey;
 
         private MutableEntryIterator()
@@ -174,7 +174,7 @@ public abstract class MutableMapAdaptor<K, V>
             if (accessMap() != startingMap) {
                 throw new ConcurrentModificationException();
             }
-            final JImmutableMap.Entry<K, V> entry = iter.next();
+            final IMapEntry<K, V> entry = iter.next();
             currentKey = entry.getKey();
             return new MutableMapEntry(entry);
         }
@@ -192,7 +192,7 @@ public abstract class MutableMapAdaptor<K, V>
         private class MutableMapEntry
             extends AbstractMap.SimpleEntry<K, V>
         {
-            private MutableMapEntry(JImmutableMap.Entry<K, V> entry)
+            private MutableMapEntry(IMapEntry<K, V> entry)
             {
                 super(entry.getKey(), entry.getValue());
             }

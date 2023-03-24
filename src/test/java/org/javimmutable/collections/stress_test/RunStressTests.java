@@ -35,20 +35,7 @@
 
 package org.javimmutable.collections.stress_test;
 
-import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
-import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
-import org.javimmutable.collections.util.JImmutables;
+import static org.javimmutable.collections.util.JImmutables.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -58,8 +45,20 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import static org.javimmutable.collections.util.JImmutables.*;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.hash.JImmutableHashMap;
+import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
+import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every
@@ -68,7 +67,7 @@ import static org.javimmutable.collections.util.JImmutables.*;
  */
 public class RunStressTests
 {
-    private static final JImmutableList<StressTester> AllTesters = JImmutables.<StressTester>list()
+    private static final IList<StressTester> AllTesters = JImmutables.<StressTester>list()
         .insert(new JImmutableListStressTester(list(), listCollector()))
 
         .insert(new JImmutableSetStressTester(set(), HashSet.class, IterationOrder.UNORDERED))
@@ -119,15 +118,15 @@ public class RunStressTests
             printHelpMessage(parser, set(), list());
             return;
         }
-        final JImmutableSet<String> filters = sortedSet(testSpec.values(options));
-        final JImmutableList<StressTester> selectedTests = filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
+        final ISet<String> filters = sortedSet(testSpec.values(options));
+        final IList<StressTester> selectedTests = filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
         if (options.has("help") || selectedTests.isEmpty()) {
             printHelpMessage(parser, filters, selectedTests);
             return;
         }
 
-        final JImmutableList<String> filenames = list(options.valuesOf(fileSpec));
-        final JImmutableList<String> tokens = StressTestUtil.loadTokens(filenames);
+        final IList<String> filenames = list(options.valuesOf(fileSpec));
+        final IList<String> tokens = StressTestUtil.loadTokens(filenames);
         System.out.printf("%nLoaded %d tokens from %d files%n", tokens.size(), filenames.size());
 
         long seed = options.valueOf(seedSpec);
@@ -149,8 +148,8 @@ public class RunStressTests
     }
 
     private static void printHelpMessage(OptionParser parser,
-                                         JImmutableSet<String> selectedTestArgs,
-                                         JImmutableList<StressTester> selectedTests)
+                                         ISet<String> selectedTestArgs,
+                                         IList<StressTester> selectedTests)
         throws IOException
     {
         if (selectedTests.size() > 0) {
@@ -168,7 +167,7 @@ public class RunStressTests
         final JImmutableSetMapFactory<String, String> filterMapFactory = setMapFactory(String.class, String.class)
             .withMap(sortedMap())
             .withSet(sortedSet());
-        final JImmutableSetMap<String, String> filterMap = AllTesters.stream()
+        final ISetMap<String, String> filterMap = AllTesters.stream()
             .flatMap(tester -> tester.getOptions()
                 .stream()
                 .map(option -> entry(tester.getTestName(), option)))

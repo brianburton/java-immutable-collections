@@ -35,16 +35,22 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.ArrayHelper;
+import static org.javimmutable.collections.common.BitmaskMath.ARRAY_SIZE;
+import static org.javimmutable.collections.common.BitmaskMath.addBit;
+import static org.javimmutable.collections.common.BitmaskMath.bitCount;
+import static org.javimmutable.collections.common.BitmaskMath.bitFromIndex;
+import static org.javimmutable.collections.common.BitmaskMath.bitIsAbsent;
+import static org.javimmutable.collections.common.BitmaskMath.bitIsPresent;
+import static org.javimmutable.collections.common.BitmaskMath.copyToCompactArrayUsingBitmask;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.baseIndexAtShift;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.indexAtShift;
 
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Arrays;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.ArrayHelper;
 
 @NotThreadSafe
 public class TrieArrayBuilder<T>
@@ -98,7 +104,7 @@ public class TrieArrayBuilder<T>
     }
 
     @Nonnull
-    public SplitableIterator<JImmutableMap.Entry<Integer, T>> iterator()
+    public SplitableIterator<IMapEntry<Integer, T>> iterator()
     {
         return buildRoot().entries().iterator();
     }

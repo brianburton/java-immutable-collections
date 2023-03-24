@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
+import java.io.Serializable;
+import java.util.Comparator;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableTreeListMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
 
 /**
  * JImmutableListMap implementation that allows keys to be traversed in sorted order using a Comparator
@@ -61,15 +60,15 @@ public class JImmutableTreeListMap<K, V>
 
     private final Comparator<K> comparator;
 
-    private JImmutableTreeListMap(JImmutableTreeMap<K, JImmutableList<V>> contents,
-                                  JImmutableList<V> emptyList)
+    private JImmutableTreeListMap(JImmutableTreeMap<K, IList<V>> contents,
+                                  IList<V> emptyList)
     {
         this(contents, contents.getComparator(), emptyList);
     }
 
-    private JImmutableTreeListMap(JImmutableMap<K, JImmutableList<V>> contents,
+    private JImmutableTreeListMap(IMap<K, IList<V>> contents,
                                   Comparator<K> comparator,
-                                  JImmutableList<V> emptyList)
+                                  IList<V> emptyList)
     {
         super(contents, emptyList);
         this.comparator = comparator;
@@ -107,12 +106,12 @@ public class JImmutableTreeListMap<K, V>
     }
 
     @Override
-    protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
+    protected IListMap<K, V> create(IMap<K, IList<V>> map)
     {
         return (map == contents) ? this : new JImmutableTreeListMap<>(map, comparator, emptyList);
     }
 
-    JImmutableMap<K, JImmutableList<V>> getMap()
+    IMap<K, IList<V>> getMap()
     {
         return contents;
     }

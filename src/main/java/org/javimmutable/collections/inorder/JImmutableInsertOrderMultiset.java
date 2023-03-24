@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.GenericCollector;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
-import org.javimmutable.collections.serialization.JImmutableInsertOrderMultisetProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.GenericCollector;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderMultisetProxy;
 
 /**
  * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,
@@ -63,7 +62,7 @@ public class JImmutableInsertOrderMultiset<T>
     private static final JImmutableInsertOrderMultiset EMPTY = new JImmutableInsertOrderMultiset(JImmutableInsertOrderMap.of(), 0);
     private static final long serialVersionUID = -121805;
 
-    private JImmutableInsertOrderMultiset(JImmutableMap<T, Integer> map,
+    private JImmutableInsertOrderMultiset(IMap<T, Integer> map,
                                           int occurrences)
     {
         super(map, occurrences);
@@ -84,20 +83,20 @@ public class JImmutableInsertOrderMultiset<T>
 
     @Nonnull
     @Override
-    public Collector<T, ?, JImmutableSet<T>> setCollector()
+    public Collector<T, ?, ISet<T>> setCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Nonnull
     @Override
-    public Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
+    public Collector<T, ?, IMultiset<T>> multisetCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override
-    protected JImmutableInsertOrderMultiset<T> create(JImmutableMap<T, Integer> map,
+    protected JImmutableInsertOrderMultiset<T> create(IMap<T, Integer> map,
                                                       int occurrences)
     {
         return new JImmutableInsertOrderMultiset<>(map, occurrences);

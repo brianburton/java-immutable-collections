@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.util;
 
+import static org.javimmutable.collections.util.ReflectionFunctions.method;
+import static org.javimmutable.collections.util.ReflectionFunctions.staticMethod;
+
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Func3;
 import org.javimmutable.collections.Func4;
-import org.javimmutable.collections.JImmutableList;
-
-import static org.javimmutable.collections.util.ReflectionFunctions.*;
+import org.javimmutable.collections.IList;
 
 public class ReflectionFunctionsTest
         extends TestCase
@@ -68,7 +69,7 @@ public class ReflectionFunctionsTest
 
     public void testInstanceAsParam()
     {
-        JImmutableList<CallMe> objects = JImmutables.list(new CallMe("a"), new CallMe("bb"), new CallMe("ccc"));
+        IList<CallMe> objects = JImmutables.list(new CallMe("a"), new CallMe("bb"), new CallMe("ccc"));
         Func1<CallMe, String> f1 = ReflectionFunctions.method("method0", CallMe.class);
         assertEquals(JImmutables.list("a:method0", "bb:method0", "ccc:method0"), Functions.collectAll(objects.iterator(), JImmutables.list(), f1));
 

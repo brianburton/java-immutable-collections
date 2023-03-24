@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableStack;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.IStack;
+import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -53,7 +52,7 @@ public class JImmutableStackProxy
     private static final long serialVersionUID = -121805;
     private static final int STACK_VERSION = 1001;
 
-    private JImmutableStack list;
+    private IStack list;
 
     public JImmutableStackProxy()
     {
@@ -70,7 +69,7 @@ public class JImmutableStackProxy
         throws IOException
     {
         out.writeInt(STACK_VERSION);
-        JImmutableStack seq = list;
+        IStack seq = list;
         while (!seq.isEmpty()) {
             out.writeBoolean(true);
             out.writeObject(seq.getHead());
@@ -87,7 +86,7 @@ public class JImmutableStackProxy
         if (version != STACK_VERSION) {
             throw new IOException("unexpected version number: expected " + STACK_VERSION + " found " + version);
         }
-        JImmutableStack seq = this.list;
+        IStack seq = this.list;
         while (in.readBoolean()) {
             seq = seq.insert(in.readObject());
         }

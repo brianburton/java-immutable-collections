@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
+import java.io.Serializable;
+import java.util.Comparator;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.serialization.JImmutableTreeSetMapProxy;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
 
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in sorted order using a Comparator
@@ -61,15 +60,15 @@ public class JImmutableTreeSetMap<K, V>
 
     private final Comparator<K> comparator;
 
-    private JImmutableTreeSetMap(JImmutableTreeMap<K, JImmutableSet<V>> contents,
-                                 JImmutableSet<V> emptySet)
+    private JImmutableTreeSetMap(JImmutableTreeMap<K, ISet<V>> contents,
+                                 ISet<V> emptySet)
     {
         this(contents, contents.getComparator(), emptySet);
     }
 
-    private JImmutableTreeSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
+    private JImmutableTreeSetMap(IMap<K, ISet<V>> contents,
                                  Comparator<K> comparator,
-                                 JImmutableSet<V> emptySet)
+                                 ISet<V> emptySet)
     {
         super(contents, emptySet);
         this.comparator = comparator;
@@ -107,12 +106,12 @@ public class JImmutableTreeSetMap<K, V>
     }
 
     @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
     {
         return new JImmutableTreeSetMap<>(map, comparator, emptySet);
     }
 
-    JImmutableMap<K, JImmutableSet<V>> getMap()
+    IMap<K, ISet<V>> getMap()
     {
         return contents;
     }

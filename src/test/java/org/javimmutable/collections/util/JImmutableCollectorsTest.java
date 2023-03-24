@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.util;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func0;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.tree.ComparableComparator;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 public class JImmutableCollectorsTest
     extends TestCase
@@ -64,10 +63,10 @@ public class JImmutableCollectorsTest
         verifyCollection(source, values -> createGroupingByExpected(values, x -> x / 7), () -> JImmutableCollectors.groupingBy(x -> x / 7));
     }
 
-    private JImmutableListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,
-                                                                         Func1<Integer, Integer> keyTransform)
+    private IListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,
+                                                                Func1<Integer, Integer> keyTransform)
     {
-        JImmutableListMap<Integer, Integer> expected = JImmutables.listMap();
+        IListMap<Integer, Integer> expected = JImmutables.listMap();
         for (Integer value : source) {
             final Integer key = keyTransform.apply(value);
             expected = expected.insert(key, value);

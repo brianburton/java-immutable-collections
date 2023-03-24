@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.stress_test;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.util.JImmutables;
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import junit.framework.TestCase;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.util.JImmutables;
 
 public class RandomKeyManagerTest
         extends TestCase
 {
-    private JImmutableList<String> allPossibleKeys;
+    private IList<String> allPossibleKeys;
     private RandomKeyManager keys;
 
     public void setUp()
@@ -69,7 +68,7 @@ public class RandomKeyManagerTest
             assertEquals(i, keys.randomUnallocatedKeysJList(i).size());
             assertEquals(i, keys.randomUnallocatedKeysList(i).size());
             assertEquals(true, keys.randomIntersectionKeysJList(0, 0, 0).isEmpty());
-            JImmutableList<String> values = keys.randomIntersectionKeysJList(0, 0, i);
+            IList<String> values = keys.randomIntersectionKeysJList(0, 0, i);
             assertEquals(i, values.size());
             for (String value : values) {
                 assertEquals(false, keys.allocated(value));
@@ -102,7 +101,7 @@ public class RandomKeyManagerTest
     {
         for (int i = 1; i <= 250; ++i) {
             keys.clear();
-            JImmutableList<String> values = keys.randomUnallocatedKeysJList(i);
+            IList<String> values = keys.randomUnallocatedKeysJList(i);
             assertEquals(i, values.size());
             for (String value : values) {
                 assertEquals(false, keys.allocated(value));
@@ -143,7 +142,7 @@ public class RandomKeyManagerTest
             for (int uniqueCount = 1; uniqueCount <= i; ++uniqueCount) {
                 for (int dupCount = 0; dupCount <= 5; ++dupCount) {
                     for (int unallocatedCount = 0; unallocatedCount <= 5; ++unallocatedCount) {
-                        JImmutableList<String> list = keys.randomIntersectionKeysJList(uniqueCount, dupCount, unallocatedCount);
+                        IList<String> list = keys.randomIntersectionKeysJList(uniqueCount, dupCount, unallocatedCount);
                         Set<String> visited = new HashSet<String>();
                         int qc = 0;
                         int dc = 0;
@@ -177,7 +176,7 @@ public class RandomKeyManagerTest
                 keys.allocate(keys.randomUnallocatedKey());
             }
             for (int unallocatedCount = 0; unallocatedCount <= Math.min(5, allPossibleKeys.size() - keys.size()); ++unallocatedCount) {
-                JImmutableList<String> list = keys.randomIntersectionKeysJList(0, 0, unallocatedCount);
+                IList<String> list = keys.randomIntersectionKeysJList(0, 0, unallocatedCount);
                 for (String value : list) {
                     assertEquals(false, keys.allocated(value));
                 }

@@ -35,9 +35,17 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -47,14 +55,6 @@ import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Immutable
 public class JImmutableTreeMap<K, V>
@@ -90,13 +90,13 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Nonnull
-    public static <K extends Comparable<K>, V> JImmutableMap.Builder<K, V> builder()
+    public static <K extends Comparable<K>, V> IMap.Builder<K, V> builder()
     {
         return new TreeMapBuilder<>(ComparableComparator.<K>of());
     }
 
     @Nonnull
-    public static <K, V> JImmutableMap.Builder<K, V> builder(@Nonnull Comparator<K> comparator)
+    public static <K, V> IMap.Builder<K, V> builder(@Nonnull Comparator<K> comparator)
     {
         return new TreeMapBuilder<>(comparator);
     }
@@ -109,19 +109,19 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Nonnull
-    public static <K extends Comparable<K>, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector()
     {
         return createMapCollector(ComparableComparator.<K>of());
     }
 
     @Nonnull
-    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector(@Nonnull Comparator<K> comparator)
+    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector(@Nonnull Comparator<K> comparator)
     {
-        return Collector.<Entry<K, V>, Builder<K, V>, JImmutableMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
-                                                                             (b, v) -> b.add(v),
-                                                                             (b1, b2) -> b1.add(b2),
-                                                                             b -> b.build(),
-                                                                             Collector.Characteristics.CONCURRENT);
+        return Collector.<IMapEntry<K, V>, Builder<K, V>, IMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
+                                                                        (b, v) -> b.add(v),
+                                                                        (b1, b2) -> b1.add(b2),
+                                                                        b -> b.build(),
+                                                                        Collector.Characteristics.CONCURRENT);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class JImmutableTreeMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         Conditions.stopNull(key);
         return root.findEntry(comparator, key);
@@ -201,7 +201,7 @@ public class JImmutableTreeMap<K, V>
 
     @Nonnull
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public SplitableIterator<IMapEntry<K, V>> iterator()
     {
         return root.iterator();
     }

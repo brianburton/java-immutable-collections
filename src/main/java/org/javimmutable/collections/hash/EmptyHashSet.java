@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
-import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.EmptyIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.EmptyIterator;
 
 public class EmptyHashSet<T>
     extends AbstractJImmutableSet<T>
@@ -69,7 +68,7 @@ public class EmptyHashSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> insert(@Nonnull T value)
+    public ISet<T> insert(@Nonnull T value)
     {
         return new JImmutableHashSet<>(value);
     }
@@ -82,56 +81,56 @@ public class EmptyHashSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> delete(T value)
+    public ISet<T> delete(T value)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other)
+    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Iterator<? extends T> other)
+    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> other)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Iterator<? extends T> values)
+    public ISet<T> union(@Nonnull Iterator<? extends T> values)
     {
         return new HashSetBuilder<T>().add(values).build();
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other)
+    public ISet<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other)
+    public ISet<T> intersection(@Nonnull ISet<? extends T> other)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterator<? extends T> values)
+    public ISet<T> intersection(@Nonnull Iterator<? extends T> values)
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Set<? extends T> other)
+    public ISet<T> intersection(@Nonnull Set<? extends T> other)
     {
         return this;
     }
@@ -150,7 +149,7 @@ public class EmptyHashSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll()
+    public ISet<T> deleteAll()
     {
         return this;
     }

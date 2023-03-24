@@ -35,16 +35,16 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.Iterator;
+import java.util.Map;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.list.JImmutableLinkedStack;
-
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Library of static functions that perform various operations on Iterators.
@@ -192,17 +192,17 @@ public final class Functions
         return list;
     }
 
-    public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,
-                                                       JImmutableMap<K, V> src)
+    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,
+                                              IMap<K, V> src)
     {
-        for (JImmutableMap.Entry<K, V> entry : src) {
+        for (IMapEntry<K, V> entry : src) {
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }
 
-    public static <K, V> JImmutableMap<K, V> assignAll(JImmutableMap<K, V> dest,
-                                                       Map<K, V> src)
+    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,
+                                              Map<K, V> src)
     {
         for (Map.Entry<K, V> entry : src.entrySet()) {
             dest = dest.assign(entry.getKey(), entry.getValue());

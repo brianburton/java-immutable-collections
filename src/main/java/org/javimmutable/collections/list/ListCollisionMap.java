@@ -35,21 +35,20 @@
 
 package org.javimmutable.collections.list;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static org.javimmutable.collections.MapEntry.entry;
 
 public class ListCollisionMap<K, V>
     implements CollisionMap<K, V>
@@ -69,9 +68,9 @@ public class ListCollisionMap<K, V>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private AbstractNode<Entry<K, V>> root(@Nonnull Node node)
+    private AbstractNode<IMapEntry<K, V>> root(@Nonnull Node node)
     {
-        return (AbstractNode<Entry<K, V>>)node;
+        return (AbstractNode<IMapEntry<K, V>>)node;
     }
 
     @Nonnull
@@ -111,9 +110,9 @@ public class ListCollisionMap<K, V>
                        @Nonnull K key,
                        @Nullable V value)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
         int i = 0;
-        for (Entry<K, V> e : root) {
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 if (e.getValue() == value) {
                     return root;
@@ -132,9 +131,9 @@ public class ListCollisionMap<K, V>
                        @Nonnull K key,
                        @Nonnull Func1<Holder<V>, V> generator)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
         int i = 0;
-        for (Entry<K, V> e : root) {
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 V value = generator.apply(Holders.of(e.getValue()));
                 if (e.getValue() == value) {
@@ -154,9 +153,9 @@ public class ListCollisionMap<K, V>
     public Node delete(@Nonnull Node node,
                        @Nonnull K key)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
         int i = 0;
-        for (Entry<K, V> e : root) {
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 return root.delete(i);
             }
@@ -170,8 +169,8 @@ public class ListCollisionMap<K, V>
                         @Nonnull K key,
                         V defaultValue)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
-        for (Entry<K, V> e : root) {
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 return e.getValue();
             }
@@ -184,8 +183,8 @@ public class ListCollisionMap<K, V>
     public Holder<V> findValue(@Nonnull Node node,
                                @Nonnull K key)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
-        for (Entry<K, V> e : root) {
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 return Holders.of(e.getValue());
             }
@@ -195,11 +194,11 @@ public class ListCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull Node node,
-                                         @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Node node,
+                                             @Nonnull K key)
     {
-        final AbstractNode<Entry<K, V>> root = root(node);
-        for (Entry<K, V> e : root) {
+        final AbstractNode<IMapEntry<K, V>> root = root(node);
+        for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 return Holders.of(e);
             }
@@ -209,17 +208,17 @@ public class ListCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Entry<K, V> first(@Nonnull Node node)
+    public IMapEntry<K, V> first(@Nonnull Node node)
     {
         return root(node).get(0);
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nonnull Node node,
-                                                               @Nullable GenericIterator.State<Entry<K, V>> parent,
-                                                               int offset,
-                                                               int limit)
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                                   @Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                   int offset,
+                                                                   int limit)
     {
         return root(node).iterateOverRange(parent, offset, limit);
     }

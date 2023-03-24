@@ -35,21 +35,20 @@
 
 package org.javimmutable.collections.tree;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Comparator;
-
-import static org.javimmutable.collections.MapEntry.entry;
 
 /**
  * ¬ * A Node containing one value and no children.
@@ -96,8 +95,8 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    Holder<JImmutableMap.Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                                @Nonnull K key)
+    Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                      @Nonnull K key)
     {
         if (isMatch(comp, key)) {
             return Holders.of(asEntry());
@@ -256,9 +255,9 @@ public class LeafNode<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                             int offset,
-                                                                             int limit)
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                   int offset,
+                                                                   int limit)
     {
         return GenericIterator.singleValueState(parent, asEntry());
     }
@@ -275,7 +274,7 @@ public class LeafNode<K, V>
         return comp.compare(key, this.key) == 0;
     }
 
-    private JImmutableMap.Entry<K, V> asEntry()
+    private IMapEntry<K, V> asEntry()
     {
         return entry(key, value);
     }

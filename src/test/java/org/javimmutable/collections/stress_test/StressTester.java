@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.util.JImmutables;
-
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
@@ -70,10 +69,10 @@ abstract class StressTester
     }
 
     abstract void execute(Random random,
-                          JImmutableList<String> tokens)
+                          IList<String> tokens)
         throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
 
-    abstract JImmutableList<String> getOptions();
+    abstract IList<String> getOptions();
 
     protected String getNameOption(Object obj)
     {
@@ -85,26 +84,26 @@ abstract class StressTester
         return obj.getClass().getSimpleName().replace("Empty", "");
     }
 
-    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
-                                                     Random random)
+    protected IList<String> makeInsertJList(IList<String> tokens,
+                                            Random random)
     {
         return makeInsertJList(tokens, random, 3);
     }
 
-    protected JImmutableList<String> makeInsertJList(JImmutableList<String> tokens,
-                                                     Random random,
-                                                     int maxToAdd)
+    protected IList<String> makeInsertJList(IList<String> tokens,
+                                            Random random,
+                                            int maxToAdd)
     {
         return JImmutables.list(makeInsertList(tokens, random, maxToAdd));
     }
 
-    protected List<String> makeInsertList(JImmutableList<String> tokens,
+    protected List<String> makeInsertList(IList<String> tokens,
                                           Random random)
     {
         return makeInsertList(tokens, random, 3);
     }
 
-    protected List<String> makeInsertList(JImmutableList<String> tokens,
+    protected List<String> makeInsertList(IList<String> tokens,
                                           Random random,
                                           int maxToAdd)
     {
@@ -130,8 +129,8 @@ abstract class StressTester
         return (holder.isFilled() == expectedHolder.isFilled()) && (!holder.isFilled() || holder.getValue().equals(expectedHolder.getValue()));
     }
 
-    protected <K, V> boolean equivalentEntryHolder(Holder<JImmutableMap.Entry<K, V>> holder,
-                                                   Holder<JImmutableMap.Entry<K, V>> expectedHolder)
+    protected <K, V> boolean equivalentEntryHolder(Holder<IMapEntry<K, V>> holder,
+                                                   Holder<IMapEntry<K, V>> expectedHolder)
     {
         if (holder.isFilled() != expectedHolder.isFilled()) {
             return false;
@@ -139,8 +138,8 @@ abstract class StressTester
         if (holder.isEmpty()) {
             return true;
         }
-        JImmutableMap.Entry<K, V> entry = holder.getValue();
-        JImmutableMap.Entry<K, V> expectedEntry = expectedHolder.getValue();
+        IMapEntry<K, V> entry = holder.getValue();
+        IMapEntry<K, V> expectedEntry = expectedHolder.getValue();
         return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
     }
 
@@ -156,10 +155,10 @@ abstract class StressTester
         }
     }
 
-    protected <T> Iterable<T> listIterable(JImmutableList<T> template,
+    protected <T> Iterable<T> listIterable(IList<T> template,
                                            Iterable<T> values)
     {
-        JImmutableList<T> answer = template.deleteAll();
+        IList<T> answer = template.deleteAll();
         for (T value : values) {
             answer = answer.insert(value);
         }
@@ -167,9 +166,9 @@ abstract class StressTester
     }
 
     @Nonnull
-    protected <K, V> List<JImmutableMap.Entry<K, V>> makeEntriesList(Map<K, V> expected)
+    protected <K, V> List<IMapEntry<K, V>> makeEntriesList(Map<K, V> expected)
     {
-        final List<JImmutableMap.Entry<K, V>> entries = new ArrayList<>();
+        final List<IMapEntry<K, V>> entries = new ArrayList<>();
 
         for (Map.Entry<K, V> entry : expected.entrySet()) {
             entries.add(new MapEntry<>(entry.getKey(), entry.getValue()));
@@ -177,12 +176,12 @@ abstract class StressTester
         return entries;
     }
 
-    protected <K, V> List<K> extractKeys(List<JImmutableMap.Entry<K, V>> entries)
+    protected <K, V> List<K> extractKeys(List<IMapEntry<K, V>> entries)
     {
         return entries.stream().map(e -> e.getKey()).collect(Collectors.toList());
     }
 
-    protected <K, V> List<V> extractValues(List<JImmutableMap.Entry<K, V>> entries)
+    protected <K, V> List<V> extractValues(List<IMapEntry<K, V>> entries)
     {
         return entries.stream().map(e -> e.getValue()).collect(Collectors.toList());
     }

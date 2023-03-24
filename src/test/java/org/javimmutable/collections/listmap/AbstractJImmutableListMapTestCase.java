@@ -35,15 +35,7 @@
 
 package org.javimmutable.collections.listmap;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.JImmutableTreeList;
+import static com.google.common.primitives.Ints.asList;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,8 +44,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.google.common.primitives.Ints.asList;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Temp;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.list.JImmutableTreeList;
 
 public abstract class AbstractJImmutableListMapTestCase
     extends TestCase
@@ -65,8 +64,8 @@ public abstract class AbstractJImmutableListMapTestCase
         REVERSED
     }
 
-    public JImmutableListMap<Integer, Integer> verifyOperations(JImmutableListMap<Integer, Integer> map,
-                                                                Ordering ordering)
+    public IListMap<Integer, Integer> verifyOperations(IListMap<Integer, Integer> map,
+                                                       Ordering ordering)
     {
         assertTrue(map.isEmpty());
         assertFalse(map.isNonEmpty());
@@ -100,7 +99,7 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(Arrays.asList(87), map.getList(3).getList());
         assertSame(map.getList(3), map.get(3));
 
-        JImmutableListMap<Integer, Integer> preInsertMap = map;
+        IListMap<Integer, Integer> preInsertMap = map;
         map = map.assign(3, JImmutableTreeList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
@@ -121,7 +120,7 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1)));
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
 
-        final JImmutableList<Integer> defaultValue = JImmutableTreeList.<Integer>of().insert(17);
+        final IList<Integer> defaultValue = JImmutableTreeList.<Integer>of().insert(17);
         assertTrue(map.find(8).isEmpty());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
@@ -142,17 +141,17 @@ public abstract class AbstractJImmutableListMapTestCase
         return map;
     }
 
-    private void verifyTransform(JImmutableListMap<Integer, Integer> map)
+    private void verifyTransform(IListMap<Integer, Integer> map)
     {
-        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeAll = list -> list.deleteAll();
-        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeLarge = list -> list.reject(x -> x >= 10);
-        final Func1<JImmutableList<Integer>, JImmutableList<Integer>> removeEven = list -> list.reject(x -> x % 2 == 0);
+        final Func1<IList<Integer>, IList<Integer>> removeAll = list -> list.deleteAll();
+        final Func1<IList<Integer>, IList<Integer>> removeLarge = list -> list.reject(x -> x >= 10);
+        final Func1<IList<Integer>, IList<Integer>> removeEven = list -> list.reject(x -> x % 2 == 0);
 
         final int goodKey = 1;
         final int badKey = 2;
 
-        final JImmutableListMap<Integer, Integer> start = map.deleteAll().insertAll(goodKey, Arrays.asList(1, 2, 3, 4, 5, 6));
-        final JImmutableList<Integer> oddOnly = start.getList(goodKey).reject(x -> x % 2 == 0);
+        final IListMap<Integer, Integer> start = map.deleteAll().insertAll(goodKey, Arrays.asList(1, 2, 3, 4, 5, 6));
+        final IList<Integer> oddOnly = start.getList(goodKey).reject(x -> x % 2 == 0);
 
         assertSame(start, start.transform(goodKey, removeLarge));
         assertEquals(start.assign(goodKey, oddOnly), start.transform(goodKey, removeEven));
@@ -165,38 +164,38 @@ public abstract class AbstractJImmutableListMapTestCase
         assertSame(start, start.transformIfPresent(badKey, removeAll));
     }
 
-    private static void verifyCollector(JImmutableListMap<Integer, Integer> template,
+    private static void verifyCollector(IListMap<Integer, Integer> template,
                                         Ordering ordering)
     {
-        List<JImmutableMap.Entry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> MapEntry.of(i, -i)).collect(Collectors.toList());
+        List<IMapEntry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> MapEntry.of(i, -i)).collect(Collectors.toList());
         switch (ordering) {
             case HASH: {
-                Set<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
-                Set<JImmutableMap.Entry<Integer, Integer>> expected = new HashSet<>(values);
+                Set<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
+                Set<IMapEntry<Integer, Integer>> expected = new HashSet<>(values);
                 assertEquals(expected, entries);
                 break;
             }
             case INORDER: {
-                List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
                 assertEquals(values, entries);
                 break;
             }
             case REVERSED: {
-                List<JImmutableMap.Entry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
                 Collections.reverse(entries);
                 assertEquals(values, entries);
                 break;
             }
         }
 
-        JImmutableListMap<Integer, Integer> expected = template.insertAll(values);
-        JImmutableListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());
+        IListMap<Integer, Integer> expected = template.insertAll(values);
+        IListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());
         assertEquals(expected, actual);
 
         verifyForEach(actual);
     }
 
-    private static void verifyForEach(JImmutableListMap<Integer, Integer> jetMap)
+    private static void verifyForEach(IListMap<Integer, Integer> jetMap)
     {
         final Temp.Int1 count = Temp.intVar(0);
         jetMap.forEach((key, set) -> {

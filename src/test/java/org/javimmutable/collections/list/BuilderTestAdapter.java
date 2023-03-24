@@ -35,24 +35,23 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.Iterator;
+import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
 import org.javimmutable.collections.common.StandardBuilderTests;
 
-import java.util.Iterator;
-
 public class BuilderTestAdapter<T>
-    implements StandardBuilderTests.BuilderAdapter<T, JImmutableList<T>>
+    implements StandardBuilderTests.BuilderAdapter<T, IList<T>>
 {
-    private final JImmutableList.Builder<T> builder;
+    private final IList.Builder<T> builder;
 
-    public BuilderTestAdapter(JImmutableList.Builder<T> builder)
+    public BuilderTestAdapter(IList.Builder<T> builder)
     {
         this.builder = builder;
     }
 
     @Override
-    public JImmutableList<T> build()
+    public IList<T> build()
     {
         return builder.build();
     }

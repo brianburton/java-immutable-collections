@@ -35,18 +35,18 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.AssertionFailedError;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-
-import static junit.framework.Assert.*;
+import javax.annotation.Nonnull;
+import junit.framework.AssertionFailedError;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMapEntry;
 
 public class StandardCollisionMapTests
 {
@@ -118,7 +118,7 @@ public class StandardCollisionMapTests
                 case 5: {
                     Integer k = r.nextInt(500);
                     Integer ev = expected.get(k);
-                    Holder<JImmutableMap.Entry<Integer, Integer>> ah = map.findEntry(node, k);
+                    Holder<IMapEntry<Integer, Integer>> ah = map.findEntry(node, k);
                     if (ev == null) {
                         if (ah.isFilled()) {
                             fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getValue()));
@@ -165,7 +165,7 @@ public class StandardCollisionMapTests
             } else if (!ev.equals(hv.getValue())) {
                 sb.append(String.format("mismatch: k=%d ev=%s hv=%s\n", k, ev, hv.getValue()));
             }
-            Holder<JImmutableMap.Entry<Integer, Integer>> he = map.findEntry(node, k);
+            Holder<IMapEntry<Integer, Integer>> he = map.findEntry(node, k);
             if (hv.isEmpty()) {
                 sb.append(String.format("missing entry for key: k=%d ev=%s\n", k, ev));
             } else {
@@ -177,7 +177,7 @@ public class StandardCollisionMapTests
                 }
             }
         }
-        for (JImmutableMap.Entry<Integer, Integer> e : map.iterable(node)) {
+        for (IMapEntry<Integer, Integer> e : map.iterable(node)) {
             if (!checked.contains(e.getKey())) {
                 sb.append(String.format("unexpected: k=%d\n", e.getKey()));
             }

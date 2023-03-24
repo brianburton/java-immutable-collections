@@ -35,18 +35,18 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 
 /**
  * Singleton implementation of JImmutableMap that contains no elements.
@@ -83,22 +83,22 @@ public class EmptyHashMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         return Holders.of();
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> assign(@Nonnull K key,
-                                      V value)
+    public IMap<K, V> assign(@Nonnull K key,
+                             V value)
     {
         return JImmutableHashMap.<K, V>forKey(key).assign(key, value);
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> delete(@Nonnull K key)
+    public IMap<K, V> delete(@Nonnull K key)
     {
         return this;
     }
@@ -111,14 +111,14 @@ public class EmptyHashMap<K, V>
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> deleteAll()
+    public IMap<K, V> deleteAll()
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public SplitableIterator<IMapEntry<K, V>> iterator()
     {
         return EmptyIterator.of();
     }

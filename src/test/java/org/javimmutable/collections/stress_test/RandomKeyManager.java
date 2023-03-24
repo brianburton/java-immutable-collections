@@ -35,9 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.util.JImmutables;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,16 +43,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.util.JImmutables;
 
 public class RandomKeyManager
 {
     private final Random random;
-    private final JImmutableList<String> allPossibleKeys;
+    private final IList<String> allPossibleKeys;
     private final List<KeyInfo> allocated;
     private final Map<String, Integer> allocatedIndexes;
 
     public RandomKeyManager(Random random,
-                            JImmutableList<String> allPossibleKeys)
+                            IList<String> allPossibleKeys)
     {
         this.random = random;
         this.allPossibleKeys = allPossibleKeys;
@@ -63,7 +62,7 @@ public class RandomKeyManager
         allocatedIndexes = new HashMap<String, Integer>();
     }
 
-    public static String makeValue(JImmutableList<String> tokens,
+    public static String makeValue(IList<String> tokens,
                                    Random random)
     {
         int length = 1 + random.nextInt(250);
@@ -83,9 +82,9 @@ public class RandomKeyManager
         }
     }
 
-    public JImmutableList<String> randomKeys(int howMany)
+    public IList<String> randomKeys(int howMany)
     {
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
             answer = answer.insertLast(randomKey());
         }
@@ -93,17 +92,17 @@ public class RandomKeyManager
     }
 
     //on average, adds 1 value to set
-    public JImmutableList<String> randomInsertJList()
+    public IList<String> randomInsertJList()
     {
         String value;
-        JImmutableList<String> list = JImmutables.list();
+        IList<String> list = JImmutables.list();
         switch (random.nextInt(8)) {
-        case 0:  //adds 0 - empty
-            break;
-        case 1: //adds 0 - value already in set
-            list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
-            break;
-        case 2: //adds 1 - unique value
+            case 0:  //adds 0 - empty
+                break;
+            case 1: //adds 0 - value already in set
+                list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
+                break;
+            case 2: //adds 1 - unique value
             list = list.insertLast(randomUnallocatedKey());
             break;
         case 3: //adds 1 - unique value, value already in set
@@ -130,17 +129,17 @@ public class RandomKeyManager
     }
 
     //on average, deletes 1 value from set
-    public JImmutableList<String> randomDeleteJList(int minSize)
+    public IList<String> randomDeleteJList(int minSize)
     {
         final int availableToDelete = Math.max(0, size() - minSize);
         final int commandMax = (availableToDelete == 0) ? 2 : ((availableToDelete == 1) ? 6 : 8);
         String value;
-        JImmutableList<String> list = JImmutables.list();
+        IList<String> list = JImmutables.list();
         switch (random.nextInt(commandMax)) {
-        case 0: //deletes 0 - empty
-            break;
-        case 1: //deletes 0 - value not in set
-            list = list.insert(randomUnallocatedKey());
+            case 0: //deletes 0 - empty
+                break;
+            case 1: //deletes 0 - value not in set
+                list = list.insert(randomUnallocatedKey());
             break;
         case 2: //deletes 1 - value in set
             list = list.insertLast(randomAllocatedKey());
@@ -168,7 +167,7 @@ public class RandomKeyManager
         return list;
     }
 
-    public JImmutableList<String> randomContainsJList(int maxSize)
+    public IList<String> randomContainsJList(int maxSize)
     {
         if (size() == 0 || random.nextBoolean()) {
             return randomUnallocatedKeysJList(random.nextInt(maxSize));
@@ -201,13 +200,13 @@ public class RandomKeyManager
         }
     }
 
-    public JImmutableList<String> randomAllocatedKeysJList(int howMany)
+    public IList<String> randomAllocatedKeysJList(int howMany)
     {
         if (size() == 0) {
             throw new IllegalArgumentException("no allocated values available");
         }
         compact();
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
             final int index = random.nextInt(allocated.size());
             final KeyInfo key = allocated.get(index);
@@ -218,14 +217,14 @@ public class RandomKeyManager
         return answer;
     }
 
-    public JImmutableList<String> randomUniqueAllocatedKeysJList(int howMany)
+    public IList<String> randomUniqueAllocatedKeysJList(int howMany)
     {
         if (size() < howMany) {
             throw new IllegalArgumentException("no allocated values available");
         }
         compact();
         Set<String> values = new HashSet<String>();
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
             final int index = random.nextInt(allocated.size());
             final KeyInfo key = allocated.get(index);
@@ -242,21 +241,21 @@ public class RandomKeyManager
         return randomAllocatedKeysJList(howMany).getList();
     }
 
-    public JImmutableList<String> randomUnallocatedKeysJList(int howMany)
+    public IList<String> randomUnallocatedKeysJList(int howMany)
     {
         compact();
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
             answer = answer.insertLast(randomUnallocatedKey());
         }
         return answer;
     }
 
-    public JImmutableList<String> randomUniqueUnallocatedKeysJList(int howMany)
+    public IList<String> randomUniqueUnallocatedKeysJList(int howMany)
     {
         compact();
         Set<String> values = new HashSet<String>();
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         while (answer.size() < howMany) {
             final String text = randomUnallocatedKey();
             if (!values.contains(text)) {
@@ -272,9 +271,9 @@ public class RandomKeyManager
         return randomUnallocatedKeysJList(howMany).getList();
     }
 
-    public JImmutableList<String> randomIntersectionKeysJList(int howManyUnique,
-                                                              int howManyDups,
-                                                              int howManyUnallocated)
+    public IList<String> randomIntersectionKeysJList(int howManyUnique,
+                                                     int howManyDups,
+                                                     int howManyUnallocated)
     {
         if (size() < howManyUnique) {
             throw new IllegalArgumentException("not enough allocated values available");
@@ -284,7 +283,7 @@ public class RandomKeyManager
         }
         compact();
         Set<String> uniques = new HashSet<String>();
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         int uniqueCount = 0;
         int dupCount = 0;
         int unallocatedCount = 0;
@@ -436,9 +435,9 @@ public class RandomKeyManager
         return allocatedIndexes.size();
     }
 
-    public JImmutableList<String> allAllocatedJList()
+    public IList<String> allAllocatedJList()
     {
-        JImmutableList<String> answer = JImmutables.list();
+        IList<String> answer = JImmutables.list();
         for (KeyInfo key : allocated) {
             if (key.present) {
                 answer = answer.insertLast(key.text);

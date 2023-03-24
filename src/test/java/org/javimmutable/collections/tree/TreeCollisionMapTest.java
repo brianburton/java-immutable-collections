@@ -35,9 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -47,10 +50,6 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TreeCollisionMapTest
     extends TestCase
@@ -115,13 +114,13 @@ public class TreeCollisionMapTest
         assertEquals(Holders.of(-60), transforms.findValue(node, -6));
         assertEquals(Holders.<Integer>of(), transforms.findValue(node, 11));
 
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
-        assertEquals(Holders.<JImmutableMap.Entry<Integer, Integer>>of(), transforms.findEntry(node, 11));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(), transforms.findEntry(node, 11));
 
-        List<JImmutableMap.Entry<Integer, Integer>> expected = new ArrayList<>();
+        List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(MapEntry.of(-6, -60));
         expected.add(MapEntry.of(10, 100));
         expected.add(MapEntry.of(12, 90));

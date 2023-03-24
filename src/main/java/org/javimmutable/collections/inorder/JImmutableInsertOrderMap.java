@@ -35,11 +35,19 @@
 
 package org.javimmutable.collections.inorder;
 
+import static org.javimmutable.collections.MapEntry.entry;
+import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
+
+import java.io.Serializable;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.array.TrieLongArrayNode;
@@ -48,14 +56,6 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.stream.Collector;
-
-import static org.javimmutable.collections.MapEntry.entry;
-import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -74,11 +74,11 @@ public class JImmutableInsertOrderMap<K, V>
     private static final int SPLITERATOR_CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
 
     private final TrieLongArrayNode<K> keys;
-    private final JImmutableMap<K, Node<V>> values;
+    private final IMap<K, Node<V>> values;
     private final long nextToken;
 
     private JImmutableInsertOrderMap(@Nonnull TrieLongArrayNode<K> keys,
-                                     @Nonnull JImmutableMap<K, Node<V>> values,
+                                     @Nonnull IMap<K, Node<V>> values,
                                      long nextToken)
     {
         assert keys.size() == values.size();
@@ -102,7 +102,7 @@ public class JImmutableInsertOrderMap<K, V>
 
             @Nonnull
             @Override
-            public synchronized JImmutableMap<K, V> build()
+            public synchronized IMap<K, V> build()
             {
                 return map;
             }
@@ -140,15 +140,15 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Nonnull
-    public static <K, V> Collector<Entry<K, V>, ?, JImmutableMap<K, V>> createMapCollector()
+    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector()
     {
-        final JImmutableMap<K, V> empty = of();
+        final IMap<K, V> empty = of();
         return GenericCollector.ordered(empty, empty, a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Nonnull
     @Override
-    public Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector()
     {
         return GenericCollector.ordered(this, of(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
@@ -171,7 +171,7 @@ public class JImmutableInsertOrderMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
         return (current != null) ? Holders.of(entry(key, current.value)) : Holders.of();
@@ -183,7 +183,7 @@ public class JImmutableInsertOrderMap<K, V>
                                                  V value)
     {
         final Temp.Var1<Boolean> inserted = new Temp.Var1<>(false);
-        final JImmutableMap<K, Node<V>> newValues = values.update(key, hv -> {
+        final IMap<K, Node<V>> newValues = values.update(key, hv -> {
             if (hv.isEmpty()) {
                 inserted.x = true;
                 return new Node<>(nextToken, value);
@@ -231,7 +231,7 @@ public class JImmutableInsertOrderMap<K, V>
 
     @Nonnull
     @Override
-    public SplitableIterator<Entry<K, V>> iterator()
+    public SplitableIterator<IMapEntry<K, V>> iterator()
     {
         return TransformStreamable.of(keys(), k -> entry(k, valueForKey(k))).iterator();
     }
@@ -269,7 +269,7 @@ public class JImmutableInsertOrderMap<K, V>
         if (keys.size() != values.size()) {
             throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", keys.size(), values.size()));
         }
-        for (JImmutableMap.Entry<Long, K> e : keys.entries()) {
+        for (IMapEntry<Long, K> e : keys.entries()) {
             final Node<V> node = values.get(e.getValue());
             if (node == null) {
                 throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.getKey(), e.getValue()));

@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.GenericCollector;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
-import org.javimmutable.collections.common.GenericSetBuilder;
-import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.GenericCollector;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
+import org.javimmutable.collections.common.GenericSetBuilder;
+import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
 
 /**
  * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
@@ -64,7 +63,7 @@ public class JImmutableInsertOrderSet<T>
     private static final JImmutableInsertOrderSet EMPTY = new JImmutableInsertOrderSet(JImmutableInsertOrderMap.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableInsertOrderSet(JImmutableMap<T, Boolean> map)
+    private JImmutableInsertOrderSet(IMap<T, Boolean> map)
     {
         super(map);
     }
@@ -76,27 +75,27 @@ public class JImmutableInsertOrderSet<T>
     }
 
     @Nonnull
-    public static <T> JImmutableSet.Builder<T> builder()
+    public static <T> ISet.Builder<T> builder()
     {
         return new GenericSetBuilder<>(JImmutableInsertOrderMap.builder(), map -> map.isEmpty() ? of() : new JImmutableInsertOrderSet<>(map));
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll()
+    public ISet<T> deleteAll()
     {
         return of();
     }
 
     @Nonnull
     @Override
-    public Collector<T, ?, JImmutableSet<T>> setCollector()
+    public Collector<T, ?, ISet<T>> setCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override
-    protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
+    protected ISet<T> create(IMap<T, Boolean> map)
     {
         return map.isEmpty() ? of() : new JImmutableInsertOrderSet<>(map);
     }

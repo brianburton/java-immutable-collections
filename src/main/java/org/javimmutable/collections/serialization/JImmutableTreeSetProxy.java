@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.tree.JImmutableTreeSet;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.tree.JImmutableTreeSet;
 
 @SuppressWarnings("unchecked")
 public class JImmutableTreeSetProxy
@@ -60,7 +59,7 @@ public class JImmutableTreeSetProxy
     }
 
     @Override
-    protected JImmutableSet readSet(ObjectInput in)
+    protected ISet readSet(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();

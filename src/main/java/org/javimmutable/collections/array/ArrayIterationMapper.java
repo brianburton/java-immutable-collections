@@ -35,10 +35,9 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.iterators.GenericIterator;
-
 import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.iterators.GenericIterator;
 
 public interface ArrayIterationMapper<K, V, T>
 {
@@ -49,5 +48,5 @@ public interface ArrayIterationMapper<K, V, T>
     GenericIterator.Iterable<V> mappedValues(@Nonnull T mapping);
 
     @Nonnull
-    GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull T mapping);
+    GenericIterator.Iterable<IMapEntry<K, V>> mappedEntries(@Nonnull T mapping);
 }

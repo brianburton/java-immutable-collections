@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.JImmutableStack;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.SequenceIterator;
 import org.javimmutable.collections.serialization.JImmutableStackProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Singly linked list implementation of JImmutableStack that stores and retrieves values
@@ -57,7 +56,7 @@ import java.util.List;
  */
 @Immutable
 public class JImmutableLinkedStack<V>
-    implements JImmutableStack<V>,
+    implements IStack<V>,
                Serializable
 {
     @SuppressWarnings("unchecked")
@@ -75,20 +74,20 @@ public class JImmutableLinkedStack<V>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> JImmutableStack<T> of()
+    public static <T> IStack<T> of()
     {
         return EMPTY;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> JImmutableStack<T> of(T value)
+    public static <T> IStack<T> of(T value)
     {
         return new JImmutableLinkedStack<>(value, EMPTY);
     }
 
-    public static <T> JImmutableStack<T> of(List<T> values)
+    public static <T> IStack<T> of(List<T> values)
     {
-        JImmutableStack<T> list = of();
+        IStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
@@ -96,9 +95,9 @@ public class JImmutableLinkedStack<V>
     }
 
     @SafeVarargs
-    public static <T> JImmutableStack<T> of(T... values)
+    public static <T> IStack<T> of(T... values)
     {
-        JImmutableStack<T> list = of();
+        IStack<T> list = of();
         for (T value : values) {
             list = list.insert(value);
         }
@@ -126,7 +125,7 @@ public class JImmutableLinkedStack<V>
 
     @Nonnull
     @Override
-    public JImmutableStack<V> getTail()
+    public IStack<V> getTail()
     {
         if (next == null) {
             return this;
@@ -137,14 +136,14 @@ public class JImmutableLinkedStack<V>
 
     @Nonnull
     @Override
-    public JImmutableStack<V> insert(@Nullable V value)
+    public IStack<V> insert(@Nullable V value)
     {
         return new JImmutableLinkedStack<>(value, this);
     }
 
     @Nonnull
     @Override
-    public JImmutableStack<V> remove()
+    public IStack<V> remove()
     {
         return getTail();
     }
@@ -158,7 +157,7 @@ public class JImmutableLinkedStack<V>
     public List<V> makeList()
     {
         final List<V> answer = new ArrayList<>();
-        JImmutableStack<V> next = this;
+        IStack<V> next = this;
         while (!next.isEmpty()) {
             answer.add(next.getHead());
             next = next.getTail();
@@ -169,7 +168,7 @@ public class JImmutableLinkedStack<V>
     @Override
     public boolean equals(Object o)
     {
-        return (o instanceof JImmutableStack) && IteratorHelper.iteratorEquals(iterator(), ((JImmutableStack)o).iterator());
+        return (o instanceof IStack) && IteratorHelper.iteratorEquals(iterator(), ((IStack)o).iterator());
     }
 
     @Override
@@ -186,7 +185,7 @@ public class JImmutableLinkedStack<V>
 
     @Nonnull
     @Override
-    public JImmutableStack<V> getInsertableSelf()
+    public IStack<V> getInsertableSelf()
     {
         return this;
     }

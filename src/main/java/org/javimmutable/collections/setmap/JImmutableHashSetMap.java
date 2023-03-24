@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.serialization.JImmutableHashSetMapProxy;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 
 
 /**
@@ -58,8 +57,8 @@ public class JImmutableHashSetMap<K, V>
     private static final JImmutableHashSetMap EMPTY = new JImmutableHashSetMap(JImmutableHashMap.of(), JImmutableHashSet.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableHashSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
-                                 JImmutableSet<V> emptySet)
+    private JImmutableHashSetMap(IMap<K, ISet<V>> contents,
+                                 ISet<V> emptySet)
     {
         super(contents, emptySet);
     }
@@ -77,7 +76,7 @@ public class JImmutableHashSetMap<K, V>
     }
 
     @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
     {
         return new JImmutableHashSetMap<>(map, emptySet);
     }

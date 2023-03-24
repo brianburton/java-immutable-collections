@@ -57,10 +57,10 @@ import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IntFunc2;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1;
@@ -220,8 +220,8 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K, V> Holder<JImmutableMap.Entry<K, V>> mappedFindEntry(@Nonnull ArrayFindEntryMapper<K, V, T> mapper,
-                                                                    @Nonnull K key)
+    public <K, V> Holder<IMapEntry<K, V>> mappedFindEntry(@Nonnull ArrayFindEntryMapper<K, V, T> mapper,
+                                                          @Nonnull K key)
     {
         final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedFindEntry(node, key) : Holders.of();
@@ -789,7 +789,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public GenericIterator.Iterable<JImmutableMap.Entry<Integer, T>> entries()
+    public GenericIterator.Iterable<IMapEntry<Integer, T>> entries()
     {
         return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());
@@ -808,7 +808,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public <K, V> GenericIterator.Iterable<JImmutableMap.Entry<K, V>> mappedEntries(@Nonnull ArrayIterationMapper<K, V, T> mapper)
+    public <K, V> GenericIterator.Iterable<IMapEntry<K, V>> mappedEntries(@Nonnull ArrayIterationMapper<K, V, T> mapper)
     {
         return mappedIterable(mapper::mappedEntries);
     }

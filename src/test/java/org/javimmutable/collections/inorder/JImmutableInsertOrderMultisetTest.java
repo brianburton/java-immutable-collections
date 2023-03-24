@@ -35,26 +35,25 @@
 
 package org.javimmutable.collections.inorder;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
-import static java.util.stream.Collectors.toList;
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.StandardJImmutableMultisetTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableInsertOrderMultisetTest
     extends TestCase
@@ -70,10 +69,10 @@ public class JImmutableInsertOrderMultisetTest
     {
         List<String> valuesL = new LinkedList<>();
         valuesL.addAll(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
-        JImmutableMultiset<String> valuesM = JImmutableInsertOrderMultiset.<String>of().union(valuesL);
+        IMultiset<String> valuesM = JImmutableInsertOrderMultiset.<String>of().union(valuesL);
         valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
 
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
+        IMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         assertTrue(jmet.isEmpty());
         assertEquals(0, jmet.size());
         assertEquals(0, jmet.occurrenceCount());
@@ -120,7 +119,7 @@ public class JImmutableInsertOrderMultisetTest
         assertSame(jmet, jmet.union(asJMet("tennant", "smith")));
         assertNotSame(jmet, jmet.union(asJMet("tennant").insert("smith", 12)));
 
-        JImmutableMultiset<String> jmet2 = jmet.union(valuesL);
+        IMultiset<String> jmet2 = jmet.union(valuesL);
         jmet2.checkInvariants();
         assertFalse(jmet2.isEmpty());
         assertEquals(4, jmet2.size());
@@ -170,7 +169,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(jmet2, jmet.insertAll(asJMet(extra)));
         assertEquals(JImmutableInsertOrderMultiset.of(), jmet2.deleteAll());
 
-        JImmutableMultiset<String> jmet3 = asJMet(valuesL).insert("davison").insert("baker");
+        IMultiset<String> jmet3 = asJMet(valuesL).insert("davison").insert("baker");
         jmet3.checkInvariants();
         assertFalse(jmet3.isEmpty());
         assertEquals(6, jmet3.size());
@@ -191,7 +190,7 @@ public class JImmutableInsertOrderMultisetTest
         assertEquals(false, jmet3.containsAllOccurrences(jmet));
         assertEquals(false, jmet3.containsAllOccurrences(jmet2));
 
-        JImmutableMultiset<String> expected = asJMet("tennant", "smith", "capaldi", "eccleston");
+        IMultiset<String> expected = asJMet("tennant", "smith", "capaldi", "eccleston");
         expected.checkInvariants();
         assertEquals(expected, jmet3.intersection(valuesL));
         assertEquals(expected, jmet3.intersection(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston")));
@@ -202,7 +201,7 @@ public class JImmutableInsertOrderMultisetTest
 
     public void testInsertOrder()
     {
-        JImmutableMultiset<Integer> jmet = JImmutableInsertOrderMultiset.of();
+        IMultiset<Integer> jmet = JImmutableInsertOrderMultiset.of();
         Multiset<Integer> multi = LinkedHashMultiset.create();
         Random random = new Random(2500L);
         for (int i = 0; i < 5; ++i) {
@@ -252,15 +251,15 @@ public class JImmutableInsertOrderMultisetTest
 
     public void testStreams()
     {
-        JImmutableMultiset<Integer> mset = JImmutableInsertOrderMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+        IMultiset<Integer> mset = JImmutableInsertOrderMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
         assertEquals(Arrays.asList(4, 3, 2, 1), mset.stream().collect(toList()));
     }
 
     public void testSerialization()
         throws Exception
     {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableMultiset)a).entries().iterator();
-        final JImmutableMultiset<String> empty = JImmutableInsertOrderMultiset.of();
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMultiset)a).entries().iterator();
+        final IMultiset<String> empty = JImmutableInsertOrderMultiset.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA6fBBeUcDAzMLxmAoAIAeQvVccYAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
@@ -269,31 +268,31 @@ public class JImmutableInsertOrderMultisetTest
                                                      "H4sIAAAAAAAAAFvzloG1uIjBN78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvmW5pRkFqeWBBTlV1T+B4F/KsY8DAwVRQxeJJjtmFRcUpSYXIKwA6fBBeUcDAzMLxmARAkDY3I5C5DFCGQlgVlMQFYiRKwCADN6c9DkAAAA");
     }
 
-    private JImmutableSet<String> asJSet(String... args)
+    private ISet<String> asJSet(String... args)
     {
-        JImmutableSet<String> jet = JImmutableInsertOrderSet.of();
+        ISet<String> jet = JImmutableInsertOrderSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
         }
         return jet;
     }
 
-    private JImmutableMultiset<String> asJMet(String... args)
+    private IMultiset<String> asJMet(String... args)
     {
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
+        IMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
         }
         return jmet;
     }
 
-    private JImmutableMultiset<String> asJMet(List<String> list)
+    private IMultiset<String> asJMet(List<String> list)
     {
-        JImmutableMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
+        IMultiset<String> jmet = JImmutableInsertOrderMultiset.of();
         return jmet.insertAll(list);
     }
 
-    private ArrayList<Integer> asList(JImmutableMultiset<Integer> jmet)
+    private ArrayList<Integer> asList(IMultiset<Integer> jmet)
     {
         ArrayList<Integer> list = new ArrayList<>();
         for (Integer value : jmet.occurrences()) {

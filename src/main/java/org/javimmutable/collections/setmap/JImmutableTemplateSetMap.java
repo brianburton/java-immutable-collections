@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.serialization.JImmutableTemplateSetMapProxy;
-
-import javax.annotation.Nonnull;
 import java.io.Serializable;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.serialization.JImmutableTemplateSetMapProxy;
 
 /**
  * JImmutableSetMap implementation that uses arbitrary Map and Set templates.
@@ -53,18 +52,18 @@ public class JImmutableTemplateSetMap<K, V>
 {
     private static final long serialVersionUID = -121805;
 
-    private final JImmutableMap<K, JImmutableSet<V>> emptyMap;
+    private final IMap<K, ISet<V>> emptyMap;
 
-    private JImmutableTemplateSetMap(JImmutableMap<K, JImmutableSet<V>> contents,
-                                     JImmutableMap<K, JImmutableSet<V>> emptyMap,
-                                     JImmutableSet<V> emptySet)
+    private JImmutableTemplateSetMap(IMap<K, ISet<V>> contents,
+                                     IMap<K, ISet<V>> emptyMap,
+                                     ISet<V> emptySet)
     {
         super(contents, emptySet);
         this.emptyMap = emptyMap;
     }
 
-    private JImmutableTemplateSetMap(JImmutableMap<K, JImmutableSet<V>> emptyMap,
-                                     JImmutableSet<V> emptySet)
+    private JImmutableTemplateSetMap(IMap<K, ISet<V>> emptyMap,
+                                     ISet<V> emptySet)
     {
         this(emptyMap, emptyMap, emptySet);
     }
@@ -73,8 +72,8 @@ public class JImmutableTemplateSetMap<K, V>
      * Creates a new empty JImmutableSetMap object using the specified template map and set implementations.
      * The provided templates are always emptied before use.
      */
-    public static <K, V> JImmutableSetMap<K, V> of(@Nonnull JImmutableMap<K, JImmutableSet<V>> emptyMap,
-                                                   @Nonnull JImmutableSet<V> emptySet)
+    public static <K, V> ISetMap<K, V> of(@Nonnull IMap<K, ISet<V>> emptyMap,
+                                          @Nonnull ISet<V> emptySet)
     {
         return new JImmutableTemplateSetMap<>(emptyMap.deleteAll(), emptySet.deleteAll());
     }
@@ -84,18 +83,18 @@ public class JImmutableTemplateSetMap<K, V>
     {
     }
 
-    public JImmutableMap<K, JImmutableSet<V>> getEmptyMap()
+    public IMap<K, ISet<V>> getEmptyMap()
     {
         return emptyMap;
     }
 
-    public JImmutableSet<V> getEmptySet()
+    public ISet<V> getEmptySet()
     {
         return emptySet;
     }
 
     @Override
-    protected JImmutableSetMap<K, V> create(JImmutableMap<K, JImmutableSet<V>> map)
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
     {
         return new JImmutableTemplateSetMap<>(map, emptyMap, emptySet);
     }

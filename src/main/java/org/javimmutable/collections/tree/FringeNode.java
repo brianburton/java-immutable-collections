@@ -35,20 +35,19 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
 
 /**
  * Node with no value and no children.  Used as the terminating node at the bottom
@@ -138,8 +137,8 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                         @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                             @Nonnull K key)
     {
         return Holders.of();
     }
@@ -199,9 +198,9 @@ class FringeNode<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<Entry<K, V>> parent,
-                                                               int offset,
-                                                               int limit)
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                   int offset,
+                                                                   int limit)
     {
         assert offset == 0 && limit == 0;
         return parent;

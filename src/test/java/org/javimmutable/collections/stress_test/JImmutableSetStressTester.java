@@ -35,22 +35,21 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.ExpectedOrderSorter;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.JImmutableTreeSet;
-import org.javimmutable.collections.tree.JImmutableTreeSetTest;
-import org.javimmutable.collections.util.JImmutables;
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree.JImmutableTreeSetTest;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
@@ -64,11 +63,11 @@ import static org.javimmutable.collections.common.StandardSerializableTests.veri
 public class JImmutableSetStressTester
     extends AbstractSetStressTestable
 {
-    private final JImmutableSet<String> set;
+    private final ISet<String> set;
     private final Class<? extends Set> expectedClass;
     private final IterationOrder iterationOrder;
 
-    public JImmutableSetStressTester(JImmutableSet<String> set,
+    public JImmutableSetStressTester(ISet<String> set,
                                      Class<? extends Set> expectedClass,
                                      IterationOrder iterationOrder)
     {
@@ -79,19 +78,19 @@ public class JImmutableSetStressTester
     }
 
     @Override
-    public JImmutableList<String> getOptions()
+    public IList<String> getOptions()
     {
         return JImmutables.list("set", getNameOption(set));
     }
 
     @Override
     public void execute(Random random,
-                        JImmutableList<String> tokens)
+                        IList<String> tokens)
         throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Set<String> expected = expectedClass.newInstance();
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
-        JImmutableSet<String> set = this.set;
+        ISet<String> set = this.set;
         final int size = 1 + random.nextInt(100000);
         System.out.printf("JImmutableSetStressTest on %s of size %d%n", getName(set), size);
 
@@ -107,28 +106,28 @@ public class JImmutableSetStressTester
                         break;
                     }
                     case 1: { //insertAll(Iterable)
-                        JImmutableList<String> values = keys.randomInsertJList();
+                        IList<String> values = keys.randomInsertJList();
                         set = set.insertAll(values);
                         expected.addAll(values.getList());
                         keys.allocate(values);
                         break;
                     }
                     case 2: { //insertAll(Collection)
-                        JImmutableList<String> values = keys.randomInsertJList();
+                        IList<String> values = keys.randomInsertJList();
                         set = set.insertAll(values.getList());
                         expected.addAll(values.getList());
                         keys.allocate(values);
                         break;
                     }
                     case 3: { //union(Iterable)
-                        JImmutableList<String> values = keys.randomInsertJList();
+                        IList<String> values = keys.randomInsertJList();
                         set = set.union(values);
                         expected.addAll(values.getList());
                         keys.allocate(values);
                         break;
                     }
                     case 4: { //union(Collection)
-                        JImmutableList<String> values = keys.randomInsertJList();
+                        IList<String> values = keys.randomInsertJList();
                         set = set.union(values.getList());
                         expected.addAll(values.getList());
                         keys.allocate(values);
@@ -152,14 +151,14 @@ public class JImmutableSetStressTester
                         break;
                     }
                     case 1: { //deleteAll(Iterable)
-                        JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
+                        IList<String> values = keys.randomDeleteJList(step.shrinkSize());
                         set = set.deleteAll(values);
                         expected.removeAll(values.getList());
                         keys.unallocate(values);
                         break;
                     }
                     case 2: { //deleteAll(Collection)
-                        JImmutableList<String> values = keys.randomDeleteJList(step.shrinkSize());
+                        IList<String> values = keys.randomDeleteJList(step.shrinkSize());
                         set = set.deleteAll(values.getList());
                         expected.removeAll(values.getList());
                         keys.unallocate(values);
@@ -185,7 +184,7 @@ public class JImmutableSetStressTester
                     }
                     case 1:
                     case 2: { //containsAll(Iterable)
-                        JImmutableList<String> values = keys.randomContainsJList(5);
+                        IList<String> values = keys.randomContainsJList(5);
                         if (set.containsAll(values.getList()) != expected.containsAll(values.getList())) {
                             throw new RuntimeException(String.format("containsAll(Iterable) method call failed for %s - expected %b found %b%n",
                                                                      values, set.containsAll(values),
@@ -195,7 +194,7 @@ public class JImmutableSetStressTester
                     }
                     case 3:
                     case 4: { //containsAny(Iterable)
-                        JImmutableList<String> values = keys.randomContainsJList(5);
+                        IList<String> values = keys.randomContainsJList(5);
                         if (set.containsAny(values.getList()) != containsAny(expected, values.getList())) {
                             throw new RuntimeException(String.format("containsAny(Iterable) method call failed for %s - expected %b found %b%n",
                                                                      values, set.containsAny(values),
@@ -222,14 +221,14 @@ public class JImmutableSetStressTester
             System.out.printf("command %d removing %d%n", command, numberToRemove);
             switch (command) {
                 case 0: {//intersection(Iterable)
-                    JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
+                    IList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                     set = set.intersection(intersectionValues);
                     expected.retainAll(new HashSet<>(intersectionValues.getList()));
                     keys.retainAll(intersectionValues);
                     break;
                 }
                 case 1: { //intersection(Collection)
-                    JImmutableList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
+                    IList<String> intersectionValues = keys.randomIntersectionKeysJList(numberToRetain, Math.min(numberToRetain, random.nextInt(5)), random.nextInt(10));
                     set = set.intersection(intersectionValues.getList());
                     expected.retainAll(new HashSet<>(intersectionValues.getList()));
                     keys.retainAll(intersectionValues);
@@ -284,7 +283,7 @@ public class JImmutableSetStressTester
         }
     }
 
-    private void verifyContents(final JImmutableSet<String> set,
+    private void verifyContents(final ISet<String> set,
                                 final Set<String> expected)
     {
         System.out.printf("checking contents with size %d%n", set.size());
@@ -311,10 +310,10 @@ public class JImmutableSetStressTester
             throw new RuntimeException("method call failed - getSet()\n");
         }
         set.checkInvariants();
-        verifySerializable(this::extraSerializationChecks, set, JImmutableSet.class);
+        verifySerializable(this::extraSerializationChecks, set, ISet.class);
     }
 
-    private void verifyIterator(final JImmutableSet<String> set,
+    private void verifyIterator(final ISet<String> set,
                                 final Set<String> expected)
     {
         System.out.printf("checking iterator with size %d%n", set.size());
@@ -329,8 +328,8 @@ public class JImmutableSetStressTester
         StandardIteratorTests.listIteratorTest(expectedList, set.iterator());
     }
 
-    private void verifyOrder(JImmutableSet<String> set,
-                             JImmutableList<String> expected)
+    private void verifyOrder(ISet<String> set,
+                             IList<String> expected)
     {
         if (iterationOrder == IterationOrder.INSERT_ORDER) {
             StandardIteratorTests.listIteratorTest(expected.getList(), set.iterator());

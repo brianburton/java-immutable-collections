@@ -35,21 +35,21 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for maps that map keys to lists of values.
  */
 @Immutable
-public interface JImmutableListMap<K, V>
-    extends Insertable<JImmutableMap.Entry<K, V>, JImmutableListMap<K, V>>,
-            Mapped<K, JImmutableList<V>>,
-            IterableStreamable<JImmutableMap.Entry<K, JImmutableList<V>>>,
+public interface IListMap<K, V>
+    extends Insertable<IMapEntry<K, V>, IListMap<K, V>>,
+            Mapped<K, IList<V>>,
+            IterableStreamable<IMapEntry<K, IList<V>>>,
             InvariantCheckable,
             Serializable
 {
@@ -60,7 +60,7 @@ public interface JImmutableListMap<K, V>
      * @return list associated with key or an empty list if no value is associated
      */
     @Nonnull
-    JImmutableList<V> getList(@Nonnull K key);
+    IList<V> getList(@Nonnull K key);
 
     /**
      * Sets the list associated with a specific key.  Key and value must be non-null.
@@ -73,30 +73,30 @@ public interface JImmutableListMap<K, V>
      * @return new map reflecting the change
      */
     @Nonnull
-    JImmutableListMap<K, V> assign(@Nonnull K key,
-                                   @Nonnull JImmutableList<V> value);
+    IListMap<K, V> assign(@Nonnull K key,
+                          @Nonnull IList<V> value);
 
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
      */
     @Nonnull
     @Override
-    JImmutableListMap<K, V> insert(@Nonnull JImmutableMap.Entry<K, V> value);
+    IListMap<K, V> insert(@Nonnull IMapEntry<K, V> value);
 
     /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
      * in the list.
      */
     @Nonnull
-    JImmutableListMap<K, V> insert(@Nonnull K key,
-                                   @Nullable V value);
+    IListMap<K, V> insert(@Nonnull K key,
+                          @Nullable V value);
 
     /**
      * Adds all of the elements of the specified collection to the List for the specified key.
      */
     @Nonnull
-    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
-                                              @Nonnull Iterable<? extends V> values)
+    default IListMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Iterable<? extends V> values)
     {
         return assign(key, getList(key).insertAll(values));
     }
@@ -105,8 +105,8 @@ public interface JImmutableListMap<K, V>
      * Adds all of the elements of the specified collection to the List for the specified key.
      */
     @Nonnull
-    default JImmutableListMap<K, V> insertAll(@Nonnull K key,
-                                              @Nonnull Iterator<? extends V> values)
+    default IListMap<K, V> insertAll(@Nonnull K key,
+                                     @Nonnull Iterator<? extends V> values)
     {
         return assign(key, getList(key).insertAll(values));
     }
@@ -119,14 +119,14 @@ public interface JImmutableListMap<K, V>
      * @return same or different map depending on whether key was removed
      */
     @Nonnull
-    JImmutableListMap<K, V> delete(@Nonnull K key);
+    IListMap<K, V> delete(@Nonnull K key);
 
     /**
      * Deletes the list for every key in keys. Returns a new map if the keys were deleted or the
      * current map if the keys were contained in the map.
      */
     @Nonnull
-    default JImmutableListMap<K, V> deleteAll(@Nonnull Iterable<? extends K> keys)
+    default IListMap<K, V> deleteAll(@Nonnull Iterable<? extends K> keys)
     {
         return deleteAll(keys.iterator());
     }
@@ -136,9 +136,9 @@ public interface JImmutableListMap<K, V>
      * current map if the keys were contained in the map.
      */
     @Nonnull
-    default JImmutableListMap<K, V> deleteAll(@Nonnull Iterator<? extends K> keys)
+    default IListMap<K, V> deleteAll(@Nonnull Iterator<? extends K> keys)
     {
-        JImmutableListMap<K, V> map = this;
+        IListMap<K, V> map = this;
         while (keys.hasNext()) {
             map = map.delete(keys.next());
         }
@@ -154,11 +154,11 @@ public interface JImmutableListMap<K, V>
      * @param transform function to update the list
      * @return new map with update applied to list associated with key
      */
-    default JImmutableListMap<K, V> transform(@Nonnull K key,
-                                              @Nonnull Func1<JImmutableList<V>, JImmutableList<V>> transform)
+    default IListMap<K, V> transform(@Nonnull K key,
+                                     @Nonnull Func1<IList<V>, IList<V>> transform)
     {
-        final JImmutableList<V> current = getList(key);
-        final JImmutableList<V> transformed = transform.apply(current);
+        final IList<V> current = getList(key);
+        final IList<V> transformed = transform.apply(current);
         return (transformed == current) ? this : assign(key, transformed);
     }
 
@@ -171,12 +171,12 @@ public interface JImmutableListMap<K, V>
      * @param transform function to update the list
      * @return new map with update applied to list associated with key
      */
-    default JImmutableListMap<K, V> transformIfPresent(@Nonnull K key,
-                                                       @Nonnull Func1<JImmutableList<V>, JImmutableList<V>> transform)
+    default IListMap<K, V> transformIfPresent(@Nonnull K key,
+                                              @Nonnull Func1<IList<V>, IList<V>> transform)
     {
-        final JImmutableList<V> current = get(key);
+        final IList<V> current = get(key);
         if (current != null) {
-            final JImmutableList<V> transformed = transform.apply(current);
+            final IList<V> transformed = transform.apply(current);
             if (transformed != current) {
                 return assign(key, transformed);
             }
@@ -206,7 +206,7 @@ public interface JImmutableListMap<K, V>
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableListMap<K, V> deleteAll();
+    IListMap<K, V> deleteAll();
 
     /**
      * Creates a Streamable to access all of the Map's keys.
@@ -227,14 +227,14 @@ public interface JImmutableListMap<K, V>
      * Creates a Streamable to access all of the Map's entries.
      */
     @Nonnull
-    IterableStreamable<JImmutableMap.Entry<K, V>> entries();
+    IterableStreamable<IMapEntry<K, V>> entries();
 
     /**
      * Processes every key/list pair in this map using the provided function.
      */
-    default void forEach(@Nonnull Proc2<K, JImmutableList<V>> proc)
+    default void forEach(@Nonnull Proc2<K, IList<V>> proc)
     {
-        for (JImmutableMap.Entry<K, JImmutableList<V>> e : this) {
+        for (IMapEntry<K, IList<V>> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -242,10 +242,10 @@ public interface JImmutableListMap<K, V>
     /**
      * Processes every key/list pair in this map using the provided function.
      */
-    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, JImmutableList<V>, E> proc)
+    default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, IList<V>, E> proc)
         throws E
     {
-        for (JImmutableMap.Entry<K, JImmutableList<V>> e : this) {
+        for (IMapEntry<K, IList<V>> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -255,7 +255,7 @@ public interface JImmutableListMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<JImmutableMap.Entry<K, V>, ?, JImmutableListMap<K, V>> listMapCollector()
+    default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> listMapCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
     }

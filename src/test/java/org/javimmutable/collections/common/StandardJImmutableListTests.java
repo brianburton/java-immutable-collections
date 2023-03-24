@@ -40,11 +40,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.IList;
 
 public class StandardJImmutableListTests
 {
-    public static void standardTests(JImmutableList<Integer> empty)
+    public static void standardTests(IList<Integer> empty)
     {
         verifyInsertAllFirst(empty);
         verifyInsertAllLast(empty);
@@ -53,10 +53,10 @@ public class StandardJImmutableListTests
         verifySingle(empty);
     }
 
-    public static void verifyInsertAllFirst(JImmutableList<Integer> empty)
+    public static void verifyInsertAllFirst(IList<Integer> empty)
     {
-        JImmutableList<Integer> actual = appendAll(empty, 1, 10);
-        JImmutableList<Integer> expected = actual;
+        IList<Integer> actual = appendAll(empty, 1, 10);
+        IList<Integer> expected = actual;
         while (actual.size() < 250_000) {
             final int addSize = actual.size() / 5;
             final int first = actual.size() + 1;
@@ -67,10 +67,10 @@ public class StandardJImmutableListTests
         }
     }
 
-    public static void verifyInsertAllLast(JImmutableList<Integer> empty)
+    public static void verifyInsertAllLast(IList<Integer> empty)
     {
-        JImmutableList<Integer> actual = appendAll(empty, 1, 10);
-        JImmutableList<Integer> expected = actual;
+        IList<Integer> actual = appendAll(empty, 1, 10);
+        IList<Integer> expected = actual;
         while (actual.size() < 250_000) {
             final int addSize = actual.size() / 5;
             final int first = actual.size() + 1;
@@ -81,11 +81,11 @@ public class StandardJImmutableListTests
         }
     }
 
-    public static void verifyAssign(JImmutableList<Integer> empty)
+    public static void verifyAssign(IList<Integer> empty)
     {
         for (int size = 0; size < 4096; ++size) {
-            JImmutableList<Integer> expected = appendAll(empty, 1, size);
-            JImmutableList<Integer> actual = appendAll(empty, 101, 100 + size);
+            IList<Integer> expected = appendAll(empty, 1, size);
+            IList<Integer> actual = appendAll(empty, 101, 100 + size);
             for (int i = 0; i < size; i++) {
                 actual = actual.assign(i, 1 + i);
             }
@@ -93,10 +93,10 @@ public class StandardJImmutableListTests
         }
     }
 
-    public static void verifyTransform(JImmutableList<Integer> empty)
+    public static void verifyTransform(IList<Integer> empty)
     {
-        JImmutableList<Integer> orig = appendAll(empty, 1, 20);
-        JImmutableList<Integer> transformed = orig.transform(i -> i + 10);
+        IList<Integer> orig = appendAll(empty, 1, 20);
+        IList<Integer> transformed = orig.transform(i -> i + 10);
         assertSame(orig.getClass(), transformed.getClass());
         assertEquals(appendAll(empty, 11, 30), transformed);
 
@@ -105,7 +105,7 @@ public class StandardJImmutableListTests
         assertEquals(appendAll(empty, 1, 10), transformed);
     }
 
-    private static void verifySingle(JImmutableList<Integer> empty)
+    private static void verifySingle(IList<Integer> empty)
     {
         assertEquals(none(), empty.single());
         assertEquals(some(1), empty.insert(1).single());
@@ -113,9 +113,9 @@ public class StandardJImmutableListTests
         assertEquals(none(), empty.insert(1).insert(2).single());
     }
 
-    private static JImmutableList<Integer> appendAll(JImmutableList<Integer> answer,
-                                                     int first,
-                                                     int last)
+    private static IList<Integer> appendAll(IList<Integer> answer,
+                                            int first,
+                                            int last)
     {
         for (int i = first; i <= last; ++i) {
             answer = answer.insert(i);
@@ -123,9 +123,9 @@ public class StandardJImmutableListTests
         return answer;
     }
 
-    private static JImmutableList<Integer> prependAll(JImmutableList<Integer> answer,
-                                                      int first,
-                                                      int last)
+    private static IList<Integer> prependAll(IList<Integer> answer,
+                                             int first,
+                                             int last)
     {
         for (int i = last; i >= first; --i) {
             answer = answer.insertFirst(i);

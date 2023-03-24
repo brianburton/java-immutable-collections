@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.JImmutableSetMap;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableSetMapProxy
@@ -52,9 +51,9 @@ abstract class AbstractJImmutableSetMapProxy
     private static final int MAP_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
-    protected JImmutableSetMap map;
+    protected ISetMap map;
 
-    protected AbstractJImmutableSetMapProxy(JImmutableSetMap map)
+    protected AbstractJImmutableSetMapProxy(ISetMap map)
     {
         this.map = map;
     }
@@ -66,10 +65,10 @@ abstract class AbstractJImmutableSetMapProxy
         out.writeInt(MAP_VERSION);
         writeMap(out);
         out.writeInt(map.size());
-        final Iterator<JImmutableMap.Entry> iterator = map.iterator();
+        final Iterator<IMapEntry> iterator = map.iterator();
         while (iterator.hasNext()) {
-            final JImmutableMap.Entry entry = iterator.next();
-            final JImmutableSet list = (JImmutableSet)entry.getValue();
+            final IMapEntry entry = iterator.next();
+            final ISet list = (ISet)entry.getValue();
             out.writeObject(entry.getKey());
             out.writeInt(list.size());
             for (Object value : list) {
@@ -90,7 +89,7 @@ abstract class AbstractJImmutableSetMapProxy
         final int size = in.readInt();
         for (int i = 0; i < size; ++i) {
             final Object key = in.readObject();
-            JImmutableSet values = map.getSet(key);
+            ISet values = map.getSet(key);
             final int listSize = in.readInt();
             for (int k = 0; k < listSize; ++k) {
                 values = values.insert(in.readObject());
@@ -104,7 +103,7 @@ abstract class AbstractJImmutableSetMapProxy
         return map;
     }
 
-    protected JImmutableSetMap readMap(ObjectInput in)
+    protected ISetMap readMap(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         return map;

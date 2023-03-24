@@ -35,36 +35,35 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.iterators.IteratorHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.iterators.IteratorHelper;
 
 @Immutable
 public abstract class AbstractJImmutableSet<T>
-    implements JImmutableSet<T>
+    implements ISet<T>
 {
     @Nonnull
     @Override
-    public JImmutableSet<T> getInsertableSelf()
+    public ISet<T> getInsertableSelf()
     {
         return this;
     }
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insertAll(@Nonnull Iterable<? extends T> values)
+    public ISet<T> insertAll(@Nonnull Iterable<? extends T> values)
     {
         return union(values.iterator());
     }
 
     @Override
     @Nonnull
-    public JImmutableSet<T> insertAll(@Nonnull Iterator<? extends T> values)
+    public ISet<T> insertAll(@Nonnull Iterator<? extends T> values)
     {
         return union(values);
     }
@@ -105,28 +104,28 @@ public abstract class AbstractJImmutableSet<T>
 
     @Nonnull
     @Override
-    public JImmutableSet<T> deleteAll(@Nonnull Iterable<? extends T> other)
+    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other)
     {
         return deleteAll(other.iterator());
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> union(@Nonnull Iterable<? extends T> other)
+    public ISet<T> union(@Nonnull Iterable<? extends T> other)
     {
         return union(other.iterator());
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull Iterable<? extends T> other)
+    public ISet<T> intersection(@Nonnull Iterable<? extends T> other)
     {
         return intersection(other.iterator());
     }
 
     @Nonnull
     @Override
-    public JImmutableSet<T> intersection(@Nonnull JImmutableSet<? extends T> other)
+    public ISet<T> intersection(@Nonnull ISet<? extends T> other)
     {
         return intersection(other.getSet());
     }
@@ -151,10 +150,10 @@ public abstract class AbstractJImmutableSet<T>
             return true;
         } else if (o == null) {
             return false;
-        } else if (o instanceof JImmutableMultiset) {
+        } else if (o instanceof IMultiset) {
             return o.equals(this);
-        } else if (o instanceof JImmutableSet) {
-            return getSet().equals(((JImmutableSet)o).getSet());
+        } else if (o instanceof ISet) {
+            return getSet().equals(((ISet)o).getSet());
         } else {
             return (o instanceof Set) && getSet().equals(o);
         }

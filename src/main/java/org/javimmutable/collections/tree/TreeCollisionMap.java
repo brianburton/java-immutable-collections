@@ -35,22 +35,21 @@
 
 package org.javimmutable.collections.tree;
 
+import static org.javimmutable.collections.MapEntry.entry;
+
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
-
-import static org.javimmutable.collections.MapEntry.entry;
 
 /**
  * CollisionMap implementation that stores values in Node objects (balanced trees).
@@ -158,15 +157,15 @@ public class TreeCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull Node node,
-                                         @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Node node,
+                                             @Nonnull K key)
     {
         return root(node).findEntry(comparator, key);
     }
 
     @Nonnull
     @Override
-    public Entry<K, V> first(@Nonnull Node node)
+    public IMapEntry<K, V> first(@Nonnull Node node)
     {
         final AbstractNode<K, V> first = root(node).leftMost();
         return entry(first.key(), first.value());
@@ -174,10 +173,10 @@ public class TreeCollisionMap<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<Entry<K, V>> iterateOverRange(@Nonnull Node node,
-                                                               @Nullable GenericIterator.State<Entry<K, V>> parent,
-                                                               int offset,
-                                                               int limit)
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nonnull Node node,
+                                                                   @Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                   int offset,
+                                                                   int limit)
     {
         return root(node).iterateOverRange(parent, offset, limit);
     }

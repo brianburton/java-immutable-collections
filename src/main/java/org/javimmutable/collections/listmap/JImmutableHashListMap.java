@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.JImmutableMap;
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.serialization.JImmutableHashListMapProxy;
-
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 
 /**
  * JImmutableListMap using a hash map for fast lookup.
@@ -57,8 +56,8 @@ public class JImmutableHashListMap<K, V>
     private static final JImmutableHashListMap EMPTY = new JImmutableHashListMap(JImmutableHashMap.of(), JImmutableTreeList.of());
     private static final long serialVersionUID = -121805;
 
-    private JImmutableHashListMap(JImmutableMap<K, JImmutableList<V>> contents,
-                                  JImmutableList<V> emptyList)
+    private JImmutableHashListMap(IMap<K, IList<V>> contents,
+                                  IList<V> emptyList)
     {
         super(contents, emptyList);
     }
@@ -76,7 +75,7 @@ public class JImmutableHashListMap<K, V>
     }
 
     @Override
-    protected JImmutableListMap<K, V> create(JImmutableMap<K, JImmutableList<V>> map)
+    protected IListMap<K, V> create(IMap<K, IList<V>> map)
     {
         return (map == contents) ? this : new JImmutableHashListMap<>(map, emptyList);
     }

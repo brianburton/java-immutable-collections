@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.JImmutableMap;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 
 public final class TimingComparison
 {
@@ -105,7 +105,7 @@ public final class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
+        IMap<Integer, Integer> map = JImmutableTreeMap.of();
 //        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
@@ -129,13 +129,13 @@ public final class TimingComparison
         map.checkInvariants();
 
         Iterator<Map.Entry<Integer, Integer>> expectedIter = expected.entrySet().iterator();
-        Iterator<JImmutableMap.Entry<Integer, Integer>> mapIter = map.iterator();
+        Iterator<IMapEntry<Integer, Integer>> mapIter = map.iterator();
         while (expectedIter.hasNext()) {
             if (!mapIter.hasNext()) {
                 throw new RuntimeException();
             }
             Map.Entry<Integer, Integer> expectedEntry = expectedIter.next();
-            JImmutableMap.Entry<Integer, Integer> mapEntry = mapIter.next();
+            IMapEntry<Integer, Integer> mapEntry = mapIter.next();
             assertEquals(expectedEntry.getKey(), mapEntry.getKey());
             assertEquals(expectedEntry.getValue(), mapEntry.getValue());
         }

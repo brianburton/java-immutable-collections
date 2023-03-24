@@ -35,19 +35,18 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableListMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.JImmutableTreeMapTest;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.tree.JImmutableTreeMapTest;
 
 public class JImmutableTreeListMapTest
     extends AbstractJImmutableListMapTestCase
@@ -55,7 +54,7 @@ public class JImmutableTreeListMapTest
     @SuppressWarnings("unchecked")
     public void testNormalOrder()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(), Ordering.HASH);
+        IListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(), Ordering.HASH);
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
                                                              MapEntry.of(2, map.getList(2)),
@@ -66,7 +65,7 @@ public class JImmutableTreeListMapTest
     @SuppressWarnings("unchecked")
     public void testReverseOrder()
     {
-        JImmutableListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(Comparator.<Integer>reverseOrder()), Ordering.REVERSED);
+        IListMap<Integer, Integer> map = verifyOperations(JImmutableTreeListMap.of(Comparator.<Integer>reverseOrder()), Ordering.REVERSED);
         StandardIteratorTests.listIteratorTest(Arrays.asList(3, 2, 1), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(3, map.getList(3)),
                                                              MapEntry.of(2, map.getList(2)),
@@ -76,8 +75,8 @@ public class JImmutableTreeListMapTest
 
     public void testEquals()
     {
-        JImmutableListMap<Integer, Integer> a = JImmutableTreeListMap.of();
-        JImmutableListMap<Integer, Integer> b = JImmutableTreeListMap.of();
+        IListMap<Integer, Integer> a = JImmutableTreeListMap.of();
+        IListMap<Integer, Integer> b = JImmutableTreeListMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -95,7 +94,7 @@ public class JImmutableTreeListMapTest
 
     public void testStreams()
     {
-        JImmutableListMap<Integer, Integer> listMap = JImmutableTreeListMap.<Integer, Integer>of()
+        IListMap<Integer, Integer> listMap = JImmutableTreeListMap.<Integer, Integer>of()
             .insert(4, 40)
             .insert(3, 30)
             .insert(2, 20)
@@ -111,7 +110,7 @@ public class JImmutableTreeListMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableTreeListMap)a).iterator();
-        JImmutableListMap<String, String> empty = JImmutableTreeListMap.of();
+        IListMap<String, String> empty = JImmutableTreeListMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBNb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfXJLC7xTSwIKMqvqPwPAv9UjHkYGCqKGDxJMNMxqbikKDG5BGE2LnMLylkYGJhfAt1shtf8EqDb9JzzcwsSi0ByUFZJfhHMMCaYYUAaAGoIkSAGAQAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, JImmutableTreeListMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),

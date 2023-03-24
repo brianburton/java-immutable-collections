@@ -35,15 +35,14 @@
 
 package org.javimmutable.collections.list;
 
+import java.io.IOException;
+import java.util.stream.IntStream;
 import junit.framework.TestCase;
-import org.javimmutable.collections.JImmutableList;
+import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
-
-import java.io.IOException;
-import java.util.stream.IntStream;
 
 public class ListCollisionMapTest
     extends TestCase
@@ -74,7 +73,7 @@ public class ListCollisionMapTest
         assertEquals("[1,-1]", sb.toString());
 
         sb.delete(0, sb.length());
-        JImmutableList<Integer> integers = IntStream.range(1, 500)
+        IList<Integer> integers = IntStream.range(1, 500)
             .boxed()
             .collect(JImmutableTreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.update(n, i, -i));
@@ -125,7 +124,7 @@ public class ListCollisionMapTest
         assertEquals("", transforms.reduce(node, "", append));
         assertEquals("[1,-1]", transforms.reduce(transforms.update(node, 1, -1), "", append));
 
-        JImmutableList<Integer> integers = IntStream.range(1, 500)
+        IList<Integer> integers = IntStream.range(1, 500)
             .boxed()
             .collect(JImmutableTreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.update(n, i, -i));

@@ -35,15 +35,8 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func0;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.tree.ComparableComparator;
+import static junit.framework.Assert.assertEquals;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -53,8 +46,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static junit.framework.Assert.assertEquals;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.tree.ComparableComparator;
 
 public final class StandardBuilderTests
 {
@@ -196,7 +195,7 @@ public final class StandardBuilderTests
         verifyThreadSafety(expected, ComparableComparator.of(), builderFactory, transform);
     }
 
-    public static <C extends JImmutableList<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
+    public static <C extends IList<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
         throws InterruptedException
     {
         verifyThreadSafety(builderFactory, list -> list);

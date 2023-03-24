@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.JImmutableList;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import org.javimmutable.collections.IList;
 
 public final class ListTimingComparison
 {
@@ -121,7 +120,7 @@ public final class ListTimingComparison
             removes = 0;
             gets = 0;
             long startPer = System.currentTimeMillis();
-            JImmutableList<Integer> list = JImmutableTreeList.of();
+            IList<Integer> list = JImmutableTreeList.of();
             for (int i = 1; i <= loops; ++i) {
                 int command = random.nextInt(maxCommand);
                 if (list.isEmpty()) {

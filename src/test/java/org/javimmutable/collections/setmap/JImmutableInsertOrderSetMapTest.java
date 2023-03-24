@@ -35,17 +35,16 @@
 
 package org.javimmutable.collections.setmap;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
-import static java.util.Arrays.asList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableInsertOrderSetMapTest
     extends AbstractJImmutableSetMapTestCase
@@ -53,7 +52,7 @@ public class JImmutableInsertOrderSetMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.of(), Ordering.HASH);
+        ISetMap<Integer, Integer> map = verifyOperations(JImmutableInsertOrderSetMap.of(), Ordering.HASH);
         verifyRandom(JImmutableInsertOrderSetMap.of(), new LinkedHashMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
@@ -64,8 +63,8 @@ public class JImmutableInsertOrderSetMapTest
 
     public void testEquals()
     {
-        JImmutableSetMap<Integer, Integer> a = JImmutableInsertOrderSetMap.of();
-        JImmutableSetMap<Integer, Integer> b = JImmutableInsertOrderSetMap.of();
+        ISetMap<Integer, Integer> a = JImmutableInsertOrderSetMap.of();
+        ISetMap<Integer, Integer> b = JImmutableInsertOrderSetMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -85,7 +84,7 @@ public class JImmutableInsertOrderSetMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableInsertOrderSetMap)a).iterator();
-        JImmutableSetMap<String, String> empty = JImmutableInsertOrderSetMap.of();
+        ISetMap<String, String> empty = JImmutableInsertOrderSetMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBO78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFgWnlvgmFgQU5VdU/geBfyrGPAwMFUUMHiSY7JhUXFKUmFyCsAGHsQXlHAwMzC8ZgKACADzR7fLCAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),

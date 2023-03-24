@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.util.JImmutables;
-
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Uses a random number generator to create a series of size steps
@@ -56,7 +55,7 @@ public class SizeStepListFactory
                                        int maxSize,
                                        Random r)
     {
-        JImmutableList<Step> steps;
+        IList<Step> steps;
         if (maxSize == 1) {
             steps = JImmutables.list(new Step(1, 1));
         } else if (maxSize == 2) {
@@ -75,9 +74,9 @@ public class SizeStepListFactory
         return steps;
     }
 
-    private static JImmutableList<Step> randomSteps(int numSteps,
-                                                    int maxSize,
-                                                    Random r)
+    private static IList<Step> randomSteps(int numSteps,
+                                           int maxSize,
+                                           Random r)
     {
         final int extra = Math.max(1, maxSize / (numSteps * 3));
         final int numSizes = 2 * (numSteps - 1);
@@ -85,7 +84,7 @@ public class SizeStepListFactory
         while (sizes.size() < numSizes) {
             sizes.add(1 + r.nextInt(maxSize - extra));
         }
-        JImmutableList<Step> steps = JImmutables.list();
+        IList<Step> steps = JImmutables.list();
         for (Iterator<Integer> i = sizes.iterator(); i.hasNext(); ) {
             final int shrinkSize = i.next();
             final int growthSize = i.next();

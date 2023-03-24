@@ -35,7 +35,9 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.JImmutableSet;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
+import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.array.ArrayAssignMapper;
 import org.javimmutable.collections.array.TrieArrayBuilder;
 import org.javimmutable.collections.common.CollisionSet;
@@ -43,12 +45,9 @@ import org.javimmutable.collections.hash.set.ArraySetNode;
 import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
 import org.javimmutable.collections.list.ListCollisionSet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
 @ThreadSafe
 class HashSetBuilder<T>
-    implements JImmutableSet.Builder<T>,
+    implements ISet.Builder<T>,
                ArrayAssignMapper<T, T, ArraySetNode<T>>
 {
     private final TrieArrayBuilder<ArraySetNode<T>> builder = new TrieArrayBuilder<>();
@@ -56,7 +55,7 @@ class HashSetBuilder<T>
 
     @Nonnull
     @Override
-    public synchronized JImmutableSet<T> build()
+    public synchronized ISet<T> build()
     {
         if (builder.size() == 0) {
             return JImmutableHashSet.of();
@@ -73,7 +72,7 @@ class HashSetBuilder<T>
 
     @Nonnull
     @Override
-    public synchronized JImmutableSet.Builder<T> add(T value)
+    public synchronized ISet.Builder<T> add(T value)
     {
         if (builder.size() == 0) {
             collisionSet = JImmutableHashSet.selectCollisionSetForValue(value);
@@ -84,7 +83,7 @@ class HashSetBuilder<T>
 
     @Nonnull
     @Override
-    public synchronized JImmutableSet.Builder<T> clear()
+    public synchronized ISet.Builder<T> clear()
     {
         collisionSet = ListCollisionSet.instance();
         builder.reset();

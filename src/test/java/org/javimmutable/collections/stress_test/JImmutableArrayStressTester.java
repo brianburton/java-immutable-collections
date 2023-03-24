@@ -35,22 +35,21 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableArray;
-import org.javimmutable.collections.JImmutableList;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableArray. Divided into four sections: growing
@@ -62,10 +61,10 @@ import static org.javimmutable.collections.common.StandardSerializableTests.veri
 public class JImmutableArrayStressTester
     extends StressTester
 {
-    private final JImmutableArray<String> array;
+    private final IArray<String> array;
     private final ArrayIndexRange indexRange;
 
-    public JImmutableArrayStressTester(JImmutableArray<String> array,
+    public JImmutableArrayStressTester(IArray<String> array,
                                        ArrayIndexRange indexRange)
     {
         super(getName(array));
@@ -74,19 +73,19 @@ public class JImmutableArrayStressTester
     }
 
     @Override
-    public JImmutableList<String> getOptions()
+    public IList<String> getOptions()
     {
         return JImmutables.list("array", getNameOption(array));
     }
 
     @Override
     public void execute(Random random,
-                        JImmutableList<String> tokens)
+                        IList<String> tokens)
     {
         final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
         final Map<Integer, String> expected = new TreeMap<>();
-        JImmutableArray<String> array = this.array;
-        JImmutableList<Integer> indexList = JImmutables.list();
+        IArray<String> array = this.array;
+        IList<Integer> indexList = JImmutables.list();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
@@ -102,8 +101,8 @@ public class JImmutableArrayStressTester
                         break;
                     }
                     case 1: { //insert(Entry<Integer, T>)
-                        JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
-                        array = (JImmutableArray<String>)array.insert(entry);
+                        IMapEntry<Integer, String> entry = new MapEntry<>(index, value);
+                        array = (IArray<String>)array.insert(entry);
                         expected.put(index, value);
                         break;
                     }
@@ -125,8 +124,8 @@ public class JImmutableArrayStressTester
                         break;
                     }
                     case 1: { //insert(Entry<Integer, T>)
-                        JImmutableMap.Entry<Integer, String> entry = new MapEntry<>(index, value);
-                        array = (JImmutableArray<String>)array.insert(entry);
+                        IMapEntry<Integer, String> entry = new MapEntry<>(index, value);
+                        array = (IArray<String>)array.insert(entry);
                         expected.put(index, value);
                         break;
                     }
@@ -188,8 +187,8 @@ public class JImmutableArrayStressTester
                         break;
                     }
                     case 3: { //findEntry(int)
-                        Holder<JImmutableMap.Entry<Integer, String>> holder = array.findEntry(index);
-                        Holder<JImmutableMap.Entry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
+                        Holder<IMapEntry<Integer, String>> holder = array.findEntry(index);
+                        Holder<IMapEntry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
                         if (!equivalentHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                         }
@@ -223,7 +222,7 @@ public class JImmutableArrayStressTester
         System.out.printf("JImmutableArrayStressTest on %s completed without errors%n", getName(array));
     }
 
-    public void verifyContents(JImmutableArray<String> array,
+    public void verifyContents(IArray<String> array,
                                Map<Integer, String> expected)
     {
         System.out.printf("checking contents with size %d%n", array.size());
@@ -245,16 +244,16 @@ public class JImmutableArrayStressTester
             throw new RuntimeException("method call failed - getMap()\n");
         }
         array.checkInvariants();
-        verifySerializable(null, array, JImmutableArray.class);
+        verifySerializable(null, array, IArray.class);
     }
 
-    private void verifyIteration(JImmutableArray<String> array,
+    private void verifyIteration(IArray<String> array,
                                  Map<Integer, String> expected)
     {
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
-        final List<JImmutableMap.Entry<Integer, String>> entries = makeEntriesList(expected);
+        final List<IMapEntry<Integer, String>> entries = makeEntriesList(expected);
 
         StandardIteratorTests.listIteratorTest(indices, array.keys().iterator());
         StandardIteratorTests.listIteratorTest(values, array.values().iterator());
@@ -264,7 +263,7 @@ public class JImmutableArrayStressTester
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
-    private void verifyIndexList(JImmutableList<Integer> indexList,
+    private void verifyIndexList(IList<Integer> indexList,
                                  Map<Integer, String> expected)
     {
         int indexListSize = indexList.size();

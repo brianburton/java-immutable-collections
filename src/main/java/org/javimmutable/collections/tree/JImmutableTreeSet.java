@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableSet;
-import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
-import org.javimmutable.collections.common.GenericSetBuilder;
-import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
+import org.javimmutable.collections.common.GenericSetBuilder;
+import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
 
 @Immutable
 public class JImmutableTreeSet<T>
@@ -63,7 +62,7 @@ public class JImmutableTreeSet<T>
         this(JImmutableTreeMap.of(comparator), comparator);
     }
 
-    private JImmutableTreeSet(JImmutableMap<T, Boolean> map,
+    private JImmutableTreeSet(IMap<T, Boolean> map,
                               Comparator<T> comparator)
     {
         super(map);
@@ -93,19 +92,19 @@ public class JImmutableTreeSet<T>
         return new JImmutableTreeSet<>(comparator);
     }
 
-    public static <T extends Comparable<T>> JImmutableSet.Builder<T> builder()
+    public static <T extends Comparable<T>> ISet.Builder<T> builder()
     {
         return builder(ComparableComparator.<T>of());
     }
 
     @Nonnull
-    public static <T> JImmutableSet.Builder<T> builder(Comparator<T> comparator)
+    public static <T> ISet.Builder<T> builder(Comparator<T> comparator)
     {
         return new GenericSetBuilder<>(JImmutableTreeMap.builder(comparator), map -> map.isEmpty() ? of(comparator) : new JImmutableTreeSet<>(map, comparator));
     }
 
     @Override
-    protected JImmutableSet<T> create(JImmutableMap<T, Boolean> map)
+    protected ISet<T> create(IMap<T, Boolean> map)
     {
         return map.isEmpty() ? of(comparator) : new JImmutableTreeSet<>(map, comparator);
     }
@@ -116,7 +115,7 @@ public class JImmutableTreeSet<T>
         return new TreeSet<>(comparator);
     }
 
-    JImmutableMap getMap()
+    IMap getMap()
     {
         return map;
     }

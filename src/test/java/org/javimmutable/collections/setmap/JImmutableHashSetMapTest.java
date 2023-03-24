@@ -36,17 +36,16 @@
 package org.javimmutable.collections.setmap;
 
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.JImmutableSetMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import static java.util.Arrays.asList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class JImmutableHashSetMapTest
     extends AbstractJImmutableSetMapTestCase
@@ -54,7 +53,7 @@ public class JImmutableHashSetMapTest
     @SuppressWarnings("unchecked")
     public void test()
     {
-        JImmutableSetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.of(), Ordering.HASH);
+        ISetMap<Integer, Integer> map = verifyOperations(JImmutableHashSetMap.of(), Ordering.HASH);
         verifyRandom(JImmutableHashSetMap.of(), new HashMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
@@ -65,8 +64,8 @@ public class JImmutableHashSetMapTest
 
     public void testEquals()
     {
-        JImmutableSetMap<Integer, Integer> a = JImmutableHashSetMap.of();
-        JImmutableSetMap<Integer, Integer> b = JImmutableHashSetMap.of();
+        ISetMap<Integer, Integer> a = JImmutableHashSetMap.of();
+        ISetMap<Integer, Integer> b = JImmutableHashSetMap.of();
         assertEquals(a, b);
         assertEquals(b, a);
 
@@ -86,7 +85,7 @@ public class JImmutableHashSetMapTest
         throws Exception
     {
         final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableHashSetMap)a).iterator();
-        JImmutableSetMap<String, String> empty = JImmutableHashSetMap.of();
+        ISetMap<String, String> empty = JImmutableHashSetMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLfFNLAgoyq+o/A8C/1SMeRgYKooYPEgw0jGpuKQoMbkEYTQOYwvKORgYmF8yAEEFAFu31gu7AAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),

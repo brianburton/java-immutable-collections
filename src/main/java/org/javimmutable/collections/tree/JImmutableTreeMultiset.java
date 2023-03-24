@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.common.AbstractJImmutableMultiset;
-import org.javimmutable.collections.serialization.JImmutableTreeMultisetProxy;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.common.AbstractJImmutableMultiset;
+import org.javimmutable.collections.serialization.JImmutableTreeMultisetProxy;
 
 @Immutable
 public class JImmutableTreeMultiset<T>
@@ -61,7 +60,7 @@ public class JImmutableTreeMultiset<T>
         this(JImmutableTreeMap.of(comparator), 0, comparator);
     }
 
-    private JImmutableTreeMultiset(JImmutableMap<T, Integer> map,
+    private JImmutableTreeMultiset(IMap<T, Integer> map,
                                    int occurrences,
                                    Comparator<T> comparator)
     {
@@ -93,7 +92,7 @@ public class JImmutableTreeMultiset<T>
     }
 
     @Override
-    protected JImmutableTreeMultiset<T> create(JImmutableMap<T, Integer> map,
+    protected JImmutableTreeMultiset<T> create(IMap<T, Integer> map,
                                                int occurrences)
     {
         return new JImmutableTreeMultiset<>(map, occurrences, comparator);
@@ -105,7 +104,7 @@ public class JImmutableTreeMultiset<T>
         return new TreeMap<>(comparator);
     }
 
-    JImmutableMap getMap()
+    IMap getMap()
     {
         return map;
     }

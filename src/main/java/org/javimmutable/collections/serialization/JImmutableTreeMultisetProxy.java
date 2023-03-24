@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.JImmutableMultiset;
-import org.javimmutable.collections.tree.JImmutableTreeMultiset;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.tree.JImmutableTreeMultiset;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
@@ -63,7 +62,7 @@ public class JImmutableTreeMultisetProxy
     }
 
     @Override
-    protected JImmutableMultiset readSet(ObjectInput in)
+    protected IMultiset readSet(ObjectInput in)
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();

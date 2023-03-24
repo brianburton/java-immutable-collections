@@ -35,22 +35,32 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.common.BitmaskMath.addBit;
+import static org.javimmutable.collections.common.BitmaskMath.arrayIndexForBit;
+import static org.javimmutable.collections.common.BitmaskMath.bitCount;
+import static org.javimmutable.collections.common.BitmaskMath.bitFromIndex;
+import static org.javimmutable.collections.common.BitmaskMath.bitIsPresent;
+import static org.javimmutable.collections.common.BitmaskMath.indexForBit;
+import static org.javimmutable.collections.common.BitmaskMath.leastBit;
+import static org.javimmutable.collections.common.BitmaskMath.removeBit;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.MAX_SHIFT_NUMBER;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.baseIndexAtShift;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.indexAtShift;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.shift;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntFunction;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntFunction;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.LongArrayMappedTrieMath.*;
 
 public class TrieLongArrayNode<T>
 {
@@ -149,7 +159,7 @@ public class TrieLongArrayNode<T>
     }
 
     @Nonnull
-    public GenericIterator.Iterable<JImmutableMap.Entry<Long, T>> entries()
+    public GenericIterator.Iterable<IMapEntry<Long, T>> entries()
     {
         return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
                         nodeIndex -> nodes[nodeIndex].entries());

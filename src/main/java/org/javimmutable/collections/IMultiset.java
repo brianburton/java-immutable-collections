@@ -35,21 +35,21 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
  * through the multiset with the correct number of occurrences per value.
  */
 @Immutable
-public interface JImmutableMultiset<T>
-    extends JImmutableSet<T>,
+public interface IMultiset<T>
+    extends ISet<T>,
             Serializable
 {
     /**
@@ -60,7 +60,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> insert(@Nonnull T value);
+    IMultiset<T> insert(@Nonnull T value);
 
     /**
      * Adds count number of occurrences of value to the multiset.
@@ -71,8 +71,8 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> insert(@Nonnull T value,
-                                 int count);
+    IMultiset<T> insert(@Nonnull T value,
+                        int count);
 
     /**
      * Determines if the multiset contains at least one occurrence of the specified value
@@ -142,7 +142,7 @@ public interface JImmutableMultiset<T>
      * @param other contains values to be checked for
      * @return true if this multiset contains all occurrences
      */
-    boolean containsAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other);
+    boolean containsAllOccurrences(@Nonnull IMultiset<? extends T> other);
 
     /**
      * Determines if the multiset and other have at least one value in common.
@@ -172,7 +172,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> delete(@Nonnull T value);
+    IMultiset<T> delete(@Nonnull T value);
 
     /**
      * Removes one occurrence of value from the multiset.
@@ -181,7 +181,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteOccurrence(@Nonnull T value);
+    IMultiset<T> deleteOccurrence(@Nonnull T value);
 
     /**
      * Removes count number of occurrences of value from the multiset. If there are fewer than
@@ -193,14 +193,14 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteOccurrence(@Nonnull T value,
-                                           int count);
+    IMultiset<T> deleteOccurrence(@Nonnull T value,
+                                  int count);
 
     /**
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAll();
+    IMultiset<T> deleteAll();
 
     /**
      * Removes all occurrences of each value in other from the multiset.
@@ -210,7 +210,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other);
+    IMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes all occurrences of each value in other from the multiset.
@@ -220,7 +220,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other);
+    IMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other);
 
     /**
      * Removes each occurrence in other from the multiset.
@@ -230,7 +230,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other);
+    IMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other);
 
     /**
      * Removes each occurrence in other from the multiset.
@@ -240,7 +240,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other);
+    IMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other);
 
     /**
      * Removes each occurrence in other from the multiset.
@@ -250,7 +250,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> deleteAllOccurrences(@Nonnull JImmutableMultiset<? extends T> other);
+    IMultiset<T> deleteAllOccurrences(@Nonnull IMultiset<? extends T> other);
 
     /**
      * Adds each occurrence in values to the multiset.
@@ -261,7 +261,7 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     @Override
-    JImmutableMultiset<T> insertAll(@Nonnull Iterable<? extends T> values);
+    IMultiset<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
      * Adds each occurrence in values to the multiset.
@@ -272,7 +272,7 @@ public interface JImmutableMultiset<T>
      */
     @Nonnull
     @Override
-    JImmutableMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
+    IMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
      * Adds each occurrence in values to the multiset.
@@ -282,7 +282,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> insertAll(@Nonnull JImmutableMultiset<? extends T> values);
+    IMultiset<T> insertAll(@Nonnull IMultiset<? extends T> values);
 
     /**
      * Apply the transform function to all elements in iterator order and add each transformed
@@ -292,9 +292,9 @@ public interface JImmutableMultiset<T>
      * @return the new collection after all elements have been processed
      */
     @SuppressWarnings("unchecked")
-    default <A> JImmutableMultiset<A> transform(@Nonnull Func1<T, A> transform)
+    default <A> IMultiset<A> transform(@Nonnull Func1<T, A> transform)
     {
-        return transform((JImmutableMultiset)deleteAll(), transform);
+        return transform((IMultiset)deleteAll(), transform);
     }
 
     /**
@@ -308,7 +308,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> union(@Nonnull Iterable<? extends T> other);
+    IMultiset<T> union(@Nonnull Iterable<? extends T> other);
 
     /**
      * Combines all occurrences from other and the multiset. If only the multiset or
@@ -321,7 +321,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> union(@Nonnull Iterator<? extends T> other);
+    IMultiset<T> union(@Nonnull Iterator<? extends T> other);
 
     /**
      * Combines all occurrences from other and the multiset. If only the multiset or
@@ -332,7 +332,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the changes
      */
     @Nonnull
-    JImmutableMultiset<T> union(@Nonnull JImmutableMultiset<? extends T> other);
+    IMultiset<T> union(@Nonnull IMultiset<? extends T> other);
 
     /**
      * Creates a new multiset with the occurrences that are in both other and this.
@@ -345,7 +345,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull Iterable<? extends T> other);
+    IMultiset<T> intersection(@Nonnull Iterable<? extends T> other);
 
     /**
      * Creates a new multiset with the occurrences that are in both other and this.
@@ -358,7 +358,7 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull Iterator<? extends T> other);
+    IMultiset<T> intersection(@Nonnull Iterator<? extends T> other);
 
     /**
      * Creates a new multiset with the occurrences that are in both other and this.
@@ -369,19 +369,7 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableMultiset<? extends T> other);
-
-    /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
-     *
-     * @param other contains values to intersect with this multiset
-     * @return new multiset reflecting the change
-     */
-    @Override
-    @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull JImmutableSet<? extends T> other);
+    IMultiset<T> intersection(@Nonnull IMultiset<? extends T> other);
 
     /**
      * Creates a new multiset with the occurrences that are in both other and this.
@@ -393,7 +381,19 @@ public interface JImmutableMultiset<T>
      */
     @Override
     @Nonnull
-    JImmutableMultiset<T> intersection(@Nonnull Set<? extends T> other);
+    IMultiset<T> intersection(@Nonnull ISet<? extends T> other);
+
+    /**
+     * Creates a new multiset with the occurrences that are in both other and this.
+     * If neither the multiset nor other contains a value, it is removed. If both
+     * contain a value, the lesser count is used.
+     *
+     * @param other contains values to intersect with this multiset
+     * @return new multiset reflecting the change
+     */
+    @Override
+    @Nonnull
+    IMultiset<T> intersection(@Nonnull Set<? extends T> other);
 
     /**
      * Stream iterates through each Entry, that contains a unique value and the count of occurrences.
@@ -401,7 +401,7 @@ public interface JImmutableMultiset<T>
      * @return Streamable of JImmutableMap.Entries
      */
     @Nonnull
-    IterableStreamable<JImmutableMap.Entry<T, Integer>> entries();
+    IterableStreamable<IMapEntry<T, Integer>> entries();
 
     /**
      * Streamable that iterates through each occurrence in the multiset the correct number of times.
@@ -430,8 +430,8 @@ public interface JImmutableMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
-    JImmutableMultiset<T> setCount(@Nonnull T value,
-                                   int count);
+    IMultiset<T> setCount(@Nonnull T value,
+                          int count);
 
     /**
      * @return total number of unique values in the multiset. Same as the number of items in iterator() and entries().iterator().
@@ -449,7 +449,7 @@ public interface JImmutableMultiset<T>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, JImmutableMultiset<T>> multisetCollector()
+    default Collector<T, ?, IMultiset<T>> multisetCollector()
     {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }

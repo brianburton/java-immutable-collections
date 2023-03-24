@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable sparse array implementation using integers as keys.  Keys are traversed in signed integer
@@ -54,10 +54,10 @@ import java.util.Map;
  * for the number of elements currently in the array.
  */
 @Immutable
-public interface JImmutableArray<T>
+public interface IArray<T>
     extends Indexed<T>,
-            Insertable<JImmutableMap.Entry<Integer, T>, JImmutableArray<T>>,
-            IterableStreamable<JImmutableMap.Entry<Integer, T>>,
+            Insertable<IMapEntry<Integer, T>, IArray<T>>,
+            IterableStreamable<IMapEntry<Integer, T>>,
             InvariantCheckable,
             Serializable
 {
@@ -71,7 +71,7 @@ public interface JImmutableArray<T>
          * @return the collection
          */
         @Nonnull
-        JImmutableArray<T> build();
+        IArray<T> build();
 
         /**
          * Determines how many values will be in the collection if build() is called now.
@@ -177,10 +177,10 @@ public interface JImmutableArray<T>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<T> putAll(@Nonnull Iterator<JImmutableMap.Entry<Integer, ? extends T>> source)
+        default Builder<T> putAll(@Nonnull Iterator<IMapEntry<Integer, ? extends T>> source)
         {
             while (source.hasNext()) {
-                final JImmutableMap.Entry<Integer, ? extends T> entry = source.next();
+                final IMapEntry<Integer, ? extends T> entry = source.next();
                 put(entry.getKey(), entry.getValue());
             }
             return this;
@@ -239,7 +239,7 @@ public interface JImmutableArray<T>
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
     @Nonnull
-    Holder<JImmutableMap.Entry<Integer, T>> findEntry(int index);
+    Holder<IMapEntry<Integer, T>> findEntry(int index);
 
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value
@@ -252,8 +252,8 @@ public interface JImmutableArray<T>
      * @return new map reflecting the change
      */
     @Nonnull
-    JImmutableArray<T> assign(int index,
-                              @Nullable T value);
+    IArray<T> assign(int index,
+                     @Nullable T value);
 
     /**
      * Deletes the entry for the specified index (if any).  Returns a new map if the value
@@ -263,7 +263,7 @@ public interface JImmutableArray<T>
      * @return same or different map depending on whether index was removed
      */
     @Nonnull
-    JImmutableArray<T> delete(int index);
+    IArray<T> delete(int index);
 
     /**
      * Return the number of entries in the map.
@@ -285,7 +285,7 @@ public interface JImmutableArray<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableArray<T> deleteAll();
+    IArray<T> deleteAll();
 
     /**
      * Creates an unmodifiable java.util.Map reflecting the values of the JImmutableMap backing the array.

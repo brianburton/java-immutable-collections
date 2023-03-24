@@ -35,20 +35,20 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.iterators.TransformStreamable;
-
+import java.util.Map;
+import java.util.function.BiPredicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Map;
-import java.util.function.BiPredicate;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 @Immutable
 public abstract class AbstractJImmutableMap<K, V>
-    implements JImmutableMap<K, V>
+    implements IMap<K, V>
 {
     @Nullable
     @Override
@@ -63,30 +63,30 @@ public abstract class AbstractJImmutableMap<K, V>
      */
     @Override
     @Nonnull
-    public JImmutableMap<K, V> insert(@Nonnull Entry<? extends K, ? extends V> e)
+    public IMap<K, V> insert(@Nonnull IMapEntry<? extends K, ? extends V> e)
     {
         return assign(e.getKey(), e.getValue());
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> getInsertableSelf()
+    public IMap<K, V> getInsertableSelf()
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map)
+    public IMap<K, V> assignAll(@Nonnull IMap<? extends K, ? extends V> map)
     {
-        return map.reduce((JImmutableMap<K, V>)this, (m, k, v) -> m = m.assign(k, v));
+        return map.reduce((IMap<K, V>)this, (m, k, v) -> m = m.assign(k, v));
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map)
+    public IMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map)
     {
-        JImmutableMap<K, V> answer = this;
+        IMap<K, V> answer = this;
         for (Map.Entry<? extends K, ? extends V> e : map.entrySet()) {
             answer = answer.assign(e.getKey(), e.getValue());
         }
@@ -137,8 +137,8 @@ public abstract class AbstractJImmutableMap<K, V>
     {
         if (o == this) {
             return true;
-        } else if (o instanceof JImmutableMap) {
-            return getMap().equals(((JImmutableMap)o).getMap());
+        } else if (o instanceof IMap) {
+            return getMap().equals(((IMap)o).getMap());
         } else {
             return (o instanceof Map) && getMap().equals(o);
         }
@@ -166,15 +166,15 @@ public abstract class AbstractJImmutableMap<K, V>
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> select(@Nonnull BiPredicate<K, V> predicate)
+    public IMap<K, V> select(@Nonnull BiPredicate<K, V> predicate)
     {
         return reduce(deleteAll().mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b).build();
     }
 
     @Nonnull
     @Override
-    public JImmutableMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate)
+    public IMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate)
     {
-        return reduce((JImmutableMap<K, V>)this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
+        return reduce((IMap<K, V>)this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
     }
 }

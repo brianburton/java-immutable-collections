@@ -35,11 +35,14 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.JImmutableMap;
-import org.javimmutable.collections.JImmutableMap.Entry;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -47,11 +50,6 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
 
 /**
  * A Node containing one value and two (possibly empty) children.  Class invariant
@@ -354,8 +352,8 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<Entry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                         @Nonnull K key)
+    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                             @Nonnull K key)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
@@ -367,7 +365,7 @@ class ValueNode<K, V>
         }
     }
 
-    private Entry<K, V> entry()
+    private IMapEntry<K, V> entry()
     {
         return MapEntry.of(key, value);
     }
@@ -460,9 +458,9 @@ class ValueNode<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<JImmutableMap.Entry<K, V>> iterateOverRange(@Nullable GenericIterator.State<JImmutableMap.Entry<K, V>> parent,
-                                                                             int offset,
-                                                                             int limit)
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
+                                                                   int offset,
+                                                                   int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
         return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, GenericIterator.singleValueIterable(MapEntry.of(key, value)), right), offset, limit);

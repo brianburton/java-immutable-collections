@@ -35,19 +35,19 @@
 
 package org.javimmutable.collections;
 
+import java.io.Serializable;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Interface for objects that store values in LIFO form.  Elements are always added
  * at the front of the list so elements are traversed in reverse order.
  */
 @Immutable
-public interface JImmutableStack<T>
-    extends Insertable<T, JImmutableStack<T>>,
+public interface IStack<T>
+    extends Insertable<T, IStack<T>>,
             Sequence<T>,
             IterableStreamable<T>,
             InvariantCheckable,
@@ -64,20 +64,20 @@ public interface JImmutableStack<T>
      */
     @Nonnull
     @Override
-    JImmutableStack<T> getTail();
+    IStack<T> getTail();
 
     /**
      * Returns a new list containing the value before the element returned by getHead().
      */
     @Nonnull
     @Override
-    JImmutableStack<T> insert(@Nullable T value);
+    IStack<T> insert(@Nullable T value);
 
     /**
      * Returns a list without the element returned by getHead().
      */
     @Nonnull
-    JImmutableStack<T> remove();
+    IStack<T> remove();
 
     /**
      * @return List containing the elements of this stack in order

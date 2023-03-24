@@ -35,14 +35,14 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for immutable data structures that allow storage and retrieval of
@@ -50,30 +50,18 @@ import java.util.stream.Collector;
  * an allowed key.
  */
 @Immutable
-public interface JImmutableMap<K, V>
-    extends Insertable<JImmutableMap.Entry<? extends K, ? extends V>, JImmutableMap<K, V>>,
+public interface IMap<K, V>
+    extends Insertable<IMapEntry<? extends K, ? extends V>, IMap<K, V>>,
             Mapped<K, V>,
-            IterableStreamable<JImmutableMap.Entry<K, V>>,
+            IterableStreamable<IMapEntry<K, V>>,
             InvariantCheckable,
             Serializable
 {
-    /**
-     * An immutable entry in the map.  Contains the key and value for that entry.
-     * key must not be null but value can be null.
-     */
-    @Immutable
-    interface Entry<K, V>
-    {
-        @Nonnull
-        K getKey();
-
-        V getValue();
-    }
 
     interface Builder<K, V>
     {
         @Nonnull
-        JImmutableMap<K, V> build();
+        IMap<K, V> build();
 
         @Nonnull
         Builder<K, V> add(@Nonnull K key,
@@ -82,7 +70,7 @@ public interface JImmutableMap<K, V>
         int size();
 
         @Nonnull
-        default Builder<K, V> add(Entry<? extends K, ? extends V> e)
+        default Builder<K, V> add(IMapEntry<? extends K, ? extends V> e)
         {
             return add(e.getKey(), e.getValue());
         }
@@ -94,7 +82,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Iterator<? extends Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Iterator<? extends IMapEntry<? extends K, ? extends V>> source)
         {
             while (source.hasNext()) {
                 add(source.next());
@@ -124,7 +112,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Iterable<? extends Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Iterable<? extends IMapEntry<? extends K, ? extends V>> source)
         {
             return add(source.iterator());
         }
@@ -136,7 +124,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default <T extends Entry<? extends K, ? extends V>> Builder<K, V> add(T... source)
+        default <T extends IMapEntry<? extends K, ? extends V>> Builder<K, V> add(T... source)
         {
             return add(Arrays.asList(source));
         }
@@ -148,7 +136,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Indexed<? extends Entry<? extends K, ? extends V>> source,
+        default Builder<K, V> add(Indexed<? extends IMapEntry<? extends K, ? extends V>> source,
                                   int offset,
                                   int limit)
         {
@@ -165,7 +153,7 @@ public interface JImmutableMap<K, V>
          * @return the builder (convenience for chaining multiple calls)
          */
         @Nonnull
-        default Builder<K, V> add(Indexed<? extends Entry<? extends K, ? extends V>> source)
+        default Builder<K, V> add(Indexed<? extends IMapEntry<? extends K, ? extends V>> source)
         {
             return add(source, 0, source.size());
         }
@@ -191,7 +179,7 @@ public interface JImmutableMap<K, V>
      */
     @Nonnull
     @Override
-    JImmutableMap<K, V> insert(@Nonnull Entry<? extends K, ? extends V> value);
+    IMap<K, V> insert(@Nonnull IMapEntry<? extends K, ? extends V> value);
 
     /**
      * Search for a value within the map and return a Holder indicating if the value
@@ -213,7 +201,7 @@ public interface JImmutableMap<K, V>
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
     @Nonnull
-    Holder<Entry<K, V>> findEntry(@Nonnull K key);
+    Holder<IMapEntry<K, V>> findEntry(@Nonnull K key);
 
     /**
      * Sets the value associated with a specific key.  Key must be non-null but value
@@ -226,8 +214,8 @@ public interface JImmutableMap<K, V>
      * @return new map reflecting the change
      */
     @Nonnull
-    JImmutableMap<K, V> assign(@Nonnull K key,
-                               V value);
+    IMap<K, V> assign(@Nonnull K key,
+                      V value);
 
     /**
      * Copies all key-value pairs from the given map. The map itself and its keys must be
@@ -238,7 +226,7 @@ public interface JImmutableMap<K, V>
      * @return new map reflecting the change
      */
     @Nonnull
-    JImmutableMap<K, V> assignAll(@Nonnull JImmutableMap<? extends K, ? extends V> map);
+    IMap<K, V> assignAll(@Nonnull IMap<? extends K, ? extends V> map);
 
 
     /**
@@ -250,7 +238,7 @@ public interface JImmutableMap<K, V>
      * @return new map reflecting the change
      */
     @Nonnull
-    JImmutableMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map);
+    IMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map);
 
     /**
      * Deletes the entry for the specified key (if any).  Returns a new map if the value
@@ -260,7 +248,7 @@ public interface JImmutableMap<K, V>
      * @return same or different map depending on whether key was removed
      */
     @Nonnull
-    JImmutableMap<K, V> delete(@Nonnull K key);
+    IMap<K, V> delete(@Nonnull K key);
 
     /**
      * Return the number of entries in the map.
@@ -281,7 +269,7 @@ public interface JImmutableMap<K, V>
      * @return an equivalent collection with no values
      */
     @Nonnull
-    JImmutableMap<K, V> deleteAll();
+    IMap<K, V> deleteAll();
 
     /**
      * Creates an unmodifiable java.util.Map reflecting the values of this JImmutableMap.
@@ -314,7 +302,7 @@ public interface JImmutableMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<Entry<K, V>, ?, JImmutableMap<K, V>> mapCollector()
+    default Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector()
     {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
@@ -328,8 +316,8 @@ public interface JImmutableMap<K, V>
      * @return new map with changes applied
      */
     @Nonnull
-    default JImmutableMap<K, V> update(@Nonnull K key,
-                                       @Nonnull Func1<Holder<V>, V> generator)
+    default IMap<K, V> update(@Nonnull K key,
+                              @Nonnull Func1<Holder<V>, V> generator)
     {
         final Holder<V> current = find(key);
         final V newValue = generator.apply(current);
@@ -341,7 +329,7 @@ public interface JImmutableMap<K, V>
      */
     default void forEach(@Nonnull Proc2<K, V> proc)
     {
-        for (Entry<K, V> e : this) {
+        for (IMapEntry<K, V> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -352,7 +340,7 @@ public interface JImmutableMap<K, V>
     default <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
         throws E
     {
-        for (Entry<K, V> e : this) {
+        for (IMapEntry<K, V> e : this) {
             proc.apply(e.getKey(), e.getValue());
         }
     }
@@ -368,7 +356,7 @@ public interface JImmutableMap<K, V>
     default <R> R reduce(R sum,
                          @Nonnull Sum2<K, V, R> proc)
     {
-        for (Entry<K, V> e : this) {
+        for (IMapEntry<K, V> e : this) {
             sum = proc.apply(sum, e.getKey(), e.getValue());
         }
         return sum;
@@ -387,7 +375,7 @@ public interface JImmutableMap<K, V>
                                                     @Nonnull Sum2Throws<K, V, R, E> proc)
         throws E
     {
-        for (Entry<K, V> e : this) {
+        for (IMapEntry<K, V> e : this) {
             sum = proc.apply(sum, e.getKey(), e.getValue());
         }
         return sum;
@@ -402,7 +390,7 @@ public interface JImmutableMap<K, V>
      * @return map of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    JImmutableMap<K, V> select(@Nonnull BiPredicate<K, V> predicate);
+    IMap<K, V> select(@Nonnull BiPredicate<K, V> predicate);
 
     /**
      * Returns a map of the same type as this containing all those elements for which
@@ -413,5 +401,5 @@ public interface JImmutableMap<K, V>
      * @return map of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    JImmutableMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate);
+    IMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate);
 }
