@@ -63,11 +63,11 @@ public interface Indexed<T>
     Holder<T> find(int index);
 
     /**
-     * Retrieves a {@link Maybe} containing the value at the specified index if it exists and is non-null.
+     * Retrieves a {@link Holder} containing the value at the specified index if it exists and is non-null.
      * If no such value exists or the value is null returns none().
      */
     @Nonnull
-    Maybe<T> seek(int index);
+    Holder<T> seek(int index);
 
     @SuppressWarnings("unchecked")
     default T[] subArray(int offset,
@@ -100,7 +100,7 @@ public interface Indexed<T>
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 return source.seek(index).map(transforminator::apply);
             }

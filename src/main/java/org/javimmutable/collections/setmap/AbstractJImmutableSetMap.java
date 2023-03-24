@@ -88,7 +88,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> insert(@Nonnull K key,
                                 @Nonnull V value)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).insert(value)));
+        return create(contents.update(key, h -> h.get(emptySet).insert(value)));
     }
 
     @Nonnull
@@ -104,7 +104,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> insertAll(@Nonnull K key,
                                    @Nonnull Iterator<? extends V> values)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).insertAll(values)));
+        return create(contents.update(key, h -> h.get(emptySet).insertAll(values)));
     }
 
     @Nonnull
@@ -117,7 +117,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     @Override
     public boolean contains(@Nonnull K key)
     {
-        return contents.find(key).isFilled();
+        return contents.find(key).isSome();
     }
 
     @Override
@@ -202,7 +202,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> union(@Nonnull K key,
                                @Nonnull Iterator<? extends V> other)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).union(other)));
+        return create(contents.update(key, h -> h.get(emptySet).union(other)));
     }
 
 
@@ -219,7 +219,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> intersection(@Nonnull K key,
                                       @Nonnull Iterator<? extends V> other)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
+        return create(contents.update(key, h -> h.get(emptySet).intersection(other)));
     }
 
     @Nonnull
@@ -227,7 +227,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> intersection(@Nonnull K key,
                                       @Nonnull ISet<? extends V> other)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
+        return create(contents.update(key, h -> h.get(emptySet).intersection(other)));
     }
 
     @Nonnull
@@ -235,7 +235,7 @@ abstract class AbstractJImmutableSetMap<K, V>
     public ISetMap<K, V> intersection(@Nonnull K key,
                                       @Nonnull Set<? extends V> other)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptySet).intersection(other)));
+        return create(contents.update(key, h -> h.get(emptySet).intersection(other)));
     }
 
     @Override

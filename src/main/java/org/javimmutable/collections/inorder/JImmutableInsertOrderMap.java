@@ -44,7 +44,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
@@ -166,7 +165,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<V> find(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        return (current != null) ? Holders.of(current.value) : Holders.of();
+        return current != null ? Holder.maybe(current.value) : Holder.none();
     }
 
     @Nonnull
@@ -174,7 +173,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        return (current != null) ? Holders.of(entry(key, current.value)) : Holders.of();
+        return current != null ? Holder.maybe(entry(key, current.value)) : Holder.none();
     }
 
     @Nonnull
@@ -184,11 +183,11 @@ public class JImmutableInsertOrderMap<K, V>
     {
         final Temp.Var1<Boolean> inserted = new Temp.Var1<>(false);
         final IMap<K, Node<V>> newValues = values.update(key, hv -> {
-            if (hv.isEmpty()) {
+            if (hv.isNone()) {
                 inserted.x = true;
                 return new Node<>(nextToken, value);
             } else {
-                final Node<V> node = hv.getValue();
+                final Node<V> node = hv.unsafeGet();
                 return node.withValue(value);
             }
         });

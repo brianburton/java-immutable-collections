@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections;
 
-import static org.javimmutable.collections.Maybe.maybe;
-import static org.javimmutable.collections.Maybe.none;
+import static org.javimmutable.collections.Holder.maybe;
+import static org.javimmutable.collections.Holder.none;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -158,26 +158,26 @@ public interface IterableStreamable<T>
     {
         for (T value : this) {
             if (predicate.test(value)) {
-                return Holders.of(value);
+                return maybe(value);
             }
         }
-        return Holders.of();
+        return none();
     }
 
     /**
-     * Returns a Maybe containing a value if this IterableStreamable contains only a single value and that value is non-null.
-     * Otherwise returns and empty Maybe.
+     * Returns a Holder containing a value if this IterableStreamable contains only a single value and that value is non-null.
+     * Otherwise returns and empty Holder.
      *
-     * @return Maybe possibly containing the single non-null value in this iterable
+     * @return Holder possibly containing the single non-null value in this iterable
      */
-    default Maybe<T> single()
+    default Holder<T> single()
     {
         final Iterator<T> iter = iterator();
         if (!iter.hasNext()) {
             return none();
         }
         final T value = iter.next();
-        return iter.hasNext() ? none() : maybe(value);
+        return iter.hasNext() ? none() : Holder.maybe(value);
     }
 
     /**
@@ -295,7 +295,7 @@ public interface IterableStreamable<T>
     {
         return reduce(collection, (c, v) -> {
             final Holder<A> transformed = transform.apply(v);
-            return transformed.isFilled() ? c.insert(transformed.getValue()) : c;
+            return transformed.fold(c, Insertable::insert);
         });
     }
 
@@ -317,8 +317,8 @@ public interface IterableStreamable<T>
         while (maxToCollect > 0 && iterator.hasNext()) {
             final T value = iterator.next();
             final Holder<A> transformed = transform.apply(value);
-            if (transformed.isFilled()) {
-                collection = collection.insert(transformed.getValue());
+            if (transformed.isSome()) {
+                collection = collection.insert(transformed.unsafeGet());
                 maxToCollect -= 1;
             }
         }
@@ -350,6 +350,15 @@ public interface IterableStreamable<T>
         return new Partitions<>(matched, unmatched);
     }
 
+    default <A> A fold(A acc,
+                       Func2<A, T, A> mapper)
+    {
+        for (T t : this) {
+            acc = mapper.apply(acc, t);
+        }
+        return acc;
+    }
+
     /**
      * Apply the specified accumulator to all elements in iterator order calling the accumulator function
      * for each element.  The first call to accumulator is passed the first element in the sequence.
@@ -362,13 +371,13 @@ public interface IterableStreamable<T>
     {
         final Iterator<T> iterator = iterator();
         if (!iterator.hasNext()) {
-            return Holders.of();
+            return none();
         }
         T answer = iterator.next();
         while (iterator.hasNext()) {
             answer = accumulator.apply(answer, iterator.next());
         }
-        return Holders.of(answer);
+        return maybe(answer);
     }
 
     class Partitions<T>

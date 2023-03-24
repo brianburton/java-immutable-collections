@@ -35,9 +35,8 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holders.holder;
-import static org.javimmutable.collections.Maybe.maybe;
-import static org.javimmutable.collections.Maybe.none;
+import static org.javimmutable.collections.Holder.maybe;
+import static org.javimmutable.collections.Holder.none;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects
@@ -73,12 +71,12 @@ public class IndexedHelper
             @Override
             public Holder<T> find(int index)
             {
-                return holder();
+                return none();
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 return none();
             }
@@ -114,14 +112,14 @@ public class IndexedHelper
             public Holder<T> find(int index)
             {
                 if (index == 0) {
-                    return holder(a);
+                    return maybe(a);
                 }
-                return holder();
+                return none();
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 if (index == 0) {
                     return maybe(a);
@@ -166,17 +164,17 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return holder(a);
+                        return maybe(a);
                     case 1:
-                        return holder(b);
+                        return maybe(b);
                     default:
-                        return holder();
+                        return none();
                 }
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 switch (index) {
                     case 0:
@@ -228,19 +226,19 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return holder(a);
+                        return maybe(a);
                     case 1:
-                        return holder(b);
+                        return maybe(b);
                     case 2:
-                        return holder(c);
+                        return maybe(c);
                     default:
-                        return holder();
+                        return none();
                 }
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 switch (index) {
                     case 0:
@@ -296,23 +294,23 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return holder(a);
+                        return maybe(a);
                     case 1:
-                        return holder(b);
+                        return maybe(b);
                     case 2:
-                        return holder(c);
+                        return maybe(c);
                     default:
                         index -= 3;
                         if (index >= 0 && index < others.length) {
-                            return holder(others[index]);
+                            return maybe(others[index]);
                         }
-                        return holder();
+                        return none();
                 }
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 switch (index) {
                     case 0:
@@ -359,15 +357,15 @@ public class IndexedHelper
             public Holder<T> find(int index)
             {
                 if (index < 0 || index >= count) {
-                    return holder();
+                    return none();
                 } else {
-                    return holder(value);
+                    return maybe(value);
                 }
             }
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 if (index < 0 || index >= count) {
                     return none();
@@ -405,14 +403,14 @@ public class IndexedHelper
             public Holder<Integer> find(int index)
             {
                 if (index < 0 || index >= size) {
-                    return holder();
+                    return none();
                 }
-                return holder(low + index);
+                return maybe(low + index);
             }
 
             @Nonnull
             @Override
-            public Maybe<Integer> seek(int index)
+            public Holder<Integer> seek(int index)
             {
                 if (index < 0 || index >= size) {
                     return none();
@@ -462,7 +460,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> seek(int index)
+            public Holder<T> seek(int index)
             {
                 return indexed.seek(index).map(transforminator::apply);
             }

@@ -94,11 +94,11 @@ public class ReadmeTest
             .isEqualTo(list(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 
         // build a new list by selectively taking values from the primes list using transformSome() method instead of a stream
-        IList<Integer> threes = primes.transformSome(list(), i -> i % 10 == 3 ? Holders.of(i) : Holders.of());
+        IList<Integer> threes = primes.transformSome(list(), i -> i % 10 == 3 ? Holder.maybe(i) : Holder.none());
         assertThat(threes).isEqualTo(list(3, 13, 23, 43, 53, 73, 83));
 
         // transformSome() can also append to an existing list rather than an empty one
-        IList<Integer> onesAndThrees = primes.transformSome(threes, i -> i % 10 == 1 ? Holders.of(i) : Holders.of());
+        IList<Integer> onesAndThrees = primes.transformSome(threes, i -> i % 10 == 1 ? Holder.maybe(i) : Holder.none());
         assertThat(onesAndThrees).isEqualTo(list(3, 13, 23, 43, 53, 73, 83, 11, 31, 41, 61, 71));
         // threes wasn't changed (it's immutable)
         assertThat(threes).isEqualTo(list(3, 13, 23, 43, 53, 73, 83));

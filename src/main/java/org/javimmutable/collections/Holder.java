@@ -35,128 +35,999 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.util.function.Consumer;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.EmptyIterator;
+import org.javimmutable.collections.iterators.SingleValueIterator;
+import org.javimmutable.collections.serialization.MaybeProxy;
 
 /**
- * Instances are immutable containers for at most a single object.  A Holder is either empty or filled
- * and always remain in the same state once created, i.e. value returned by isEmpty() and isFilled()
- * and getValue() must not change over time for a single instance.  null is a legitimate value for a
- * Holder and a filled Holder could return null from getValue().
+ * Similar to Holder but implemented as a concrete ADT rather than an interface.
+ * Used to handle cases when a value may or may not be present and to eliminate
+ * the use of null values.  Unlike a Holder, the value of a Holder can never be null.
+ * Provides a variety of utility methods to allow call chaining.
  */
-@Immutable
-public interface Holder<T>
+public abstract class Holder<T>
+    implements IterableStreamable<T>,
+               Serializable
 {
     /**
-     * @return true iff this Holder has no value to return
-     */
-    boolean isEmpty();
-
-    /**
-     * @return true iff this Holder has a value to return
-     */
-    boolean isNonEmpty();
-
-    /**
-     * @return true iff this Holder has a value to return
-     */
-    boolean isFilled();
-
-    /**
-     * Retrieve the value of a filled Holder.  Must throw if Holder is empty.
+     * Produce a non-empty Holder.  If this Holder is non-empty it is returned.
+     * Otherwise the noneMapping function is called to provide a value
+     * for the result Holder.
      *
-     * @return the (possibly null) value
-     * @throws UnsupportedOperationException if Holder is empty
+     * @param noneMapping produces value if this is empty
+     * @return a non-empty Holder
      */
-    T getValue();
-
-    /**
-     * Retrieve the value of a filled Holder or null if Holder is empty.
-     *
-     * @return null (empty) or value (filled)
-     */
-    T getValueOrNull();
-
-    /**
-     * Retrieve the value of a filled Holder or the defaultValue if Holder is empty
-     *
-     * @param defaultValue value to return if Holder is empty
-     * @return value or defaultValue
-     */
-    T getValueOr(T defaultValue);
-
     @Nonnull
-    Maybe<T> toMaybe();
+    public abstract Holder<T> map(@Nonnull Func0<? extends T> noneMapping);
 
     /**
-     * Call consumer with my value if I am filled.  Otherwise do nothing.
+     * Produce a Holder that is empty if this is empty or else contains the result
+     * of passing this value to the given mapping function.
+     *
+     * @param someMapping maps this value to new value
+     * @return a possibly empty Holder
      */
-    default void ifPresent(@Nonnull Consumer<? super T> consumer)
+    @Nonnull
+    public abstract <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> someMapping);
+
+    /**
+     * Produce a Holder that is empty if this is empty or else contains the result
+     * of passing this value to the given mapping function.
+     *
+     * @param someMapping maps this value to new value
+     * @return a possibly empty Holder
+     */
+    @Nonnull
+    public abstract <U> Holder<U> map(@Nonnull Func1<? super T, ? extends U> someMapping);
+
+    /**
+     * Produce a non-empty Holder.  If this is empty the noneMapping function is called
+     * to provide a value.  Otherwise the someMapping function is called to produce a
+     * new value based on this value.
+     *
+     * @param noneMapping produces value when this is empty
+     * @param someMapping maps this value to new value
+     * @return a non-empty Holder
+     */
+    @Nonnull
+    public abstract <U> Holder<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                      @Nonnull Func1<? super T, ? extends U> someMapping);
+
+    /**
+     * Produce a non-empty Holder.  If this Holder is non-empty it is returned.
+     * Otherwise the noneMapping function is called to provide a value
+     * for the result Holder.
+     *
+     * @param noneMapping produces value if this is empty
+     * @return a non-empty Holder
+     */
+    @Nonnull
+    public abstract <E extends Exception> Holder<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
+        throws E;
+
+    /**
+     * Produce a Holder that is empty if this is empty or else contains the result
+     * of passing this value to the given mapping function.
+     *
+     * @param someMapping maps this value to new value
+     * @return a possibly empty Holder
+     */
+    @Nonnull
+    public abstract <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+        throws E;
+
+    /**
+     * Produce a non-empty Holder.  If this is empty the noneMapping function is called
+     * to provide a value.  Otherwise the someMapping function is called to produce a
+     * new value based on this value.
+     *
+     * @param noneMapping produces value when this is empty
+     * @param someMapping maps this value to new value
+     * @return a non-empty Holder
+     */
+    @Nonnull
+    public abstract <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                                 @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+        throws E;
+
+    /**
+     * Produce a Holder based on this one.  If this is empty noneMapping is called
+     * to produce a new Holder. Otherwise this is returned.
+     *
+     * @param noneMapping produce new Holder if this is empty
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract Holder<T> flatMap(@Nonnull Func0<Holder<T>> noneMapping);
+
+    /**
+     * Produce a Holder based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Holder.  Otherwise this is returned.
+     *
+     * @param someMapping produce a new Holder from this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract <A> Holder<A> flatMap(@Nonnull Func1<? super T, Holder<A>> someMapping);
+
+    /**
+     * Produce a Holder based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Holder.  Otherwise noneMapping is
+     * called to produce a new Holder..
+     *
+     * @param noneMapping produce a new Holder when this is empty
+     * @param someMapping produce a new Holder from this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract <A> Holder<A> flatMap(@Nonnull Func0<Holder<A>> noneMapping,
+                                          @Nonnull Func1<? super T, Holder<A>> someMapping);
+
+    /**
+     * Produce a Holder based on this one.  If this is empty noneMapping is called
+     * to produce a new Holder. Otherwise this is returned.
+     *
+     * @param noneMapping produce new Holder if this is empty
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract <E extends Exception> Holder<T> flatMapThrows(@Nonnull Func0Throws<Holder<T>, E> noneMapping)
+        throws E;
+
+    /**
+     * Produce a Holder based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Holder.  Otherwise this is returned.
+     *
+     * @param someMapping produce a new Holder from this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+        throws E;
+
+    /**
+     * Produce a Holder based on this one.  If this is non-empty its value is
+     * passed to someMapping to produce a new Holder.  Otherwise noneMapping is
+     * called to produce a new Holder..
+     *
+     * @param noneMapping produce a new Holder when this is empty
+     * @param someMapping produce a new Holder from this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func0Throws<Holder<A>, E> noneMapping,
+                                                                     @Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+        throws E;
+
+    /**
+     * Returns this if this is non-empty and predicate returns true.
+     * Otherwise an empty Holder is returned.
+     *
+     * @param predicate determines whether to accept this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract Holder<T> select(@Nonnull Predicate<? super T> predicate);
+
+    /**
+     * Returns this if this is non-empty and predicate returns false.
+     * Otherwise an empty Holder is returned.
+     *
+     * @param predicate determines whether to reject this value
+     * @return a Holder
+     */
+    @Nonnull
+    public abstract Holder<T> reject(@Nonnull Predicate<? super T> predicate);
+
+    /**
+     * Invokes noneAction if this is empty.
+     *
+     * @param noneAction action to call if this is empty
+     * @return this
+     */
+    @Nonnull
+    public abstract Holder<T> apply(@Nonnull Proc0 noneAction);
+
+    /**
+     * Invokes someAction with this value if this is non-empty.
+     *
+     * @param someAction action to call if this is non-empty
+     * @return this
+     */
+    @Nonnull
+    public abstract Holder<T> apply(@Nonnull Proc1<? super T> someAction);
+
+    /**
+     * Invokes noneAction if this is empty.
+     *
+     * @param noneAction action to call if this is empty
+     * @return this
+     */
+    @Nonnull
+    public abstract <E extends Exception> Holder<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+        throws E;
+
+    /**
+     * Invokes someAction with this value if this is non-empty.
+     *
+     * @param someAction action to call if this is non-empty
+     * @return this
+     */
+    @Nonnull
+    public abstract <E extends Exception> Holder<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+        throws E;
+
+    /**
+     * Gets this value.  Throws NoSuchElementException if this is empty.
+     *
+     * @return this value
+     * @throws NoSuchElementException if this is empty
+     */
+    @Nonnull
+    public abstract T unsafeGet();
+
+    /**
+     * Gets this value.  Calls noneExceptionMapping to get an exception
+     * to throw if this is empty.
+     *
+     * @return this value
+     * @throws E an exception produced by mapping if this is empty
+     */
+    @Nonnull
+    public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
+        throws E;
+
+    /**
+     * Gets this value.  If this is empty returns noneValue instead.
+     *
+     * @param noneValue value to return if this is empty
+     */
+    @Nonnull
+    public abstract T get(@Nonnull T noneValue);
+
+    /**
+     * Gets this value.  If this is empty returns null.
+     */
+    @Nullable
+    public abstract T getOrNull();
+
+    /**
+     * Gets this value.  If this is empty returns result of calling noneMapping instead.
+     *
+     * @param noneMapping function to generate value to return if this is empty
+     */
+    @Nonnull
+    public abstract T getOr(@Nonnull Func0<? extends T> noneMapping);
+
+    /**
+     * Gets a value based on this value.  If this is empty noneValue is returned.
+     * Otherwise this value is passed to someMapping to obtain a return value.
+     *
+     * @param noneValue   value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
+    public abstract <U> U match(U noneValue,
+                                @Nonnull Func1<? super T, U> someMapping);
+
+    /**
+     * Gets a value based on this value.  If this is empty noneMapping is called
+     * to obtain a return value.  Otherwise this value is passed to someMapping to
+     * obtain a return value.
+     *
+     * @param noneMapping function to produce a value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
+    public abstract <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                                  @Nonnull Func1<? super T, U> someMapping);
+
+    /**
+     * Gets a value based on this value.  If this is empty noneValue is returned.
+     * Otherwise this value is passed to someMapping to obtain a return value.
+     *
+     * @param noneValue   value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
+    public abstract <U, E extends Exception> U matchThrows(U noneValue,
+                                                           @Nonnull Func1Throws<? super T, U, E> someMapping)
+        throws E;
+
+    /**
+     * Gets a value based on this value.  If this is empty noneMapping is called
+     * to obtain a return value.  Otherwise this value is passed to someMapping to
+     * obtain a return value.
+     *
+     * @param noneMapping function to produce a value to return if this is empty
+     * @param someMapping function to map this value into return value
+     * @return a value
+     */
+    public abstract <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                             @Nonnull Func1Throws<? super T, U, E> someMapping)
+        throws E;
+
+    /**
+     * Returns true if this has no value
+     */
+    public abstract boolean isNone();
+
+    /**
+     * Returns true if this has a value
+     */
+    public abstract boolean isSome();
+
+    private Holder()
     {
-        if (isFilled()) {
-            consumer.accept(getValue());
+    }
+
+    /**
+     * Returns an empty Holder. All empty Maybes share a common instance.
+     */
+    @Nonnull
+    public static <T> Holder<T> maybe()
+    {
+        return none();
+    }
+
+    /**
+     * Returns an empty Holder if value is null, otherwise a Holder containing
+     * the value is returned.
+     */
+    @Nonnull
+    public static <T> Holder<T> maybe(@Nullable T value)
+    {
+        return value != null ? some(value) : none();
+    }
+
+    /**
+     * Returns an empty Holder if value is null, otherwise a Holder containing
+     * the value is returned.
+     */
+    @Nonnull
+    public static <T> Holder<T> Holder(@Nullable T value)
+    {
+        return value != null ? some(value) : none();
+    }
+
+    /**
+     * Determine if the object is an instance of the specified Class or a subclass.
+     * If that is the case returns a Holder containing the object case to the class.
+     * If that is not the case returns an empty Holder.  Note that this is generally
+     * only useful for classes with simple (non-generic) types.
+     *
+     * @param klass       class to cast the object to
+     * @param valueOrNull object to be case
+     * @param <T>         type of the class
+     * @return a Holder
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <T> Holder<T> cast(@Nonnull Class<T> klass,
+                                     @Nullable Object valueOrNull)
+    {
+        return klass.isInstance(valueOrNull) ? new Some(valueOrNull) : none();
+    }
+
+    /**
+     * Returns an empty Holder. All empty Maybes share a common instance.
+     */
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public static <T> Holder<T> none()
+    {
+        return (Holder<T>)None.NONE;
+    }
+
+    /**
+     * Returns a Holder containing the value.  The value must be non-null.
+     */
+    @Nonnull
+    public static <T> Holder<T> some(@Nonnull T value)
+    {
+        //noinspection ConstantConditions
+        assert value != null;
+        return new Some<>(value);
+    }
+
+    /**
+     * Returns a Holder containing the first value of the collection.  If the collection
+     * is empty or the first value is null an empty Holder is returned.
+     */
+    @Nonnull
+    public static <T> Holder<T> first(@Nonnull Iterable<? extends T> collection)
+    {
+        final Iterator<? extends T> i = collection.iterator();
+        return i.hasNext() ? Holder(i.next()) : none();
+    }
+
+    /**
+     * Returns a Holder containing the first non-null value of the collection
+     * for which the predicate returns true.  If the collection
+     * is empty, there are no non-null values, or predicate always
+     * returns false an empty Holder is returned.
+     */
+    @Nonnull
+    public static <T> Holder<T> first(@Nonnull Iterable<? extends T> collection,
+                                      @Nonnull Func1<? super T, Boolean> predicate)
+    {
+        for (T value : collection) {
+            if (value != null && predicate.apply(value)) {
+                return some(value);
+            }
+        }
+        return none();
+    }
+
+    private static class None<T>
+        extends Holder<T>
+    {
+        @SuppressWarnings("rawtypes")
+        private static final None NONE = new None();
+
+        private None()
+        {
+        }
+
+        @Override
+        public <A> A fold(A acc,
+                          Func2<A, T, A> mapper)
+        {
+            return acc;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> map(@Nonnull Func0<? extends T> noneMapping)
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> someMapping)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
+            throws E
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(noneMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> flatMap(@Nonnull Func0<Holder<T>> noneMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A> Holder<A> flatMap(@Nonnull Func1<? super T, Holder<A>> someMapping)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+            throws E
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public <A> Holder<A> flatMap(@Nonnull Func0<Holder<A>> noneMapping,
+                                     @Nonnull Func1<? super T, Holder<A>> someMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> flatMapThrows(@Nonnull Func0Throws<Holder<T>, E> noneMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func0Throws<Holder<A>, E> noneMapping,
+                                                                @Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> reject(@Nonnull Predicate<? super T> predicate)
+        {
+            return none();
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<T> iterator()
+        {
+            return EmptyIterator.of();
+        }
+
+        @Override
+        public int getSpliteratorCharacteristics()
+        {
+            return StreamConstants.SPLITERATOR_UNORDERED;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> apply(@Nonnull Proc0 noneAction)
+        {
+            noneAction.apply();
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> apply(@Nonnull Proc1<? super T> someAction)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+            throws E
+        {
+            noneAction.apply();
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public T unsafeGet()
+        {
+            throw new NoSuchElementException();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
+            throws E
+        {
+            throw noneExceptionMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public T get(@Nonnull T noneValue)
+        {
+            return noneValue;
+        }
+
+        @Nonnull
+        @Override
+        public T getOr(@Nonnull Func0<? extends T> noneMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Nullable
+        @Override
+        public T getOrNull()
+        {
+            return null;
+        }
+
+        @Override
+        public <U> U match(U noneValue,
+                           @Nonnull Func1<? super T, U> someMapping)
+        {
+            return noneValue;
+        }
+
+        @Override
+        public <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                             @Nonnull Func1<? super T, U> someMapping)
+        {
+            return noneMapping.apply();
+        }
+
+        @Override
+        public <U, E extends Exception> U matchThrows(U noneValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> someMapping)
+            throws E
+        {
+            return noneValue;
+        }
+
+        @Override
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                        @Nonnull Func1Throws<? super T, U, E> someMapping)
+            throws E
+        {
+            return noneMapping.apply();
+        }
+
+        @Override
+        public boolean isNone()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSome()
+        {
+            return false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return -1;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return obj instanceof None;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "None";
+        }
+
+        private Object writeReplace()
+        {
+            return new MaybeProxy(this);
         }
     }
 
-    /**
-     * Call consumer with my value if I am filled.  Otherwise do nothing.
-     */
-    default <E extends Exception> void ifPresentThrows(@Nonnull Proc1Throws<? super T, E> consumer)
-        throws E
+    private static class Some<T>
+        extends Holder<T>
     {
-        if (isFilled()) {
-            consumer.apply(getValue());
+        private final T value;
+
+        private Some(@Nonnull T value)
+        {
+            this.value = value;
         }
-    }
 
-    /**
-     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
-     * If I am empty return an empty Holder.
-     */
-    default <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> transforminator)
-    {
-        return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
-    }
+        @Override
+        public <A> A fold(A acc,
+                          Func2<A, T, A> mapper)
+        {
+            return mapper.apply(acc, value);
+        }
 
-    /**
-     * Apply the transform function to my value (if I am filled) and return a new Holder containing the result.
-     * If I am empty return an empty Holder.
-     */
-    default <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> transforminator)
-        throws E
-    {
-        return isFilled() ? Holders.of(transforminator.apply(getValue())) : Holders.of();
-    }
+        @Nonnull
+        @Override
+        public Holder<T> map(@Nonnull Func0<? extends T> noneMapping)
+        {
+            return this;
+        }
 
-    /**
-     * Return my value if I am filled.  Otherwise return defaultValue.
-     */
-    default T orElse(T defaultValue)
-    {
-        return getValueOr(defaultValue);
-    }
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Function<? super T, ? extends U> someMapping)
+        {
+            return some(someMapping.apply(value));
+        }
 
-    /**
-     * Return my value if I am filled.  Otherwise call supplier and return its result.
-     */
-    default T orElseGet(@Nonnull Supplier<? extends T> supplier)
-    {
-        return isFilled() ? getValue() : supplier.get();
-    }
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return some(someMapping.apply(value));
+        }
 
-    /**
-     * Return my value if I am filled.  Otherwise call supplier and throw its result.
-     */
-    default <X extends Throwable> T orElseThrow(@Nonnull Supplier<? extends X> supplier)
-        throws X
-    {
-        if (isFilled()) {
-            return getValue();
-        } else {
-            throw supplier.get();
+        @Nonnull
+        @Override
+        public <U> Holder<U> map(@Nonnull Func0<? extends U> noneMapping,
+                                 @Nonnull Func1<? super T, ? extends U> someMapping)
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> mapThrows(@Nonnull Func0Throws<? extends T, E> noneMapping)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> Holder<U> mapThrows(@Nonnull Func0Throws<? extends U, E> noneMapping,
+                                                            @Nonnull Func1Throws<? super T, ? extends U, E> someMapping)
+            throws E
+        {
+            return some(someMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> flatMap(@Nonnull Func0<Holder<T>> noneMapping)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A> Holder<A> flatMap(@Nonnull Func1<? super T, Holder<A>> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> flatMapThrows(@Nonnull Func0Throws<Holder<T>, E> noneMapping)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <A> Holder<A> flatMap(@Nonnull Func0<Holder<A>> noneMapping,
+                                     @Nonnull Func1<? super T, Holder<A>> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> Holder<A> flatMapThrows(@Nonnull Func0Throws<Holder<A>, E> noneMapping,
+                                                                @Nonnull Func1Throws<? super T, Holder<A>, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return predicate.test(value) ? this : none();
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> reject(@Nonnull Predicate<? super T> predicate)
+        {
+            return predicate.test(value) ? none() : this;
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<T> iterator()
+        {
+            return SingleValueIterator.of(value);
+        }
+
+        @Override
+        public int getSpliteratorCharacteristics()
+        {
+            return StreamConstants.SPLITERATOR_UNORDERED;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> apply(@Nonnull Proc0 noneAction)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> apply(@Nonnull Proc1<? super T> someAction)
+        {
+            someAction.apply(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> applyThrows(@Nonnull Proc0Throws<E> noneAction)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> Holder<T> applyThrows(@Nonnull Proc1Throws<? super T, E> someAction)
+            throws E
+        {
+            someAction.apply(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public T unsafeGet()
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
+            throws E
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
+        public T get(@Nonnull T noneValue)
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
+        public T getOr(@Nonnull Func0<? extends T> noneMapping)
+        {
+            return value;
+        }
+
+        @Nullable
+        @Override
+        public T getOrNull()
+        {
+            return value;
+        }
+
+        @Override
+        public <U> U match(U noneValue,
+                           @Nonnull Func1<? super T, U> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Override
+        public <U> U matchOr(@Nonnull Func0<U> noneMapping,
+                             @Nonnull Func1<? super T, U> someMapping)
+        {
+            return someMapping.apply(value);
+        }
+
+        @Override
+        public <U, E extends Exception> U matchThrows(U noneValue,
+                                                      @Nonnull Func1Throws<? super T, U, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
+        }
+
+        @Override
+        public <U, E extends Exception> U matchOrThrows(@Nonnull Func0Throws<U, E> noneMapping,
+                                                        @Nonnull Func1Throws<? super T, U, E> someMapping)
+            throws E
+        {
+            return someMapping.apply(value);
+        }
+
+        @Override
+        public boolean isNone()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSome()
+        {
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return value.hashCode();
+        }
+
+        @SuppressWarnings("rawtypes")
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Some)) {
+                return false;
+            }
+            return value.equals(((Some)obj).value);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Some(" + value + ")";
+        }
+
+        private Object writeReplace()
+        {
+            return new MaybeProxy(this);
         }
     }
 }

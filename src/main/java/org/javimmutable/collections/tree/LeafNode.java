@@ -42,7 +42,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -87,9 +86,9 @@ public class LeafNode<K, V>
                    @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holders.of(value);
+            return Holder.maybe(value);
         } else {
-            return Holders.of();
+            return Holder.none();
         }
     }
 
@@ -99,9 +98,9 @@ public class LeafNode<K, V>
                                       @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holders.of(asEntry());
+            return Holder.maybe(asEntry());
         } else {
-            return Holders.of();
+            return Holder.none();
         }
     }
 
@@ -153,14 +152,14 @@ public class LeafNode<K, V>
                               @Nonnull Func1<Holder<V>, V> generator)
     {
         if (isMatch(comp, key)) {
-            final V value = generator.apply(Holders.of(this.value));
+            final V value = generator.apply(Holder.maybe(this.value));
             if (this.value == value) {
                 return this;
             } else {
                 return new LeafNode<>(key, value);
             }
         } else {
-            final V value = generator.apply(Holders.of());
+            final V value = generator.apply(Holder.none());
             return ValueNode.instance(comp, this.key, this.value, key, value);
         }
     }

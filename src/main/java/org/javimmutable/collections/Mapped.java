@@ -77,15 +77,15 @@ public interface Mapped<K, V>
     Holder<V> find(K key);
 
     /**
-     * Return a Maybe containing the non-null value associated wth the key or a None
+     * Return a Holder containing the non-null value associated wth the key or a None
      * if no value or a null value is associated with the key.
      *
      * @param key identifies the value to retrieve
-     * @return possibly empty Maybe containing any value associated with the key
+     * @return possibly empty Holder containing any value associated with the key
      */
     @Nonnull
-    default Maybe<V> seek(K key)
+    default Holder<V> seek(K key)
     {
-        return Maybe.maybe(get(key));
+        return Holder.maybe(get(key));
     }
 }

@@ -56,13 +56,11 @@ import javax.annotation.Nullable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IntFunc2;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.ArrayHelper;
@@ -168,15 +166,15 @@ public class TrieArrayNode<T>
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, Holders::holder, Holders::holder);
+        return findImpl(shiftCountForValue, index, () -> Holder.none(), value -> Holder.maybe(value));
     }
 
     @Nonnull
-    public Maybe<T> seek(int index)
+    public Holder<T> seek(int index)
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, Maybe::none, Maybe::maybe);
+        return findImpl(shiftCountForValue, index, Holder::none, Holder::maybe);
     }
 
     @Nonnull
@@ -216,7 +214,7 @@ public class TrieArrayNode<T>
                                        @Nonnull K key)
     {
         final T node = getNodeFofHashKey(key);
-        return node != null ? mapper.mappedFind(node, key) : Holders.of();
+        return node != null ? mapper.mappedFind(node, key) : Holder.none();
     }
 
     @Nonnull
@@ -224,7 +222,7 @@ public class TrieArrayNode<T>
                                                           @Nonnull K key)
     {
         final T node = getNodeFofHashKey(key);
-        return node != null ? mapper.mappedFindEntry(node, key) : Holders.of();
+        return node != null ? mapper.mappedFindEntry(node, key) : Holder.none();
     }
 
     @Nonnull
@@ -595,7 +593,7 @@ public class TrieArrayNode<T>
                     return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
                 }
             } else {
-                final T newValue = mapper.mappedAssign(key, generator.apply(Holders.of()));
+                final T newValue = mapper.mappedAssign(key, generator.apply(Holder.none()));
                 assert mapper.mappedSize(newValue) == 1;
                 final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, newValue);
                 assert (size + 1) == computeSize(mapper, nodes, newValues);
@@ -617,7 +615,7 @@ public class TrieArrayNode<T>
                 }
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
-                final V value = generator.apply(Holders.of());
+                final V value = generator.apply(Holder.none());
                 final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, mapper.mappedAssign(key, value));
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;

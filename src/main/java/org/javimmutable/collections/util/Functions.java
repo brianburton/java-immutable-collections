@@ -40,7 +40,6 @@ import java.util.Map;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Insertable;
@@ -124,9 +123,7 @@ public final class Functions
     {
         while (iterator.hasNext()) {
             Holder<R> mappedValue = func.apply(iterator.next());
-            if (mappedValue.isFilled()) {
-                list = list.insert(mappedValue.getValue());
-            }
+            list = mappedValue.fold(list, Insertable::insert);
         }
         return list;
     }
@@ -142,10 +139,10 @@ public final class Functions
         while (iterator.hasNext()) {
             final T value = iterator.next();
             if (func.apply(value)) {
-                return Holders.of(value);
+                return Holder.maybe(value);
             }
         }
-        return Holders.of();
+        return Holder.none();
     }
 
     /**

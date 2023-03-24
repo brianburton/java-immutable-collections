@@ -445,13 +445,13 @@ public interface IList<T>
                    int limit);
 
     /**
-     * Returns a Maybe containing a value if this list contains only a single value and that value is non-null.
-     * Otherwise returns and empty Maybe.  i.e. empty unless size() == 1 and get(0) returns a non-null value.
+     * Returns a Holder containing a value if this list contains only a single value and that value is non-null.
+     * Otherwise returns and empty Holder.  i.e. empty unless size() == 1 and get(0) returns a non-null value.
      *
-     * @return Maybe possibly containing the single non-null value in this list
+     * @return Holder possibly containing the single non-null value in this list
      */
-    default Maybe<T> single()
+    default Holder<T> single()
     {
-        return size() == 1 ? Maybe.maybe(get(0)) : Maybe.none();
+        return size() == 1 ? Holder.maybe(get(0)) : Holder.none();
     }
 }

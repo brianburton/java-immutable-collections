@@ -84,7 +84,7 @@ public class ArrayToMapAdaptor<T>
     @Override
     public boolean containsKey(Object o)
     {
-        return map.find((Integer)o).isFilled();
+        return map.find((Integer)o).isSome();
     }
 
     /**
@@ -153,7 +153,7 @@ public class ArrayToMapAdaptor<T>
             @Override
             public boolean contains(Object o)
             {
-                return map.find((Integer)o).isFilled();
+                return map.find((Integer)o).isSome();
             }
 
             @Override
@@ -220,7 +220,7 @@ public class ArrayToMapAdaptor<T>
                 }
                 Entry<Integer, T> oEntry = (Entry<Integer, T>)o;
                 Holder<IMapEntry<Integer, T>> eHolder = map.findEntry(oEntry.getKey());
-                return eHolder.isFilled() && new MapEntry(eHolder.getValue()).equals(oEntry);
+                return eHolder.isSome() && new MapEntry(eHolder.unsafeGet()).equals(oEntry);
             }
 
             @Override

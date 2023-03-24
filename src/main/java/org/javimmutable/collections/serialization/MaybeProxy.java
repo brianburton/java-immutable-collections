@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.Maybe;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.Holder;
 
 public class MaybeProxy
     implements Externalizable
@@ -50,14 +49,14 @@ public class MaybeProxy
     private static final short NONE_CODE = (short)0xaaaa;
     private static final short SOME_CODE = (short)0xbbbb;
 
-    private Maybe value;
+    private Holder value;
 
     public MaybeProxy()
     {
-        this(Maybe.none());
+        this(Holder.none());
     }
 
-    public MaybeProxy(Maybe value)
+    public MaybeProxy(Holder value)
     {
         this.value = value;
     }
@@ -86,13 +85,13 @@ public class MaybeProxy
         final short valueCode = in.readShort();
         switch (valueCode) {
             case NONE_CODE:
-                value = Maybe.none();
+                value = Holder.none();
                 break;
             case SOME_CODE:
-                value = Maybe.maybe(in.readObject());
+                value = Holder.some(in.readObject());
                 break;
             default:
-                throw new IOException("unexpected Maybe type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
+                throw new IOException("unexpected Holder type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
         }
     }
 

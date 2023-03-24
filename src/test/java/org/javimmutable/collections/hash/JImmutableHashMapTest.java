@@ -56,7 +56,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -73,20 +72,24 @@ public class JImmutableHashMapTest
     public void test()
     {
         IMap<Integer, Integer> map = JImmutableHashMap.usingList();
-        assertSame(Maybe.none(), map.seek(10));
-        assertEquals(true, map.find(10).isEmpty());
+        assertSame(Holder.none(), map.seek(10));
+        Holder<Integer> integers2 = map.find(10);
+        assertEquals(true, integers2.isNone());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
         map = map.assign(10, 20);
         assertEquals(1, map.size());
         assertEquals(false, map.isEmpty());
-        assertEquals(false, map.find(10).isEmpty());
-        assertEquals(Maybe.some(20), map.seek(10));
-        assertEquals(20, (int)map.find(10).getValue());
+        Holder<Integer> integers1 = map.find(10);
+        assertEquals(false, integers1.isNone());
+        assertEquals(Holder.some(20), map.seek(10));
+        Holder<Integer> integers3 = map.find(10);
+        assertEquals(20, (int)integers3.unsafeGet());
         assertEquals(20, (int)map.getValueOr(10, -99));
         assertEquals(-99, (int)map.getValueOr(72, -99));
         map = map.delete(10);
-        assertEquals(true, map.find(10).isEmpty());
+        Holder<Integer> integers = map.find(10);
+        assertEquals(true, integers.isNone());
         assertEquals(0, map.size());
 
         StandardJImmutableMapTests.verifyMiscellaneous(JImmutableHashMap.usingList());
@@ -133,7 +136,7 @@ public class JImmutableHashMapTest
                             ManualHashKey key = createManualHashKey(maxKey, random);
                             Integer value = random.nextInt(1000000);
                             int merged = value;
-                            map = map.update(key, h -> h.isEmpty() ? value : h.getValue() ^ value);
+                            map = map.update(key, h -> h.isNone() ? value : Integer.valueOf(h.unsafeGet() ^ value));
                             if (expected.get(key) != null) {
                                 merged = expected.get(key) ^ value;
                             }
@@ -171,7 +174,8 @@ public class JImmutableHashMapTest
                         }
                         case 4: {
                             ManualHashKey key = createManualHashKey(maxKey, random);
-                            assertEquals(expected.get(key), map.find(key).getValueOrNull());
+                            Holder<Integer> integers = map.find(key);
+                            assertEquals(expected.get(key), integers.getOrNull());
                             assertEquals(expected.size(), map.size());
                             map.checkInvariants();
                             break;
@@ -181,9 +185,9 @@ public class JImmutableHashMapTest
                             Integer value = random.nextInt(1000000);
                             Integer currentValue = map.get(key);
                             if (currentValue == null) {
-                                map = map.update(key, h -> h.isEmpty() ? value : -h.getValue());
+                                map = map.update(key, h -> h.isNone() ? value : Integer.valueOf(-h.unsafeGet()));
                             } else {
-                                map = map.update(key, h -> h.isEmpty() ? -value : value);
+                                map = map.update(key, h -> h.isNone() ? -value : value);
                             }
                             expected.put(key, value);
                             assertEquals(expected.size(), map.size());
@@ -197,8 +201,8 @@ public class JImmutableHashMapTest
 
                 for (Map.Entry<ManualHashKey, Integer> entry : expected.entrySet()) {
                     Holder<Integer> mapValue = map.find(entry.getKey());
-                    assertEquals(true, mapValue.isFilled());
-                    assertEquals(entry.getValue(), mapValue.getValue());
+                    assertEquals(true, mapValue.isSome());
+                    assertEquals(entry.getValue(), mapValue.unsafeGet());
                 }
 
                 // verify the iterator worked properly
@@ -227,9 +231,11 @@ public class JImmutableHashMapTest
                 ArrayList<ManualHashKey> keys = new ArrayList<>(expected.keySet());
                 Collections.shuffle(keys, random);
                 for (ManualHashKey key : keys) {
-                    assertEquals(false, map.find(key).isEmpty());
+                    Holder<Integer> integers1 = map.find(key);
+                    assertEquals(false, integers1.isNone());
                     map = map.delete(key);
-                    assertEquals(true, map.find(key).isEmpty());
+                    Holder<Integer> integers = map.find(key);
+                    assertEquals(true, integers.isNone());
                 }
                 assertEquals(0, map.size());
             }
@@ -338,9 +344,12 @@ public class JImmutableHashMapTest
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("2", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        assertEquals("1", map.find(key1).getValueOr("X"));
-        assertEquals("2", map.find(key2).getValueOr("X"));
-        assertEquals("3", map.find(key3).getValueOr("X"));
+        Holder<String> strings11 = map.find(key1);
+        assertEquals("1", strings11.get("X"));
+        Holder<String> strings10 = map.find(key2);
+        assertEquals("2", strings10.get("X"));
+        Holder<String> strings9 = map.find(key3);
+        assertEquals("3", strings9.get("X"));
         map = map.delete(key2);
         assertEquals(2, map.size());
         assertEquals("1", map.get(key1));
@@ -349,9 +358,12 @@ public class JImmutableHashMapTest
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        assertEquals("1", map.find(key1).getValueOr("X"));
-        assertEquals("X", map.find(key2).getValueOr("X"));
-        assertEquals("3", map.find(key3).getValueOr("X"));
+        Holder<String> strings8 = map.find(key1);
+        assertEquals("1", strings8.get("X"));
+        Holder<String> strings7 = map.find(key2);
+        assertEquals("X", strings7.get("X"));
+        Holder<String> strings6 = map.find(key3);
+        assertEquals("3", strings6.get("X"));
         map = map.delete(key1);
         assertEquals(1, map.size());
         assertEquals(null, map.get(key1));
@@ -360,9 +372,12 @@ public class JImmutableHashMapTest
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        assertEquals("X", map.find(key1).getValueOr("X"));
-        assertEquals("X", map.find(key2).getValueOr("X"));
-        assertEquals("3", map.find(key3).getValueOr("X"));
+        Holder<String> strings5 = map.find(key1);
+        assertEquals("X", strings5.get("X"));
+        Holder<String> strings4 = map.find(key2);
+        assertEquals("X", strings4.get("X"));
+        Holder<String> strings3 = map.find(key3);
+        assertEquals("3", strings3.get("X"));
         map = map.delete(key3);
         assertEquals(0, map.size());
         assertEquals(null, map.get(key1));
@@ -371,9 +386,12 @@ public class JImmutableHashMapTest
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("X", map.getValueOr(key3, "X"));
-        assertEquals("X", map.find(key1).getValueOr("X"));
-        assertEquals("X", map.find(key2).getValueOr("X"));
-        assertEquals("X", map.find(key3).getValueOr("X"));
+        Holder<String> strings2 = map.find(key1);
+        assertEquals("X", strings2.get("X"));
+        Holder<String> strings1 = map.find(key2);
+        assertEquals("X", strings1.get("X"));
+        Holder<String> strings = map.find(key3);
+        assertEquals("X", strings.get("X"));
         assertSame(JImmutableHashMap.of(), map);
     }
 

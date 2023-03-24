@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
@@ -126,11 +127,13 @@ public abstract class AbstractJImmutableSetMapTestCase
         assertEquals(map.getSet(3), map.values(3).stream().collect(Collectors.toSet()));
 
         final ISet<Integer> defaultValue = JImmutableHashSet.<Integer>of().insert(17);
-        assertTrue(map.find(8).isEmpty());
+        Holder<ISet<Integer>> iSets = map.find(8);
+        assertTrue(iSets.isNone());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));
-        assertSame(map.get(3), map.find(3).getValue());
+        Holder<ISet<Integer>> iSets1 = map.find(3);
+        assertSame(map.get(3), iSets1.unsafeGet());
         assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());
         assertFalse(map.deleteAll().isNonEmpty());

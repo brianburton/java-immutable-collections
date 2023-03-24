@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMapEntry;
@@ -180,7 +179,13 @@ public class JImmutableArrayStressTester
                     }
                     case 2: { //find(int)
                         Holder<String> holder = array.find(index);
-                        Holder<String> expectedHolder = (expected.containsKey(index)) ? Holders.of(expected.get(index)) : Holders.of();
+                        Holder<String> expectedHolder;
+                        if (expected.containsKey(index)) {
+                            String value = expected.get(index);
+                            expectedHolder = Holder.maybe(value);
+                        } else {
+                            expectedHolder = Holder.none();
+                        }
                         if (!equivalentHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                         }
@@ -188,7 +193,13 @@ public class JImmutableArrayStressTester
                     }
                     case 3: { //findEntry(int)
                         Holder<IMapEntry<Integer, String>> holder = array.findEntry(index);
-                        Holder<IMapEntry<Integer, String>> expectedHolder = (expected.containsKey(index)) ? Holders.of(new MapEntry<>(index, expected.get(index))) : Holders.of();
+                        Holder<IMapEntry<Integer, String>> expectedHolder;
+                        if (expected.containsKey(index)) {
+                            IMapEntry<Integer, String> value = new MapEntry<>(index, expected.get(index));
+                            expectedHolder = Holder.maybe(value);
+                        } else {
+                            expectedHolder = Holder.none();
+                        }
                         if (!equivalentHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
                         }

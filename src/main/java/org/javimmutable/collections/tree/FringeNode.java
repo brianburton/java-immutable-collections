@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -86,7 +85,7 @@ class FringeNode<K, V>
                                      @Nonnull K key,
                                      @Nonnull Func1<Holder<V>, V> generator)
     {
-        return ValueNode.instance(key, generator.apply(Holders.of()));
+        return ValueNode.instance(key, generator.apply(Holder.none()));
     }
 
     @Nonnull
@@ -132,7 +131,7 @@ class FringeNode<K, V>
     public Holder<V> find(@Nonnull Comparator<K> comp,
                           @Nonnull K key)
     {
-        return Holders.of();
+        return Holder.none();
     }
 
     @Nonnull
@@ -140,7 +139,7 @@ class FringeNode<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
                                              @Nonnull K key)
     {
-        return Holders.of();
+        return Holder.none();
     }
 
     @Override

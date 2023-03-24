@@ -49,7 +49,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.hash.JImmutableHashSet;
@@ -90,7 +90,7 @@ public final class StandardJImmutableSetTests
 
         assertEquals((Integer)10, jet.get(10));
         assertEquals((Integer)10, jet.getValueOr(10, 25));
-        assertEquals(Holders.of(10), jet.find(10));
+        assertEquals(Holder.maybe(10), jet.find(10));
 
         jet = jet.delete(10);
         assertEquals(0, jet.size());
@@ -103,7 +103,7 @@ public final class StandardJImmutableSetTests
 
         assertEquals(null, jet.get(10));
         assertEquals((Integer)25, jet.getValueOr(10, 25));
-        assertEquals(Holders.of(), jet.find(10));
+        assertEquals(Holder.none(), jet.find(10));
 
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
         verifyContents(jet.union(values), values);

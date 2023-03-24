@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
@@ -149,7 +148,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
-                        map = map.update(key, h -> h.isEmpty() ? key.getValue() : h.getValue() + "," + key.getValue());
+                        map = map.update(key, h -> h.isNone() ? key.getValue() : h.unsafeGet() + "," + key.getValue());
                         expected.put(key, key.getValue());
                         break;
                     }
@@ -195,7 +194,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        map = map.update(key, h -> h.isEmpty() ? value : h.getValue() + "," + value);
+                        map = map.update(key, h -> h.isNone() ? value : h.unsafeGet() + "," + value);
                         expected.put(key, expected.get(key) + "," + value);
                         break;
                     }
@@ -258,7 +257,13 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     }
                     case 2: { //find(K)
                         Holder<String> holder = map.find(key);
-                        Holder<String> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.of();
+                        Holder<String> expectedHolder;
+                        if (expected.containsKey(key)) {
+                            String value = expected.get(key);
+                            expectedHolder = Holder.maybe(value);
+                        } else {
+                            expectedHolder = Holder.none();
+                        }
                         if (!equivalentHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
                         }
@@ -266,7 +271,13 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                     }
                     case 3: { //findEntry(K)
                         Holder<IMapEntry<K, String>> holder = map.findEntry(key);
-                        Holder<IMapEntry<K, String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(new MapEntry<>(key, expected.get(key))) : Holders.of();
+                        Holder<IMapEntry<K, String>> expectedHolder;
+                        if (expected.containsKey(key)) {
+                            IMapEntry<K, String> value = new MapEntry<>(key, expected.get(key));
+                            expectedHolder = Holder.maybe(value);
+                        } else {
+                            expectedHolder = Holder.none();
+                        }
                         if (!equivalentEntryHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, holder, holder));
                         }
@@ -315,10 +326,10 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
             K key = entry.getKey();
             String expectedValue = entry.getValue();
             Holder<String> holder = map.find(key);
-            if (holder.isEmpty()) {
+            if (holder.isNone()) {
                 throw new RuntimeException(String.format("key mismatch - %s expected but not found%n", key));
             }
-            String mapValue = holder.getValue();
+            String mapValue = holder.unsafeGet();
             if (!mapValue.equals(expectedValue)) {
                 throw new RuntimeException(String.format("value mismatch for %s - expected %s found %s%n", key, expectedValue, mapValue));
             }

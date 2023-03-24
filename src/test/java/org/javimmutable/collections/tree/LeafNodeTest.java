@@ -35,13 +35,11 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
-
-import java.util.Comparator;
 
 public class LeafNodeTest
     extends TestCase
@@ -58,10 +56,10 @@ public class LeafNodeTest
         assertEquals((Integer)5, node.value());
         assertEquals((Integer)5, node.get(comparator, 1, 20));
         assertEquals((Integer)20, node.get(comparator, 3, 20));
-        assertEquals(Holders.of(5), node.find(comparator, 1));
-        assertEquals(Holders.of(), node.find(comparator, 3));
-        assertEquals(Holders.of(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
-        assertEquals(Holders.of(), node.findEntry(comparator, 3));
+        assertEquals(Holder.maybe(5), node.find(comparator, 1));
+        assertEquals(Holder.none(), node.find(comparator, 3));
+        assertEquals(Holder.maybe(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
+        assertEquals(Holder.none(), node.findEntry(comparator, 3));
     }
 
     public void testDelete()
@@ -94,13 +92,13 @@ public class LeafNodeTest
 
     public void testUpdate()
     {
-        final Func1<Holder<Integer>, Integer> generator = h -> h.isFilled() ? h.getValue() + 1 : 1;
+        final Func1<Holder<Integer>, Integer> generator = h -> h.isSome() ? h.unsafeGet() + 1 : 1;
 
         AbstractNode<Integer, Integer> node = empty.update(comparator, 1, generator);
         assertTrue(node instanceof LeafNode);
         assertEquals("[(1,1)]", node.toString());
 
-        assertSame(node, node.update(comparator, 1, h -> h.getValueOr(-1)));
+        assertSame(node, node.update(comparator, 1, h -> h.get(-1)));
 
         node = node.update(comparator, 1, generator);
         assertTrue(node instanceof LeafNode);

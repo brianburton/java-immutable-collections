@@ -39,7 +39,7 @@ import static org.javimmutable.collections.util.JImmutables.*;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IterableStreamable.Partitions;
 import org.javimmutable.collections.MapEntry;
@@ -94,9 +94,9 @@ public class IterableStreamableTest
 
     public void testFirst()
     {
-        assertEquals(Holders.of(), list().first(x -> true));
-        assertEquals(Holders.of(), list(1, 3).first(x -> x >= 5));
-        assertEquals(Holders.of(3), list(1, 3, 5).first(x -> x >= 3));
+        assertEquals(Holder.none(), list().first(x -> true));
+        assertEquals(Holder.none(), list(1, 3).first(x -> x >= 5));
+        assertEquals(Holder.maybe(3), list(1, 3, 5).first(x -> x >= 3));
     }
 
     public void testCollectAll()
@@ -149,15 +149,36 @@ public class IterableStreamableTest
 
     public void testTransformSome()
     {
-        assertEquals(list(), list().transformSome(list(), x -> Holders.of(x)));
-        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
+        assertEquals(list(), list().transformSome(list(), x -> Holder.maybe(x)));
+        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(list(9), x -> {
+            if (x == 3) {
+                return Holder.none();
+            } else {
+                Integer value = -x;
+                return Holder.maybe(value);
+            }
+        }));
     }
 
     public void testTransformAtMostSome()
     {
-        assertEquals(list(), list().transformSome(10, list(), x -> Holders.of(x)));
-        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(10, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
-        assertEquals(list(9, -1), list(1, 3, 5).transformSome(1, list(9), x -> x == 3 ? Holders.of() : Holders.of(-x)));
+        assertEquals(list(), list().transformSome(10, list(), x -> Holder.maybe(x)));
+        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(10, list(9), x -> {
+            if (x == 3) {
+                return Holder.none();
+            } else {
+                Integer value = -x;
+                return Holder.maybe(value);
+            }
+        }));
+        assertEquals(list(9, -1), list(1, 3, 5).transformSome(1, list(9), x -> {
+            if (x == 3) {
+                return Holder.none();
+            } else {
+                Integer value = -x;
+                return Holder.maybe(value);
+            }
+        }));
     }
 
     public void testPartition()
@@ -173,10 +194,10 @@ public class IterableStreamableTest
 
     public void testReduce()
     {
-        assertEquals(Holders.of(), list().reduce((s, x) -> s));
-        assertEquals(Holders.of(1), list(1).reduce((s, x) -> s + x));
-        assertEquals(Holders.of(3), list(1, 2).reduce((s, x) -> s + x));
-        assertEquals(Holders.of(6), list(1, 2, 3).reduce((s, x) -> s + x));
+        assertEquals(Holder.none(), list().reduce((s, x) -> s));
+        assertEquals(Holder.maybe(1), list(1).reduce((s, x) -> s + x));
+        assertEquals(Holder.maybe(3), list(1, 2).reduce((s, x) -> s + x));
+        assertEquals(Holder.maybe(6), list(1, 2, 3).reduce((s, x) -> s + x));
 
         assertEquals(Integer.valueOf(0), list().reduce(0, (s, x) -> s));
         assertEquals(Integer.valueOf(1), list(1).reduce(0, (s, x) -> s + x));

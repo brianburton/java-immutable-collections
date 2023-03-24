@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMapEntry;
@@ -121,11 +122,13 @@ public abstract class AbstractJImmutableListMapTestCase
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
 
         final IList<Integer> defaultValue = JImmutableTreeList.<Integer>of().insert(17);
-        assertTrue(map.find(8).isEmpty());
+        Holder<IList<Integer>> iLists = map.find(8);
+        assertTrue(iLists.isNone());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));
-        assertSame(map.get(3), map.find(3).getValue());
+        Holder<IList<Integer>> iLists1 = map.find(3);
+        assertSame(map.get(3), iLists1.unsafeGet());
         assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());

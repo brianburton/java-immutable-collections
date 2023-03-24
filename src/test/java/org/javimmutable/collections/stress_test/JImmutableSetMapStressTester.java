@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
@@ -359,7 +358,13 @@ public class JImmutableSetMapStressTester
                     }
                     case 7: { //find(K)
                         Holder<ISet<String>> holder = setmap.find(key);
-                        Holder<ISet<String>> expectedHolder = (expected.containsKey(key)) ? Holders.of(expected.get(key)) : Holders.of();
+                        Holder<ISet<String>> expectedHolder;
+                        if (expected.containsKey(key)) {
+                            ISet<String> value = expected.get(key);
+                            expectedHolder = Holder.maybe(value);
+                        } else {
+                            expectedHolder = Holder.none();
+                        }
                         if (!equivalentHolder(holder, expectedHolder)) {
                             throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
                         }

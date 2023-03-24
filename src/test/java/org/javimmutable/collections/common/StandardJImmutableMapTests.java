@@ -67,7 +67,7 @@ public class StandardJImmutableMapTests
 
         x = x.update(1, generator(3));
         assertEquals(Integer.valueOf(3), x.get(1));
-        assertSame(x, x.update(1, h -> h.getValueOr(8)));
+        assertSame(x, x.update(1, h -> h.get(8)));
         assertSame(map.deleteAll(), x.delete(1));
 
         assertEquals(false, x.isEmpty());
@@ -78,7 +78,7 @@ public class StandardJImmutableMapTests
 
         x = x.update(2, generator(7));
         assertEquals(Integer.valueOf(7), x.get(2));
-        assertSame(x, x.update(2, h -> h.getValueOr(8)));
+        assertSame(x, x.update(2, h -> h.get(8)));
 
         x = x.update(2, generator(4));
         assertEquals(Integer.valueOf(71), x.get(2));
@@ -219,7 +219,7 @@ public class StandardJImmutableMapTests
 
     private static Func1<Holder<Integer>, Integer> generator(int newValue)
     {
-        return h -> h.isEmpty() ? newValue : h.getValue() * 10 + 1;
+        return h -> h.isNone() ? newValue : h.unsafeGet() * 10 + 1;
     }
 
     private static <K, V> void testCollector(IMap<K, V> values,

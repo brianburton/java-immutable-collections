@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.common.TestUtil;
-
 import static org.assertj.core.api.Assertions.*;
+
+import junit.framework.TestCase;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.common.TestUtil;
 
 public class EmptyNodeTest
     extends TestCase
@@ -77,8 +77,8 @@ public class EmptyNodeTest
 
     public void testSeek()
     {
-        assertEquals(Maybe.of(), node.seekImpl(-1, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(), node.seekImpl(0, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(), node.seekImpl(node.size(), Maybe::of, Maybe::of));
+        assertEquals(Holder.maybe(), node.seekImpl(-1, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(), node.seekImpl(0, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(), node.seekImpl(node.size(), Holder::maybe, Holder::maybe));
     }
 }

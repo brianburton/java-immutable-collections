@@ -38,7 +38,7 @@ package org.javimmutable.collections.util;
 import java.util.Arrays;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IStack;
@@ -79,9 +79,9 @@ public class FunctionsTest
         IList<Integer> list = JImmutables.list(1, 2, 3);
         assertEquals(expected, Functions.collectSome(list.iterator(), JImmutables.list(), value -> {
             if (value % 2 == 0) {
-                return Holders.of();
+                return Holder.none();
             } else {
-                return Holders.of(value + 1);
+                return Holder.maybe(value + 1);
             }
         }));
     }
@@ -91,10 +91,10 @@ public class FunctionsTest
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
         IList<Integer> list = JImmutables.list(1, 2, 3, 4);
-        assertEquals(Holders.of(2), Functions.find(list.iterator(), func));
+        assertEquals(Holder.maybe(2), Functions.find(list.iterator(), func));
 
         list = JImmutables.list(1, 5, 7);
-        assertEquals(Holders.<Integer>of(), Functions.find(list.iterator(), func));
+        assertEquals(Holder.<Integer>none(), Functions.find(list.iterator(), func));
     }
 
     public void testReject()

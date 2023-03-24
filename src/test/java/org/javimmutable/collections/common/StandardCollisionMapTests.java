@@ -107,11 +107,11 @@ public class StandardCollisionMapTests
                     Integer ev = expected.get(k);
                     Holder<Integer> ah = map.findValue(node, k);
                     if (ev == null) {
-                        if (ah.isFilled()) {
-                            fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.getValue()));
+                        if (ah.isSome()) {
+                            fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isEmpty()) {
-                        fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.getValueOrNull()));
+                    } else if (ah.isNone()) {
+                        fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
                 }
@@ -120,11 +120,11 @@ public class StandardCollisionMapTests
                     Integer ev = expected.get(k);
                     Holder<IMapEntry<Integer, Integer>> ah = map.findEntry(node, k);
                     if (ev == null) {
-                        if (ah.isFilled()) {
-                            fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getValue()));
+                        if (ah.isSome()) {
+                            fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isEmpty()) {
-                        fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getValueOrNull()));
+                    } else if (ah.isNone()) {
+                        fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
                 }
@@ -160,20 +160,20 @@ public class StandardCollisionMapTests
                 sb.append(String.format("mismatch: k=%d ev=%s av=%s\n", k, ev, av));
             }
             Holder<Integer> hv = map.findValue(node, k);
-            if (hv.isEmpty()) {
+            if (hv.isNone()) {
                 sb.append(String.format("missing value for key: k=%d ev=%s\n", k, ev));
-            } else if (!ev.equals(hv.getValue())) {
-                sb.append(String.format("mismatch: k=%d ev=%s hv=%s\n", k, ev, hv.getValue()));
+            } else if (!ev.equals(hv.unsafeGet())) {
+                sb.append(String.format("mismatch: k=%d ev=%s hv=%s\n", k, ev, hv.unsafeGet()));
             }
             Holder<IMapEntry<Integer, Integer>> he = map.findEntry(node, k);
-            if (hv.isEmpty()) {
+            if (hv.isNone()) {
                 sb.append(String.format("missing entry for key: k=%d ev=%s\n", k, ev));
             } else {
-                if (!k.equals(he.getValue().getKey())) {
-                    sb.append(String.format("mismatch: k=%d he.k=%s\n", k, he.getValue().getKey()));
+                if (!k.equals(he.unsafeGet().getKey())) {
+                    sb.append(String.format("mismatch: k=%d he.k=%s\n", k, he.unsafeGet().getKey()));
                 }
-                if (!ev.equals(he.getValue().getValue())) {
-                    sb.append(String.format("mismatch: k=%d ev=%s he.v=%s\n", k, ev, he.getValue().getValue()));
+                if (!ev.equals(he.unsafeGet().getValue())) {
+                    sb.append(String.format("mismatch: k=%d ev=%s he.v=%s\n", k, ev, he.unsafeGet().getValue()));
                 }
             }
         }

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
@@ -55,7 +56,6 @@ import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.hash.JImmutableHashMultiset;
@@ -97,49 +97,49 @@ public final class JImmutables
     }
 
     /**
-     * Returns an empty Maybe. All empty Maybes share a common instance.
+     * Returns an empty Holder. All empty Maybes share a common instance.
      */
     @Nonnull
-    public static <T> Maybe<T> none()
+    public static <T> Holder<T> none()
     {
-        return Maybe.none();
+        return Holder.none();
     }
 
     /**
-     * Returns a Maybe containing the value.  The value must be non-null.
+     * Returns a Holder containing the value.  The value must be non-null.
      */
     @Nonnull
-    public static <T> Maybe<T> some(@Nonnull T value)
+    public static <T> Holder<T> some(@Nonnull T value)
     {
-        return Maybe.some(value);
+        return Holder.some(value);
     }
 
     /**
-     * Returns an empty Maybe if value is null, otherwise a Maybe containing
+     * Returns an empty Holder if value is null, otherwise a Holder containing
      * the value is returned.
      */
     @Nonnull
-    static <T> Maybe<T> maybe(@Nullable T valueOrNull)
+    static <T> Holder<T> maybe(@Nullable T valueOrNull)
     {
-        return Maybe.maybe(valueOrNull);
+        return Holder.maybe(valueOrNull);
     }
 
     /**
      * Determine if the object is an instance of the specified Class or a subclass.
-     * If that is the case returns a Maybe containing the object case to the class.
-     * If that is not the case returns an empty Maybe.  Note that this is generally
+     * If that is the case returns a Holder containing the object case to the class.
+     * If that is not the case returns an empty Holder.  Note that this is generally
      * only useful for classes with simple (non-generic) types.
      *
      * @param klass       class to cast the object to
      * @param valueOrNull object to be case
      * @param <T>         type of the class
-     * @return a Maybe
+     * @return a Holder
      */
     @Nonnull
-    static <T> Maybe<T> cast(@Nonnull Class<T> klass,
-                             @Nullable T valueOrNull)
+    static <T> Holder<T> cast(@Nonnull Class<T> klass,
+                              @Nullable T valueOrNull)
     {
-        return Maybe.cast(klass, valueOrNull);
+        return Holder.cast(klass, valueOrNull);
     }
 
     /**

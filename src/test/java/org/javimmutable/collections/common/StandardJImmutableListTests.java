@@ -39,7 +39,7 @@ import static org.javimmutable.collections.util.JImmutables.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 
 public class StandardJImmutableListTests
@@ -100,7 +100,7 @@ public class StandardJImmutableListTests
         assertSame(orig.getClass(), transformed.getClass());
         assertEquals(appendAll(empty, 11, 30), transformed);
 
-        transformed = orig.transformSome(i -> i < 11 ? Holders.of(i) : Holders.of());
+        transformed = orig.transformSome(i -> i < 11 ? Holder.maybe(i) : Holder.none());
         assertSame(orig.getClass(), transformed.getClass());
         assertEquals(appendAll(empty, 1, 10), transformed);
     }

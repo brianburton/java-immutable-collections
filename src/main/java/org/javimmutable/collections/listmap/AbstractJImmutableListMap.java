@@ -69,7 +69,7 @@ abstract class AbstractJImmutableListMap<K, V>
     {
         Conditions.stopNull(key);
         Holder<IList<V>> current = contents.find(key);
-        return current.isFilled() ? current.getValue() : emptyList;
+        return current.get(emptyList);
     }
 
     @Nonnull
@@ -86,7 +86,7 @@ abstract class AbstractJImmutableListMap<K, V>
     public IListMap<K, V> insert(@Nonnull K key,
                                  @Nullable V value)
     {
-        return create(contents.update(key, h -> h.getValueOr(emptyList).insertLast(value)));
+        return create(contents.update(key, h -> h.get(emptyList).insertLast(value)));
     }
 
     @Nonnull

@@ -51,7 +51,6 @@ import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
 import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
@@ -122,7 +121,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public Maybe<T> seek(int index)
+    public Holder<T> seek(int index)
     {
         return root.seek(index);
     }

@@ -56,6 +56,7 @@ import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
@@ -537,12 +538,15 @@ public class JImmutablesTest
 
         hmap2 = hmap2.assign(80, null);
         assertEquals(null, hmap2.get(20));
-        assertEquals(true, hmap2.find(20).isEmpty());
+        Holder<Integer> integers1 = hmap2.find(20);
+        assertEquals(true, integers1.isNone());
         // hmap2.find(20).getValue() would throw since the Holder is empty
 
         assertEquals(null, hmap2.get(80));
-        assertEquals(false, hmap2.find(80).isEmpty());
-        assertEquals(null, hmap2.find(80).getValue());
+        Holder<Integer> integers = hmap2.find(80);
+        assertEquals(false, integers.isNone());
+        Holder<Integer> integers2 = hmap2.find(80);
+        assertEquals(null, integers2.unsafeGet());
 
         IMap<Integer, Integer> smap = JImmutables.sortedMap();
         smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);

@@ -35,25 +35,24 @@
 
 package org.javimmutable.collections.iterators;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedSplit;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class GenericIteratorTest
     extends TestCase
@@ -75,11 +74,11 @@ public class GenericIteratorTest
 
         final Transformed transformed = new Transformed(deep);
         eq(expected, transformed);
-        assertEquals(expected, transformed.stream().map(Holder::getValue).collect(Collectors.toList()));
-        assertEquals(expected, transformed.stream().parallel().map(Holder::getValue).collect(Collectors.toList()));
-        assertEquals(expected, transformed.parallelStream().map(Holder::getValue).collect(Collectors.toList()));
-        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).stream().parallel().map(Holder::getValue).collect(Collectors.toList()));
-        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).parallelStream().map(Holder::getValue).collect(Collectors.toList()));
+        assertEquals(expected, transformed.stream().map(integers4 -> integers4.unsafeGet()).collect(Collectors.toList()));
+        assertEquals(expected, transformed.stream().parallel().map(integers3 -> integers3.unsafeGet()).collect(Collectors.toList()));
+        assertEquals(expected, transformed.parallelStream().map(integers2 -> integers2.unsafeGet()).collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).stream().parallel().map(integers1 -> integers1.unsafeGet()).collect(Collectors.toList()));
+        assertEquals(lr(1, limit(4)), new Transformed(nr(1, limit(4))).parallelStream().map(integers -> integers.unsafeGet()).collect(Collectors.toList()));
     }
 
     public void testStandard()
@@ -115,7 +114,7 @@ public class GenericIteratorTest
     {
         List<Integer> list = new ArrayList<>();
         for (Holder<Integer> integer : actual) {
-            list.add(integer.getValue());
+            list.add(integer.unsafeGet());
         }
         assertEquals(expected, list);
     }
@@ -300,7 +299,7 @@ public class GenericIteratorTest
                                                                        int offset,
                                                                        int limit)
         {
-            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holders.of(i));
+            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holder.maybe(i));
         }
 
         @Override

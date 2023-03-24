@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -264,7 +264,7 @@ public class JImmutableListStressTester
             }
             verifyContents(list, expected);
             verifyContents(list.stream().parallel().collect(collector), expected);
-            verifyContents(list.transformSome(s -> (s.length() % 2 == 0) ? Holders.of(s + "x") : Holders.of()),
+            verifyContents(list.transformSome(s -> s.length() % 2 == 0 ? Holder.maybe(s + "x") : Holder.none()),
                            expected.stream().filter(s -> s.length() % 2 == 0).map(s -> s + "x").collect(Collectors.toList()));
             verifyContents(list.transform(s -> s + "x"), expected.stream().map(s -> s + "x").collect(Collectors.toList()));
 

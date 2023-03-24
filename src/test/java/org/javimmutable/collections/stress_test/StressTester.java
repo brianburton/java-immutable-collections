@@ -126,20 +126,23 @@ abstract class StressTester
     protected <T> boolean equivalentHolder(Holder<T> holder,
                                            Holder<T> expectedHolder)
     {
-        return (holder.isFilled() == expectedHolder.isFilled()) && (!holder.isFilled() || holder.getValue().equals(expectedHolder.getValue()));
+        if ((holder.isSome() != expectedHolder.isSome())) {
+            return false;
+        }
+        return !holder.isSome() || holder.unsafeGet().equals(expectedHolder.unsafeGet());
     }
 
     protected <K, V> boolean equivalentEntryHolder(Holder<IMapEntry<K, V>> holder,
                                                    Holder<IMapEntry<K, V>> expectedHolder)
     {
-        if (holder.isFilled() != expectedHolder.isFilled()) {
+        if (holder.isSome() != expectedHolder.isSome()) {
             return false;
         }
-        if (holder.isEmpty()) {
+        if (holder.isNone()) {
             return true;
         }
-        IMapEntry<K, V> entry = holder.getValue();
-        IMapEntry<K, V> expectedEntry = expectedHolder.getValue();
+        IMapEntry<K, V> entry = holder.unsafeGet();
+        IMapEntry<K, V> expectedEntry = expectedHolder.unsafeGet();
         return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
     }
 

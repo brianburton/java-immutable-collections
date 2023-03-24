@@ -35,16 +35,13 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holders.holder;
-import static org.javimmutable.collections.Maybe.maybe;
-import static org.javimmutable.collections.Maybe.none;
-import static org.javimmutable.collections.Maybe.some;
+import static org.javimmutable.collections.Holder.maybe;
+import static org.javimmutable.collections.Holder.none;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
 
 /**
  * Indexed implementation backed by a java array.
@@ -91,12 +88,12 @@ public class IndexedArray<T>
     @Override
     public Holder<T> find(int index)
     {
-        return index >= 0 && index < values.length ? holder(values[index]) : holder();
+        return index >= 0 && index < values.length ? maybe(values[index]) : none();
     }
 
     @Nonnull
     @Override
-    public Maybe<T> seek(int index)
+    public Holder<T> seek(int index)
     {
         return index >= 0 && index < values.length ? maybe(values[index]) : none();
     }

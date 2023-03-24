@@ -41,7 +41,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -135,7 +134,8 @@ public class ListCollisionMap<K, V>
         int i = 0;
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
-                V value = generator.apply(Holders.of(e.getValue()));
+                V value1 = e.getValue();
+                V value = generator.apply(Holder.maybe(value1));
                 if (e.getValue() == value) {
                     return root;
                 } else {
@@ -144,7 +144,7 @@ public class ListCollisionMap<K, V>
             }
             i += 1;
         }
-        V value = generator.apply(Holders.of());
+        V value = generator.apply(Holder.none());
         return root.append(entry(key, value));
     }
 
@@ -186,10 +186,11 @@ public class ListCollisionMap<K, V>
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
-                return Holders.of(e.getValue());
+                V value = e.getValue();
+                return Holder.maybe(value);
             }
         }
-        return Holders.of();
+        return Holder.none();
     }
 
     @Nonnull
@@ -200,10 +201,10 @@ public class ListCollisionMap<K, V>
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
-                return Holders.of(e);
+                return Holder.maybe(e);
             }
         }
-        return Holders.of();
+        return Holder.none();
     }
 
     @Nonnull

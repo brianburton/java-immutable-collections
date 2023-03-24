@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Maybe;
-
-import javax.annotation.Nonnull;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
-import static org.javimmutable.collections.list.MultiValueNode.*;
-import static org.javimmutable.collections.list.MultiValueNodeTest.*;
+import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
+import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
+import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
+import static org.javimmutable.collections.list.MultiValueNodeTest.reversed;
+
+import javax.annotation.Nonnull;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Holder;
 
 public class BranchNodeTest
     extends TestCase
@@ -57,11 +58,11 @@ public class BranchNodeTest
         assertThat(root.get(0)).isEqualTo(0);
         assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
         assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
-        assertEquals(Maybe.of(), root.seekImpl(-1, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(0), root.seekImpl(0, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(MAX_SIZE), root.seekImpl(MAX_SIZE, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Maybe::of, Maybe::of));
-        assertEquals(Maybe.of(), root.seekImpl(root.size(), Maybe::of, Maybe::of));
+        assertEquals(Holder.maybe(), root.seekImpl(-1, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(0), root.seekImpl(0, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(MAX_SIZE), root.seekImpl(MAX_SIZE, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Holder::maybe, Holder::maybe));
+        assertEquals(Holder.maybe(), root.seekImpl(root.size(), Holder::maybe, Holder::maybe));
     }
 
     public void testRotateLeft()

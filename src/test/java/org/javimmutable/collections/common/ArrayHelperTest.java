@@ -35,12 +35,27 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.TestCase;
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.ArrayHelper.Allocator;
+import static org.javimmutable.collections.common.ArrayHelper.allocator;
+import static org.javimmutable.collections.common.ArrayHelper.append;
+import static org.javimmutable.collections.common.ArrayHelper.assign;
+import static org.javimmutable.collections.common.ArrayHelper.assignAppend;
+import static org.javimmutable.collections.common.ArrayHelper.assignDelete;
+import static org.javimmutable.collections.common.ArrayHelper.assignInsert;
+import static org.javimmutable.collections.common.ArrayHelper.assignTwo;
+import static org.javimmutable.collections.common.ArrayHelper.concat;
+import static org.javimmutable.collections.common.ArrayHelper.delete;
+import static org.javimmutable.collections.common.ArrayHelper.insert;
+import static org.javimmutable.collections.common.ArrayHelper.prefix;
+import static org.javimmutable.collections.common.ArrayHelper.prefixInsert;
+import static org.javimmutable.collections.common.ArrayHelper.reverse;
+import static org.javimmutable.collections.common.ArrayHelper.subArray;
+import static org.javimmutable.collections.common.ArrayHelper.suffix;
+import static org.javimmutable.collections.common.ArrayHelper.suffixInsert;
 
 import java.util.concurrent.Callable;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.ArrayHelper.*;
+import junit.framework.TestCase;
 
 public class ArrayHelperTest
     extends TestCase
@@ -126,11 +141,11 @@ public class ArrayHelperTest
     {
         verifyValues(insert(alloc, new Integer[0], 0, 9), 9);
 
-        verifyValues(insert(new Integer[]{1}, 0, 9), 9, 1);
+        verifyValues(insert(alloc, new Integer[]{1}, 0, 9), 9, 1);
         verifyValues(insert(alloc, new Integer[]{1}, 1, 9), 1, 9);
 
         verifyValues(insert(alloc, new Integer[]{1, 2}, 0, 9), 9, 1, 2);
-        verifyValues(insert(new Integer[]{1, 2}, 1, 9), 1, 9, 2);
+        verifyValues(insert(alloc, new Integer[]{1, 2}, 1, 9), 1, 9, 2);
         verifyValues(insert(alloc, new Integer[]{1, 2}, 2, 9), 1, 2, 9);
     }
 
@@ -143,12 +158,12 @@ public class ArrayHelperTest
         // length 2
         orig = new Integer[]{1, 2};
         verifyValues(delete(alloc, orig, 0), 2);
-        verifyValues(delete(orig, 1), 1);
+        verifyValues(delete(alloc, orig, 1), 1);
 
         // length 3
         orig = new Integer[]{1, 2, 3};
         verifyValues(delete(alloc, orig, 0), 2, 3);
-        verifyValues(delete(orig, 1), 1, 3);
+        verifyValues(delete(alloc, orig, 1), 1, 3);
         verifyValues(delete(alloc, orig, 2), 1, 2);
     }
 

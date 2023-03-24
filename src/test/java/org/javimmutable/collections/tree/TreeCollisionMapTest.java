@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
@@ -108,17 +108,17 @@ public class TreeCollisionMapTest
         node = transforms.update(node, 12, 90);
         assertEquals(4, transforms.size(node));
 
-        assertEquals(Holders.of(100), transforms.findValue(node, 10));
-        assertEquals(Holders.of(90), transforms.findValue(node, 12));
-        assertEquals(Holders.of(180), transforms.findValue(node, 18));
-        assertEquals(Holders.of(-60), transforms.findValue(node, -6));
-        assertEquals(Holders.<Integer>of(), transforms.findValue(node, 11));
+        assertEquals(Holder.maybe(100), transforms.findValue(node, 10));
+        assertEquals(Holder.maybe(90), transforms.findValue(node, 12));
+        assertEquals(Holder.maybe(180), transforms.findValue(node, 18));
+        assertEquals(Holder.maybe(-60), transforms.findValue(node, -6));
+        assertEquals(Holder.<Integer>none(), transforms.findValue(node, 11));
 
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>of(), transforms.findEntry(node, 11));
+        assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Holder.<IMapEntry<Integer, Integer>>none(), transforms.findEntry(node, 11));
 
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(MapEntry.of(-6, -60));

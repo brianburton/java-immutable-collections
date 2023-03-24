@@ -58,7 +58,6 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -97,9 +96,9 @@ public class JImmutableTreeMapTest
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
 
         map = JImmutableTreeMap.of();
-        assertSame(Maybe.none(), map.seek(10));
+        assertSame(Holder.none(), map.seek(10));
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
-        assertEquals(Maybe.some(11), map.seek(10));
+        assertEquals(Holder.some(11), map.seek(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
         final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));
@@ -174,7 +173,8 @@ public class JImmutableTreeMapTest
                         expected.put(key, merged);
                         assertEquals(expected.get(key), map.get(key));
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
-                        assertEquals(expected.get(key), map.find(key).getValue());
+                        Holder<Integer> integers = map.find(key);
+                        assertEquals(expected.get(key), integers.unsafeGet());
                         break;
                     }
                     case 1: {
@@ -184,7 +184,8 @@ public class JImmutableTreeMapTest
                         map = add(map, key, value);
                         assertEquals(expected.get(key), map.get(key));
                         assertEquals(expected.get(key), map.getValueOr(key, -99));
-                        assertEquals(expected.get(key), map.find(key).getValue());
+                        Holder<Integer> integers = map.find(key);
+                        assertEquals(expected.get(key), integers.unsafeGet());
                         break;
                     }
                     case 2: {
@@ -206,7 +207,8 @@ public class JImmutableTreeMapTest
                         map = remove(map, key);
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
-                        assertEquals(true, map.find(key).isEmpty());
+                        Holder<Integer> integers = map.find(key);
+                        assertEquals(true, integers.isNone());
                         break;
                     }
                     case 4: {
@@ -214,13 +216,17 @@ public class JImmutableTreeMapTest
                         if (expected.containsKey(key)) {
                             assertEquals(expected.get(key), map.get(key));
                             assertEquals(expected.get(key), map.getValueOr(key, -99));
-                            assertEquals(expected.get(key), map.find(key).getValue());
-                            assertEquals(MapEntry.of(key, expected.get(key)), map.findEntry(key).getValue());
+                            Holder<Integer> integers = map.find(key);
+                            assertEquals(expected.get(key), integers.unsafeGet());
+                            Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
+                            assertEquals(MapEntry.of(key, expected.get(key)), iMapEntries.unsafeGet());
                         } else {
                             assertEquals(null, map.get(key));
                             assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
-                            assertEquals(true, map.find(key).isEmpty());
-                            assertEquals(true, map.findEntry(key).isEmpty());
+                            Holder<Integer> integers = map.find(key);
+                            assertEquals(true, integers.isNone());
+                            Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
+                            assertEquals(true, iMapEntries.isNone());
                         }
                     }
                 }
@@ -231,7 +237,7 @@ public class JImmutableTreeMapTest
             assertEquals(new ArrayList<>(expected.values()), new ArrayList<>(map.getMap().values()));
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
                 Holder<Integer> value = map.find(entry.getKey());
-                assertEquals(entry.getValue(), value.getValue());
+                assertEquals(entry.getValue(), value.unsafeGet());
             }
             verifyEnumeration(expected, map);
         }
@@ -473,10 +479,12 @@ public class JImmutableTreeMapTest
                                                        Integer merged)
     {
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
-        treeMap = treeMap.update(key, h -> h.isEmpty() ? value : h.getValue() ^ value);
+        treeMap = treeMap.update(key, h -> h.isNone() ? value : Integer.valueOf(h.unsafeGet() ^ value));
         treeMap.checkInvariants();
-        assertEquals(true, treeMap.find(key).isFilled());
-        assertEquals(merged, treeMap.find(key).getValue());
+        Holder<Integer> integers = treeMap.find(key);
+        assertEquals(true, integers.isSome());
+        Holder<Integer> integers1 = treeMap.find(key);
+        assertEquals(merged, integers1.unsafeGet());
         return treeMap;
     }
 
@@ -487,8 +495,10 @@ public class JImmutableTreeMapTest
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap = treeMap.assign(key, value);
         treeMap.checkInvariants();
-        assertEquals(true, treeMap.find(key).isFilled());
-        assertEquals(value, treeMap.find(key).getValue());
+        Holder<Integer> integers = treeMap.find(key);
+        assertEquals(true, integers.isSome());
+        Holder<Integer> integers1 = treeMap.find(key);
+        assertEquals(value, integers1.unsafeGet());
         return treeMap;
     }
 
@@ -499,8 +509,10 @@ public class JImmutableTreeMapTest
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap.checkInvariants();
         for (IMapEntry<Integer, Integer> entry : extra) {
-            assertEquals(true, treeMap.find(entry.getKey()).isFilled());
-            assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
+            Holder<Integer> integers = treeMap.find(entry.getKey());
+            assertEquals(true, integers.isSome());
+            Holder<Integer> integers1 = treeMap.find(entry.getKey());
+            assertEquals(entry.getValue(), integers1.unsafeGet());
         }
         return treeMap;
     }
@@ -512,8 +524,10 @@ public class JImmutableTreeMapTest
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap.checkInvariants();
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
-            assertEquals(true, treeMap.find(entry.getKey()).isFilled());
-            assertEquals(entry.getValue(), treeMap.find(entry.getKey()).getValue());
+            Holder<Integer> integers = treeMap.find(entry.getKey());
+            assertEquals(true, integers.isSome());
+            Holder<Integer> integers1 = treeMap.find(entry.getKey());
+            assertEquals(entry.getValue(), integers1.unsafeGet());
         }
         return treeMap;
     }
@@ -524,7 +538,8 @@ public class JImmutableTreeMapTest
         JImmutableTreeMap<Integer, Integer> treeMap = (JImmutableTreeMap<Integer, Integer>)map;
         treeMap = treeMap.delete(value);
         treeMap.checkInvariants();
-        assertEquals(true, treeMap.find(value).isEmpty());
+        Holder<Integer> integers = treeMap.find(value);
+        assertEquals(true, integers.isNone());
         return treeMap;
     }
 }

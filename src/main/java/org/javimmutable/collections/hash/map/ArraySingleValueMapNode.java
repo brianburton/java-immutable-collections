@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -51,7 +50,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 @Immutable
 public class ArraySingleValueMapNode<K, V>
     implements ArrayMapNode<K, V>,
-               Holders.Filled<V>,
                IMapEntry<K, V>
 {
     private final K key;
@@ -88,7 +86,7 @@ public class ArraySingleValueMapNode<K, V>
     public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
                           @Nonnull K key)
     {
-        return key.equals(this.key) ? this : Holders.of();
+        return key.equals(this.key) ? Holder.some(value) : Holder.none();
     }
 
     @Nonnull
@@ -96,7 +94,7 @@ public class ArraySingleValueMapNode<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
                                              @Nonnull K key)
     {
-        return key.equals(this.key) ? Holders.of(this) : Holders.of();
+        return key.equals(this.key) ? Holder.maybe(this) : Holder.none();
     }
 
     @Nonnull
@@ -125,10 +123,10 @@ public class ArraySingleValueMapNode<K, V>
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
-            final V value = generator.apply(Holders.of());
+            final V value = generator.apply(Holder.none());
             return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else {
-            final V value = generator.apply(this);
+            final V value = generator.apply(Holder.some(thisValue));
             if (value == thisValue) {
                 return this;
             } else {

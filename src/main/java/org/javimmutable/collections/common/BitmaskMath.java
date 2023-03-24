@@ -35,18 +35,15 @@
 
 package org.javimmutable.collections.common;
 
-import static org.javimmutable.collections.Holders.holder;
-import static org.javimmutable.collections.Maybe.maybe;
-import static org.javimmutable.collections.Maybe.none;
-import static org.javimmutable.collections.Maybe.some;
+import static org.javimmutable.collections.Holder.maybe;
+import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holder.some;
 
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 
 /**
@@ -180,15 +177,15 @@ public final class BitmaskMath
         {
             long bit = findBit(index);
             if (bit == 0) {
-                return holder();
+                return none();
             } else {
-                return holder(indexForBit(bit));
+                return maybe(indexForBit(bit));
             }
         }
 
         @Nonnull
         @Override
-        public Maybe<Integer> seek(int index)
+        public Holder<Integer> seek(int index)
         {
             long bit = findBit(index);
             if (bit == 0) {

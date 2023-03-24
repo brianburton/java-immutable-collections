@@ -51,10 +51,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum1Throws;
@@ -299,7 +297,7 @@ public class JImmutableTreeList<T>
     public <A> JImmutableTreeList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
     {
         final ListBuilder<A> builder = new ListBuilder<>();
-        root.forEach(t -> transform.apply(t).ifPresent(builder::add));
+        root.forEach(t -> transform.apply(t).apply(tt -> builder.add(tt)));
         return builder.build();
     }
 
@@ -319,14 +317,14 @@ public class JImmutableTreeList<T>
     @Override
     public Holder<T> find(int index)
     {
-        return root.seekImpl(index, Holders::of, Holders::of);
+        return root.seekImpl(index, () -> Holder.none(), value -> Holder.maybe(value));
     }
 
     @Nonnull
     @Override
-    public Maybe<T> seek(int index)
+    public Holder<T> seek(int index)
     {
-        return root.seekImpl(index, Maybe::of, Maybe::of);
+        return root.seekImpl(index, Holder::maybe, Holder::maybe);
     }
 
     @Override

@@ -39,7 +39,6 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
@@ -78,14 +77,14 @@ public class EmptyHashMap<K, V>
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        return Holders.of();
+        return Holder.none();
     }
 
     @Nonnull
     @Override
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
-        return Holders.of();
+        return Holder.none();
     }
 
     @Nonnull
