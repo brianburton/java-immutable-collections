@@ -328,5 +328,5 @@ public interface IArray<T>
      * @return An empty Builder object ready for use to create a new JImmutableArray.
      */
     @Nonnull
-    Builder<T> arrayBuilder();
+    Builder<T> toBuilder();
 }

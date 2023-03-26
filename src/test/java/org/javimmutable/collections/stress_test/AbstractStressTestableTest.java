@@ -40,8 +40,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
+import org.javimmutable.collections.IArrays;
 import org.javimmutable.collections.IList;
-import org.javimmutable.collections.util.JImmutables;
 
 public class AbstractStressTestableTest
     extends TestCase
@@ -56,7 +56,7 @@ public class AbstractStressTestableTest
     private void testStandard(IList<String> tokens)
     {
         Random random = new Random();
-        StressTester testable = new JImmutableArrayStressTester(JImmutables.<String>array(), ArrayIndexRange.INTEGER);
+        StressTester testable = new JImmutableArrayStressTester(IArrays.<String>of(), ArrayIndexRange.INTEGER);
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }

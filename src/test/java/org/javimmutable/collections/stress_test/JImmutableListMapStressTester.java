@@ -43,6 +43,7 @@ import java.util.Random;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
@@ -51,7 +52,6 @@ import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMapTest;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableListMap. Divided into five sections:
@@ -83,7 +83,7 @@ public class JImmutableListMapStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("lmap", "listmap", getNameOption(listmap));
+        return ILists.of("lmap", "listmap", getNameOption(listmap));
     }
 
     @Override
@@ -180,8 +180,8 @@ public class JImmutableListMapStressTester
                         break;
                     }
                     case 1: { //getValueOr(K, V)
-                        IList<String> list = listmap.getValueOr(key, JImmutables.list(""));
-                        IList<String> expectedList = (expected.containsKey(key)) ? expected.get(key) : JImmutables.list("");
+                        IList<String> list = listmap.getValueOr(key, ILists.of(""));
+                        IList<String> expectedList = (expected.containsKey(key)) ? expected.get(key) : ILists.of("");
                         if (!list.equals(expectedList)) {
                             throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - expected %s found %s%n", key, expectedList, list));
                         }
@@ -281,7 +281,7 @@ public class JImmutableListMapStressTester
                        String key,
                        String value)
     {
-        IList<String> list = (expected.containsKey(key)) ? expected.get(key) : JImmutables.list();
+        IList<String> list = (expected.containsKey(key)) ? expected.get(key) : ILists.of();
         list = list.insert(value);
         expected.put(key, list);
     }
@@ -291,7 +291,7 @@ public class JImmutableListMapStressTester
     protected IList<String> makeUpdateList(IList<String> tokens,
                                            Random random)
     {
-        IList<String> values = JImmutables.list();
+        IList<String> values = ILists.of();
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             values = values.insert(RandomKeyManager.makeValue(tokens, random));
         }
@@ -302,7 +302,7 @@ public class JImmutableListMapStressTester
     protected IList<String> makeGrowingList(IList<String> tokens,
                                             Random random)
     {
-        IList<String> list = JImmutables.list();
+        IList<String> list = ILists.of();
         int limit;
         int command = random.nextInt(100);
         if (command < 20) {

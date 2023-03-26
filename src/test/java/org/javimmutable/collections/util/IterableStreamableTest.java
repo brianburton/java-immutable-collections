@@ -35,12 +35,16 @@
 
 package org.javimmutable.collections.util;
 
-import static org.javimmutable.collections.util.JImmutables.*;
-
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMaps;
+import org.javimmutable.collections.IMultisets;
+import org.javimmutable.collections.ISets;
+import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.IterableStreamable.Partitions;
 import org.javimmutable.collections.MapEntry;
 
@@ -49,108 +53,108 @@ public class IterableStreamableTest
 {
     public void testSingle()
     {
-        assertEquals(none(), set().single());
-        assertEquals(some("a"), set("a").single());
-        assertEquals(none(), set("a", "b").single());
+        assertEquals(Holder.none(), ISets.hashed().single());
+        assertEquals(Holder.some("a"), ISets.hashed("a").single());
+        assertEquals(Holder.none(), ISets.hashed("a", "b").single());
 
-        assertEquals(none(), stack().single());
-        assertEquals(some("a"), stack("a").single());
-        assertEquals(none(), stack((String)null).single());
-        assertEquals(none(), stack("a", "b").single());
+        assertEquals(Holder.none(), IStacks.of().single());
+        assertEquals(Holder.some("a"), IStacks.of("a").single());
+        assertEquals(Holder.none(), IStacks.of((String)null).single());
+        assertEquals(Holder.none(), IStacks.of("a", "b").single());
     }
 
     public void testCount()
     {
-        assertEquals(0, list().count());
-        assertEquals(1, list(1).count());
-        assertEquals(5, list(1, 3, 5, 7, 9).count());
+        assertEquals(0, ILists.of().count());
+        assertEquals(1, ILists.of(1).count());
+        assertEquals(5, ILists.of(1, 3, 5, 7, 9).count());
 
-        assertEquals(0, list().count(x -> false));
-        assertEquals(0, list(1).count(x -> false));
-        assertEquals(1, list(1).count(x -> true));
-        assertEquals(2, list(1, 3, 5, 7, 9).count(x -> x % 3 == 0));
+        assertEquals(0, ILists.of().count(x -> false));
+        assertEquals(0, ILists.of(1).count(x -> false));
+        assertEquals(1, ILists.of(1).count(x -> true));
+        assertEquals(2, ILists.of(1, 3, 5, 7, 9).count(x -> x % 3 == 0));
     }
 
     public void testAllMatch()
     {
-        assertEquals(true, list().allMatch(x -> false));
-        assertEquals(true, list().allMatch(x -> true));
+        assertEquals(true, ILists.of().allMatch(x -> false));
+        assertEquals(true, ILists.of().allMatch(x -> true));
 
-        assertEquals(false, list(1).allMatch(x -> false));
-        assertEquals(true, list(1).allMatch(x -> true));
+        assertEquals(false, ILists.of(1).allMatch(x -> false));
+        assertEquals(true, ILists.of(1).allMatch(x -> true));
     }
 
     public void testAnyMatch()
     {
-        assertEquals(false, list().anyMatch(x -> false));
-        assertEquals(false, list().anyMatch(x -> true));
+        assertEquals(false, ILists.of().anyMatch(x -> false));
+        assertEquals(false, ILists.of().anyMatch(x -> true));
 
-        assertEquals(false, list(1).anyMatch(x -> false));
-        assertEquals(true, list(1).anyMatch(x -> true));
+        assertEquals(false, ILists.of(1).anyMatch(x -> false));
+        assertEquals(true, ILists.of(1).anyMatch(x -> true));
 
-        assertEquals(false, list(1, 3, 5).anyMatch(x -> x > 5));
-        assertEquals(true, list(1, 3, 5).anyMatch(x -> x < 5));
+        assertEquals(false, ILists.of(1, 3, 5).anyMatch(x -> x > 5));
+        assertEquals(true, ILists.of(1, 3, 5).anyMatch(x -> x < 5));
     }
 
     public void testFirst()
     {
-        assertEquals(Holder.none(), list().first(x -> true));
-        assertEquals(Holder.none(), list(1, 3).first(x -> x >= 5));
-        assertEquals(Holder.maybe(3), list(1, 3, 5).first(x -> x >= 3));
+        assertEquals(Holder.none(), ILists.of().first(x -> true));
+        assertEquals(Holder.none(), ILists.of(1, 3).first(x -> x >= 5));
+        assertEquals(Holder.maybe(3), ILists.of(1, 3, 5).first(x -> x >= 3));
     }
 
     public void testCollectAll()
     {
-        assertSame(set(), list().collect(set()));
-        assertEquals(set(1), list(1).collect(set()));
-        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collect(set()));
+        assertSame(ISets.hashed(), ILists.of().collect(ISets.hashed()));
+        assertEquals(ISets.hashed(1), ILists.of(1).collect(ISets.hashed()));
+        assertEquals(ISets.hashed(1, 2, 3, 4, 5), ILists.of(1, 2, 3, 4, 5).collect(ISets.hashed()));
     }
 
     public void testCollectAtMost()
     {
-        assertSame(set(), list().collect(100, set()));
-        assertSame(set(), list(1).collect(0, set()));
-        assertEquals(set(1), list(1).collect(1, set()));
-        assertEquals(set(1), list(1).collect(100, set()));
-        assertEquals(set(1), list(1, 2, 3, 4, 5).collect(1, set()));
-        assertEquals(set(1, 2, 3), list(1, 2, 3, 4, 5).collect(3, set()));
-        assertEquals(set(1, 2, 3, 4, 5), list(1, 2, 3, 4, 5).collect(5, set()));
+        assertSame(ISets.hashed(), ILists.of().collect(100, ISets.hashed()));
+        assertSame(ISets.hashed(), ILists.of(1).collect(0, ISets.hashed()));
+        assertEquals(ISets.hashed(1), ILists.of(1).collect(1, ISets.hashed()));
+        assertEquals(ISets.hashed(1), ILists.of(1).collect(100, ISets.hashed()));
+        assertEquals(ISets.hashed(1), ILists.of(1, 2, 3, 4, 5).collect(1, ISets.hashed()));
+        assertEquals(ISets.hashed(1, 2, 3), ILists.of(1, 2, 3, 4, 5).collect(3, ISets.hashed()));
+        assertEquals(ISets.hashed(1, 2, 3, 4, 5), ILists.of(1, 2, 3, 4, 5).collect(5, ISets.hashed()));
     }
 
     public void testCollectAllMatching()
     {
-        assertEquals(list(), list().collect(list(), x -> true));
-        assertEquals(list(1, 3, 5), list(1, 3, 5).collect(list(), x -> true));
-        assertEquals(list(1, 5), list(1, 3, 5).collect(list(), x -> x != 3));
+        assertEquals(ILists.of(), ILists.of().collect(ILists.of(), x -> true));
+        assertEquals(ILists.of(1, 3, 5), ILists.of(1, 3, 5).collect(ILists.of(), x -> true));
+        assertEquals(ILists.of(1, 5), ILists.of(1, 3, 5).collect(ILists.of(), x -> x != 3));
     }
 
     public void testCollectAtMostMatching()
     {
-        assertEquals(list(), list().collect(3, list(), x -> true));
-        assertEquals(list(), list(1, 3, 5).collect(0, list(), x -> true));
-        assertEquals(list(), list(1, 3, 5).collect(-10, list(), x -> true));
-        assertEquals(list(1), list(1, 3, 5).collect(1, list(), x -> true));
-        assertEquals(list(1, 3), list(1, 3, 5).collect(2, list(), x -> true));
-        assertEquals(list(1, 5), list(1, 3, 5, 7).collect(2, list(), x -> x != 3));
+        assertEquals(ILists.of(), ILists.of().collect(3, ILists.of(), x -> true));
+        assertEquals(ILists.of(), ILists.of(1, 3, 5).collect(0, ILists.of(), x -> true));
+        assertEquals(ILists.of(), ILists.of(1, 3, 5).collect(-10, ILists.of(), x -> true));
+        assertEquals(ILists.of(1), ILists.of(1, 3, 5).collect(1, ILists.of(), x -> true));
+        assertEquals(ILists.of(1, 3), ILists.of(1, 3, 5).collect(2, ILists.of(), x -> true));
+        assertEquals(ILists.of(1, 5), ILists.of(1, 3, 5, 7).collect(2, ILists.of(), x -> x != 3));
     }
 
     public void testTransformAll()
     {
-        assertEquals(list(), list().transform(list(), x -> x));
-        assertEquals(list(-1), list(1).transform(list(), x -> -x));
-        assertEquals(list(-1, -3, -5), list(1, 3, 5).transform(list(), x -> -x));
+        assertEquals(ILists.of(), ILists.of().transform(ILists.of(), x -> x));
+        assertEquals(ILists.of(-1), ILists.of(1).transform(ILists.of(), x -> -x));
+        assertEquals(ILists.of(-1, -3, -5), ILists.of(1, 3, 5).transform(ILists.of(), x -> -x));
     }
 
     public void testTransformAtMost()
     {
-        assertEquals(list(), list().transform(10, list(), x -> x));
-        assertEquals(list(-1, -3), list(1, 3, 5).transform(2, list(), x -> -x));
+        assertEquals(ILists.of(), ILists.of().transform(10, ILists.of(), x -> x));
+        assertEquals(ILists.of(-1, -3), ILists.of(1, 3, 5).transform(2, ILists.of(), x -> -x));
     }
 
     public void testTransformSome()
     {
-        assertEquals(list(), list().transformSome(list(), x -> Holder.maybe(x)));
-        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(list(9), x -> {
+        assertEquals(ILists.of(), ILists.of().transformSome(ILists.of(), x -> Holder.maybe(x)));
+        assertEquals(ILists.of(9, -1, -5), ILists.of(1, 3, 5).transformSome(ILists.of(9), x -> {
             if (x == 3) {
                 return Holder.none();
             } else {
@@ -162,8 +166,8 @@ public class IterableStreamableTest
 
     public void testTransformAtMostSome()
     {
-        assertEquals(list(), list().transformSome(10, list(), x -> Holder.maybe(x)));
-        assertEquals(list(9, -1, -5), list(1, 3, 5).transformSome(10, list(9), x -> {
+        assertEquals(ILists.of(), ILists.of().transformSome(10, ILists.of(), x -> Holder.maybe(x)));
+        assertEquals(ILists.of(9, -1, -5), ILists.of(1, 3, 5).transformSome(10, ILists.of(9), x -> {
             if (x == 3) {
                 return Holder.none();
             } else {
@@ -171,7 +175,7 @@ public class IterableStreamableTest
                 return Holder.maybe(value);
             }
         }));
-        assertEquals(list(9, -1), list(1, 3, 5).transformSome(1, list(9), x -> {
+        assertEquals(ILists.of(9, -1), ILists.of(1, 3, 5).transformSome(1, ILists.of(9), x -> {
             if (x == 3) {
                 return Holder.none();
             } else {
@@ -183,42 +187,42 @@ public class IterableStreamableTest
 
     public void testPartition()
     {
-        assertEquals(new Partitions<>(list(), list()), list().partition(list(), list(), x -> true));
-        assertEquals(new Partitions<>(list(1, 2, 3, 4, 5), list()), list(1, 2, 3, 4, 5).partition(list(), list(), x -> true));
-        assertEquals(new Partitions<>(list(), list(1, 2, 3, 4, 5)), list(1, 2, 3, 4, 5).partition(list(), list(), x -> false));
-        assertEquals(new Partitions<>(list(999, 1, 3, 5), list(888, 2, 4)), list(1, 2, 3, 4, 5).partition(list(999), list(888), x -> x % 2 == 1));
-        Partitions<IList<Integer>> p = list(1, 2, 3, 4, 5).partition(list(999), list(888), x -> x % 2 == 1);
-        assertEquals(list(999, 1, 3, 5), p.getMatched());
-        assertEquals(list(888, 2, 4), p.getUnmatched());
+        assertEquals(new Partitions<>(ILists.of(), ILists.of()), ILists.of().partition(ILists.of(), ILists.of(), x -> true));
+        assertEquals(new Partitions<>(ILists.of(1, 2, 3, 4, 5), ILists.of()), ILists.of(1, 2, 3, 4, 5).partition(ILists.of(), ILists.of(), x -> true));
+        assertEquals(new Partitions<>(ILists.of(), ILists.of(1, 2, 3, 4, 5)), ILists.of(1, 2, 3, 4, 5).partition(ILists.of(), ILists.of(), x -> false));
+        assertEquals(new Partitions<>(ILists.of(999, 1, 3, 5), ILists.of(888, 2, 4)), ILists.of(1, 2, 3, 4, 5).partition(ILists.of(999), ILists.of(888), x -> x % 2 == 1));
+        Partitions<IList<Integer>> p = ILists.of(1, 2, 3, 4, 5).partition(ILists.of(999), ILists.of(888), x -> x % 2 == 1);
+        assertEquals(ILists.of(999, 1, 3, 5), p.getMatched());
+        assertEquals(ILists.of(888, 2, 4), p.getUnmatched());
     }
 
     public void testReduce()
     {
-        assertEquals(Holder.none(), list().reduce((s, x) -> s));
-        assertEquals(Holder.maybe(1), list(1).reduce((s, x) -> s + x));
-        assertEquals(Holder.maybe(3), list(1, 2).reduce((s, x) -> s + x));
-        assertEquals(Holder.maybe(6), list(1, 2, 3).reduce((s, x) -> s + x));
+        assertEquals(Holder.none(), ILists.of().reduce((s, x) -> s));
+        assertEquals(Holder.maybe(1), ILists.of(1).reduce((s, x) -> s + x));
+        assertEquals(Holder.maybe(3), ILists.of(1, 2).reduce((s, x) -> s + x));
+        assertEquals(Holder.maybe(6), ILists.of(1, 2, 3).reduce((s, x) -> s + x));
 
-        assertEquals(Integer.valueOf(0), list().reduce(0, (s, x) -> s));
-        assertEquals(Integer.valueOf(1), list(1).reduce(0, (s, x) -> s + x));
-        assertEquals(Integer.valueOf(3), list(1, 2).reduce(0, (s, x) -> s + x));
-        assertEquals(Integer.valueOf(6), list(1, 2, 3).reduce(0, (s, x) -> s + x));
+        assertEquals(Integer.valueOf(0), ILists.of().reduce(0, (s, x) -> s));
+        assertEquals(Integer.valueOf(1), ILists.of(1).reduce(0, (s, x) -> s + x));
+        assertEquals(Integer.valueOf(3), ILists.of(1, 2).reduce(0, (s, x) -> s + x));
+        assertEquals(Integer.valueOf(6), ILists.of(1, 2, 3).reduce(0, (s, x) -> s + x));
     }
 
     public void testInject()
     {
         final Func2<String, Integer, String> accumulator = (s, x) -> String.valueOf(Integer.parseInt(s) + x);
-        assertEquals("0", JImmutables.<Integer>list().reduce("0", accumulator));
-        assertEquals("1", JImmutables.list(1).reduce("0", accumulator));
-        assertEquals("9", JImmutables.list(1, 3, 5).reduce("0", accumulator));
-        assertEquals(Integer.valueOf(-9), JImmutables.list(1, 3, 5).reduce(-18, (s, x) -> s + x));
+        assertEquals("0", ILists.<Integer>of().reduce("0", accumulator));
+        assertEquals("1", ILists.of(1).reduce("0", accumulator));
+        assertEquals("9", ILists.of(1, 3, 5).reduce("0", accumulator));
+        assertEquals(Integer.valueOf(-9), ILists.of(1, 3, 5).reduce(-18, (s, x) -> s + x));
     }
 
     public void testConversions()
     {
-        assertEquals(set(3, 5), list(5, 3, 3, 5).transform(JImmutables.<Integer>sortedSet(), x -> x));
-        assertEquals(JImmutables.multiset(3, 3, 5, 5), list(5, 3, 3, 5).transform(JImmutables.<Integer>sortedMultiset(), x -> x));
-        assertEquals(JImmutables.map().assign(3, 6).assign(5, 10), list(5, 3, 3, 5).transform(JImmutables.sortedMap(), x -> MapEntry.of(x, 2 * x)));
-        assertEquals(JImmutables.listMap().assign(3, list(3, 3)).assign(5, list(5)), list(3, 5, 3).transform(JImmutables.sortedListMap(), x -> MapEntry.of(x, x)));
+        assertEquals(ISets.hashed(3, 5), ILists.of(5, 3, 3, 5).transform(ISets.<Integer>sorted(), x -> x));
+        assertEquals(IMultisets.hashed(3, 3, 5, 5), ILists.of(5, 3, 3, 5).transform(IMultisets.<Integer>sorted(), x -> x));
+        assertEquals(IMaps.hashed().assign(3, 6).assign(5, 10), ILists.of(5, 3, 3, 5).transform(IMaps.sorted(), x -> MapEntry.of(x, 2 * x)));
+        assertEquals(IListMap.listMap().assign(3, ILists.of(3, 3)).assign(5, ILists.of(5)), ILists.of(3, 5, 3).transform(IListMap.sortedListMap(), x -> MapEntry.of(x, x)));
     }
 }

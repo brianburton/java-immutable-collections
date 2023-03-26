@@ -43,13 +43,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISets;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeSet;
 import org.javimmutable.collections.tree.JImmutableTreeSetTest;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
@@ -80,7 +81,7 @@ public class JImmutableSetStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("set", getNameOption(set));
+        return ILists.of("set", getNameOption(set));
     }
 
     @Override
@@ -237,7 +238,7 @@ public class JImmutableSetStressTester
                 case 2: { //intersection(JSet)
                     final int padding = random.nextBoolean() ? numberToRemove + 1 : random.nextInt(Math.max(1, numberToRemove - 1));
                     final Set<String> intersectionValues = keys.randomIntersectionKeysSet(numberToRetain, padding);
-                    set = set.intersection(JImmutables.set(intersectionValues));
+                    set = set.intersection(ISets.hashed(intersectionValues));
                     expected.retainAll(intersectionValues);
                     keys.retainAll(intersectionValues);
                     break;

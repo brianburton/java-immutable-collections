@@ -36,12 +36,32 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import org.javimmutable.collections.sequence.EmptySequenceNode;
+import org.javimmutable.collections.sequence.FilledSequenceNode;
 
 /**
  * Interface for simple collections that contain a head value and a tail containing the remainder of the sequence.
  */
 public interface Sequence<T>
 {
+    /**
+     * Creates an empty InsertableSequence.
+     */
+    @Nonnull
+    static <T> InsertableSequence<T> sequence()
+    {
+        return EmptySequenceNode.of();
+    }
+
+    /**
+     * Creates an InsertableSequence with a single value.
+     */
+    @Nonnull
+    static <T> InsertableSequence<T> sequence(T value)
+    {
+        return FilledSequenceNode.of(value);
+    }
+
     /**
      * Determines if this is the end of the Sequence.  When true the Sequence is empty and
      * getHead() cannot be called.  getTail() can still be called but will always return

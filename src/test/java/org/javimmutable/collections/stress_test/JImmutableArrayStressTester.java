@@ -44,11 +44,11 @@ import java.util.TreeMap;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableArray. Divided into four sections: growing
@@ -74,7 +74,7 @@ public class JImmutableArrayStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("array", getNameOption(array));
+        return ILists.of("array", getNameOption(array));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class JImmutableArrayStressTester
         final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
         final Map<Integer, String> expected = new TreeMap<>();
         IArray<String> array = this.array;
-        IList<Integer> indexList = JImmutables.list();
+        IList<Integer> indexList = ILists.of();
 
         System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {

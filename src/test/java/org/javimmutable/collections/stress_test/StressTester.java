@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
@@ -94,7 +94,7 @@ abstract class StressTester
                                             Random random,
                                             int maxToAdd)
     {
-        return JImmutables.list(makeInsertList(tokens, random, maxToAdd));
+        return ILists.allOf(makeInsertList(tokens, random, maxToAdd));
     }
 
     protected List<String> makeInsertList(IList<String> tokens,

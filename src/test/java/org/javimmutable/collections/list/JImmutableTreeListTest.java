@@ -53,6 +53,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -1132,7 +1133,7 @@ public class JImmutableTreeListTest
     public void testParallelStreams()
     {
         final IList<Integer> original = JImmutableTreeList.of(IndexedList.retained(TestUtil.makeList(IndexedIterator.forRange(1, 10000))));
-        final IList<Object> collected = original.stream().parallel().collect(JImmutableTreeList.of().listCollector());
+        final IList<Object> collected = original.stream().parallel().collect(ICollectors.toList());
         collected.checkInvariants();
         assertEquals(original, collected);
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));

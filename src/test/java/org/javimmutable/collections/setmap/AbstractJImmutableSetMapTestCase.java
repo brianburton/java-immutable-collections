@@ -52,15 +52,17 @@ import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.ISets;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
 
 public abstract class AbstractJImmutableSetMapTestCase
     extends TestCase
@@ -187,8 +189,8 @@ public abstract class AbstractJImmutableSetMapTestCase
 
     private void verifyContains(ISetMap<Integer, Integer> emptyMap)
     {
-        IList<Integer> values = JImmutables.list();
-        ISetMap<Integer, Integer> jetMap = emptyMap.insertAll(1, JImmutables.set(1, 2, 4));
+        IList<Integer> values = ILists.of();
+        ISetMap<Integer, Integer> jetMap = emptyMap.insertAll(1, ISets.hashed(1, 2, 4));
 
         //empty with empty
         assertEquals(false, emptyMap.contains(1));
@@ -532,7 +534,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         }
 
         ISetMap<Integer, Integer> expected = template.insertAll(values);
-        ISetMap<Integer, Integer> actual = values.parallelStream().collect(template.setMapCollector());
+        ISetMap<Integer, Integer> actual = values.parallelStream().collect(ICollectors.toSetMap());
         assertEquals(expected, actual);
     }
 }

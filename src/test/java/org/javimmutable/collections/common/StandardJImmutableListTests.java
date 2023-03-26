@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.common;
 
-import static org.javimmutable.collections.util.JImmutables.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
@@ -107,10 +106,10 @@ public class StandardJImmutableListTests
 
     private static void verifySingle(IList<Integer> empty)
     {
-        assertEquals(none(), empty.single());
-        assertEquals(some(1), empty.insert(1).single());
-        assertEquals(none(), empty.insert(null).single());
-        assertEquals(none(), empty.insert(1).insert(2).single());
+        assertEquals(Holder.none(), empty.single());
+        assertEquals(Holder.some(1), empty.insert(1).single());
+        assertEquals(Holder.none(), empty.insert(null).single());
+        assertEquals(Holder.none(), empty.insert(1).insert(2).single());
     }
 
     private static IList<Integer> appendAll(IList<Integer> answer,

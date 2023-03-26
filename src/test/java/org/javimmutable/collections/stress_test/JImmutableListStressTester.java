@@ -44,9 +44,9 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableList.
@@ -74,7 +74,7 @@ public class JImmutableListStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("list", getNameOption(list));
+        return ILists.of("list", getNameOption(list));
     }
 
     @Override

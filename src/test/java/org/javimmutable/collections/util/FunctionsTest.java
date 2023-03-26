@@ -40,8 +40,10 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IStack;
+import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -50,34 +52,34 @@ public class FunctionsTest
 {
     public void testFoldLeft()
     {
-        IStack<Integer> list = JImmutables.stack(1, 2, 3);
+        IStack<Integer> list = IStacks.of(1, 2, 3);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
     public void testFoldRight()
     {
-        IStack<Integer> list = JImmutables.stack(1, 2, 3);
+        IStack<Integer> list = IStacks.of(1, 2, 3);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
     public void testReverse()
     {
-        StandardIteratorTests.listIteratorTest(Arrays.asList(1), Functions.reverse(JImmutables.list(1).iterator()));
-        StandardIteratorTests.listIteratorTest(Arrays.asList(3, 2, 1), Functions.reverse(JImmutables.list(1, 2, 3).iterator()));
+        StandardIteratorTests.listIteratorTest(Arrays.asList(1), Functions.reverse(ILists.of(1).iterator()));
+        StandardIteratorTests.listIteratorTest(Arrays.asList(3, 2, 1), Functions.reverse(ILists.of(1, 2, 3).iterator()));
     }
 
     public void testCollectAll()
     {
-        IList<Integer> expected = JImmutables.list(2, 3, 4);
-        IList<Integer> list = JImmutables.list(1, 2, 3);
-        assertEquals(expected, Functions.collectAll(list.iterator(), JImmutables.list(), value -> value + 1));
+        IList<Integer> expected = ILists.of(2, 3, 4);
+        IList<Integer> list = ILists.of(1, 2, 3);
+        assertEquals(expected, Functions.collectAll(list.iterator(), ILists.of(), value -> value + 1));
     }
 
     public void testCollectSome()
     {
-        IList<Integer> expected = JImmutables.list(2, 4);
-        IList<Integer> list = JImmutables.list(1, 2, 3);
-        assertEquals(expected, Functions.collectSome(list.iterator(), JImmutables.list(), value -> {
+        IList<Integer> expected = ILists.of(2, 4);
+        IList<Integer> list = ILists.of(1, 2, 3);
+        assertEquals(expected, Functions.collectSome(list.iterator(), ILists.of(), value -> {
             if (value % 2 == 0) {
                 return Holder.none();
             } else {
@@ -90,10 +92,10 @@ public class FunctionsTest
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
+        IList<Integer> list = ILists.of(1, 2, 3, 4);
         assertEquals(Holder.maybe(2), Functions.find(list.iterator(), func));
 
-        list = JImmutables.list(1, 5, 7);
+        list = ILists.of(1, 5, 7);
         assertEquals(Holder.<Integer>none(), Functions.find(list.iterator(), func));
     }
 
@@ -101,28 +103,28 @@ public class FunctionsTest
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
-        IList<Integer> expected = JImmutables.list(1, 3);
-        assertEquals(expected, Functions.reject(list.iterator(), JImmutables.list(), func));
-        list = JImmutables.list(1, 5, 7);
-        assertEquals(list, Functions.reject(list.iterator(), JImmutables.list(), func));
-        list = JImmutables.list(2, 6, 12);
-        expected = JImmutables.list();
-        assertEquals(expected, Functions.reject(list.iterator(), JImmutables.list(), func));
+        IList<Integer> list = ILists.of(1, 2, 3, 4);
+        IList<Integer> expected = ILists.of(1, 3);
+        assertEquals(expected, Functions.reject(list.iterator(), ILists.of(), func));
+        list = ILists.of(1, 5, 7);
+        assertEquals(list, Functions.reject(list.iterator(), ILists.of(), func));
+        list = ILists.of(2, 6, 12);
+        expected = ILists.of();
+        assertEquals(expected, Functions.reject(list.iterator(), ILists.of(), func));
     }
 
     public void testSelect()
     {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
-        IList<Integer> list = JImmutables.list(1, 2, 3, 4);
-        IList<Integer> expected = JImmutables.list(2, 4);
-        assertEquals(expected, Functions.select(list.iterator(), JImmutables.list(), func));
-        list = JImmutables.list(2, 6, 12);
-        assertEquals(list, Functions.select(list.iterator(), JImmutables.list(), func));
-        list = JImmutables.list(1, 5, 7);
-        expected = JImmutables.list();
-        assertEquals(expected, Functions.select(list.iterator(), JImmutables.list(), func));
+        IList<Integer> list = ILists.of(1, 2, 3, 4);
+        IList<Integer> expected = ILists.of(2, 4);
+        assertEquals(expected, Functions.select(list.iterator(), ILists.of(), func));
+        list = ILists.of(2, 6, 12);
+        assertEquals(list, Functions.select(list.iterator(), ILists.of(), func));
+        list = ILists.of(1, 5, 7);
+        expected = ILists.of();
+        assertEquals(expected, Functions.select(list.iterator(), ILists.of(), func));
     }
     
     public void testAssignAll()

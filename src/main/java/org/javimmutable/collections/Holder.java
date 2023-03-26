@@ -48,9 +48,8 @@ import org.javimmutable.collections.iterators.SingleValueIterator;
 import org.javimmutable.collections.serialization.MaybeProxy;
 
 /**
- * Similar to Holder but implemented as a concrete ADT rather than an interface.
- * Used to handle cases when a value may or may not be present and to eliminate
- * the use of null values.  Unlike a Holder, the value of a Holder can never be null.
+ * Used to handle cases when a value may or may not be present and, when needed, to eliminate
+ * the use of null values.  The value can be null but a method is provided to change the instance to None if it is.
  * Provides a variety of utility methods to allow call chaining.
  */
 public abstract class Holder<T>
@@ -271,7 +270,6 @@ public abstract class Holder<T>
      * @return this value
      * @throws NoSuchElementException if this is empty
      */
-    @Nonnull
     public abstract T unsafeGet();
 
     /**
@@ -281,7 +279,6 @@ public abstract class Holder<T>
      * @return this value
      * @throws E an exception produced by mapping if this is empty
      */
-    @Nonnull
     public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> noneExceptionMapping)
         throws E;
 
@@ -290,13 +287,11 @@ public abstract class Holder<T>
      *
      * @param noneValue value to return if this is empty
      */
-    @Nonnull
-    public abstract T get(@Nonnull T noneValue);
+    public abstract T get(T noneValue);
 
     /**
      * Gets this value.  If this is empty returns null.
      */
-    @Nullable
     public abstract T getOrNull();
 
     /**
@@ -304,7 +299,6 @@ public abstract class Holder<T>
      *
      * @param noneMapping function to generate value to return if this is empty
      */
-    @Nonnull
     public abstract T getOr(@Nonnull Func0<? extends T> noneMapping);
 
     /**
@@ -430,10 +424,8 @@ public abstract class Holder<T>
      * Returns a Holder containing the value.  The value must be non-null.
      */
     @Nonnull
-    public static <T> Holder<T> some(@Nonnull T value)
+    public static <T> Holder<T> some(T value)
     {
-        //noinspection ConstantConditions
-        assert value != null;
         return new Some<>(value);
     }
 

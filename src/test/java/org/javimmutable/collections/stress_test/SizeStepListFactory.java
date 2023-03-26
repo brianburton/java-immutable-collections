@@ -40,7 +40,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import org.javimmutable.collections.IList;
-import org.javimmutable.collections.util.JImmutables;
+import org.javimmutable.collections.ILists;
 
 /**
  * Uses a random number generator to create a series of size steps
@@ -57,15 +57,15 @@ public class SizeStepListFactory
     {
         IList<Step> steps;
         if (maxSize == 1) {
-            steps = JImmutables.list(new Step(1, 1));
+            steps = ILists.of(new Step(1, 1));
         } else if (maxSize == 2) {
-            steps = JImmutables.list(new Step(1, 1),
-                                     new Step(2, 1),
-                                     new Step(2, 2));
+            steps = ILists.of(new Step(1, 1),
+                              new Step(2, 1),
+                              new Step(2, 2));
         } else if (maxSize == 3) {
-            steps = JImmutables.list(new Step(1, 1),
-                                     new Step(3, 2),
-                                     new Step(3, 3));
+            steps = ILists.of(new Step(1, 1),
+                              new Step(3, 2),
+                              new Step(3, 3));
         } else if (maxSize < (2 * numSteps)) {
             steps = randomSteps(maxSize / 2, maxSize, r);
         } else {
@@ -84,7 +84,7 @@ public class SizeStepListFactory
         while (sizes.size() < numSizes) {
             sizes.add(1 + r.nextInt(maxSize - extra));
         }
-        IList<Step> steps = JImmutables.list();
+        IList<Step> steps = ILists.of();
         for (Iterator<Integer> i = sizes.iterator(); i.hasNext(); ) {
             final int shrinkSize = i.next();
             final int growthSize = i.next();

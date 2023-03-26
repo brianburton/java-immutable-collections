@@ -37,23 +37,25 @@ package org.javimmutable.collections.util;
 
 import java.io.IOException;
 import junit.framework.TestCase;
+import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 
 public class SplitableIterableTest
     extends TestCase
 {
     public void testIndexedForEach()
     {
-        IList.Builder<Integer> collected = JImmutables.listBuilder();
-        JImmutables.list(1, 2, 3).indexedForEach((i, v) -> collected.add(i).add(v));
-        assertEquals(JImmutables.list(0, 1, 1, 2, 2, 3), collected.build());
+        IList.Builder<Integer> collected = IBuilders.list();
+        ILists.of(1, 2, 3).indexedForEach((i, v) -> collected.add(i).add(v));
+        assertEquals(ILists.of(0, 1, 1, 2, 2, 3), collected.build());
     }
 
     public void testIndexedForEachThrows()
     {
-        IList.Builder<Integer> collected = JImmutables.listBuilder();
+        IList.Builder<Integer> collected = IBuilders.list();
         try {
-            JImmutables.list(1, 2, 3).indexedForEachThrows((i, v) -> {
+            ILists.of(1, 2, 3).indexedForEachThrows((i, v) -> {
                 if (i == 2) {
                     throw new IOException();
                 }
@@ -61,7 +63,7 @@ public class SplitableIterableTest
             });
             fail();
         } catch (IOException ex) {
-            assertEquals(JImmutables.list(0, 1, 1, 2), collected.build());
+            assertEquals(ILists.of(0, 1, 1, 2), collected.build());
         }
     }
 }

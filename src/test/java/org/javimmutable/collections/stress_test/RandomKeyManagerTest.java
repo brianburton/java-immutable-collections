@@ -40,7 +40,7 @@ import java.util.Random;
 import java.util.Set;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IList;
-import org.javimmutable.collections.util.JImmutables;
+import org.javimmutable.collections.ILists;
 
 public class RandomKeyManagerTest
         extends TestCase
@@ -51,7 +51,7 @@ public class RandomKeyManagerTest
     public void setUp()
             throws Exception
     {
-        allPossibleKeys = JImmutables.list();
+        allPossibleKeys = ILists.of();
         for (int i = 0; i < 100; ++i) {
             allPossibleKeys = allPossibleKeys.insertLast(String.valueOf(i));
         }

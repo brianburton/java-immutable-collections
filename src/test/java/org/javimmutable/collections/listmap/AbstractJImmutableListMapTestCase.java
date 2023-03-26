@@ -47,6 +47,7 @@ import java.util.stream.IntStream;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMapEntry;
@@ -192,7 +193,7 @@ public abstract class AbstractJImmutableListMapTestCase
         }
 
         IListMap<Integer, Integer> expected = template.insertAll(values);
-        IListMap<Integer, Integer> actual = values.parallelStream().collect(template.listMapCollector());
+        IListMap<Integer, Integer> actual = values.parallelStream().collect(ICollectors.toListMap());
         assertEquals(expected, actual);
 
         verifyForEach(actual);

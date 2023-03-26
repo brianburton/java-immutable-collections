@@ -42,9 +42,11 @@ import java.util.Map;
 import java.util.Random;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.ISets;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -52,7 +54,6 @@ import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
 import org.javimmutable.collections.setmap.JImmutableTreeSetMapTest;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableSetMap. Divided into five sections:
@@ -84,7 +85,7 @@ public class JImmutableSetMapStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("smap", "setmap", getNameOption(setmap));
+        return ILists.of("smap", "setmap", getNameOption(setmap));
     }
 
     @Override
@@ -150,25 +151,25 @@ public class JImmutableSetMapStressTester
                     case 7: { //intersection(K, Iterable)
                         IList<String> values = makeIntersectList(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values);
-                        expected.put(key, JImmutables.set());
+                        expected.put(key, ISets.hashed());
                         break;
                     }
                     case 8: { //intersection(K, Collection)
                         IList<String> values = makeIntersectList(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values.getList());
-                        expected.put(key, JImmutables.set());
+                        expected.put(key, ISets.hashed());
                         break;
                     }
                     case 9: { //intersection(K, JSet)
                         ISet<String> values = makeIntersectSet(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values);
-                        expected.put(key, JImmutables.set());
+                        expected.put(key, ISets.hashed());
                         break;
                     }
                     case 10: { //intersection(K, Set)
                         ISet<String> values = makeIntersectSet(tokens, random, key, expected);
                         setmap = setmap.intersection(key, values.getSet());
-                        expected.put(key, JImmutables.set());
+                        expected.put(key, ISets.hashed());
                         break;
                     }
                     default:
@@ -349,8 +350,8 @@ public class JImmutableSetMapStressTester
                         break;
                     }
                     case 6: { //getValueOr(K, V)
-                        ISet<String> set = setmap.getValueOr(key, JImmutables.set(""));
-                        ISet<String> expectedSet = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set("");
+                        ISet<String> set = setmap.getValueOr(key, ISets.hashed(""));
+                        ISet<String> expectedSet = (expected.containsKey(key)) ? expected.get(key) : ISets.hashed("");
                         if (!set.equals(expectedSet)) {
                             throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - expected %s found %s%n", key, expectedSet, set));
                         }
@@ -456,7 +457,7 @@ public class JImmutableSetMapStressTester
                          String key,
                          Iterable<String> values)
     {
-        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
+        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : ISets.hashed();
         expected.put(key, set.union(values));
     }
 
@@ -464,7 +465,7 @@ public class JImmutableSetMapStressTester
                                 String key,
                                 Iterable<String> values)
     {
-        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
+        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : ISets.hashed();
         expected.put(key, set.intersection(values));
     }
 
@@ -492,7 +493,7 @@ public class JImmutableSetMapStressTester
                        String key,
                        String value)
     {
-        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
+        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : ISets.hashed();
         set = set.insert(value);
         expected.put(key, set);
     }
@@ -501,7 +502,7 @@ public class JImmutableSetMapStressTester
                           String key,
                           Iterable<String> values)
     {
-        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : JImmutables.set();
+        ISet<String> set = (expected.containsKey(key)) ? expected.get(key) : ISets.hashed();
         expected.put(key, set.insertAll(values.iterator()));
     }
 
@@ -525,7 +526,7 @@ public class JImmutableSetMapStressTester
                                           Random random)
     {
         final int limit = randomGrowingSize(random);
-        IList<String> list = JImmutables.list();
+        IList<String> list = ILists.of();
         for (int i = 0; i < limit; ++i) {
             list = list.insert(RandomKeyManager.makeValue(tokens, random));
         }
@@ -536,7 +537,7 @@ public class JImmutableSetMapStressTester
                                         Random random)
     {
         final int limit = randomGrowingSize(random);
-        ISet<String> set = JImmutables.set();
+        ISet<String> set = ISets.hashed();
         while (set.size() < limit) {
             set = set.insert(RandomKeyManager.makeValue(tokens, random));
         }
@@ -549,8 +550,8 @@ public class JImmutableSetMapStressTester
                                          String key,
                                          Map<String, ISet<String>> expected)
     {
-        IList<String> values = JImmutables.list();
-        IList<String> expectedSet = JImmutables.list(expected.get(key));
+        IList<String> values = ILists.of();
+        IList<String> expectedSet = ILists.allOf(expected.get(key));
         for (int i = 0, limit = random.nextInt(5); i < limit; ++i) {
             if (random.nextBoolean() || expectedSet.size() == 0) {
                 values = values.insert(RandomKeyManager.makeValue(tokens, random));
@@ -567,8 +568,8 @@ public class JImmutableSetMapStressTester
                                        String key,
                                        Map<String, ISet<String>> expected)
     {
-        ISet<String> values = JImmutables.set();
-        IList<String> expectedSet = JImmutables.list(expected.get(key));
+        ISet<String> values = ISets.hashed();
+        IList<String> expectedSet = ILists.allOf(expected.get(key));
         int limit = random.nextInt(5);
         while (values.size() < limit) {
             if (random.nextBoolean() || expectedSet.size() == 0) {
@@ -594,7 +595,7 @@ public class JImmutableSetMapStressTester
                 value = RandomKeyManager.makeValue(tokens, random);
             }
         } else {
-            IList<String> list = JImmutables.list(expectedSet);
+            IList<String> list = ILists.allOf(expectedSet);
             value = list.get(random.nextInt(list.size()));
         }
         return value;
@@ -607,12 +608,12 @@ public class JImmutableSetMapStressTester
     {
         IList<String> values;
         if (expected.containsKey(key)) {
-            values = JImmutables.list(expected.get(key));
+            values = ILists.allOf(expected.get(key));
             for (int i = 0, limit = random.nextInt(3); i < limit && values.size() >= 1; ++i) {
                 values = values.delete(random.nextInt(values.size()));
             }
         } else {
-            values = JImmutables.list();
+            values = ILists.of();
         }
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             values = values.insert(RandomKeyManager.makeValue(tokens, random));
@@ -628,14 +629,14 @@ public class JImmutableSetMapStressTester
         ISet<String> values;
         if (expected.containsKey(key)) {
             values = expected.get(key);
-            IList<String> list = JImmutables.list(values);
+            IList<String> list = ILists.allOf(values);
             for (int i = 0, limit = random.nextInt(3); i < limit && list.size() >= 1; ++i) {
                 int index = random.nextInt(list.size());
                 values = values.delete(list.get(index));
                 list = list.delete(index);
             }
         } else {
-            values = JImmutables.set();
+            values = ISets.hashed();
         }
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             values = values.insert(RandomKeyManager.makeValue(tokens, random));
@@ -648,13 +649,13 @@ public class JImmutableSetMapStressTester
                                            Random random,
                                            IList<String> tokens)
     {
-        IList<String> values = JImmutables.list();
+        IList<String> values = ILists.of();
         if (!expected.containsKey(key) || expected.get(key).isEmpty()) {
             for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
                 values = values.insert(RandomKeyManager.makeValue(tokens, random));
             }
         } else {
-            IList<String> setValues = JImmutables.list(expected.get(key));
+            IList<String> setValues = ILists.allOf(expected.get(key));
             for (int n = 0, limit = random.nextInt(5); n < limit; ++n) {
                 values = (random.nextBoolean()) ? values.insert(RandomKeyManager.makeValue(setValues, random)) : values.insert(RandomKeyManager.makeValue(tokens, random));
 
@@ -668,7 +669,7 @@ public class JImmutableSetMapStressTester
                                            String key,
                                            Map<String, ISet<String>> expected)
     {
-        IList<String> list = JImmutables.list();
+        IList<String> list = ILists.of();
         IList<String> jImmutableInMap = listFromExpected(key, expected);
         for (int i = 0, limit = random.nextInt(4); i < limit; ++i) {
             if (random.nextBoolean() || jImmutableInMap.size() == 0) {
@@ -698,9 +699,9 @@ public class JImmutableSetMapStressTester
     {
         ISet<String> value = expected.get(key);
         if (value == null) {
-            return JImmutables.list();
+            return ILists.of();
         } else {
-            return JImmutables.list(value);
+            return ILists.allOf(value);
         }
     }
 

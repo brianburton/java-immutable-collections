@@ -41,6 +41,7 @@ import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ISet;
@@ -61,7 +62,7 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T> Collector<T, ?, IList<T>> toList()
     {
-        return JImmutables.listCollector();
+        return ICollectors.toList();
     }
 
     /**
@@ -71,7 +72,7 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T> Collector<T, ?, IArray<T>> toArray()
     {
-        return JImmutables.arrayCollector();
+        return ICollectors.toArray();
     }
 
     /**
@@ -81,7 +82,7 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T> Collector<T, ?, ISet<T>> toSet()
     {
-        return JImmutables.<T>set().setCollector();
+        return ICollectors.toSet();
     }
 
     /**
@@ -91,7 +92,7 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, ISet<T>> toSortedSet()
     {
-        return JImmutables.<T>sortedSet().setCollector();
+        return ICollectors.toSortedSet();
     }
 
     /**
@@ -101,7 +102,7 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T> Collector<T, ?, ISet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
     {
-        return JImmutables.sortedSet(comparator).setCollector();
+        return ICollectors.toSortedSet(comparator);
     }
 
     /**
@@ -111,9 +112,9 @@ public final class JImmutableCollectors
     @Nonnull
     public static <T, K> Collector<T, ?, IListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {
-        return GenericCollector.ordered(JImmutables.listMap(),
-                                        JImmutables.listMap(),
-                                        a -> a.isEmpty(),
+        return GenericCollector.ordered(IListMap.listMap(),
+                                        IListMap.listMap(),
+                                        IListMap::isEmpty,
                                         (a, v) -> a.insert(classifier.apply(v), v),
                                         (a, b) -> a.insertAll(b.entries()));
     }

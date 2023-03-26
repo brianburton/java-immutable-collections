@@ -36,11 +36,15 @@
 package org.javimmutable.collections;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.listmap.JImmutableHashListMap;
+import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
+import org.javimmutable.collections.listmap.JImmutableTreeListMap;
 
 /**
  * Interface for maps that map keys to lists of values.
@@ -53,6 +57,42 @@ public interface IListMap<K, V>
             InvariantCheckable,
             Serializable
 {
+    /**
+     * Creates a list map with higher performance but no specific ordering of keys.
+     */
+    @Nonnull
+    static <K, V> IListMap<K, V> listMap()
+    {
+        return JImmutableHashListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by order they are inserted.
+     */
+    @Nonnull
+    static <K, V> IListMap<K, V> insertOrderListMap()
+    {
+        return JImmutableInsertOrderListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by their natural ordering.
+     */
+    @Nonnull
+    static <K extends Comparable<K>, V> IListMap<K, V> sortedListMap()
+    {
+        return JImmutableTreeListMap.of();
+    }
+
+    /**
+     * Creates a list map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
+     */
+    @Nonnull
+    static <K, V> IListMap<K, V> sortedListMap(@Nonnull Comparator<K> comparator)
+    {
+        return JImmutableTreeListMap.of(comparator);
+    }
+
     /**
      * Return the list associated with key or an empty list if no list is associated.
      *
@@ -255,7 +295,7 @@ public interface IListMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> listMapCollector()
+    default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toCollector()
     {
         return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
     }

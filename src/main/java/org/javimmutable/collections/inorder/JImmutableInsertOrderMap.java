@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.inorder;
 
-import static org.javimmutable.collections.MapEntry.entry;
 import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
 import java.io.Serializable;
@@ -147,7 +146,7 @@ public class JImmutableInsertOrderMap<K, V>
 
     @Nonnull
     @Override
-    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector()
+    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> toCollector()
     {
         return GenericCollector.ordered(this, of(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }

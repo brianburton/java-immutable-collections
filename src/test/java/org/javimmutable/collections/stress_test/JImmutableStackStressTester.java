@@ -42,10 +42,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for implementations of JImmutableStack. Divided into three
@@ -66,7 +66,7 @@ public class JImmutableStackStressTester
     @Override
     public IList<String> getOptions()
     {
-        return JImmutables.list("stack");
+        return ILists.of("stack");
     }
 
     @Override

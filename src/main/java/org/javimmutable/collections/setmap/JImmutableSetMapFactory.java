@@ -56,7 +56,7 @@ public class JImmutableSetMapFactory<K, V>
 
     public Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> collector()
     {
-        return create().setMapCollector();
+        return create().toCollector();
     }
 
     public JImmutableSetMapFactory<K, V> withMap(@Nonnull IMap<K, ISet<V>> map)

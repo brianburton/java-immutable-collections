@@ -50,12 +50,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.IMultisets;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.hash.JImmutableHashSet;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.util.JImmutables;
 
 public final class StandardJImmutableSetTests
 {
@@ -211,7 +212,7 @@ public final class StandardJImmutableSetTests
             values = new LinkedHashSet<>(values);
         }
         ISet<Integer> expected = template.insertAll(values);
-        ISet<Integer> actual = values.parallelStream().collect(template.setCollector());
+        ISet<Integer> actual = values.parallelStream().collect(ICollectors.toSet());
         assertEquals(expected, actual);
     }
 
@@ -343,7 +344,7 @@ public final class StandardJImmutableSetTests
 
     private static void testWithMultiset(ISet<Integer> template)
     {
-        ISet<Integer> multi = JImmutables.multiset();
+        ISet<Integer> multi = IMultisets.hashed();
         ISet<Integer> jet = template;
 
         //intersection(Jet)

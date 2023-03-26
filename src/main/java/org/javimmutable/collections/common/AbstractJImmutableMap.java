@@ -168,7 +168,7 @@ public abstract class AbstractJImmutableMap<K, V>
     @Override
     public IMap<K, V> select(@Nonnull BiPredicate<K, V> predicate)
     {
-        return reduce(deleteAll().mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b).build();
+        return reduce(mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b).build();
     }
 
     @Nonnull

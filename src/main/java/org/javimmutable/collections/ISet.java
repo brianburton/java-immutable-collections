@@ -57,6 +57,7 @@ public interface ISet<T>
             InvariantCheckable,
             Serializable
 {
+
     interface Builder<T>
     {
         /**

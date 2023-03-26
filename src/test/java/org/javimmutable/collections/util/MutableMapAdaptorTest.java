@@ -45,6 +45,7 @@ import java.util.TreeMap;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMaps;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class MutableMapAdaptorTest
@@ -53,7 +54,7 @@ public class MutableMapAdaptorTest
     private static class TestAdaptor<K extends Comparable<K>, V>
         extends MutableMapAdaptor<K, V>
     {
-        private IMap<K, V> myMap = JImmutables.sortedMap();
+        private IMap<K, V> myMap = IMaps.sorted();
 
         @Override
         protected IMap<K, V> accessMap()

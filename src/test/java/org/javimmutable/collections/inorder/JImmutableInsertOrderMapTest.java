@@ -36,7 +36,6 @@
 package org.javimmutable.collections.inorder;
 
 import static java.util.Arrays.asList;
-import static org.javimmutable.collections.MapEntry.entry;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +48,7 @@ import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
@@ -303,7 +303,7 @@ public class JImmutableInsertOrderMapTest
         StandardIterableStreamableTests.verifyOrderedUsingCollection(values, map.values());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, map);
 
-        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
+        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(ICollectors.toMap());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
         assertEquals(map, map.parallelStream().collect(JImmutableInsertOrderMap.createMapCollector()));
     }

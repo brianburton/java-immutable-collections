@@ -45,9 +45,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMaps;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardJImmutableMapTests;
@@ -55,7 +57,6 @@ import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 import org.javimmutable.collections.tree.JImmutableTreeMapTest;
-import org.javimmutable.collections.util.JImmutables;
 
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:
@@ -92,7 +93,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     public IList<String> getOptions()
     {
         final String option = getNameOption(map);
-        final IList.Builder<String> options = JImmutables.listBuilder();
+        final IList.Builder<String> options = IBuilders.list();
         options.add("map");
         options.add(option);
         if (map instanceof JImmutableHashMap) {
@@ -377,7 +378,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                                              Random random,
                                              List<K> keys)
     {
-        IMap<K, String> values = JImmutables.map();
+        IMap<K, String> values = IMaps.hashed();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = containedKey(keys, random);
             String value = RandomKeyManager.makeValue(tokens, random);
@@ -390,7 +391,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                                              Random random,
                                              Map<K, String> expected)
     {
-        IMap<K, String> values = JImmutables.map();
+        IMap<K, String> values = IMaps.hashed();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = unusedKey(tokens, random, expected);
             values = values.assign(key, key.getValue());

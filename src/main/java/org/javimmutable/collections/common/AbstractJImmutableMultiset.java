@@ -90,7 +90,7 @@ public abstract class AbstractJImmutableMultiset<T>
 
     @Nonnull
     @Override
-    public ISet<T> getInsertableSelf()
+    public IMultiset<T> getInsertableSelf()
     {
         return this;
     }
@@ -425,7 +425,6 @@ public abstract class AbstractJImmutableMultiset<T>
         return occurrences;
     }
 
-    @Override
     @Nonnull
     public Set<T> getSet()
     {

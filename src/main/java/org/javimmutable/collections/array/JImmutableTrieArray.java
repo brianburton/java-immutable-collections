@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import static org.javimmutable.collections.MapEntry.entry;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -287,7 +285,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public IArray.Builder<T> arrayBuilder()
+    public IArray.Builder<T> toBuilder()
     {
         return new Builder<>();
     }

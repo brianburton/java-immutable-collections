@@ -85,7 +85,7 @@ public class JImmutableArrayProxy
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
         final int size = in.readInt();
-        final IArray.Builder builder = list.arrayBuilder();
+        final IArray.Builder builder = list.toBuilder();
         for (int i = 0; i < size; ++i) {
             final int index = in.readInt();
             final Object value = in.readObject();

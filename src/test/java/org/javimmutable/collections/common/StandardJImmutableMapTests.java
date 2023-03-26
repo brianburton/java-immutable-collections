@@ -52,6 +52,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
@@ -144,7 +145,7 @@ public class StandardJImmutableMapTests
         @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
-            .collect(empty.mapCollector());
+            .collect(ICollectors.toMap());
         assertEquals(expected, map.reduce(0, (s, k, v) -> s + k - v));
 
         try {
@@ -178,7 +179,7 @@ public class StandardJImmutableMapTests
         @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
-            .collect(empty.mapCollector());
+            .collect(ICollectors.toMap());
         MutableDelta delta = new MutableDelta();
         map.forEach((k, v) -> delta.add(k - v));
         assertEquals(2 * sum, delta.getValue());
@@ -200,15 +201,15 @@ public class StandardJImmutableMapTests
         final IMap<Integer, Integer> all = IntStream.range(1, 50)
             .boxed()
             .map(i -> MapEntry.entry(i, -i))
-            .collect(empty.mapCollector());
+            .collect(ICollectors.toMap());
 
         final IMap<Integer, Integer> evens = all.stream()
             .filter(e -> e.getKey() % 2 == 0)
-            .collect(empty.mapCollector());
+            .collect(ICollectors.toMap());
 
         final IMap<Integer, Integer> odds = all.stream()
             .filter(e -> e.getKey() % 2 == 1)
-            .collect(empty.mapCollector());
+            .collect(ICollectors.toMap());
 
         assertEquals(evens, all.select((k, v) -> k % 2 == 0));
         assertEquals(odds, all.select((k, v) -> k % 2 == 1));
@@ -226,7 +227,7 @@ public class StandardJImmutableMapTests
                                              IMap<K, V> template)
     {
         IMap<K, V> expected = template.insertAll(values);
-        IMap<K, V> actual = values.parallelStream().collect(template.mapCollector());
+        IMap<K, V> actual = values.parallelStream().collect(ICollectors.toMap());
         assertEquals(expected, actual);
     }
 

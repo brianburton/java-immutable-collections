@@ -35,12 +35,10 @@
 
 package org.javimmutable.collections.util;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.javimmutable.collections.util.JImmutables.*;
+import junit.framework.TestCase;
+import org.javimmutable.collections.ILists;
 
 public class ZipTest
     extends TestCase
@@ -48,23 +46,23 @@ public class ZipTest
     public void test()
     {
         AtomicInteger sum = new AtomicInteger();
-        Zip.forEach(list(1, 2), list(3, 4), (a, b) -> sum.addAndGet(a + b));
+        Zip.forEach(ILists.of(1, 2), ILists.of(3, 4), (a, b) -> sum.addAndGet(a + b));
         assertEquals(10, sum.get());
-        assertEquals(Integer.valueOf(10), Zip.reduce(0, list(1, 2), list(3, 4), ZipTest::adder));
+        assertEquals(Integer.valueOf(10), Zip.reduce(0, ILists.of(1, 2), ILists.of(3, 4), ZipTest::adder));
     }
 
     public void testThrows()
         throws IOException
     {
         AtomicInteger sum = new AtomicInteger();
-        Zip.forEachThrows(list(1, 2), list(3, 4), (a, b) -> {
+        Zip.forEachThrows(ILists.of(1, 2), ILists.of(3, 4), (a, b) -> {
             if (a == -1) {
                 throw new IOException();
             }
             sum.addAndGet(a + b);
         });
         assertEquals(10, sum.get());
-        assertEquals(Integer.valueOf(10), Zip.reduceThrows(0, list(1, 2), list(3, 4), ZipTest::adderThrows));
+        assertEquals(Integer.valueOf(10), Zip.reduceThrows(0, ILists.of(1, 2), ILists.of(3, 4), ZipTest::adderThrows));
     }
 
     private static Integer adder(Integer s,

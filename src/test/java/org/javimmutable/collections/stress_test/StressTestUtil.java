@@ -41,27 +41,28 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.util.JImmutables;
+import org.javimmutable.collections.ISets;
 
 class StressTestUtil
 {
     static IList<String> loadTokens(Iterable<String> filenames)
         throws IOException
     {
-        ISet<String> tokens = JImmutables.set();
+        ISet<String> tokens = ISets.hashed();
         for (String filename : filenames) {
             tokens = addTokensFromFile(tokens, filename);
         }
-        return JImmutables.list(tokens);
+        return ILists.allOf(tokens);
     }
 
     static IList<String> loadTokens(String filename)
         throws IOException
     {
-        ISet<String> tokens = JImmutables.set();
+        ISet<String> tokens = ISets.hashed();
         tokens = addTokensFromFile(tokens, filename);
-        return JImmutables.list(tokens);
+        return ILists.allOf(tokens);
     }
 
     static ISet<String> addTokensFromFile(ISet<String> tokens,
