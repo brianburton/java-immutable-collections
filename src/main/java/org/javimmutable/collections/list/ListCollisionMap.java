@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.list;
 
-import static org.javimmutable.collections.IMapEntry.entry;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
@@ -85,7 +83,7 @@ public class ListCollisionMap<K, V>
     public Node single(@Nonnull K key,
                        @Nullable V value)
     {
-        return new OneValueNode<>(entry(key, value));
+        return new OneValueNode<>(IMapEntry.of(key, value));
     }
 
     @Nonnull
@@ -95,7 +93,7 @@ public class ListCollisionMap<K, V>
                      @Nonnull K key2,
                      @Nullable V value2)
     {
-        return new MultiValueNode<>(entry(key1, value1), entry(key2, value2));
+        return new MultiValueNode<>(IMapEntry.of(key1, value1), IMapEntry.of(key2, value2));
     }
 
     @Override
@@ -117,12 +115,12 @@ public class ListCollisionMap<K, V>
                 if (e.getValue() == value) {
                     return root;
                 } else {
-                    return root.assign(i, entry(key, value));
+                    return root.assign(i, IMapEntry.of(key, value));
                 }
             }
             i += 1;
         }
-        return root.append(entry(key, value));
+        return root.append(IMapEntry.of(key, value));
     }
 
     @Nonnull
@@ -140,13 +138,13 @@ public class ListCollisionMap<K, V>
                 if (e.getValue() == value) {
                     return root;
                 } else {
-                    return root.assign(i, entry(key, value));
+                    return root.assign(i, IMapEntry.of(key, value));
                 }
             }
             i += 1;
         }
         V value = generator.apply(Holder.none());
-        return root.append(entry(key, value));
+        return root.append(IMapEntry.of(key, value));
     }
 
     @Nonnull

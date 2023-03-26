@@ -101,7 +101,7 @@ public class TreeMapTest
         assertEquals(Holder.some(11), map.seek(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
-        final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(MapEntry.of(10, 11), MapEntry.of(20, 19), MapEntry.of(30, 18));
+        final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(IMapEntry.of(10, 11), IMapEntry.of(20, 19), IMapEntry.of(30, 18));
         StandardIteratorTests.listIteratorTest(expectedEntries, map.iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
@@ -219,7 +219,7 @@ public class TreeMapTest
                             Holder<Integer> integers = map.find(key);
                             assertEquals(expected.get(key), integers.unsafeGet());
                             Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
-                            assertEquals(MapEntry.of(key, expected.get(key)), iMapEntries.unsafeGet());
+                            assertEquals(IMapEntry.of(key, expected.get(key)), iMapEntries.unsafeGet());
                         } else {
                             assertEquals(null, map.get(key));
                             assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
@@ -319,7 +319,7 @@ public class TreeMapTest
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         IMap<Integer, Integer> map = TreeMap.of();
         for (int i = -1000; i <= 1000; ++i) {
-            expected.add(MapEntry.of(i, 1000 + i));
+            expected.add(IMapEntry.of(i, 1000 + i));
             map = map.assign(i, 1000 + i);
         }
         StandardIteratorTests.verifyOrderedIterable(expected, map);
@@ -329,8 +329,8 @@ public class TreeMapTest
     {
         final IMap<Integer, Integer> treeMap = TreeMap.of();
         assertEquals(asList(), treeMap.stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), treeMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), treeMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
@@ -360,17 +360,17 @@ public class TreeMapTest
         IMap<String, String> empty = TreeMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhQBoAwRi6T/4AAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDIwlDIyOQJxYAQBlcMCiBgEAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3WqG1+wSoJv0nPNzCxKLQHJQVkl+EcwwJphhDMwlDIyOQJwIxO5AnATEUUCcXAEABOXC0BYBAAA=");
 
         empty = TreeMap.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3aoFNDdRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAUAaAOY74tryAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCilKTfVNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKWRgYmF8C3aoFNDdRLycxL10vuKQoMy9dxTmxONUzrzg1rzizJLMs1Tk/tyCxKLEkv6icOaY2JuDpOSaYAQyMJQyMjkCcWAEA0RodVvoAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("G", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAJXOMQrCQBBA0dFo5zFSWWzjCUIQiSAEtJI0kzCElc1umF2TKHgjz+ItLCy8gropgo2NA78YGB5zfcLUMkSGS3HARlbV0WGuSBRGKSqcNNoKSyxRyTP2q1gnw9GOiTZYp2y607ufV7iYAXQMyz+8KLeOsXBf95dZtxOA4OF/nXsXhUJdiq1jqcswRkuJtqStdLKh2FQ1MjrDbZBdsvR+Gw8ABA5GkQ99K1/u2/uK7gNAXoJFCgEAAA==");
     }
 

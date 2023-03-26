@@ -174,7 +174,7 @@ public class OrderedMap<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        return current != null ? Holders.nullable(IMapEntry.entry(key, current.value)) : Holder.none();
+        return current != null ? Holders.nullable(IMapEntry.of(key, current.value)) : Holder.none();
     }
 
     @Nonnull
@@ -233,7 +233,7 @@ public class OrderedMap<K, V>
     @Override
     public SplitableIterator<IMapEntry<K, V>> iterator()
     {
-        return TransformStreamable.of(keys(), k -> IMapEntry.entry(k, valueForKey(k))).iterator();
+        return TransformStreamable.of(keys(), k -> IMapEntry.of(k, valueForKey(k))).iterator();
     }
 
     @Nonnull

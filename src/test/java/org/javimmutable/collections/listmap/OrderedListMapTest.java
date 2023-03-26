@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -54,9 +55,9 @@ public class OrderedListMapTest
     {
         IListMap<Integer, Integer> map = verifyOperations(OrderedListMap.of(), Ordering.INORDER);
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getList(1)),
-                                                             MapEntry.of(3, map.getList(3)),
-                                                             MapEntry.of(2, map.getList(2))),
+        StandardIteratorTests.listIteratorTest(Arrays.asList(IMapEntry.of(1, map.getList(1)),
+                                                             IMapEntry.of(3, map.getList(3)),
+                                                             IMapEntry.of(2, map.getList(2))),
                                                map.iterator());
     }
 
@@ -100,9 +101,9 @@ public class OrderedListMapTest
         IListMap<String, String> empty = OrderedListMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGYCgAgCgsGMpxAAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGRgYGEsYGB3LWaCsxAoAf4hpPdIAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGYBECQOjYzkLkMUIZCUWMtQxsMC5SUAcBeclVwAAS4EY5e8AAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").transform("A", l -> l.deleteLast()),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBJ78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvlkFpf4JhYEFOVXVP4HgX8qxjwMDBVFDJ4kGO2YVFxSlJhcgrACl7kF5RwMDMwvGRgYmEoYGB3LWYAsBiArCcxiBLKcKgAHurrU3AAAAA==");

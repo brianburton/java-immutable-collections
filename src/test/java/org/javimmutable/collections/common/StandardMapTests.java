@@ -233,11 +233,11 @@ public class StandardMapTests
 
     private static <K, V> Function<IMapEntry<K, V>, Map.Entry<K, V>> entries()
     {
-        return ie -> MapEntry.of(ie);
+        return MapEntry::new;
     }
 
     private static <K, V> Function<Map.Entry<K, V>, IMapEntry<K, V>> reverseEntries()
     {
-        return ie -> MapEntry.of(ie);
+        return MapEntry::new;
     }
 }

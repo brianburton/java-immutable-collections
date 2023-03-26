@@ -247,7 +247,7 @@ public class MapAdaptor<K, V>
             @Nonnull
             private IterableStreamable<Entry<K, V>> streamable()
             {
-                return TransformStreamable.of(map, e -> MapEntry.of(e));
+                return TransformStreamable.of(map, MapEntry::new);
             }
         };
     }

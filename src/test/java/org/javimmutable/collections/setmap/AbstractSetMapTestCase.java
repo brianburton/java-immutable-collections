@@ -99,10 +99,10 @@ public abstract class AbstractSetMapTestCase
         assertSame(map.getSet(1), map.get(1));
         assertEquals(2, map.getSet(1).size());
 
-        map = map.insert(MapEntry.of(3, 87));
-        map = map.insert(MapEntry.of(2, 87));
-        map = map.insert(MapEntry.of(1, 87));
-        map = map.insert(MapEntry.of(1, 87));
+        map = map.insert(IMapEntry.of(3, 87));
+        map = map.insert(IMapEntry.of(2, 87));
+        map = map.insert(IMapEntry.of(1, 87));
+        map = map.insert(IMapEntry.of(1, 87));
         assertFalse(map.isEmpty());
         assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
@@ -525,9 +525,9 @@ public abstract class AbstractSetMapTestCase
     {
         Collection<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 500; ++i) {
-            values.add(MapEntry.of(i, i));
+            values.add(IMapEntry.of(i, i));
             if (i % 2 == 0) {
-                values.add(MapEntry.of(i, -i));
+                values.add(IMapEntry.of(i, -i));
             }
         }
 

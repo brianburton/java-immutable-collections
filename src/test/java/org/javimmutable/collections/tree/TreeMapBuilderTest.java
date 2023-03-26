@@ -82,7 +82,7 @@ public class TreeMapBuilderTest
     {
         final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
-            values.add(MapEntry.of(i, 5001 - i));
+            values.add(IMapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
         StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new IMapEntry[0]);

@@ -81,7 +81,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
         map = map.assign("x", "X");
-        expectedEntries.add(MapEntry.of("x", "X"));
+        expectedEntries.add(IMapEntry.of("x", "X"));
         expectedKeys.add("x");
         expectedValues.add("X");
         StandardMapTests.verifyEnumeration(expectedEntries, map);
@@ -90,7 +90,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
         map = map.assign("d", "D");
-        expectedEntries.add(MapEntry.of("d", "D"));
+        expectedEntries.add(IMapEntry.of("d", "D"));
         expectedKeys.add("d");
         expectedValues.add("D");
         StandardMapTests.verifyEnumeration(expectedEntries, map);
@@ -99,7 +99,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
         map = map.assign("c", "C");
-        expectedEntries.add(MapEntry.of("c", "C"));
+        expectedEntries.add(IMapEntry.of("c", "C"));
         expectedKeys.add("c");
         expectedValues.add("C");
         StandardMapTests.verifyEnumeration(expectedEntries, map);
@@ -116,8 +116,8 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedKeys, map.keys().iterator());
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
-        map = (OrderedMap<String, String>)map.insert(MapEntry.of("d", "D"));
-        expectedEntries.add(MapEntry.of("d", "D"));
+        map = (OrderedMap<String, String>)map.insert(IMapEntry.of("d", "D"));
+        expectedEntries.add(IMapEntry.of("d", "D"));
         expectedKeys.add("d");
         expectedValues.add("D");
         StandardMapTests.verifyEnumeration(expectedEntries, map);
@@ -126,7 +126,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
         map = map.assign("x", "XX");
-        expectedEntries.set(0, MapEntry.of("x", "XX"));
+        expectedEntries.set(0, IMapEntry.of("x", "XX"));
         expectedValues.set(0, "XX");
         StandardMapTests.verifyEnumeration(expectedEntries, map);
         StandardIteratorTests.listIteratorTest(expectedEntries, map.iterator());
@@ -159,7 +159,7 @@ public class OrderedMapTest
                         assertEquals(merged, (int)integers.getOrNull());
                         assertEquals(Holders.nullable(merged), map.find(key));
                         Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
-                        assertEquals(MapEntry.of(key, merged), iMapEntries.unsafeGet());
+                        assertEquals(IMapEntry.of(key, merged), iMapEntries.unsafeGet());
                         break;
                     }
                     case 1: {
@@ -174,7 +174,7 @@ public class OrderedMapTest
                         assertEquals(value, (int)integers.getOrNull());
                         assertEquals(Holders.nullable(value), map.find(key));
                         Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
-                        assertEquals(MapEntry.of(key, value), iMapEntries.unsafeGet());
+                        assertEquals(IMapEntry.of(key, value), iMapEntries.unsafeGet());
                         break;
                     }
                     case 2: {
@@ -199,7 +199,7 @@ public class OrderedMapTest
             List<Integer> keys = new ArrayList<>();
             List<Integer> values = new ArrayList<>();
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
-                entries.add(MapEntry.of(entry));
+                entries.add(IMapEntry.of(entry));
                 keys.add(entry.getKey());
                 values.add(entry.getValue());
             }
@@ -276,8 +276,8 @@ public class OrderedMapTest
     {
         final IMap<Integer, Integer> inOrderMap = OrderedMap.of();
         assertEquals(asList(), inOrderMap.stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(4, 40), MapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(4, 40), IMapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), inOrderMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), inOrderMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
@@ -296,7 +296,7 @@ public class OrderedMapTest
             final int key = r.nextInt();
             keys.add(key);
             values.add(i);
-            entries.add(IMapEntry.entry(key, i));
+            entries.add(IMapEntry.of(key, i));
             map = map.assign(key, i);
         }
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
@@ -304,7 +304,7 @@ public class OrderedMapTest
         StandardIterableStreamableTests.verifyOrderedUsingCollection(values, map.values());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, map);
 
-        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
+        map = keys.parallelStream().map(i -> IMapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
         assertEquals(map, map.parallelStream().collect(OrderedMap.createMapCollector()));
     }
@@ -316,9 +316,9 @@ public class OrderedMapTest
         final IMap<Integer, String> empty = OrderedMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgKACANcYyRO8AAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of(1, "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZGBgYgc4WBJqdqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQHcIINT5leYmpRa1rZkqyz3lQTcTyEiQYSUMjIkVAEaTh0oNAQAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8swDypT4F6WkFvkmFgQU5VdU/geBfyrGPAwMFUUMriQY65hUXFKUmFyCMB6bmQXlHAwMzC8ZgATQ2YJAsxP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBXoDgGEOr/S3KTUorY1U2W5pzzoZgIZ2QA0rYSBMbG4kKGOgRnIYQTykiC8eqDVQF5yBQAzIFETKQEAAA==");
     }
 
@@ -348,7 +348,7 @@ public class OrderedMapTest
     {
         final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
-            values.add(MapEntry.of(i, 5001 - i));
+            values.add(IMapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
         StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new IMapEntry[0]);
@@ -380,7 +380,7 @@ public class OrderedMapTest
             Integer value = entry.getValue();
             assertEquals(Holders.nullable(value), map.find(entry.getKey()));
             Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
-            assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
+            assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
         return map;
     }
@@ -396,7 +396,7 @@ public class OrderedMapTest
             assertEquals(entry.getValue(), integers.getOrNull());
             assertEquals(Holders.nullable(entry.getValue()), map.find(entry.getKey()));
             Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
-            assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
+            assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
         return map;
     }

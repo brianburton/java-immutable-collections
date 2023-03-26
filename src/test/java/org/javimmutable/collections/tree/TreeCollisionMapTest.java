@@ -115,17 +115,17 @@ public class TreeCollisionMapTest
         assertEquals(Holders.nullable(-60), transforms.findValue(node, -6));
         assertEquals(Holder.<Integer>none(), transforms.findValue(node, 11));
 
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(10, 100)), transforms.findEntry(node, 10));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(12, 90)), transforms.findEntry(node, 12));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(18, 180)), transforms.findEntry(node, 18));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(-6, -60)), transforms.findEntry(node, -6));
         assertEquals(Holder.<IMapEntry<Integer, Integer>>none(), transforms.findEntry(node, 11));
 
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
-        expected.add(MapEntry.of(-6, -60));
-        expected.add(MapEntry.of(10, 100));
-        expected.add(MapEntry.of(12, 90));
-        expected.add(MapEntry.of(18, 180));
+        expected.add(IMapEntry.of(-6, -60));
+        expected.add(IMapEntry.of(10, 100));
+        expected.add(IMapEntry.of(12, 90));
+        expected.add(IMapEntry.of(18, 180));
         TestUtil.verifyContents(expected, transforms.iterable(node));
     }
 

@@ -367,7 +367,7 @@ class ValueNode<K, V>
 
     private IMapEntry<K, V> entry()
     {
-        return MapEntry.of(key, value);
+        return IMapEntry.of(key, value);
     }
 
     @Override
@@ -463,7 +463,7 @@ class ValueNode<K, V>
                                                                    int limit)
     {
         assert offset >= 0 && limit <= size && offset <= limit;
-        return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, GenericIterator.singleValueIterable(MapEntry.of(key, value)), right), offset, limit);
+        return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, GenericIterator.singleValueIterable(IMapEntry.of(key, value)), right), offset, limit);
     }
 
     @Override

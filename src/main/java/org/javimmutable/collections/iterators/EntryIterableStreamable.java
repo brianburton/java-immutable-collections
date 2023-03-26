@@ -55,7 +55,7 @@ public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D ex
     @Override
     public SplitableIterator<IMapEntry<K, V>> iterator()
     {
-        return LazyMultiIterator.transformed(source.iterator(), e -> () -> TransformIterator.of(e.getValue().iterator(), v -> MapEntry.of(e.getKey(), v)));
+        return LazyMultiIterator.transformed(source.iterator(), e -> () -> TransformIterator.of(e.getValue().iterator(), v -> IMapEntry.of(e.getKey(), v)));
     }
 
     @Override

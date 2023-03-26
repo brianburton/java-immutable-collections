@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import static org.javimmutable.collections.IMapEntry.entry;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
@@ -316,7 +314,7 @@ public class HashSet<T>
     @Override
     public GenericIterator.Iterable<IMapEntry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping)
     {
-        return GenericIterator.transformIterable(mapping.values(collisionSet), k -> entry(k, k));
+        return GenericIterator.transformIterable(mapping.values(collisionSet), k -> IMapEntry.of(k, k));
     }
 
     private Object writeReplace()

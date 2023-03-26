@@ -406,8 +406,8 @@ public class HashMapTest
     {
         final EmptyHashMap<Integer, Integer> hashMap = HashMap.of();
         assertEquals(asList(), hashMap.stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(MapEntry.of(1, 10), MapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), hashMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), hashMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
@@ -425,9 +425,9 @@ public class HashMapTest
         final IMap<Integer, String> empty = HashMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAEEFAO752S21AAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of(1, "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yMDAwAt0rCDQ7US8nMS9dzzOvJDU9tUjo0YIl3xvbLZgYGD0ZWMsSc0pTge4QQKjzK81NSi1qWzNVlnvKg24mkJEgw0oYGBMrAIbHHPIGAQAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAAmgewWBZifq5STmpet55pWkpqcWCT1asOR7Y7sFEwOjJwNrWWJOaSrQHQIIdX6luUmpRW1rpspyT3nQzQQysgFoWgkDY2JxIUMdAzOQwwjkJUF49UCrgbzkCgB7GrcPIgEAAA==");
     }
 
@@ -458,7 +458,7 @@ public class HashMapTest
     {
         final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
-            values.add(MapEntry.of(i, 5001 - i));
+            values.add(IMapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
         StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new IMapEntry[0]);

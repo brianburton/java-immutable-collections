@@ -503,11 +503,11 @@ public class StaticConstructorsTest
     public void testEntry()
     {
         IMap<Integer, Integer> m = IMaps.<Integer, Integer>hashed().assign(1, 1).assign(2, 2);
-        IMap<Number, Number> n = m.stream().map(IMapEntry::<Number, Number>entry).collect(ICollectors.toMap());
+        IMap<Number, Number> n = m.stream().map(e -> IMapEntry.<Number, Number>of(e.getKey(), e.getValue())).collect(ICollectors.toMap());
         assertEquals(IMaps.<Number, Number>hashed().assign(1, 1).assign(2, 2), n);
 
         IList<Integer> il = ILists.of(4, 2, 3, 1);
-        final Function<Integer, IMapEntry<String, Number>> mapper = i -> IMapEntry.entry(String.valueOf(i), i);
+        final Function<Integer, IMapEntry<String, Number>> mapper = i -> IMapEntry.of(String.valueOf(i), i);
         IMap<String, Number> im = il.stream().map(mapper).collect(ICollectors.toSortedMap());
         assertEquals("{1=1, 2=2, 3=3, 4=4}", im.toString());
         im = il.stream().map(mapper).collect(ICollectors.toOrderedMap());
@@ -518,7 +518,7 @@ public class StaticConstructorsTest
         m1.put(2, 2);
         m1.put(3, 3);
         m1.put(1, 1);
-        IMap<Integer, Integer> m2 = m1.entrySet().stream().map(IMapEntry::entry).collect(ICollectors.toOrderedMap());
+        IMap<Integer, Integer> m2 = m1.entrySet().stream().map(IMapEntry::of).collect(ICollectors.toOrderedMap());
         assertEquals("{4=4, 2=2, 3=3, 1=1}", m2.toString());
     }
 
@@ -566,7 +566,7 @@ public class StaticConstructorsTest
         while (actualIter.hasNext()) {
             T x = actualIter.next();
             if (x instanceof IMapEntry) {
-                actualSet.add(MapEntry.of((IMapEntry)x));
+                actualSet.add(IMapEntry.of((IMapEntry)x));
             } else {
                 actualSet.add(x);
             }
@@ -589,7 +589,7 @@ public class StaticConstructorsTest
     private <K, V> IMapEntry<K, V> entry(K key,
                                          V value)
     {
-        return MapEntry.of(key, value);
+        return IMapEntry.of(key, value);
     }
 
     private <T> Indexed<T> indexed(T... values)

@@ -173,7 +173,7 @@ public class RunStressTests
         final ISetMap<String, String> filterMap = AllTesters.stream()
             .flatMap(tester -> tester.getOptions()
                 .stream()
-                .map(option -> IMapEntry.entry(tester.getTestName(), option)))
+                .map(option -> IMapEntry.of(tester.getTestName(), option)))
             .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters By Class:");
@@ -185,7 +185,7 @@ public class RunStressTests
         System.out.println("Available Filters");
         System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
         filterMap.stream()
-            .flatMap(e -> e.getValue().stream().map(s -> IMapEntry.entry(s, e.getKey())))
+            .flatMap(e -> e.getValue().stream().map(s -> IMapEntry.of(s, e.getKey())))
             .collect(filterMapFactory.collector())
             .forEach(e -> System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue())));
     }

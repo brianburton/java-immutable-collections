@@ -278,19 +278,19 @@ public class TrieArrayTest
         StandardIteratorTests.listIteratorTest(values, array.values().iterator());
 
         List<IMapEntry<Integer, Integer>> entries = new ArrayList<>();
-        entries.add(MapEntry.of(-500, -5001));
-        entries.add(MapEntry.of(-10, -101));
-        entries.add(MapEntry.of(-1, -11));
-        entries.add(MapEntry.of(0, 0));
-        entries.add(MapEntry.of(1, 11));
-        entries.add(MapEntry.of(10, 101));
-        entries.add(MapEntry.of(500, 5001));
+        entries.add(IMapEntry.of(-500, -5001));
+        entries.add(IMapEntry.of(-10, -101));
+        entries.add(IMapEntry.of(-1, -11));
+        entries.add(IMapEntry.of(0, 0));
+        entries.add(IMapEntry.of(1, 11));
+        entries.add(IMapEntry.of(10, 101));
+        entries.add(IMapEntry.of(500, 5001));
         StandardIteratorTests.listIteratorTest(entries, array.iterator());
 
         entries.clear();
         array = TrieArray.of();
         for (int i = -1000; i <= 1000; ++i) {
-            entries.add(MapEntry.of(i, 1000 + i));
+            entries.add(IMapEntry.of(i, 1000 + i));
             array = array.assign(i, 1000 + i);
         }
         StandardIteratorTests.verifyOrderedIterable(entries, array);
@@ -308,7 +308,7 @@ public class TrieArrayTest
         for (int i = 0; i < numLoops; ++i) {
             keys.add(index);
             values.add(-index);
-            entries.add(MapEntry.of(index, -index));
+            entries.add(IMapEntry.of(index, -index));
             array = array.assign(index, -index);
             index += increment;
         }
@@ -345,7 +345,7 @@ public class TrieArrayTest
                 assertEquals(Integer.valueOf(i), array.get(index));
                 assertEquals(Integer.valueOf(i), array.getValueOr(index, -99));
                 assertEquals(Holders.nullable(i), array.find(index));
-                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(index, i)), array.findEntry(index));
+                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(index, i)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {
@@ -354,7 +354,7 @@ public class TrieArrayTest
                 assertEquals(Integer.valueOf(i - 1), array.get(index));
                 assertEquals(Integer.valueOf(i - 1), array.getValueOr(index, -99));
                 assertEquals(Holders.nullable(i - 1), array.find(index));
-                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(index, i - 1)), array.findEntry(index));
+                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(index, i - 1)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {
@@ -377,9 +377,9 @@ public class TrieArrayTest
         final IArray<String> empty = TrieArray.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgBBBQBbOGFFXwAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(MapEntry.of(1, "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyoEk80sGBgZGEC5hYEysAACKUbzuZwAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(MapEntry.of(Integer.MIN_VALUE, "a"), MapEntry.of(1, "b"), MapEntry.of(Integer.MAX_VALUE, "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpciwqSqwMKMqvqPwPAv9UjHkYGCoKyoEk80sGINEAJEoYGBPLWYAMRiArqZylHqgSyEquAABirp0EewAAAA==");
     }
 

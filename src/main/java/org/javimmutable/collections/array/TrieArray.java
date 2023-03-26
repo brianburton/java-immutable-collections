@@ -129,7 +129,7 @@ public class TrieArray<T>
     @Override
     public Holder<IMapEntry<Integer, T>> findEntry(int index)
     {
-        return find(index).map(v -> IMapEntry.entry(index, v));
+        return find(index).map(v -> IMapEntry.of(index, v));
     }
 
     @Nonnull
@@ -242,14 +242,14 @@ public class TrieArray<T>
     @Override
     public void forEach(Consumer<? super IMapEntry<Integer, T>> action)
     {
-        forEach((i, v) -> action.accept(IMapEntry.entry(i, v)));
+        forEach((i, v) -> action.accept(IMapEntry.of(i, v)));
     }
 
     @Override
     public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<IMapEntry<Integer, T>, E> proc)
         throws E
     {
-        forEachThrows((i, v) -> proc.apply(IMapEntry.entry(i, v)));
+        forEachThrows((i, v) -> proc.apply(IMapEntry.of(i, v)));
     }
 
     @Override

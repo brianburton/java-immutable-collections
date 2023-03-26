@@ -797,7 +797,7 @@ public class StandardMultisetTests
         StandardIteratorTests.iteratorTest(value -> entries.get(value), entries.size(), jmet.entries().iterator());
 
         StandardIterableStreamableTests.verifyUnorderedUsingCollection(jmet.getSet(), jmet);
-        StandardIterableStreamableTests.verifyUnorderedUsingCollection(entries, jmet.entries(), e -> MapEntry.of(e));
+        StandardIterableStreamableTests.verifyUnorderedUsingCollection(entries, jmet.entries(), MapEntry::new);
         StandardIterableStreamableTests.verifyUnorderedUsingCollection(expectedList, jmet.occurrences());
     }
 

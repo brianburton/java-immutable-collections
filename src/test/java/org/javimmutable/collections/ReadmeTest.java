@@ -80,7 +80,7 @@ public class ReadmeTest
         // use a stream to build a map of numbers to lists of the number's factors
         IMap<Integer, IList<Integer>> factorMap =
             IntStream.range(2, 100).boxed()
-                .map(i -> MapEntry.of(i, factorsOf(i)))
+                .map(i -> IMapEntry.of(i, factorsOf(i)))
                 .collect(ICollectors.toMap());
 
         // extract a list of prime numbers using a stream by filtering out numbers that have any factors 
@@ -187,16 +187,16 @@ public class ReadmeTest
             }
         }).isInstanceOf(ConcurrentModificationException.class);
 
-        IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(ICollectors.toMap());
+        IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
         for (IMapEntry<Integer, Integer> entry : myMap) {
             myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
         }
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
         assertThat(ILists.allOf(myMap.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
 
-        myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(ICollectors.toMap());
+        myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
         IMap<Integer, Integer> changed = myMap.stream()
-            .map(entry -> MapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+            .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
             .collect(myMap.mapCollector());
         // 6-10 were updated, 11-15 were added
         assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));

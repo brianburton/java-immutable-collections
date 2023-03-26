@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.MapEntry;
@@ -70,9 +71,9 @@ public class TemplateSetMapTest
         ISetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
         verifyRandom(TreeSetMap.of(), new java.util.TreeMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(MapEntry.of(1, map.getSet(1)),
-                                                             MapEntry.of(2, map.getSet(2)),
-                                                             MapEntry.of(3, map.getSet(3))),
+        StandardIteratorTests.listIteratorTest(Arrays.asList(IMapEntry.of(1, map.getSet(1)),
+                                                             IMapEntry.of(2, map.getSet(2)),
+                                                             IMapEntry.of(3, map.getSet(3))),
                                                map.iterator());
 
         map = empty
@@ -118,9 +119,9 @@ public class TemplateSetMapTest
         ISetMap<String, String> empty = TemplateSetMap.of(TreeMap.<String, ISet<String>>of(), TreeSet.of());
         StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6lAIrlf6p0AgAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6mGEsYGB3hrMQKAL1djtGCAgAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6mmEsYGB3BLEYgKxGIo+C8ZJBqXjg3qQIAfGkuEJ8CAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerGV6zS4Bu0nPOzy1ILALJQVkl+UUww5hghgFpinwODFSq+xybmTCfFzLUMbBBHQ6mmEoYGB0hAkBWEpjFCGQ5VQAA9oB1u4wCAAA=");
@@ -128,9 +129,9 @@ public class TemplateSetMapTest
         empty = TemplateSetMap.of(TreeMap.of(String.CASE_INSENSITIVE_ORDER), TreeSet.of(String.CASE_INSENSITIVE_ORDER));
         StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerFtDcRL2cxLx0veCSosy8dBXnxOJUz7zi1LzizJLMslTn/NyCxKLEkvyicuaY2piAp+eYYAYAaYp8CwxIqvsWm5lQ3xYy1DGwQ90NpQAsnvP+ZwIAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insert(MapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerFtDcRL2cxLx0veCSosy8dBXnxOJUz7zi1LzizJLMslTn/NyCxKLEkvyicuaY2piAp+eYYAYAaYp8CwxIqvsWm5lQ3xYy1DGwQ90NphhLGBgd4azECgDRzsyXdQIAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insertAll(asList(MapEntry.of("A", "a"), MapEntry.of("a", "b"), MapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TemplateSetMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerFtDcRL2cxLx0veCSosy8dBXnxOJUz7zi1LzizJLMslTn/NyCxKLEkvyicuaY2piAp+eYYAYAaYp8CwxIqvsWm5lQ3xYy1DGwQ90NpphKGBgTISyQHDeQmwTEUWAhRiAruQIAxZwVLIgCAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAAAFvzloG1uIjBI78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpCknNLchJLEkNTi3xTSwIKMqvqPwPAv9UjHkYGCpIM9YxqbikKDG5BGE8DmMLylkYGJhfAl3tSJ6ri1JTsTvXlSLn4nerFtDcRL2cxLx0veCSosy8dBXnxOJUz7zi1LzizJLMslTn/NyCxKLEkvyicuaY2piAp+eYYAYAaYp8CwxIqvsWm5lQ3xYy1DGwQ90NpphKGBgdIQJAVhKYxQhkOVUAACCf1c9/AgAA");

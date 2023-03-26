@@ -42,6 +42,7 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMaps;
 import org.javimmutable.collections.IMultisets;
 import org.javimmutable.collections.ISets;
@@ -222,7 +223,7 @@ public class IterableStreamableTest
     {
         assertEquals(ISets.hashed(3, 5), ILists.of(5, 3, 3, 5).transform(ISets.<Integer>sorted(), x -> x));
         assertEquals(IMultisets.hashed(3, 3, 5, 5), ILists.of(5, 3, 3, 5).transform(IMultisets.<Integer>sorted(), x -> x));
-        assertEquals(IMaps.hashed().assign(3, 6).assign(5, 10), ILists.of(5, 3, 3, 5).transform(IMaps.sorted(), x -> MapEntry.of(x, 2 * x)));
-        assertEquals(IListMap.listMap().assign(3, ILists.of(3, 3)).assign(5, ILists.of(5)), ILists.of(3, 5, 3).transform(IListMap.sortedListMap(), x -> MapEntry.of(x, x)));
+        assertEquals(IMaps.hashed().assign(3, 6).assign(5, 10), ILists.of(5, 3, 3, 5).transform(IMaps.sorted(), x -> IMapEntry.of(x, 2 * x)));
+        assertEquals(IListMap.listMap().assign(3, ILists.of(3, 3)).assign(5, ILists.of(5)), ILists.of(3, 5, 3).transform(IListMap.sortedListMap(), x -> IMapEntry.of(x, x)));
     }
 }

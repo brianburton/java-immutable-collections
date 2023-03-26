@@ -12,32 +12,23 @@ import javax.annotation.concurrent.Immutable;
 public
 interface IMapEntry<K, V>
 {
-    /**
-     * Convenience function to create a JImmutableMap.Entry.
-     */
     @Nonnull
-    static <K, V, K1 extends K, V1 extends V> IMapEntry<K, V> entry(K1 key,
-                                                                    V1 value)
+     static <K, V> IMapEntry<K, V> of(@Nonnull Map.Entry<K, V> entry)
     {
-        return MapEntry.of(key, value);
+        return new MapEntry<K, V>(entry);
     }
 
-    /**
-     * Convenience function to create a JImmutableMap.Entry.
-     */
     @Nonnull
-    static <K, V> IMapEntry<K, V> entry(@Nonnull IMapEntry<? extends K, ? extends V> e)
+     static <K, V> IMapEntry<K, V> of(@Nonnull IMapEntry<K, V> entry)
     {
-        return MapEntry.of(e.getKey(), e.getValue());
+        return new MapEntry<K, V>(entry);
     }
 
-    /**
-     * Convenience function to create a Map.Entry.
-     */
     @Nonnull
-    static <K, V> IMapEntry<K, V> entry(@Nonnull Map.Entry<? extends K, ? extends V> e)
+     static <K, V> IMapEntry<K, V> of(@Nonnull K key,
+                                           V value)
     {
-        return MapEntry.of(e.getKey(), e.getValue());
+        return new MapEntry<K, V>(key, value);
     }
 
     @Nonnull

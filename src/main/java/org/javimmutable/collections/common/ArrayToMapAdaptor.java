@@ -244,7 +244,7 @@ public class ArrayToMapAdaptor<T>
             @Nonnull
             private IterableStreamable<Entry<Integer, T>> streamable()
             {
-                return TransformStreamable.of(map, e -> MapEntry.of(e));
+                return TransformStreamable.of(map, MapEntry::new);
             }
         };
     }

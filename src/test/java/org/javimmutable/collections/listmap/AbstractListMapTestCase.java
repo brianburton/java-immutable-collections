@@ -88,9 +88,9 @@ public abstract class AbstractListMapTestCase
         assertSame(map.getList(1), map.get(1));
         assertEquals(2, map.getList(1).size());
 
-        map = map.insert(MapEntry.of(3, 87));
-        map = map.insert(MapEntry.of(2, 87));
-        map = map.insert(MapEntry.of(1, 87));
+        map = map.insert(IMapEntry.of(3, 87));
+        map = map.insert(IMapEntry.of(2, 87));
+        map = map.insert(IMapEntry.of(1, 87));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(100, 18, 87), map.getList(1).getList());
@@ -170,7 +170,7 @@ public abstract class AbstractListMapTestCase
     private static void verifyCollector(IListMap<Integer, Integer> template,
                                         Ordering ordering)
     {
-        List<IMapEntry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> MapEntry.of(i, -i)).collect(Collectors.toList());
+        List<IMapEntry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, -i)).collect(Collectors.toList());
         switch (ordering) {
             case HASH: {
                 Set<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());

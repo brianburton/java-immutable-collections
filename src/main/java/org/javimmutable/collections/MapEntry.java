@@ -73,25 +73,6 @@ public class MapEntry<K, V>
     }
 
     @Nonnull
-    public static <K, V> MapEntry<K, V> of(@Nonnull Map.Entry<K, V> entry)
-    {
-        return new MapEntry<K, V>(entry);
-    }
-
-    @Nonnull
-    public static <K, V> MapEntry<K, V> of(@Nonnull IMapEntry<K, V> entry)
-    {
-        return new MapEntry<K, V>(entry);
-    }
-
-    @Nonnull
-    public static <K, V> MapEntry<K, V> of(@Nonnull K key,
-                                           V value)
-    {
-        return new MapEntry<K, V>(key, value);
-    }
-
-    @Nonnull
     public static <K, V> IMapEntry<K, V> entry(@Nonnull K key,
                                                V value)
     {
@@ -206,11 +187,11 @@ public class MapEntry<K, V>
 
     public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<IMapEntry<K, V>> source)
     {
-        return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
+        return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }
 
     public static <K, V> List<IMapEntry<K, V>> toImmutableEntries(@Nonnull Collection<Map.Entry<K, V>> source)
     {
-        return source.stream().map(e -> MapEntry.of(e)).collect(Collectors.toList());
+        return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }
 }
