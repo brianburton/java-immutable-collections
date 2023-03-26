@@ -45,6 +45,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IArrays;
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.ISets;
@@ -58,12 +59,12 @@ public class JImmutableCollectorsTest
         final List<Integer> source = IntStream.rangeClosed(1, 1200).boxed().collect(Collectors.toList());
         final Comparator<Integer> comparator = ComparableComparator.of();
         Collections.shuffle(source);
-        verifyCollection(source, values -> ILists.allOf(values), () -> JImmutableCollectors.toList());
-        verifyCollection(source, values -> IArrays.allOf(values), () -> JImmutableCollectors.toArray());
-        verifyCollection(source, values -> ISets.hashed(values), () -> JImmutableCollectors.toSet());
-        verifyCollection(source, values -> ISets.sorted(values), () -> JImmutableCollectors.toSortedSet());
-        verifyCollection(source, values -> ISets.sorted(comparator, values), () -> JImmutableCollectors.toSortedSet(comparator));
-        verifyCollection(source, values -> createGroupingByExpected(values, x -> x / 7), () -> JImmutableCollectors.groupingBy(x -> x / 7));
+        verifyCollection(source, values -> ILists.allOf(values), () -> ICollectors.toList());
+        verifyCollection(source, values -> IArrays.allOf(values), () -> ICollectors.toArray());
+        verifyCollection(source, values -> ISets.hashed(values), () -> ICollectors.toSet());
+        verifyCollection(source, values -> ISets.sorted(values), () -> ICollectors.toSortedSet());
+        verifyCollection(source, values -> ISets.sorted(comparator, values), () -> ICollectors.toSortedSet(comparator));
+        verifyCollection(source, values -> createGroupingByExpected(values, x -> x / 7), () -> ICollectors.groupingBy(x -> x / 7));
     }
 
     private IListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,

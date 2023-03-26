@@ -1,6 +1,7 @@
 package org.javimmutable.collections;
 
 import java.util.Comparator;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.array.JImmutableTrieArray;
@@ -193,5 +194,19 @@ public final class ICollectors
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toSortedSetMap(@Nonnull Comparator<K> comparator)
     {
         return ISetMaps.<K, V>sorted(comparator).toCollector();
+    }
+
+    /**
+     * Collects values into a hashed JImmutableListMap using the specified classifier function
+     * to generate keys from the encountered elements.
+     */
+    @Nonnull
+    public static <T, K> Collector<T, ?, IListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
+    {
+        return GenericCollector.ordered(IListMap.listMap(),
+                                        IListMap.listMap(),
+                                        IListMap::isEmpty,
+                                        (a, v) -> a.insert(classifier.apply(v), v),
+                                        (a, b) -> a.insertAll(b.entries()));
     }
 }
