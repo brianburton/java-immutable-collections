@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holder.maybe;
 import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -88,14 +88,14 @@ public class IndexedArray<T>
     @Override
     public Holder<T> find(int index)
     {
-        return index >= 0 && index < values.length ? maybe(values[index]) : none();
+        return index >= 0 && index < values.length ? nullable(values[index]) : none();
     }
 
     @Nonnull
     @Override
     public Holder<T> seek(int index)
     {
-        return index >= 0 && index < values.length ? maybe(values[index]) : none();
+        return index >= 0 && index < values.length ? nullable(values[index]) : none();
     }
 
     @Override

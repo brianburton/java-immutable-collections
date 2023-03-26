@@ -40,6 +40,7 @@ import static org.javimmutable.collections.Holder.none;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 
 /**
@@ -95,7 +96,7 @@ public class Subindexed<T>
             return none();
         }
         T value = source.get(offset + index);
-        return Holder.maybe(value);
+        return Holders.nullable(value);
     }
 
     @Nonnull
@@ -105,7 +106,7 @@ public class Subindexed<T>
         if ((index < 0) || (index >= size)) {
             return none();
         }
-        return Holder.maybe(source.get(offset + index));
+        return Holders.nullable(source.get(offset + index));
     }
 
     @Override

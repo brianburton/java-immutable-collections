@@ -452,6 +452,6 @@ public interface IList<T>
      */
     default Holder<T> single()
     {
-        return size() == 1 ? Holder.maybe(get(0)) : Holder.none();
+        return size() == 1 ? Holders.nullable(get(0)) : Holder.none();
     }
 }

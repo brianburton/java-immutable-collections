@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
@@ -182,7 +183,7 @@ public class JImmutableArrayStressTester
                         Holder<String> expectedHolder;
                         if (expected.containsKey(index)) {
                             String value = expected.get(index);
-                            expectedHolder = Holder.maybe(value);
+                            expectedHolder = Holders.nullable(value);
                         } else {
                             expectedHolder = Holder.none();
                         }
@@ -196,7 +197,7 @@ public class JImmutableArrayStressTester
                         Holder<IMapEntry<Integer, String>> expectedHolder;
                         if (expected.containsKey(index)) {
                             IMapEntry<Integer, String> value = new MapEntry<>(index, expected.get(index));
-                            expectedHolder = Holder.maybe(value);
+                            expectedHolder = Holders.nullable(value);
                         } else {
                             expectedHolder = Holder.none();
                         }

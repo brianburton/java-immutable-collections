@@ -40,7 +40,7 @@ import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
 import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.TestUtil;
 
 public class MultiValueNodeTest
@@ -51,9 +51,9 @@ public class MultiValueNodeTest
         final AbstractNode<Integer> node = leaf(0, 1);
         assertThat(node.get(0)).isEqualTo(0);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Holder.maybe(), node.seekImpl(-1, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(0), node.seekImpl(0, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(), node.seekImpl(1, Holder::maybe, Holder::maybe));
+        assertEquals(Holders.none(), node.seekImpl(-1, Holders::none, Holders::nullable));
+        assertEquals(Holders.nullable(0), node.seekImpl(0, Holders::none, Holders::nullable));
+        assertEquals(Holders.none(), node.seekImpl(1, Holders::none, Holders::nullable));
     }
 
     public void testVarious()

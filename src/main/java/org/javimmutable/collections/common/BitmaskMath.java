@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.common;
 
-import static org.javimmutable.collections.Holder.maybe;
 import static org.javimmutable.collections.Holder.none;
 import static org.javimmutable.collections.Holder.some;
+import static org.javimmutable.collections.Holders.nullable;
 
 import java.util.function.Function;
 import java.util.function.IntConsumer;
@@ -179,7 +179,7 @@ public final class BitmaskMath
             if (bit == 0) {
                 return none();
             } else {
-                return maybe(indexForBit(bit));
+                return nullable(indexForBit(bit));
             }
         }
 

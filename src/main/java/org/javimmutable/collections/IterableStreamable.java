@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections;
 
-import static org.javimmutable.collections.Holder.maybe;
 import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -158,7 +158,7 @@ public interface IterableStreamable<T>
     {
         for (T value : this) {
             if (predicate.test(value)) {
-                return maybe(value);
+                return nullable(value);
             }
         }
         return none();
@@ -177,7 +177,7 @@ public interface IterableStreamable<T>
             return none();
         }
         final T value = iter.next();
-        return iter.hasNext() ? none() : Holder.maybe(value);
+        return iter.hasNext() ? none() : Holders.nullable(value);
     }
 
     /**
@@ -377,7 +377,7 @@ public interface IterableStreamable<T>
         while (iterator.hasNext()) {
             answer = accumulator.apply(answer, iterator.next());
         }
-        return maybe(answer);
+        return nullable(answer);
     }
 
     class Partitions<T>

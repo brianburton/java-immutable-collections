@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IMap;
@@ -261,7 +262,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         Holder<String> expectedHolder;
                         if (expected.containsKey(key)) {
                             String value = expected.get(key);
-                            expectedHolder = Holder.maybe(value);
+                            expectedHolder = Holders.nullable(value);
                         } else {
                             expectedHolder = Holder.none();
                         }
@@ -275,7 +276,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
                         Holder<IMapEntry<K, String>> expectedHolder;
                         if (expected.containsKey(key)) {
                             IMapEntry<K, String> value = new MapEntry<>(key, expected.get(key));
-                            expectedHolder = Holder.maybe(value);
+                            expectedHolder = Holders.nullable(value);
                         } else {
                             expectedHolder = Holder.none();
                         }

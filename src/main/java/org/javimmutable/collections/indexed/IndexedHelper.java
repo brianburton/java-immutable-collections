@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holder.maybe;
 import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +112,7 @@ public class IndexedHelper
             public Holder<T> find(int index)
             {
                 if (index == 0) {
-                    return maybe(a);
+                    return nullable(a);
                 }
                 return none();
             }
@@ -122,7 +122,7 @@ public class IndexedHelper
             public Holder<T> seek(int index)
             {
                 if (index == 0) {
-                    return maybe(a);
+                    return nullable(a);
                 }
                 return none();
             }
@@ -164,9 +164,9 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     default:
                         return none();
                 }
@@ -178,9 +178,9 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     default:
                         return none();
                 }
@@ -226,11 +226,11 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     case 2:
-                        return maybe(c);
+                        return nullable(c);
                     default:
                         return none();
                 }
@@ -242,11 +242,11 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     case 2:
-                        return maybe(c);
+                        return nullable(c);
                     default:
                         return none();
                 }
@@ -294,15 +294,15 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     case 2:
-                        return maybe(c);
+                        return nullable(c);
                     default:
                         index -= 3;
                         if (index >= 0 && index < others.length) {
-                            return maybe(others[index]);
+                            return nullable(others[index]);
                         }
                         return none();
                 }
@@ -314,15 +314,15 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return maybe(a);
+                        return nullable(a);
                     case 1:
-                        return maybe(b);
+                        return nullable(b);
                     case 2:
-                        return maybe(c);
+                        return nullable(c);
                     default:
                         index -= 3;
                         if (index >= 0 && index < others.length) {
-                            return maybe(others[index]);
+                            return nullable(others[index]);
                         }
                         return none();
                 }
@@ -359,7 +359,7 @@ public class IndexedHelper
                 if (index < 0 || index >= count) {
                     return none();
                 } else {
-                    return maybe(value);
+                    return nullable(value);
                 }
             }
 
@@ -370,7 +370,7 @@ public class IndexedHelper
                 if (index < 0 || index >= count) {
                     return none();
                 } else {
-                    return maybe(value);
+                    return nullable(value);
                 }
             }
 
@@ -405,7 +405,7 @@ public class IndexedHelper
                 if (index < 0 || index >= size) {
                     return none();
                 }
-                return maybe(low + index);
+                return nullable(low + index);
             }
 
             @Nonnull
@@ -415,7 +415,7 @@ public class IndexedHelper
                 if (index < 0 || index >= size) {
                     return none();
                 }
-                return maybe(low + index);
+                return nullable(low + index);
             }
 
             @Override

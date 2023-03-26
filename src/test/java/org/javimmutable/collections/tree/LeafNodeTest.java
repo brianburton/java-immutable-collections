@@ -39,6 +39,7 @@ import java.util.Comparator;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
 
 public class LeafNodeTest
@@ -56,9 +57,9 @@ public class LeafNodeTest
         assertEquals((Integer)5, node.value());
         assertEquals((Integer)5, node.get(comparator, 1, 20));
         assertEquals((Integer)20, node.get(comparator, 3, 20));
-        assertEquals(Holder.maybe(5), node.find(comparator, 1));
+        assertEquals(Holders.nullable(5), node.find(comparator, 1));
         assertEquals(Holder.none(), node.find(comparator, 3));
-        assertEquals(Holder.maybe(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
+        assertEquals(Holders.nullable(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
         assertEquals(Holder.none(), node.findEntry(comparator, 3));
     }
 

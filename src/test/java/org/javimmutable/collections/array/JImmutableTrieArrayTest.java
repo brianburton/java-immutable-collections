@@ -53,6 +53,7 @@ import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Indexed;
@@ -220,9 +221,9 @@ public class JImmutableTrieArrayTest
 
         for (int i = 9999; i >= 0; --i) {
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holder.maybe(i), array.find(i));
+            assertEquals(Holders.nullable(i), array.find(i));
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holder.maybe(i), array.find(i));
+            assertEquals(Holders.nullable(i), array.find(i));
             for (int shift = 31; shift > 20; --shift) {
                 int shiftedIndex = i | (1 << shift);
                 assertEquals(null, array.get(shiftedIndex));
@@ -244,9 +245,9 @@ public class JImmutableTrieArrayTest
 
         for (int i = 9999; i >= 0; --i) {
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holder.maybe(i), array.find(i));
+            assertEquals(Holders.nullable(i), array.find(i));
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holder.maybe(i), array.find(i));
+            assertEquals(Holders.nullable(i), array.find(i));
             IArray<Integer> deleted = array.delete(i);
             assertEquals(array.size() - 1, deleted.size());
             assertEquals(null, deleted.get(i));
@@ -342,8 +343,8 @@ public class JImmutableTrieArrayTest
                 final Integer index = indexes.get(i);
                 assertEquals(Integer.valueOf(i), array.get(index));
                 assertEquals(Integer.valueOf(i), array.getValueOr(index, -99));
-                assertEquals(Holder.maybe(i), array.find(index));
-                assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(index, i)), array.findEntry(index));
+                assertEquals(Holders.nullable(i), array.find(index));
+                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(index, i)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {
@@ -351,8 +352,8 @@ public class JImmutableTrieArrayTest
                 array = array.assign(index, i - 1);
                 assertEquals(Integer.valueOf(i - 1), array.get(index));
                 assertEquals(Integer.valueOf(i - 1), array.getValueOr(index, -99));
-                assertEquals(Holder.maybe(i - 1), array.find(index));
-                assertEquals(Holder.<IMapEntry<Integer, Integer>>maybe(MapEntry.of(index, i - 1)), array.findEntry(index));
+                assertEquals(Holders.nullable(i - 1), array.find(index));
+                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(MapEntry.of(index, i - 1)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {

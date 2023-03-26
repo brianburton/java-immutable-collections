@@ -365,7 +365,7 @@ public interface ISet<T>
     @Override
     default Holder<T> find(T key)
     {
-        return contains(key) ? Holder.maybe(key) : Holder.none();
+        return contains(key) ? Holders.nullable(key) : Holder.none();
     }
 
     /**

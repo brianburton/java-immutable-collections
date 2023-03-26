@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
@@ -534,7 +533,7 @@ public abstract class AbstractJImmutableSetMapTestCase
         }
 
         ISetMap<Integer, Integer> expected = template.insertAll(values);
-        ISetMap<Integer, Integer> actual = values.parallelStream().collect(ICollectors.toSetMap());
+        ISetMap<Integer, Integer> actual = values.parallelStream().collect(template.toCollector());
         assertEquals(expected, actual);
     }
 }

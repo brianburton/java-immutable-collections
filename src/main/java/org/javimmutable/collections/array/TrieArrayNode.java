@@ -56,6 +56,7 @@ import javax.annotation.Nullable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
@@ -166,7 +167,7 @@ public class TrieArrayNode<T>
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, () -> Holder.none(), value -> Holder.maybe(value));
+        return findImpl(shiftCountForValue, index, () -> Holder.none(), value -> Holders.nullable(value));
     }
 
     @Nonnull
@@ -174,7 +175,7 @@ public class TrieArrayNode<T>
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, Holder::none, Holder::maybe);
+        return findImpl(shiftCountForValue, index, Holder::none, Holders::nullable);
     }
 
     @Nonnull

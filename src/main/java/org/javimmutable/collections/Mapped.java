@@ -86,6 +86,6 @@ public interface Mapped<K, V>
     @Nonnull
     default Holder<V> seek(K key)
     {
-        return Holder.maybe(get(key));
+        return Holders.notNull(get(key));
     }
 }

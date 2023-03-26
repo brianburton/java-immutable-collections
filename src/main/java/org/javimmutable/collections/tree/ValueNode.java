@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
@@ -226,7 +227,7 @@ class ValueNode<K, V>
         final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
-            final V newValue = generator.apply(Holder.maybe(thisValue));
+            final V newValue = generator.apply(Holders.nullable(thisValue));
             if (newValue != thisValue) {
                 return new ValueNode<>(key, newValue, left, right);
             }
@@ -341,7 +342,7 @@ class ValueNode<K, V>
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Holder.maybe(value);
+            return Holders.nullable(value);
         } else if (diff < 0) {
             return left.find(comp, key);
         } else {
@@ -356,7 +357,7 @@ class ValueNode<K, V>
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Holder.maybe(entry());
+            return Holders.nullable(entry());
         } else if (diff < 0) {
             return left.findEntry(comp, key);
         } else {

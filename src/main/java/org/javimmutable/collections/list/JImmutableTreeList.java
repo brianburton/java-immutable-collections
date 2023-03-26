@@ -51,6 +51,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Proc1Throws;
@@ -317,14 +318,14 @@ public class JImmutableTreeList<T>
     @Override
     public Holder<T> find(int index)
     {
-        return root.seekImpl(index, () -> Holder.none(), value -> Holder.maybe(value));
+        return root.seekImpl(index, () -> Holder.none(), value -> Holders.nullable(value));
     }
 
     @Nonnull
     @Override
     public Holder<T> seek(int index)
     {
-        return root.seekImpl(index, Holder::maybe, Holder::maybe);
+        return root.seekImpl(index, Holders::none, Holders::nullable);
     }
 
     @Override

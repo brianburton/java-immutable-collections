@@ -92,11 +92,11 @@ public class ReadmeTest
             .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 
         // build a new list by selectively taking values from the primes list using transformSome() method instead of a stream
-        IList<Integer> threes = primes.transformSome(ILists.of(), i -> i % 10 == 3 ? Holder.maybe(i) : Holder.none());
+        IList<Integer> threes = primes.transformSome(ILists.of(), i -> i % 10 == 3 ? Holders.nullable(i) : Holder.none());
         assertThat(threes).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83));
 
         // transformSome() can also append to an existing list rather than an empty one
-        IList<Integer> onesAndThrees = primes.transformSome(threes, i -> i % 10 == 1 ? Holder.maybe(i) : Holder.none());
+        IList<Integer> onesAndThrees = primes.transformSome(threes, i -> i % 10 == 1 ? Holders.nullable(i) : Holder.none());
         assertThat(onesAndThrees).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83, 11, 31, 41, 61, 71));
         // threes wasn't changed (it's immutable)
         assertThat(threes).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83));
@@ -197,7 +197,7 @@ public class ReadmeTest
         myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(ICollectors.toMap());
         IMap<Integer, Integer> changed = myMap.stream()
             .map(entry -> MapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
-            .collect(ICollectors.toMap());
+            .collect(myMap.mapCollector());
         // 6-10 were updated, 11-15 were added
         assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
         assertThat(ILists.allOf(changed.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));

@@ -44,7 +44,7 @@ import static org.javimmutable.collections.list.MultiValueNodeTest.reversed;
 
 import javax.annotation.Nonnull;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 
 public class BranchNodeTest
     extends TestCase
@@ -58,11 +58,11 @@ public class BranchNodeTest
         assertThat(root.get(0)).isEqualTo(0);
         assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
         assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
-        assertEquals(Holder.maybe(), root.seekImpl(-1, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(0), root.seekImpl(0, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(MAX_SIZE), root.seekImpl(MAX_SIZE, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Holder::maybe, Holder::maybe));
-        assertEquals(Holder.maybe(), root.seekImpl(root.size(), Holder::maybe, Holder::maybe));
+        assertEquals(Holders.none(), root.seekImpl(-1, Holders::none, Holders::nullable));
+        assertEquals(Holders.nullable(0), root.seekImpl(0, Holders::none, Holders::nullable));
+        assertEquals(Holders.nullable(MAX_SIZE), root.seekImpl(MAX_SIZE, Holders::none, Holders::nullable));
+        assertEquals(Holders.nullable(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Holders::none, Holders::nullable));
+        assertEquals(Holders.none(), root.seekImpl(root.size(), Holders::none, Holders::nullable));
     }
 
     public void testRotateLeft()

@@ -38,6 +38,7 @@ package org.javimmutable.collections.util;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
@@ -59,7 +60,7 @@ public class IterableStreamableTest
 
         assertEquals(Holder.none(), IStacks.of().single());
         assertEquals(Holder.some("a"), IStacks.of("a").single());
-        assertEquals(Holder.none(), IStacks.of((String)null).single());
+        assertEquals(Holder.some(null), IStacks.of((String)null).single());
         assertEquals(Holder.none(), IStacks.of("a", "b").single());
     }
 
@@ -100,7 +101,7 @@ public class IterableStreamableTest
     {
         assertEquals(Holder.none(), ILists.of().first(x -> true));
         assertEquals(Holder.none(), ILists.of(1, 3).first(x -> x >= 5));
-        assertEquals(Holder.maybe(3), ILists.of(1, 3, 5).first(x -> x >= 3));
+        assertEquals(Holders.nullable(3), ILists.of(1, 3, 5).first(x -> x >= 3));
     }
 
     public void testCollectAll()
@@ -153,26 +154,26 @@ public class IterableStreamableTest
 
     public void testTransformSome()
     {
-        assertEquals(ILists.of(), ILists.of().transformSome(ILists.of(), x -> Holder.maybe(x)));
+        assertEquals(ILists.of(), ILists.of().transformSome(ILists.of(), x -> Holders.nullable(x)));
         assertEquals(ILists.of(9, -1, -5), ILists.of(1, 3, 5).transformSome(ILists.of(9), x -> {
             if (x == 3) {
                 return Holder.none();
             } else {
                 Integer value = -x;
-                return Holder.maybe(value);
+                return Holders.nullable(value);
             }
         }));
     }
 
     public void testTransformAtMostSome()
     {
-        assertEquals(ILists.of(), ILists.of().transformSome(10, ILists.of(), x -> Holder.maybe(x)));
+        assertEquals(ILists.of(), ILists.of().transformSome(10, ILists.of(), x -> Holders.nullable(x)));
         assertEquals(ILists.of(9, -1, -5), ILists.of(1, 3, 5).transformSome(10, ILists.of(9), x -> {
             if (x == 3) {
                 return Holder.none();
             } else {
                 Integer value = -x;
-                return Holder.maybe(value);
+                return Holders.nullable(value);
             }
         }));
         assertEquals(ILists.of(9, -1), ILists.of(1, 3, 5).transformSome(1, ILists.of(9), x -> {
@@ -180,7 +181,7 @@ public class IterableStreamableTest
                 return Holder.none();
             } else {
                 Integer value = -x;
-                return Holder.maybe(value);
+                return Holders.nullable(value);
             }
         }));
     }
@@ -199,9 +200,9 @@ public class IterableStreamableTest
     public void testReduce()
     {
         assertEquals(Holder.none(), ILists.of().reduce((s, x) -> s));
-        assertEquals(Holder.maybe(1), ILists.of(1).reduce((s, x) -> s + x));
-        assertEquals(Holder.maybe(3), ILists.of(1, 2).reduce((s, x) -> s + x));
-        assertEquals(Holder.maybe(6), ILists.of(1, 2, 3).reduce((s, x) -> s + x));
+        assertEquals(Holders.nullable(1), ILists.of(1).reduce((s, x) -> s + x));
+        assertEquals(Holders.nullable(3), ILists.of(1, 2).reduce((s, x) -> s + x));
+        assertEquals(Holders.nullable(6), ILists.of(1, 2, 3).reduce((s, x) -> s + x));
 
         assertEquals(Integer.valueOf(0), ILists.of().reduce(0, (s, x) -> s));
         assertEquals(Integer.valueOf(1), ILists.of(1).reduce(0, (s, x) -> s + x));

@@ -39,6 +39,7 @@ import java.util.Arrays;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
@@ -83,7 +84,7 @@ public class FunctionsTest
             if (value % 2 == 0) {
                 return Holder.none();
             } else {
-                return Holder.maybe(value + 1);
+                return Holders.nullable(value + 1);
             }
         }));
     }
@@ -93,7 +94,7 @@ public class FunctionsTest
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
         IList<Integer> list = ILists.of(1, 2, 3, 4);
-        assertEquals(Holder.maybe(2), Functions.find(list.iterator(), func));
+        assertEquals(Holders.nullable(2), Functions.find(list.iterator(), func));
 
         list = ILists.of(1, 5, 7);
         assertEquals(Holder.<Integer>none(), Functions.find(list.iterator(), func));

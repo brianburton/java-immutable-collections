@@ -85,10 +85,10 @@ public class HolderTest
         throws IOException
     {
         Holder<String> empty1 = Holder.none();
-        Holder<String> empty2 = Holder.maybe(null);
-        Holder<String> filled1 = Holder.maybe("ABC");
-        Holder<String> filled2 = Holder.maybe("BC");
-        Holder<String> filled3 = Holder.maybe("ABC");
+        Holder<String> empty2 = Holders.notNull(null);
+        Holder<String> filled1 = Holders.notNull("ABC");
+        Holder<String> filled2 = Holders.notNull("BC");
+        Holder<String> filled3 = Holders.notNull("ABC");
         assertEquals(true, empty1.equals(empty2));
         assertEquals(true, empty2.equals(empty1));
 
@@ -139,8 +139,8 @@ public class HolderTest
         assertNull(called.get());
         filled3.applyThrows(x -> called.set(x));
         assertEquals("ABC", called.get());
-        assertEquals(Holder.maybe("ABC".hashCode()), filled3.map(String::hashCode));
-        assertEquals(Holder.maybe("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
+        assertEquals(Holders.nullable("ABC".hashCode()), filled3.map(String::hashCode));
+        assertEquals(Holders.nullable("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
         assertEquals("ABC", filled3.get("ZZZ"));
         assertEquals("ABC", filled3.getOr(() -> "ZZZ"));
         assertEquals("ABC", filled3.unsafeGet(() -> new RuntimeException("threw")));

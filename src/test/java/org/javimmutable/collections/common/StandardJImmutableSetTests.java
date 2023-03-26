@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.ICollectors;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.IMultisets;
 import org.javimmutable.collections.ISet;
@@ -91,7 +91,7 @@ public final class StandardJImmutableSetTests
 
         assertEquals((Integer)10, jet.get(10));
         assertEquals((Integer)10, jet.getValueOr(10, 25));
-        assertEquals(Holder.maybe(10), jet.find(10));
+        assertEquals(Holders.nullable(10), jet.find(10));
 
         jet = jet.delete(10);
         assertEquals(0, jet.size());
@@ -212,7 +212,7 @@ public final class StandardJImmutableSetTests
             values = new LinkedHashSet<>(values);
         }
         ISet<Integer> expected = template.insertAll(values);
-        ISet<Integer> actual = values.parallelStream().collect(ICollectors.toSet());
+        ISet<Integer> actual = values.parallelStream().collect(template.setCollector());
         assertEquals(expected, actual);
     }
 

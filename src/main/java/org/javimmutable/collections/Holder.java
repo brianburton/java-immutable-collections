@@ -36,7 +36,6 @@
 package org.javimmutable.collections;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -56,6 +55,12 @@ public abstract class Holder<T>
     implements IterableStreamable<T>,
                Serializable
 {
+    /**
+     * If this value is null returns None, otherwise returns this value.
+     */
+    @Nonnull
+    public abstract Holder<T> notNull();
+
     /**
      * Produce a non-empty Holder.  If this Holder is non-empty it is returned.
      * Otherwise the noneMapping function is called to provide a value
@@ -366,53 +371,6 @@ public abstract class Holder<T>
     /**
      * Returns an empty Holder. All empty Maybes share a common instance.
      */
-    @Nonnull
-    public static <T> Holder<T> maybe()
-    {
-        return none();
-    }
-
-    /**
-     * Returns an empty Holder if value is null, otherwise a Holder containing
-     * the value is returned.
-     */
-    @Nonnull
-    public static <T> Holder<T> maybe(@Nullable T value)
-    {
-        return value != null ? some(value) : none();
-    }
-
-    /**
-     * Returns an empty Holder if value is null, otherwise a Holder containing
-     * the value is returned.
-     */
-    @Nonnull
-    public static <T> Holder<T> Holder(@Nullable T value)
-    {
-        return value != null ? some(value) : none();
-    }
-
-    /**
-     * Determine if the object is an instance of the specified Class or a subclass.
-     * If that is the case returns a Holder containing the object case to the class.
-     * If that is not the case returns an empty Holder.  Note that this is generally
-     * only useful for classes with simple (non-generic) types.
-     *
-     * @param klass       class to cast the object to
-     * @param valueOrNull object to be case
-     * @param <T>         type of the class
-     * @return a Holder
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> Holder<T> cast(@Nonnull Class<T> klass,
-                                     @Nullable Object valueOrNull)
-    {
-        return klass.isInstance(valueOrNull) ? new Some(valueOrNull) : none();
-    }
-
-    /**
-     * Returns an empty Holder. All empty Maybes share a common instance.
-     */
     @SuppressWarnings("unchecked")
     @Nonnull
     public static <T> Holder<T> none()
@@ -429,35 +387,6 @@ public abstract class Holder<T>
         return new Some<>(value);
     }
 
-    /**
-     * Returns a Holder containing the first value of the collection.  If the collection
-     * is empty or the first value is null an empty Holder is returned.
-     */
-    @Nonnull
-    public static <T> Holder<T> first(@Nonnull Iterable<? extends T> collection)
-    {
-        final Iterator<? extends T> i = collection.iterator();
-        return i.hasNext() ? Holder(i.next()) : none();
-    }
-
-    /**
-     * Returns a Holder containing the first non-null value of the collection
-     * for which the predicate returns true.  If the collection
-     * is empty, there are no non-null values, or predicate always
-     * returns false an empty Holder is returned.
-     */
-    @Nonnull
-    public static <T> Holder<T> first(@Nonnull Iterable<? extends T> collection,
-                                      @Nonnull Func1<? super T, Boolean> predicate)
-    {
-        for (T value : collection) {
-            if (value != null && predicate.apply(value)) {
-                return some(value);
-            }
-        }
-        return none();
-    }
-
     private static class None<T>
         extends Holder<T>
     {
@@ -466,6 +395,13 @@ public abstract class Holder<T>
 
         private None()
         {
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> notNull()
+        {
+            return this;
         }
 
         @Override
@@ -742,9 +678,16 @@ public abstract class Holder<T>
     {
         private final T value;
 
-        private Some(@Nonnull T value)
+        private Some(T value)
         {
             this.value = value;
+        }
+
+        @Nonnull
+        @Override
+        public Holder<T> notNull()
+        {
+            return value != null ? this : none();
         }
 
         @Override
@@ -1008,7 +951,11 @@ public abstract class Holder<T>
             if (!(obj instanceof Some)) {
                 return false;
             }
-            return value.equals(((Some)obj).value);
+            Object otherValue = ((Some)obj).value;
+            if (value == null) {
+                return otherValue == null;
+            }
+            return value.equals(otherValue);
         }
 
         @Override

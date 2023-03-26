@@ -53,7 +53,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Function;
-import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
@@ -151,7 +150,7 @@ public class StandardJImmutableMultisetTests
             }
         }
         IMultiset<Integer> expected = template.insertAll(values);
-        IMultiset<Integer> actual = values.parallelStream().collect(ICollectors.toMultiset());
+        IMultiset<Integer> actual = values.parallelStream().collect(template.multisetCollector());
         assertEquals(expected, actual);
     }
 

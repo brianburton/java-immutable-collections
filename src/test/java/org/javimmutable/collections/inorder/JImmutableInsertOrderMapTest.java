@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.ICollectors;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
@@ -156,7 +156,7 @@ public class JImmutableInsertOrderMapTest
                         assertEquals(merged, (int)map.getValueOr(key, value - 1000));
                         Holder<Integer> integers = map.find(key);
                         assertEquals(merged, (int)integers.getOrNull());
-                        assertEquals(Holder.maybe(merged), map.find(key));
+                        assertEquals(Holders.nullable(merged), map.find(key));
                         Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(MapEntry.of(key, merged), iMapEntries.unsafeGet());
                         break;
@@ -171,7 +171,7 @@ public class JImmutableInsertOrderMapTest
                         assertEquals(value, (int)map.getValueOr(key, value - 1000));
                         Holder<Integer> integers = map.find(key);
                         assertEquals(value, (int)integers.getOrNull());
-                        assertEquals(Holder.maybe(value), map.find(key));
+                        assertEquals(Holders.nullable(value), map.find(key));
                         Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(MapEntry.of(key, value), iMapEntries.unsafeGet());
                         break;
@@ -295,7 +295,7 @@ public class JImmutableInsertOrderMapTest
             final int key = r.nextInt();
             keys.add(key);
             values.add(i);
-            entries.add(entry(key, i));
+            entries.add(IMapEntry.entry(key, i));
             map = map.assign(key, i);
         }
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
@@ -303,7 +303,7 @@ public class JImmutableInsertOrderMapTest
         StandardIterableStreamableTests.verifyOrderedUsingCollection(values, map.values());
         StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, map);
 
-        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(ICollectors.toMap());
+        map = keys.parallelStream().map(i -> MapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
         assertEquals(map, map.parallelStream().collect(JImmutableInsertOrderMap.createMapCollector()));
     }
@@ -377,7 +377,7 @@ public class JImmutableInsertOrderMapTest
             Holder<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
             Integer value = entry.getValue();
-            assertEquals(Holder.maybe(value), map.find(entry.getKey()));
+            assertEquals(Holders.nullable(value), map.find(entry.getKey()));
             Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
@@ -393,7 +393,7 @@ public class JImmutableInsertOrderMapTest
             assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
             Holder<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
-            assertEquals(Holder.maybe(entry.getValue()), map.find(entry.getKey()));
+            assertEquals(Holders.nullable(entry.getValue()), map.find(entry.getKey()));
             Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(MapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }

@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
@@ -146,7 +147,7 @@ public class JImmutableInsertOrderMap<K, V>
 
     @Nonnull
     @Override
-    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> toCollector()
+    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector()
     {
         return GenericCollector.ordered(this, of(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
@@ -164,7 +165,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<V> find(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        return current != null ? Holder.maybe(current.value) : Holder.none();
+        return current != null ? Holders.nullable(current.value) : Holder.none();
     }
 
     @Nonnull
@@ -172,7 +173,7 @@ public class JImmutableInsertOrderMap<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<V> current = values.get(key);
-        return current != null ? Holder.maybe(entry(key, current.value)) : Holder.none();
+        return current != null ? Holders.nullable(IMapEntry.entry(key, current.value)) : Holder.none();
     }
 
     @Nonnull
@@ -231,7 +232,7 @@ public class JImmutableInsertOrderMap<K, V>
     @Override
     public SplitableIterator<IMapEntry<K, V>> iterator()
     {
-        return TransformStreamable.of(keys(), k -> entry(k, valueForKey(k))).iterator();
+        return TransformStreamable.of(keys(), k -> IMapEntry.entry(k, valueForKey(k))).iterator();
     }
 
     @Nonnull

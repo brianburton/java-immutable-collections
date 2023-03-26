@@ -90,7 +90,7 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> toOrderedMap()
     {
-        return JImmutableInsertOrderMap.<K, V>of().toCollector();
+        return JImmutableInsertOrderMap.<K, V>of().mapCollector();
     }
 
     /**

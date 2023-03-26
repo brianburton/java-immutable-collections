@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
-import static org.javimmutable.collections.MapEntry.entry;
-
 import java.util.Comparator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -86,7 +85,7 @@ public class LeafNode<K, V>
                    @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holder.maybe(value);
+            return Holders.nullable(value);
         } else {
             return Holder.none();
         }
@@ -98,7 +97,7 @@ public class LeafNode<K, V>
                                       @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holder.maybe(asEntry());
+            return Holders.nullable(asEntry());
         } else {
             return Holder.none();
         }
@@ -152,7 +151,7 @@ public class LeafNode<K, V>
                               @Nonnull Func1<Holder<V>, V> generator)
     {
         if (isMatch(comp, key)) {
-            final V value = generator.apply(Holder.maybe(this.value));
+            final V value = generator.apply(Holders.nullable(this.value));
             if (this.value == value) {
                 return this;
             } else {

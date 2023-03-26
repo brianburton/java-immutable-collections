@@ -47,6 +47,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
@@ -299,7 +300,7 @@ public class GenericIteratorTest
                                                                        int offset,
                                                                        int limit)
         {
-            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holder.maybe(i));
+            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holders.nullable(i));
         }
 
         @Override

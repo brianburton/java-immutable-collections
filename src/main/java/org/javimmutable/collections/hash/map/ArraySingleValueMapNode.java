@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -86,7 +87,7 @@ public class ArraySingleValueMapNode<K, V>
     public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
                           @Nonnull K key)
     {
-        return key.equals(this.key) ? Holder.some(value) : Holder.none();
+        return key.equals(this.key) ? Holders.nullable(value) : Holder.none();
     }
 
     @Nonnull
@@ -94,7 +95,7 @@ public class ArraySingleValueMapNode<K, V>
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
                                              @Nonnull K key)
     {
-        return key.equals(this.key) ? Holder.maybe(this) : Holder.none();
+        return key.equals(this.key) ? Holders.nullable(this) : Holder.none();
     }
 
     @Nonnull
