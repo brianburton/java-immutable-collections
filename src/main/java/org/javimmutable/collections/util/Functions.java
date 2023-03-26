@@ -36,6 +36,8 @@
 package org.javimmutable.collections.util;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
@@ -44,7 +46,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 /**
  * Library of static functions that perform various operations on Iterators.
@@ -87,7 +88,11 @@ public final class Functions
      */
     public static <T> Iterator<T> reverse(Iterator<? extends T> iterator)
     {
-        return JImmutableLinkedStack.<T>of().insertAll(iterator).iterator();
+        List<T> reversed = new LinkedList<>();
+        while (iterator.hasNext()) {
+            reversed.add(0, iterator.next());
+        }
+        return reversed.iterator();
     }
 
     /**

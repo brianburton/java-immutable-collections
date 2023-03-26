@@ -59,7 +59,6 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.ISetMaps;
 import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.hash.JImmutableHashMap;
 import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
@@ -105,9 +104,7 @@ public class RunStressTests
         .insert(new JImmutableListMapStressTester(IListMap.insertOrderListMap(), LinkedHashMap.class))
         .insert(new JImmutableListMapStressTester(IListMap.sortedListMap(), TreeMap.class))
 
-        .insert(new JImmutableArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER))
-
-        .insert(new JImmutableStackStressTester(IStacks.of()));
+        .insert(new JImmutableArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
 
     public static void main(String[] argv)
         throws Exception

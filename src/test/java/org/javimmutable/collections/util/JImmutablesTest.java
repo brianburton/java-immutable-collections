@@ -72,12 +72,8 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.ISetMaps;
 import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.IStack;
-import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.InsertableSequence;
 import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Sequence;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 import org.javimmutable.collections.hash.EmptyHashMap;
 import org.javimmutable.collections.hash.EmptyHashSet;
@@ -90,14 +86,10 @@ import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
 import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
-import org.javimmutable.collections.iterators.SequenceIterator;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.list.JImmutableTreeList;
 import org.javimmutable.collections.listmap.JImmutableHashListMap;
 import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
 import org.javimmutable.collections.listmap.JImmutableTreeListMap;
-import org.javimmutable.collections.sequence.EmptySequenceNode;
-import org.javimmutable.collections.sequence.FilledSequenceNode;
 import org.javimmutable.collections.setmap.JImmutableHashSetMap;
 import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
 import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
@@ -113,7 +105,6 @@ public class JImmutablesTest
     extends TestCase
 {
     private final Predicate<IArray> isArray = x -> x instanceof JImmutableTrieArray;
-    private final Predicate<IStack> isStack = x -> x instanceof JImmutableLinkedStack;
     private final Predicate<IList> isList = x -> x instanceof JImmutableTreeList;
     private final Predicate<IMap> isEmptyMap = x -> x instanceof EmptyHashMap;
     private final Predicate<IMap> isMap = x -> x instanceof JImmutableHashMap;
@@ -133,8 +124,6 @@ public class JImmutablesTest
     private final Predicate<ISetMap> isSortedSetMap = x -> x instanceof JImmutableTreeSetMap;
     private final Predicate<ISetMap> isInsertOrderSetMap = x -> x instanceof JImmutableInsertOrderSetMap;
     private final Predicate<ISetMap> isTemplateSetMap = x -> x instanceof JImmutableTemplateSetMap;
-    private final Predicate<InsertableSequence> isEmptyInsertableSequence = x -> x instanceof EmptySequenceNode;
-    private final Predicate<InsertableSequence> isInsertableSequence = x -> x instanceof FilledSequenceNode;
 
     public void testArray()
     {
@@ -162,29 +151,6 @@ public class JImmutablesTest
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
                       () -> Stream.of("c", "a", "d", "a").collect(ICollectors.toArray()));
-    }
-
-    public void testStack()
-    {
-        List<Integer> input = asList(1, 2, 3);
-        List<Integer> expected = asList(3, 2, 1);
-
-        IStack<Integer> stack = IStacks.of();
-        stack = stack.insert(1).insert(2).insert(3);
-        assertEquals(expected, ILists.allOf(stack.iterator()).getList());
-
-        IList<Integer> inlist = JImmutableTreeList.of();
-        inlist = inlist.insert(1).insert(2).insert(3);
-        assertEquals(stack, IStacks.allOf(inlist));
-        assertEquals(stack, IStacks.allOf((inlist.iterator())));
-        assertEquals(stack, IStacks.allOf(input));
-        assertEquals(stack, IStacks.allOf(input.iterator()));
-        assertEquals(stack, IStacks.of(1, 2, 3));
-
-        verifyOrdered(isStack, asList(), () -> IStacks.of());
-        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> IStacks.of("w", "x", "y", "z"));
-        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> IStacks.allOf(iterable("w", "x", "y", "z")));
-        verifyOrdered(isStack, asList("z", "y", "x", "w"), () -> IStacks.allOf(iterator("w", "x", "y", "z")));
     }
 
     public void testList()
@@ -465,12 +431,6 @@ public class JImmutablesTest
         verifyOrdered(isTemplateSetMap, entryList(entry("y", ISets.hashed(1)), entry("z", ISets.hashed(2)), entry("x", ISets.hashed(3))), () -> setmap.insert("y", 1).insert("z", 2).insert("x", 3));
         final ISetMap<String, Integer> setmap2 = ISetMaps.<String, Integer>factory().withMap(IMaps.ordered()).withSet(ISets.hashed()).create();
         verifyOrdered(isTemplateSetMap, entryList(entry("y", ISets.hashed(1)), entry("z", ISets.hashed(2)), entry("x", ISets.hashed(3))), () -> setmap2.insert("y", 1).insert("z", 2).insert("x", 3));
-    }
-
-    public void testSequence()
-    {
-        verifyOrdered(isEmptyInsertableSequence, asList(), () -> Sequence.<String>sequence(), x -> SequenceIterator.iterator(x));
-        verifyOrdered(isInsertableSequence, asList("x"), () -> Sequence.sequence("x"), x -> SequenceIterator.iterator(x));
     }
 
     private <K, V> List<IMapEntry<K, V>> entryList(IMapEntry<K, V>... values)

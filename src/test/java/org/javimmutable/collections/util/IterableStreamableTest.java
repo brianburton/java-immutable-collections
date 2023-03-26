@@ -45,7 +45,6 @@ import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMaps;
 import org.javimmutable.collections.IMultisets;
 import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.IterableStreamable.Partitions;
 import org.javimmutable.collections.MapEntry;
 
@@ -58,10 +57,10 @@ public class IterableStreamableTest
         assertEquals(Holder.some("a"), ISets.hashed("a").single());
         assertEquals(Holder.none(), ISets.hashed("a", "b").single());
 
-        assertEquals(Holder.none(), IStacks.of().single());
-        assertEquals(Holder.some("a"), IStacks.of("a").single());
-        assertEquals(Holder.some(null), IStacks.of((String)null).single());
-        assertEquals(Holder.none(), IStacks.of("a", "b").single());
+        assertEquals(Holder.none(), ILists.of().single());
+        assertEquals(Holder.some("a"), ILists.of("a").single());
+        assertEquals(Holder.some(null), ILists.of((String)null).single());
+        assertEquals(Holder.none(), ILists.of("a", "b").single());
     }
 
     public void testCount()

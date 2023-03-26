@@ -36,6 +36,7 @@
 package org.javimmutable.collections.util;
 
 import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
@@ -43,8 +44,6 @@ import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IStack;
-import org.javimmutable.collections.IStacks;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.JImmutableTreeMap;
 
@@ -53,13 +52,13 @@ public class FunctionsTest
 {
     public void testFoldLeft()
     {
-        IStack<Integer> list = IStacks.of(1, 2, 3);
+        List<Integer> list = List.of(3, 2, 1);
         assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
     public void testFoldRight()
     {
-        IStack<Integer> list = IStacks.of(1, 2, 3);
+        List<Integer> list = List.of(3, 2, 1);
         assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 

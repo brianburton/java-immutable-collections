@@ -50,13 +50,11 @@ import java.util.TreeSet;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 
 public class JImmutableInsertOrderSetTest
     extends TestCase
@@ -70,8 +68,7 @@ public class JImmutableInsertOrderSetTest
 
     public void test()
     {
-        IStack<String> expected = JImmutableLinkedStack.of();
-        expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
+        List<String> expected = List.of("barney", "betty", "wilma", "fred");
 
         ISet<String> set = JImmutableInsertOrderSet.of();
         assertTrue(set.isEmpty());

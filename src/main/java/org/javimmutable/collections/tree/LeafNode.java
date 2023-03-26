@@ -274,6 +274,6 @@ public class LeafNode<K, V>
 
     private IMapEntry<K, V> asEntry()
     {
-        return entry(key, value);
+        return IMapEntry.entry(key, value);
     }
 }

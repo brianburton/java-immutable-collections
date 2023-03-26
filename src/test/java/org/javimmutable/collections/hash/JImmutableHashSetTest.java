@@ -37,6 +37,7 @@ package org.javimmutable.collections.hash;
 
 import static java.util.Arrays.asList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,7 +51,6 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.IStack;
 import org.javimmutable.collections.common.SetBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
@@ -58,7 +58,6 @@ import org.javimmutable.collections.common.StandardJImmutableSetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.JImmutableLinkedStack;
 import org.javimmutable.collections.tree.ComparableComparator;
 
 public class JImmutableHashSetTest
@@ -75,8 +74,11 @@ public class JImmutableHashSetTest
 
     public void test()
     {
-        IStack<String> expected = JImmutableLinkedStack.of();
-        expected = expected.insert("fred").insert("wilma").insert("betty").insert("barney");
+        List<String> expected = new ArrayList<>();
+        expected.add("fred");
+        expected.add("wilma");
+        expected.add("betty");
+        expected.add("barney");
 
         ISet<String> set = JImmutableHashSet.of();
         assertTrue(set.isEmpty());

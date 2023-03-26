@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.list;
 
+import static org.javimmutable.collections.IMapEntry.entry;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
