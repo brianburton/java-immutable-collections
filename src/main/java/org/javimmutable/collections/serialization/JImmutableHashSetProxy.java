@@ -35,19 +35,19 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.hash.JImmutableHashSet;
+import org.javimmutable.collections.hash.HashSet;
 
 public class JImmutableHashSetProxy
-    extends AbstractJImmutableSetProxy
+    extends AbstractSetProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableHashSetProxy()
     {
-        super(JImmutableHashSet.of());
+        super(HashSet.of());
     }
 
-    public JImmutableHashSetProxy(JImmutableHashSet set)
+    public JImmutableHashSetProxy(HashSet set)
     {
         super(set);
     }

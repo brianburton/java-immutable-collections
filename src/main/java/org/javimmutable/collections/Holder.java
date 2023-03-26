@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
-import org.javimmutable.collections.serialization.MaybeProxy;
+import org.javimmutable.collections.serialization.HolderProxy;
 
 /**
  * Used to handle cases when a value may or may not be present and, when needed, to eliminate
@@ -669,7 +669,7 @@ public abstract class Holder<T>
 
         private Object writeReplace()
         {
-            return new MaybeProxy(this);
+            return new HolderProxy(this);
         }
     }
 
@@ -966,7 +966,7 @@ public abstract class Holder<T>
 
         private Object writeReplace()
         {
-            return new MaybeProxy(this);
+            return new HolderProxy(this);
         }
     }
 }

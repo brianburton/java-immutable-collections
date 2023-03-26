@@ -54,7 +54,7 @@ public final class TimingLoop
         int removes = 0;
         int gets = 0;
         long startPer = System.currentTimeMillis();
-        IMap<Integer, Integer> map = JImmutableHashMap.of();
+        IMap<Integer, Integer> map = HashMap.of();
         for (int i = 1; i <= maxLoops; ++i) {
             int command = random.nextInt(8);
             if (command <= 1) {

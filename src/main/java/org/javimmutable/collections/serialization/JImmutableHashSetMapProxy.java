@@ -35,23 +35,23 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.setmap.JImmutableHashSetMap;
+import org.javimmutable.collections.setmap.HashSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableHashSetMapProxy
-    extends AbstractJImmutableSetMapProxy
+    extends AbstractSetMapProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableHashSetMapProxy()
     {
-        super(JImmutableHashSetMap.of());
+        super(HashSetMap.of());
     }
 
-    public JImmutableHashSetMapProxy(JImmutableHashSetMap map)
+    public JImmutableHashSetMapProxy(HashSetMap map)
     {
         super(map);
     }

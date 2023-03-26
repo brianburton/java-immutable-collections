@@ -3,9 +3,9 @@ package org.javimmutable.collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
-import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.inorder.OrderedSet;
+import org.javimmutable.collections.tree.TreeSet;
 
 public final class ISets
 {
@@ -25,7 +25,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> hashed()
     {
-        return JImmutableHashSet.of();
+        return HashSet.of();
     }
 
     /**
@@ -41,7 +41,7 @@ public final class ISets
     @SafeVarargs
     public static <T> ISet<T> hashed(T... source)
     {
-        return JImmutableHashSet.<T>builder().add(source).build();
+        return HashSet.<T>builder().add(source).build();
     }
 
     /**
@@ -56,7 +56,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> hashed(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableHashSet.<T>builder().add(source).build();
+        return HashSet.<T>builder().add(source).build();
     }
 
     /**
@@ -71,7 +71,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> hashed(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableHashSet.<T>builder().add(source).build();
+        return HashSet.<T>builder().add(source).build();
     }
 
     /**
@@ -80,7 +80,7 @@ public final class ISets
     @Nonnull
     public static <T extends Comparable<T>> ISet<T> sorted()
     {
-        return JImmutableTreeSet.of();
+        return TreeSet.of();
     }
 
     /**
@@ -91,7 +91,7 @@ public final class ISets
     @SafeVarargs
     public static <T extends Comparable<T>> ISet<T> sorted(T... source)
     {
-        return JImmutableTreeSet.<T>builder().add(source).build();
+        return TreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -101,7 +101,7 @@ public final class ISets
     @Nonnull
     public static <T extends Comparable<T>> ISet<T> sorted(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeSet.<T>builder().add(source).build();
+        return TreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -111,7 +111,7 @@ public final class ISets
     @Nonnull
     public static <T extends Comparable<T>> ISet<T> sorted(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeSet.<T>builder().add(source).build();
+        return TreeSet.<T>builder().add(source).build();
     }
 
     /**
@@ -124,7 +124,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> sorted(@Nonnull Comparator<T> comparator)
     {
-        return JImmutableTreeSet.of(comparator);
+        return TreeSet.of(comparator);
     }
 
     /**
@@ -139,7 +139,7 @@ public final class ISets
     public static <T> ISet<T> sorted(@Nonnull Comparator<T> comparator,
                                      T... source)
     {
-        return JImmutableTreeSet.builder(comparator).add(source).build();
+        return TreeSet.builder(comparator).add(source).build();
     }
 
     /**
@@ -153,7 +153,7 @@ public final class ISets
     public static <T> ISet<T> sorted(@Nonnull Comparator<T> comparator,
                                      @Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeSet.builder(comparator).add(source).build();
+        return TreeSet.builder(comparator).add(source).build();
     }
 
     /**
@@ -167,7 +167,7 @@ public final class ISets
     public static <T> ISet<T> sorted(@Nonnull Comparator<T> comparator,
                                      @Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeSet.builder(comparator).add(source).build();
+        return TreeSet.builder(comparator).add(source).build();
     }
 
     /**
@@ -182,7 +182,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> ordered()
     {
-        return JImmutableInsertOrderSet.of();
+        return OrderedSet.of();
     }
 
     /**
@@ -199,7 +199,7 @@ public final class ISets
     @SafeVarargs
     public static <T> ISet<T> ordered(T... source)
     {
-        return JImmutableInsertOrderSet.<T>builder().add(source).build();
+        return OrderedSet.<T>builder().add(source).build();
     }
 
     /**
@@ -215,7 +215,7 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> ordered(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableInsertOrderSet.<T>builder().add(source).build();
+        return OrderedSet.<T>builder().add(source).build();
     }
 
     /**
@@ -231,6 +231,6 @@ public final class ISets
     @Nonnull
     public static <T> ISet<T> ordered(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableInsertOrderSet.<T>builder().add(source).build();
+        return OrderedSet.<T>builder().add(source).build();
     }
 }

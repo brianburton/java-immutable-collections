@@ -73,7 +73,7 @@ public class ListCollisionSetTest
         sb.delete(0, sb.length());
         IList<Integer> integers = IntStream.range(1, 500)
             .boxed()
-            .collect(JImmutableTreeList.createListCollector());
+            .collect(TreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.insert(n, i));
         String expected = integers.reduce("", (s, i) -> s + "[" + i + "]");
         transforms.forEach(node, append);
@@ -120,7 +120,7 @@ public class ListCollisionSetTest
 
         IList<Integer> integers = IntStream.range(1, 500)
             .boxed()
-            .collect(JImmutableTreeList.createListCollector());
+            .collect(TreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.insert(n, i));
         String expected = integers.reduce("", (s, i) -> s + "[" + i + "]");
         assertEquals(expected, transforms.reduce(node, "", append));

@@ -2,11 +2,11 @@ package org.javimmutable.collections;
 
 import java.util.Comparator;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.setmap.JImmutableHashSetMap;
-import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
-import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
-import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
-import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
+import org.javimmutable.collections.setmap.HashSetMap;
+import org.javimmutable.collections.setmap.OrderedSetMap;
+import org.javimmutable.collections.setmap.SetMapFactory;
+import org.javimmutable.collections.setmap.TemplateSetMap;
+import org.javimmutable.collections.setmap.TreeSetMap;
 
 public final class ISetMaps
 {
@@ -21,7 +21,7 @@ public final class ISetMaps
     @Nonnull
     public static <K, V> ISetMap<K, V> hashed()
     {
-        return JImmutableHashSetMap.of();
+        return HashSetMap.of();
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ISetMaps
     @Nonnull
     public static <K, V> ISetMap<K, V> ordered()
     {
-        return JImmutableInsertOrderSetMap.of();
+        return OrderedSetMap.of();
     }
 
     /**
@@ -41,7 +41,7 @@ public final class ISetMaps
     @Nonnull
     public static <K extends Comparable<K>, V> ISetMap<K, V> sorted()
     {
-        return JImmutableTreeSetMap.of();
+        return TreeSetMap.of();
     }
 
     /**
@@ -51,7 +51,7 @@ public final class ISetMaps
     @Nonnull
     public static <K, V> ISetMap<K, V> sorted(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeSetMap.of(comparator);
+        return TreeSetMap.of(comparator);
     }
 
     /**
@@ -66,7 +66,7 @@ public final class ISetMaps
     public static <K, V> ISetMap<K, V> templated(@Nonnull IMap<K, ISet<V>> templateMap,
                                                  @Nonnull ISet<V> templateSet)
     {
-        return JImmutableTemplateSetMap.of(templateMap, templateSet);
+        return TemplateSetMap.of(templateMap, templateSet);
     }
 
     /**
@@ -74,9 +74,9 @@ public final class ISetMaps
      * base map and set type.
      */
     @Nonnull
-    public static <K, V> JImmutableSetMapFactory<K, V> factory()
+    public static <K, V> SetMapFactory<K, V> factory()
     {
-        return new JImmutableSetMapFactory<>();
+        return new SetMapFactory<>();
     }
 
     /**
@@ -86,9 +86,9 @@ public final class ISetMaps
      * convenient than angle brackets.
      */
     @Nonnull
-    public static <K, V> JImmutableSetMapFactory<K, V> factory(@Nonnull Class<K> keyClass,
-                                                               @Nonnull Class<V> valueClass)
+    public static <K, V> SetMapFactory<K, V> factory(@Nonnull Class<K> keyClass,
+                                                     @Nonnull Class<V> valueClass)
     {
-        return new JImmutableSetMapFactory<>();
+        return new SetMapFactory<>();
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.list.JImmutableTreeList;
+import org.javimmutable.collections.list.TreeList;
 
 public final class ILists
 {
@@ -19,7 +19,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> of()
     {
-        return JImmutableTreeList.of();
+        return TreeList.of();
     }
 
     /**
@@ -29,7 +29,7 @@ public final class ILists
     @SafeVarargs
     public static <T> IList<T> of(T... values)
     {
-        return JImmutableTreeList.of(IndexedArray.retained(values));
+        return TreeList.of(IndexedArray.retained(values));
     }
 
     /**
@@ -38,7 +38,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull Indexed<? extends T> source)
     {
-        return JImmutableTreeList.of(source);
+        return TreeList.of(source);
     }
 
     /**
@@ -51,7 +51,7 @@ public final class ILists
                                      int offset,
                                      int limit)
     {
-        return JImmutableTreeList.of(source, offset, limit);
+        return TreeList.of(source, offset, limit);
     }
 
     /**
@@ -60,7 +60,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull ISet<? extends T> source)
     {
-        return JImmutableTreeList.of(source.iterator());
+        return TreeList.of(source.iterator());
     }
 
     /**
@@ -69,7 +69,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull List<? extends T> source)
     {
-        return JImmutableTreeList.of(IndexedList.retained(source));
+        return TreeList.of(IndexedList.retained(source));
     }
 
     /**
@@ -78,7 +78,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeList.of(source);
+        return TreeList.of(source);
     }
 
     /**
@@ -87,7 +87,7 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull IList<? extends T> source)
     {
-        return JImmutableTreeList.of(source);
+        return TreeList.of(source);
     }
 
     /**
@@ -96,6 +96,6 @@ public final class ILists
     @Nonnull
     public static <T> IList<T> allOf(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeList.of(source.iterator());
+        return TreeList.of(source.iterator());
     }
 }

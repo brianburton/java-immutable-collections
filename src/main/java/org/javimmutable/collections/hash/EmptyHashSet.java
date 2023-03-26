@@ -36,19 +36,18 @@
 package org.javimmutable.collections.hash;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.AbstractJImmutableSet;
+import org.javimmutable.collections.common.AbstractSet;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
 public class EmptyHashSet<T>
-    extends AbstractJImmutableSet<T>
+    extends AbstractSet<T>
     implements Serializable
 {
     @SuppressWarnings("rawtypes")
@@ -63,14 +62,14 @@ public class EmptyHashSet<T>
     @Override
     protected Set<T> emptyMutableSet()
     {
-        return new HashSet<>();
+        return new java.util.HashSet<>();
     }
 
     @Nonnull
     @Override
     public ISet<T> insert(@Nonnull T value)
     {
-        return new JImmutableHashSet<>(value);
+        return new HashSet<>(value);
     }
 
     @Override

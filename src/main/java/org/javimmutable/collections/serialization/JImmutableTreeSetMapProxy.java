@@ -40,23 +40,23 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
 import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.setmap.JImmutableTreeSetMap;
+import org.javimmutable.collections.setmap.TreeSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableTreeSetMapProxy
-    extends AbstractJImmutableSetMapProxy
+    extends AbstractSetMapProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableTreeSetMapProxy()
     {
-        super(JImmutableTreeSetMap.of());
+        super(TreeSetMap.of());
     }
 
-    public JImmutableTreeSetMapProxy(JImmutableTreeSetMap map)
+    public JImmutableTreeSetMapProxy(TreeSetMap map)
     {
         super(map);
     }
@@ -66,14 +66,14 @@ public class JImmutableTreeSetMapProxy
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();
-        return JImmutableTreeSetMap.of(comparator);
+        return TreeSetMap.of(comparator);
     }
 
     @Override
     protected void writeMap(ObjectOutput out)
         throws IOException
     {
-        JImmutableTreeSetMap treeMap = (JImmutableTreeSetMap)map;
+        TreeSetMap treeMap = (TreeSetMap)map;
         out.writeObject(treeMap.getComparator());
     }
 }

@@ -56,7 +56,7 @@ public class AbstractStressTestableTest
     private void testStandard(IList<String> tokens)
     {
         Random random = new Random();
-        StressTester testable = new JImmutableArrayStressTester(IArrays.<String>of(), ArrayIndexRange.INTEGER);
+        StressTester testable = new ArrayStressTester(IArrays.<String>of(), ArrayIndexRange.INTEGER);
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }

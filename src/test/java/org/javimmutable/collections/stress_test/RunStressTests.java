@@ -36,7 +36,6 @@
 package org.javimmutable.collections.stress_test;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -59,8 +58,8 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.ISetMaps;
 import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.setmap.JImmutableSetMapFactory;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.setmap.SetMapFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
@@ -74,37 +73,37 @@ import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
 public class RunStressTests
 {
     private static final IList<StressTester> AllTesters = ILists.<StressTester>of()
-        .insert(new JImmutableListStressTester(ILists.of(), ICollectors.toList()))
+        .insert(new ListStressTester(ILists.of(), ICollectors.toList()))
 
-        .insert(new JImmutableSetStressTester(ISets.hashed(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new JImmutableSetStressTester(ISets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new JImmutableSetStressTester(ISets.sorted(), TreeSet.class, IterationOrder.ORDERED))
-        .insert(new JImmutableSetStressTester(IMultisets.hashed(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new JImmutableSetStressTester(IMultisets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new JImmutableSetStressTester(IMultisets.sorted(), TreeSet.class, IterationOrder.ORDERED))
+        .insert(new SetStressTester(ISets.hashed(), HashSet.class, IterationOrder.UNORDERED))
+        .insert(new SetStressTester(ISets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+        .insert(new SetStressTester(ISets.sorted(), TreeSet.class, IterationOrder.ORDERED))
+        .insert(new SetStressTester(IMultisets.hashed(), HashSet.class, IterationOrder.UNORDERED))
+        .insert(new SetStressTester(IMultisets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+        .insert(new SetStressTester(IMultisets.sorted(), TreeSet.class, IterationOrder.ORDERED))
 
-        .insert(new JImmutableMultisetStressTester(IMultisets.hashed()))
-        .insert(new JImmutableMultisetStressTester(IMultisets.ordered()))
-        .insert(new JImmutableMultisetStressTester(IMultisets.sorted()))
+        .insert(new MultisetStressTester(IMultisets.hashed()))
+        .insert(new MultisetStressTester(IMultisets.ordered()))
+        .insert(new MultisetStressTester(IMultisets.sorted()))
 
-        .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new RegularKeyFactory()))
-        .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableRegularKeyFactory()))
-        .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingList(), HashMap.class, new BadHashKeyFactory()))
-        .insert(new JImmutableMapStressTester<>(JImmutableHashMap.usingTree(), HashMap.class, new ComparableBadHashKeyFactory()))
+        .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new RegularKeyFactory()))
+        .insert(new MapStressTester<>(HashMap.usingTree(), java.util.HashMap.class, new ComparableRegularKeyFactory()))
+        .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new BadHashKeyFactory()))
+        .insert(new MapStressTester<>(HashMap.usingTree(), java.util.HashMap.class, new ComparableBadHashKeyFactory()))
 
-        .insert(new JImmutableMapStressTester<>(IMaps.ordered(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
-        .insert(new JImmutableMapStressTester<>(IMaps.sorted(), TreeMap.class, new ComparableRegularKeyFactory()))
+        .insert(new MapStressTester<>(IMaps.ordered(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
+        .insert(new MapStressTester<>(IMaps.sorted(), TreeMap.class, new ComparableRegularKeyFactory()))
 
-        .insert(new JImmutableSetMapStressTester(ISetMaps.hashed(), HashMap.class))
-        .insert(new JImmutableSetMapStressTester(ISetMaps.ordered(), LinkedHashMap.class))
-        .insert(new JImmutableSetMapStressTester(ISetMaps.sorted(), TreeMap.class))
-        .insert(new JImmutableSetMapStressTester(ISetMaps.factory(String.class, String.class).withMap(IMaps.sorted()).withSet(ISets.hashed()).create(), TreeMap.class))
+        .insert(new SetMapStressTester(ISetMaps.hashed(), java.util.HashMap.class))
+        .insert(new SetMapStressTester(ISetMaps.ordered(), LinkedHashMap.class))
+        .insert(new SetMapStressTester(ISetMaps.sorted(), TreeMap.class))
+        .insert(new SetMapStressTester(ISetMaps.factory(String.class, String.class).withMap(IMaps.sorted()).withSet(ISets.hashed()).create(), TreeMap.class))
 
-        .insert(new JImmutableListMapStressTester(IListMap.listMap(), HashMap.class))
-        .insert(new JImmutableListMapStressTester(IListMap.insertOrderListMap(), LinkedHashMap.class))
-        .insert(new JImmutableListMapStressTester(IListMap.sortedListMap(), TreeMap.class))
+        .insert(new ListMapStressTester(IListMap.listMap(), java.util.HashMap.class))
+        .insert(new ListMapStressTester(IListMap.insertOrderListMap(), LinkedHashMap.class))
+        .insert(new ListMapStressTester(IListMap.sortedListMap(), TreeMap.class))
 
-        .insert(new JImmutableArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
+        .insert(new ArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
 
     public static void main(String[] argv)
         throws Exception
@@ -168,7 +167,7 @@ public class RunStressTests
         System.out.println();
         parser.printHelpOn(System.out);
 
-        final JImmutableSetMapFactory<String, String> filterMapFactory = ISetMaps.factory(String.class, String.class)
+        final SetMapFactory<String, String> filterMapFactory = ISetMaps.factory(String.class, String.class)
             .withMap(IMaps.sorted())
             .withSet(ISets.sorted());
         final ISetMap<String, String> filterMap = AllTesters.stream()

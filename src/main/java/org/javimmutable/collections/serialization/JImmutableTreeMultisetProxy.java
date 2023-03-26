@@ -40,23 +40,23 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
 import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.tree.JImmutableTreeMultiset;
+import org.javimmutable.collections.tree.TreeMultiset;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableTreeMultisetProxy
-    extends AbstractJImmutableMultisetProxy
+    extends AbstractMultisetProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableTreeMultisetProxy()
     {
-        super(JImmutableTreeMultiset.of());
+        super(TreeMultiset.of());
     }
 
-    public JImmutableTreeMultisetProxy(JImmutableTreeMultiset set)
+    public JImmutableTreeMultisetProxy(TreeMultiset set)
     {
         super(set);
     }
@@ -66,14 +66,14 @@ public class JImmutableTreeMultisetProxy
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();
-        return JImmutableTreeMultiset.of(comparator);
+        return TreeMultiset.of(comparator);
     }
 
     @Override
     protected void writeSet(ObjectOutput out)
         throws IOException
     {
-        JImmutableTreeMultiset treeSet = (JImmutableTreeMultiset)set;
+        TreeMultiset treeSet = (TreeMultiset)set;
         out.writeObject(treeSet.getComparator());
     }
 }

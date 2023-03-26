@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.array.JImmutableTrieArray;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-import org.javimmutable.collections.list.JImmutableTreeList;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.array.TrieArray;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.inorder.OrderedMap;
+import org.javimmutable.collections.list.TreeList;
+import org.javimmutable.collections.tree.TreeMap;
 
 public final class ICollectors
 {
@@ -22,7 +22,7 @@ public final class ICollectors
     @Nonnull
     public static <T> Collector<T, ?, IArray<T>> toArray()
     {
-        return JImmutableTrieArray.collector();
+        return TrieArray.collector();
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ICollectors
     @Nonnull
     public static <T> Collector<T, ?, IList<T>> toList()
     {
-        return JImmutableTreeList.createListCollector();
+        return TreeList.createListCollector();
     }
 
     @Nonnull
@@ -64,7 +64,7 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> toMap()
     {
-        return JImmutableHashMap.createMapCollector();
+        return HashMap.createMapCollector();
     }
 
     /**
@@ -73,7 +73,7 @@ public final class ICollectors
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> toSortedMap()
     {
-        return JImmutableTreeMap.createMapCollector();
+        return TreeMap.createMapCollector();
     }
 
     /**
@@ -82,7 +82,7 @@ public final class ICollectors
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> toSortedMap(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeMap.createMapCollector(comparator);
+        return TreeMap.createMapCollector(comparator);
     }
 
     /**
@@ -91,7 +91,7 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> toOrderedMap()
     {
-        return JImmutableInsertOrderMap.<K, V>of().mapCollector();
+        return OrderedMap.<K, V>of().mapCollector();
     }
 
     /**

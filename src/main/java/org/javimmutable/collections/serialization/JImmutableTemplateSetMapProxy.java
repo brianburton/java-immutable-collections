@@ -41,25 +41,25 @@ import java.io.ObjectOutput;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.setmap.JImmutableTemplateSetMap;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.setmap.TemplateSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableTemplateSetMapProxy
-    extends AbstractJImmutableSetMapProxy
+    extends AbstractSetMapProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableTemplateSetMapProxy()
     {
-        super(JImmutableTemplateSetMap.of(JImmutableHashMap.of(), JImmutableHashSet.of()));
+        super(TemplateSetMap.of(HashMap.of(), HashSet.of()));
     }
 
-    public JImmutableTemplateSetMapProxy(JImmutableTemplateSetMap map)
+    public JImmutableTemplateSetMapProxy(TemplateSetMap map)
     {
         super(map);
     }
@@ -70,14 +70,14 @@ public class JImmutableTemplateSetMapProxy
     {
         IMap emptyMap = (IMap)in.readObject();
         ISet emptySet = (ISet)in.readObject();
-        return JImmutableTemplateSetMap.of(emptyMap, emptySet);
+        return TemplateSetMap.of(emptyMap, emptySet);
     }
 
     @Override
     protected void writeMap(ObjectOutput out)
         throws IOException
     {
-        JImmutableTemplateSetMap setMap = (JImmutableTemplateSetMap)map;
+        TemplateSetMap setMap = (TemplateSetMap)map;
         out.writeObject(setMap.getEmptyMap());
         out.writeObject(setMap.getEmptySet());
     }

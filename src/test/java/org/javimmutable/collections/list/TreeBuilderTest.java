@@ -57,7 +57,7 @@ public class TreeBuilderTest
             assertThat(second.size()).isEqualTo(before.size());
             AbstractNode<Integer> after = second.build();
             after.checkInvariants();
-            assertEquals(JImmutableTreeList.create(after), JImmutableTreeList.create(before));
+            assertEquals(TreeList.create(after), TreeList.create(before));
         }
     }
 }

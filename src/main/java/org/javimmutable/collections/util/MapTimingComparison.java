@@ -35,17 +35,15 @@
 
 package org.javimmutable.collections.util;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.array.JImmutableTrieArray;
+import org.javimmutable.collections.array.TrieArray;
 import org.javimmutable.collections.common.MutableDelta;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.inorder.OrderedMap;
+import org.javimmutable.collections.tree.TreeMap;
 
 public final class MapTimingComparison
 {
@@ -108,7 +106,7 @@ public final class MapTimingComparison
         int removes = 0;
         int gets = 0;
         long startMillis = System.currentTimeMillis();
-        Map<Integer, Integer> expected = new HashMap<>();
+        Map<Integer, Integer> expected = new java.util.HashMap<>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -138,7 +136,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        expected = new TreeMap<>();
+        expected = new java.util.TreeMap<>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -168,7 +166,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        IMap<Integer, Integer> map = JImmutableTreeMap.of();
+        IMap<Integer, Integer> map = TreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -198,7 +196,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        map = JImmutableHashMap.of();
+        map = HashMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -228,7 +226,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        map = JImmutableInsertOrderMap.of();
+        map = OrderedMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {
@@ -258,7 +256,7 @@ public final class MapTimingComparison
         removes = 0;
         gets = 0;
         startMillis = System.currentTimeMillis();
-        IArray<Integer> array = JImmutableTrieArray.of();
+        IArray<Integer> array = TrieArray.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 2) {

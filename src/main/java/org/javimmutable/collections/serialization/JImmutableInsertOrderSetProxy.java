@@ -35,19 +35,19 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
+import org.javimmutable.collections.inorder.OrderedSet;
 
 public class JImmutableInsertOrderSetProxy
-    extends AbstractJImmutableSetProxy
+    extends AbstractSetProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableInsertOrderSetProxy()
     {
-        super(JImmutableInsertOrderSet.of());
+        super(OrderedSet.of());
     }
 
-    public JImmutableInsertOrderSetProxy(JImmutableInsertOrderSet set)
+    public JImmutableInsertOrderSetProxy(OrderedSet set)
     {
         super(set);
     }

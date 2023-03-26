@@ -45,7 +45,7 @@ import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.TreeMap;
 
 public class FunctionsTest
     extends TestCase
@@ -129,8 +129,8 @@ public class FunctionsTest
     
     public void testAssignAll()
     {
-        final IMap<String, String> expected = JImmutableTreeMap.<String, String>of().assign("a", "A").assign("b", "B");
-        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected));
-        assertEquals(expected, Functions.assignAll(JImmutableTreeMap.of(), expected.getMap()));
+        final IMap<String, String> expected = TreeMap.<String, String>of().assign("a", "A").assign("b", "B");
+        assertEquals(expected, Functions.assignAll(TreeMap.of(), expected));
+        assertEquals(expected, Functions.assignAll(TreeMap.of(), expected.getMap()));
     }
 }

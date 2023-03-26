@@ -42,9 +42,9 @@ import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.listmap.JImmutableHashListMap;
-import org.javimmutable.collections.listmap.JImmutableInsertOrderListMap;
-import org.javimmutable.collections.listmap.JImmutableTreeListMap;
+import org.javimmutable.collections.listmap.HashListMap;
+import org.javimmutable.collections.listmap.OrderedListMap;
+import org.javimmutable.collections.listmap.TreeListMap;
 
 /**
  * Interface for maps that map keys to lists of values.
@@ -63,7 +63,7 @@ public interface IListMap<K, V>
     @Nonnull
     static <K, V> IListMap<K, V> listMap()
     {
-        return JImmutableHashListMap.of();
+        return HashListMap.of();
     }
 
     /**
@@ -72,7 +72,7 @@ public interface IListMap<K, V>
     @Nonnull
     static <K, V> IListMap<K, V> insertOrderListMap()
     {
-        return JImmutableInsertOrderListMap.of();
+        return OrderedListMap.of();
     }
 
     /**
@@ -81,7 +81,7 @@ public interface IListMap<K, V>
     @Nonnull
     static <K extends Comparable<K>, V> IListMap<K, V> sortedListMap()
     {
-        return JImmutableTreeListMap.of();
+        return TreeListMap.of();
     }
 
     /**
@@ -90,7 +90,7 @@ public interface IListMap<K, V>
     @Nonnull
     static <K, V> IListMap<K, V> sortedListMap(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeListMap.of(comparator);
+        return TreeListMap.of(comparator);
     }
 
     /**

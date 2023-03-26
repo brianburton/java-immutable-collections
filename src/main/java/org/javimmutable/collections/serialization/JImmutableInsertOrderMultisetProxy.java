@@ -35,23 +35,23 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
+import org.javimmutable.collections.inorder.OrderedMultiset;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableInsertOrderMultisetProxy
-    extends AbstractJImmutableMultisetProxy
+    extends AbstractMultisetProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableInsertOrderMultisetProxy()
     {
-        super(JImmutableInsertOrderMultiset.of());
+        super(OrderedMultiset.of());
     }
 
-    public JImmutableInsertOrderMultisetProxy(JImmutableInsertOrderMultiset set)
+    public JImmutableInsertOrderMultisetProxy(OrderedMultiset set)
     {
         super(set);
     }

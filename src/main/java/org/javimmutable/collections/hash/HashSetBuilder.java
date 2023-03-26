@@ -59,9 +59,9 @@ class HashSetBuilder<T>
     public synchronized ISet<T> build()
     {
         if (builder.size() == 0) {
-            return JImmutableHashSet.of();
+            return HashSet.of();
         } else {
-            return new JImmutableHashSet<>(builder.buildRoot(), collisionSet);
+            return new HashSet<>(builder.buildRoot(), collisionSet);
         }
     }
 
@@ -76,7 +76,7 @@ class HashSetBuilder<T>
     public synchronized ISetBuilder<T> add(T value)
     {
         if (builder.size() == 0) {
-            collisionSet = JImmutableHashSet.selectCollisionSetForValue(value);
+            collisionSet = HashSet.selectCollisionSetForValue(value);
         }
         builder.assign(this, value, value);
         return this;

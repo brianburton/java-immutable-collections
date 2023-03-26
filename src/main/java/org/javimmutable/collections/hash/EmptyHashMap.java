@@ -43,7 +43,7 @@ import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.AbstractJImmutableMap;
+import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
@@ -55,7 +55,7 @@ import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
  */
 @Immutable
 public class EmptyHashMap<K, V>
-    extends AbstractJImmutableMap<K, V>
+    extends AbstractMap<K, V>
     implements Serializable
 {
     @SuppressWarnings("rawtypes")
@@ -71,7 +71,7 @@ public class EmptyHashMap<K, V>
     @Override
     public IMapBuilder<K, V> mapBuilder()
     {
-        return JImmutableHashMap.builder();
+        return HashMap.builder();
     }
 
     @Nonnull
@@ -93,7 +93,7 @@ public class EmptyHashMap<K, V>
     public IMap<K, V> assign(@Nonnull K key,
                              V value)
     {
-        return JImmutableHashMap.<K, V>forKey(key).assign(key, value);
+        return HashMap.<K, V>forKey(key).assign(key, value);
     }
 
     @Nonnull

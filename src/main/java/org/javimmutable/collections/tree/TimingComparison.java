@@ -38,7 +38,6 @@ package org.javimmutable.collections.tree;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 
@@ -79,7 +78,7 @@ public final class TimingComparison
         int removes = 0;
         int gets = 0;
         long startMap = System.currentTimeMillis();
-        Map<Integer, Integer> expected = new TreeMap<>();
+        Map<Integer, Integer> expected = new java.util.TreeMap<>();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {
@@ -105,7 +104,7 @@ public final class TimingComparison
         removes = 0;
         gets = 0;
         long startPer = System.currentTimeMillis();
-        IMap<Integer, Integer> map = JImmutableTreeMap.of();
+        IMap<Integer, Integer> map = TreeMap.of();
 //        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);

@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.hash.JImmutableHashMultiset;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMultiset;
-import org.javimmutable.collections.tree.JImmutableTreeMultiset;
+import org.javimmutable.collections.hash.HashMultiset;
+import org.javimmutable.collections.inorder.OrderedMultiset;
+import org.javimmutable.collections.tree.TreeMultiset;
 
 public final class IMultisets
 {
@@ -26,7 +26,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> hashed()
     {
-        return JImmutableHashMultiset.of();
+        return HashMultiset.of();
     }
 
     /**
@@ -42,7 +42,7 @@ public final class IMultisets
     @SafeVarargs
     public static <T> IMultiset<T> hashed(T... source)
     {
-        return JImmutableHashMultiset.<T>of().insertAll(Arrays.asList(source));
+        return HashMultiset.<T>of().insertAll(Arrays.asList(source));
     }
 
     /**
@@ -57,7 +57,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> hashed(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableHashMultiset.<T>of().insertAll(source);
+        return HashMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -72,7 +72,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> hashed(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableHashMultiset.<T>of().insertAll(source);
+        return HashMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -81,7 +81,7 @@ public final class IMultisets
     @Nonnull
     public static <T extends Comparable<T>> IMultiset<T> sorted()
     {
-        return JImmutableTreeMultiset.of();
+        return TreeMultiset.of();
     }
 
     /**
@@ -92,7 +92,7 @@ public final class IMultisets
     @SafeVarargs
     public static <T extends Comparable<T>> IMultiset<T> sorted(T... source)
     {
-        return JImmutableTreeMultiset.<T>of().insertAll(Arrays.asList(source));
+        return TreeMultiset.<T>of().insertAll(Arrays.asList(source));
     }
 
     /**
@@ -102,7 +102,7 @@ public final class IMultisets
     @Nonnull
     public static <T extends Comparable<T>> IMultiset<T> sorted(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeMultiset.<T>of().insertAll(source);
+        return TreeMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -112,7 +112,7 @@ public final class IMultisets
     @Nonnull
     public static <T extends Comparable<T>> IMultiset<T> sorted(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeMultiset.<T>of().insertAll(source);
+        return TreeMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -125,7 +125,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> sorted(@Nonnull Comparator<T> comparator)
     {
-        return JImmutableTreeMultiset.of(comparator);
+        return TreeMultiset.of(comparator);
     }
 
     /**
@@ -140,7 +140,7 @@ public final class IMultisets
     public static <T> IMultiset<T> sorted(@Nonnull Comparator<T> comparator,
                                           T... source)
     {
-        return JImmutableTreeMultiset.of(comparator).insertAll(Arrays.asList(source));
+        return TreeMultiset.of(comparator).insertAll(Arrays.asList(source));
     }
 
     /**
@@ -154,7 +154,7 @@ public final class IMultisets
     public static <T> IMultiset<T> sorted(@Nonnull Comparator<T> comparator,
                                           @Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTreeMultiset.of(comparator).insertAll(source);
+        return TreeMultiset.of(comparator).insertAll(source);
     }
 
     /**
@@ -168,7 +168,7 @@ public final class IMultisets
     public static <T> IMultiset<T> sorted(@Nonnull Comparator<T> comparator,
                                           @Nonnull Iterator<? extends T> source)
     {
-        return JImmutableTreeMultiset.of(comparator).insertAll(source);
+        return TreeMultiset.of(comparator).insertAll(source);
     }
 
     /**
@@ -178,7 +178,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> ordered()
     {
-        return JImmutableInsertOrderMultiset.of();
+        return OrderedMultiset.of();
     }
 
     /**
@@ -189,7 +189,7 @@ public final class IMultisets
     @SafeVarargs
     public static <T> IMultiset<T> ordered(T... source)
     {
-        return JImmutableInsertOrderMultiset.<T>of().insertAll(Arrays.asList(source));
+        return OrderedMultiset.<T>of().insertAll(Arrays.asList(source));
     }
 
     /**
@@ -199,7 +199,7 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> ordered(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableInsertOrderMultiset.<T>of().insertAll(source);
+        return OrderedMultiset.<T>of().insertAll(source);
     }
 
     /**
@@ -209,6 +209,6 @@ public final class IMultisets
     @Nonnull
     public static <T> IMultiset<T> ordered(@Nonnull Iterator<? extends T> source)
     {
-        return JImmutableInsertOrderMultiset.<T>of().insertAll(source);
+        return OrderedMultiset.<T>of().insertAll(source);
     }
 }

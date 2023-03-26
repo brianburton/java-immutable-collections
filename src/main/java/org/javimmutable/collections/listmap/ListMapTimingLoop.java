@@ -54,7 +54,7 @@ public final class ListMapTimingLoop
         int removes = 0;
         int gets = 0;
         long startPer = System.currentTimeMillis();
-        IListMap<Integer, Integer> map = JImmutableHashListMap.of();
+        IListMap<Integer, Integer> map = HashListMap.of();
         for (int i = 1; i <= maxLoops; ++i) {
             int command = 1 + random.nextInt(12);
             if (command <= 6) {

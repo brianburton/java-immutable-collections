@@ -2,7 +2,7 @@ package org.javimmutable.collections;
 
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.array.JImmutableTrieArray;
+import org.javimmutable.collections.array.TrieArray;
 
 public final class IArrays
 {
@@ -17,7 +17,7 @@ public final class IArrays
     @Nonnull
     public static <T> IArray<T> of()
     {
-        return JImmutableTrieArray.of();
+        return TrieArray.of();
     }
 
     /**
@@ -29,7 +29,7 @@ public final class IArrays
     @SafeVarargs
     public static <T> IArray<T> of(T... source)
     {
-        return JImmutableTrieArray.<T>builder().add(source).build();
+        return TrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -41,7 +41,7 @@ public final class IArrays
     @Nonnull
     public static <T> IArray<T> allOf(@Nonnull Iterator<IMapEntry<Integer, T>> source)
     {
-        return JImmutableTrieArray.<T>of().insertAll(source);
+        return TrieArray.<T>of().insertAll(source);
     }
 
     /**
@@ -53,7 +53,7 @@ public final class IArrays
     @Nonnull
     public static <T> IArray<T> allOf(@Nonnull Indexed<? extends T> source)
     {
-        return JImmutableTrieArray.<T>builder().add(source).build();
+        return TrieArray.<T>builder().add(source).build();
     }
 
     /**
@@ -68,7 +68,7 @@ public final class IArrays
                                       int offset,
                                       int limit)
     {
-        return JImmutableTrieArray.<T>builder().add(source, offset, limit).build();
+        return TrieArray.<T>builder().add(source, offset, limit).build();
     }
 
     /**
@@ -80,6 +80,6 @@ public final class IArrays
     @Nonnull
     public static <T> IArray<T> allOf(@Nonnull Iterable<? extends T> source)
     {
-        return JImmutableTrieArray.<T>builder().add(source).build();
+        return TrieArray.<T>builder().add(source).build();
     }
 }

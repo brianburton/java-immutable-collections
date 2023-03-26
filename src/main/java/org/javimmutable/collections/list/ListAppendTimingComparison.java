@@ -60,7 +60,7 @@ public class ListAppendTimingComparison
     private static void runTest(Mode mode)
     {
         for (int loop = 1; loop <= 10_000; ++loop) {
-            IList<Integer> list = JImmutableTreeList.of();
+            IList<Integer> list = TreeList.of();
             List<Integer> extras = new ArrayList<>();
             for (int length = 1; length <= 250; ++length) {
                 extras.add(length);

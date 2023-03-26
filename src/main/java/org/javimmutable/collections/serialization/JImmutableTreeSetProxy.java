@@ -40,20 +40,20 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
 import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.tree.TreeSet;
 
 @SuppressWarnings("unchecked")
 public class JImmutableTreeSetProxy
-    extends AbstractJImmutableSetProxy
+    extends AbstractSetProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableTreeSetProxy()
     {
-        super(JImmutableTreeSet.of());
+        super(TreeSet.of());
     }
 
-    public JImmutableTreeSetProxy(JImmutableTreeSet set)
+    public JImmutableTreeSetProxy(TreeSet set)
     {
         super(set);
     }
@@ -63,14 +63,14 @@ public class JImmutableTreeSetProxy
         throws IOException, ClassNotFoundException
     {
         Comparator comparator = (Comparator)in.readObject();
-        return JImmutableTreeSet.of(comparator);
+        return TreeSet.of(comparator);
     }
 
     @Override
     protected void writeSet(ObjectOutput out)
         throws IOException
     {
-        JImmutableTreeSet treeSet = (JImmutableTreeSet)set;
+        TreeSet treeSet = (TreeSet)set;
         out.writeObject(treeSet.getComparator());
     }
 }

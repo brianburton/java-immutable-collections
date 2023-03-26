@@ -35,23 +35,23 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.setmap.JImmutableInsertOrderSetMap;
+import org.javimmutable.collections.setmap.OrderedSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings("unchecked")
 public class JImmutableInsertOrderSetMapProxy
-    extends AbstractJImmutableSetMapProxy
+    extends AbstractSetMapProxy
 {
     private static final long serialVersionUID = -121805;
 
     public JImmutableInsertOrderSetMapProxy()
     {
-        super(JImmutableInsertOrderSetMap.of());
+        super(OrderedSetMap.of());
     }
 
-    public JImmutableInsertOrderSetMapProxy(JImmutableInsertOrderSetMap map)
+    public JImmutableInsertOrderSetMapProxy(OrderedSetMap map)
     {
         super(map);
     }

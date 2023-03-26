@@ -3,10 +3,10 @@ package org.javimmutable.collections;
 import java.util.Comparator;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
+import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.util.Functions;
 
 public final class IMaps
@@ -27,7 +27,7 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> hashed()
     {
-        return JImmutableHashMap.of();
+        return HashMap.of();
     }
 
     /**
@@ -43,7 +43,7 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> hashed(@Nonnull Map<K, V> source)
     {
-        return JImmutableHashMap.<K, V>builder().add(source).build();
+        return HashMap.<K, V>builder().add(source).build();
     }
 
     /**
@@ -60,10 +60,10 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> hashed(@Nonnull IMap<K, V> source)
     {
-        if (source instanceof JImmutableHashMap) {
+        if (source instanceof HashMap) {
             return source;
         } else {
-            return JImmutableHashMap.<K, V>builder().add(source).build();
+            return HashMap.<K, V>builder().add(source).build();
         }
     }
 
@@ -73,7 +73,7 @@ public final class IMaps
     @Nonnull
     public static <K extends Comparable<K>, V> IMap<K, V> sorted()
     {
-        return JImmutableTreeMap.of();
+        return TreeMap.of();
     }
 
     /**
@@ -114,7 +114,7 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> sorted(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeMap.of(comparator);
+        return TreeMap.of(comparator);
     }
 
     /**
@@ -132,7 +132,7 @@ public final class IMaps
     public static <K, V> IMap<K, V> sorted(@Nonnull Comparator<K> comparator,
                                            @Nonnull Map<K, V> source)
     {
-        return JImmutableTreeMap.<K, V>builder(comparator).add(source).build();
+        return TreeMap.<K, V>builder(comparator).add(source).build();
     }
 
     /**
@@ -152,13 +152,13 @@ public final class IMaps
     public static <K, V> IMap<K, V> sorted(@Nonnull Comparator<K> comparator,
                                            @Nonnull IMap<K, V> source)
     {
-        if (source instanceof JImmutableTreeMap) {
-            final JImmutableTreeMap treemap = (JImmutableTreeMap)source;
+        if (source instanceof TreeMap) {
+            final TreeMap treemap = (TreeMap)source;
             if (treemap.getComparator().equals(comparator)) {
                 return source;
             }
         }
-        return JImmutableTreeMap.<K, V>builder(comparator).add(source).build();
+        return TreeMap.<K, V>builder(comparator).add(source).build();
     }
 
     /**
@@ -174,7 +174,7 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> ordered()
     {
-        return JImmutableInsertOrderMap.of();
+        return OrderedMap.of();
     }
 
     /**
@@ -191,7 +191,7 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> ordered(@Nonnull Map<K, V> source)
     {
-        return Functions.assignAll(JImmutableInsertOrderMap.of(), source);
+        return Functions.assignAll(OrderedMap.of(), source);
     }
 
     /**
@@ -211,10 +211,10 @@ public final class IMaps
     @Nonnull
     public static <K, V> IMap<K, V> ordered(@Nonnull IMap<K, V> source)
     {
-        if (source instanceof JImmutableInsertOrderMap) {
+        if (source instanceof OrderedMap) {
             return source;
         } else {
-            return Functions.assignAll(JImmutableInsertOrderMap.of(), source);
+            return Functions.assignAll(OrderedMap.of(), source);
         }
     }
 }

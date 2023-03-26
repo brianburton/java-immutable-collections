@@ -40,7 +40,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.IMap;
@@ -56,7 +55,7 @@ class TreeMapBuilder<K, V>
     TreeMapBuilder(@Nonnull Comparator<K> comparator)
     {
         this.comparator = comparator;
-        values = new TreeMap<>(comparator);
+        values = new java.util.TreeMap<>(comparator);
     }
 
     @Nonnull
@@ -64,11 +63,11 @@ class TreeMapBuilder<K, V>
     public synchronized IMap<K, V> build()
     {
         if (values.isEmpty()) {
-            return JImmutableTreeMap.of(comparator);
+            return TreeMap.of(comparator);
         } else {
             final List<Entry<K, V>> sorted = new ArrayList<>(values.entrySet());
             final AbstractNode<K, V> root = buildTree(sorted, 0, sorted.size());
-            return new JImmutableTreeMap<>(comparator, root);
+            return new TreeMap<>(comparator, root);
         }
     }
 

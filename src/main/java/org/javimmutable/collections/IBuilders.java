@@ -2,14 +2,14 @@ package org.javimmutable.collections;
 
 import java.util.Comparator;
 import javax.annotation.Nonnull;
-import org.javimmutable.collections.array.JImmutableTrieArray;
-import org.javimmutable.collections.hash.JImmutableHashMap;
-import org.javimmutable.collections.hash.JImmutableHashSet;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderMap;
-import org.javimmutable.collections.inorder.JImmutableInsertOrderSet;
-import org.javimmutable.collections.list.JImmutableTreeList;
-import org.javimmutable.collections.tree.JImmutableTreeMap;
-import org.javimmutable.collections.tree.JImmutableTreeSet;
+import org.javimmutable.collections.array.TrieArray;
+import org.javimmutable.collections.hash.HashMap;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.inorder.OrderedMap;
+import org.javimmutable.collections.inorder.OrderedSet;
+import org.javimmutable.collections.list.TreeList;
+import org.javimmutable.collections.tree.TreeMap;
+import org.javimmutable.collections.tree.TreeSet;
 
 public final class IBuilders
 {
@@ -25,7 +25,7 @@ public final class IBuilders
     @Nonnull
     public static <T> IArrayBuilder<T> array()
     {
-        return JImmutableTrieArray.builder();
+        return TrieArray.builder();
     }
 
     /**
@@ -34,7 +34,7 @@ public final class IBuilders
     @Nonnull
     public static <T> IListBuilder<T> list()
     {
-        return JImmutableTreeList.listBuilder();
+        return TreeList.listBuilder();
     }
 
     /**
@@ -49,7 +49,7 @@ public final class IBuilders
     @Nonnull
     public static <K, V> IMapBuilder<K, V> map()
     {
-        return JImmutableHashMap.builder();
+        return HashMap.builder();
     }
 
     /**
@@ -58,7 +58,7 @@ public final class IBuilders
     @Nonnull
     public static <K extends Comparable<K>, V> IMapBuilder<K, V> sortedMap()
     {
-        return JImmutableTreeMap.builder();
+        return TreeMap.builder();
     }
 
     /**
@@ -67,7 +67,7 @@ public final class IBuilders
     @Nonnull
     public static <K, V> IMapBuilder<K, V> sortedMap(@Nonnull Comparator<K> comparator)
     {
-        return JImmutableTreeMap.builder(comparator);
+        return TreeMap.builder(comparator);
     }
 
     /**
@@ -77,7 +77,7 @@ public final class IBuilders
     @Nonnull
     public static <K, V> IMapBuilder<K, V> orderedMap()
     {
-        return JImmutableInsertOrderMap.builder();
+        return OrderedMap.builder();
     }
 
     /**
@@ -92,7 +92,7 @@ public final class IBuilders
     @Nonnull
     public static <T> ISetBuilder<T> set()
     {
-        return JImmutableHashSet.builder();
+        return HashSet.builder();
     }
 
     /**
@@ -102,7 +102,7 @@ public final class IBuilders
     @Nonnull
     public static <T extends Comparable<T>> ISetBuilder<T> sortedSet()
     {
-        return JImmutableTreeSet.builder();
+        return TreeSet.builder();
     }
 
     /**
@@ -111,7 +111,7 @@ public final class IBuilders
     @Nonnull
     public static <T> ISetBuilder<T> sortedSet(@Nonnull Comparator<T> comparator)
     {
-        return JImmutableTreeSet.builder(comparator);
+        return TreeSet.builder(comparator);
     }
 
     /**
@@ -127,6 +127,6 @@ public final class IBuilders
     @Nonnull
     public static <T> ISetBuilder<T> orderedSet()
     {
-        return JImmutableInsertOrderSet.builder();
+        return OrderedSet.builder();
     }
 }
