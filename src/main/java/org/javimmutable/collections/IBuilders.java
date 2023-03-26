@@ -23,7 +23,7 @@ public final class IBuilders
      * assigned consecutive indices starting with zero.
      */
     @Nonnull
-    public static <T> IArray.Builder<T> array()
+    public static <T> IArrayBuilder<T> array()
     {
         return JImmutableTrieArray.builder();
     }
@@ -32,7 +32,7 @@ public final class IBuilders
      * Produces a Builder for efficiently constructing a JImmutableList built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IList.Builder<T> list()
+    public static <T> IListBuilder<T> list()
     {
         return JImmutableTreeList.listBuilder();
     }
@@ -47,7 +47,7 @@ public final class IBuilders
      * always safest to use homogeneous keys in any map.
      */
     @Nonnull
-    public static <K, V> IMap.Builder<K, V> map()
+    public static <K, V> IMapBuilder<K, V> map()
     {
         return JImmutableHashMap.builder();
     }
@@ -56,7 +56,7 @@ public final class IBuilders
      * Create a Builder to construct sorted maps using the natural order of the keys.
      */
     @Nonnull
-    public static <K extends Comparable<K>, V> IMap.Builder<K, V> sortedMap()
+    public static <K extends Comparable<K>, V> IMapBuilder<K, V> sortedMap()
     {
         return JImmutableTreeMap.builder();
     }
@@ -65,7 +65,7 @@ public final class IBuilders
      * Create a Builder to construct sorted maps using the specified Comparator for keys.
      */
     @Nonnull
-    public static <K, V> IMap.Builder<K, V> sortedMap(@Nonnull Comparator<K> comparator)
+    public static <K, V> IMapBuilder<K, V> sortedMap(@Nonnull Comparator<K> comparator)
     {
         return JImmutableTreeMap.builder(comparator);
     }
@@ -75,7 +75,7 @@ public final class IBuilders
      * added to the map.
      */
     @Nonnull
-    public static <K, V> IMap.Builder<K, V> orderedMap()
+    public static <K, V> IMapBuilder<K, V> orderedMap()
     {
         return JImmutableInsertOrderMap.builder();
     }
@@ -90,7 +90,7 @@ public final class IBuilders
      * always safest to use homogeneous values in any set.
      */
     @Nonnull
-    public static <T> ISet.Builder<T> set()
+    public static <T> ISetBuilder<T> set()
     {
         return JImmutableHashSet.builder();
     }
@@ -100,7 +100,7 @@ public final class IBuilders
      * sort order (using ComparableComparator).
      */
     @Nonnull
-    public static <T extends Comparable<T>> ISet.Builder<T> sortedSet()
+    public static <T extends Comparable<T>> ISetBuilder<T> sortedSet()
     {
         return JImmutableTreeSet.builder();
     }
@@ -109,7 +109,7 @@ public final class IBuilders
      * Constructs a Builder object to produce sets that sort values using specified Comparator.
      */
     @Nonnull
-    public static <T> ISet.Builder<T> sortedSet(@Nonnull Comparator<T> comparator)
+    public static <T> ISetBuilder<T> sortedSet(@Nonnull Comparator<T> comparator)
     {
         return JImmutableTreeSet.builder(comparator);
     }
@@ -125,7 +125,7 @@ public final class IBuilders
      * always safest to use homogeneous values in any set.
      */
     @Nonnull
-    public static <T> ISet.Builder<T> orderedSet()
+    public static <T> ISetBuilder<T> orderedSet()
     {
         return JImmutableInsertOrderSet.builder();
     }

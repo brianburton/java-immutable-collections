@@ -48,6 +48,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMaps;
@@ -94,7 +95,7 @@ public class JImmutableMapStressTester<K extends KeyWrapper<String>>
     public IList<String> getOptions()
     {
         final String option = getNameOption(map);
-        final IList.Builder<String> options = IBuilders.list();
+        final IListBuilder<String> options = IBuilders.list();
         options.add("map");
         options.add(option);
         if (map instanceof JImmutableHashMap) {

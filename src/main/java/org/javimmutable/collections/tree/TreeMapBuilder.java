@@ -44,10 +44,11 @@ import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 
 @ThreadSafe
 class TreeMapBuilder<K, V>
-    implements IMap.Builder<K, V>
+    implements IMapBuilder<K, V>
 {
     private final Comparator<K> comparator;
     private final Map<K, V> values;
@@ -73,7 +74,7 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized IMap.Builder<K, V> clear()
+    public synchronized IMapBuilder<K, V> clear()
     {
         values.clear();
         return this;
@@ -81,8 +82,8 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized IMap.Builder<K, V> add(@Nonnull K key,
-                                               V value)
+    public synchronized IMapBuilder<K, V> add(@Nonnull K key,
+                                              V value)
     {
         values.put(key, value);
         return this;

@@ -38,15 +38,17 @@ package org.javimmutable.collections.common;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetBuilder;
 
 public class GenericSetBuilder<T>
-    implements ISet.Builder<T>
+    implements ISetBuilder<T>
 {
-    private final IMap.Builder<T, Boolean> mapBuilder;
+    private final IMapBuilder<T, Boolean> mapBuilder;
     private final Func1<IMap<T, Boolean>, ISet<T>> setFactory;
 
-    public GenericSetBuilder(IMap.Builder<T, Boolean> mapBuilder,
+    public GenericSetBuilder(IMapBuilder<T, Boolean> mapBuilder,
                              Func1<IMap<T, Boolean>, ISet<T>> setFactory)
     {
         this.mapBuilder = mapBuilder;
@@ -62,7 +64,7 @@ public class GenericSetBuilder<T>
 
     @Nonnull
     @Override
-    public ISet.Builder<T> clear()
+    public ISetBuilder<T> clear()
     {
         mapBuilder.clear();
         return this;
@@ -76,7 +78,7 @@ public class GenericSetBuilder<T>
 
     @Nonnull
     @Override
-    public ISet.Builder<T> add(T value)
+    public ISetBuilder<T> add(T value)
     {
         mapBuilder.add(value, Boolean.TRUE);
         return this;

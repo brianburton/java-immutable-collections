@@ -45,6 +45,7 @@ import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
@@ -90,20 +91,20 @@ public class JImmutableTreeMap<K, V>
     }
 
     @Nonnull
-    public static <K extends Comparable<K>, V> IMap.Builder<K, V> builder()
+    public static <K extends Comparable<K>, V> IMapBuilder<K, V> builder()
     {
         return new TreeMapBuilder<>(ComparableComparator.<K>of());
     }
 
     @Nonnull
-    public static <K, V> IMap.Builder<K, V> builder(@Nonnull Comparator<K> comparator)
+    public static <K, V> IMapBuilder<K, V> builder(@Nonnull Comparator<K> comparator)
     {
         return new TreeMapBuilder<>(comparator);
     }
 
     @Nonnull
     @Override
-    public Builder<K, V> mapBuilder()
+    public IMapBuilder<K, V> mapBuilder()
     {
         return new TreeMapBuilder<>(comparator);
     }
@@ -117,11 +118,11 @@ public class JImmutableTreeMap<K, V>
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector(@Nonnull Comparator<K> comparator)
     {
-        return Collector.<IMapEntry<K, V>, Builder<K, V>, IMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
-                                                                        (b, v) -> b.add(v),
-                                                                        (b1, b2) -> b1.add(b2),
-                                                                        b -> b.build(),
-                                                                        Collector.Characteristics.CONCURRENT);
+        return Collector.<IMapEntry<K, V>, IMapBuilder<K, V>, IMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
+                                                                            (b, v) -> b.add(v),
+                                                                            (b1, b2) -> b1.add(b2),
+                                                                            b -> b.build(),
+                                                                            Collector.Characteristics.CONCURRENT);
     }
 
     @Override

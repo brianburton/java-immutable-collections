@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
 import org.javimmutable.collections.array.JImmutableTrieArray;
 
 /**
@@ -85,7 +86,7 @@ public class JImmutableArrayProxy
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
         final int size = in.readInt();
-        final IArray.Builder builder = list.toBuilder();
+        final IArrayBuilder builder = list.toBuilder();
         for (int i = 0; i < size; ++i) {
             final int index = in.readInt();
             final Object value = in.readObject();

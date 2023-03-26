@@ -53,6 +53,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -524,7 +525,7 @@ public class JImmutableTreeList<T>
 
     @ThreadSafe
     public static class ListBuilder<T>
-        implements IList.Builder<T>
+        implements IListBuilder<T>
     {
         private final TreeBuilder<T> builder = new TreeBuilder<>();
 

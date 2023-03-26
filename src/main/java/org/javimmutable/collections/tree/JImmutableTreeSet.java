@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
@@ -92,13 +93,13 @@ public class JImmutableTreeSet<T>
         return new JImmutableTreeSet<>(comparator);
     }
 
-    public static <T extends Comparable<T>> ISet.Builder<T> builder()
+    public static <T extends Comparable<T>> ISetBuilder<T> builder()
     {
         return builder(ComparableComparator.<T>of());
     }
 
     @Nonnull
-    public static <T> ISet.Builder<T> builder(Comparator<T> comparator)
+    public static <T> ISetBuilder<T> builder(Comparator<T> comparator)
     {
         return new GenericSetBuilder<>(JImmutableTreeMap.builder(comparator), map -> map.isEmpty() ? of(comparator) : new JImmutableTreeSet<>(map, comparator));
     }

@@ -45,6 +45,7 @@ import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IterableStreamable;
 import org.javimmutable.collections.SplitableIterator;
@@ -93,9 +94,9 @@ public class JImmutableInsertOrderMap<K, V>
     }
 
     @Nonnull
-    public static <K, V> Builder<K, V> builder()
+    public static <K, V> IMapBuilder<K, V> builder()
     {
-        return new Builder<K, V>()
+        return new IMapBuilder<K, V>()
         {
             private JImmutableInsertOrderMap<K, V> map = of();
 
@@ -108,7 +109,7 @@ public class JImmutableInsertOrderMap<K, V>
 
             @Nonnull
             @Override
-            public synchronized Builder<K, V> clear()
+            public synchronized IMapBuilder<K, V> clear()
             {
                 map = of();
                 return this;
@@ -116,8 +117,8 @@ public class JImmutableInsertOrderMap<K, V>
 
             @Nonnull
             @Override
-            public synchronized Builder<K, V> add(@Nonnull K key,
-                                                  V value)
+            public synchronized IMapBuilder<K, V> add(@Nonnull K key,
+                                                      V value)
             {
                 map = map.assign(key, value);
                 return this;
@@ -133,7 +134,7 @@ public class JImmutableInsertOrderMap<K, V>
 
     @Nonnull
     @Override
-    public Builder<K, V> mapBuilder()
+    public IMapBuilder<K, V> mapBuilder()
     {
         return builder();
     }

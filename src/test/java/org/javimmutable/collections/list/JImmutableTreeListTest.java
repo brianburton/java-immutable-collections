@@ -56,6 +56,7 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardJImmutableListTests;
@@ -778,7 +779,7 @@ public class JImmutableTreeListTest
     public void testIndexedBuild()
     {
         List<Integer> values = new ArrayList<>();
-        IList.Builder<Integer> builder = JImmutableTreeList.listBuilder();
+        IListBuilder<Integer> builder = JImmutableTreeList.listBuilder();
         for (int i = 1; i <= 4096; ++i) {
             values.add(i);
             builder.add(i);
@@ -1361,7 +1362,7 @@ public class JImmutableTreeListTest
     private IList<Integer> rangeList(int first,
                                      int last)
     {
-        IList.Builder<Integer> builder = JImmutableTreeList.listBuilder();
+        IListBuilder<Integer> builder = JImmutableTreeList.listBuilder();
         for (int i = first; i <= last; ++i) {
             builder.add(i);
         }

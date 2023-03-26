@@ -37,15 +37,16 @@ package org.javimmutable.collections.list;
 
 import java.util.Iterator;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.StandardBuilderTests;
 
 public class BuilderTestAdapter<T>
     implements StandardBuilderTests.BuilderAdapter<T, IList<T>>
 {
-    private final IList.Builder<T> builder;
+    private final IListBuilder<T> builder;
 
-    public BuilderTestAdapter(IList.Builder<T> builder)
+    public BuilderTestAdapter(IListBuilder<T> builder)
     {
         this.builder = builder;
     }

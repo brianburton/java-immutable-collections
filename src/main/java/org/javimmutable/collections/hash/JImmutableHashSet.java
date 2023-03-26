@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import static org.javimmutable.collections.MapEntry.entry;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +45,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.array.ArrayAssignMapper;
@@ -107,7 +106,7 @@ public class JImmutableHashSet<T>
     }
 
     @Nonnull
-    public static <T> ISet.Builder<T> builder()
+    public static <T> ISetBuilder<T> builder()
     {
         return new HashSetBuilder<>();
     }

@@ -45,6 +45,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
@@ -82,7 +83,7 @@ public class JImmutableTrieArray<T>
     }
 
     @Nonnull
-    public static <T> IArray.Builder<T> builder()
+    public static <T> IArrayBuilder<T> builder()
     {
         return new Builder<>();
     }
@@ -285,7 +286,7 @@ public class JImmutableTrieArray<T>
 
     @Nonnull
     @Override
-    public IArray.Builder<T> toBuilder()
+    public IArrayBuilder<T> toBuilder()
     {
         return new Builder<>();
     }
@@ -297,7 +298,7 @@ public class JImmutableTrieArray<T>
 
     @ThreadSafe
     public static class Builder<T>
-        implements IArray.Builder<T>
+        implements IArrayBuilder<T>
     {
         private final TrieArrayBuilder<T> builder;
 
@@ -314,7 +315,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized IArray.Builder<T> clear()
+        public synchronized IArrayBuilder<T> clear()
         {
             builder.reset();
             return this;
@@ -322,7 +323,7 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized IArray.Builder<T> add(T value)
+        public synchronized IArrayBuilder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -330,15 +331,15 @@ public class JImmutableTrieArray<T>
 
         @Nonnull
         @Override
-        public synchronized IArray.Builder<T> put(int index,
-                                                  T value)
+        public synchronized IArrayBuilder<T> put(int index,
+                                                 T value)
         {
             builder.put(index, value);
             return this;
         }
 
         @Override
-        public synchronized IArray.Builder<T> setNextIndex(int index)
+        public synchronized IArrayBuilder<T> setNextIndex(int index)
         {
             builder.setNextIndex(index);
             return this;

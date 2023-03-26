@@ -40,6 +40,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractJImmutableMap;
@@ -68,7 +69,7 @@ public class EmptyHashMap<K, V>
 
     @Nonnull
     @Override
-    public Builder<K, V> mapBuilder()
+    public IMapBuilder<K, V> mapBuilder()
     {
         return JImmutableHashMap.builder();
     }

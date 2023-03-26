@@ -50,6 +50,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
@@ -325,7 +326,7 @@ public class JImmutableInsertOrderMapTest
     {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 100; ++i) {
-            IMap.Builder<Integer, Integer> builder = JImmutableInsertOrderMap.builder();
+            IMapBuilder<Integer, Integer> builder = JImmutableInsertOrderMap.builder();
             IMap<Integer, Integer> expected = JImmutableInsertOrderMap.of();
             final int size = 1 + r.nextInt(2000);
             for (int k = 1; k <= size; ++k) {

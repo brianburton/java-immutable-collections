@@ -37,14 +37,15 @@ package org.javimmutable.collections.common;
 
 import java.util.Iterator;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.Indexed;
 
 public class SetBuilderTestAdapter<T>
     implements StandardBuilderTests.BuilderAdapter<T, ISet<T>>
 {
-    private final ISet.Builder<T> builder;
+    private final ISetBuilder<T> builder;
 
-    public SetBuilderTestAdapter(ISet.Builder<T> builder)
+    public SetBuilderTestAdapter(ISetBuilder<T> builder)
     {
         this.builder = builder;
     }

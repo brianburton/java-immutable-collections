@@ -38,7 +38,7 @@ package org.javimmutable.collections.util;
 import java.io.IOException;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IBuilders;
-import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.ILists;
 
 public class SplitableIterableTest
@@ -46,14 +46,14 @@ public class SplitableIterableTest
 {
     public void testIndexedForEach()
     {
-        IList.Builder<Integer> collected = IBuilders.list();
+        IListBuilder<Integer> collected = IBuilders.list();
         ILists.of(1, 2, 3).indexedForEach((i, v) -> collected.add(i).add(v));
         assertEquals(ILists.of(0, 1, 1, 2, 2, 3), collected.build());
     }
 
     public void testIndexedForEachThrows()
     {
-        IList.Builder<Integer> collected = IBuilders.list();
+        IListBuilder<Integer> collected = IBuilders.list();
         try {
             ILists.of(1, 2, 3).indexedForEachThrows((i, v) -> {
                 if (i == 2) {

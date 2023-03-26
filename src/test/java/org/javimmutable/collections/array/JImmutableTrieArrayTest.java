@@ -55,6 +55,7 @@ import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.MapEntry;
@@ -388,7 +389,7 @@ public class JImmutableTrieArrayTest
         assertSame(JImmutableTrieArray.of(), JImmutableTrieArray.builder().build());
 
         final List<Integer> expected = new ArrayList<>();
-        final IArray.Builder<Integer> builder = JImmutableTrieArray.builder();
+        final IArrayBuilder<Integer> builder = JImmutableTrieArray.builder();
         IArray<Integer> array;
         IArray<Integer> manual = JImmutableTrieArray.of();
         for (int length = 1; length <= 1024; ++length) {
@@ -416,7 +417,7 @@ public class JImmutableTrieArrayTest
         array = builder.build();
         assertEquals(manual, array);
 
-        Func0<IArray.Builder<Integer>> factory = () -> JImmutableTrieArray.builder();
+        Func0<IArrayBuilder<Integer>> factory = () -> JImmutableTrieArray.builder();
 
         Func2<List<Integer>, IArray<Integer>, Boolean> comparator = (list, tree) -> {
             for (int i = 0; i < list.size(); ++i) {
@@ -455,9 +456,9 @@ public class JImmutableTrieArrayTest
     private static class BuilderTestAdapter<T>
         implements StandardBuilderTests.BuilderAdapter<T, IArray<T>>
     {
-        private final IArray.Builder<T> builder;
+        private final IArrayBuilder<T> builder;
 
-        public BuilderTestAdapter(IArray.Builder<T> builder)
+        public BuilderTestAdapter(IArrayBuilder<T> builder)
         {
             this.builder = builder;
         }

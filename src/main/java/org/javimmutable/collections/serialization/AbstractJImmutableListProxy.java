@@ -41,6 +41,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.function.Supplier;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractJImmutableListProxy
@@ -49,10 +50,10 @@ abstract class AbstractJImmutableListProxy
     private static final int LIST_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
-    protected final Supplier<IList.Builder> builderFactory;
+    protected final Supplier<IListBuilder> builderFactory;
     protected IList list;
 
-    protected AbstractJImmutableListProxy(Supplier<IList.Builder> builderFactory,
+    protected AbstractJImmutableListProxy(Supplier<IListBuilder> builderFactory,
                                           IList list)
     {
         this.builderFactory = builderFactory;
@@ -78,7 +79,7 @@ abstract class AbstractJImmutableListProxy
         if (version != LIST_VERSION) {
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
         }
-        final IList.Builder builder = builderFactory.get();
+        final IListBuilder builder = builderFactory.get();
         final int size = in.readInt();
         for (int i = 0; i < size; ++i) {
             builder.add(in.readObject());

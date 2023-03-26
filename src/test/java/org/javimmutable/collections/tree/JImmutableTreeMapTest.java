@@ -56,6 +56,7 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
@@ -386,7 +387,7 @@ public class JImmutableTreeMapTest
     {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 1000; ++i) {
-            IMap.Builder<Integer, Integer> builder = JImmutableTreeMap.builder();
+            IMapBuilder<Integer, Integer> builder = JImmutableTreeMap.builder();
             IMap<Integer, Integer> expected = JImmutableTreeMap.of();
             final int size = 1 + r.nextInt(4000);
             for (int k = 1; k <= size; ++k) {

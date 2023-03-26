@@ -44,6 +44,7 @@ import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.common.AbstractJImmutableSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
@@ -75,7 +76,7 @@ public class JImmutableInsertOrderSet<T>
     }
 
     @Nonnull
-    public static <T> ISet.Builder<T> builder()
+    public static <T> ISetBuilder<T> builder()
     {
         return new GenericSetBuilder<>(JImmutableInsertOrderMap.builder(), map -> map.isEmpty() ? of() : new JImmutableInsertOrderSet<>(map));
     }
