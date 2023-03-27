@@ -195,7 +195,7 @@ public final class StandardBuilderTests
         verifyThreadSafety(expected, ComparableComparator.of(), builderFactory, transform);
     }
 
-    public static <C extends IList<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
+    public static <C extends Iterable<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
         throws InterruptedException
     {
         verifyThreadSafety(builderFactory, list -> list);

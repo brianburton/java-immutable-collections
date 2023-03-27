@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 
@@ -90,5 +93,14 @@ public class IteratorHelper
     public static <T> Iterable<T> plainIterable(Iterable<T> values)
     {
         return () -> values.iterator();
+    }
+
+    public static <T> Iterator<T> reverse(Iterator<? extends T> values)
+    {
+        List<T> prefix = new ArrayList<>();
+        while (values.hasNext()) {
+            prefix.add(values.next());
+        }
+        return IndexedIterator.reverse(prefix);
     }
 }

@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.List;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
@@ -43,6 +44,7 @@ import org.javimmutable.collections.indexed.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
+import org.javimmutable.collections.indexed.IndexedList;
 
 public final class IndexedIterator
 {
@@ -68,6 +70,11 @@ public final class IndexedIterator
     public static <T> SplitableIterator<T> reverse(@Nonnull Indexed<T> values)
     {
         return new Reverse<>(values, values.size(), 0);
+    }
+
+    public static <T> SplitableIterator<T> reverse(@Nonnull List<T> values)
+    {
+        return new Reverse<>(IndexedList.retained(values), values.size(), 0);
     }
 
     public static <T> SplitableIterable<T> rev(@Nonnull Indexed<T> values)
