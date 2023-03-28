@@ -52,8 +52,9 @@ public class ICollectorsTest
         final List<Integer> source = IntStream.rangeClosed(1, 1200).boxed().collect(Collectors.toList());
         final Comparator<Integer> comparator = ComparableComparator.of();
         Collections.shuffle(source);
-        verifyCollection(source, values -> ILists.allOf(values), () -> ICollectors.toList());
         verifyCollection(source, values -> IArrays.allOf(values), () -> ICollectors.toArray());
+        verifyCollection(source, values -> IDeques.allOf(values), () -> ICollectors.toDeque());
+        verifyCollection(source, values -> ILists.allOf(values), () -> ICollectors.toList());
         verifyCollection(source, values -> ISets.hashed(values), () -> ICollectors.toSet());
         verifyCollection(source, values -> ISets.sorted(values), () -> ICollectors.toSortedSet());
         verifyCollection(source, values -> ISets.sorted(comparator, values), () -> ICollectors.toSortedSet(comparator));

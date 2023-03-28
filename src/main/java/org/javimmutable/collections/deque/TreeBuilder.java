@@ -148,15 +148,6 @@ class TreeBuilder<T>
             remaining = 32;
         }
 
-        void clear()
-        {
-            Arrays.fill(values, null);
-            next = null;
-            offset = forwardOrder ? 0 : 32;
-            remaining = 32;
-            size = 0;
-        }
-
         private LeafBuilder(boolean forwardOrder,
                             @Nonnull Indexed<Node<T>> startNodes)
         {
@@ -165,6 +156,15 @@ class TreeBuilder<T>
             for (Node<T> node : IndexedIterator.fwd(startNodes)) {
                 size += node.size();
             }
+        }
+
+        void clear()
+        {
+            Arrays.fill(values, null);
+            next = null;
+            offset = forwardOrder ? 0 : 32;
+            remaining = 32;
+            size = 0;
         }
 
         private void add(T value)
