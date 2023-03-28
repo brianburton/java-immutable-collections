@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.array.TrieArray;
+import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.list.TreeList;
@@ -23,6 +24,15 @@ public final class ICollectors
     public static <T> Collector<T, ?, IArray<T>> toArray()
     {
         return TrieArray.collector();
+    }
+
+    /**
+     * Collects values into a IDeque.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, IDeque<T>> toDeque()
+    {
+        return ArrayDeque.collector();
     }
 
     /**

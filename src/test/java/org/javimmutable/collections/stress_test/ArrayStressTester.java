@@ -87,7 +87,7 @@ public class ArrayStressTester
         IArray<String> array = this.array;
         IList<Integer> indexList = ILists.of();
 
-        System.out.printf("JImmutableArrayStressTest on %s of size %d%n", getName(array), size);
+        System.out.printf("ArrayStressTest on %s of size %d%n", getName(array), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d to %s%n", array.size(), step.growthSize());
             while (expected.size() < step.growthSize()) {
@@ -231,7 +231,7 @@ public class ArrayStressTester
             throw new RuntimeException(String.format("expected array to be empty but it contained %d keys%n", array.size()));
         }
         verifyContents(array, expected);
-        System.out.printf("JImmutableArrayStressTest on %s completed without errors%n", getName(array));
+        System.out.printf("ArrayStressTest on %s completed without errors%n", getName(array));
     }
 
     public void verifyContents(IArray<String> array,

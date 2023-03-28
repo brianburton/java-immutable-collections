@@ -96,7 +96,7 @@ public class ListMapStressTester
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
         IListMap<String, String> listmap = this.listmap;
         final int size = 1 + random.nextInt(100000);
-        System.out.printf("JImmutableListMapStressTest on %s of size %d%n", getName(listmap), size);
+        System.out.printf("ListMapStressTest on %s of size %d%n", getName(listmap), size);
 
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", listmap.size());
@@ -228,7 +228,7 @@ public class ListMapStressTester
             throw new RuntimeException(String.format("expected listmap to be empty but it contained %d keys%n", listmap.size()));
         }
         verifyContents(listmap, expected);
-        System.out.printf("JImmutableListMapStressTest on %s completed without errors%n", getName(listmap));
+        System.out.printf("ListMapStressTest on %s completed without errors%n", getName(listmap));
     }
 
     private void verifyContents(final IListMap<String, String> listmap,

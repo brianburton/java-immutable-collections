@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.stress_test;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
 
 import java.util.ArrayList;
@@ -46,8 +47,10 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 /**
  * Test program for all implementations of JImmutableList.
@@ -58,7 +61,8 @@ import org.javimmutable.collections.indexed.IndexedList;
  */
 @SuppressWarnings("Duplicates")
 public class ListStressTester
-    extends AbstractListStressTestable
+    extends
+    StressTester
 {
     private final Collector<String, ?, ? extends IList<String>> collector;
 
@@ -85,7 +89,7 @@ public class ListStressTester
         IList<String> list = this.list;
         List<String> expected = new ArrayList<>();
         int size = 1 + random.nextInt(100000);
-        System.out.printf("JImmutableListStressTest on %s of size %d%n", getName(list), size);
+        System.out.printf("ListStressTest on %s of size %d%n", getName(list), size);
 
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             assert expected.size() == list.size();
@@ -366,6 +370,40 @@ public class ListStressTester
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", list.size()));
         }
         verifyContents(list, expected);
-        System.out.printf("JImmutableListStressTest on %s completed without errors%n", getName(list));
+        System.out.printf("ListStressTest on %s completed without errors%n", getName(list));
+    }
+
+    protected void verifyContents(IList<String> list,
+                                  List<String> expected)
+    {
+        System.out.printf("checking contents with size %d%n", list.size());
+        if (list.isEmpty() != expected.isEmpty()) {
+            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), list.isEmpty()));
+        }
+        if (list.size() != expected.size()) {
+            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), list.size()));
+        }
+
+        int index = 0;
+        for (String expectedValue : expected) {
+            String listValue = list.get(index);
+            if (!expectedValue.equals(listValue)) {
+                throw new RuntimeException(String.format("value mismatch - expected %s found %s%n", expectedValue, listValue));
+            }
+            index += 1;
+        }
+        if (!expected.equals(list.getList())) {
+            throw new RuntimeException("method call failed - getList()\n");
+        }
+        list.checkInvariants();
+        verifySerializable(null, list, IList.class);
+    }
+
+    protected void verifyIterator(IList<String> list,
+                                  List<String> expected)
+    {
+        System.out.printf("checking cursor with size %d%n", list.size());
+        StandardIteratorTests.listIteratorTest(expected, list.iterator());
+        StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
     }
 }

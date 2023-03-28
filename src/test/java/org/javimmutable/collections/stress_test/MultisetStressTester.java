@@ -105,7 +105,7 @@ public class MultisetStressTester
         Multiset<String> expected = getEmptyMultiset();
         List<String> multiList = new ArrayList<>();
         final int size = 1 + random.nextInt(100000);
-        System.out.printf("JImmutableMultisetStressTest on %s of size %d%n", getName(multi), size);
+        System.out.printf("MultisetStressTest on %s of size %d%n", getName(multi), size);
 
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d%n", multi.occurrenceCount());
@@ -385,7 +385,7 @@ public class MultisetStressTester
             throw new RuntimeException(String.format("expected multiset to be empty but it contained %d keys%n", multi.size()));
         }
         verifyContents(multi, expected);
-        System.out.printf("JImmutableMultisetStressTest on %s completed without errors%n", getName(multi));
+        System.out.printf("MultisetStressTest on %s completed without errors%n", getName(multi));
     }
 
     private IMultiset<String> shrinkingCaseTwo(int toRemove,

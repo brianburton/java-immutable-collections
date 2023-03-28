@@ -136,7 +136,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
         List<K> keysList = new ArrayList<>();
         IMap<K, String> map = this.map;
         final int size = 1 + random.nextInt(100000);
-        System.out.printf("JImmutableMapStressTest on %s of size %d%n", getName(map, factory), size);
+        System.out.printf("MapStressTest on %s of size %d%n", getName(map, factory), size);
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing %d%n", map.size());
             while (expected.size() < step.growthSize()) {
@@ -312,7 +312,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
             throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
         }
         verifyContents(map, expected);
-        System.out.printf("JImmutableMapStressTest on %s completed without errors%n", getName(map, factory));
+        System.out.printf("MapStressTest on %s completed without errors%n", getName(map, factory));
     }
 
     private void verifyContents(final IMap<K, String> map,

@@ -196,6 +196,13 @@ public interface IDeque<T>
     List<T> getList();
 
     /**
+     * Returns a list containing the same elements as this list but with their order reversed
+     * so that first in this list is last in returned list etc.
+     */
+    @Nonnull
+    IDeque<T> reverse();
+
+    /**
      * Returns a list of the same type as this containing only those elements for which
      * predicate returns true.  Implementations are optimized assuming predicate will
      * return false more often than true.

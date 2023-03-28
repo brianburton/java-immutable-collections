@@ -98,7 +98,7 @@ public class SetMapStressTester
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
         ISetMap<String, String> setmap = this.setmap;
         final int size = 1 + random.nextInt(100000);
-        System.out.printf("JImmutableSetMapStressTest on %s of size %d%n", getName(setmap), size);
+        System.out.printf("SetMapStressTest on %s of size %d%n", getName(setmap), size);
 
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             System.out.printf("growing keys %d%n", setmap.size());
@@ -398,7 +398,7 @@ public class SetMapStressTester
             throw new RuntimeException(String.format("expected setmap to be empty but it contained %d keys%n", setmap.size()));
         }
         verifyContents(setmap, expected);
-        System.out.printf("JImmutableSetMapStressTest on %s completed without errors%n", getName(setmap));
+        System.out.printf("SetMapStressTest on %s completed without errors%n", getName(setmap));
     }
 
     private void verifyContents(final ISetMap<String, String> setmap,

@@ -45,6 +45,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IDequeBuilder;
+import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
@@ -53,6 +54,8 @@ import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
+import org.javimmutable.collections.serialization.JImmutableArrayProxy;
+import org.javimmutable.collections.serialization.JImmutableDequeProxy;
 
 /**
  * IDeque implementation using 32-way trees.  The underlying trees
@@ -98,6 +101,16 @@ public class ArrayDeque<T>
     {
         final Node<T> root = BranchNode.of(source);
         return root.isEmpty() ? (ArrayDeque<T>)EMPTY : new ArrayDeque<>(root);
+    }
+
+    @Nonnull
+    public static <T> ArrayDeque<T> of(Iterator<? extends T> source)
+    {
+        final Builder<T> builder = new Builder<>();
+        while (source.hasNext()) {
+            builder.add(source.next());
+        }
+        return builder.build();
     }
 
     @Nonnull
@@ -313,6 +326,17 @@ public class ArrayDeque<T>
         return DequeListAdaptor.of(this);
     }
 
+    @Nonnull
+    @Override
+    public IDeque<T> reverse()
+    {
+        TreeBuilder<T> builder = new TreeBuilder<>(false);
+        for (T value : this) {
+            builder.add(value);
+        }
+        return new ArrayDeque<>(builder.build());
+    }
+
     @Override
     @Nonnull
     public SplitableIterator<T> iterator()
@@ -368,6 +392,11 @@ public class ArrayDeque<T>
     public String toString()
     {
         return IteratorHelper.iteratorToString(iterator());
+    }
+
+    private Object writeReplace()
+    {
+        return new JImmutableDequeProxy(this);
     }
 
     public static class Builder<T>

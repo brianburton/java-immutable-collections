@@ -222,7 +222,7 @@
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
                         <argument>--test</argument>
-                        <argument>insertordermap</argument>
+                        <argument>deque</argument>
                         <!--
                                                 <argument>&#45;&#45;test</argument>
                                                 <argument>hashmap</argument>

@@ -48,6 +48,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.javimmutable.collections.IArrays;
 import org.javimmutable.collections.ICollectors;
+import org.javimmutable.collections.IDeques;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
@@ -73,6 +74,7 @@ import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
 public class RunStressTests
 {
     private static final IList<StressTester> AllTesters = ILists.<StressTester>of()
+        .insert(new DequeStressTester(IDeques.of(), ICollectors.toDeque()))
         .insert(new ListStressTester(ILists.of(), ICollectors.toList()))
 
         .insert(new SetStressTester(ISets.hashed(), HashSet.class, IterationOrder.UNORDERED))
