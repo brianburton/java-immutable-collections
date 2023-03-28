@@ -35,17 +35,11 @@
 
 package org.javimmutable.collections.deque;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.deque.BranchNode;
-import org.javimmutable.collections.deque.EmptyNode;
-import org.javimmutable.collections.deque.LeafNode;
-import org.javimmutable.collections.deque.ListHelper;
-import org.javimmutable.collections.deque.Node;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import junit.framework.TestCase;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class BranchNodeTest
     extends TestCase
@@ -135,7 +129,7 @@ public class BranchNodeTest
 
     public void testInsertFirst()
     {
-        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), ListHelper.allocateNodes(0), EmptyNode.of());
+        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), DequeHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
 
@@ -178,7 +172,7 @@ public class BranchNodeTest
 
     public void testInsertLast()
     {
-        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), ListHelper.allocateNodes(0), EmptyNode.of());
+        Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), DequeHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
 
@@ -430,7 +424,7 @@ public class BranchNodeTest
     static Node<Integer>[] nodesArray(int length,
                                       int value)
     {
-        Node<Integer>[] nodes = ListHelper.allocateNodes(length);
+        Node<Integer>[] nodes = DequeHelper.allocateNodes(length);
         for (int i = 0; i < length; ++i) {
             nodes[i] = leaf(32, value);
             value += 32;

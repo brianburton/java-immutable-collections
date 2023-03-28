@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.deque;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.IndexedIterator;
-
-import javax.annotation.Nonnull;
-import java.util.Iterator;
 
 class TreeBuilder<T>
 {
@@ -49,6 +49,11 @@ class TreeBuilder<T>
     TreeBuilder(boolean forwardOrder)
     {
         leafBuilder = new LeafBuilder<>(forwardOrder);
+    }
+
+    synchronized void clear()
+    {
+        leafBuilder.clear();
     }
 
     synchronized void add(T value)
@@ -82,7 +87,7 @@ class TreeBuilder<T>
     /**
      * Takes a single LeafNode and returns a new Node of size maxSize containing all of the values
      * from the LeafNode plus values from Iterator.  If Iterator contains insufficient values to
-     * reach maxSize than a smaller than requested Node containing all of the values in the Iterator
+     * reach maxSize then a smaller than requested Node containing all of the values in the Iterator
      * is returned.
      */
     @Nonnull
@@ -107,7 +112,7 @@ class TreeBuilder<T>
     /**
      * Takes a single BranchNode which has an empty prefix/suffix and builds a new BranchNode
      * containing all of the filled nodes from nodeToFill as a starting point plus sufficient
-     * values added to from the Iterator to bring the total size of the new node to maxSize.
+     * values added from the Iterator to bring the total size of the new node to maxSize.
      * If the Iterator contains insufficient values to produce a node of maxSize then a smaller
      * than requested node containing all values in the Iterator is returned.
      */
@@ -138,9 +143,18 @@ class TreeBuilder<T>
         private LeafBuilder(boolean forwardOrder)
         {
             this.forwardOrder = forwardOrder;
-            values = ListHelper.allocateValues(32);
+            values = DequeHelper.allocateValues(32);
             offset = forwardOrder ? 0 : 32;
             remaining = 32;
+        }
+
+        void clear()
+        {
+            Arrays.fill(values, null);
+            next = null;
+            offset = forwardOrder ? 0 : 32;
+            remaining = 32;
+            size = 0;
         }
 
         private LeafBuilder(boolean forwardOrder,
@@ -208,7 +222,7 @@ class TreeBuilder<T>
         {
             this.depth = depth;
             this.forwardOrder = forwardOrder;
-            nodes = ListHelper.allocateNodes(32);
+            nodes = DequeHelper.allocateNodes(32);
             next = null;
             offset = forwardOrder ? 0 : 32;
             remaining = 32;
@@ -226,17 +240,22 @@ class TreeBuilder<T>
                 if (forwardOrder) {
                     for (int i = 0; i < nodeCount; ++i) {
                         final Node<T> node = startNodes.get(i);
+                        assert node.isFull();
+                        assert node.getDepth() == depth;
                         size += node.size();
                         nodes[offset++] = node;
                     }
                 } else {
                     for (int i = nodeCount - 1; i >= 0; --i) {
                         final Node<T> node = startNodes.get(i);
+                        assert node.isFull();
+                        assert node.getDepth() == depth;
                         size += node.size();
                         nodes[--offset] = node;
                     }
                 }
                 remaining -= startNodes.size();
+                assert remaining > 0;
             } else {
                 next = new BranchBuilder<>(depth + 1, forwardOrder, startNodes);
             }
@@ -246,6 +265,7 @@ class TreeBuilder<T>
         {
             assert node.isFull();
             assert node.getDepth() == depth;
+            assert remaining >= 1;
 
             if (forwardOrder) {
                 nodes[offset++] = node;
@@ -287,7 +307,7 @@ class TreeBuilder<T>
         private Node<T> createNodeForNext(@Nonnull Node<T> extra)
         {
             final int nodeSize = size + extra.size();
-            assert nodeSize <= ListHelper.sizeForDepth(depth + 1);
+            assert nodeSize <= DequeHelper.sizeForDepth(depth + 1);
             if (forwardOrder) {
                 return BranchNode.forNodeBuilder(depth + 1, nodeSize, EmptyNode.of(), IndexedArray.retained(nodes), 0, offset, extra);
             } else {

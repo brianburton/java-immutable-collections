@@ -35,11 +35,10 @@
 
 package org.javimmutable.collections.deque;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 
-import javax.annotation.Nonnull;
-
-final class ListHelper
+final class DequeHelper
 {
     private static final Object[] EMPTY_VALUES = new Object[0];
     private static final Node[] EMPTY_NODES = new Node[0];

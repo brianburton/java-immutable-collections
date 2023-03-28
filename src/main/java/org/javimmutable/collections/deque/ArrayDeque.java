@@ -373,7 +373,7 @@ public class ArrayDeque<T>
     public static class Builder<T>
         implements IDequeBuilder<T>
     {
-        private TreeBuilder<T> builder;
+        private final TreeBuilder<T> builder;
 
         private Builder()
         {
@@ -411,7 +411,7 @@ public class ArrayDeque<T>
         @Override
         public IDequeBuilder<T> clear()
         {
-            builder = new TreeBuilder<>(true);
+            builder.clear();
             return this;
         }
     }

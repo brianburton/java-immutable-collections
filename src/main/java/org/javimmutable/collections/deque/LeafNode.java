@@ -35,18 +35,17 @@
 
 package org.javimmutable.collections.deque;
 
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Node that forms the bottom of the 32-way tree and contains up to 32 values.
@@ -67,7 +66,7 @@ class LeafNode<T>
 
     LeafNode(T value)
     {
-        values = ListHelper.allocateValues(1);
+        values = DequeHelper.allocateValues(1);
         values[0] = value;
     }
 
@@ -82,7 +81,7 @@ class LeafNode<T>
                                     int offset,
                                     int limit)
     {
-        T[] array = ListHelper.allocateValues(limit - offset);
+        T[] array = DequeHelper.allocateValues(limit - offset);
         for (int i = offset; i < limit; ++i) {
             array[i - offset] = values.get(i);
         }
@@ -130,7 +129,7 @@ class LeafNode<T>
         if (values.length == 1) {
             return EmptyNode.of();
         }
-        T[] newValues = ListHelper.allocateValues(values.length - 1);
+        T[] newValues = DequeHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 1, newValues, 0, newValues.length);
         return new LeafNode<T>(newValues);
     }
@@ -141,7 +140,7 @@ class LeafNode<T>
         if (values.length == 1) {
             return EmptyNode.of();
         }
-        T[] newValues = ListHelper.allocateValues(values.length - 1);
+        T[] newValues = DequeHelper.allocateValues(values.length - 1);
         System.arraycopy(values, 0, newValues, 0, newValues.length);
         return new LeafNode<T>(newValues);
     }
@@ -152,7 +151,7 @@ class LeafNode<T>
         if (isFull()) {
             return new BranchNode<T>(value, this);
         }
-        T[] newValues = ListHelper.allocateValues(values.length + 1);
+        T[] newValues = DequeHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 1, values.length);
         newValues[0] = value;
         return new LeafNode<T>(newValues);
@@ -164,7 +163,7 @@ class LeafNode<T>
         if (isFull()) {
             return new BranchNode<T>(this, value);
         }
-        T[] newValues = ListHelper.allocateValues(values.length + 1);
+        T[] newValues = DequeHelper.allocateValues(values.length + 1);
         System.arraycopy(values, 0, newValues, 0, values.length);
         newValues[values.length] = value;
         return new LeafNode<T>(newValues);
