@@ -44,10 +44,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardDequeTests;
 import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -621,18 +623,18 @@ public class ArrayDequeTest
         assertEquals(original.getList(), original.stream().parallel().collect(toList()));
     }
 
-//    public void testSerialization()
-//        throws Exception
-//    {
-//        final Func1<Object, Iterator> iteratorFactory = a -> ((JImmutableList)a).iterator();
-//        final JImmutableList<String> empty = JImmutableArrayList.of();
-//        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-//                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGYCgAgAFkzNDswAAAA==");
-//        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-//                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGRgYGEsYGBMrAOarJ9+3AAAA");
-//        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
-//                                                     "H4sIAAAAAAAAAFvzloG1uIjBLr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8sksLgkoyq+o/A8C/1SMeRgYKooY3EgwzDGpuKQoMbmEgKEF5RwMDMwvGYBECQNjIhAnAXFyBQAT1rKNvwAAAA==");
-//    }
+    public void testSerialization()
+        throws Exception
+    {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IDeque)a).iterator();
+        final IDeque<String> empty = ArrayDeque.of();
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgBBBQAWVBsPXwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMjAwMJYwMCZWAABDcFwrYwAAAA==");
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgCJEgbGRCBOAuLkCgDbY4oaawAAAA==");
+    }
 
     private IDeque<Integer> mkDeque(Integer... values)
     {

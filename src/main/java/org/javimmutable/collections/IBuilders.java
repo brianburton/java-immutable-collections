@@ -38,6 +38,7 @@ package org.javimmutable.collections;
 import java.util.Comparator;
 import javax.annotation.Nonnull;
 import org.javimmutable.collections.array.TrieArray;
+import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedMap;
@@ -53,7 +54,7 @@ public final class IBuilders
     }
 
     /**
-     * Produces a Builder for efficiently constructing a JImmutableArray
+     * Produces a Builder for efficiently constructing a IArray
      * built atop a 32-way integer trie.  All values added by the builder are
      * assigned consecutive indices starting with zero.
      */
@@ -64,7 +65,15 @@ public final class IBuilders
     }
 
     /**
-     * Produces a Builder for efficiently constructing a JImmutableList built atop a balanced binary tree.
+     * Produces a Builder for efficiently constructing an IDeque.
+     */
+    public static <T> IDequeBuilder<T> builder()
+    {
+        return ArrayDeque.builder();
+    }
+
+    /**
+     * Produces a Builder for efficiently constructing a IList built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> IListBuilder<T> list()

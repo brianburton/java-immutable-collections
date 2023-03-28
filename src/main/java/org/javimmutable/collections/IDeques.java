@@ -133,9 +133,4 @@ public final class IDeques
     {
         return ArrayDeque.of(source.iterator());
     }
-
-    public static <T> IDequeBuilder<T> builder()
-    {
-        return ArrayDeque.builder();
-    }
 }
