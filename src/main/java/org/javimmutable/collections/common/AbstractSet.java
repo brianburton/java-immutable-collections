@@ -35,25 +35,19 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.Iterator;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.iterators.IteratorHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
+import java.util.Set;
 
 @Immutable
 public abstract class AbstractSet<T>
     implements ISet<T>
 {
-    @Nonnull
-    @Override
-    public ISet<T> getInsertableSelf()
-    {
-        return this;
-    }
-
     @Override
     @Nonnull
     public ISet<T> insertAll(@Nonnull Iterable<? extends T> values)

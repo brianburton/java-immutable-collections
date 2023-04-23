@@ -728,12 +728,11 @@ public class MultisetStressTester
         return repeats;
     }
 
-    private <C extends Insertable<String, C>> Insertable<String, C> makeIntersectInsertable(IList<String> tokens,
-                                                                                            Random random,
-                                                                                            List<String> multiList,
-                                                                                            Multiset<String> expected,
-                                                                                            Insertable<String, C> values)
-    {
+    private <C extends ICollection<String>> ICollection<String> makeIntersectInsertable(IList<String> tokens,
+                                                                                        Random random,
+                                                                                        List<String> multiList,
+                                                                                        Multiset<String> expected,
+                                                                                        ICollection<String> values) {
         int maxSize = multiList.size() / 20;
         for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {
             values = values.insert(notContainedValue(tokens, random, expected));

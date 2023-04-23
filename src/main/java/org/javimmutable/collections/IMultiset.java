@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -49,8 +48,7 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IMultiset<T>
-    extends ISet<T>,
-            Serializable
+    extends ISet<T>
 {
     /**
      * Adds one occurrence of value to the multiset.
@@ -200,6 +198,7 @@ public interface IMultiset<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IMultiset<T> deleteAll();
 
     /**
@@ -210,6 +209,7 @@ public interface IMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
+    @Override
     IMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
@@ -220,6 +220,7 @@ public interface IMultiset<T>
      * @return new multiset reflecting the change
      */
     @Nonnull
+    @Override
     IMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other);
 
     /**

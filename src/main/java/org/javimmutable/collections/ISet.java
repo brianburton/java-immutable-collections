@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -50,12 +49,9 @@ import java.util.stream.Collector;
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
 public interface ISet<T>
-    extends Insertable<T, ISet<T>>,
-        IStreamable<T>,
+        extends ICollection<T>,
         Mapped<T, T>,
-        InvariantCheckable,
-        Serializable
-{
+        InvariantCheckable {
     /**
      * Adds the single value to the Set.
      *
@@ -193,29 +189,10 @@ public interface ISet<T>
     ISet<T> intersection(@Nonnull Set<? extends T> other);
 
     /**
-     * Determines the number of values in the Set.
-     *
-     * @return number of values in the Set
-     */
-    int size();
-
-    /**
-     * @return true only if set contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return true only if set contains values
-     */
-    default boolean isNonEmpty()
-    {
-        return !isEmpty();
-    }
-
-    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     ISet<T> deleteAll();
 
     /**
@@ -232,8 +209,7 @@ public interface ISet<T>
      */
     @Nullable
     @Override
-    default T get(T key)
-    {
+    default T get(T key) {
         return contains(key) ? key : null;
     }
 
@@ -245,8 +221,7 @@ public interface ISet<T>
      */
     @Override
     default T getValueOr(T key,
-                         T defaultValue)
-    {
+                         T defaultValue) {
         return contains(key) ? key : defaultValue;
     }
 
@@ -259,8 +234,7 @@ public interface ISet<T>
      */
     @Nonnull
     @Override
-    default Holder<T> find(T key)
-    {
+    default Holder<T> find(T key) {
         return contains(key) ? Holders.nullable(key) : Holder.none();
     }
 
@@ -273,8 +247,7 @@ public interface ISet<T>
      * @return set of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default ISet<T> select(@Nonnull Predicate<T> predicate)
-    {
+    default ISet<T> select(@Nonnull Predicate<T> predicate) {
         ISet<T> answer = deleteAll();
         for (T value : this) {
             if (predicate.test(value)) {
@@ -293,8 +266,7 @@ public interface ISet<T>
      * @return set of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default ISet<T> reject(@Nonnull Predicate<T> predicate)
-    {
+    default ISet<T> reject(@Nonnull Predicate<T> predicate) {
         ISet<T> answer = this;
         for (T value : this) {
             if (predicate.test(value)) {
@@ -309,8 +281,7 @@ public interface ISet<T>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, ISet<T>> setCollector()
-    {
+    default Collector<T, ?, ISet<T>> setCollector() {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

@@ -84,13 +84,6 @@ public abstract class AbstractMultiset<T>
         }
     }
 
-    @Nonnull
-    @Override
-    public IMultiset<T> getInsertableSelf()
-    {
-        return this;
-    }
-
     @Override
     public boolean contains(@Nullable T value)
     {
