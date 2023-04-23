@@ -64,16 +64,9 @@ public abstract class AbstractMap<K, V>
      */
     @Override
     @Nonnull
-    public IMap<K, V> insert(@Nonnull IMapEntry<? extends K, ? extends V> e)
+    public IMap<K, V> insert(@Nonnull IMapEntry<K, V> e)
     {
         return assign(e.getKey(), e.getValue());
-    }
-
-    @Nonnull
-    @Override
-    public IMap<K, V> getInsertableSelf()
-    {
-        return this;
     }
 
     @Nonnull
@@ -115,13 +108,15 @@ public abstract class AbstractMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<K> keys() {
+    public IStreamable<K> keys()
+    {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values() {
+    public IStreamable<V> values()
+    {
         return TransformStreamable.ofValues(this);
     }
 

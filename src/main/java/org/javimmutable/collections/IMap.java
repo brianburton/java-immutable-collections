@@ -37,7 +37,7 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.stream.Collector;
@@ -49,18 +49,44 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IMap<K, V>
-    extends Insertable<IMapEntry<? extends K, ? extends V>, IMap<K, V>>,
-        Mapped<K, V>,
-        IStreamable<IMapEntry<K, V>>,
-        InvariantCheckable,
-        Serializable
+    extends ICollection<IMapEntry<K, V>>,
+            Mapped<K, V>,
+            InvariantCheckable
 {
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
      */
     @Nonnull
     @Override
-    IMap<K, V> insert(@Nonnull IMapEntry<? extends K, ? extends V> value);
+    IMap<K, V> insert(@Nonnull IMapEntry<K, V> value);
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    @Override
+    default IMap<K, V> insertAll(@Nonnull Iterable<? extends IMapEntry<K, V>> values)
+    {
+        return insertAll(values.iterator());
+    }
+
+    /**
+     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     *
+     * @return instance of list containing the collection
+     */
+    @Nonnull
+    @Override
+    default IMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, V>> values)
+    {
+        IMap<K, V> map = this;
+        while (values.hasNext()) {
+            map = map.insert(values.next());
+        }
+        return map;
+    }
 
     /**
      * Search for a value within the map and return a Holder indicating if the value
@@ -132,24 +158,10 @@ public interface IMap<K, V>
     IMap<K, V> delete(@Nonnull K key);
 
     /**
-     * Return the number of entries in the map.
-     */
-    int size();
-
-    /**
-     * @return true only if map contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return false only if map contains no values
-     */
-    boolean isNonEmpty();
-
-    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IMap<K, V> deleteAll();
 
     /**

@@ -35,21 +35,6 @@
 
 package org.javimmutable.collections;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.array.TrieArray;
 import org.javimmutable.collections.hash.EmptyHashMap;
@@ -76,6 +61,22 @@ import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.tree.TreeMultiset;
 import org.javimmutable.collections.tree.TreeSet;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
 
 @SuppressWarnings("unchecked")
 public class StaticConstructorsTest
@@ -235,7 +236,7 @@ public class StaticConstructorsTest
         IMap<String, String> iomap = IMaps.ordered(map(entries));
         assertSame(iomap, IMaps.ordered(iomap));
 
-        assertEquals(IMaps.ordered().insertAll(entries), IBuilders.orderedMap().add(entries).build());
+        assertEquals(IMaps.<String, String>ordered().insertAll(entries), IBuilders.orderedMap().add(entries).build());
     }
 
     public void testSet()
