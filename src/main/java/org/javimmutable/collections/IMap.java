@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for immutable data structures that allow storage and retrieval of
@@ -50,10 +50,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public interface IMap<K, V>
     extends Insertable<IMapEntry<? extends K, ? extends V>, IMap<K, V>>,
-            Mapped<K, V>,
-            IterableStreamable<IMapEntry<K, V>>,
-            InvariantCheckable,
-            Serializable
+        Mapped<K, V>,
+        IStreamable<IMapEntry<K, V>>,
+        InvariantCheckable,
+        Serializable
 {
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.
@@ -164,13 +164,13 @@ public interface IMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    IterableStreamable<K> keys();
+    IStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the Map's values.
      */
     @Nonnull
-    IterableStreamable<V> values();
+    IStreamable<V> values();
 
     /**
      * Creates a Builder with the same type signature as this Map.

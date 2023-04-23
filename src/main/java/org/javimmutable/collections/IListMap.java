@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections;
 
+import org.javimmutable.collections.listmap.HashListMap;
+import org.javimmutable.collections.listmap.OrderedListMap;
+import org.javimmutable.collections.listmap.TreeListMap;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.listmap.HashListMap;
-import org.javimmutable.collections.listmap.OrderedListMap;
-import org.javimmutable.collections.listmap.TreeListMap;
 
 /**
  * Interface for maps that map keys to lists of values.
@@ -52,10 +53,10 @@ import org.javimmutable.collections.listmap.TreeListMap;
 @Immutable
 public interface IListMap<K, V>
     extends Insertable<IMapEntry<K, V>, IListMap<K, V>>,
-            Mapped<K, IList<V>>,
-            IterableStreamable<IMapEntry<K, IList<V>>>,
-            InvariantCheckable,
-            Serializable
+        Mapped<K, IList<V>>,
+        IStreamable<IMapEntry<K, IList<V>>>,
+        InvariantCheckable,
+        Serializable
 {
     /**
      * Creates a list map with higher performance but no specific ordering of keys.
@@ -252,7 +253,7 @@ public interface IListMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    IterableStreamable<K> keys();
+    IStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the specified key's list.
@@ -261,13 +262,13 @@ public interface IListMap<K, V>
      * @return a (possibly empty) Streamable for traversing the values associated with key
      */
     @Nonnull
-    IterableStreamable<V> values(@Nonnull K key);
+    IStreamable<V> values(@Nonnull K key);
 
     /**
      * Creates a Streamable to access all of the Map's entries.
      */
     @Nonnull
-    IterableStreamable<IMapEntry<K, V>> entries();
+    IStreamable<IMapEntry<K, V>> entries();
 
     /**
      * Processes every key/list pair in this map using the provided function.

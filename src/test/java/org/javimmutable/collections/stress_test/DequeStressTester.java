@@ -35,22 +35,19 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.StandardStreamableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IDeque;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
 
 /**
  * Test program for all implementations of IDeque.
@@ -310,6 +307,6 @@ public class DequeStressTester
     {
         System.out.printf("checking cursor with size %d%n", deque.size());
         StandardIteratorTests.listIteratorTest(expected, deque.iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, deque);
+        StandardStreamableTests.verifyOrderedUsingCollection(expected, deque);
     }
 }

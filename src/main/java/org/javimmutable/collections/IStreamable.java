@@ -35,25 +35,24 @@
 
 package org.javimmutable.collections;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
-
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+
+import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 /**
  * Interface for classes that can produce java.util.Streams and are also Iterable.   The default stream
  * creation implementations use spliterator().
  */
-public interface IterableStreamable<T>
-    extends SplitableIterable<T>,
-            Streamable<T>
-{
+public interface IStreamable<T>
+        extends SplitableIterable<T>,
+        Streamable<T> {
     /**
      * Overridden here to require implementations to return a SplitableIterator rather than
      * a basic Iterator.  This is necessary to allow composition of new objects from methods

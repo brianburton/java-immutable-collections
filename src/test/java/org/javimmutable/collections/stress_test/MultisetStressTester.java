@@ -35,35 +35,24 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.IMultisets;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.Insertable;
-import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.hash.HashMultiset;
 import org.javimmutable.collections.inorder.OrderedMultiset;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.TreeMultiset;
 import org.javimmutable.collections.tree.TreeMultisetTest;
+
+import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableMultiset. Divided into four sections:
@@ -459,17 +448,17 @@ public class MultisetStressTester
 
         if (expectedList.size() != multi.occurrenceCount()) {
             throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n",
-                                                     multi.occurrenceCount(), expectedList.size()));
+                    multi.occurrenceCount(), expectedList.size()));
         }
         if (entries.size() != multi.size()) {
             throw new RuntimeException(String.format("entries list built incorrectly - size expected %d size found %d%n",
-                                                     multi.size(), entries.size()));
+                    multi.size(), entries.size()));
         }
 
         StandardIteratorTests.listIteratorTest(expectedList, multi.occurrences().iterator());
         StandardIteratorTests.listIteratorTest(entries, multi.entries().iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(expectedList, multi.occurrences());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, multi.entries());
+        StandardStreamableTests.verifyOrderedUsingCollection(expectedList, multi.occurrences());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, multi.entries());
     }
 
     private void verifyContents(final IMultiset<String> multi,
@@ -505,7 +494,7 @@ public class MultisetStressTester
                              List<String> expected)
     {
         StandardIteratorTests.listIteratorTest(expected, set.occurrences().iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, set.occurrences());
+        StandardStreamableTests.verifyOrderedUsingCollection(expected, set.occurrences());
     }
 
     //precondition: multi must not have had a union performed with values yet.

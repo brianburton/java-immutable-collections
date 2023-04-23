@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for maps that map keys to sets of values.
@@ -49,10 +49,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public interface ISetMap<K, V>
     extends Insertable<IMapEntry<K, V>, ISetMap<K, V>>,
-            Mapped<K, ISet<V>>,
-            IterableStreamable<IMapEntry<K, ISet<V>>>,
-            InvariantCheckable,
-            Serializable
+        Mapped<K, ISet<V>>,
+        IStreamable<IMapEntry<K, ISet<V>>>,
+        InvariantCheckable,
+        Serializable
 {
     /**
      * Return the set associated with key, or an empty set if no list is associated.
@@ -294,7 +294,7 @@ public interface ISetMap<K, V>
      * Creates a Streamable to access all of the Map's keys.
      */
     @Nonnull
-    IterableStreamable<K> keys();
+    IStreamable<K> keys();
 
     /**
      * Creates a Streamable to access all of the specified key's set.
@@ -303,13 +303,13 @@ public interface ISetMap<K, V>
      * @return a (possibly empty) Streamable for traversing the values associated with key
      */
     @Nonnull
-    IterableStreamable<V> values(@Nonnull K key);
+    IStreamable<V> values(@Nonnull K key);
 
     /**
      * Creates a Streamable to access all of the Map's entries.
      */
     @Nonnull
-    IterableStreamable<IMapEntry<K, V>> entries();
+    IStreamable<IMapEntry<K, V>> entries();
 
     /**
      * Processes every key/set pair in this map using the provided function.

@@ -35,36 +35,20 @@
 
 package org.javimmutable.collections.array;
 
+import junit.framework.TestCase;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.IntArrayMappedTrieMath;
+import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
 import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func0;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IArrayBuilder;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.common.IntArrayMappedTrieMath;
-import org.javimmutable.collections.common.StandardBuilderTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class TrieArrayTest
     extends TestCase
@@ -315,9 +299,9 @@ public class TrieArrayTest
         StandardIteratorTests.listIteratorTest(keys, array.keys().iterator());
         StandardIteratorTests.listIteratorTest(values, array.values().iterator());
         StandardIteratorTests.listIteratorTest(entries, array.iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, array.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, array.values());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
+        StandardStreamableTests.verifyOrderedUsingCollection(keys, array.keys());
+        StandardStreamableTests.verifyOrderedUsingCollection(values, array.values());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
     public void testVarious()

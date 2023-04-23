@@ -35,30 +35,15 @@
 
 package org.javimmutable.collections.inorder;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.MapBuilderTestAdapter;
-import org.javimmutable.collections.common.StandardBuilderTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardMapTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.*;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public class OrderedMapTest
     extends TestCase
@@ -300,9 +285,9 @@ public class OrderedMapTest
             map = map.assign(key, i);
         }
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, map.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, map.values());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, map);
+        StandardStreamableTests.verifyOrderedUsingCollection(keys, map.keys());
+        StandardStreamableTests.verifyOrderedUsingCollection(values, map.values());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, map);
 
         map = keys.parallelStream().map(i -> IMapEntry.of(i, -i)).collect(inOrderMap.mapCollector());
         assertEquals(keys, map.keys().parallelStream().collect(Collectors.toList()));

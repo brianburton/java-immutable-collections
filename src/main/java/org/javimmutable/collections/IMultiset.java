@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
@@ -401,7 +401,7 @@ public interface IMultiset<T>
      * @return Streamable of JImmutableMap.Entries
      */
     @Nonnull
-    IterableStreamable<IMapEntry<T, Integer>> entries();
+    IStreamable<IMapEntry<T, Integer>> entries();
 
     /**
      * Streamable that iterates through each occurrence in the multiset the correct number of times.
@@ -409,7 +409,7 @@ public interface IMultiset<T>
      * @return Streamable that behaves as if multiset was a list
      */
     @Nonnull
-    IterableStreamable<T> occurrences();
+    IStreamable<T> occurrences();
 
     /**
      * Returns the number of occurrences associated with the specified value. If the value is not

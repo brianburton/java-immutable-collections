@@ -35,25 +35,22 @@
 
 package org.javimmutable.collections.deque;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardDequeTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("deprecation")
 public class ArrayDequeTest
@@ -381,7 +378,7 @@ public class ArrayDequeTest
             list.checkInvariants();
 
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -460,7 +457,7 @@ public class ArrayDequeTest
                 assertEquals(expected.size(), list.size());
             }
             StandardIteratorTests.listIteratorTest(expected, list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
             assertEquals(expected, list.getList());
             list = list.deleteAll();
             assertEquals(0, list.size());

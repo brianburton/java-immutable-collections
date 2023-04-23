@@ -35,27 +35,20 @@
 
 package org.javimmutable.collections.inorder;
 
-import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
-
-import java.io.Serializable;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.GenericCollector;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Temp;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.array.TrieLongArrayNode;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.iterators.TransformStreamable;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.stream.Collector;
+
+import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -238,15 +231,13 @@ public class OrderedMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return keys.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<V> values()
-    {
+    public IStreamable<V> values() {
         return TransformStreamable.of(keys(), this::valueForKey);
     }
 

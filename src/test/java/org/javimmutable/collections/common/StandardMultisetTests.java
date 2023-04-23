@@ -36,21 +36,7 @@
 package org.javimmutable.collections.common;
 
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-
 import com.google.common.collect.Multiset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.Function;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
@@ -59,6 +45,11 @@ import org.javimmutable.collections.hash.HashMultiset;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedMultiset;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.util.*;
+import java.util.function.Function;
+
+import static junit.framework.Assert.*;
 
 public class StandardMultisetTests
 {
@@ -796,9 +787,9 @@ public class StandardMultisetTests
         StandardIteratorTests.listIteratorTest(entries, jmet.entries().iterator());
         StandardIteratorTests.iteratorTest(value -> entries.get(value), entries.size(), jmet.entries().iterator());
 
-        StandardIterableStreamableTests.verifyUnorderedUsingCollection(jmet.getSet(), jmet);
-        StandardIterableStreamableTests.verifyUnorderedUsingCollection(entries, jmet.entries(), MapEntry::new);
-        StandardIterableStreamableTests.verifyUnorderedUsingCollection(expectedList, jmet.occurrences());
+        StandardStreamableTests.verifyUnorderedUsingCollection(jmet.getSet(), jmet);
+        StandardStreamableTests.verifyUnorderedUsingCollection(entries, jmet.entries(), MapEntry::new);
+        StandardStreamableTests.verifyUnorderedUsingCollection(expectedList, jmet.occurrences());
     }
 
     private static Set<Integer> asSet(List<Integer> list)

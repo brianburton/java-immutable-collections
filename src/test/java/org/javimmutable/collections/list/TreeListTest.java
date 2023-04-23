@@ -35,37 +35,23 @@
 
 package org.javimmutable.collections.list;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
 import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.ICollectors;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListBuilder;
-import org.javimmutable.collections.common.StandardBuilderTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardListTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.*;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.IntStream;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
 
 public class TreeListTest
     extends TestCase
@@ -834,7 +820,7 @@ public class TreeListTest
             assertEquals(expected.isEmpty(), list.isEmpty());
             assertEquals(!expected.isEmpty(), list.isNonEmpty());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int op = random.nextInt(3);
@@ -859,7 +845,7 @@ public class TreeListTest
             assertEquals(expected.isEmpty(), list.isEmpty());
             assertEquals(!expected.isEmpty(), list.isNonEmpty());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -918,7 +904,7 @@ public class TreeListTest
             }
             assertEquals(expected, list.getList());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -929,7 +915,7 @@ public class TreeListTest
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -960,7 +946,7 @@ public class TreeListTest
             assertEquals(expected, list.getList());
             list.checkInvariants();
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -971,7 +957,7 @@ public class TreeListTest
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 
@@ -1024,7 +1010,7 @@ public class TreeListTest
             }
             assertEquals(expected, list.getList());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
 
             while (!list.isEmpty()) {
                 int index = random.nextInt(list.size());
@@ -1035,7 +1021,7 @@ public class TreeListTest
             assertEquals(true, list.isEmpty());
             assertEquals(0, list.size());
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(expected, list);
+            StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
         }
     }
 

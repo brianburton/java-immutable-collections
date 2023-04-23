@@ -35,26 +35,19 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.setmap.HashSetMap;
 import org.javimmutable.collections.setmap.TreeSetMap;
 import org.javimmutable.collections.setmap.TreeSetMapTest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableSetMap. Divided into five sections:
@@ -442,14 +435,14 @@ public class SetMapStressTester
 
         StandardIteratorTests.listIteratorTest(keys, setmap.keys().iterator());
         StandardIteratorTests.listIteratorTest(entries, setmap.iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, setmap.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, setmap);
+        StandardStreamableTests.verifyOrderedUsingCollection(keys, setmap.keys());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, setmap);
 
         for (Map.Entry<String, ISet<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
             List<String> values = asList(entry.getValue());
             StandardIteratorTests.listIteratorTest(values, setmap.values(key).iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(values, setmap.values(key));
+            StandardStreamableTests.verifyOrderedUsingCollection(values, setmap.values(key));
         }
     }
 

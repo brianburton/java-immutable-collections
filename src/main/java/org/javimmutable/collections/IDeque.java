@@ -35,14 +35,14 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for containers that store items in list form with individual items available
@@ -53,10 +53,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public interface IDeque<T>
     extends Insertable<T, IDeque<T>>,
-            Indexed<T>,
-            IterableStreamable<T>,
-            InvariantCheckable,
-            Serializable
+        Indexed<T>,
+        IStreamable<T>,
+        InvariantCheckable,
+        Serializable
 {
     /**
      * @return number of values in the list

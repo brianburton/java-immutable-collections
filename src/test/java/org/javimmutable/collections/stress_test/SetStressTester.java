@@ -35,22 +35,23 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISets;
+import org.javimmutable.collections.common.ExpectedOrderSorter;
+import org.javimmutable.collections.common.StandardStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.tree.TreeSet;
+import org.javimmutable.collections.tree.TreeSetTest;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.common.ExpectedOrderSorter;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.TreeSet;
-import org.javimmutable.collections.tree.TreeSetTest;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableSet, including JImmutableMultiset. Divided
@@ -325,7 +326,7 @@ public class SetStressTester
             expectedList = ordering.sort(expectedList, Function.identity());
         }
 
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(expectedList, set);
+        StandardStreamableTests.verifyOrderedUsingCollection(expectedList, set);
         StandardIteratorTests.listIteratorTest(expectedList, set.iterator());
     }
 

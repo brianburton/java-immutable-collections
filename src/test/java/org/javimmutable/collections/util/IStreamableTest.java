@@ -36,24 +36,12 @@
 package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMaps;
-import org.javimmutable.collections.IMultisets;
-import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.IterableStreamable.Partitions;
-import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.IStreamable.Partitions;
 
-public class IterableStreamableTest
-    extends TestCase
-{
-    public void testSingle()
-    {
+public class IStreamableTest
+        extends TestCase {
+    public void testSingle() {
         assertEquals(Holder.none(), ISets.hashed().single());
         assertEquals(Holder.some("a"), ISets.hashed("a").single());
         assertEquals(Holder.none(), ISets.hashed("a", "b").single());

@@ -35,38 +35,35 @@
 
 package org.javimmutable.collections.iterators;
 
-import java.util.function.Function;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 
+import javax.annotation.Nonnull;
+import java.util.function.Function;
+
 public class TransformStreamable<S, T>
-    implements IterableStreamable<T>
+        implements IStreamable<T>
 {
-    private final IterableStreamable<S> source;
+    private final IStreamable<S> source;
     private final Function<S, T> transforminator;
 
-    private TransformStreamable(IterableStreamable<S> source,
-                                Function<S, T> transforminator)
-    {
+    private TransformStreamable(IStreamable<S> source,
+                                Function<S, T> transforminator) {
         this.source = source;
         this.transforminator = transforminator;
     }
 
-    public static <S, T> IterableStreamable<T> of(@Nonnull IterableStreamable<S> source,
-                                                  @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> IStreamable<T> of(@Nonnull IStreamable<S> source,
+                                           @Nonnull Function<S, T> transforminator) {
         return new TransformStreamable<>(source, transforminator);
     }
 
-    public static <K, V> IterableStreamable<K> ofKeys(@Nonnull IterableStreamable<IMapEntry<K, V>> source)
-    {
+    public static <K, V> IStreamable<K> ofKeys(@Nonnull IStreamable<IMapEntry<K, V>> source) {
         return of(source, IMapEntry::getKey);
     }
 
-    public static <K, V> IterableStreamable<V> ofValues(@Nonnull IterableStreamable<IMapEntry<K, V>> source)
-    {
+    public static <K, V> IStreamable<V> ofValues(@Nonnull IStreamable<IMapEntry<K, V>> source) {
         return of(source, IMapEntry::getValue);
     }
 

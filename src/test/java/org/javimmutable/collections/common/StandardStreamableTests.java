@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import javax.annotation.Nonnull;
@@ -48,22 +48,19 @@ import java.util.stream.Stream;
 
 import static junit.framework.Assert.assertEquals;
 
-public class StandardIterableStreamableTests
-{
+public class StandardStreamableTests {
     public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull IterableStreamable<T> source)
-    {
+                                                        @Nonnull IStreamable<T> source) {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
     public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull Collection<T> source)
-    {
+                                                        @Nonnull Collection<T> source) {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
     public static <S, T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                           @Nonnull IterableStreamable<S> source,
+                                                           @Nonnull IStreamable<S> source,
                                                            @Nonnull Function<S, T> transforminator)
     {
         StandardIteratorTests.verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
@@ -83,7 +80,7 @@ public class StandardIterableStreamableTests
     }
 
     public static <T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                          @Nonnull IterableStreamable<T> source)
+                                                          @Nonnull IStreamable<T> source)
     {
         verifyUnorderedUsingCollection(expected, source, Function.identity());
     }
@@ -95,7 +92,7 @@ public class StandardIterableStreamableTests
     }
 
     public static <S, T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                             @Nonnull IterableStreamable<S> source,
+                                                             @Nonnull IStreamable<S> source,
                                                              @Nonnull Function<S, T> transforminator)
     {
         StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);

@@ -35,24 +35,19 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.listmap.HashListMap;
 import org.javimmutable.collections.listmap.TreeListMap;
 import org.javimmutable.collections.listmap.TreeListMapTest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableListMap. Divided into five sections:
@@ -267,14 +262,14 @@ public class ListMapStressTester
 
         StandardIteratorTests.listIteratorTest(keys, listmap.keys().iterator());
         StandardIteratorTests.listIteratorTest(entries, listmap.iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(keys, listmap.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, listmap);
+        StandardStreamableTests.verifyOrderedUsingCollection(keys, listmap.keys());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, listmap);
 
         for (Map.Entry<String, IList<String>> entry : expected.entrySet()) {
             String key = entry.getKey();
             List<String> values = asList(entry.getValue());
             StandardIteratorTests.listIteratorTest(values, listmap.values(key).iterator());
-            StandardIterableStreamableTests.verifyOrderedUsingCollection(values, listmap.values(key));
+            StandardStreamableTests.verifyOrderedUsingCollection(values, listmap.values(key));
         }
     }
 

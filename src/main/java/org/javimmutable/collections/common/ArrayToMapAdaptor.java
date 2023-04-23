@@ -35,22 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.AbstractCollection;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Spliterator;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.iterators.TransformStreamable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.iterators.TransformStreamable;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.*;
 
 @SuppressWarnings({"unchecked", "NullableProblems"})
 @Immutable
@@ -242,8 +234,7 @@ public class ArrayToMapAdaptor<T>
             }
 
             @Nonnull
-            private IterableStreamable<Entry<Integer, T>> streamable()
-            {
+            private IStreamable<Entry<Integer, T>> streamable() {
                 return TransformStreamable.of(map, MapEntry::new);
             }
         };

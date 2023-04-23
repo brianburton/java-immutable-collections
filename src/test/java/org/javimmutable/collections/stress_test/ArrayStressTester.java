@@ -35,21 +35,16 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.StandardStreamableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 
 /**
  * Test program for all implementations of JImmutableArray. Divided into four sections: growing
@@ -260,8 +255,7 @@ public class ArrayStressTester
     }
 
     private void verifyIteration(IArray<String> array,
-                                 Map<Integer, String> expected)
-    {
+                                 Map<Integer, String> expected) {
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
@@ -270,9 +264,9 @@ public class ArrayStressTester
         StandardIteratorTests.listIteratorTest(indices, array.keys().iterator());
         StandardIteratorTests.listIteratorTest(values, array.values().iterator());
         StandardIteratorTests.listIteratorTest(entries, array.iterator());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(indices, array.keys());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(values, array.values());
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(entries, array);
+        StandardStreamableTests.verifyOrderedUsingCollection(indices, array.keys());
+        StandardStreamableTests.verifyOrderedUsingCollection(values, array.values());
+        StandardStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
     private void verifyIndexList(IList<Integer> indexList,

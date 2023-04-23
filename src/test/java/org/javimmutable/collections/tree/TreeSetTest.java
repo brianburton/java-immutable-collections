@@ -35,31 +35,19 @@
 
 package org.javimmutable.collections.tree;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.common.SetBuilderTestAdapter;
-import org.javimmutable.collections.common.StandardBuilderTests;
-import org.javimmutable.collections.common.StandardIterableStreamableTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.StandardSetTests;
-import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.common.*;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.Arrays.asList;
 
 public class TreeSetTest
     extends TestCase
@@ -297,7 +285,7 @@ public class TreeSetTest
     public void testStreams()
     {
         ISet<Integer> mset = TreeSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
-        StandardIterableStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
+        StandardStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
     }
 
     public void testSerialization()

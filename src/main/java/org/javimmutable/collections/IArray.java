@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections;
 
-import java.io.Serializable;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Immutable sparse array implementation using integers as keys.  Keys are traversed in signed integer
@@ -54,10 +54,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public interface IArray<T>
     extends Indexed<T>,
-            Insertable<IMapEntry<Integer, T>, IArray<T>>,
-            IterableStreamable<IMapEntry<Integer, T>>,
-            InvariantCheckable,
-            Serializable
+        Insertable<IMapEntry<Integer, T>, IArray<T>>,
+        IStreamable<IMapEntry<Integer, T>>,
+        InvariantCheckable,
+        Serializable
 {
 
     /**
@@ -163,13 +163,13 @@ public interface IArray<T>
      * Creates a Streamable to access all of the array's keys.
      */
     @Nonnull
-    IterableStreamable<Integer> keys();
+    IStreamable<Integer> keys();
 
     /**
      * Creates a Streamable to access all of the array's values.
      */
     @Nonnull
-    IterableStreamable<T> values();
+    IStreamable<T> values();
 
     /**
      * Visits every element in the array in order by index and passes the index and value to

@@ -35,23 +35,19 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 @Immutable
 public abstract class AbstractMultiset<T>
@@ -446,21 +442,17 @@ public abstract class AbstractMultiset<T>
 
     @Nonnull
     @Override
-    public IterableStreamable<IMapEntry<T, Integer>> entries()
-    {
+    public IStreamable<IMapEntry<T, Integer>> entries() {
         return map;
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<T> occurrences()
-    {
-        return new IterableStreamable<T>()
-        {
+    public IStreamable<T> occurrences() {
+        return new IStreamable<T>() {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator()
-            {
+            public SplitableIterator<T> iterator() {
                 return LazyMultiIterator.transformed(map.iterator(), e -> () -> IndexedIterator.iterator(IndexedHelper.repeating(e.getKey(), e.getValue())));
             }
 
@@ -679,8 +671,7 @@ public abstract class AbstractMultiset<T>
             }
         }
 
-        private <T1 extends T> Counter(@Nonnull IterableStreamable<IMapEntry<T1, Integer>> values)
-        {
+        private <T1 extends T> Counter(@Nonnull IStreamable<IMapEntry<T1, Integer>> values) {
             this();
             for (IMapEntry<? extends T, Integer> entry : values) {
                 add(entry.getKey(), entry.getValue());

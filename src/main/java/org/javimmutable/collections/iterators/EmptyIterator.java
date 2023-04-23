@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.IterableStreamable;
+import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 
@@ -58,14 +58,11 @@ public class EmptyIterator<T>
     }
 
     @Nonnull
-    public static <T> IterableStreamable<T> streamable()
-    {
-        return new IterableStreamable<T>()
-        {
+    public static <T> IStreamable<T> streamable() {
+        return new IStreamable<T>() {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator()
-            {
+            public SplitableIterator<T> iterator() {
                 return of();
             }
 

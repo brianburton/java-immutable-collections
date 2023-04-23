@@ -35,14 +35,14 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Interface for immutable sets.
@@ -51,10 +51,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public interface ISet<T>
     extends Insertable<T, ISet<T>>,
-            IterableStreamable<T>,
-            Mapped<T, T>,
-            InvariantCheckable,
-            Serializable
+        IStreamable<T>,
+        Mapped<T, T>,
+        InvariantCheckable,
+        Serializable
 {
     /**
      * Adds the single value to the Set.

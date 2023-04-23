@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.Map;
-import java.util.function.BiPredicate;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.iterators.TransformStreamable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.iterators.TransformStreamable;
+import java.util.Map;
+import java.util.function.BiPredicate;
 
 @Immutable
 public abstract class AbstractMap<K, V>
@@ -114,15 +115,13 @@ public abstract class AbstractMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<V> values()
-    {
+    public IStreamable<V> values() {
         return TransformStreamable.ofValues(this);
     }
 

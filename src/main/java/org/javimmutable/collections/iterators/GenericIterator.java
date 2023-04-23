@@ -35,12 +35,7 @@
 
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitIterator;
-import org.javimmutable.collections.SplitableIterable;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,14 +105,11 @@ public class GenericIterator<T>
         }
 
         @Nonnull
-        default IterableStreamable<T> streamable(int characteristics)
-        {
-            return new IterableStreamable<T>()
-            {
+        default IStreamable<T> streamable(int characteristics) {
+            return new IStreamable<T>() {
                 @Nonnull
                 @Override
-                public SplitableIterator<T> iterator()
-                {
+                public SplitableIterator<T> iterator() {
                     return Iterable.this.iterator();
                 }
 

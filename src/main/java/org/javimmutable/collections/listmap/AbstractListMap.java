@@ -35,19 +35,14 @@
 
 package org.javimmutable.collections.listmap;
 
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.Conditions;
+import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.EntryStreamable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.Conditions;
-import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.EntryIterableStreamable;
 
 @Immutable
 abstract class AbstractListMap<K, V>
@@ -117,23 +112,20 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<V> values(@Nonnull K key)
-    {
+    public IStreamable<V> values(@Nonnull K key) {
         return getList(key);
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<IMapEntry<K, V>> entries()
-    {
-        return new EntryIterableStreamable<>(this);
+    public IStreamable<IMapEntry<K, V>> entries() {
+        return new EntryStreamable<>(this);
     }
 
     @Override

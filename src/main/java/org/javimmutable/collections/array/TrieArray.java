@@ -35,28 +35,21 @@
 
 package org.javimmutable.collections.array;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IArrayBuilder;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IndexedProc1;
-import org.javimmutable.collections.IndexedProc1Throws;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.Proc1Throws;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.TransformIterator;
 import org.javimmutable.collections.serialization.JImmutableArrayProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collector;
 
 public class TrieArray<T>
     implements Serializable,
@@ -221,15 +214,13 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public IterableStreamable<Integer> keys()
-    {
+    public IStreamable<Integer> keys() {
         return root.keys().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<T> values()
-    {
+    public IStreamable<T> values() {
         return root.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 

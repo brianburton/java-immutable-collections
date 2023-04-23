@@ -35,19 +35,17 @@
 
 package org.javimmutable.collections.iterators;
 
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 
-public class EntryIterableStreamable<K, V, C extends IterableStreamable<V>, D extends IterableStreamable<IMapEntry<K, C>>>
-    implements IterableStreamable<IMapEntry<K, V>>
-{
+import javax.annotation.Nonnull;
+
+public class EntryStreamable<K, V, C extends IStreamable<V>, D extends IStreamable<IMapEntry<K, C>>>
+        implements IStreamable<IMapEntry<K, V>> {
     private final D source;
 
-    public EntryIterableStreamable(@Nonnull D source)
-    {
+    public EntryStreamable(@Nonnull D source) {
         this.source = source;
     }
 

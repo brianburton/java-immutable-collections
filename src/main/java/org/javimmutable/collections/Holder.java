@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections;
 
-import java.io.Serializable;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 import org.javimmutable.collections.serialization.HolderProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Used to handle cases when a value may or may not be present and, when needed, to eliminate
@@ -52,8 +53,8 @@ import org.javimmutable.collections.serialization.HolderProxy;
  * Provides a variety of utility methods to allow call chaining.
  */
 public abstract class Holder<T>
-    implements IterableStreamable<T>,
-               Serializable
+    implements IStreamable<T>,
+        Serializable
 {
     /**
      * If this value is null returns None, otherwise returns this value.

@@ -36,21 +36,16 @@
 package org.javimmutable.collections.setmap;
 
 
-import java.util.Iterator;
-import java.util.Set;
+import org.javimmutable.collections.*;
+import org.javimmutable.collections.common.Conditions;
+import org.javimmutable.collections.common.StreamConstants;
+import org.javimmutable.collections.iterators.EntryStreamable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.IterableStreamable;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.Conditions;
-import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.EntryIterableStreamable;
+import java.util.Iterator;
+import java.util.Set;
 
 @Immutable
 abstract class AbstractSetMap<K, V>
@@ -272,15 +267,13 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public IterableStreamable<V> values(@Nonnull K key)
-    {
+    public IStreamable<V> values(@Nonnull K key) {
         return getSet(key);
     }
 
@@ -314,9 +307,8 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public IterableStreamable<IMapEntry<K, V>> entries()
-    {
-        return new EntryIterableStreamable<>(this);
+    public IStreamable<IMapEntry<K, V>> entries() {
+        return new EntryStreamable<>(this);
     }
 
     @Override

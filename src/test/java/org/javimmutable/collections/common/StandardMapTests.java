@@ -35,12 +35,9 @@
 
 package org.javimmutable.collections.common;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.fail;
-import static org.javimmutable.collections.common.StandardIterableStreamableTests.verifyOrderedUsingCollection;
-import static org.javimmutable.collections.common.StandardIterableStreamableTests.verifyUnorderedUsingCollection;
+import org.javimmutable.collections.*;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,13 +46,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.ICollectors;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
+
+import static junit.framework.Assert.*;
+import static org.javimmutable.collections.common.StandardStreamableTests.verifyOrderedUsingCollection;
+import static org.javimmutable.collections.common.StandardStreamableTests.verifyUnorderedUsingCollection;
 
 public class StandardMapTests
 {
