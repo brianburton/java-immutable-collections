@@ -38,7 +38,6 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -52,17 +51,10 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IDeque<T>
-    extends Insertable<T, IDeque<T>>,
+    extends ICollection<T>,
         Indexed<T>,
-        IStreamable<T>,
-        InvariantCheckable,
-        Serializable
+        InvariantCheckable
 {
-    /**
-     * @return number of values in the list
-     */
-    int size();
-
     /**
      * Retrieves the value at the specified index (which must be within the bounds
      * of the list).
@@ -174,19 +166,10 @@ public interface IDeque<T>
     IDeque<T> deleteLast();
 
     /**
-     * @return true only if list contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return false only if list contains no values
-     */
-    boolean isNonEmpty();
-
-    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IDeque<T> deleteAll();
 
     /**

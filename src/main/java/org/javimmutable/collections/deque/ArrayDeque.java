@@ -35,27 +35,21 @@
 
 package org.javimmutable.collections.deque;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IDeque;
-import org.javimmutable.collections.IDequeBuilder;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.DequeListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
-import org.javimmutable.collections.serialization.JImmutableArrayProxy;
 import org.javimmutable.collections.serialization.JImmutableDequeProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 
 /**
  * IDeque implementation using 32-way trees.  The underlying trees
@@ -187,13 +181,6 @@ public class ArrayDeque<T>
     public ArrayDeque<T> reject(@Nonnull Predicate<T> predicate)
     {
         return select(predicate.negate());
-    }
-
-    @Nonnull
-    @Override
-    public ArrayDeque<T> getInsertableSelf()
-    {
-        return this;
     }
 
     @Nonnull
