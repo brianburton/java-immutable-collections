@@ -35,17 +35,12 @@
 
 package org.javimmutable.collections.util;
 
+import org.javimmutable.collections.*;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.Insertable;
 
 /**
  * Library of static functions that perform various operations on Iterators.
@@ -96,45 +91,6 @@ public final class Functions
     }
 
     /**
-     * Calls func for every value in iterator and adds each value returned by func
-     * to a list.  Returns the resulting list.
-     *
-     * @param iterator source of the values
-     * @param func     function to transform the values
-     * @param list     list to receive the values
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R, A>> A collectAll(Iterator<? extends T> iterator,
-                                                                  A list,
-                                                                  Func1<? super T, R> func)
-    {
-        while (iterator.hasNext()) {
-            list = list.insert(func.apply(iterator.next()));
-        }
-        return list;
-    }
-
-    /**
-     * Calls func for every value in iterator and adds each value for which func returns a non-empty
-     * Holder to a list.  Returns the resulting list.
-     *
-     * @param iterator source of the values
-     * @param func     function to reject the values
-     * @param list     list to receive the values
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, R, A extends Insertable<R, A>> A collectSome(Iterator<? extends T> iterator,
-                                                                   A list,
-                                                                   Func1<? super T, Holder<R>> func)
-    {
-        while (iterator.hasNext()) {
-            Holder<R> mappedValue = func.apply(iterator.next());
-            list = mappedValue.fold(list, Insertable::insert);
-        }
-        return list;
-    }
-
-    /**
      * Calls func for each value in iterator and passes it to func until func returns true.
      * If func returns true the value is returned.  If func never returns true an empty
      * value is returned.
@@ -149,50 +105,6 @@ public final class Functions
             }
         }
         return Holder.none();
-    }
-
-    /**
-     * Calls func for every value in iterator and adds each value for which func returns false
-     * to a list.  Returns the resulting list.
-     *
-     * @param iterator source of the values
-     * @param func     function to reject the values
-     * @param list     list to receive the values
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T, A>> A reject(Iterator<? extends T> iterator,
-                                                           A list,
-                                                           Func1<? super T, Boolean> func)
-    {
-        while (iterator.hasNext()) {
-            final T value = iterator.next();
-            if (!func.apply(value)) {
-                list = list.insert(value);
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Calls func for every value in iterator and adds each value for which func returns true
-     * to a list.  Returns the resulting list.
-     *
-     * @param iterator source of the values
-     * @param func     function to select the values
-     * @param list     list to receive the values
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, A extends Insertable<T, A>> A select(Iterator<? extends T> iterator,
-                                                           A list,
-                                                           Func1<? super T, Boolean> func)
-    {
-        while (iterator.hasNext()) {
-            final T value = iterator.next();
-            if (func.apply(value)) {
-                list = list.insert(value);
-            }
-        }
-        return list;
     }
 
     public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,

@@ -35,35 +35,27 @@
 
 package org.javimmutable.collections.list;
 
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListBuilder;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Proc1Throws;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Sum1Throws;
+import org.javimmutable.collections.*;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.JImmutableListProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
 
 @Immutable
 public class TreeList<T>
@@ -429,13 +421,6 @@ public class TreeList<T>
     public List<T> getList()
     {
         return new ListAdaptor<>(this);
-    }
-
-    @Nonnull
-    @Override
-    public IList<T> getInsertableSelf()
-    {
-        return this;
     }
 
     @Override

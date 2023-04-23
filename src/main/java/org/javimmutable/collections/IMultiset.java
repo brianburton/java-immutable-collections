@@ -285,19 +285,6 @@ public interface IMultiset<T>
     IMultiset<T> insertAll(@Nonnull IMultiset<? extends T> values);
 
     /**
-     * Apply the transform function to all elements in iterator order and add each transformed
-     * value to build a new collection the same type as this.
-     *
-     * @param transform transformation applied to each element
-     * @return the new collection after all elements have been processed
-     */
-    @SuppressWarnings("unchecked")
-    default <A> IMultiset<A> transform(@Nonnull Func1<T, A> transform)
-    {
-        return transform((IMultiset)deleteAll(), transform);
-    }
-
-    /**
      * Combines all occurrences from other and the multiset. If only the multiset or
      * other contains a value, that value's count is preserved in the new multiset.
      * If both contain a value, the greater count is used.

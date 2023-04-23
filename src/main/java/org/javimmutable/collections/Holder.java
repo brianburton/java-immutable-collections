@@ -405,13 +405,6 @@ public abstract class Holder<T>
             return this;
         }
 
-        @Override
-        public <A> A fold(A acc,
-                          Func2<A, T, A> mapper)
-        {
-            return acc;
-        }
-
         @Nonnull
         @Override
         public Holder<T> map(@Nonnull Func0<? extends T> noneMapping)
@@ -689,13 +682,6 @@ public abstract class Holder<T>
         public Holder<T> notNull()
         {
             return value != null ? this : none();
-        }
-
-        @Override
-        public <A> A fold(A acc,
-                          Func2<A, T, A> mapper)
-        {
-            return mapper.apply(acc, value);
         }
 
         @Nonnull

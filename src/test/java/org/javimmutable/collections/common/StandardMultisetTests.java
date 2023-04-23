@@ -63,7 +63,6 @@ public class StandardMultisetTests
         testVarious(empty);
         testEquals(empty);
         testCollector(empty.insert(1).insert(1));
-        testTransform(empty);
 
         verifyContents(empty, com.google.common.collect.HashMultiset.create());
 
@@ -410,21 +409,6 @@ public class StandardMultisetTests
         verifyContents(jmet.insertAll(values), expected);
         verifyContents(jmet.insertAll(values.iterator()), expected);
         verifyContents(jmet.insertAll(asJMSet(values)), expected);
-    }
-
-    private static void testTransform(IMultiset<Integer> template)
-    {
-        IMultiset<Integer> ints = template;
-        IMultiset<Integer> strings = template.transform(x -> x * 100);
-        Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
-        verifyContents(strings, expected);
-        for (int i = 1; i <= 100; ++i) {
-            ints = ints.insert(i);
-            strings = ints.transform(x -> x * 100);
-            assertEquals(ints.getClass(), strings.getClass());
-            expected.add(100 * i);
-            verifyContents(strings, expected);
-        }
     }
 
     private static Iterable<Integer> plainIterable(List<Integer> values)

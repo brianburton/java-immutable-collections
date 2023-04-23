@@ -38,9 +38,7 @@ package org.javimmutable.collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 
@@ -52,26 +50,8 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IList<T>
-    extends Insertable<T, IList<T>>,
-        Indexed<T>,
-        IStreamable<T>,
-        InvariantCheckable,
-        Serializable
+    extends IDeque<T>
 {
-    /**
-     * @return number of values in the list
-     */
-    int size();
-
-    /**
-     * Retrieves the value at the specified index (which must be within the bounds
-     * of the list).
-     *
-     * @throws IndexOutOfBoundsException if index is out of bounds
-     */
-    @Override
-    T get(int index);
-
     /**
      * Replaces the value at the specified index (which must be within current
      * bounds of the list) with the new value.
@@ -79,6 +59,7 @@ public interface IList<T>
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
+    @Override
     IList<T> assign(int index,
                     @Nullable T value);
 
@@ -103,6 +84,7 @@ public interface IList<T>
      * Synonym for insert()
      */
     @Nonnull
+    @Override
     IList<T> insertFirst(@Nullable T value);
 
     /**
@@ -110,6 +92,7 @@ public interface IList<T>
      * Synonym for insert().
      */
     @Nonnull
+    @Override
     IList<T> insertLast(@Nullable T value);
 
     /**
@@ -160,6 +143,7 @@ public interface IList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     IList<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
 
     /**
@@ -168,6 +152,7 @@ public interface IList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     IList<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -177,6 +162,7 @@ public interface IList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     IList<T> insertAllLast(@Nonnull Iterable<? extends T> values);
 
     /**
@@ -186,6 +172,7 @@ public interface IList<T>
      * @return instance of list containing the collection
      */
     @Nonnull
+    @Override
     IList<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
@@ -195,6 +182,7 @@ public interface IList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
+    @Override
     IList<T> deleteFirst();
 
     /**
@@ -204,17 +192,8 @@ public interface IList<T>
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
+    @Override
     IList<T> deleteLast();
-
-    /**
-     * @return true only if list contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return false only if list contains no values
-     */
-    boolean isNonEmpty();
 
     /**
      * Delete value at index (which must be within the current bounds of the list).
@@ -228,19 +207,15 @@ public interface IList<T>
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IList<T> deleteAll();
-
-    /**
-     * Returns an unmodifiable List implementation backed by this list.
-     */
-    @Nonnull
-    List<T> getList();
 
     /**
      * Returns a list containing the same elements as this list but with their order reversed
      * so that first in this list is last in returned list etc.
      */
     @Nonnull
+    @Override
     IList<T> reverse();
 
     /**
@@ -252,6 +227,7 @@ public interface IList<T>
      * @return list of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
+    @Override
     IList<T> select(@Nonnull Predicate<T> predicate);
 
     /**
@@ -263,6 +239,7 @@ public interface IList<T>
      * @return list of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
+    @Override
     IList<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
@@ -282,6 +259,7 @@ public interface IList<T>
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
      */
+    @Override
     <A> IList<A> transform(@Nonnull Func1<T, A> transform);
 
     /**
@@ -291,6 +269,7 @@ public interface IList<T>
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
      */
+    @Override
     <A> IList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
 
     /**
@@ -340,15 +319,4 @@ public interface IList<T>
     @Nonnull
     IList<T> slice(int offset,
                    int limit);
-
-    /**
-     * Returns a Holder containing a value if this list contains only a single value and that value is non-null.
-     * Otherwise returns and empty Holder.  i.e. empty unless size() == 1 and get(0) returns a non-null value.
-     *
-     * @return Holder possibly containing the single non-null value in this list
-     */
-    default Holder<T> single()
-    {
-        return size() == 1 ? Holders.nullable(get(0)) : Holder.none();
-    }
 }

@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -44,7 +44,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ReadmeTest
 {
@@ -85,25 +87,15 @@ public class ReadmeTest
 
         // extract a list of prime numbers using a stream by filtering out numbers that have any factors 
         IList<Integer> primes = factorMap.stream()
-            .filter(e -> e.getValue().isEmpty())
-            .map(e -> e.getKey())
-            .collect(ICollectors.toList());
+                .filter(e -> e.getValue().isEmpty())
+                .map(e -> e.getKey())
+                .collect(ICollectors.toList());
         assertThat(primes)
-            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
-
-        // build a new list by selectively taking values from the primes list using transformSome() method instead of a stream
-        IList<Integer> threes = primes.transformSome(ILists.of(), i -> i % 10 == 3 ? Holders.nullable(i) : Holder.none());
-        assertThat(threes).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83));
-
-        // transformSome() can also append to an existing list rather than an empty one
-        IList<Integer> onesAndThrees = primes.transformSome(threes, i -> i % 10 == 1 ? Holders.nullable(i) : Holder.none());
-        assertThat(onesAndThrees).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83, 11, 31, 41, 61, 71));
-        // threes wasn't changed (it's immutable)
-        assertThat(threes).isEqualTo(ILists.of(3, 13, 23, 43, 53, 73, 83));
+                .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 
         // you can easily grab sub-lists from a list
-        assertThat(onesAndThrees.prefix(7)).isEqualTo(threes);
-        assertThat(onesAndThrees.middle(3, 10)).isEqualTo(ILists.of(43, 53, 73, 83, 11, 31, 41));
+        assertThat(primes.prefix(7)).isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17));
+        assertThat(primes.middle(3, 10)).isEqualTo(ILists.of(7, 11, 13, 17, 19, 23, 29));
     }
 
     @Test
@@ -124,8 +116,6 @@ public class ReadmeTest
         assertThat(changed).isEqualTo(ISets.hashed(2, 5, 8, 11, 14, 17));
         changed = numbers.select(i -> i % 3 == 1);
         assertThat(changed).isEqualTo(ISets.hashed(1, 4, 7, 10, 13, 16, 19));
-        IList<Integer> transformed = changed.collect(ILists.of());
-        assertThat(transformed).isEqualTo(ILists.of(1, 4, 7, 10, 13, 16, 19));
     }
 
     @Test

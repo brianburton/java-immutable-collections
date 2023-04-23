@@ -35,24 +35,20 @@
 
 package org.javimmutable.collections.setmap;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.ComparableComparator;
-import org.javimmutable.collections.tree.TreeMap;
-import org.javimmutable.collections.tree.TreeMapTest;
-import org.javimmutable.collections.tree.TreeSet;
-import org.javimmutable.collections.tree.TreeSetTest;
+import org.javimmutable.collections.tree.*;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class TemplateSetMapTest
     extends AbstractSetMapTestCase
@@ -63,18 +59,18 @@ public class TemplateSetMapTest
         final TreeMap<Integer, ISet<Integer>> emptyMap = TreeMap.of();
         final TreeSet<Integer> emptySet = TreeSet.of(reverse);
         final ISetMap<Integer, Integer> empty = TemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
-                                                                  emptySet.insert(8).insert(25));
+                emptySet.insert(8).insert(25));
         assertEquals(true, empty.isEmpty());
-        assertEquals(0, empty.count());
-        assertEquals(0, empty.keys().count());
+        assertEquals(0, empty.stream().count());
+        assertEquals(0, empty.keys().stream().count());
         assertNull(empty.get(1));
         ISetMap<Integer, Integer> map = verifyOperations(empty, Ordering.REVERSED);
         verifyRandom(TreeSetMap.of(), new java.util.TreeMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(IMapEntry.of(1, map.getSet(1)),
-                                                             IMapEntry.of(2, map.getSet(2)),
-                                                             IMapEntry.of(3, map.getSet(3))),
-                                               map.iterator());
+                        IMapEntry.of(2, map.getSet(2)),
+                        IMapEntry.of(3, map.getSet(3))),
+                map.iterator());
 
         map = empty
             .insert(10, 100)

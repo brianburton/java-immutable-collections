@@ -57,7 +57,6 @@ public final class StandardSetTests
         testWithMultiset(template);
         testRandom(template);
         testCollector(template.insert(-1).insert(-2));
-        testTransform(template);
         verifyIntersectionOrder(template);
 
         assertEquals(0, template.size());
@@ -414,21 +413,6 @@ public final class StandardSetTests
             }
             assertEquals(0, set.size());
             assertEquals(true, set.isEmpty());
-        }
-    }
-
-    private static void testTransform(ISet<Integer> template)
-    {
-        ISet<Integer> ints = template;
-        ISet<String> strings = template.transform(String::valueOf);
-        List<String> expected = new ArrayList<>();
-        verifyContents(strings, expected);
-        for (int i = 1; i <= 100; ++i) {
-            ints = ints.insert(i);
-            strings = ints.transform(String::valueOf);
-            assertEquals(ints.getClass(), strings.getClass());
-            expected.add(String.valueOf(i));
-            verifyContents(strings, expected);
         }
     }
 
