@@ -35,7 +35,17 @@
 
 package org.javimmutable.collections.listmap;
 
-import static com.google.common.primitives.Ints.asList;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Temp;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.list.TreeList;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,16 +54,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.list.TreeList;
+
+import static com.google.common.primitives.Ints.asList;
 
 public abstract class AbstractListMapTestCase
     extends TestCase
@@ -88,9 +90,9 @@ public abstract class AbstractListMapTestCase
         assertSame(map.getList(1), map.get(1));
         assertEquals(2, map.getList(1).size());
 
-        map = map.insert(IMapEntry.of(3, 87));
-        map = map.insert(IMapEntry.of(2, 87));
-        map = map.insert(IMapEntry.of(1, 87));
+        map = map.insert(IMapEntry.of(3, ILists.of(87)));
+        map = map.insert(IMapEntry.of(2, ILists.of(87)));
+        map = map.insert(IMapEntry.of(1, ILists.of(87)));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(100, 18, 87), map.getList(1).getList());
@@ -170,21 +172,27 @@ public abstract class AbstractListMapTestCase
     private static void verifyCollector(IListMap<Integer, Integer> template,
                                         Ordering ordering)
     {
-        List<IMapEntry<Integer, Integer>> values = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, -i)).collect(Collectors.toList());
+        List<IMapEntry<Integer, Integer>> values1 = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, -i)).collect(Collectors.toList());
+        List<IMapEntry<Integer, IList<Integer>>> values = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, ILists.of(-i))).collect(Collectors.toList());
         switch (ordering) {
             case HASH: {
-                Set<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toSet());
-                Set<IMapEntry<Integer, Integer>> expected = new HashSet<>(values);
+                Set<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll()
+                    .insertAll(values)
+                    .entries()
+                    .parallelStream()
+                    .map(e -> MapEntry.entry(e.getKey(), e.getValue()))
+                    .collect(Collectors.toSet());
+                Set<IMapEntry<Integer, IList<Integer>>> expected = new HashSet<>(values);
                 assertEquals(expected, entries);
                 break;
             }
             case INORDER: {
-                List<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
                 assertEquals(values, entries);
                 break;
             }
             case REVERSED: {
-                List<IMapEntry<Integer, Integer>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
                 Collections.reverse(entries);
                 assertEquals(values, entries);
                 break;
@@ -192,7 +200,7 @@ public abstract class AbstractListMapTestCase
         }
 
         IListMap<Integer, Integer> expected = template.insertAll(values);
-        IListMap<Integer, Integer> actual = values.parallelStream().collect(template.toCollector());
+        IListMap<Integer, Integer> actual = values1.parallelStream().collect(template.toCollector());
         assertEquals(expected, actual);
 
         verifyForEach(actual);

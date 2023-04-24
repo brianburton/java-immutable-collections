@@ -35,14 +35,20 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.iterators.EntryStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Iterator;
 
 @Immutable
 abstract class AbstractListMap<K, V>
@@ -86,13 +92,6 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public IListMap<K, V> getInsertableSelf()
-    {
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public IListMap<K, V> delete(@Nonnull K key)
     {
         return create(contents.delete(key));
@@ -124,15 +123,28 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<K, V>> entries() {
-        return new EntryStreamable<>(this);
+    public IStreamable<IMapEntry<K, IList<V>>> entries()
+    {
+        return contents;
     }
 
-    @Override
     @Nonnull
-    public IListMap<K, V> insert(@Nonnull IMapEntry<K, V> e)
+    @Override
+    public IListMap<K, V> insert(@Nonnull IMapEntry<K, IList<V>> e)
     {
-        return insert(e.getKey(), e.getValue());
+        return insertAll(e.getKey(), e.getValue());
+    }
+
+    @Nonnull
+    @Override
+    public IListMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, IList<V>>> iterator)
+    {
+        IListMap<K, V> map = this;
+        while (iterator.hasNext()) {
+            IMapEntry<K, IList<V>> entry = iterator.next();
+            map = map.insertAll(entry.getKey(), entry.getValue());
+        }
+        return map;
     }
 
     @Override

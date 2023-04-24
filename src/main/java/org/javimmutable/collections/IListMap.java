@@ -42,7 +42,6 @@ import org.javimmutable.collections.listmap.TreeListMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Collector;
@@ -52,12 +51,21 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IListMap<K, V>
-    extends Insertable<IMapEntry<K, V>, IListMap<K, V>>,
-        Mapped<K, IList<V>>,
-        IStreamable<IMapEntry<K, IList<V>>>,
-        InvariantCheckable,
-        Serializable
+    extends ICollection<IMapEntry<K, IList<V>>>,
+            Mapped<K, IList<V>>,
+            InvariantCheckable
 {
+    @Nonnull
+    @Override
+    IListMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, IList<V>>> iterator);
+
+    @Nonnull
+    @Override
+    default IListMap<K, V> insertAll(@Nonnull Iterable<? extends IMapEntry<K, IList<V>>> iterable)
+    {
+        return insertAll(iterable.iterator());
+    }
+
     /**
      * Creates a list map with higher performance but no specific ordering of keys.
      */
@@ -122,7 +130,7 @@ public interface IListMap<K, V>
      */
     @Nonnull
     @Override
-    IListMap<K, V> insert(@Nonnull IMapEntry<K, V> value);
+    IListMap<K, V> insert(@Nonnull IMapEntry<K, IList<V>> value);
 
     /**
      * Add value to the list for the specified key.  Note that this can create duplicate values
@@ -226,27 +234,10 @@ public interface IListMap<K, V>
     }
 
     /**
-     * Return the number of keys in the map.
-     */
-    int size();
-
-    /**
-     * @return true only if map contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return true only if map contains values
-     */
-    default boolean isNonEmpty()
-    {
-        return !isEmpty();
-    }
-
-    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IListMap<K, V> deleteAll();
 
     /**
@@ -268,7 +259,7 @@ public interface IListMap<K, V>
      * Creates a Streamable to access all of the Map's entries.
      */
     @Nonnull
-    IStreamable<IMapEntry<K, V>> entries();
+    IStreamable<IMapEntry<K, IList<V>>> entries();
 
     /**
      * Processes every key/list pair in this map using the provided function.
@@ -298,6 +289,10 @@ public interface IListMap<K, V>
     @Nonnull
     default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toCollector()
     {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
+        return GenericCollector.ordered(this,
+                                        deleteAll(),
+                                        a -> a.isEmpty(),
+                                        (a, e) -> a.insert(e.getKey(), e.getValue()),
+                                        (a, b) -> a.insertAll(b.entries()));
     }
 }

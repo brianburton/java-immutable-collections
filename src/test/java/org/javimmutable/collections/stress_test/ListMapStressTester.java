@@ -35,7 +35,13 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -111,9 +117,9 @@ public class ListMapStressTester
                         addAt(expected, key, value);
                         break;
                     }
-                    case 2: { //insert(Entry<K, V>)
+                    case 2: { //insert(Entry<K, IList<V>>)
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        IMapEntry<String, String> entry = new MapEntry<>(key, value);
+                        IMapEntry<String, IList<String>> entry = new MapEntry<>(key, ILists.of(value));
                         listmap = listmap.insert(entry);
                         addAt(expected, key, value);
                         break;
@@ -140,9 +146,9 @@ public class ListMapStressTester
                         addAt(expected, key, value);
                         break;
                     }
-                    case 2: { //insert(Entry<K, V>)
+                    case 2: { //insert(Entry<K, IList<V>>)
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        IMapEntry<String, String> entry = new MapEntry<>(key, value);
+                        IMapEntry<String, IList<String>> entry = new MapEntry<>(key, ILists.of(value));
                         listmap = listmap.insert(entry);
                         addAt(expected, key, value);
                         break;

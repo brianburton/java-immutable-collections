@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
