@@ -35,16 +35,16 @@
 
 package org.javimmutable.collections.iterators;
 
-import java.util.List;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedList;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.NoSuchElementException;
-import org.javimmutable.collections.indexed.IndexedList;
 
 public final class IndexedIterator
 {

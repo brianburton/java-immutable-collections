@@ -35,14 +35,10 @@
 
 package org.javimmutable.collections.tree;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -51,6 +47,10 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TreeCollisionMapTest
     extends TestCase

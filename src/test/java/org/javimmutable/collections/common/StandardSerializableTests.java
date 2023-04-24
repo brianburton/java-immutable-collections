@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections.common;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertEquals;
+import org.javimmutable.collections.Func1;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -48,9 +49,9 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.javimmutable.collections.Func1;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 public class StandardSerializableTests
 {

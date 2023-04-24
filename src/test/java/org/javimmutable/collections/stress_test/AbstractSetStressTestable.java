@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.IList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import org.javimmutable.collections.IList;
 
 
 abstract class AbstractSetStressTestable

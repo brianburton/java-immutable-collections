@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Indexed;
+
+import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 @Immutable
 public class IndexedList<T>

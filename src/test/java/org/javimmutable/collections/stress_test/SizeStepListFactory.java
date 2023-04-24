@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
 
 /**
  * Uses a random number generator to create a series of size steps

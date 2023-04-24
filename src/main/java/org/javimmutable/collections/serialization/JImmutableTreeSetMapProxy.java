@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.setmap.TreeSetMap;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.setmap.TreeSetMap;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.

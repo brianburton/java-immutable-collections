@@ -36,11 +36,27 @@
 package org.javimmutable.collections.inorder;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.*;
-import org.javimmutable.collections.common.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.common.MapBuilderTestAdapter;
+import org.javimmutable.collections.common.StandardBuilderTests;
+import org.javimmutable.collections.common.StandardMapTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;

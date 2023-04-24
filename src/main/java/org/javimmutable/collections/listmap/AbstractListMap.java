@@ -111,13 +111,15 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<K> keys() {
+    public IStreamable<K> keys()
+    {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values(@Nonnull K key) {
+    public IStreamable<V> values(@Nonnull K key)
+    {
         return getList(key);
     }
 

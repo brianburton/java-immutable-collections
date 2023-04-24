@@ -54,10 +54,10 @@ import java.util.Map;
 @Immutable
 public interface IArray<T>
     extends Indexed<T>,
-        Insertable<IMapEntry<Integer, T>, IArray<T>>,
-        IStreamable<IMapEntry<Integer, T>>,
-        InvariantCheckable,
-        Serializable
+            Insertable<IMapEntry<Integer, T>, IArray<T>>,
+            IStreamable<IMapEntry<Integer, T>>,
+            InvariantCheckable,
+            Serializable
 {
 
     /**

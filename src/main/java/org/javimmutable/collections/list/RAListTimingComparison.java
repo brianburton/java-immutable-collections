@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.IList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import org.javimmutable.collections.IList;
 
 public final class RAListTimingComparison
 {

@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.list;
 
-import static org.assertj.core.api.Assertions.*;
-
 import junit.framework.TestCase;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class TreeBuilderTest
     extends TestCase

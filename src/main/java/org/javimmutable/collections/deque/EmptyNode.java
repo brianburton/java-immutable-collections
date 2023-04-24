@@ -36,7 +36,6 @@
 package org.javimmutable.collections.deque;
 
 import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;

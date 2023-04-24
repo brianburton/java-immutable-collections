@@ -35,7 +35,15 @@
 
 package org.javimmutable.collections.inorder;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.GenericCollector;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.array.TrieLongArrayNode;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
@@ -231,13 +239,15 @@ public class OrderedMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<K> keys() {
+    public IStreamable<K> keys()
+    {
         return keys.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values() {
+    public IStreamable<V> values()
+    {
         return TransformStreamable.of(keys(), this::valueForKey);
     }
 

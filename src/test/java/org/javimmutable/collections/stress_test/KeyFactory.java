@@ -35,13 +35,11 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.stress_test.KeyWrapper.BadHashKey;
-import static org.javimmutable.collections.stress_test.KeyWrapper.ComparableBadHashKey;
-import static org.javimmutable.collections.stress_test.KeyWrapper.ComparableRegularKey;
-import static org.javimmutable.collections.stress_test.KeyWrapper.RegularKey;
+import org.javimmutable.collections.IList;
 
 import java.util.Random;
-import org.javimmutable.collections.IList;
+
+import static org.javimmutable.collections.stress_test.KeyWrapper.*;
 
 public abstract class KeyFactory<T>
 {
@@ -62,7 +60,7 @@ public abstract class KeyFactory<T>
     }
 
     static class RegularKeyFactory
-            extends KeyFactory<RegularKey<String>>
+        extends KeyFactory<RegularKey<String>>
     {
         @Override
         public RegularKey<String> newKey(IList<String> tokens,
@@ -79,7 +77,7 @@ public abstract class KeyFactory<T>
     }
 
     static class ComparableRegularKeyFactory
-            extends KeyFactory<ComparableRegularKey<String>>
+        extends KeyFactory<ComparableRegularKey<String>>
     {
         @Override
         public ComparableRegularKey<String> newKey(IList<String> tokens,
@@ -97,7 +95,7 @@ public abstract class KeyFactory<T>
     }
 
     static class BadHashKeyFactory
-            extends KeyFactory<BadHashKey<String>>
+        extends KeyFactory<BadHashKey<String>>
     {
         @Override
         public BadHashKey<String> newKey(IList<String> tokens,
@@ -114,7 +112,7 @@ public abstract class KeyFactory<T>
     }
 
     static class ComparableBadHashKeyFactory
-            extends KeyFactory<ComparableBadHashKey<String>>
+        extends KeyFactory<ComparableBadHashKey<String>>
     {
         @Override
         public ComparableBadHashKey<String> newKey(IList<String> tokens,

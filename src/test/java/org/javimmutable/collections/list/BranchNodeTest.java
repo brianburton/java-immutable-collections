@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.list;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
-import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
-import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
-import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
-import static org.javimmutable.collections.list.MultiValueNodeTest.reversed;
-
-import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
+
+import javax.annotation.Nonnull;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
+import static org.javimmutable.collections.list.MultiValueNode.*;
+import static org.javimmutable.collections.list.MultiValueNodeTest.*;
 
 public class BranchNodeTest
     extends TestCase

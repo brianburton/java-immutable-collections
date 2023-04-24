@@ -37,7 +37,8 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 
-public abstract class Compute<T> {
+public abstract class Compute<T>
+{
     @Nonnull
     public abstract <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func);
 
@@ -48,37 +49,44 @@ public abstract class Compute<T> {
     public abstract Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
 
     public abstract T get()
-            throws Exception;
+        throws Exception;
 
-    private Compute() {
+    private Compute()
+    {
     }
 
     @Nonnull
-    public static <T> Compute<T> success(T value) {
+    public static <T> Compute<T> success(T value)
+    {
         return new Success<>(value);
     }
 
     @Nonnull
-    public static <T> Compute<T> failure(Exception exception) {
+    public static <T> Compute<T> failure(Exception exception)
+    {
         return new Failure<>(exception);
     }
 
     @Nonnull
-    public static <T> Compute<T> compute(@Nonnull Func0Throws<T, ? super Exception> func) {
+    public static <T> Compute<T> compute(@Nonnull Func0Throws<T, ? super Exception> func)
+    {
         return new Later<>(func);
     }
 
     private static class Success<T>
-            extends Compute<T> {
+        extends Compute<T>
+    {
         private final T value;
 
-        private Success(T value) {
+        private Success(T value)
+        {
             this.value = value;
         }
 
         @Nonnull
         @Override
-        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func) {
+        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        {
             try {
                 return success(func.apply(value));
             } catch (Exception ex) {
@@ -88,7 +96,8 @@ public abstract class Compute<T> {
 
         @Nonnull
         @Override
-        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func) {
+        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func)
+        {
             try {
                 return func.apply(value);
             } catch (Exception ex) {
@@ -98,7 +107,8 @@ public abstract class Compute<T> {
 
         @Nonnull
         @Override
-        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc) {
+        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
+        {
             try {
                 proc.apply(value);
                 return this;
@@ -109,69 +119,81 @@ public abstract class Compute<T> {
 
         @Override
         public T get()
-                throws Exception {
+            throws Exception
+        {
             return value;
         }
     }
 
     private static class Failure<T>
-            extends Compute<T> {
+        extends Compute<T>
+    {
         private final Exception error;
 
-        private Failure(Exception error) {
+        private Failure(Exception error)
+        {
             this.error = error;
         }
 
         @SuppressWarnings("unchecked")
         @Nonnull
         @Override
-        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func) {
-            return (Compute<U>) this;
+        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        {
+            return (Compute<U>)this;
         }
 
         @SuppressWarnings("unchecked")
         @Nonnull
         @Override
-        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func) {
-            return (Compute<U>) this;
+        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func)
+        {
+            return (Compute<U>)this;
         }
 
         @Nonnull
         @Override
-        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc) {
+        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
+        {
             return this;
         }
 
         @Override
         public T get()
-                throws Exception {
+            throws Exception
+        {
             throw error;
         }
     }
 
     private static class Later<T>
-            extends Compute<T> {
+        extends Compute<T>
+    {
         private final Func0Throws<T, ? extends Exception> func;
 
-        private Later(Func0Throws<T, ? extends Exception> func) {
+        private Later(Func0Throws<T, ? extends Exception> func)
+        {
             this.func = func;
         }
 
         @Nonnull
         @Override
-        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func) {
+        public <U> Compute<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
+        {
             return new Later<>(() -> func.apply(this.func.apply()));
         }
 
         @Nonnull
         @Override
-        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func) {
+        public <U> Compute<U> flatMap(@Nonnull Func1Throws<T, Compute<U>, ? super Exception> func)
+        {
             return new Later<>(() -> func.apply(this.func.apply()).get());
         }
 
         @Nonnull
         @Override
-        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc) {
+        public Compute<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
+        {
             return map(x -> {
                 proc.apply(x);
                 return x;
@@ -180,7 +202,8 @@ public abstract class Compute<T> {
 
         @Override
         public T get()
-                throws Exception {
+            throws Exception
+        {
             return func.apply();
         }
     }

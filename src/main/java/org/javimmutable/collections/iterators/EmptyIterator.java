@@ -58,11 +58,14 @@ public class EmptyIterator<T>
     }
 
     @Nonnull
-    public static <T> IStreamable<T> streamable() {
-        return new IStreamable<T>() {
+    public static <T> IStreamable<T> streamable()
+    {
+        return new IStreamable<T>()
+        {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator() {
+            public SplitableIterator<T> iterator()
+            {
                 return of();
             }
 

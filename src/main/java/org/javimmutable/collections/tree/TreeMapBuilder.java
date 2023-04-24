@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.tree;
 
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
 
 @ThreadSafe
 class TreeMapBuilder<K, V>

@@ -35,7 +35,18 @@
 
 package org.javimmutable.collections.setmap;
 
-import static org.javimmutable.collections.common.TestUtil.makeSet;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.ISets;
+import org.javimmutable.collections.Temp;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,19 +59,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.ISets;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.hash.HashSet;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import static org.javimmutable.collections.common.TestUtil.makeSet;
 
 public abstract class AbstractSetMapTestCase
     extends TestCase

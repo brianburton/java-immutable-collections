@@ -35,17 +35,18 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.IList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import org.javimmutable.collections.IList;
 
 public final class ListTimingComparison
 {
     @SuppressWarnings("CallToSystemExit")
     public static void main(String[] argv)
-            throws Exception
+        throws Exception
     {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");

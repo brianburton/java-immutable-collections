@@ -41,7 +41,11 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.*;
+import org.javimmutable.collections.tree.ComparableComparator;
+import org.javimmutable.collections.tree.TreeMap;
+import org.javimmutable.collections.tree.TreeMapTest;
+import org.javimmutable.collections.tree.TreeSet;
+import org.javimmutable.collections.tree.TreeSetTest;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,7 +63,7 @@ public class TemplateSetMapTest
         final TreeMap<Integer, ISet<Integer>> emptyMap = TreeMap.of();
         final TreeSet<Integer> emptySet = TreeSet.of(reverse);
         final ISetMap<Integer, Integer> empty = TemplateSetMap.of(emptyMap.assign(1, emptySet.insert(10)),
-                emptySet.insert(8).insert(25));
+                                                                  emptySet.insert(8).insert(25));
         assertEquals(true, empty.isEmpty());
         assertEquals(0, empty.stream().count());
         assertEquals(0, empty.keys().stream().count());
@@ -68,9 +72,9 @@ public class TemplateSetMapTest
         verifyRandom(TreeSetMap.of(), new java.util.TreeMap<>());
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), map.keys().iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(IMapEntry.of(1, map.getSet(1)),
-                        IMapEntry.of(2, map.getSet(2)),
-                        IMapEntry.of(3, map.getSet(3))),
-                map.iterator());
+                                                             IMapEntry.of(2, map.getSet(2)),
+                                                             IMapEntry.of(3, map.getSet(3))),
+                                               map.iterator());
 
         map = empty
             .insert(10, 100)

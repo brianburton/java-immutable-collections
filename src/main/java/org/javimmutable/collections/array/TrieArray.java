@@ -35,7 +35,15 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.IndexedProc1;
+import org.javimmutable.collections.IndexedProc1Throws;
+import org.javimmutable.collections.Proc1Throws;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.IteratorHelper;
@@ -214,13 +222,15 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public IStreamable<Integer> keys() {
+    public IStreamable<Integer> keys()
+    {
         return root.keys().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 
     @Nonnull
     @Override
-    public IStreamable<T> values() {
+    public IStreamable<T> values()
+    {
         return root.values().streamable(SPLITERATOR_CHARACTERISTICS);
     }
 

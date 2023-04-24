@@ -35,11 +35,10 @@
 
 package org.javimmutable.collections.iterators;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class IteratorHelper
 {

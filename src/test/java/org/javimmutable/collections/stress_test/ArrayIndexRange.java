@@ -51,7 +51,7 @@ public abstract class ArrayIndexRange
     public abstract int randomIndex(Random random);
 
     private static class PositiveIndexRange
-            extends ArrayIndexRange
+        extends ArrayIndexRange
     {
         private final int maxIndex;
 
@@ -74,7 +74,7 @@ public abstract class ArrayIndexRange
     }
 
     private static class AllIntIndexRange
-            extends ArrayIndexRange
+        extends ArrayIndexRange
     {
         private AllIntIndexRange()
         {

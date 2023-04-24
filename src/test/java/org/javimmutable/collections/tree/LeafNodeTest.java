@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.tree;
 
-import java.util.Comparator;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.MapEntry;
+
+import java.util.Comparator;
 
 public class LeafNodeTest
     extends TestCase

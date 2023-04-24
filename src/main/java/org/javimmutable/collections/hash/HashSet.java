@@ -35,13 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
@@ -61,6 +54,14 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionSet;
 import org.javimmutable.collections.serialization.JImmutableHashSetProxy;
 import org.javimmutable.collections.tree.TreeCollisionSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.function.Consumer;
 
 @Immutable
 public class HashSet<T>

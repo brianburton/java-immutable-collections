@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.list;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.common.TestUtil.verifyContents;
-
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.common.TestUtil.verifyContents;
 
 public class OneValueNodeTest
     extends TestCase

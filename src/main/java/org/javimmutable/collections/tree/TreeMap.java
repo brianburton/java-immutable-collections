@@ -35,13 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
@@ -56,6 +49,14 @@ import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.serialization.JImmutableTreeMapProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Immutable
 public class TreeMap<K, V>

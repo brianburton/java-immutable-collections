@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.setmap;
 
-import java.io.Serializable;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.serialization.JImmutableTemplateSetMapProxy;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
 
 /**
  * JImmutableSetMap implementation that uses arbitrary Map and Set templates.

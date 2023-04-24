@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.array.ArrayAssignMapper;
@@ -45,6 +43,9 @@ import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.hash.set.ArraySetNode;
 import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
 import org.javimmutable.collections.list.ListCollisionSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 class HashSetBuilder<T>

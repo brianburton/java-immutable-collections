@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
+import org.javimmutable.collections.array.TrieArray;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IArrayBuilder;
-import org.javimmutable.collections.array.TrieArray;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.

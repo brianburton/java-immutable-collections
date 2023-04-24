@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISetMap;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractSetMapProxy

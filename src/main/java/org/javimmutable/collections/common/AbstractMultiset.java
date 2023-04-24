@@ -35,7 +35,12 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
@@ -435,17 +440,21 @@ public abstract class AbstractMultiset<T>
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<T, Integer>> entries() {
+    public IStreamable<IMapEntry<T, Integer>> entries()
+    {
         return map;
     }
 
     @Nonnull
     @Override
-    public IStreamable<T> occurrences() {
-        return new IStreamable<T>() {
+    public IStreamable<T> occurrences()
+    {
+        return new IStreamable<T>()
+        {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator() {
+            public SplitableIterator<T> iterator()
+            {
                 return LazyMultiIterator.transformed(map.iterator(), e -> () -> IndexedIterator.iterator(IndexedHelper.repeating(e.getKey(), e.getValue())));
             }
 
@@ -664,7 +673,8 @@ public abstract class AbstractMultiset<T>
             }
         }
 
-        private <T1 extends T> Counter(@Nonnull IStreamable<IMapEntry<T1, Integer>> values) {
+        private <T1 extends T> Counter(@Nonnull IStreamable<IMapEntry<T1, Integer>> values)
+        {
             this();
             for (IMapEntry<? extends T, Integer> entry : values) {
                 add(entry.getKey(), entry.getValue());

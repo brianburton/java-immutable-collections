@@ -35,8 +35,9 @@
 
 package org.javimmutable.collections.deque;
 
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
 
 final class DequeHelper
 {

@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
-import javax.annotation.Nonnull;
 
 public interface IArrayBuilder<T>
 {

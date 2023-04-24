@@ -36,7 +36,11 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
@@ -49,8 +53,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedSplit;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class GenericIteratorTest
     extends TestCase
@@ -165,7 +168,7 @@ public class GenericIteratorTest
 
     private static abstract class Node
         implements GenericIterator.Iterable<Integer>,
-            IStreamable<Integer>
+                   IStreamable<Integer>
 
     {
         @Nonnull
@@ -269,7 +272,7 @@ public class GenericIteratorTest
 
     private static class Transformed
         implements GenericIterator.Iterable<Holder<Integer>>,
-            IStreamable<Holder<Integer>>
+                   IStreamable<Holder<Integer>>
     {
         private final Node node;
 

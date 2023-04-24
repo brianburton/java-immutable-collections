@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections;
 
+import junit.framework.TestCase;
+import org.javimmutable.collections.tree.ComparableComparator;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import junit.framework.TestCase;
-import org.javimmutable.collections.tree.ComparableComparator;
 
 public class ICollectorsTest
     extends TestCase

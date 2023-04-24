@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections;
 
-import java.util.Iterator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.array.TrieArray;
+
+import javax.annotation.Nonnull;
+import java.util.Iterator;
 
 public final class IArrays
 {

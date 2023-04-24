@@ -35,7 +35,12 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.ICollectors;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -48,8 +53,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static junit.framework.Assert.*;
-import static org.javimmutable.collections.common.StandardStreamableTests.verifyOrderedUsingCollection;
-import static org.javimmutable.collections.common.StandardStreamableTests.verifyUnorderedUsingCollection;
+import static org.javimmutable.collections.common.StandardStreamableTests.*;
 
 public class StandardMapTests
 {

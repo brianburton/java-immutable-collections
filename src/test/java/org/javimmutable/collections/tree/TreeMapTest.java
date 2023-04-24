@@ -35,10 +35,19 @@
 
 package org.javimmutable.collections.tree;
 
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardMapTests.verifyEmptyEnumeration;
-import static org.javimmutable.collections.common.StandardMapTests.verifyEnumeration;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Proc2;
+import org.javimmutable.collections.Proc2Throws;
+import org.javimmutable.collections.Sum2;
+import org.javimmutable.collections.Sum2Throws;
+import org.javimmutable.collections.common.StandardMapTests;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,20 +60,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Proc2;
-import org.javimmutable.collections.Proc2Throws;
-import org.javimmutable.collections.Sum2;
-import org.javimmutable.collections.Sum2Throws;
-import org.javimmutable.collections.common.StandardMapTests;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardMapTests.*;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
 
 public class TreeMapTest
     extends TestCase

@@ -45,8 +45,9 @@ import java.util.stream.StreamSupport;
  * creation implementations use spliterator().
  */
 public interface IStreamable<T>
-        extends SplitableIterable<T>,
-        Streamable<T> {
+    extends SplitableIterable<T>,
+            Streamable<T>
+{
     /**
      * Overridden here to require implementations to return a SplitableIterator rather than
      * a basic Iterator.  This is necessary to allow composition of new objects from methods

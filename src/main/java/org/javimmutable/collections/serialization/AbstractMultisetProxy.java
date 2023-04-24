@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMultiset;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractMultisetProxy

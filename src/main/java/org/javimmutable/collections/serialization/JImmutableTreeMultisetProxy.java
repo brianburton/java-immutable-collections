@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.tree.TreeMultiset;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.tree.TreeMultiset;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.

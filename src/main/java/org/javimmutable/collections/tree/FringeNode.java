@@ -35,10 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import java.util.Comparator;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
@@ -47,6 +43,11 @@ import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Comparator;
 
 /**
  * Node with no value and no children.  Used as the terminating node at the bottom

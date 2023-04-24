@@ -35,14 +35,23 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Spliterator;
 
 /**
  * An immutable Map implementation backed by a JImmutableMap.
@@ -237,7 +246,8 @@ public class MapAdaptor<K, V>
             }
 
             @Nonnull
-            private IStreamable<Entry<K, V>> streamable() {
+            private IStreamable<Entry<K, V>> streamable()
+            {
                 return TransformStreamable.of(map, MapEntry::new);
             }
         };

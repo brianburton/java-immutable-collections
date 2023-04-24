@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.Iterator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+import java.util.Iterator;
 
 public class MapBuilderTestAdapter<K, V>
     implements StandardBuilderTests.BuilderAdapter<IMapEntry<K, V>, IMap<K, V>>

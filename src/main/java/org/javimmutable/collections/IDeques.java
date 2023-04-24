@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections;
 
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
+
+import javax.annotation.Nonnull;
+import java.util.Iterator;
+import java.util.List;
 
 public final class IDeques
 {

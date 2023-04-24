@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.common;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
@@ -47,6 +45,9 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.

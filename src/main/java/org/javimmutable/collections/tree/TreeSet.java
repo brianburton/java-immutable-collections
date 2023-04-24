@@ -35,17 +35,18 @@
 
 package org.javimmutable.collections.tree;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.common.AbstractSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableTreeSetProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Set;
 
 @Immutable
 public class TreeSet<T>

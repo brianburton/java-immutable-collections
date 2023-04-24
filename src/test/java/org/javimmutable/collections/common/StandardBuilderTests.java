@@ -35,8 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import static junit.framework.Assert.assertEquals;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.tree.ComparableComparator;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -46,14 +52,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.Func0;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.tree.ComparableComparator;
+
+import static junit.framework.Assert.assertEquals;
 
 public final class StandardBuilderTests
 {

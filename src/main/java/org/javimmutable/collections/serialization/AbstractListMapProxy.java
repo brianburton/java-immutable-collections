@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMapEntry;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.IMapEntry;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractListMapProxy

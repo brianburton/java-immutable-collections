@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
-import javax.annotation.Nonnull;
 
 public interface IDequeBuilder<T>
 {
@@ -111,8 +111,8 @@ public interface IDequeBuilder<T>
      */
     @Nonnull
     default IDequeBuilder<T> add(Indexed<? extends T> source,
-                                int offset,
-                                int limit)
+                                 int offset,
+                                 int limit)
     {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));

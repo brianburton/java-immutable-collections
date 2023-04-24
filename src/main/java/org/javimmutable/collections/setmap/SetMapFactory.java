@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.setmap;
 
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.hash.HashSet;
+
+import javax.annotation.Nonnull;
+import java.util.stream.Collector;
 
 public class SetMapFactory<K, V>
 {

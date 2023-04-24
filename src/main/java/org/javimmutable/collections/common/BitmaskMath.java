@@ -35,16 +35,16 @@
 
 package org.javimmutable.collections.common;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holder.some;
-import static org.javimmutable.collections.Holders.nullable;
-
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Temp;
+
+import javax.annotation.Nonnull;
+import java.util.function.Function;
+import java.util.function.IntConsumer;
+
+import static org.javimmutable.collections.Holder.*;
+import static org.javimmutable.collections.Holders.nullable;
 
 /**
  * Helper class with static methods to manipulate long bitmasks.

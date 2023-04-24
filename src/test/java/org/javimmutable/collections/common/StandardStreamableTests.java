@@ -48,14 +48,17 @@ import java.util.stream.Stream;
 
 import static junit.framework.Assert.assertEquals;
 
-public class StandardStreamableTests {
+public class StandardStreamableTests
+{
     public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull IStreamable<T> source) {
+                                                        @Nonnull IStreamable<T> source)
+    {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
     public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull Collection<T> source) {
+                                                        @Nonnull Collection<T> source)
+    {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 

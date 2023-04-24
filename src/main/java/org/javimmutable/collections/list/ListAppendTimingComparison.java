@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.IList;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.javimmutable.collections.IList;
 
 public class ListAppendTimingComparison
 {

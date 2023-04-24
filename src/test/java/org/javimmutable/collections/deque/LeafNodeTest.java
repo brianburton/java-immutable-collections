@@ -36,10 +36,6 @@
 package org.javimmutable.collections.deque;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.deque.BranchNode;
-import org.javimmutable.collections.deque.EmptyNode;
-import org.javimmutable.collections.deque.LeafNode;
-import org.javimmutable.collections.deque.Node;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;

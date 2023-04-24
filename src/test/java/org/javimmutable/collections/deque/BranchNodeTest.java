@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.deque;
 
+import junit.framework.TestCase;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import junit.framework.TestCase;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class BranchNodeTest
     extends TestCase

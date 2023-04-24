@@ -54,7 +54,7 @@ import java.util.function.Predicate;
  */
 public abstract class Holder<T>
     implements IStreamable<T>,
-        Serializable
+               Serializable
 {
     /**
      * If this value is null returns None, otherwise returns this value.

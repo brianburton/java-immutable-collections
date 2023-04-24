@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.util;
 
-import java.util.Map;
-import java.util.Random;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.array.TrieArray;
@@ -44,6 +42,9 @@ import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.tree.TreeMap;
+
+import java.util.Map;
+import java.util.Random;
 
 public final class MapTimingComparison
 {

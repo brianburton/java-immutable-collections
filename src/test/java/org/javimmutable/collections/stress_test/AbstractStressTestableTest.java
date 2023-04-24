@@ -36,12 +36,13 @@
 package org.javimmutable.collections.stress_test;
 
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IArrays;
 import org.javimmutable.collections.IList;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 
 public class AbstractStressTestableTest
     extends TestCase

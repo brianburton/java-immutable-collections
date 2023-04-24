@@ -35,8 +35,9 @@
 
 package org.javimmutable.collections.listmap;
 
-import java.util.Random;
 import org.javimmutable.collections.IListMap;
+
+import java.util.Random;
 
 public final class ListMapTimingLoop
 {

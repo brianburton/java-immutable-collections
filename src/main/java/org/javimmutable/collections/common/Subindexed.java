@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import static org.javimmutable.collections.Holder.none;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
+import static org.javimmutable.collections.Holder.none;
 
 /**
  * Wrapper for an Indexed that only provides access to a portion of the full Indexed's values.

@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 /**
  * Interface for objects that can produce a Stream on demand.  This interface only requires implementation
  * of a stream() method so it can easily be used with lambdas.
+ *
  * @param <T>
  */
 public interface Streamable<T>

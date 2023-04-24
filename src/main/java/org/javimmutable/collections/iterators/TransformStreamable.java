@@ -43,27 +43,31 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 public class TransformStreamable<S, T>
-        implements IStreamable<T>
+    implements IStreamable<T>
 {
     private final IStreamable<S> source;
     private final Function<S, T> transforminator;
 
     private TransformStreamable(IStreamable<S> source,
-                                Function<S, T> transforminator) {
+                                Function<S, T> transforminator)
+    {
         this.source = source;
         this.transforminator = transforminator;
     }
 
     public static <S, T> IStreamable<T> of(@Nonnull IStreamable<S> source,
-                                           @Nonnull Function<S, T> transforminator) {
+                                           @Nonnull Function<S, T> transforminator)
+    {
         return new TransformStreamable<>(source, transforminator);
     }
 
-    public static <K, V> IStreamable<K> ofKeys(@Nonnull IStreamable<IMapEntry<K, V>> source) {
+    public static <K, V> IStreamable<K> ofKeys(@Nonnull IStreamable<IMapEntry<K, V>> source)
+    {
         return of(source, IMapEntry::getKey);
     }
 
-    public static <K, V> IStreamable<V> ofValues(@Nonnull IStreamable<IMapEntry<K, V>> source) {
+    public static <K, V> IStreamable<V> ofValues(@Nonnull IStreamable<IMapEntry<K, V>> source)
+    {
         return of(source, IMapEntry::getValue);
     }
 

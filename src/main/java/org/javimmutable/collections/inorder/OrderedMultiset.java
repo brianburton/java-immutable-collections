@@ -35,18 +35,19 @@
 
 package org.javimmutable.collections.inorder;
 
-import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMultisetProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collector;
 
 /**
  * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,

@@ -39,9 +39,6 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.javimmutable.collections.deque.EmptyNode;
-import org.javimmutable.collections.deque.Node;
-import org.javimmutable.collections.deque.TreeBuilder;
 
 public class TreeBuilderTest
     extends TestCase

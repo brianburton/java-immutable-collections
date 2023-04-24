@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections.array;
 
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+
+import javax.annotation.Nonnull;
 
 public interface ArrayFindEntryMapper<K, V, T>
     extends ArrayGetMapper<K, V, T>

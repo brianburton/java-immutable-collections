@@ -35,16 +35,8 @@
 
 package org.javimmutable.collections.inorder;
 
-import static java.util.stream.Collectors.toList;
-
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
@@ -54,6 +46,15 @@ import org.javimmutable.collections.common.StandardMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import static java.util.stream.Collectors.toList;
 
 public class OrderedMultisetTest
     extends TestCase

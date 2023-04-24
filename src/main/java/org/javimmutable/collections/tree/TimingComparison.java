@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.tree;
 
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
 
 public final class TimingComparison
 {

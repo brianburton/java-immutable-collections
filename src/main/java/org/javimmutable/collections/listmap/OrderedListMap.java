@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.listmap;
 
-import java.io.Serializable;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.list.TreeList;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderListMapProxy;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableListMap implementation that allows keys to be traversed in the same order as they

@@ -35,22 +35,16 @@
 
 package org.javimmutable.collections.array;
 
-import static org.javimmutable.collections.common.BitmaskMath.ARRAY_SIZE;
-import static org.javimmutable.collections.common.BitmaskMath.addBit;
-import static org.javimmutable.collections.common.BitmaskMath.bitCount;
-import static org.javimmutable.collections.common.BitmaskMath.bitFromIndex;
-import static org.javimmutable.collections.common.BitmaskMath.bitIsAbsent;
-import static org.javimmutable.collections.common.BitmaskMath.bitIsPresent;
-import static org.javimmutable.collections.common.BitmaskMath.copyToCompactArrayUsingBitmask;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.baseIndexAtShift;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.indexAtShift;
-
-import java.util.Arrays;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Arrays;
+
+import static org.javimmutable.collections.common.BitmaskMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 @NotThreadSafe
 public class TrieArrayBuilder<T>

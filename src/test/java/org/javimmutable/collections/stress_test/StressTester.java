@@ -35,18 +35,19 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
 
 /**
  * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.

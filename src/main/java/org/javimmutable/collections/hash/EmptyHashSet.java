@@ -35,16 +35,17 @@
 
 package org.javimmutable.collections.hash;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractSet;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Set;
 
 public class EmptyHashSet<T>
     extends AbstractSet<T>

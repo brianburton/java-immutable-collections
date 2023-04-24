@@ -46,7 +46,14 @@ import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedMultiset;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.Spliterator;
 import java.util.function.Function;
 
 import static junit.framework.Assert.*;

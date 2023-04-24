@@ -35,24 +35,6 @@
 
 package org.javimmutable.collections.array;
 
-import static org.javimmutable.collections.common.BitmaskMath.addBit;
-import static org.javimmutable.collections.common.BitmaskMath.arrayIndexForBit;
-import static org.javimmutable.collections.common.BitmaskMath.bitCount;
-import static org.javimmutable.collections.common.BitmaskMath.bitFromIndex;
-import static org.javimmutable.collections.common.BitmaskMath.bitIsPresent;
-import static org.javimmutable.collections.common.BitmaskMath.indexForBit;
-import static org.javimmutable.collections.common.BitmaskMath.leastBit;
-import static org.javimmutable.collections.common.BitmaskMath.removeBit;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.baseIndexAtShift;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.indexAtShift;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.shift;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntFunction;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
@@ -68,6 +50,15 @@ import org.javimmutable.collections.common.ArrayHelper;
 import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntFunction;
+
+import static org.javimmutable.collections.common.BitmaskMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
 /**
  * Implements an array mapped trie using integers as keys.  When iterating keys

@@ -35,12 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import java.io.Serializable;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
@@ -67,6 +61,13 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
 import org.javimmutable.collections.tree.TreeCollisionMap;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.Serializable;
+import java.util.stream.Collector;
 
 @Immutable
 public class HashMap<T, K, V>

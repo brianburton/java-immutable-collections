@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections;
 
-import static org.junit.Assert.assertThrows;
+import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.assertThrows;
 
 public class HolderTest
     extends TestCase

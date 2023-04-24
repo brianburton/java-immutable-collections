@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.common;
 
-import java.lang.reflect.Array;
 import javax.annotation.Nonnull;
+import java.lang.reflect.Array;
 
 public final class ArrayHelper
 {

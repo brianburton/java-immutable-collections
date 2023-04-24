@@ -42,10 +42,12 @@ import org.javimmutable.collections.SplitableIterator;
 import javax.annotation.Nonnull;
 
 public class EntryStreamable<K, V, C extends IStreamable<V>, D extends IStreamable<IMapEntry<K, C>>>
-        implements IStreamable<IMapEntry<K, V>> {
+    implements IStreamable<IMapEntry<K, V>>
+{
     private final D source;
 
-    public EntryStreamable(@Nonnull D source) {
+    public EntryStreamable(@Nonnull D source)
+    {
         this.source = source;
     }
 

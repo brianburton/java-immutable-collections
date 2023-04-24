@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections;
 
-import java.util.Comparator;
-import java.util.Map;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.tree.ComparableComparator;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.util.Functions;
+
+import javax.annotation.Nonnull;
+import java.util.Comparator;
+import java.util.Map;
 
 public final class IMaps
 {

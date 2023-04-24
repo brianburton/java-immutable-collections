@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
 
 public class RandomKeyManager
 {
@@ -103,27 +104,27 @@ public class RandomKeyManager
                 list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
                 break;
             case 2: //adds 1 - unique value
-            list = list.insertLast(randomUnallocatedKey());
-            break;
-        case 3: //adds 1 - unique value, value already in set
-            list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
-            list = list.insertLast(randomUnallocatedKey());
-            break;
-        case 4: //adds 1 - two copies of unique value
-            value = randomUnallocatedKey();
-            list = list.insert(value).insert(value);
-            break;
-        case 5: //adds 1 - two copies of unique value, value already in set
-            list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
-            value = randomUnallocatedKey();
-            list = list.insert(value).insert(value);
-            break;
-        case 6: //adds 2 - two unique values
-        case 7: //adds 2 - two unique values
-            list = list.insertAll(randomUniqueUnallocatedKeysJList(2));
-            break;
-        default:
-            throw new RuntimeException();
+                list = list.insertLast(randomUnallocatedKey());
+                break;
+            case 3: //adds 1 - unique value, value already in set
+                list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
+                list = list.insertLast(randomUnallocatedKey());
+                break;
+            case 4: //adds 1 - two copies of unique value
+                value = randomUnallocatedKey();
+                list = list.insert(value).insert(value);
+                break;
+            case 5: //adds 1 - two copies of unique value, value already in set
+                list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
+                value = randomUnallocatedKey();
+                list = list.insert(value).insert(value);
+                break;
+            case 6: //adds 2 - two unique values
+            case 7: //adds 2 - two unique values
+                list = list.insertAll(randomUniqueUnallocatedKeysJList(2));
+                break;
+            default:
+                throw new RuntimeException();
         }
         return list;
     }
@@ -140,29 +141,29 @@ public class RandomKeyManager
                 break;
             case 1: //deletes 0 - value not in set
                 list = list.insert(randomUnallocatedKey());
-            break;
-        case 2: //deletes 1 - value in set
-            list = list.insertLast(randomAllocatedKey());
-            break;
-        case 3: //deletes 1 - two copies of value in set
-            value = randomAllocatedKey();
-            list = list.insert(value).insert(value);
-            break;
-        case 4: //deletes 1 - value in set, value not in set
-            list = list.insertLast(randomAllocatedKey());
-            list = list.insert(randomUnallocatedKey());
-            break;
-        case 5: //deletes 1 - two copies of value in set, value not in set
-            value = randomAllocatedKey();
-            list = list.insert(value).insert(value);
-            list = list.insert(randomUnallocatedKey());
-            break;
-        case 6: //deletes 2 - two different values in set
-        case 7: //deletes 2 - two different values in set
-            list = list.insertAll(randomUniqueAllocatedKeysJList(2));
-            break;
-        default:
-            throw new RuntimeException();
+                break;
+            case 2: //deletes 1 - value in set
+                list = list.insertLast(randomAllocatedKey());
+                break;
+            case 3: //deletes 1 - two copies of value in set
+                value = randomAllocatedKey();
+                list = list.insert(value).insert(value);
+                break;
+            case 4: //deletes 1 - value in set, value not in set
+                list = list.insertLast(randomAllocatedKey());
+                list = list.insert(randomUnallocatedKey());
+                break;
+            case 5: //deletes 1 - two copies of value in set, value not in set
+                value = randomAllocatedKey();
+                list = list.insert(value).insert(value);
+                list = list.insert(randomUnallocatedKey());
+                break;
+            case 6: //deletes 2 - two different values in set
+            case 7: //deletes 2 - two different values in set
+                list = list.insertAll(randomUniqueAllocatedKeysJList(2));
+                break;
+            default:
+                throw new RuntimeException();
         }
         return list;
     }

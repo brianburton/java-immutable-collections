@@ -35,12 +35,11 @@
 
 package org.javimmutable.collections.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
+
+import static org.junit.Assert.*;
 
 public class StandardListTests
 {

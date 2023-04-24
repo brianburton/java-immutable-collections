@@ -35,7 +35,16 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Proc1Throws;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
@@ -54,8 +63,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
+import static org.javimmutable.collections.list.TreeBuilder.*;
 
 @Immutable
 public class TreeList<T>

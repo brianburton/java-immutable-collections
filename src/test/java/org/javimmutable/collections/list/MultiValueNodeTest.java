@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.list;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
-import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
-
 import junit.framework.TestCase;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.common.TestUtil;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.javimmutable.collections.list.MultiValueNode.*;
 
 public class MultiValueNodeTest
     extends TestCase

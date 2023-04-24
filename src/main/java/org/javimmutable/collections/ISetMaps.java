@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections;
 
-import java.util.Comparator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.setmap.HashSetMap;
 import org.javimmutable.collections.setmap.OrderedSetMap;
 import org.javimmutable.collections.setmap.SetMapFactory;
 import org.javimmutable.collections.setmap.TemplateSetMap;
 import org.javimmutable.collections.setmap.TreeSetMap;
+
+import javax.annotation.Nonnull;
+import java.util.Comparator;
 
 public final class ISetMaps
 {

@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.deque;
 
-import java.util.Iterator;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IDequeBuilder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.StandardBuilderTests;
+
+import java.util.Iterator;
 
 public class BuilderTestAdapter<T>
     implements StandardBuilderTests.BuilderAdapter<T, IDeque<T>>

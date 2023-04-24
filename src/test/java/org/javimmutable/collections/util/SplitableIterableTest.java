@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.util;
 
-import java.io.IOException;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.ILists;
+
+import java.io.IOException;
 
 public class SplitableIterableTest
     extends TestCase

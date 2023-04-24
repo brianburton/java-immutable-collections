@@ -49,9 +49,10 @@ import java.util.stream.Collector;
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
 public interface ISet<T>
-        extends ICollection<T>,
-        Mapped<T, T>,
-        InvariantCheckable {
+    extends ICollection<T>,
+            Mapped<T, T>,
+            InvariantCheckable
+{
     /**
      * Adds the single value to the Set.
      *
@@ -209,7 +210,8 @@ public interface ISet<T>
      */
     @Nullable
     @Override
-    default T get(T key) {
+    default T get(T key)
+    {
         return contains(key) ? key : null;
     }
 
@@ -221,7 +223,8 @@ public interface ISet<T>
      */
     @Override
     default T getValueOr(T key,
-                         T defaultValue) {
+                         T defaultValue)
+    {
         return contains(key) ? key : defaultValue;
     }
 
@@ -234,7 +237,8 @@ public interface ISet<T>
      */
     @Nonnull
     @Override
-    default Holder<T> find(T key) {
+    default Holder<T> find(T key)
+    {
         return contains(key) ? Holders.nullable(key) : Holder.none();
     }
 
@@ -247,7 +251,8 @@ public interface ISet<T>
      * @return set of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default ISet<T> select(@Nonnull Predicate<T> predicate) {
+    default ISet<T> select(@Nonnull Predicate<T> predicate)
+    {
         ISet<T> answer = deleteAll();
         for (T value : this) {
             if (predicate.test(value)) {
@@ -266,7 +271,8 @@ public interface ISet<T>
      * @return set of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default ISet<T> reject(@Nonnull Predicate<T> predicate) {
+    default ISet<T> reject(@Nonnull Predicate<T> predicate)
+    {
         ISet<T> answer = this;
         for (T value : this) {
             if (predicate.test(value)) {
@@ -281,7 +287,8 @@ public interface ISet<T>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, ISet<T>> setCollector() {
+    default Collector<T, ?, ISet<T>> setCollector()
+    {
         return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

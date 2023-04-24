@@ -35,14 +35,14 @@
 
 package org.javimmutable.collections.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IDeque;
 
-public class StandardDequeTests {
+import static org.junit.Assert.*;
+
+public class StandardDequeTests
+{
     public static void standardTests(IDeque<Integer> empty)
     {
         verifyInsertAllFirst(empty);
@@ -113,8 +113,8 @@ public class StandardDequeTests {
     }
 
     private static IDeque<Integer> appendAll(IDeque<Integer> answer,
-                                            int first,
-                                            int last)
+                                             int first,
+                                             int last)
     {
         for (int i = first; i <= last; ++i) {
             answer = answer.insert(i);
@@ -123,8 +123,8 @@ public class StandardDequeTests {
     }
 
     private static IDeque<Integer> prependAll(IDeque<Integer> answer,
-                                             int first,
-                                             int last)
+                                              int first,
+                                              int last)
     {
         for (int i = last; i >= first; --i) {
             answer = answer.insertFirst(i);

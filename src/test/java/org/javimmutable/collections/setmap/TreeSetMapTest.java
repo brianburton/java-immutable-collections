@@ -35,19 +35,19 @@
 
 package org.javimmutable.collections.setmap;
 
-import static java.util.Arrays.asList;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+import org.javimmutable.collections.tree.TreeMapTest;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeMap;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-import org.javimmutable.collections.tree.TreeMapTest;
+
+import static java.util.Arrays.asList;
 
 public class TreeSetMapTest
     extends AbstractSetMapTestCase

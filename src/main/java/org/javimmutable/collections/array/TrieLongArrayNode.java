@@ -321,13 +321,16 @@ public class TrieLongArrayNode<T>
     }
 
     private <V> IStreamable<V> streamable(@Nonnull LongIntFunc<V> valueFunction,
-                                          @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction) {
+                                          @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
+    {
         return iterable(valueFunction, nodeFunction).streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
     private <V> GenericIterator.Iterable<V> iterable(@Nonnull LongIntFunc<V> valueFunction,
-                                                     @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction) {
-        return new GenericIterator.Iterable<V>() {
+                                                     @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
+    {
+        return new GenericIterator.Iterable<V>()
+        {
             @Nullable
             @Override
             public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,

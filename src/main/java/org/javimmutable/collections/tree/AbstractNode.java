@@ -35,9 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import java.util.Comparator;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
@@ -51,6 +48,10 @@ import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Comparator;
 
 abstract class AbstractNode<K, V>
     implements SplitableIterable<IMapEntry<K, V>>,

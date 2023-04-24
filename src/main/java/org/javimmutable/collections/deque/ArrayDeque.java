@@ -35,7 +35,12 @@
 
 package org.javimmutable.collections.deque;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IDeque;
+import org.javimmutable.collections.IDequeBuilder;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.common.Subindexed;
@@ -58,7 +63,7 @@ import java.util.stream.Collector;
  * Replaced by JImmutableTreeList since direct element access (get) is less common than simple
  * construction and iteration and this class is far less flexible in what it can do than the balanced
  * binary tree implementation.
- *
+ * <p>
  * Retained temporarily for extreme backwards compatibility but will definitely be removed in the future.
  */
 public class ArrayDeque<T>

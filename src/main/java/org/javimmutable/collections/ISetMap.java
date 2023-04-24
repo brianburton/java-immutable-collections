@@ -49,10 +49,10 @@ import java.util.stream.Collector;
 @Immutable
 public interface ISetMap<K, V>
     extends Insertable<IMapEntry<K, V>, ISetMap<K, V>>,
-        Mapped<K, ISet<V>>,
-        IStreamable<IMapEntry<K, ISet<V>>>,
-        InvariantCheckable,
-        Serializable
+            Mapped<K, ISet<V>>,
+            IStreamable<IMapEntry<K, ISet<V>>>,
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Return the set associated with key, or an empty set if no list is associated.

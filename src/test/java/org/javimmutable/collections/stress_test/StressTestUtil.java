@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISets;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISets;
 
 class StressTestUtil
 {

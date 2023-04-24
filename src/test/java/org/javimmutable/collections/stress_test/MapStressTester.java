@@ -35,15 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-import static org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
-import static org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
-import static org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IBuilders;
@@ -59,6 +50,14 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.tree.TreeMapTest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import static org.javimmutable.collections.stress_test.KeyFactory.*;
 
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:

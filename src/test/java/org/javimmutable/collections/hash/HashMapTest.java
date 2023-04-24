@@ -35,20 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardMapTests.verifyEnumeration;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.iteratorTest;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.listIteratorTest;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Holder;
@@ -65,6 +51,20 @@ import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.tree.TreeCollisionMap;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardMapTests.verifyEnumeration;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class HashMapTest
     extends TestCase

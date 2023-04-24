@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.tree;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.JImmutableTreeMultisetProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Map;
 
 @Immutable
 public class TreeMultiset<T>
@@ -107,7 +108,7 @@ public class TreeMultiset<T>
     {
         return map;
     }
-    
+
     private Object writeReplace()
     {
         return new JImmutableTreeMultisetProxy(this);

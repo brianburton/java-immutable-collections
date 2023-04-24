@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.hash;
 
-import java.io.Serializable;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.JImmutableHashMultisetProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Map;
 
 @Immutable
 public class HashMultiset<T>

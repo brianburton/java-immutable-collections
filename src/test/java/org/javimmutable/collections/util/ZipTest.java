@@ -35,10 +35,11 @@
 
 package org.javimmutable.collections.util;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.TestCase;
 import org.javimmutable.collections.ILists;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ZipTest
     extends TestCase

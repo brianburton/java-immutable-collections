@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.deque;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.IndexedIterator;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Iterator;
 
 class TreeBuilder<T>
 {

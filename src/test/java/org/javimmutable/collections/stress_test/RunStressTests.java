@@ -35,13 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -65,6 +58,14 @@ import org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every

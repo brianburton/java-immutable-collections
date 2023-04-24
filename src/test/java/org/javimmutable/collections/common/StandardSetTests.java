@@ -35,12 +35,23 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.IMultisets;
+import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import static junit.framework.Assert.*;
 

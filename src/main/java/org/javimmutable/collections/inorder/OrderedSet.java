@@ -35,12 +35,6 @@
 
 package org.javimmutable.collections.inorder;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
@@ -48,6 +42,13 @@ import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.common.AbstractSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collector;
 
 /**
  * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration

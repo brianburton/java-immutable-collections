@@ -45,8 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 public class ReadmeTest
 {
@@ -87,11 +86,11 @@ public class ReadmeTest
 
         // extract a list of prime numbers using a stream by filtering out numbers that have any factors 
         IList<Integer> primes = factorMap.stream()
-                .filter(e -> e.getValue().isEmpty())
-                .map(e -> e.getKey())
-                .collect(ICollectors.toList());
+            .filter(e -> e.getValue().isEmpty())
+            .map(e -> e.getKey())
+            .collect(ICollectors.toList());
         assertThat(primes)
-                .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
+            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 
         // you can easily grab sub-lists from a list
         assertThat(primes.prefix(7)).isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17));

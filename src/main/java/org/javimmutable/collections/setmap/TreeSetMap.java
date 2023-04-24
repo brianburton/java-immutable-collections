@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.setmap;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.serialization.JImmutableTreeSetMapProxy;
 import org.javimmutable.collections.tree.TreeMap;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in sorted order using a Comparator

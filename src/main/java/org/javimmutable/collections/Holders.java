@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections;
 
-import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 public final class Holders
 {

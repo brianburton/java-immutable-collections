@@ -36,14 +36,7 @@
 package org.javimmutable.collections.hash;
 
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-
 import com.google.common.collect.TreeMultiset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMultiset;
@@ -51,6 +44,14 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.common.StandardMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class HashMultisetTest
     extends TestCase

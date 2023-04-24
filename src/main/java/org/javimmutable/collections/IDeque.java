@@ -52,8 +52,8 @@ import java.util.stream.Collector;
 @Immutable
 public interface IDeque<T>
     extends ICollection<T>,
-        Indexed<T>,
-        InvariantCheckable
+            Indexed<T>,
+            InvariantCheckable
 {
     /**
      * Retrieves the value at the specified index (which must be within the bounds
@@ -72,7 +72,7 @@ public interface IDeque<T>
      */
     @Nonnull
     IDeque<T> assign(int index,
-                    @Nullable T value);
+                     @Nullable T value);
 
     /**
      * Adds a value to the end of the list.  May be invoked on an empty list.

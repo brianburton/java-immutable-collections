@@ -35,7 +35,12 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 
 import java.util.Iterator;
 import java.util.LinkedList;

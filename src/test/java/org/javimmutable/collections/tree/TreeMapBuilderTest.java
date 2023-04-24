@@ -35,12 +35,6 @@
 
 package org.javimmutable.collections.tree;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
@@ -48,6 +42,13 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.TestUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class TreeMapBuilderTest
     extends TestCase

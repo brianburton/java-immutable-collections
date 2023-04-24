@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.ISet;
+
+import javax.annotation.concurrent.Immutable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.ISet;
 
 /**
  * Adaptor that implements an unmodifiable Set backed by a JImmutableSet.

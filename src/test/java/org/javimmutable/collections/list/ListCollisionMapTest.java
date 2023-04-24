@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.list;
 
-import java.io.IOException;
-import java.util.stream.IntStream;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
+
+import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class ListCollisionMapTest
     extends TestCase

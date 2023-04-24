@@ -37,7 +37,15 @@ package org.javimmutable.collections.stress_test;
 
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.ICollection;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.IMultisets;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISets;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.hash.HashMultiset;
@@ -48,7 +56,11 @@ import org.javimmutable.collections.tree.TreeMultiset;
 import org.javimmutable.collections.tree.TreeMultisetTest;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -448,11 +460,11 @@ public class MultisetStressTester
 
         if (expectedList.size() != multi.occurrenceCount()) {
             throw new RuntimeException(String.format("expectedList built incorrectly - size expected %d size found %d%n",
-                    multi.occurrenceCount(), expectedList.size()));
+                                                     multi.occurrenceCount(), expectedList.size()));
         }
         if (entries.size() != multi.size()) {
             throw new RuntimeException(String.format("entries list built incorrectly - size expected %d size found %d%n",
-                    multi.size(), entries.size()));
+                                                     multi.size(), entries.size()));
         }
 
         StandardIteratorTests.listIteratorTest(expectedList, multi.occurrences().iterator());
@@ -732,7 +744,8 @@ public class MultisetStressTester
                                                                                         Random random,
                                                                                         List<String> multiList,
                                                                                         Multiset<String> expected,
-                                                                                        ICollection<String> values) {
+                                                                                        ICollection<String> values)
+    {
         int maxSize = multiList.size() / 20;
         for (int n = 0, limit = (maxSize > 0) ? random.nextInt(maxSize) : random.nextInt(3); n < limit; ++n) {
             values = values.insert(notContainedValue(tokens, random, expected));

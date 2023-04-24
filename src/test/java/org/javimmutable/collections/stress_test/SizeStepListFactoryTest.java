@@ -40,7 +40,7 @@ import junit.framework.TestCase;
 import java.util.Random;
 
 public class SizeStepListFactoryTest
-        extends TestCase
+    extends TestCase
 {
     public void testSteps()
     {
@@ -93,9 +93,9 @@ public class SizeStepListFactoryTest
     }
 
     private void verifyTinySteps(int requestedNumSteps,
-                             int expectedNumSteps,
-                             int maxSize,
-                             Random r)
+                                 int expectedNumSteps,
+                                 int maxSize,
+                                 Random r)
     {
         int stepCount = 0;
         SizeStepListFactory.Step lastStep = null;

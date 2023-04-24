@@ -36,7 +36,12 @@
 package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.TreeMap;
 

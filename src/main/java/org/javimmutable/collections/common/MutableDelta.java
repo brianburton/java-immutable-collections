@@ -41,7 +41,7 @@ import org.javimmutable.collections.Func1;
  * Mutable object for tracking changes from zero.
  */
 public class MutableDelta
-        implements Func1<Integer, Integer>
+    implements Func1<Integer, Integer>
 {
     private int value;
 

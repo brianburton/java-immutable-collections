@@ -47,7 +47,11 @@ import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;

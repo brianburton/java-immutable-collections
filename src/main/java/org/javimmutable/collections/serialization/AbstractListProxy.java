@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.function.Supplier;
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListBuilder;
 
 @SuppressWarnings("unchecked")
 abstract class AbstractListProxy

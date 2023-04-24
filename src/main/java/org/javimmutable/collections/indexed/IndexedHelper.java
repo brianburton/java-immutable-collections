@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.indexed;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Indexed;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Indexed;
+
+import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Holders.nullable;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects

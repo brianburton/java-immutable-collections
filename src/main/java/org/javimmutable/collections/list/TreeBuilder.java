@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.list;
 
+import org.javimmutable.collections.Indexed;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
-import org.javimmutable.collections.Indexed;
 
 @NotThreadSafe
 class TreeBuilder<T>

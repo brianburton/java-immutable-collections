@@ -35,9 +35,6 @@
 
 package org.javimmutable.collections.hash;
 
-import java.io.Serializable;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
@@ -47,6 +44,10 @@ import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Singleton implementation of JImmutableMap that contains no elements.

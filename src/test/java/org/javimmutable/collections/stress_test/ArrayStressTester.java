@@ -35,7 +35,13 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -255,7 +261,8 @@ public class ArrayStressTester
     }
 
     private void verifyIteration(IArray<String> array,
-                                 Map<Integer, String> expected) {
+                                 Map<Integer, String> expected)
+    {
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());

@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.list;
 
-import java.util.Iterator;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.common.StandardBuilderTests;
+
+import java.util.Iterator;
 
 public class BuilderTestAdapter<T>
     implements StandardBuilderTests.BuilderAdapter<T, IList<T>>

@@ -38,7 +38,7 @@ package org.javimmutable.collections;
 import junit.framework.TestCase;
 
 public class Tuple3Test
-        extends TestCase
+    extends TestCase
 {
     public void test()
     {

@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.tree.TreeSet;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.tree.TreeSet;
 
 @SuppressWarnings("unchecked")
 public class JImmutableTreeSetProxy

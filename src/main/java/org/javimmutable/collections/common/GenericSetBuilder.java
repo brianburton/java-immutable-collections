@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections.common;
 
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
+
+import javax.annotation.Nonnull;
 
 public class GenericSetBuilder<T>
     implements ISetBuilder<T>

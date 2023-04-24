@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.setmap;
 
-import java.io.Serializable;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderSetMapProxy;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableSetMap implementation that allows keys to be traversed in the same order as they

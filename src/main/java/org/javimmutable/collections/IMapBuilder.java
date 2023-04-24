@@ -35,10 +35,10 @@
 
 package org.javimmutable.collections;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 public interface IMapBuilder<K, V>
 {

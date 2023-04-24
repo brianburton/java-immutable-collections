@@ -35,11 +35,12 @@
 
 package org.javimmutable.collections.hash;
 
-import java.util.Map;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.tree.TreeCollisionMap;
+
+import java.util.Map;
 
 public class EmptyHashMapTest
     extends TestCase

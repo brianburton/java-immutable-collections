@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections.array;
 
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.iterators.GenericIterator;
+
+import javax.annotation.Nonnull;
 
 public interface ArrayIterationMapper<K, V, T>
 {

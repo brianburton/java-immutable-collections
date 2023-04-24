@@ -35,18 +35,18 @@
 
 package org.javimmutable.collections.common;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import junit.framework.AssertionFailedError;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMapEntry;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import javax.annotation.Nonnull;
-import junit.framework.AssertionFailedError;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.IMapEntry;
+
+import static junit.framework.Assert.*;
 
 public class StandardCollisionMapTests
 {

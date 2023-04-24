@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.common;
 
+import org.javimmutable.collections.IList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import org.javimmutable.collections.IList;
 
 /**
  * Immutable List implementation backed by a JImmutableList.

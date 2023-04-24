@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections;
 
-import java.util.Comparator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.array.TrieArray;
 import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.hash.HashMap;
@@ -46,6 +44,9 @@ import org.javimmutable.collections.inorder.OrderedSet;
 import org.javimmutable.collections.list.TreeList;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.tree.TreeSet;
+
+import javax.annotation.Nonnull;
+import java.util.Comparator;
 
 public final class IBuilders
 {

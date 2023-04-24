@@ -35,9 +35,10 @@
 
 package org.javimmutable.collections.serialization;
 
-import java.util.function.Supplier;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.list.TreeList;
+
+import java.util.function.Supplier;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.

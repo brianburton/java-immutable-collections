@@ -35,15 +35,16 @@
 
 package org.javimmutable.collections.util;
 
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+
+import javax.annotation.Nonnull;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
 
 /**
  * When converting legacy code to use JImmutableMap there are sometimes objects that shared the mutable

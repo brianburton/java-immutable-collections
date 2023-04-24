@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.common;
 
-import java.util.Iterator;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.SplitableIterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.Set;
 
 public abstract class AbstractSetUsingMap<T>
     extends AbstractSet<T>

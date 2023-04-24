@@ -35,14 +35,15 @@
 
 package org.javimmutable.collections.listmap;
 
-import java.io.Serializable;
-import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.list.TreeList;
 import org.javimmutable.collections.serialization.JImmutableHashListMapProxy;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * JImmutableListMap using a hash map for fast lookup.

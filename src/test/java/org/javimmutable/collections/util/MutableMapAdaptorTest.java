@@ -35,6 +35,12 @@
 
 package org.javimmutable.collections.util;
 
+import junit.framework.TestCase;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMaps;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -42,11 +48,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import junit.framework.TestCase;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMaps;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 public class MutableMapAdaptorTest
     extends TestCase

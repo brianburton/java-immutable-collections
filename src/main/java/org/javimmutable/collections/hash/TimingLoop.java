@@ -35,8 +35,9 @@
 
 package org.javimmutable.collections.hash;
 
-import java.util.Random;
 import org.javimmutable.collections.IMap;
+
+import java.util.Random;
 
 public final class TimingLoop
 {

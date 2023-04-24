@@ -35,21 +35,22 @@
 
 package org.javimmutable.collections.stress_test;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 public class RandomKeyManagerTest
-        extends TestCase
+    extends TestCase
 {
     private IList<String> allPossibleKeys;
     private RandomKeyManager keys;
 
     public void setUp()
-            throws Exception
+        throws Exception
     {
         allPossibleKeys = ILists.of();
         for (int i = 0; i < 100; ++i) {

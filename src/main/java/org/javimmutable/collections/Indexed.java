@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections;
 
-import java.util.function.Function;
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 
 /**
  * Interface for containers that allow access to values by an integer index.

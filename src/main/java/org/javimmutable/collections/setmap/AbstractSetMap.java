@@ -36,7 +36,13 @@
 package org.javimmutable.collections.setmap;
 
 
-import org.javimmutable.collections.*;
+import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EntryStreamable;
@@ -267,13 +273,15 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<K> keys() {
+    public IStreamable<K> keys()
+    {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values(@Nonnull K key) {
+    public IStreamable<V> values(@Nonnull K key)
+    {
         return getSet(key);
     }
 
@@ -307,7 +315,8 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<K, V>> entries() {
+    public IStreamable<IMapEntry<K, V>> entries()
+    {
         return new EntryStreamable<>(this);
     }
 

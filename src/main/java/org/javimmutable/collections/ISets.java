@@ -35,12 +35,13 @@
 
 package org.javimmutable.collections;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import javax.annotation.Nonnull;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedSet;
 import org.javimmutable.collections.tree.TreeSet;
+
+import javax.annotation.Nonnull;
+import java.util.Comparator;
+import java.util.Iterator;
 
 public final class ISets
 {

@@ -35,13 +35,14 @@
 
 package org.javimmutable.collections.serialization;
 
+import org.javimmutable.collections.IDeque;
+import org.javimmutable.collections.IDequeBuilder;
+import org.javimmutable.collections.deque.ArrayDeque;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import org.javimmutable.collections.IDeque;
-import org.javimmutable.collections.IDequeBuilder;
-import org.javimmutable.collections.deque.ArrayDeque;
 
 /**
  * Serialization proxy class to safely serialize immutable collection.
