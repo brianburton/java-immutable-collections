@@ -78,26 +78,26 @@ public abstract class Computation<T>
     public abstract Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
 
     /**
-     * Execute the computation and return the final result or throw any exception that terminated the computation.
+     * Execute the computation and return a {@link Result} containing the final value or an exception
+     * that terminated the computation.
      *
-     * @return the result
-     * @throws Exception if the computation throws an exception
+     * @return the outcome as a {@link Result}
      */
-    public abstract T evaluate()
-        throws Exception;
+    @Nonnull
+    public Result<T> evaluate()
+    {
+        return Result.attempt(this);
+    }
 
     /**
-     * Synonym for {@link #evaluate}. For compatibility with {@link Callable}.
+     * Execute the computation and return the final value or throw any exception that terminated the computation.
      *
-     * @return the result
-     * @throws Exception if the computation throws an exception
+     * @return the computed value
+     * @throws Exception if the computation terminates due to an exception
      */
     @Override
-    public T call()
-        throws Exception
-    {
-        return evaluate();
-    }
+    public abstract T call()
+        throws Exception;
 
     private Computation()
     {
@@ -179,7 +179,7 @@ public abstract class Computation<T>
         }
 
         @Override
-        public T evaluate()
+        public T call()
             throws Exception
         {
             return func.apply();
@@ -221,10 +221,10 @@ public abstract class Computation<T>
         }
 
         @Override
-        public T evaluate()
+        public T call()
             throws Exception
         {
-            return func.apply().evaluate();
+            return func.apply().call();
         }
     }
 }
