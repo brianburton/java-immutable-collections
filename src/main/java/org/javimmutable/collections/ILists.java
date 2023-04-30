@@ -121,7 +121,7 @@ public final class ILists
      * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IList<T> allOf(@Nonnull IList<? extends T> source)
+    public static <T> IList<T> allOf(@Nonnull IDeque<? extends T> source)
     {
         return TreeList.of(source);
     }
