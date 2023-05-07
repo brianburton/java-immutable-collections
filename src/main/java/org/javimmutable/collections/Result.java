@@ -2,6 +2,7 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public abstract class Result<T>
 {
@@ -12,12 +13,20 @@ public abstract class Result<T>
     public abstract T get()
         throws Exception;
 
+    public abstract T orElse(T defaultValue);
+
+    public abstract T orElseGet(Supplier<T> defaultValue);
+
+    @Nonnull
     public abstract <U> Result<U> map(Func1Throws<T, U, Exception> func);
 
+    @Nonnull
     public abstract <U> Result<U> flatMap(Func1<T, Result<U>> func);
 
+    @Nonnull
     public abstract Result<T> mapFailure(Func1Throws<Exception, T, Exception> func);
 
+    @Nonnull
     public abstract Result<T> flatMapFailure(Func1<Exception, Result<T>> func);
 
     /**
@@ -30,16 +39,19 @@ public abstract class Result<T>
     @Nonnull
     public abstract Result<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
 
+    @Nonnull
     public static <T> Result<T> success(T value)
     {
         return new Success<>(value);
     }
 
+    @Nonnull
     public static <T> Result<T> failure(Exception value)
     {
         return new Failure<>(value);
     }
 
+    @Nonnull
     public static <T> Result<T> attempt(Callable<T> func)
     {
         try {
@@ -67,6 +79,19 @@ public abstract class Result<T>
         }
 
         @Override
+        public T orElse(T defaultValue)
+        {
+            return value;
+        }
+
+        @Override
+        public T orElseGet(Supplier<T> defaultValue)
+        {
+            return value;
+        }
+
+        @Nonnull
+        @Override
         public <U> Result<U> map(Func1Throws<T, U, Exception> func)
         {
             try {
@@ -76,6 +101,7 @@ public abstract class Result<T>
             }
         }
 
+        @Nonnull
         @Override
         public <U> Result<U> flatMap(Func1<T, Result<U>> func)
         {
@@ -86,12 +112,14 @@ public abstract class Result<T>
             }
         }
 
+        @Nonnull
         @Override
         public Result<T> mapFailure(Func1Throws<Exception, T, Exception> func)
         {
             return this;
         }
 
+        @Nonnull
         @Override
         public Result<T> flatMapFailure(Func1<Exception, Result<T>> func)
         {
@@ -129,17 +157,32 @@ public abstract class Result<T>
         }
 
         @Override
+        public T orElse(T defaultValue)
+        {
+            return defaultValue;
+        }
+
+        @Override
+        public T orElseGet(Supplier<T> defaultValue)
+        {
+            return defaultValue.get();
+        }
+
+        @Nonnull
+        @Override
         public <U> Result<U> map(Func1Throws<T, U, Exception> func)
         {
             return new Failure<>(exception);
         }
 
+        @Nonnull
         @Override
         public <U> Result<U> flatMap(Func1<T, Result<U>> func)
         {
             return new Failure<>(exception);
         }
 
+        @Nonnull
         @Override
         public Result<T> mapFailure(Func1Throws<Exception, T, Exception> func)
         {
@@ -150,6 +193,7 @@ public abstract class Result<T>
             }
         }
 
+        @Nonnull
         @Override
         public Result<T> flatMapFailure(Func1<Exception, Result<T>> func)
         {

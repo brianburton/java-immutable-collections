@@ -41,8 +41,7 @@ import java.util.concurrent.Callable;
 /**
  * A deferred computation.  Allows multiple processing steps to be queued into an immutable
  * object for later evaluation.  Nothing is done until the {@link #evaluate} method is called.
- * An exception at any step stops the computation at that point and will be thrown by the
- * call to {@link #evaluate}.
+ * An exception at any step stops the computation at that point.
  */
 public abstract class Computation<T>
     implements Callable<T>
