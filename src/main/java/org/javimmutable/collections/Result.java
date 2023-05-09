@@ -1,6 +1,7 @@
 package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
@@ -137,6 +138,25 @@ public abstract class Result<T>
                 return new Failure<>(ex);
             }
         }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Success)) {
+                return false;
+            }
+            Success<?> success = (Success<?>)o;
+            return Objects.equals(value, success.value);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(value);
+        }
     }
 
     public static class Failure<T>
@@ -209,6 +229,25 @@ public abstract class Result<T>
         public Result<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
         {
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Failure)) {
+                return false;
+            }
+            Failure<?> failure = (Failure<?>)o;
+            return Objects.equals(exception, failure.exception);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(exception);
         }
     }
 }

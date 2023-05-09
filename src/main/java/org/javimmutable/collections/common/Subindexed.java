@@ -100,16 +100,6 @@ public class Subindexed<T>
         return Holders.nullable(value);
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        if ((index < 0) || (index >= size)) {
-            return none();
-        }
-        return Holders.nullable(source.get(offset + index));
-    }
-
     @Override
     public int size()
     {

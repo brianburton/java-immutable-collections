@@ -75,13 +75,6 @@ public class IndexedHelper
                 return none();
             }
 
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                return none();
-            }
-
             @Override
             public int size()
             {
@@ -111,16 +104,6 @@ public class IndexedHelper
             @Nonnull
             @Override
             public Holder<T> find(int index)
-            {
-                if (index == 0) {
-                    return nullable(a);
-                }
-                return none();
-            }
-
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
             {
                 if (index == 0) {
                     return nullable(a);
@@ -173,20 +156,6 @@ public class IndexedHelper
                 }
             }
 
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                switch (index) {
-                    case 0:
-                        return nullable(a);
-                    case 1:
-                        return nullable(b);
-                    default:
-                        return none();
-                }
-            }
-
             @Override
             public int size()
             {
@@ -224,22 +193,6 @@ public class IndexedHelper
             @Nonnull
             @Override
             public Holder<T> find(int index)
-            {
-                switch (index) {
-                    case 0:
-                        return nullable(a);
-                    case 1:
-                        return nullable(b);
-                    case 2:
-                        return nullable(c);
-                    default:
-                        return none();
-                }
-            }
-
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
             {
                 switch (index) {
                     case 0:
@@ -309,26 +262,6 @@ public class IndexedHelper
                 }
             }
 
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                switch (index) {
-                    case 0:
-                        return nullable(a);
-                    case 1:
-                        return nullable(b);
-                    case 2:
-                        return nullable(c);
-                    default:
-                        index -= 3;
-                        if (index >= 0 && index < others.length) {
-                            return nullable(others[index]);
-                        }
-                        return none();
-                }
-            }
-
             @Override
             public int size()
             {
@@ -364,17 +297,6 @@ public class IndexedHelper
                 }
             }
 
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                if (index < 0 || index >= count) {
-                    return none();
-                } else {
-                    return nullable(value);
-                }
-            }
-
             @Override
             public int size()
             {
@@ -402,16 +324,6 @@ public class IndexedHelper
             @Nonnull
             @Override
             public Holder<Integer> find(int index)
-            {
-                if (index < 0 || index >= size) {
-                    return none();
-                }
-                return nullable(low + index);
-            }
-
-            @Nonnull
-            @Override
-            public Holder<Integer> seek(int index)
             {
                 if (index < 0 || index >= size) {
                     return none();
@@ -457,13 +369,6 @@ public class IndexedHelper
             public Holder<T> find(int index)
             {
                 return indexed.find(index).map(transforminator);
-            }
-
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                return indexed.seek(index).map(transforminator::apply);
             }
 
             @Override

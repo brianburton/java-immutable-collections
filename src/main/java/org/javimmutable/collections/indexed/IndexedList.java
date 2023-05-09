@@ -93,13 +93,6 @@ public class IndexedList<T>
         return index >= 0 && index < values.size() ? nullable(values.get(index)) : none();
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        return index >= 0 && index < values.size() ? nullable(values.get(index)) : none();
-    }
-
     @Override
     public int size()
     {

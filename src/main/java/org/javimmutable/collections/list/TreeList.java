@@ -322,13 +322,6 @@ public class TreeList<T>
         return root.seekImpl(index, () -> Holder.none(), value -> Holders.nullable(value));
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        return root.seekImpl(index, Holders::none, Holders::nullable);
-    }
-
     @Override
     public boolean isEmpty()
     {

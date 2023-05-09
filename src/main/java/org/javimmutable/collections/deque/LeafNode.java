@@ -189,13 +189,6 @@ class LeafNode<T>
         return Holders.nullable(values[index]);
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        return Holders.nullable(values[index]);
-    }
-
     @Override
     public Node<T> assign(int index,
                           T value)

@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 
-import static org.javimmutable.collections.Holder.*;
+import static org.javimmutable.collections.Holder.none;
 import static org.javimmutable.collections.Holders.nullable;
 
 /**
@@ -180,18 +180,6 @@ public final class BitmaskMath
                 return none();
             } else {
                 return nullable(indexForBit(bit));
-            }
-        }
-
-        @Nonnull
-        @Override
-        public Holder<Integer> seek(int index)
-        {
-            long bit = findBit(index);
-            if (bit == 0) {
-                return none();
-            } else {
-                return some(indexForBit(bit));
             }
         }
 

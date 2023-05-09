@@ -75,17 +75,4 @@ public interface Mapped<K, V>
      */
     @Nonnull
     Holder<V> find(K key);
-
-    /**
-     * Return a Holder containing the non-null value associated wth the key or a None
-     * if no value or a null value is associated with the key.
-     *
-     * @param key identifies the value to retrieve
-     * @return possibly empty Holder containing any value associated with the key
-     */
-    @Nonnull
-    default Holder<V> seek(K key)
-    {
-        return Holders.notNull(get(key));
-    }
 }

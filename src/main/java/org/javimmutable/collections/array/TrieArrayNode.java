@@ -162,14 +162,6 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    public Holder<T> seek(int index)
-    {
-        index = flip(index);
-        final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, Holder::none, Holders::nullable);
-    }
-
-    @Nonnull
     public TrieArrayNode<T> assign(int index,
                                    T value)
     {

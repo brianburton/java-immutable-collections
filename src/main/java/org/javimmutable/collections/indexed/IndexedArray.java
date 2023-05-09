@@ -92,13 +92,6 @@ public class IndexedArray<T>
         return index >= 0 && index < values.length ? nullable(values[index]) : none();
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        return index >= 0 && index < values.length ? nullable(values[index]) : none();
-    }
-
     @Override
     public int size()
     {

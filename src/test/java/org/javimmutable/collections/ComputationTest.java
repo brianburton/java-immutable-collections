@@ -56,27 +56,28 @@ public class ComputationTest
             .apply(values::add)
             .map(x -> (double)(x + 1))
             .apply(values::add);
-        assertEquals(11.0, cb0.evaluate());
+        assertEquals(Result.success(11.0), cb0.evaluate());
         assertEquals(Arrays.asList(10, 11.0), values);
-        assertEquals(11.0, cb0.evaluate());
+        assertEquals(Result.success(11.0), cb0.evaluate());
         assertEquals(Arrays.asList(10, 11.0, 10, 11.0), values);
 
         values.clear();
         Computation<Boolean> cb1 = cb0.map(x -> x > 10);
-        assertEquals(Boolean.TRUE, cb1.evaluate());
+        assertEquals(Result.success(Boolean.TRUE), cb1.evaluate());
         assertEquals(Arrays.asList(10, 11.0), values);
-        assertEquals(Boolean.TRUE, cb1.evaluate());
+        assertEquals(Result.success(Boolean.TRUE), cb1.evaluate());
         assertEquals(Arrays.asList(10, 11.0, 10, 11.0), values);
 
         values.clear();
+        final IOException error = new IOException();
         Computation<Boolean> cb2 = Computation.success(10)
             .apply(x -> {
-                throw new IOException();
+                throw error;
             })
             .map(x -> (double)(x + 1))
             .apply(values::add)
             .map(x -> x > 10);
-        assertThatThrownBy(cb2::evaluate).isInstanceOf(IOException.class);
+        assertEquals(Result.failure(error), cb2.evaluate());
         assertEquals(Collections.emptyList(), values);
 
         values.clear();
@@ -84,10 +85,10 @@ public class ComputationTest
             .apply(values::add)
             .map(x -> (double)(x + 1))
             .apply(x -> {
-                throw new IOException();
+                throw error;
             })
             .map(x -> x > 10);
-        assertThatThrownBy(cb3::evaluate).isInstanceOf(IOException.class);
+        assertEquals(Result.failure(error), cb3.evaluate());
         assertEquals(Collections.singletonList(10), values);
 
         values.clear();
@@ -95,7 +96,7 @@ public class ComputationTest
             .flatMap(x -> Computation.of(() -> x + 4))
             .apply(values::add)
             .flatMap(x -> Computation.of(() -> String.valueOf(x)));
-        assertEquals("22", cb4.evaluate());
+        assertEquals(Result.success("22"), cb4.evaluate());
         assertEquals(Collections.singletonList(22), values);
 
         values.clear();

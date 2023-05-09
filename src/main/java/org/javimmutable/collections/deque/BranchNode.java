@@ -364,13 +364,6 @@ class BranchNode<T>
         return Holders.nullable(get(index));
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        return Holders.nullable(get(index));
-    }
-
     @Override
     public Node<T> assign(int index,
                           T value)
@@ -483,13 +476,6 @@ class BranchNode<T>
             @Nonnull
             @Override
             public Holder<Node<T>> find(int index)
-            {
-                return Holders.nullable(get(index));
-            }
-
-            @Nonnull
-            @Override
-            public Holder<Node<T>> seek(int index)
             {
                 return Holders.nullable(get(index));
             }

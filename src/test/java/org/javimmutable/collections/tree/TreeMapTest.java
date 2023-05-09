@@ -95,9 +95,9 @@ public class TreeMapTest
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
 
         map = TreeMap.of();
-        assertSame(Holder.none(), map.seek(10));
+        assertSame(Holder.none(), map.find(10));
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
-        assertEquals(Holder.some(11), map.seek(10));
+        assertEquals(Holder.some(11), map.find(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
         final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(IMapEntry.of(10, 11), IMapEntry.of(20, 19), IMapEntry.of(30, 18));

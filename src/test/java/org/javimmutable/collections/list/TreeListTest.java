@@ -1321,15 +1321,11 @@ public class TreeListTest
     {
         IList<Integer> list = TreeList.of();
         assertEquals(Holder.none(), list.find(0));
-        assertEquals(Holder.none(), list.seek(0));
 
         list = rangeList(0, 0);
         assertEquals(Holder.none(), list.find(-1));
         assertEquals(Holders.nullable(0), list.find(0));
         assertEquals(Holder.none(), list.find(1));
-        assertEquals(Holder.none(), list.seek(-1));
-        assertEquals(Holder.some(0), list.seek(0));
-        assertEquals(Holder.none(), list.seek(1));
 
         list = rangeList(0, 24999);
         assertEquals(Holder.none(), list.find(-1));
@@ -1337,11 +1333,6 @@ public class TreeListTest
         assertEquals(Holders.nullable(12500), list.find(12500));
         assertEquals(Holders.nullable(24999), list.find(24999));
         assertEquals(Holder.none(), list.find(25000));
-        assertEquals(Holders.none(), list.seek(-1));
-        assertEquals(Holders.nullable(0), list.seek(0));
-        assertEquals(Holders.nullable(12500), list.seek(12500));
-        assertEquals(Holders.nullable(24999), list.seek(24999));
-        assertEquals(Holders.none(), list.seek(25000));
     }
 
     private IList<Integer> list(Integer... values)

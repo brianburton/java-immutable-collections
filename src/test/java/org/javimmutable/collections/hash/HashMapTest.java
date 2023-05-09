@@ -72,7 +72,6 @@ public class HashMapTest
     public void test()
     {
         IMap<Integer, Integer> map = HashMap.usingList();
-        assertSame(Holder.none(), map.seek(10));
         Holder<Integer> integers2 = map.find(10);
         assertEquals(true, integers2.isNone());
         assertEquals(0, map.size());
@@ -82,7 +81,6 @@ public class HashMapTest
         assertEquals(false, map.isEmpty());
         Holder<Integer> integers1 = map.find(10);
         assertEquals(false, integers1.isNone());
-        assertEquals(Holder.some(20), map.seek(10));
         Holder<Integer> integers3 = map.find(10);
         assertEquals(20, (int)integers3.unsafeGet());
         assertEquals(20, (int)map.getValueOr(10, -99));

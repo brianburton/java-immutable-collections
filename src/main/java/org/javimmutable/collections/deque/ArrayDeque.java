@@ -148,13 +148,6 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public Holder<T> seek(int index)
-    {
-        return root.find(index);
-    }
-
-    @Nonnull
-    @Override
     public ArrayDeque<T> assign(int index,
                                 @Nullable T value)
     {

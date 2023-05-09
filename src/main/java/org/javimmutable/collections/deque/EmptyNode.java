@@ -135,13 +135,6 @@ final class EmptyNode<T>
         throw new IndexOutOfBoundsException();
     }
 
-    @Nonnull
-    @Override
-    public Holder<T> seek(int index)
-    {
-        throw new IndexOutOfBoundsException();
-    }
-
     @Override
     public Node<T> assign(int index,
                           T value)

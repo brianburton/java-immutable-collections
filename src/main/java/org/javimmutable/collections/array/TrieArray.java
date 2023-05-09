@@ -121,13 +121,6 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public Holder<T> seek(int index)
-    {
-        return root.seek(index);
-    }
-
-    @Nonnull
-    @Override
     public Holder<IMapEntry<Integer, T>> findEntry(int index)
     {
         return find(index).map(v -> IMapEntry.of(index, v));

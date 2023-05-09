@@ -62,13 +62,6 @@ public interface Indexed<T>
     @Nonnull
     Holder<T> find(int index);
 
-    /**
-     * Retrieves a {@link Holder} containing the value at the specified index if it exists and is non-null.
-     * If no such value exists or the value is null returns none().
-     */
-    @Nonnull
-    Holder<T> seek(int index);
-
     @SuppressWarnings("unchecked")
     default T[] subArray(int offset,
                          int limit)
@@ -96,13 +89,6 @@ public interface Indexed<T>
             public Holder<T> find(int index)
             {
                 return source.find(index).map(transforminator);
-            }
-
-            @Nonnull
-            @Override
-            public Holder<T> seek(int index)
-            {
-                return source.seek(index).map(transforminator::apply);
             }
 
             @Override
