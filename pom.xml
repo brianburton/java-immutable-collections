@@ -221,11 +221,15 @@
                         <classpath/>
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
-                        <!--                        <argument>&#45;&#45;test</argument>-->
-                        <!--                        <argument>deque</argument>-->
+                        <argument>--test</argument>
+                        <argument>deque</argument>
+                        <argument>--test</argument>
+                        <argument>orderedmap</argument>
+                        <argument>--test</argument>
+                        <argument>orderedset</argument>
+                        <argument>--test</argument>
+                        <argument>orderedsetmap</argument>
                         <!--
-                                                <argument>&#45;&#45;test</argument>
-                                                <argument>hashmap</argument>
                                                 <argument>&#45;&#45;test</argument>
                                                 <argument>hashset</argument>
                         -->

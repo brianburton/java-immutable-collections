@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.inorder;
 
+import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
@@ -43,20 +44,18 @@ import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.Temp;
-import org.javimmutable.collections.array.TrieLongArrayNode;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.hash.HashMap;
-import org.javimmutable.collections.iterators.TransformStreamable;
+import org.javimmutable.collections.iterators.AbstractSplitableIterator;
 import org.javimmutable.collections.serialization.JImmutableInsertOrderMapProxy;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import java.util.NoSuchElementException;
 import java.util.stream.Collector;
-
-import static org.javimmutable.collections.common.StreamConstants.SPLITERATOR_ORDERED;
 
 /**
  * JImmutableMap implementation that allows iteration over members in the order in which they
@@ -70,22 +69,21 @@ public class OrderedMap<K, V>
     implements Serializable
 {
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static final OrderedMap EMPTY = new OrderedMap(TrieLongArrayNode.empty(), HashMap.of(), Long.MIN_VALUE);
+    public static final OrderedMap EMPTY = new OrderedMap(HashMap.of(), null, null);
     private static final long serialVersionUID = -121805;
     private static final int SPLITERATOR_CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
 
-    private final TrieLongArrayNode<K> keys;
-    private final IMap<K, Node<V>> values;
-    private final long nextToken;
+    private final @Nonnull IMap<K, Node<K, V>> values;
+    private final @Nullable K firstKey;
+    private final @Nullable K lastKey;
 
-    private OrderedMap(@Nonnull TrieLongArrayNode<K> keys,
-                       @Nonnull IMap<K, Node<V>> values,
-                       long nextToken)
+    private OrderedMap(@Nonnull IMap<K, Node<K, V>> values,
+                       @Nullable K firstKey,
+                       @Nullable K lastKey)
     {
-        assert keys.size() == values.size();
-        this.keys = keys;
         this.values = values;
-        this.nextToken = nextToken;
+        this.firstKey = firstKey;
+        this.lastKey = lastKey;
     }
 
     @SuppressWarnings("unchecked")
@@ -158,7 +156,7 @@ public class OrderedMap<K, V>
     public V getValueOr(K key,
                         V defaultValue)
     {
-        final Node<V> current = values.get(key);
+        final Node<K, V> current = values.get(key);
         return (current != null) ? current.value : defaultValue;
     }
 
@@ -166,7 +164,7 @@ public class OrderedMap<K, V>
     @Override
     public Holder<V> find(@Nonnull K key)
     {
-        final Node<V> current = values.get(key);
+        final Node<K, V> current = values.get(key);
         return current != null ? Holders.nullable(current.value) : Holder.none();
     }
 
@@ -174,8 +172,8 @@ public class OrderedMap<K, V>
     @Override
     public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
-        final Node<V> current = values.get(key);
-        return current != null ? Holders.nullable(IMapEntry.of(key, current.value)) : Holder.none();
+        final Node<K, V> current = values.get(key);
+        return current != null ? Holders.notNull(IMapEntry.of(key, current.value)) : Holder.none();
     }
 
     @Nonnull
@@ -183,21 +181,21 @@ public class OrderedMap<K, V>
     public OrderedMap<K, V> assign(@Nonnull K key,
                                    V value)
     {
-        final Temp.Var1<Boolean> inserted = new Temp.Var1<>(false);
-        final IMap<K, Node<V>> newValues = values.update(key, hv -> {
-            if (hv.isNone()) {
-                inserted.x = true;
-                return new Node<>(nextToken, value);
-            } else {
-                final Node<V> node = hv.unsafeGet();
-                return node.withValue(value);
+        IMap<K, Node<K, V>> newValues = this.values;
+        final Node<K, V> oldNode = newValues.get(key);
+        if (oldNode == null) {
+            final Node<K, V> newNode = new Node<>(lastKey, null, value);
+            newValues = newValues.assign(key, newNode);
+            if (lastKey != null) {
+                final Node<K, V> prevNode = nodeForKey(lastKey);
+                newValues = newValues.assign(lastKey, prevNode.withNextKey(key));
             }
-        });
-        if (inserted.x) {
-            final TrieLongArrayNode<K> newKeys = keys.assign(nextToken, key);
-            return new OrderedMap<>(newKeys, newValues, nextToken + 1);
-        } else if (newValues != values) {
-            return new OrderedMap<>(keys, newValues, nextToken);
+            final K newFirstKey = (firstKey == null) ? key : firstKey;
+            return new OrderedMap<>(newValues, newFirstKey, key);
+        } else if (oldNode.value != value) {
+            final Node<K, V> newNode = oldNode.withValue(value);
+            newValues = newValues.assign(key, newNode);
+            return new OrderedMap<>(newValues, firstKey, lastKey);
         } else {
             return this;
         }
@@ -207,13 +205,25 @@ public class OrderedMap<K, V>
     @Override
     public OrderedMap<K, V> delete(@Nonnull K key)
     {
-        final Node<V> current = values.get(key);
-        if (current == null) {
+        IMap<K, Node<K, V>> newValues = this.values;
+        final Node<K, V> oldNode = newValues.get(key);
+        if (oldNode == null) {
             return this;
         } else if (values.size() == 1) {
             return of();
         } else {
-            return new OrderedMap<>(keys.delete(current.token), values.delete(key), nextToken);
+            if (oldNode.prevKey != null) {
+                final Node<K, V> prevNode = nodeForKey(oldNode.prevKey);
+                newValues = newValues.assign(oldNode.prevKey, prevNode.withNextKey(oldNode.nextKey));
+            }
+            if (oldNode.nextKey != null) {
+                final Node<K, V> nextNode = nodeForKey(oldNode.nextKey);
+                newValues = newValues.assign(oldNode.nextKey, nextNode.withPrevKey(oldNode.prevKey));
+            }
+            newValues = newValues.delete(key);
+            final K newFirstKey = oldNode.prevKey == null ? oldNode.nextKey : firstKey;
+            final K newLastKey = oldNode.nextKey == null ? oldNode.prevKey : lastKey;
+            return new OrderedMap<>(newValues, newFirstKey, newLastKey);
         }
     }
 
@@ -234,51 +244,40 @@ public class OrderedMap<K, V>
     @Override
     public SplitableIterator<IMapEntry<K, V>> iterator()
     {
-        return TransformStreamable.of(keys(), k -> IMapEntry.of(k, valueForKey(k))).iterator();
+        return new NodeStreamable<>(NodeWalker::nextEntry).iterator();
     }
 
     @Nonnull
     @Override
     public IStreamable<K> keys()
     {
-        return keys.values().streamable(SPLITERATOR_CHARACTERISTICS);
+        return new NodeStreamable<>(NodeWalker::nextKey);
     }
 
     @Nonnull
     @Override
     public IStreamable<V> values()
     {
-        return TransformStreamable.of(keys(), this::valueForKey);
+        return new NodeStreamable<>(NodeWalker::nextValue);
     }
 
-    private V valueForKey(K key)
+    @Nonnull
+    private Node<K, V> nodeForKey(K key)
     {
-        final Node<V> node = values.get(key);
+        final Node<K, V> node = values.get(key);
         assert node != null;
-        return node.value;
+        return node;
     }
 
     @Override
     public int getSpliteratorCharacteristics()
     {
-        return SPLITERATOR_ORDERED;
+        return SPLITERATOR_CHARACTERISTICS;
     }
 
     @Override
     public void checkInvariants()
     {
-        if (keys.size() != values.size()) {
-            throw new IllegalStateException(String.format("size mismatch: sorted=%s hashed=%s", keys.size(), values.size()));
-        }
-        for (IMapEntry<Long, K> e : keys.entries()) {
-            final Node<V> node = values.get(e.getValue());
-            if (node == null) {
-                throw new IllegalStateException(String.format("node missing: token=%s key=%s", e.getKey(), e.getValue()));
-            }
-            if (!e.getKey().equals(node.token)) {
-                throw new IllegalStateException(String.format("node mismatch: sorted=%s hashed=%s", e, node));
-            }
-        }
     }
 
     private Object writeReplace()
@@ -287,21 +286,128 @@ public class OrderedMap<K, V>
     }
 
     @Immutable
-    private static class Node<V>
+    private static class Node<K, V>
     {
-        private final long token;
+        @Nullable
+        private final K prevKey;
+        @Nullable
+        private final K nextKey;
         private final V value;
 
-        private Node(long token,
+        private Node(@Nullable K prevKey,
+                     @Nullable K nextKey,
                      V value)
         {
-            this.token = token;
+            this.prevKey = prevKey;
+            this.nextKey = nextKey;
             this.value = value;
         }
 
-        private Node<V> withValue(V value)
+        private Node<K, V> withPrevKey(K prevKey)
         {
-            return (value == this.value) ? this : new Node<>(token, value);
+            return new Node<>(prevKey, nextKey, value);
+        }
+
+        private Node<K, V> withNextKey(K nextKey)
+        {
+            return new Node<>(prevKey, nextKey, value);
+        }
+
+        private Node<K, V> withValue(V value)
+        {
+            return (value == this.value) ? this : new Node<>(prevKey, nextKey, value);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "(" + value + "," + prevKey + "," + nextKey + ")";
+        }
+    }
+
+    private class NodeWalker
+    {
+        @Nullable
+        private K key;
+
+        private NodeWalker()
+        {
+            key = firstKey;
+        }
+
+        public boolean hasNext()
+        {
+            return key != null;
+        }
+
+        private Node<K, V> nextNode()
+        {
+            if (key == null) {
+                throw new NoSuchElementException();
+            }
+            final Node<K, V> node = values.get(key);
+            assert node != null;
+            key = node.nextKey;
+            return node;
+        }
+
+        private K nextKey()
+        {
+            final K answer = key;
+            nextNode();
+            return answer;
+        }
+
+        private V nextValue()
+        {
+            final Node<K, V> node = nextNode();
+            return node.value;
+        }
+
+        private IMapEntry<K, V> nextEntry()
+        {
+            final K entryKey = key;
+            final Node<K, V> node = nextNode();
+            return IMapEntry.of(entryKey, node.value);
+        }
+    }
+
+    private class NodeStreamable<T>
+        implements IStreamable<T>
+    {
+        private final Func1<NodeWalker, T> transforminator;
+
+        private NodeStreamable(Func1<NodeWalker, T> transforminator)
+        {
+            this.transforminator = transforminator;
+        }
+
+        @Nonnull
+        @Override
+        public SplitableIterator<T> iterator()
+        {
+            return new AbstractSplitableIterator<T>()
+            {
+                private final NodeWalker nodes = new NodeWalker();
+
+                @Override
+                public boolean hasNext()
+                {
+                    return nodes.hasNext();
+                }
+
+                @Override
+                public T next()
+                {
+                    return transforminator.apply(nodes);
+                }
+            };
+        }
+
+        @Override
+        public int getSpliteratorCharacteristics()
+        {
+            return SPLITERATOR_CHARACTERISTICS;
         }
     }
 }
