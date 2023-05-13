@@ -37,11 +37,9 @@ package org.javimmutable.collections;
 
 import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.indexed.IndexedList;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
-import java.util.List;
 
 public final class IDeques
 {
@@ -94,36 +92,9 @@ public final class IDeques
      * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull ISet<? extends T> source)
-    {
-        return ArrayDeque.of(source.iterator());
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull List<? extends T> source)
-    {
-        return ArrayDeque.of(IndexedList.retained(source));
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source)
     {
-        return ArrayDeque.of(source);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull IDeque<? extends T> source)
-    {
-        return ArrayDeque.of(source);
+        return ArrayDeque.<T>builder().add(source).build();
     }
 
     /**
@@ -132,6 +103,6 @@ public final class IDeques
     @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterable<? extends T> source)
     {
-        return ArrayDeque.of(source.iterator());
+        return ArrayDeque.<T>builder().add(source).build();
     }
 }

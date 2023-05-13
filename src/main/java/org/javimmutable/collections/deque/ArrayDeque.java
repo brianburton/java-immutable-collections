@@ -43,7 +43,6 @@ import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.common.Subindexed;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
@@ -58,13 +57,7 @@ import java.util.stream.Collector;
 
 /**
  * IDeque implementation using 32-way trees.  The underlying trees
- * only allow values to be inserted or deleted from the head or tail of the list
- * so any methods attempting to do so inside the list throw UnsupportedOperationException.
- * Replaced by JImmutableTreeList since direct element access (get) is less common than simple
- * construction and iteration and this class is far less flexible in what it can do than the balanced
- * binary tree implementation.
- * <p>
- * Retained temporarily for extreme backwards compatibility but will definitely be removed in the future.
+ * only allow values to be inserted or deleted from the head or tail.
  */
 public class ArrayDeque<T>
     implements IDeque<T>
@@ -91,25 +84,19 @@ public class ArrayDeque<T>
                                        int offset,
                                        int limit)
     {
-        return of(Subindexed.of(source, offset, limit));
+        return new Builder<T>().add(source, offset, limit).build();
     }
 
-    @SuppressWarnings("unchecked")
     @Nonnull
     public static <T> ArrayDeque<T> of(Indexed<? extends T> source)
     {
-        final Node<T> root = BranchNode.of(source);
-        return root.isEmpty() ? (ArrayDeque<T>)EMPTY : new ArrayDeque<>(root);
+        return new Builder<T>().add(source, 0, source.size()).build();
     }
 
     @Nonnull
     public static <T> ArrayDeque<T> of(Iterator<? extends T> source)
     {
-        final Builder<T> builder = new Builder<>();
-        while (source.hasNext()) {
-            builder.add(source.next());
-        }
-        return builder.build();
+        return new Builder<T>().add(source).build();
     }
 
     @Nonnull
@@ -412,6 +399,26 @@ public class ArrayDeque<T>
         public Builder<T> add(T value)
         {
             builder.add(value);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Iterator<? extends T> source)
+        {
+            source.forEachRemaining(this::add);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder<T> add(Indexed<? extends T> source,
+                              int offset,
+                              int limit)
+        {
+            for (int i = offset; i < limit; ++i) {
+                add(source.get(i));
+            }
             return this;
         }
 

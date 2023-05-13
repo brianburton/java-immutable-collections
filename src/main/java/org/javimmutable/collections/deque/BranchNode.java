@@ -126,65 +126,6 @@ class BranchNode<T>
         return new BranchNode<>(depth, size, prefix, nodes, suffix);
     }
 
-    static <T> Node<T> of(Indexed<? extends T> leaves)
-    {
-        int nodeCount = leaves.size();
-        if (nodeCount == 0) {
-            return EmptyNode.of();
-        }
-
-        if (nodeCount <= 32) {
-            return LeafNode.fromList(leaves, 0, nodeCount);
-        }
-
-        final Node<T>[] nodes = DequeHelper.allocateNodes(1 + (leaves.size() / 32));
-        int offset = 0;
-        int index = 0;
-        while (offset < nodeCount) {
-            nodes[index++] = LeafNode.fromList(leaves, offset, Math.min(offset + 32, nodeCount));
-            offset += 32;
-        }
-        nodeCount = index;
-
-        // loop invariant - all nodes except last one are always full
-        // last one is possibly full
-        int depth = 2;
-        while (nodeCount > 1) {
-            int dstOffset = 0;
-            int srcOffset = 0;
-            // fill all full nodes
-            while (nodeCount > 32) {
-                final Node<T>[] newNodes = DequeHelper.allocateNodes(32);
-                System.arraycopy(nodes, srcOffset, newNodes, 0, 32);
-                nodes[dstOffset++] = new BranchNode<>(depth, DequeHelper.sizeForDepth(depth), EmptyNode.of(), newNodes, EmptyNode.of());
-                srcOffset += 32;
-                nodeCount -= 32;
-            }
-            // collect remaining nodes
-            if (nodeCount == 1) {
-                nodes[dstOffset++] = nodes[srcOffset];
-            } else if (nodeCount > 1) {
-                final Node<T> lastNode = nodes[srcOffset + nodeCount - 1];
-                if ((lastNode.getDepth() == (depth - 1)) && lastNode.isFull()) {
-                    // all remaining nodes are full
-                    final Node<T>[] newNodes = DequeHelper.allocateNodes(nodeCount);
-                    System.arraycopy(nodes, srcOffset, newNodes, 0, nodeCount);
-                    nodes[dstOffset++] = new BranchNode<>(depth, DequeHelper.sizeForDepth(depth - 1) * nodeCount, EmptyNode.of(), newNodes, EmptyNode.of());
-                } else {
-                    // all but last remaining nodes are full
-                    final int newNodesLength = nodeCount - 1;
-                    final Node<T>[] newNodes = DequeHelper.allocateNodes(newNodesLength);
-                    System.arraycopy(nodes, srcOffset, newNodes, 0, newNodesLength);
-                    nodes[dstOffset++] = new BranchNode<>(depth, (DequeHelper.sizeForDepth(depth - 1) * newNodesLength) + lastNode.size(), EmptyNode.of(), newNodes, lastNode);
-                }
-            }
-            nodeCount = dstOffset;
-            depth += 1;
-        }
-        assert nodeCount == 1;
-        return nodes[0];
-    }
-
     static <T> BranchNode<T> forTesting(Node<T> prefix,
                                         Node<T>[] nodes,
                                         Node<T> suffix)
