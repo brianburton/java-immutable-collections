@@ -77,6 +77,8 @@ interface Node<T>
                       boolean forwardOrder,
                       @Nonnull Iterator<? extends T> values);
 
+    int computedSize();
+
     @Nonnull
     @Override
     default SplitableIterator<T> iterator()

@@ -216,12 +216,17 @@ class LeafNode<T>
     }
 
     @Override
+    public int computedSize()
+    {
+        return values.length;
+    }
+
+    @Override
     public void checkInvariants()
     {
         if ((values.length == 0) || (values.length > 32)) {
             throw new IllegalStateException();
         }
-        //TODO: review checkInvariants()
     }
 
     Indexed<T> values()

@@ -94,7 +94,7 @@ class BranchNode<T>
     BranchNode(Node<T> node)
     {
         this(node.getDepth() + 1,
-             node.size() + 1,
+             node.size(),
              EmptyNode.of(),
              DequeHelper.allocateSingleNode(node),
              EmptyNode.of());
@@ -489,6 +489,16 @@ class BranchNode<T>
     }
 
     @Override
+    public int computedSize()
+    {
+        int computedSize = prefix.computedSize() + suffix.computedSize();
+        for (Node<T> node : nodes) {
+            computedSize += node.computedSize();
+        }
+        return computedSize;
+    }
+
+    @Override
     public void checkInvariants()
     {
         if (nodes.length > 32) {
@@ -502,10 +512,7 @@ class BranchNode<T>
                 throw new IllegalStateException();
             }
         }
-        int computedSize = prefix.size() + suffix.size();
-        for (Node<T> node : nodes) {
-            computedSize += node.size();
-        }
+        int computedSize = computedSize();
         if (computedSize != size) {
             throw new IllegalStateException();
         }
