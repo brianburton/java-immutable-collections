@@ -70,28 +70,6 @@ public final class IDeques
      * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull Indexed<? extends T> source)
-    {
-        return ArrayDeque.of(source);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in the specified range from source
-     * built atop a balanced binary tree.  The values copied from source are those whose index are in the
-     * range offset to (limit - 1).
-     */
-    @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull Indexed<? extends T> source,
-                                      int offset,
-                                      int limit)
-    {
-        return ArrayDeque.of(source, offset, limit);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source)
     {
         return ArrayDeque.<T>builder().add(source).build();

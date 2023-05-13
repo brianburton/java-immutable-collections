@@ -36,12 +36,10 @@
 package org.javimmutable.collections;
 
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.list.TreeList;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
-import java.util.List;
 
 public final class ILists
 {
@@ -72,56 +70,7 @@ public final class ILists
      * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IList<T> allOf(@Nonnull Indexed<? extends T> source)
-    {
-        return TreeList.of(source);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in the specified range from source
-     * built atop a balanced binary tree.  The values copied from source are those whose index are in the
-     * range offset to (limit - 1).
-     */
-    @Nonnull
-    public static <T> IList<T> allOf(@Nonnull Indexed<? extends T> source,
-                                     int offset,
-                                     int limit)
-    {
-        return TreeList.of(source, offset, limit);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> IList<T> allOf(@Nonnull ISet<? extends T> source)
-    {
-        return TreeList.of(source.iterator());
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> IList<T> allOf(@Nonnull List<? extends T> source)
-    {
-        return TreeList.of(IndexedList.retained(source));
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
     public static <T> IList<T> allOf(@Nonnull Iterator<? extends T> source)
-    {
-        return TreeList.of(source);
-    }
-
-    /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
-     */
-    @Nonnull
-    public static <T> IList<T> allOf(@Nonnull IDeque<? extends T> source)
     {
         return TreeList.of(source);
     }

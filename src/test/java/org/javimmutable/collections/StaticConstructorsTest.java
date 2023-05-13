@@ -146,11 +146,8 @@ public class StaticConstructorsTest
         verifyOrdered(isList, asList(), () -> ILists.of());
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.of("a", "b", "c"));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(asList("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c", "d", "e"), () -> ILists.allOf(indexed("a", "b", "c", "d", "e")));
-        verifyOrdered(isList, asList("b", "c", "d"), () -> ILists.allOf(indexed("a", "b", "c", "d", "e"), 1, 4));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(ISets.ordered("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(iterator("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(ILists.of("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(asList("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> IBuilders.list().add("a", "b", "c").build());
         verifyOrdered(isList, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(ICollectors.toList()));
