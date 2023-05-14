@@ -546,7 +546,7 @@ public class TreeListTest
                                  int last)
     {
         return TreeList.<Integer>listBuilder()
-            .add(IndexedIterator.forRange(first, last))
+            .addAll(IndexedIterator.forRange(first, last))
             .build();
     }
 
@@ -1117,7 +1117,7 @@ public class TreeListTest
 
     public void testStreams()
     {
-        IList<Integer> list = TreeList.<Integer>listBuilder().add(1, 2, 3, 4, 5, 6, 7).build();
+        IList<Integer> list = TreeList.<Integer>listBuilder().addAll(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 

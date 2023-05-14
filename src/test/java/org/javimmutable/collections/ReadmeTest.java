@@ -64,7 +64,7 @@ public class ReadmeTest
         IList<String> fromBuilder = IBuilders.<String>list()
             .add("these")
             .add("are")
-            .add("some", "strings")
+            .addAll("some", "strings")
             .build();
         assertThat(aList).isEqualTo(literal);
         assertThat(fromJavaList).isEqualTo(literal);

@@ -68,7 +68,7 @@ public final class IBuilders
     /**
      * Produces a Builder for efficiently constructing an IDeque.
      */
-    public static <T> IDequeBuilder<T> builder()
+    public static <T> IDequeBuilder<T> deque()
     {
         return ArrayDeque.builder();
     }

@@ -545,7 +545,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(Iterator<? extends T> source)
+        public synchronized ListBuilder<T> addAll(Iterator<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -553,7 +553,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(Iterable<? extends T> source)
+        public synchronized ListBuilder<T> addAll(Iterable<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -561,7 +561,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized <K extends T> ListBuilder<T> add(K... source)
+        public synchronized <K extends T> ListBuilder<T> addAll(K... source)
         {
             builder.add(source);
             return this;
@@ -569,9 +569,9 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(Indexed<? extends T> source,
-                                               int offset,
-                                               int limit)
+        public synchronized ListBuilder<T> addAll(Indexed<? extends T> source,
+                                                  int offset,
+                                                  int limit)
         {
             builder.add(source, offset, limit);
             return this;
@@ -579,7 +579,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(Indexed<? extends T> source)
+        public synchronized ListBuilder<T> addAll(Indexed<? extends T> source)
         {
             builder.add(source);
             return this;

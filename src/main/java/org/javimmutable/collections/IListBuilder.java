@@ -71,7 +71,7 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> add(Iterator<? extends T> source)
+    default IListBuilder<T> addAll(Iterator<? extends T> source)
     {
         while (source.hasNext()) {
             add(source.next());
@@ -86,9 +86,9 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> add(Iterable<? extends T> source)
+    default IListBuilder<T> addAll(Iterable<? extends T> source)
     {
-        return add(source.iterator());
+        return addAll(source.iterator());
     }
 
     /**
@@ -98,9 +98,9 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default <K extends T> IListBuilder<T> add(K... source)
+    default <K extends T> IListBuilder<T> addAll(K... source)
     {
-        return add(Arrays.asList(source));
+        return addAll(Arrays.asList(source));
     }
 
     /**
@@ -110,9 +110,9 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> add(Indexed<? extends T> source,
-                                int offset,
-                                int limit)
+    default IListBuilder<T> addAll(Indexed<? extends T> source,
+                                   int offset,
+                                   int limit)
     {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
@@ -127,9 +127,9 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> add(Indexed<? extends T> source)
+    default IListBuilder<T> addAll(Indexed<? extends T> source)
     {
-        return add(source, 0, source.size());
+        return addAll(source, 0, source.size());
     }
 
     /**

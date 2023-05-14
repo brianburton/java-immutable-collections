@@ -140,7 +140,7 @@ public class StaticConstructorsTest
         assertEquals(list, ILists.allOf(input.iterator()));
         assertEquals(list, ILists.allOf(list));
         assertEquals(list, ILists.of(1, 2, 3));
-        assertEquals(list, IBuilders.<Integer>list().add(input).build());
+        assertEquals(list, IBuilders.<Integer>list().addAll(input).build());
         assertEquals(list, ILists.allOf(IteratorHelper.plainIterable(asList(1, 2, 3))));
 
         verifyOrdered(isList, asList(), () -> ILists.of());
@@ -149,7 +149,7 @@ public class StaticConstructorsTest
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(ISets.ordered("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(iterator("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(asList("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> IBuilders.list().add("a", "b", "c").build());
+        verifyOrdered(isList, asList("a", "b", "c"), () -> IBuilders.list().addAll("a", "b", "c").build());
         verifyOrdered(isList, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(ICollectors.toList()));
     }
 

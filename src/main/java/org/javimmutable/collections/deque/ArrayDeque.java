@@ -80,23 +80,23 @@ public class ArrayDeque<T>
     }
 
     @Nonnull
-    public static <T> ArrayDeque<T> of(Indexed<? extends T> source,
-                                       int offset,
-                                       int limit)
+    public static <T> IDeque<T> of(Indexed<? extends T> source,
+                                   int offset,
+                                   int limit)
     {
-        return new Builder<T>().add(source, offset, limit).build();
+        return new Builder<T>().addAll(source, offset, limit).build();
     }
 
     @Nonnull
-    public static <T> ArrayDeque<T> of(Indexed<? extends T> source)
+    public static <T> IDeque<T> of(Indexed<? extends T> source)
     {
-        return new Builder<T>().add(source, 0, source.size()).build();
+        return new Builder<T>().addAll(source, 0, source.size()).build();
     }
 
     @Nonnull
-    public static <T> ArrayDeque<T> of(Iterator<? extends T> source)
+    public static <T> IDeque<T> of(Iterator<? extends T> source)
     {
-        return new Builder<T>().add(source).build();
+        return new Builder<T>().addAll(source).build();
     }
 
     @Nonnull
@@ -110,7 +110,7 @@ public class ArrayDeque<T>
     {
         return Collector.<T, Builder<T>, IDeque<T>>of(() -> new Builder<>(),
                                                       (b, v) -> b.add(v),
-                                                      (b1, b2) -> (Builder<T>)b1.add(b2.iterator()),
+                                                      (b1, b2) -> (Builder<T>)b1.addAll(b2.iterator()),
                                                       b -> b.build());
     }
 
@@ -401,27 +401,6 @@ public class ArrayDeque<T>
             builder.add(value);
             return this;
         }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Iterator<? extends T> source)
-        {
-            source.forEachRemaining(this::add);
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Builder<T> add(Indexed<? extends T> source,
-                              int offset,
-                              int limit)
-        {
-            for (int i = offset; i < limit; ++i) {
-                add(source.get(i));
-            }
-            return this;
-        }
-
         @Nonnull
         private Iterator<T> iterator()
         {

@@ -79,19 +79,19 @@ public class BuilderTestAdapter<T>
     @Override
     public void add(Iterator<? extends T> source)
     {
-        builder.add(source);
+        builder.addAll(source);
     }
 
     @Override
     public void add(Iterable<? extends T> source)
     {
-        builder.add(source);
+        builder.addAll(source);
     }
 
     @Override
     public <K extends T> void add(K... source)
     {
-        builder.add(source);
+        builder.addAll(source);
     }
 
     @Override
@@ -99,12 +99,12 @@ public class BuilderTestAdapter<T>
                     int offset,
                     int limit)
     {
-        builder.add(source, offset, limit);
+        builder.addAll(source, offset, limit);
     }
 
     @Override
     public void add(Indexed<? extends T> source)
     {
-        builder.add(source);
+        builder.addAll(source);
     }
 }

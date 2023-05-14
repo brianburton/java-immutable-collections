@@ -588,7 +588,7 @@ public class ArrayDequeTest
         for (int offset = 0; offset < values.length; ++offset) {
             for (int limit = offset; limit <= values.length; ++limit) {
                 final int size = limit - offset;
-                ArrayDeque<Integer> list = ArrayDeque.of(source, offset, limit);
+                IDeque<Integer> list = ArrayDeque.of(source, offset, limit);
                 if (size == 0) {
                     assertSame(ArrayDeque.<Integer>of(), list);
                 }
@@ -604,7 +604,7 @@ public class ArrayDequeTest
 
     public void testStreams()
     {
-        IDeque<Integer> list = ArrayDeque.<Integer>builder().add(1, 2, 3, 4, 5, 6, 7).build();
+        IDeque<Integer> list = ArrayDeque.<Integer>builder().addAll(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
         assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 
