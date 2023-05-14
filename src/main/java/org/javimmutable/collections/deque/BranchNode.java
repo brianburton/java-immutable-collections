@@ -61,9 +61,9 @@ class BranchNode<T>
 {
     private final int depth;
     private final int size;
-    private final Node<T> prefix;  // possibly empty and can be any depth
+    private final Node<T> prefix;  // possibly empty and can be any depth < this.depth
     private final Node<T>[] nodes; // all of these are full and have depth - 1
-    private final Node<T> suffix;  // possibly empty and can be any depth
+    private final Node<T> suffix;  // possibly empty and can be any depth < this.depth
 
     private BranchNode(int depth,
                        int size,

@@ -80,21 +80,7 @@ public class ArrayDeque<T>
     }
 
     @Nonnull
-    public static <T> IDeque<T> of(Indexed<? extends T> source,
-                                   int offset,
-                                   int limit)
-    {
-        return new Builder<T>().addAll(source, offset, limit).build();
-    }
-
-    @Nonnull
     public static <T> IDeque<T> of(Indexed<? extends T> source)
-    {
-        return new Builder<T>().addAll(source, 0, source.size()).build();
-    }
-
-    @Nonnull
-    public static <T> IDeque<T> of(Iterator<? extends T> source)
     {
         return new Builder<T>().addAll(source).build();
     }
@@ -401,6 +387,7 @@ public class ArrayDeque<T>
             builder.add(value);
             return this;
         }
+
         @Nonnull
         private Iterator<T> iterator()
         {

@@ -39,14 +39,12 @@ import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Node that forms the bottom of the 32-way tree and contains up to 32 values.
@@ -71,13 +69,6 @@ class LeafNode<T>
         values[0] = value;
     }
 
-    static <T> LeafNode<T> fromList(List<T> values,
-                                    int offset,
-                                    int limit)
-    {
-        return fromList(IndexedList.retained(values), offset, limit);
-    }
-
     static <T> LeafNode<T> fromList(Indexed<? extends T> values,
                                     int offset,
                                     int limit)
@@ -91,6 +82,8 @@ class LeafNode<T>
 
     static <T> LeafNode<T> forTesting(T[] values)
     {
+        assert values.length >= 1;
+        assert values.length <= 32;
         return new LeafNode<T>(values.clone());
     }
 

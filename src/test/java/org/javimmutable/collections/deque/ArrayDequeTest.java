@@ -578,30 +578,6 @@ public class ArrayDequeTest
         return new BuilderTestAdapter<>(ArrayDeque.builder());
     }
 
-    public void testIndexedConstructor()
-    {
-        Integer[] values = new Integer[33 * 32];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = i;
-        }
-        final IndexedArray<Integer> source = IndexedArray.retained(values);
-        for (int offset = 0; offset < values.length; ++offset) {
-            for (int limit = offset; limit <= values.length; ++limit) {
-                final int size = limit - offset;
-                IDeque<Integer> list = ArrayDeque.of(source, offset, limit);
-                if (size == 0) {
-                    assertSame(ArrayDeque.<Integer>of(), list);
-                }
-                for (int i = 0; i < size; ++i) {
-                    final Integer value = list.get(i);
-                    assertEquals(values[offset + i], value);
-                }
-            }
-        }
-
-        assertSame(ArrayDeque.<Integer>of(), ArrayDeque.of(ArrayDeque.<Integer>of()));
-    }
-
     public void testStreams()
     {
         IDeque<Integer> list = ArrayDeque.<Integer>builder().addAll(1, 2, 3, 4, 5, 6, 7).build();
