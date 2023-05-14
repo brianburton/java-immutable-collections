@@ -36,9 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -82,25 +81,25 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    Holder<V> find(@Nonnull Comparator<K> comp,
-                   @Nonnull K key)
+    Maybe<V> find(@Nonnull Comparator<K> comp,
+                  @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holders.nullable(value);
+            return Maybe.present(value);
         } else {
-            return Holder.none();
+            return Maybe.absent();
         }
     }
 
     @Nonnull
     @Override
-    Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                      @Nonnull K key)
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                     @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Holders.nullable(asEntry());
+            return Maybe.present(asEntry());
         } else {
-            return Holder.none();
+            return Maybe.absent();
         }
     }
 
@@ -149,17 +148,17 @@ public class LeafNode<K, V>
     @Override
     AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
                               @Nonnull K key,
-                              @Nonnull Func1<Holder<V>, V> generator)
+                              @Nonnull Func1<Maybe<V>, V> generator)
     {
         if (isMatch(comp, key)) {
-            final V value = generator.apply(Holders.nullable(this.value));
+            final V value = generator.apply(Maybe.present(this.value));
             if (this.value == value) {
                 return this;
             } else {
                 return new LeafNode<>(key, value);
             }
         } else {
-            final V value = generator.apply(Holder.none());
+            final V value = generator.apply(Maybe.absent());
             return ValueNode.instance(comp, this.key, this.value, key, value);
         }
     }

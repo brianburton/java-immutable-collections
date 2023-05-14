@@ -36,8 +36,8 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterable;
@@ -82,7 +82,7 @@ public interface CollisionMap<K, V>
     @Nonnull
     Node update(@Nonnull Node node,
                 @Nonnull K key,
-                @Nonnull Func1<Holder<V>, V> generator);
+                @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
     Node delete(@Nonnull Node node,
@@ -93,12 +93,12 @@ public interface CollisionMap<K, V>
                  V defaultValue);
 
     @Nonnull
-    Holder<V> findValue(@Nonnull Node node,
-                        @Nonnull K key);
+    Maybe<V> findValue(@Nonnull Node node,
+                       @Nonnull K key);
 
     @Nonnull
-    Holder<IMapEntry<K, V>> findEntry(@Nonnull Node node,
-                                      @Nonnull K key);
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Node node,
+                                     @Nonnull K key);
 
     @Nonnull
     IMapEntry<K, V> first(@Nonnull Node node);

@@ -35,11 +35,10 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -176,7 +175,7 @@ public class DequeStressTester
             }
             verifyContents(deque, expected);
             verifyContents(deque.stream().parallel().collect(collector), expected);
-            verifyContents(deque.transformSome(s -> s.length() % 2 == 0 ? Holders.nullable(s + "x") : Holder.none()),
+            verifyContents(deque.transformSome(s -> s.length() % 2 == 0 ? Maybe.present(s + "x") : Maybe.absent()),
                            expected.stream().filter(s -> s.length() % 2 == 0).map(s -> s + "x").collect(Collectors.toList()));
             verifyContents(deque.transform(s -> s + "x"), expected.stream().map(s -> s + "x").collect(Collectors.toList()));
 

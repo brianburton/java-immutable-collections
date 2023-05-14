@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
 
 import static org.assertj.core.api.Assertions.*;
@@ -77,8 +77,8 @@ public class EmptyNodeTest
 
     public void testSeek()
     {
-        assertEquals(Holders.none(), node.seekImpl(-1, Holders::none, Holders::nullable));
-        assertEquals(Holders.none(), node.seekImpl(0, Holders::none, Holders::nullable));
-        assertEquals(Holders.none(), node.seekImpl(node.size(), Holders::none, Holders::nullable));
+        assertEquals(Maybe.absent(), node.seekImpl(-1, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
+        assertEquals(Maybe.absent(), node.seekImpl(0, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
+        assertEquals(Maybe.absent(), node.seekImpl(node.size(), () -> Maybe.absent(), value -> Maybe.present(value)));
     }
 }

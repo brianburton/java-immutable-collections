@@ -35,8 +35,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
@@ -44,6 +42,7 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.ISets;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -360,16 +359,16 @@ public class SetMapStressTester
                         break;
                     }
                     case 7: { //find(K)
-                        Holder<ISet<String>> holder = setmap.find(key);
-                        Holder<ISet<String>> expectedHolder;
+                        Maybe<ISet<String>> maybe = setmap.find(key);
+                        Maybe<ISet<String>> expectedMaybe;
                         if (expected.containsKey(key)) {
                             ISet<String> value = expected.get(key);
-                            expectedHolder = Holders.nullable(value);
+                            expectedMaybe = Maybe.present(value);
                         } else {
-                            expectedHolder = Holder.none();
+                            expectedMaybe = Maybe.absent();
                         }
-                        if (!equivalentHolder(holder, expectedHolder)) {
-                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
+                        if (!equivalentHolder(maybe, expectedMaybe)) {
+                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedMaybe, maybe));
                         }
                         break;
                     }

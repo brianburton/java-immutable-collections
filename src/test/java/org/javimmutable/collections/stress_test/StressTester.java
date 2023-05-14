@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -124,26 +124,26 @@ abstract class StressTester
         return list;
     }
 
-    protected <T> boolean equivalentHolder(Holder<T> holder,
-                                           Holder<T> expectedHolder)
+    protected <T> boolean equivalentHolder(Maybe<T> maybe,
+                                           Maybe<T> expectedMaybe)
     {
-        if ((holder.isSome() != expectedHolder.isSome())) {
+        if ((maybe.isPresent() != expectedMaybe.isPresent())) {
             return false;
         }
-        return !holder.isSome() || holder.unsafeGet().equals(expectedHolder.unsafeGet());
+        return !maybe.isPresent() || maybe.unsafeGet().equals(expectedMaybe.unsafeGet());
     }
 
-    protected <K, V> boolean equivalentEntryHolder(Holder<IMapEntry<K, V>> holder,
-                                                   Holder<IMapEntry<K, V>> expectedHolder)
+    protected <K, V> boolean equivalentEntryHolder(Maybe<IMapEntry<K, V>> maybe,
+                                                   Maybe<IMapEntry<K, V>> expectedMaybe)
     {
-        if (holder.isSome() != expectedHolder.isSome()) {
+        if (maybe.isPresent() != expectedMaybe.isPresent()) {
             return false;
         }
-        if (holder.isNone()) {
+        if (maybe.isAbsent()) {
             return true;
         }
-        IMapEntry<K, V> entry = holder.unsafeGet();
-        IMapEntry<K, V> expectedEntry = expectedHolder.unsafeGet();
+        IMapEntry<K, V> entry = maybe.unsafeGet();
+        IMapEntry<K, V> expectedEntry = expectedMaybe.unsafeGet();
         return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
     }
 

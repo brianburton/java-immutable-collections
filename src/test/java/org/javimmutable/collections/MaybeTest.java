@@ -43,18 +43,18 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertThrows;
 
-public class HolderTest
+public class MaybeTest
     extends TestCase
 {
     public void testEmpty()
         throws IOException
     {
-        Holder<String> e1 = Holder.none();
-        Holder<String> e2 = Holder.none();
+        Maybe<String> e1 = Maybe.absent();
+        Maybe<String> e2 = Maybe.absent();
         assertSame(e1, e2);
         assertEquals(e1, e2);
-        assertEquals(true, e1.isNone());
-        assertEquals(false, e1.isSome());
+        assertEquals(true, e1.isAbsent());
+        assertEquals(false, e1.isPresent());
         try {
             e1.unsafeGet();
             fail();
@@ -70,8 +70,8 @@ public class HolderTest
         assertEquals(null, called.get());
         e1.applyThrows(x -> called.set(x));
         assertEquals(null, called.get());
-        assertEquals(Holder.none(), e1.map(String::hashCode));
-        assertEquals(Holder.none(), e1.mapThrows(this::hashCodeThrows));
+        assertEquals(Maybe.absent(), e1.map(String::hashCode));
+        assertEquals(Maybe.absent(), e1.mapThrows(this::hashCodeThrows));
         assertEquals("ZZZ", e1.get("ZZZ"));
         assertEquals("ZZZ", e1.getOr(() -> "ZZZ"));
         try {
@@ -85,16 +85,16 @@ public class HolderTest
     public void testFilled()
         throws IOException
     {
-        Holder<String> empty1 = Holder.none();
-        Holder<String> empty2 = Holders.notNull(null);
-        Holder<String> filled1 = Holders.notNull("ABC");
-        Holder<String> filled2 = Holders.notNull("BC");
-        Holder<String> filled3 = Holders.notNull("ABC");
+        Maybe<String> empty1 = Maybe.absent();
+        Maybe<String> empty2 = Maybe.notNull(null);
+        Maybe<String> filled1 = Maybe.notNull("ABC");
+        Maybe<String> filled2 = Maybe.notNull("BC");
+        Maybe<String> filled3 = Maybe.notNull("ABC");
         assertEquals(true, empty1.equals(empty2));
         assertEquals(true, empty2.equals(empty1));
 
-        assertEquals(true, empty2.isNone());
-        assertEquals(false, empty2.isSome());
+        assertEquals(true, empty2.isAbsent());
+        assertEquals(false, empty2.isPresent());
         assertFalse(empty2.equals(filled1));
         assertFalse(empty2.equals(filled2));
         assertFalse(empty2.equals(filled3));
@@ -103,8 +103,8 @@ public class HolderTest
         assertEquals("ZZZ", empty2.get("ZZZ"));
         assertEquals(-1, empty2.hashCode());
 
-        assertEquals(false, filled1.isNone());
-        assertEquals(true, filled1.isSome());
+        assertEquals(false, filled1.isAbsent());
+        assertEquals(true, filled1.isPresent());
         assertFalse(filled1.equals(empty2));
         assertFalse(filled1.equals(filled2));
         assertTrue(filled1.equals(filled3));
@@ -113,8 +113,8 @@ public class HolderTest
         assertEquals("ABC", filled1.get("ZZZ"));
         assertEquals(64578, filled1.hashCode());
 
-        assertEquals(false, filled2.isNone());
-        assertEquals(true, filled2.isSome());
+        assertEquals(false, filled2.isAbsent());
+        assertEquals(true, filled2.isPresent());
         assertFalse(filled2.equals(empty2));
         assertFalse(filled2.equals(filled1));
         assertFalse(filled2.equals(filled3));
@@ -123,8 +123,8 @@ public class HolderTest
         assertEquals("BC", filled2.get("ZZZ"));
         assertEquals(2113, filled2.hashCode());
 
-        assertEquals(false, filled3.isNone());
-        assertEquals(true, filled3.isSome());
+        assertEquals(false, filled3.isAbsent());
+        assertEquals(true, filled3.isPresent());
         assertFalse(filled3.equals(empty2));
         assertTrue(filled3.equals(filled1));
         assertFalse(filled3.equals(filled2));
@@ -140,8 +140,8 @@ public class HolderTest
         assertNull(called.get());
         filled3.applyThrows(x -> called.set(x));
         assertEquals("ABC", called.get());
-        assertEquals(Holders.nullable("ABC".hashCode()), filled3.map(String::hashCode));
-        assertEquals(Holders.nullable("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
+        assertEquals(Maybe.present("ABC".hashCode()), filled3.map(String::hashCode));
+        assertEquals(Maybe.present("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
         assertEquals("ABC", filled3.get("ZZZ"));
         assertEquals("ABC", filled3.getOr(() -> "ZZZ"));
         assertEquals("ABC", filled3.unsafeGet(() -> new RuntimeException("threw")));

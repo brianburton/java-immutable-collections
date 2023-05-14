@@ -35,9 +35,8 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IDeque;
+import org.javimmutable.collections.Maybe;
 
 import static org.junit.Assert.*;
 
@@ -99,17 +98,17 @@ public class StandardDequeTests
         assertSame(orig.getClass(), transformed.getClass());
         assertEquals(appendAll(empty, 11, 30), transformed);
 
-        transformed = orig.transformSome(i -> i < 11 ? Holders.nullable(i) : Holder.none());
+        transformed = orig.transformSome(i -> i < 11 ? Maybe.present(i) : Maybe.absent());
         assertSame(orig.getClass(), transformed.getClass());
         assertEquals(appendAll(empty, 1, 10), transformed);
     }
 
     private static void verifySingle(IDeque<Integer> empty)
     {
-        assertEquals(Holder.none(), empty.single());
-        assertEquals(Holder.some(1), empty.insert(1).single());
-        assertEquals(Holder.some(null), empty.insert(null).single());
-        assertEquals(Holder.none(), empty.insert(1).insert(2).single());
+        assertEquals(Maybe.absent(), empty.single());
+        assertEquals(Maybe.present(1), empty.insert(1).single());
+        assertEquals(Maybe.present(null), empty.insert(null).single());
+        assertEquals(Maybe.absent(), empty.insert(1).insert(2).single());
     }
 
     private static IDeque<Integer> appendAll(IDeque<Integer> answer,

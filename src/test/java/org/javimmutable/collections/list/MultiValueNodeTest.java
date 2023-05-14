@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
 
 import static org.assertj.core.api.Assertions.*;
@@ -50,9 +50,9 @@ public class MultiValueNodeTest
         final AbstractNode<Integer> node = leaf(0, 1);
         assertThat(node.get(0)).isEqualTo(0);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Holders.none(), node.seekImpl(-1, Holders::none, Holders::nullable));
-        assertEquals(Holders.nullable(0), node.seekImpl(0, Holders::none, Holders::nullable));
-        assertEquals(Holders.none(), node.seekImpl(1, Holders::none, Holders::nullable));
+        assertEquals(Maybe.absent(), node.seekImpl(-1, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
+        assertEquals(Maybe.present(0), node.seekImpl(0, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
+        assertEquals(Maybe.absent(), node.seekImpl(1, () -> Maybe.absent(), value -> Maybe.present(value)));
     }
 
     public void testVarious()

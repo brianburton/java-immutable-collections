@@ -36,9 +36,8 @@
 package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -128,14 +127,14 @@ public class ListCollisionMap<K, V>
     @Override
     public Node update(@Nonnull Node node,
                        @Nonnull K key,
-                       @Nonnull Func1<Holder<V>, V> generator)
+                       @Nonnull Func1<Maybe<V>, V> generator)
     {
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         int i = 0;
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 V value1 = e.getValue();
-                V value = generator.apply(Holders.nullable(value1));
+                V value = generator.apply(Maybe.present(value1));
                 if (e.getValue() == value) {
                     return root;
                 } else {
@@ -144,7 +143,7 @@ public class ListCollisionMap<K, V>
             }
             i += 1;
         }
-        V value = generator.apply(Holder.none());
+        V value = generator.apply(Maybe.absent());
         return root.append(IMapEntry.of(key, value));
     }
 
@@ -180,31 +179,31 @@ public class ListCollisionMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> findValue(@Nonnull Node node,
-                               @Nonnull K key)
+    public Maybe<V> findValue(@Nonnull Node node,
+                              @Nonnull K key)
     {
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 V value = e.getValue();
-                return Holders.nullable(value);
+                return Maybe.present(value);
             }
         }
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Node node,
-                                             @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Node node,
+                                            @Nonnull K key)
     {
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
-                return Holders.nullable(e);
+                return Maybe.present(e);
             }
         }
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Nonnull

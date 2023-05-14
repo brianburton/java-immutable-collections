@@ -74,5 +74,5 @@ public interface Mapped<K, V>
      * @return possibly empty Holder containing any value associated with the key
      */
     @Nonnull
-    Holder<V> find(K key);
+    Maybe<V> find(K key);
 }

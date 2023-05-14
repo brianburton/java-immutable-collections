@@ -35,14 +35,13 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static org.javimmutable.collections.Holder.none;
+import static org.javimmutable.collections.Maybe.absent;
 
 /**
  * Wrapper for an Indexed that only provides access to a portion of the full Indexed's values.
@@ -91,13 +90,13 @@ public class Subindexed<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
         if ((index < 0) || (index >= size)) {
-            return none();
+            return absent();
         }
         T value = source.get(offset + index);
-        return Holders.nullable(value);
+        return Maybe.present(value);
     }
 
     @Override

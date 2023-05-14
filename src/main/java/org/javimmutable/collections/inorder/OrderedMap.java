@@ -37,12 +37,11 @@ package org.javimmutable.collections.inorder;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.GenericCollector;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
@@ -162,18 +161,18 @@ public class OrderedMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull K key)
+    public Maybe<V> find(@Nonnull K key)
     {
         final Node<K, V> current = values.get(key);
-        return current != null ? Holders.nullable(current.value) : Holder.none();
+        return current != null ? Maybe.present(current.value) : Maybe.absent();
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<K, V> current = values.get(key);
-        return current != null ? Holders.notNull(IMapEntry.of(key, current.value)) : Holder.none();
+        return current != null ? Maybe.notNull(IMapEntry.of(key, current.value)) : Maybe.absent();
     }
 
     @Nonnull

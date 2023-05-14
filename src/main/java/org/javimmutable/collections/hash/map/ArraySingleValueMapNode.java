@@ -36,9 +36,8 @@
 package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
@@ -85,18 +84,18 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
-                          @Nonnull K key)
+    public Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                         @Nonnull K key)
     {
-        return key.equals(this.key) ? Holders.nullable(value) : Holder.none();
+        return key.equals(this.key) ? Maybe.present(value) : Maybe.absent();
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                             @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                            @Nonnull K key)
     {
-        return key.equals(this.key) ? Holders.nullable(this) : Holder.none();
+        return key.equals(this.key) ? Maybe.present(this) : Maybe.absent();
     }
 
     @Nonnull
@@ -120,15 +119,15 @@ public class ArraySingleValueMapNode<K, V>
     @Override
     public ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                                      @Nonnull K key,
-                                     @Nonnull Func1<Holder<V>, V> generator)
+                                     @Nonnull Func1<Maybe<V>, V> generator)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
-            final V value = generator.apply(Holder.none());
+            final V value = generator.apply(Maybe.absent());
             return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else {
-            final V value = generator.apply(Holder.some(thisValue));
+            final V value = generator.apply(Maybe.present(thisValue));
             if (value == thisValue) {
                 return this;
             } else {

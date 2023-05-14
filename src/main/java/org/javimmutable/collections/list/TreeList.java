@@ -37,11 +37,10 @@ package org.javimmutable.collections.list;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.Sum1Throws;
@@ -296,7 +295,7 @@ public class TreeList<T>
     }
 
     @Override
-    public <A> TreeList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    public <A> TreeList<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform)
     {
         final ListBuilder<A> builder = new ListBuilder<>();
         root.forEach(t -> transform.apply(t).apply(tt -> builder.add(tt)));
@@ -317,9 +316,9 @@ public class TreeList<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
-        return root.seekImpl(index, () -> Holder.none(), value -> Holders.nullable(value));
+        return root.seekImpl(index, () -> Maybe.absent(), value -> Maybe.present(value));
     }
 
     @Override

@@ -35,11 +35,11 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
 import javax.annotation.Nonnull;
@@ -88,7 +88,7 @@ public class MapAdaptor<K, V>
     @Override
     public boolean containsKey(Object o)
     {
-        return map.find((K)o).isSome();
+        return map.find((K)o).isPresent();
     }
 
     /**
@@ -157,7 +157,7 @@ public class MapAdaptor<K, V>
             @Override
             public boolean contains(Object o)
             {
-                return map.find((K)o).isSome();
+                return map.find((K)o).isPresent();
             }
 
             @Override
@@ -223,8 +223,8 @@ public class MapAdaptor<K, V>
                     return false;
                 }
                 Entry<K, V> oEntry = (Entry<K, V>)o;
-                Holder<IMapEntry<K, V>> eHolder = map.findEntry(oEntry.getKey());
-                return eHolder.isSome() && new MapEntry(eHolder.unsafeGet()).equals(oEntry);
+                Maybe<IMapEntry<K, V>> eMaybe = map.findEntry(oEntry.getKey());
+                return eMaybe.isPresent() && new MapEntry(eMaybe.unsafeGet()).equals(oEntry);
             }
 
             @Override

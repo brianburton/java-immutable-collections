@@ -36,10 +36,10 @@
 package org.javimmutable.collections.deque;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IDequeBuilder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
@@ -114,7 +114,7 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
         return root.find(index);
     }
@@ -313,7 +313,7 @@ public class ArrayDeque<T>
     }
 
     @Override
-    public <A> ArrayDeque<A> transformSome(@Nonnull Func1<T, Holder<A>> transform)
+    public <A> ArrayDeque<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform)
     {
         final Builder<A> builder = builder();
         for (T t : root) {

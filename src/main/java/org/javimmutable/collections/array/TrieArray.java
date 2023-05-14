@@ -35,13 +35,13 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IArrayBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.IndexedProc1;
 import org.javimmutable.collections.IndexedProc1Throws;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayToMapAdaptor;
@@ -114,14 +114,14 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
         return root.find(index);
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<Integer, T>> findEntry(int index)
+    public Maybe<IMapEntry<Integer, T>> findEntry(int index)
     {
         return find(index).map(v -> IMapEntry.of(index, v));
     }

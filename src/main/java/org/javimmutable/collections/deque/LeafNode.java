@@ -35,9 +35,8 @@
 
 package org.javimmutable.collections.deque;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -177,9 +176,9 @@ class LeafNode<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
-        return Holders.nullable(values[index]);
+        return Maybe.present(values[index]);
     }
 
     @Override

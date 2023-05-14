@@ -36,12 +36,12 @@
 package org.javimmutable.collections.setmap;
 
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
@@ -118,7 +118,7 @@ abstract class AbstractSetMap<K, V>
     @Override
     public boolean contains(@Nonnull K key)
     {
-        return contents.find(key).isSome();
+        return contents.find(key).isPresent();
     }
 
     @Override
@@ -301,7 +301,7 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<ISet<V>> find(K key)
+    public Maybe<ISet<V>> find(K key)
     {
         return contents.find(key);
     }

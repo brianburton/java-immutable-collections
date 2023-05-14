@@ -38,11 +38,10 @@ package org.javimmutable.collections.list;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListBuilder;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardListTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
@@ -1320,19 +1319,19 @@ public class TreeListTest
     public void testSeek()
     {
         IList<Integer> list = TreeList.of();
-        assertEquals(Holder.none(), list.find(0));
+        assertEquals(Maybe.absent(), list.find(0));
 
         list = rangeList(0, 0);
-        assertEquals(Holder.none(), list.find(-1));
-        assertEquals(Holders.nullable(0), list.find(0));
-        assertEquals(Holder.none(), list.find(1));
+        assertEquals(Maybe.absent(), list.find(-1));
+        assertEquals(Maybe.present(0), list.find(0));
+        assertEquals(Maybe.absent(), list.find(1));
 
         list = rangeList(0, 24999);
-        assertEquals(Holder.none(), list.find(-1));
-        assertEquals(Holders.nullable(0), list.find(0));
-        assertEquals(Holders.nullable(12500), list.find(12500));
-        assertEquals(Holders.nullable(24999), list.find(24999));
-        assertEquals(Holder.none(), list.find(25000));
+        assertEquals(Maybe.absent(), list.find(-1));
+        assertEquals(Maybe.present(0), list.find(0));
+        assertEquals(Maybe.present(12500), list.find(12500));
+        assertEquals(Maybe.present(24999), list.find(24999));
+        assertEquals(Maybe.absent(), list.find(25000));
     }
 
     private IList<Integer> list(Integer... values)

@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.array;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 
@@ -44,6 +44,6 @@ public interface ArrayFindEntryMapper<K, V, T>
     extends ArrayGetMapper<K, V, T>
 {
     @Nonnull
-    Holder<IMapEntry<K, V>> mappedFindEntry(@Nonnull T mapping,
-                                            @Nonnull K key);
+    Maybe<IMapEntry<K, V>> mappedFindEntry(@Nonnull T mapping,
+                                           @Nonnull K key);
 }

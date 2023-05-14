@@ -39,12 +39,11 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IArrayBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.common.StandardBuilderTests;
@@ -141,7 +140,7 @@ public class TrieArrayTest
                         array.checkInvariants();
                         break;
                     case 3:
-                        Holder<Integer> integers = array.find(index);
+                        Maybe<Integer> integers = array.find(index);
                         assertEquals(integers.getOrNull(), array.get(index));
                         break;
                     case 4:
@@ -221,13 +220,13 @@ public class TrieArrayTest
 
         for (int i = 9999; i >= 0; --i) {
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holders.nullable(i), array.find(i));
+            assertEquals(Maybe.present(i), array.find(i));
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holders.nullable(i), array.find(i));
+            assertEquals(Maybe.present(i), array.find(i));
             for (int shift = 31; shift > 20; --shift) {
                 int shiftedIndex = i | (1 << shift);
                 assertEquals(null, array.get(shiftedIndex));
-                assertEquals(Holder.<Integer>none(), array.find(shiftedIndex));
+                assertEquals(Maybe.<Integer>absent(), array.find(shiftedIndex));
                 assertSame(array, array.delete(shiftedIndex));
             }
             IArray<Integer> deleted = array.delete(i);
@@ -245,9 +244,9 @@ public class TrieArrayTest
 
         for (int i = 9999; i >= 0; --i) {
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holders.nullable(i), array.find(i));
+            assertEquals(Maybe.present(i), array.find(i));
             assertEquals((Integer)i, array.get(i));
-            assertEquals(Holders.nullable(i), array.find(i));
+            assertEquals(Maybe.present(i), array.find(i));
             IArray<Integer> deleted = array.delete(i);
             assertEquals(array.size() - 1, deleted.size());
             assertEquals(null, deleted.get(i));
@@ -343,8 +342,8 @@ public class TrieArrayTest
                 final Integer index = indexes.get(i);
                 assertEquals(Integer.valueOf(i), array.get(index));
                 assertEquals(Integer.valueOf(i), array.getValueOr(index, -99));
-                assertEquals(Holders.nullable(i), array.find(index));
-                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(index, i)), array.findEntry(index));
+                assertEquals(Maybe.present(i), array.find(index));
+                assertEquals(Maybe.present(IMapEntry.of(index, i)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {
@@ -352,8 +351,8 @@ public class TrieArrayTest
                 array = array.assign(index, i - 1);
                 assertEquals(Integer.valueOf(i - 1), array.get(index));
                 assertEquals(Integer.valueOf(i - 1), array.getValueOr(index, -99));
-                assertEquals(Holders.nullable(i - 1), array.find(index));
-                assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(index, i - 1)), array.findEntry(index));
+                assertEquals(Maybe.present(i - 1), array.find(index));
+                assertEquals(Maybe.present(IMapEntry.of(index, i - 1)), array.findEntry(index));
             }
             array.checkInvariants();
             for (int i = 0; i < length; ++i) {
@@ -362,8 +361,8 @@ public class TrieArrayTest
                 assertEquals(length - i - 1, array.size());
                 assertEquals(null, array.get(index));
                 assertEquals(Integer.valueOf(-99), array.getValueOr(index, -99));
-                assertEquals(Holder.<Integer>none(), array.find(index));
-                assertEquals(Holder.<IMapEntry<Integer, Integer>>none(), array.findEntry(index));
+                assertEquals(Maybe.<Integer>absent(), array.find(index));
+                assertEquals(Maybe.<IMapEntry<Integer, Integer>>absent(), array.findEntry(index));
             }
             array.checkInvariants();
         }

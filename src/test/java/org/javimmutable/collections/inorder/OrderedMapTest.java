@@ -37,12 +37,11 @@ package org.javimmutable.collections.inorder;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.MapBuilderTestAdapter;
 import org.javimmutable.collections.common.StandardBuilderTests;
 import org.javimmutable.collections.common.StandardMapTests;
@@ -148,7 +147,7 @@ public class OrderedMapTest
                         int key = r.nextInt(500);
                         int value = r.nextInt(500);
                         int merged = value;
-                        map = map.update(key, h -> h.isNone() ? value : h.unsafeGet() ^ value);
+                        map = map.update(key, h -> h.isAbsent() ? value : h.unsafeGet() ^ value);
                         if (expected.get(key) != null) {
                             merged = expected.get(key) ^ value;
                         }
@@ -156,10 +155,10 @@ public class OrderedMapTest
                         //noinspection ConstantConditions
                         assertEquals(merged, (int)map.get(key));
                         assertEquals(merged, (int)map.getValueOr(key, value - 1000));
-                        Holder<Integer> integers = map.find(key);
+                        Maybe<Integer> integers = map.find(key);
                         assertEquals(merged, (int)integers.getOrNull());
-                        assertEquals(Holders.nullable(merged), map.find(key));
-                        Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
+                        assertEquals(Maybe.present(merged), map.find(key));
+                        Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, merged), iMapEntries.unsafeGet());
                         break;
                     }
@@ -171,10 +170,10 @@ public class OrderedMapTest
                         //noinspection ConstantConditions
                         assertEquals(value, (int)map.get(key));
                         assertEquals(value, (int)map.getValueOr(key, value - 1000));
-                        Holder<Integer> integers = map.find(key);
+                        Maybe<Integer> integers = map.find(key);
                         assertEquals(value, (int)integers.getOrNull());
-                        assertEquals(Holders.nullable(value), map.find(key));
-                        Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
+                        assertEquals(Maybe.present(value), map.find(key));
+                        Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, value), iMapEntries.unsafeGet());
                         break;
                     }
@@ -215,7 +214,7 @@ public class OrderedMapTest
                 map = map.delete(key);
                 assertEquals(key - 99, (int)map.getValueOr(key, key - 99));
                 assertEquals(null, map.getValueOr(key, null));
-                Holder<Integer> integers = map.find(key);
+                Maybe<Integer> integers = map.find(key);
                 assertEquals(null, integers.getOrNull());
                 assertEquals(keys.size(), map.size());
             }
@@ -376,11 +375,11 @@ public class OrderedMapTest
         for (IMapEntry<Integer, Integer> entry : extra) {
             assertEquals(entry.getValue(), map.get(entry.getKey()));
             assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
-            Holder<Integer> integers = map.find(entry.getKey());
+            Maybe<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
             Integer value = entry.getValue();
-            assertEquals(Holders.nullable(value), map.find(entry.getKey()));
-            Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
+            assertEquals(Maybe.present(value), map.find(entry.getKey()));
+            Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
         return map;
@@ -393,10 +392,10 @@ public class OrderedMapTest
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
             assertEquals(entry.getValue(), map.get(entry.getKey()));
             assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
-            Holder<Integer> integers = map.find(entry.getKey());
+            Maybe<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
-            assertEquals(Holders.nullable(entry.getValue()), map.find(entry.getKey()));
-            Holder<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
+            assertEquals(Maybe.present(entry.getValue()), map.find(entry.getKey()));
+            Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
         return map;

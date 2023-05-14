@@ -35,8 +35,8 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -44,8 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
+import static org.javimmutable.collections.Maybe.absent;
 
 @Immutable
 public class IndexedList<T>
@@ -88,9 +87,9 @@ public class IndexedList<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
-        return index >= 0 && index < values.size() ? nullable(values.get(index)) : none();
+        return index >= 0 && index < values.size() ? Maybe.present(values.get(index)) : absent();
     }
 
     @Override

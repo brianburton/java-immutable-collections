@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -190,16 +189,16 @@ public class ListMapStressTester
                         break;
                     }
                     case 2: { //find(K)
-                        Holder<IList<String>> holder = listmap.find(key);
-                        Holder<IList<String>> expectedHolder;
+                        Maybe<IList<String>> maybe = listmap.find(key);
+                        Maybe<IList<String>> expectedMaybe;
                         if (expected.containsKey(key)) {
                             IList<String> value = expected.get(key);
-                            expectedHolder = Holders.nullable(value);
+                            expectedMaybe = Maybe.present(value);
                         } else {
-                            expectedHolder = Holder.none();
+                            expectedMaybe = Maybe.absent();
                         }
-                        if (!equivalentHolder(holder, expectedHolder)) {
-                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedHolder, holder));
+                        if (!equivalentHolder(maybe, expectedMaybe)) {
+                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedMaybe, maybe));
                         }
                         break;
                     }

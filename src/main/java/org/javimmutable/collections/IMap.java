@@ -98,7 +98,7 @@ public interface IMap<K, V>
      */
     @Nonnull
     @Override
-    Holder<V> find(@Nonnull K key);
+    Maybe<V> find(@Nonnull K key);
 
     /**
      * Search for an Entry within the map and return a Holder indicating if the Entry
@@ -108,7 +108,7 @@ public interface IMap<K, V>
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
     @Nonnull
-    Holder<IMapEntry<K, V>> findEntry(@Nonnull K key);
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key);
 
     /**
      * Sets the value associated with a specific key.  Key must be non-null but value
@@ -210,9 +210,9 @@ public interface IMap<K, V>
      */
     @Nonnull
     default IMap<K, V> update(@Nonnull K key,
-                              @Nonnull Func1<Holder<V>, V> generator)
+                              @Nonnull Func1<Maybe<V>, V> generator)
     {
-        final Holder<V> current = find(key);
+        final Maybe<V> current = find(key);
         final V newValue = generator.apply(current);
         return assign(key, newValue);
     }

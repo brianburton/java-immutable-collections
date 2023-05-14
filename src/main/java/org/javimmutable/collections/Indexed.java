@@ -60,7 +60,7 @@ public interface Indexed<T>
      * If no such value exists returns an empty Holder.
      */
     @Nonnull
-    Holder<T> find(int index);
+    Maybe<T> find(int index);
 
     @SuppressWarnings("unchecked")
     default T[] subArray(int offset,
@@ -86,7 +86,7 @@ public interface Indexed<T>
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 return source.find(index).map(transforminator);
             }

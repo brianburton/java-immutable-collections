@@ -36,8 +36,8 @@
 package org.javimmutable.collections.common;
 
 import junit.framework.AssertionFailedError;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -105,12 +105,12 @@ public class StandardCollisionMapTests
                 case 4: {
                     Integer k = r.nextInt(500);
                     Integer ev = expected.get(k);
-                    Holder<Integer> ah = map.findValue(node, k);
+                    Maybe<Integer> ah = map.findValue(node, k);
                     if (ev == null) {
-                        if (ah.isSome()) {
+                        if (ah.isPresent()) {
                             fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isNone()) {
+                    } else if (ah.isAbsent()) {
                         fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
@@ -118,12 +118,12 @@ public class StandardCollisionMapTests
                 case 5: {
                     Integer k = r.nextInt(500);
                     Integer ev = expected.get(k);
-                    Holder<IMapEntry<Integer, Integer>> ah = map.findEntry(node, k);
+                    Maybe<IMapEntry<Integer, Integer>> ah = map.findEntry(node, k);
                     if (ev == null) {
-                        if (ah.isSome()) {
+                        if (ah.isPresent()) {
                             fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isNone()) {
+                    } else if (ah.isAbsent()) {
                         fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
@@ -159,14 +159,14 @@ public class StandardCollisionMapTests
             if (!ev.equals(av)) {
                 sb.append(String.format("mismatch: k=%d ev=%s av=%s\n", k, ev, av));
             }
-            Holder<Integer> hv = map.findValue(node, k);
-            if (hv.isNone()) {
+            Maybe<Integer> hv = map.findValue(node, k);
+            if (hv.isAbsent()) {
                 sb.append(String.format("missing value for key: k=%d ev=%s\n", k, ev));
             } else if (!ev.equals(hv.unsafeGet())) {
                 sb.append(String.format("mismatch: k=%d ev=%s hv=%s\n", k, ev, hv.unsafeGet()));
             }
-            Holder<IMapEntry<Integer, Integer>> he = map.findEntry(node, k);
-            if (hv.isNone()) {
+            Maybe<IMapEntry<Integer, Integer>> he = map.findEntry(node, k);
+            if (hv.isAbsent()) {
                 sb.append(String.format("missing entry for key: k=%d ev=%s\n", k, ev));
             } else {
                 if (!k.equals(he.unsafeGet().getKey())) {

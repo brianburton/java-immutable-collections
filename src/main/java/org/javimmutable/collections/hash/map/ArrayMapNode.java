@@ -36,8 +36,8 @@
 package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
@@ -55,12 +55,12 @@ public interface ArrayMapNode<K, V>
                  V defaultValue);
 
     @Nonnull
-    Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
-                   @Nonnull K key);
+    Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                  @Nonnull K key);
 
     @Nonnull
-    Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                      @Nonnull K key);
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                     @Nonnull K key);
 
     @Nonnull
     ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
@@ -74,7 +74,7 @@ public interface ArrayMapNode<K, V>
     @Nonnull
     ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                               @Nonnull K key,
-                              @Nonnull Func1<Holder<V>, V> generator);
+                              @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
     GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap);

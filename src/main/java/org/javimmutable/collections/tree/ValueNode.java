@@ -36,9 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -219,7 +218,7 @@ class ValueNode<K, V>
     @Override
     public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
                                      @Nonnull K key,
-                                     @Nonnull Func1<Holder<V>, V> generator)
+                                     @Nonnull Func1<Maybe<V>, V> generator)
     {
         final K thisKey = this.key;
         final V thisValue = this.value;
@@ -227,7 +226,7 @@ class ValueNode<K, V>
         final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
-            final V newValue = generator.apply(Holders.nullable(thisValue));
+            final V newValue = generator.apply(Maybe.present(thisValue));
             if (newValue != thisValue) {
                 return new ValueNode<>(key, newValue, left, right);
             }
@@ -337,12 +336,12 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull Comparator<K> comp,
-                          @Nonnull K key)
+    public Maybe<V> find(@Nonnull Comparator<K> comp,
+                         @Nonnull K key)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Holders.nullable(value);
+            return Maybe.present(value);
         } else if (diff < 0) {
             return left.find(comp, key);
         } else {
@@ -352,12 +351,12 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                             @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                            @Nonnull K key)
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Holders.nullable(entry());
+            return Maybe.present(entry());
         } else if (diff < 0) {
             return left.findEntry(comp, key);
         } else {

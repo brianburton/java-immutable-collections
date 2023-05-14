@@ -36,11 +36,11 @@
 package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -216,9 +216,9 @@ public class StandardMapTests
         assertEquals(evens, all.reject((k, v) -> k % 2 == 1));
     }
 
-    private static Func1<Holder<Integer>, Integer> generator(int newValue)
+    private static Func1<Maybe<Integer>, Integer> generator(int newValue)
     {
-        return h -> h.isNone() ? newValue : h.unsafeGet() * 10 + 1;
+        return h -> h.isAbsent() ? newValue : h.unsafeGet() * 10 + 1;
     }
 
     private static <K, V> void testCollector(IMap<K, V> values,

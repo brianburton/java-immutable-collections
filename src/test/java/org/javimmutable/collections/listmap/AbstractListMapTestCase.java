@@ -37,12 +37,12 @@ package org.javimmutable.collections.listmap;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.TreeList;
@@ -124,12 +124,12 @@ public abstract class AbstractListMapTestCase
         assertEquals(map.delete(1).delete(3), map.deleteAll(asList(3, 1).iterator()));
 
         final IList<Integer> defaultValue = TreeList.<Integer>of().insert(17);
-        Holder<IList<Integer>> iLists = map.find(8);
-        assertTrue(iLists.isNone());
+        Maybe<IList<Integer>> iLists = map.find(8);
+        assertTrue(iLists.isAbsent());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));
-        Holder<IList<Integer>> iLists1 = map.find(3);
+        Maybe<IList<Integer>> iLists1 = map.find(3);
         assertSame(map.get(3), iLists1.unsafeGet());
         assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());

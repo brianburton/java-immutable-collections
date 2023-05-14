@@ -37,13 +37,13 @@ package org.javimmutable.collections.setmap;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.ISets;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -127,12 +127,12 @@ public abstract class AbstractSetMapTestCase
         assertEquals(map.getSet(3), map.values(3).stream().collect(Collectors.toSet()));
 
         final ISet<Integer> defaultValue = HashSet.<Integer>of().insert(17);
-        Holder<ISet<Integer>> iSets = map.find(8);
-        assertTrue(iSets.isNone());
+        Maybe<ISet<Integer>> iSets = map.find(8);
+        assertTrue(iSets.isAbsent());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));
-        Holder<ISet<Integer>> iSets1 = map.find(3);
+        Maybe<ISet<Integer>> iSets1 = map.find(3);
         assertSame(map.get(3), iSets1.unsafeGet());
         assertSame(map.get(3), map.getValueOr(3, defaultValue));
         assertTrue(map.deleteAll().isEmpty());

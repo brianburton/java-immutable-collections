@@ -36,10 +36,9 @@
 package org.javimmutable.collections.iterators;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedArray;
@@ -114,7 +113,7 @@ public class GenericIteratorTest
                     Transformed actual)
     {
         List<Integer> list = new ArrayList<>();
-        for (Holder<Integer> integer : actual) {
+        for (Maybe<Integer> integer : actual) {
             list.add(integer.unsafeGet());
         }
         assertEquals(expected, list);
@@ -271,8 +270,8 @@ public class GenericIteratorTest
     }
 
     private static class Transformed
-        implements GenericIterator.Iterable<Holder<Integer>>,
-                   IStreamable<Holder<Integer>>
+        implements GenericIterator.Iterable<Maybe<Integer>>,
+                   IStreamable<Maybe<Integer>>
     {
         private final Node node;
 
@@ -283,7 +282,7 @@ public class GenericIteratorTest
 
         @Nonnull
         @Override
-        public SplitableIterator<Holder<Integer>> iterator()
+        public SplitableIterator<Maybe<Integer>> iterator()
         {
             return GenericIterator.Iterable.super.iterator();
         }
@@ -296,11 +295,11 @@ public class GenericIteratorTest
 
         @Nullable
         @Override
-        public GenericIterator.State<Holder<Integer>> iterateOverRange(@Nullable GenericIterator.State<Holder<Integer>> parent,
-                                                                       int offset,
-                                                                       int limit)
+        public GenericIterator.State<Maybe<Integer>> iterateOverRange(@Nullable GenericIterator.State<Maybe<Integer>> parent,
+                                                                      int offset,
+                                                                      int limit)
         {
-            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Holders.nullable(i));
+            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Maybe.present(i));
         }
 
         @Override

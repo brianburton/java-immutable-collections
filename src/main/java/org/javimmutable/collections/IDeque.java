@@ -233,7 +233,7 @@ public interface IDeque<T>
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
      */
-    <A> IDeque<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
+    <A> IDeque<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform);
 
     /**
      * Returns a Holder containing a value if this list contains only a single value and that value is non-null.
@@ -241,8 +241,13 @@ public interface IDeque<T>
      *
      * @return Holder possibly containing the single non-null value in this list
      */
-    default Holder<T> single()
+    default Maybe<T> single()
     {
-        return size() == 1 ? Holders.nullable(get(0)) : Holder.none();
+        if (size() == 1) {
+            T value = get(0);
+            return Maybe.present(value);
+        } else {
+            return Maybe.absent();
+        }
     }
 }

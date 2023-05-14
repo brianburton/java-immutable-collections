@@ -93,7 +93,7 @@ public interface IArray<T>
      * @return possibly empty Holder containing any value associated with the index
      */
     @Nonnull
-    Holder<T> find(int index);
+    Maybe<T> find(int index);
 
     /**
      * Search for an Entry within the map and return a Holder indicating if the Entry
@@ -103,7 +103,7 @@ public interface IArray<T>
      * @return empty Holder if not found, otherwise filled Holder with Entry
      */
     @Nonnull
-    Holder<IMapEntry<Integer, T>> findEntry(int index);
+    Maybe<IMapEntry<Integer, T>> findEntry(int index);
 
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value

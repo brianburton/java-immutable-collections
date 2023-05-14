@@ -35,11 +35,10 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.IMultisets;
 import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -87,7 +86,7 @@ public final class StandardSetTests
 
         assertEquals((Integer)10, jet.get(10));
         assertEquals((Integer)10, jet.getValueOr(10, 25));
-        assertEquals(Holders.nullable(10), jet.find(10));
+        assertEquals(Maybe.present(10), jet.find(10));
 
         jet = jet.delete(10);
         assertEquals(0, jet.size());
@@ -100,7 +99,7 @@ public final class StandardSetTests
 
         assertEquals(null, jet.get(10));
         assertEquals((Integer)25, jet.getValueOr(10, 25));
-        assertEquals(Holder.none(), jet.find(10));
+        assertEquals(Maybe.absent(), jet.find(10));
 
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
         verifyContents(jet.union(values), values);

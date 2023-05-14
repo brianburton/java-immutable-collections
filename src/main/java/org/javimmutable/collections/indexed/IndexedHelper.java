@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
+import static org.javimmutable.collections.Maybe.absent;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects
@@ -70,9 +69,9 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
-                return none();
+                return absent();
             }
 
             @Override
@@ -103,12 +102,12 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 if (index == 0) {
-                    return nullable(a);
+                    return Maybe.present(a);
                 }
-                return none();
+                return absent();
             }
 
             @Override
@@ -144,15 +143,15 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 switch (index) {
                     case 0:
-                        return nullable(a);
+                        return Maybe.present(a);
                     case 1:
-                        return nullable(b);
+                        return Maybe.present(b);
                     default:
-                        return none();
+                        return absent();
                 }
             }
 
@@ -192,17 +191,17 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 switch (index) {
                     case 0:
-                        return nullable(a);
+                        return Maybe.present(a);
                     case 1:
-                        return nullable(b);
+                        return Maybe.present(b);
                     case 2:
-                        return nullable(c);
+                        return Maybe.present(c);
                     default:
-                        return none();
+                        return absent();
                 }
             }
 
@@ -244,21 +243,21 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 switch (index) {
                     case 0:
-                        return nullable(a);
+                        return Maybe.present(a);
                     case 1:
-                        return nullable(b);
+                        return Maybe.present(b);
                     case 2:
-                        return nullable(c);
+                        return Maybe.present(c);
                     default:
                         index -= 3;
                         if (index >= 0 && index < others.length) {
-                            return nullable(others[index]);
+                            return Maybe.present(others[index]);
                         }
-                        return none();
+                        return absent();
                 }
             }
 
@@ -288,12 +287,12 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 if (index < 0 || index >= count) {
-                    return none();
+                    return absent();
                 } else {
-                    return nullable(value);
+                    return Maybe.present(value);
                 }
             }
 
@@ -323,12 +322,12 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<Integer> find(int index)
+            public Maybe<Integer> find(int index)
             {
                 if (index < 0 || index >= size) {
-                    return none();
+                    return absent();
                 }
-                return nullable(low + index);
+                return Maybe.present(low + index);
             }
 
             @Override
@@ -366,7 +365,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Holder<T> find(int index)
+            public Maybe<T> find(int index)
             {
                 return indexed.find(index).map(transforminator);
             }

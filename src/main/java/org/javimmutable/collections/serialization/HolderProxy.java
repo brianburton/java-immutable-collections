@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Maybe;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -50,14 +50,14 @@ public class HolderProxy
     private static final short NONE_CODE = (short)0xaaaa;
     private static final short SOME_CODE = (short)0xbbbb;
 
-    private Holder value;
+    private Maybe value;
 
     public HolderProxy()
     {
-        this(Holder.none());
+        this(Maybe.absent());
     }
 
-    public HolderProxy(Holder value)
+    public HolderProxy(Maybe value)
     {
         this.value = value;
     }
@@ -67,7 +67,7 @@ public class HolderProxy
         throws IOException
     {
         out.writeInt(MAYBE_VERSION);
-        if (value.isNone()) {
+        if (value.isAbsent()) {
             out.writeShort(NONE_CODE);
         } else {
             out.writeShort(SOME_CODE);
@@ -86,10 +86,10 @@ public class HolderProxy
         final short valueCode = in.readShort();
         switch (valueCode) {
             case NONE_CODE:
-                value = Holder.none();
+                value = Maybe.absent();
                 break;
             case SOME_CODE:
-                value = Holder.some(in.readObject());
+                value = Maybe.present(in.readObject());
                 break;
             default:
                 throw new IOException("unexpected Holder type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);

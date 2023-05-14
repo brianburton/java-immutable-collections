@@ -37,10 +37,9 @@ package org.javimmutable.collections.util;
 
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,16 +99,16 @@ public final class Functions
      * If func returns true the value is returned.  If func never returns true an empty
      * value is returned.
      */
-    public static <T> Holder<T> find(Iterator<? extends T> iterator,
-                                     Func1<? super T, Boolean> func)
+    public static <T> Maybe<T> find(Iterator<? extends T> iterator,
+                                    Func1<? super T, Boolean> func)
     {
         while (iterator.hasNext()) {
             final T value = iterator.next();
             if (func.apply(value)) {
-                return Holders.nullable(value);
+                return Maybe.present(value);
             }
         }
-        return Holder.none();
+        return Maybe.absent();
     }
 
     public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,

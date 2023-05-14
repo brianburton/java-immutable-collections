@@ -35,12 +35,12 @@
 
 package org.javimmutable.collections.listmap;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
@@ -69,7 +69,7 @@ abstract class AbstractListMap<K, V>
     public IList<V> getList(@Nonnull K key)
     {
         Conditions.stopNull(key);
-        Holder<IList<V>> current = contents.find(key);
+        Maybe<IList<V>> current = contents.find(key);
         return current.get(emptyList);
     }
 
@@ -178,7 +178,7 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<IList<V>> find(K key)
+    public Maybe<IList<V>> find(K key)
     {
         return contents.find(key);
     }

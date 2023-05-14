@@ -36,10 +36,10 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -136,7 +136,7 @@ public class TreeMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull K key)
+    public Maybe<V> find(@Nonnull K key)
     {
         Conditions.stopNull(key);
         return root.find(comparator, key);
@@ -144,7 +144,7 @@ public class TreeMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         Conditions.stopNull(key);
         return root.findEntry(comparator, key);
@@ -162,7 +162,7 @@ public class TreeMap<K, V>
     @Nonnull
     @Override
     public TreeMap<K, V> update(@Nonnull K key,
-                                @Nonnull Func1<Holder<V>, V> generator)
+                                @Nonnull Func1<Maybe<V>, V> generator)
     {
         Conditions.stopNull(key);
         return create(root.update(comparator, key, generator));

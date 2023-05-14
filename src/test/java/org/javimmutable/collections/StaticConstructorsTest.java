@@ -482,14 +482,14 @@ public class StaticConstructorsTest
 
         hmap2 = hmap2.assign(80, null);
         assertEquals(null, hmap2.get(20));
-        Holder<Integer> integers1 = hmap2.find(20);
-        assertEquals(true, integers1.isNone());
+        Maybe<Integer> integers1 = hmap2.find(20);
+        assertEquals(true, integers1.isAbsent());
         // hmap2.find(20).getValue() would throw since the Holder is empty
 
         assertEquals(null, hmap2.get(80));
-        Holder<Integer> integers = hmap2.find(80);
-        assertEquals(false, integers.isNone());
-        Holder<Integer> integers2 = hmap2.find(80);
+        Maybe<Integer> integers = hmap2.find(80);
+        assertEquals(false, integers.isAbsent());
+        Maybe<Integer> integers2 = hmap2.find(80);
         assertEquals(null, integers2.unsafeGet());
 
         IMap<Integer, Integer> smap = IMaps.sorted();

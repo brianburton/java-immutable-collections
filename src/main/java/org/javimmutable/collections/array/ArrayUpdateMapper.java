@@ -36,7 +36,7 @@
 package org.javimmutable.collections.array;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 
@@ -46,5 +46,5 @@ public interface ArrayUpdateMapper<K, V, T>
     @Nonnull
     T mappedUpdate(@Nonnull T current,
                    @Nonnull K key,
-                   @Nonnull Func1<Holder<V>, V> generator);
+                   @Nonnull Func1<Maybe<V>, V> generator);
 }

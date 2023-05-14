@@ -35,10 +35,10 @@
 
 package org.javimmutable.collections.hash;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
@@ -77,16 +77,16 @@ public class EmptyHashMap<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull K key)
+    public Maybe<V> find(@Nonnull K key)
     {
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Nonnull

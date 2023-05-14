@@ -37,11 +37,11 @@ package org.javimmutable.collections.hash;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -72,22 +72,22 @@ public class HashMapTest
     public void test()
     {
         IMap<Integer, Integer> map = HashMap.usingList();
-        Holder<Integer> integers2 = map.find(10);
-        assertEquals(true, integers2.isNone());
+        Maybe<Integer> integers2 = map.find(10);
+        assertEquals(true, integers2.isAbsent());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
         map = map.assign(10, 20);
         assertEquals(1, map.size());
         assertEquals(false, map.isEmpty());
-        Holder<Integer> integers1 = map.find(10);
-        assertEquals(false, integers1.isNone());
-        Holder<Integer> integers3 = map.find(10);
+        Maybe<Integer> integers1 = map.find(10);
+        assertEquals(false, integers1.isAbsent());
+        Maybe<Integer> integers3 = map.find(10);
         assertEquals(20, (int)integers3.unsafeGet());
         assertEquals(20, (int)map.getValueOr(10, -99));
         assertEquals(-99, (int)map.getValueOr(72, -99));
         map = map.delete(10);
-        Holder<Integer> integers = map.find(10);
-        assertEquals(true, integers.isNone());
+        Maybe<Integer> integers = map.find(10);
+        assertEquals(true, integers.isAbsent());
         assertEquals(0, map.size());
 
         StandardMapTests.verifyMiscellaneous(HashMap.usingList());
@@ -134,7 +134,7 @@ public class HashMapTest
                             ManualHashKey key = createManualHashKey(maxKey, random);
                             Integer value = random.nextInt(1000000);
                             int merged = value;
-                            map = map.update(key, h -> h.isNone() ? value : Integer.valueOf(h.unsafeGet() ^ value));
+                            map = map.update(key, h -> h.isAbsent() ? value : Integer.valueOf(h.unsafeGet() ^ value));
                             if (expected.get(key) != null) {
                                 merged = expected.get(key) ^ value;
                             }
@@ -172,7 +172,7 @@ public class HashMapTest
                         }
                         case 4: {
                             ManualHashKey key = createManualHashKey(maxKey, random);
-                            Holder<Integer> integers = map.find(key);
+                            Maybe<Integer> integers = map.find(key);
                             assertEquals(expected.get(key), integers.getOrNull());
                             assertEquals(expected.size(), map.size());
                             map.checkInvariants();
@@ -183,9 +183,9 @@ public class HashMapTest
                             Integer value = random.nextInt(1000000);
                             Integer currentValue = map.get(key);
                             if (currentValue == null) {
-                                map = map.update(key, h -> h.isNone() ? value : Integer.valueOf(-h.unsafeGet()));
+                                map = map.update(key, h -> h.isAbsent() ? value : Integer.valueOf(-h.unsafeGet()));
                             } else {
-                                map = map.update(key, h -> h.isNone() ? -value : value);
+                                map = map.update(key, h -> h.isAbsent() ? -value : value);
                             }
                             expected.put(key, value);
                             assertEquals(expected.size(), map.size());
@@ -198,8 +198,8 @@ public class HashMapTest
                 verifyEnumeration(expected, map);
 
                 for (Map.Entry<ManualHashKey, Integer> entry : expected.entrySet()) {
-                    Holder<Integer> mapValue = map.find(entry.getKey());
-                    assertEquals(true, mapValue.isSome());
+                    Maybe<Integer> mapValue = map.find(entry.getKey());
+                    assertEquals(true, mapValue.isPresent());
                     assertEquals(entry.getValue(), mapValue.unsafeGet());
                 }
 
@@ -229,11 +229,11 @@ public class HashMapTest
                 ArrayList<ManualHashKey> keys = new ArrayList<>(expected.keySet());
                 Collections.shuffle(keys, random);
                 for (ManualHashKey key : keys) {
-                    Holder<Integer> integers1 = map.find(key);
-                    assertEquals(false, integers1.isNone());
+                    Maybe<Integer> integers1 = map.find(key);
+                    assertEquals(false, integers1.isAbsent());
                     map = map.delete(key);
-                    Holder<Integer> integers = map.find(key);
-                    assertEquals(true, integers.isNone());
+                    Maybe<Integer> integers = map.find(key);
+                    assertEquals(true, integers.isAbsent());
                 }
                 assertEquals(0, map.size());
             }
@@ -342,11 +342,11 @@ public class HashMapTest
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("2", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        Holder<String> strings11 = map.find(key1);
+        Maybe<String> strings11 = map.find(key1);
         assertEquals("1", strings11.get("X"));
-        Holder<String> strings10 = map.find(key2);
+        Maybe<String> strings10 = map.find(key2);
         assertEquals("2", strings10.get("X"));
-        Holder<String> strings9 = map.find(key3);
+        Maybe<String> strings9 = map.find(key3);
         assertEquals("3", strings9.get("X"));
         map = map.delete(key2);
         assertEquals(2, map.size());
@@ -356,11 +356,11 @@ public class HashMapTest
         assertEquals("1", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        Holder<String> strings8 = map.find(key1);
+        Maybe<String> strings8 = map.find(key1);
         assertEquals("1", strings8.get("X"));
-        Holder<String> strings7 = map.find(key2);
+        Maybe<String> strings7 = map.find(key2);
         assertEquals("X", strings7.get("X"));
-        Holder<String> strings6 = map.find(key3);
+        Maybe<String> strings6 = map.find(key3);
         assertEquals("3", strings6.get("X"));
         map = map.delete(key1);
         assertEquals(1, map.size());
@@ -370,11 +370,11 @@ public class HashMapTest
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("3", map.getValueOr(key3, "X"));
-        Holder<String> strings5 = map.find(key1);
+        Maybe<String> strings5 = map.find(key1);
         assertEquals("X", strings5.get("X"));
-        Holder<String> strings4 = map.find(key2);
+        Maybe<String> strings4 = map.find(key2);
         assertEquals("X", strings4.get("X"));
-        Holder<String> strings3 = map.find(key3);
+        Maybe<String> strings3 = map.find(key3);
         assertEquals("3", strings3.get("X"));
         map = map.delete(key3);
         assertEquals(0, map.size());
@@ -384,11 +384,11 @@ public class HashMapTest
         assertEquals("X", map.getValueOr(key1, "X"));
         assertEquals("X", map.getValueOr(key2, "X"));
         assertEquals("X", map.getValueOr(key3, "X"));
-        Holder<String> strings2 = map.find(key1);
+        Maybe<String> strings2 = map.find(key1);
         assertEquals("X", strings2.get("X"));
-        Holder<String> strings1 = map.find(key2);
+        Maybe<String> strings1 = map.find(key2);
         assertEquals("X", strings1.get("X"));
-        Holder<String> strings = map.find(key3);
+        Maybe<String> strings = map.find(key3);
         assertEquals("X", strings.get("X"));
         assertSame(HashMap.of(), map);
     }

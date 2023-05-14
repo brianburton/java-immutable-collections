@@ -35,7 +35,7 @@
 
 package org.javimmutable.collections.deque;
 
-import org.javimmutable.collections.Holder;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
@@ -130,7 +130,7 @@ final class EmptyNode<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
         throw new IndexOutOfBoundsException();
     }

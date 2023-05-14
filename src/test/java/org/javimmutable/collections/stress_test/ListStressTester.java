@@ -35,10 +35,9 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.indexed.IndexedList;
@@ -270,7 +269,7 @@ public class ListStressTester
             }
             verifyContents(list, expected);
             verifyContents(list.stream().parallel().collect(collector), expected);
-            verifyContents(list.transformSome(s -> s.length() % 2 == 0 ? Holders.nullable(s + "x") : Holder.none()),
+            verifyContents(list.transformSome(s -> s.length() % 2 == 0 ? Maybe.present(s + "x") : Maybe.absent()),
                            expected.stream().filter(s -> s.length() % 2 == 0).map(s -> s + "x").collect(Collectors.toList()));
             verifyContents(list.transform(s -> s + "x"), expected.stream().map(s -> s + "x").collect(Collectors.toList()));
 

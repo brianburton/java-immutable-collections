@@ -270,7 +270,7 @@ public interface IList<T>
      * @return the collection after all elements have been processed
      */
     @Override
-    <A> IList<A> transformSome(@Nonnull Func1<T, Holder<A>> transform);
+    <A> IList<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform);
 
     /**
      * Return the (possibly empty) list containing the first limit values.

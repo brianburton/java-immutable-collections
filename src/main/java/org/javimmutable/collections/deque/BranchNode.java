@@ -35,9 +35,8 @@
 
 package org.javimmutable.collections.deque;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
@@ -300,9 +299,10 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    public Holder<T> find(int index)
+    public Maybe<T> find(int index)
     {
-        return Holders.nullable(get(index));
+        T value = get(index);
+        return Maybe.present(value);
     }
 
     @Override
@@ -416,9 +416,9 @@ class BranchNode<T>
 
             @Nonnull
             @Override
-            public Holder<Node<T>> find(int index)
+            public Maybe<Node<T>> find(int index)
             {
-                return Holders.nullable(get(index));
+                return Maybe.present(get(index));
             }
 
             @Override

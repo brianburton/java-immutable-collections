@@ -36,8 +36,8 @@
 package org.javimmutable.collections.hash.map;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
@@ -75,16 +75,16 @@ public class ArrayMultiValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull CollisionMap<K, V> collisionMap,
-                          @Nonnull K key)
+    public Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
+                         @Nonnull K key)
     {
         return collisionMap.findValue(node, key);
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                             @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
+                                            @Nonnull K key)
     {
         return collisionMap.findEntry(node, key);
     }
@@ -108,7 +108,7 @@ public class ArrayMultiValueMapNode<K, V>
     @Override
     public ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
                                      @Nonnull K key,
-                                     @Nonnull Func1<Holder<V>, V> generator)
+                                     @Nonnull Func1<Maybe<V>, V> generator)
     {
         final CollisionMap.Node thisNode = this.node;
         final CollisionMap.Node newNode = collisionMap.update(thisNode, key, generator);

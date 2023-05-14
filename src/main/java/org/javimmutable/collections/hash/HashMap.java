@@ -36,10 +36,10 @@
 package org.javimmutable.collections.hash;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterator;
@@ -186,14 +186,14 @@ public class HashMap<T, K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull K key)
+    public Maybe<V> find(@Nonnull K key)
     {
         return root.mappedFind(this, key);
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         return root.mappedFindEntry(this, key);
     }
@@ -214,7 +214,7 @@ public class HashMap<T, K, V>
     @Nonnull
     @Override
     public IMap<K, V> update(@Nonnull K key,
-                             @Nonnull Func1<Holder<V>, V> generator)
+                             @Nonnull Func1<Maybe<V>, V> generator)
     {
         final TrieArrayNode<ArrayMapNode<K, V>> newRoot = root.mappedUpdate(this, key, generator);
         if (newRoot == root) {
@@ -306,16 +306,16 @@ public class HashMap<T, K, V>
 
     @Nonnull
     @Override
-    public Holder<V> mappedFind(@Nonnull ArrayMapNode<K, V> mapping,
-                                @Nonnull K key)
+    public Maybe<V> mappedFind(@Nonnull ArrayMapNode<K, V> mapping,
+                               @Nonnull K key)
     {
         return mapping.find(collisionMap, key);
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> mappedFindEntry(@Nonnull ArrayMapNode<K, V> mapping,
-                                                   @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> mappedFindEntry(@Nonnull ArrayMapNode<K, V> mapping,
+                                                  @Nonnull K key)
     {
         return mapping.findEntry(collisionMap, key);
     }
@@ -341,7 +341,7 @@ public class HashMap<T, K, V>
     @Override
     public ArrayMapNode<K, V> mappedUpdate(@Nonnull ArrayMapNode<K, V> current,
                                            @Nonnull K key,
-                                           @Nonnull Func1<Holder<V>, V> generator)
+                                           @Nonnull Func1<Maybe<V>, V> generator)
     {
         return current.update(collisionMap, key, generator);
     }

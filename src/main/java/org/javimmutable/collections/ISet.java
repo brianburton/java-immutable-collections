@@ -237,9 +237,9 @@ public interface ISet<T>
      */
     @Nonnull
     @Override
-    default Holder<T> find(T key)
+    default Maybe<T> find(T key)
     {
-        return contains(key) ? Holders.nullable(key) : Holder.none();
+        return contains(key) ? Maybe.present(key) : Maybe.absent();
     }
 
     /**

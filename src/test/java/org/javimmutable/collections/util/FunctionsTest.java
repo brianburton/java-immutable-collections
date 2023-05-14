@@ -37,11 +37,10 @@ package org.javimmutable.collections.util;
 
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.TreeMap;
 
@@ -74,10 +73,10 @@ public class FunctionsTest
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
         IList<Integer> list = ILists.of(1, 2, 3, 4);
-        assertEquals(Holders.nullable(2), Functions.find(list.iterator(), func));
+        assertEquals(Maybe.present(2), Functions.find(list.iterator(), func));
 
         list = ILists.of(1, 5, 7);
-        assertEquals(Holder.<Integer>none(), Functions.find(list.iterator(), func));
+        assertEquals(Maybe.<Integer>absent(), Functions.find(list.iterator(), func));
     }
 
     public void testAssignAll()

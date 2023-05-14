@@ -35,16 +35,15 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 
-import static org.javimmutable.collections.Holder.none;
-import static org.javimmutable.collections.Holders.nullable;
+import static org.javimmutable.collections.Maybe.absent;
 
 /**
  * Helper class with static methods to manipulate long bitmasks.
@@ -173,13 +172,13 @@ public final class BitmaskMath
 
         @Nonnull
         @Override
-        public Holder<Integer> find(int index)
+        public Maybe<Integer> find(int index)
         {
             long bit = findBit(index);
             if (bit == 0) {
-                return none();
+                return absent();
             } else {
-                return nullable(indexForBit(bit));
+                return Maybe.present(indexForBit(bit));
             }
         }
 

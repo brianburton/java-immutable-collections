@@ -36,8 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -84,9 +84,9 @@ class FringeNode<K, V>
     @Override
     public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
                                      @Nonnull K key,
-                                     @Nonnull Func1<Holder<V>, V> generator)
+                                     @Nonnull Func1<Maybe<V>, V> generator)
     {
-        return ValueNode.instance(key, generator.apply(Holder.none()));
+        return ValueNode.instance(key, generator.apply(Maybe.absent()));
     }
 
     @Nonnull
@@ -129,18 +129,18 @@ class FringeNode<K, V>
 
     @Nonnull
     @Override
-    public Holder<V> find(@Nonnull Comparator<K> comp,
-                          @Nonnull K key)
+    public Maybe<V> find(@Nonnull Comparator<K> comp,
+                         @Nonnull K key)
     {
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Nonnull
     @Override
-    public Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                             @Nonnull K key)
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                            @Nonnull K key)
     {
-        return Holder.none();
+        return Maybe.absent();
     }
 
     @Override

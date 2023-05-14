@@ -36,9 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.Sum2;
@@ -109,17 +108,17 @@ public class TreeCollisionMapTest
         node = transforms.update(node, 12, 90);
         assertEquals(4, transforms.size(node));
 
-        assertEquals(Holders.nullable(100), transforms.findValue(node, 10));
-        assertEquals(Holders.nullable(90), transforms.findValue(node, 12));
-        assertEquals(Holders.nullable(180), transforms.findValue(node, 18));
-        assertEquals(Holders.nullable(-60), transforms.findValue(node, -6));
-        assertEquals(Holder.<Integer>none(), transforms.findValue(node, 11));
+        assertEquals(Maybe.present(100), transforms.findValue(node, 10));
+        assertEquals(Maybe.present(90), transforms.findValue(node, 12));
+        assertEquals(Maybe.present(180), transforms.findValue(node, 18));
+        assertEquals(Maybe.present(-60), transforms.findValue(node, -6));
+        assertEquals(Maybe.<Integer>absent(), transforms.findValue(node, 11));
 
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(10, 100)), transforms.findEntry(node, 10));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(12, 90)), transforms.findEntry(node, 12));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(18, 180)), transforms.findEntry(node, 18));
-        assertEquals(Holders.<IMapEntry<Integer, Integer>>nullable(IMapEntry.of(-6, -60)), transforms.findEntry(node, -6));
-        assertEquals(Holder.<IMapEntry<Integer, Integer>>none(), transforms.findEntry(node, 11));
+        assertEquals(Maybe.present(IMapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Maybe.present(IMapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Maybe.present(IMapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Maybe.present(IMapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Maybe.<IMapEntry<Integer, Integer>>absent(), transforms.findEntry(node, 11));
 
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(IMapEntry.of(-6, -60));

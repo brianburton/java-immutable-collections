@@ -35,13 +35,12 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.Holder;
-import org.javimmutable.collections.Holders;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
@@ -180,30 +179,30 @@ public class ArrayStressTester
 
                     }
                     case 2: { //find(int)
-                        Holder<String> holder = array.find(index);
-                        Holder<String> expectedHolder;
+                        Maybe<String> maybe = array.find(index);
+                        Maybe<String> expectedMaybe;
                         if (expected.containsKey(index)) {
                             String value = expected.get(index);
-                            expectedHolder = Holders.nullable(value);
+                            expectedMaybe = Maybe.present(value);
                         } else {
-                            expectedHolder = Holder.none();
+                            expectedMaybe = Maybe.absent();
                         }
-                        if (!equivalentHolder(holder, expectedHolder)) {
-                            throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
+                        if (!equivalentHolder(maybe, expectedMaybe)) {
+                            throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));
                         }
                         break;
                     }
                     case 3: { //findEntry(int)
-                        Holder<IMapEntry<Integer, String>> holder = array.findEntry(index);
-                        Holder<IMapEntry<Integer, String>> expectedHolder;
+                        Maybe<IMapEntry<Integer, String>> maybe = array.findEntry(index);
+                        Maybe<IMapEntry<Integer, String>> expectedMaybe;
                         if (expected.containsKey(index)) {
                             IMapEntry<Integer, String> value = new MapEntry<>(index, expected.get(index));
-                            expectedHolder = Holders.nullable(value);
+                            expectedMaybe = Maybe.present(value);
                         } else {
-                            expectedHolder = Holder.none();
+                            expectedMaybe = Maybe.absent();
                         }
-                        if (!equivalentHolder(holder, expectedHolder)) {
-                            throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedHolder, holder));
+                        if (!equivalentHolder(maybe, expectedMaybe)) {
+                            throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));
                         }
                         break;
                     }

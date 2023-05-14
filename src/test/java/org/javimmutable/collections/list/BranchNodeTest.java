@@ -36,7 +36,7 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
-import org.javimmutable.collections.Holders;
+import org.javimmutable.collections.Maybe;
 
 import javax.annotation.Nonnull;
 
@@ -57,11 +57,11 @@ public class BranchNodeTest
         assertThat(root.get(0)).isEqualTo(0);
         assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
         assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
-        assertEquals(Holders.none(), root.seekImpl(-1, Holders::none, Holders::nullable));
-        assertEquals(Holders.nullable(0), root.seekImpl(0, Holders::none, Holders::nullable));
-        assertEquals(Holders.nullable(MAX_SIZE), root.seekImpl(MAX_SIZE, Holders::none, Holders::nullable));
-        assertEquals(Holders.nullable(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, Holders::none, Holders::nullable));
-        assertEquals(Holders.none(), root.seekImpl(root.size(), Holders::none, Holders::nullable));
+        assertEquals(Maybe.absent(), root.seekImpl(-1, () -> Maybe.absent(), value4 -> Maybe.present(value4)));
+        assertEquals(Maybe.present(0), root.seekImpl(0, () -> Maybe.absent(), value3 -> Maybe.present(value3)));
+        assertEquals(Maybe.present(MAX_SIZE), root.seekImpl(MAX_SIZE, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
+        assertEquals(Maybe.present(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
+        assertEquals(Maybe.absent(), root.seekImpl(root.size(), () -> Maybe.absent(), value -> Maybe.present(value)));
     }
 
     public void testRotateLeft()

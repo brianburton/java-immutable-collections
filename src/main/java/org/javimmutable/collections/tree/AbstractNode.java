@@ -36,8 +36,8 @@
 package org.javimmutable.collections.tree;
 
 import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Holder;
 import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Proc2;
 import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.SplitableIterable;
@@ -67,12 +67,12 @@ abstract class AbstractNode<K, V>
                    V defaultValue);
 
     @Nonnull
-    abstract Holder<V> find(@Nonnull Comparator<K> comp,
-                            @Nonnull K key);
+    abstract Maybe<V> find(@Nonnull Comparator<K> comp,
+                           @Nonnull K key);
 
     @Nonnull
-    abstract Holder<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                               @Nonnull K key);
+    abstract Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
+                                              @Nonnull K key);
 
     abstract boolean isEmpty();
 
@@ -90,7 +90,7 @@ abstract class AbstractNode<K, V>
     @Nonnull
     abstract AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
                                        @Nonnull K key,
-                                       @Nonnull Func1<Holder<V>, V> generator);
+                                       @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
     abstract DeleteResult<K, V> deleteLeftmost();
