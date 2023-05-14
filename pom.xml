@@ -2,8 +2,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.javimmutable</groupId>
-    <artifactId>javimmutable-collections</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <artifactId>collections</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>JImmutable Collections</name>
