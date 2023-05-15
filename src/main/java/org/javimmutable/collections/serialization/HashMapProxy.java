@@ -35,20 +35,30 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.hash.EmptyHashMap;
+import org.javimmutable.collections.hash.HashMap;
 
-public class JImmutableHashSetProxy
-    extends AbstractSetProxy
+/**
+ * Serialization proxy class to safely serialize immutable collection.
+ */
+@SuppressWarnings("rawtypes")
+public class HashMapProxy
+    extends AbstractMapProxy
 {
     private static final long serialVersionUID = -121805;
 
-    public JImmutableHashSetProxy()
+    public HashMapProxy()
     {
-        super(HashSet.of());
+        super(HashMap.of());
     }
 
-    public JImmutableHashSetProxy(HashSet set)
+    public HashMapProxy(HashMap map)
     {
-        super(set);
+        super(map);
+    }
+
+    public HashMapProxy(EmptyHashMap map)
+    {
+        super(map);
     }
 }

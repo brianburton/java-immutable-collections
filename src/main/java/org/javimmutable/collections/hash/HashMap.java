@@ -59,7 +59,7 @@ import org.javimmutable.collections.hash.map.ArrayMapNode;
 import org.javimmutable.collections.hash.map.ArraySingleValueMapNode;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionMap;
-import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
+import org.javimmutable.collections.serialization.HashMapProxy;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
 import javax.annotation.Nonnull;
@@ -390,7 +390,7 @@ public class HashMap<T, K, V>
 
     private Object writeReplace()
     {
-        return new JImmutableHashMapProxy(this);
+        return new HashMapProxy(this);
     }
 
     @ThreadSafe

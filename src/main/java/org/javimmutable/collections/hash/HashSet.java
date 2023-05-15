@@ -52,7 +52,7 @@ import org.javimmutable.collections.hash.set.ArraySetNode;
 import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.list.ListCollisionSet;
-import org.javimmutable.collections.serialization.JImmutableHashSetProxy;
+import org.javimmutable.collections.serialization.HashSetProxy;
 import org.javimmutable.collections.tree.TreeCollisionSet;
 
 import javax.annotation.Nonnull;
@@ -320,7 +320,7 @@ public class HashSet<T>
 
     private Object writeReplace()
     {
-        return new JImmutableHashSetProxy(this);
+        return new HashSetProxy(this);
     }
 
     private ISet<T> createForUpdate(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot)

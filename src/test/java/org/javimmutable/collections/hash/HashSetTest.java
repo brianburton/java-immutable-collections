@@ -224,11 +224,11 @@ public class HashSetTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((ISet)a).iterator();
         final ISet<String> empty = HashSet.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFADwPF+xhAAAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIhBL78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1gvI7E4Q881t6Ck0gPICk4tmZv/p+zRkZVvmRgYKooY9PFqTs7Pzc3P03NMKi4pSkwuAermbFnFYXb0SCJIdwEATI5GOIEAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yMDAwljAwJlYAAIYCjBFlAAAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYSxgYEysAEu8rjaUAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszghOLQkoyq+o/A8C/1SMeRgYKgrKORgYmF8yAIkSBsZEIE4C4uQKAIJXlKptAAAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgEQJA2MiECcBcXIFABnBxnOtAAAA");
     }
 
     public void testBuilder()

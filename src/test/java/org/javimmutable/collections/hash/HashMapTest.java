@@ -422,11 +422,11 @@ public class HashMapTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
         final IMap<Integer, String> empty = HashMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAEEFAO752S21AAAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgKACAJwqmKWhAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yMDAwAt0rCDQ7US8nMS9dzzOvJDU9tUjo0YIl3xvbLZgYGD0ZWMsSc0pTge4QQKjzK81NSi1qWzNVlnvKg24mkJEgw0oYGBMrAIbHHPIGAQAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYgW4TBJqYqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQNsFEOr8SnOTUova1kyV5Z7yoJsJZCTIsBIGxsQKAGFh0ZTyAAAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
-                                                     "H4sIAAAAAAAAAFvzloG1uIjBMb8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQp8kgszvBNLAgoyq+o/A8C/1SMeRgYKooYXEkwzzGpuKQoMbkEYS42MwvKORgYmF8yAAmgewWBZifq5STmpet55pWkpqcWCT1asOR7Y7sFEwOjJwNrWWJOaSrQHQIIdX6luUmpRW1rpspyT3nQzQQysgFoWgkDY2JxIUMdAzOQwwjkJUF49UCrgbzkCgB7GrcPIgEAAA==");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgATQbYJAExP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBVouwBCnV9pblJqUduaqbLcUx50M4GMbACaVsLAmFhcyFDHwAzkMAJ5SRBePdBqIC+5AgAc02F6DgEAAA==");
     }
 
     public void testBuilder()

@@ -43,7 +43,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractMap;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
-import org.javimmutable.collections.serialization.JImmutableHashMapProxy;
+import org.javimmutable.collections.serialization.HashMapProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -145,6 +145,6 @@ public class EmptyHashMap<K, V>
 
     private Object writeReplace()
     {
-        return new JImmutableHashMapProxy(this);
+        return new HashMapProxy(this);
     }
 }
