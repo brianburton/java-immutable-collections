@@ -46,7 +46,7 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
-import org.javimmutable.collections.serialization.JImmutableDequeProxy;
+import org.javimmutable.collections.serialization.ArrayDequeProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -354,7 +354,7 @@ public class ArrayDeque<T>
 
     private Object writeReplace()
     {
-        return new JImmutableDequeProxy(this);
+        return new ArrayDequeProxy(this);
     }
 
     public static class Builder<T>

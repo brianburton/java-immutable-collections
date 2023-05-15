@@ -48,7 +48,7 @@ import java.io.ObjectOutput;
  * Serialization proxy class to safely serialize immutable collection.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class JImmutableDequeProxy
+public class ArrayDequeProxy
     implements Externalizable
 {
     private static final int DEQUE_VERSION = 1001;
@@ -56,12 +56,12 @@ public class JImmutableDequeProxy
 
     protected IDeque deque;
 
-    public JImmutableDequeProxy()
+    public ArrayDequeProxy()
     {
         this.deque = ArrayDeque.of();
     }
 
-    public JImmutableDequeProxy(IDeque deque)
+    public ArrayDequeProxy(IDeque deque)
     {
         this.deque = deque;
     }

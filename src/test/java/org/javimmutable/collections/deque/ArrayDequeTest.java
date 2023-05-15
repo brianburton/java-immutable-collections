@@ -606,11 +606,11 @@ public class ArrayDequeTest
         final Func1<Object, Iterator> iteratorFactory = a -> ((IDeque)a).iterator();
         final IDeque<String> empty = ArrayDeque.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgBBBQAWVBsPXwAAAA==");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrHRJLSxNDSjKr6j8DwL/VIx5GBgqCso5GBiYXzIAQQUAXJsJcVoAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMjAwMJYwMCZWAABDcFwrYwAAAA==");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrHRJLSxNDSjKr6j8DwL/VIx5GBgqCso5GBiYXzIwMDCWMDAmVgAAjzVPil4AAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXz8oQpckktLE0NKMqvqPwPAv9UjHkYGCoKyjkYGJhfMgCJEgbGRCBOAuLkCgDbY4oaawAAAA==");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrHRJLSxNDSjKr6j8DwL/VIx5GBgqCso5GBiYXzIAiRIGxkQgTgLi5AoAbq216WYAAAA=");
     }
 
     private IDeque<Integer> mkDeque(Integer... values)
