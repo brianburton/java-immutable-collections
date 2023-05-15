@@ -36,6 +36,7 @@
 package org.javimmutable.collections;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.common.StandardSerializableTests;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertThrows;
 public class MaybeTest
     extends TestCase
 {
-    public void testEmpty()
+    public void testAbsent()
         throws IOException
     {
         Maybe<String> e1 = Maybe.absent();
@@ -82,7 +83,7 @@ public class MaybeTest
         }
     }
 
-    public void testFilled()
+    public void testPresent()
         throws IOException
     {
         Maybe<String> empty1 = Maybe.absent();
@@ -145,6 +146,20 @@ public class MaybeTest
         assertEquals("ABC", filled3.get("ZZZ"));
         assertEquals("ABC", filled3.getOr(() -> "ZZZ"));
         assertEquals("ABC", filled3.unsafeGet(() -> new RuntimeException("threw")));
+    }
+
+    public void testSerialization()
+        throws Exception
+    {
+        Maybe<String> maybe = Maybe.absent();
+        StandardSerializableTests.verifySerializable(maybe,
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyM9JSS0KKMqvqPwPAn9OXeZhYKgoKGdjYGB+uWpVBQBDnBE5VAAAAA==");
+        maybe = Maybe.present(null);
+        StandardSerializableTests.verifySerializable(maybe,
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyM9JSS0KKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3QQUAgGSoXlUAAAA=");
+        maybe = Maybe.present("hello");
+        StandardSerializableTests.verifySerializable(maybe,
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyM9JSS0KKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3CQNrRmpOTn4FABuhCKRcAAAA");
     }
 
     private Integer hashCodeThrows(String value)
