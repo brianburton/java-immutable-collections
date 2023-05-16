@@ -47,12 +47,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * When converting legacy code to use JImmutableMap there are sometimes objects that shared the mutable
+ * When converting legacy code to use {@link IMap} there are sometimes objects that shared the mutable
  * version of their internal Map field with other classes.  This class serves as an adaptor to allow
- * this sharing to continue for a time after converting to JImmutableMap.  However the legacy code should
+ * this sharing to continue for a time after converting to {@link IMap}.  However the legacy code should
  * still be changed over time to eliminate the sharing of a mutable Map.
  * <p>
- * Since a JImmutableMap has to be replaced to reflect any changes to the map it can be difficult to
+ * Since a {@link IMap} has to be replaced to reflect any changes to the map it can be difficult to
  * adapt one of them into a mutable Map.  Concrete classes derived from this class only have to implement
  * two methods, accessMap() and replaceMap() in order to implement the adaptor.
  * <p>
@@ -69,12 +69,12 @@ public abstract class MutableMapAdaptor<K, V>
     }
 
     /**
-     * Implemented by derived classes to allow this adaptor to access their JImmutableMap instance.
+     * Implemented by derived classes to allow this adaptor to access their {@link IMap} instance.
      */
     protected abstract IMap<K, V> accessMap();
 
     /**
-     * Implemented by derived classes to allow this adaptor to replace their JImmutableMap instance.
+     * Implemented by derived classes to allow this adaptor to replace their {@link IMap} instance.
      */
     protected abstract void replaceMap(IMap<K, V> newMap);
 

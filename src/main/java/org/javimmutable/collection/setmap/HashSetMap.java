@@ -47,7 +47,7 @@ import java.io.Serializable;
 
 
 /**
- * JImmutableSetMap using a hash map for fast lookup.
+ * {@link ISetMap} using a hash map for fast lookup.
  */
 @Immutable
 public class HashSetMap<K, V>

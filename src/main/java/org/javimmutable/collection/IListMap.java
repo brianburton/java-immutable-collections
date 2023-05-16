@@ -114,7 +114,7 @@ public interface IListMap<K, V>
     /**
      * Sets the list associated with a specific key.  Key and value must be non-null.
      * If the key already has a list in the map the old list is discarded
-     * and the new list is stored in its place.  Returns a new JImmutableListMap reflecting
+     * and the new list is stored in its place.  Returns a new {@link IListMap} reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param key   non-null key

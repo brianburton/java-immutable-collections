@@ -106,7 +106,6 @@ public final class TimingComparison
         gets = 0;
         long startPer = System.currentTimeMillis();
         IMap<Integer, Integer> map = TreeMap.of();
-//        JImmutableMap<Integer, Integer> map = JImmutableTreeMap.of();
         for (int i = 1; i <= loops; ++i) {
             int command = random.nextInt(maxCommand);
             if (command <= 1) {

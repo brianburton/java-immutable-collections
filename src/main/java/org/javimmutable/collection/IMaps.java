@@ -130,7 +130,7 @@ public final class IMaps
      * If source is already a sorted map using the natural sort order it will be returned directly
      * (effectively performing a simple cast).
      *
-     * @param source JImmutableMap containing starting key/value pairs
+     * @param source {@link IMap} containing starting key/value pairs
      */
     @Nonnull
     public static <K extends Comparable<K>, V> IMap<K, V> sorted(@Nonnull IMap<K, V> source)
@@ -182,7 +182,7 @@ public final class IMaps
      * then source will be returned directly.  Otherwise all key/value pairs from source are copied into
      * the newly created map.
      *
-     * @param source JImmutableMap containing starting key/value pairs
+     * @param source {@link IMap} containing starting key/value pairs
      */
     @Nonnull
     public static <K, V> IMap<K, V> sorted(@Nonnull Comparator<K> comparator,

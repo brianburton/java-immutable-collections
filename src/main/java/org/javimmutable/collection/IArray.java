@@ -108,7 +108,7 @@ public interface IArray<T>
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value
      * can be null.  If the index already has a value in the map the old value is discarded
-     * and the new value is stored in its place.  Returns a new JImmutableMap reflecting
+     * and the new value is stored in its place.  Returns a new {@link IMap} reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param index index
@@ -152,9 +152,9 @@ public interface IArray<T>
     IArray<T> deleteAll();
 
     /**
-     * Creates an unmodifiable java.util.Map reflecting the values of the JImmutableMap backing the array.
+     * Creates an unmodifiable java.util.Map reflecting the values of the {@link IMap} backing the array.
      *
-     * @return Map view of this JImmutableMap
+     * @return Map view of this {@link IMap}
      */
     @Nonnull
     Map<Integer, T> getMap();
@@ -189,7 +189,7 @@ public interface IArray<T>
     /**
      * Creates and returns a new Builder object for the same value type as this array.
      *
-     * @return An empty Builder object ready for use to create a new JImmutableArray.
+     * @return An empty Builder object ready for use to create a new {@link IArray}.
      */
     @Nonnull
     IArrayBuilder<T> toBuilder();

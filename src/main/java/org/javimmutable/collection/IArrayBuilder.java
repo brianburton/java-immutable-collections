@@ -149,7 +149,7 @@ public interface IArrayBuilder<T>
     /**
      * Adds all values from the provided Iterator using the entry keys as indexes and the
      * entry values as values.  Intended to simplify adding all values from an existing
-     * JImmutableArray or JImmutableMap into a new Builder.
+     * {@link IArray} or {@link IMap} into a new Builder.
      *
      * @param source Iterator containing entries to add
      * @return the builder (convenience for chaining multiple calls)

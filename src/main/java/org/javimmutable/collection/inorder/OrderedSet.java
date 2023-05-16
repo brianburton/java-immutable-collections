@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 
 /**
- * JImmutableSet implementation built on top of a JImmutableInsertOrderMap.  During iteration
+ * {@link ISet} implementation built on top of an ordered set.  During iteration
  * elements are returned in the same order they were inserted into the set.  Performance is
  * slower than hash or tree sets but should be sufficient for most algorithms where insert
  * order matters.

@@ -52,7 +52,7 @@ public final class ISetMaps
 
     /**
      * Creates a set map with higher performance but no specific ordering of keys.
-     * Sets for each key are equivalent to one created by JImmutables.set().
+     * Sets for each key are equivalent to one created by {@link Is}.set().
      */
     @Nonnull
     public static <K, V> ISetMap<K, V> hashed()
@@ -62,7 +62,7 @@ public final class ISetMaps
 
     /**
      * Creates a set map with keys sorted by order they are inserted.
-     * Sets for each value are equivalent to one created by JImmutables.set().
+     * Sets for each value are equivalent to one created by {@link Is}.set().
      */
     @Nonnull
     public static <K, V> ISetMap<K, V> ordered()
@@ -72,7 +72,7 @@ public final class ISetMaps
 
     /**
      * Creates a set map with keys sorted by their natural ordering.
-     * Sets for each key are equivalent to one created by JImmutables.set().
+     * Sets for each key are equivalent to one created by {@link Is}.set().
      */
     @Nonnull
     public static <K extends Comparable<K>, V> ISetMap<K, V> sorted()
@@ -82,7 +82,7 @@ public final class ISetMaps
 
     /**
      * Creates a set map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
-     * Sets for each value are equivalent to one created by JImmutables.set().
+     * Sets for each value are equivalent to one created by {@link Is}.set().
      */
     @Nonnull
     public static <K, V> ISetMap<K, V> sorted(@Nonnull Comparator<K> comparator)
@@ -106,7 +106,7 @@ public final class ISetMaps
     }
 
     /**
-     * Creates a builder to build a custom JImmutableSetMap configuration from a
+     * Creates a builder to build a custom {@link ISetMap} configuration from a
      * base map and set type.
      */
     @Nonnull
@@ -116,7 +116,7 @@ public final class ISetMaps
     }
 
     /**
-     * Creates a builder to build a custom JImmutableSetMap configuration from a
+     * Creates a builder to build a custom {@link ISetMap} configuration from a
      * base map and set type.   The provided classes are used to tell the java
      * type system what the target times are.  Sometimes this can be more
      * convenient than angle brackets.

@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Adaptor that implements an unmodifiable Set backed by a JImmutableSet.
+ * Adaptor that implements an unmodifiable Set backed by a {@link ISet}.
  */
 @Immutable
 public class SetAdaptor<T>

@@ -113,7 +113,7 @@ public interface IMap<K, V>
     /**
      * Sets the value associated with a specific key.  Key must be non-null but value
      * can be null.  If the key already has a value in the map the old value is discarded
-     * and the new value is stored in its place.  Returns a new JImmutableMap reflecting
+     * and the new value is stored in its place.  Returns a new {@link IMap} reflecting
      * any changes.  The original map is always left unchanged.
      *
      * @param key   non-null key
@@ -127,9 +127,9 @@ public interface IMap<K, V>
     /**
      * Copies all key-value pairs from the given map. The map itself and its keys must be
      * nonnull, but values can be null.  If a key already has a value in the map, the old
-     * value is replaced with the new value. Returns a new JImmutableMap with the changes.
+     * value is replaced with the new value. Returns a new {@link IMap} with the changes.
      *
-     * @param map JImmutableMap to take values from
+     * @param map {@link IMap} to take values from
      * @return new map reflecting the change
      */
     @Nonnull
@@ -139,7 +139,7 @@ public interface IMap<K, V>
     /**
      * Copies all key-value pairs from the given map. The map itself and its keys must be
      * nonnull, but values can be null.  If a key already has a value in the map, the old
-     * value is replaced with the new value. Returns a new JImmutableMap with the changes.
+     * value is replaced with the new value. Returns a new {@link IMap} with the changes.
      *
      * @param map Map to take values from
      * @return new map reflecting the change
@@ -165,9 +165,9 @@ public interface IMap<K, V>
     IMap<K, V> deleteAll();
 
     /**
-     * Creates an unmodifiable java.util.Map reflecting the values of this JImmutableMap.
+     * Creates an unmodifiable java.util.Map reflecting the values of this {@link IMap}.
      *
-     * @return Map view of this JImmutableMap
+     * @return Map view of this {@link IMap}
      */
     @Nonnull
     Map<K, V> getMap();

@@ -386,7 +386,7 @@ public interface IMultiset<T>
     /**
      * Stream iterates through each Entry, that contains a unique value and the count of occurrences.
      *
-     * @return Streamable of JImmutableMap.Entries
+     * @return Streamable of {@link IMap}.Entries
      */
     @Nonnull
     IStreamable<IMapEntry<T, Integer>> entries();

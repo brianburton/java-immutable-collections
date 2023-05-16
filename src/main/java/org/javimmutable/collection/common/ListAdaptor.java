@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Spliterator;
 
 /**
- * Immutable List implementation backed by a JImmutableList.
+ * Immutable List implementation backed by a {@link IList}.
  */
 @Immutable
 public class ListAdaptor<T>

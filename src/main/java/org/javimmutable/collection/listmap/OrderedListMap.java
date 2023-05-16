@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 
 /**
- * JImmutableListMap implementation that allows keys to be traversed in the same order as they
+ * {@link IListMap} implementation that allows keys to be traversed in the same order as they
  * were inserted into the collection.
  */
 @Immutable

@@ -47,7 +47,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * JImmutableSetMap implementation that allows keys to be traversed in sorted order using a Comparator
+ * {@link ISetMap} implementation that allows keys to be traversed in sorted order using a Comparator
  * of the natural ordering of the keys if they implement Comparable.
  */
 @Immutable

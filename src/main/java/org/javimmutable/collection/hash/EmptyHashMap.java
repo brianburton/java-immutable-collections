@@ -50,8 +50,8 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 
 /**
- * Singleton implementation of JImmutableMap that contains no elements.
- * When a value is assigned to the map a JImmutableHashMap is created that
+ * Singleton implementation of {@link IMap} that contains no elements.
+ * When a value is assigned to the map a {@link IHashMap} is created that
  * manages hash collisions using a tree if key is Comparable or a list otherwise.
  */
 @Immutable

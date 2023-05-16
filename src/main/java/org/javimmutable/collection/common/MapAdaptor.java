@@ -54,7 +54,7 @@ import java.util.Set;
 import java.util.Spliterator;
 
 /**
- * An immutable Map implementation backed by a JImmutableMap.
+ * An immutable Map implementation backed by a {@link IMap}.
  */
 @SuppressWarnings({"unchecked", "NullableProblems"})
 @Immutable
@@ -92,7 +92,7 @@ public class MapAdaptor<K, V>
     }
 
     /**
-     * Uses O(n) traversal of the JImmutableMap to search for a matching value.
+     * Uses O(n) traversal of the {@link IMap} to search for a matching value.
      */
     @Override
     public boolean containsValue(Object o)

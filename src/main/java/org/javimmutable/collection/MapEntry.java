@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Immutable implementation of both Map.Entry and JImmutableMap.Entry that uses the same equals() and hashCode() implementations as
+ * Immutable implementation of both Map.Entry and {@link IMap}.Entry that uses the same equals() and hashCode() implementations as
  * documented in javadoc for Map.Entry.
  */
 @Immutable

@@ -63,7 +63,7 @@ public interface ISetMap<K, V>
     /**
      * Sets the set associated with a specific key. Key and value must be non-null.
      * If the key already has a set in the map the old set is discarded and the
-     * new set is stored in its place. Returns a new JImmutableSetMap reflecting
+     * new set is stored in its place. Returns a new {@link ISetMap} reflecting
      * any changes. The original map is always left unchanged.
      */
     @Nonnull

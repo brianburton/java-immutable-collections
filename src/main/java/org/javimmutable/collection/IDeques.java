@@ -48,7 +48,7 @@ public final class IDeques
     }
 
     /**
-     * Produces an empty JImmutableList built atop a balanced binary tree.
+     * Produces an empty {@link IList} built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> IDeque<T> of()
@@ -57,7 +57,7 @@ public final class IDeques
     }
 
     /**
-     * Efficiently produces a JImmutableList containing all of the specified values built atop a balanced binary tree.
+     * Efficiently produces a {@link IList} containing all of the specified values built atop a balanced binary tree.
      */
     @Nonnull
     @SafeVarargs
@@ -67,7 +67,7 @@ public final class IDeques
     }
 
     /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
+     * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source)
@@ -76,7 +76,7 @@ public final class IDeques
     }
 
     /**
-     * Efficiently produces a JImmutableList containing all of the values in source built atop a balanced binary tree.
+     * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterable<? extends T> source)

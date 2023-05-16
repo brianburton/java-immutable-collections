@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 
 /**
- * JImmutableListMap using a hash map for fast lookup.
+ * {@link IListMap} using a hash map for fast lookup.
  */
 @Immutable
 public class HashListMap<K, V>

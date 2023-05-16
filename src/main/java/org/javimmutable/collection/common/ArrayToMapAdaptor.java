@@ -89,7 +89,7 @@ public class ArrayToMapAdaptor<T>
     }
 
     /**
-     * Uses O(n) traversal of the JImmutableMap to search for a matching value.
+     * Uses O(n) traversal of the {@link IMap} to search for a matching value.
      */
     @Override
     public boolean containsValue(Object o)

@@ -178,7 +178,7 @@ public interface IList<T>
     /**
      * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
      *
-     * @return new JImmutableList without last value
+     * @return new {@link IList} without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull
@@ -188,7 +188,7 @@ public interface IList<T>
     /**
      * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
      *
-     * @return new JImmutableList without last value
+     * @return new {@link IList} without last value
      * @throws IndexOutOfBoundsException if list is already empty
      */
     @Nonnull

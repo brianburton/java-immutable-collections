@@ -57,7 +57,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collector;
 
 /**
- * JImmutableMap implementation that allows iteration over members in the order in which they
+ * {@link IMap} implementation that allows iteration over members in the order in which they
  * were inserted into the map.  Maintains two parallel data structures, one for sorting and
  * the other for storing entries.  Gets are approximately as fast as hash map gets but updates
  * are significantly slower.

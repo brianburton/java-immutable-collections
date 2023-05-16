@@ -44,7 +44,7 @@ import javax.annotation.Nonnull;
 import java.io.Serializable;
 
 /**
- * JImmutableSetMap implementation that uses arbitrary Map and Set templates.
+ * {@link ISetMap} implementation that uses arbitrary Map and Set templates.
  * Allows mix and match of map and set types to support all possible combinations.
  */
 public class TemplateSetMap<K, V>
@@ -70,7 +70,7 @@ public class TemplateSetMap<K, V>
     }
 
     /**
-     * Creates a new empty JImmutableSetMap object using the specified template map and set implementations.
+     * Creates a new empty {@link ISetMap} object using the specified template map and set implementations.
      * The provided templates are always emptied before use.
      */
     public static <K, V> ISetMap<K, V> of(@Nonnull IMap<K, ISet<V>> emptyMap,

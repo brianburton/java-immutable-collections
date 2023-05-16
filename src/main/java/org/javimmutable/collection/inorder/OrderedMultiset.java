@@ -50,7 +50,7 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 /**
- * JImmutableMultisetImplementation built on top of a JImmutableInsertOrderMap. During iteration,
+ * {@link IMultiset} implementation built on top of an ordered map. During iteration,
  * elements are returned in the same order they were inserted into the set. Performance is slower
  * than hash or tree sets, but should be sufficient for most algorithms where insert order matters.
  */

@@ -54,7 +54,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a JImmutableArray.
+     * Collects values into a {@link IArray}.
      */
     @Nonnull
     public static <T> Collector<T, ?, IArray<T>> toArray()
@@ -72,7 +72,7 @@ public final class ICollectors
     }
 
     /**
-     * Efficiently collects values into a JImmutableList built atop a balanced binary tree.
+     * Efficiently collects values into a {@link IList} built atop a balanced binary tree.
      */
     @Nonnull
     public static <T> Collector<T, ?, IList<T>> toList()
@@ -150,7 +150,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a sorted JImmutableMultiset using natural sort order of elements.
+     * Collects values into a sorted {@link IMultiset} using natural sort order of elements.
      */
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, IMultiset<T>> toSortedMultiset()
@@ -159,7 +159,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a sorted JImmutableMultiset using specified Comparator.
+     * Collects values into a sorted {@link IMultiset} using specified Comparator.
      */
     @Nonnull
     public static <T> Collector<T, ?, IMultiset<T>> toSortedMultiset(@Nonnull Comparator<T> comparator)
@@ -186,7 +186,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a sorted JImmutableSet using natural sort order of elements.
+     * Collects values into a sorted {@link ISet} using natural sort order of elements.
      */
     @Nonnull
     public static <T extends Comparable<T>> Collector<T, ?, ISet<T>> toSortedSet()
@@ -195,7 +195,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a sorted JImmutableSet using specified Comparator.
+     * Collects values into a sorted {@link ISet} using specified Comparator.
      */
     @Nonnull
     public static <T> Collector<T, ?, ISet<T>> toSortedSet(@Nonnull Comparator<T> comparator)
@@ -243,7 +243,7 @@ public final class ICollectors
     }
 
     /**
-     * Collects values into a hashed JImmutableListMap using the specified classifier function
+     * Collects values into a hashed {@link IListMap} using the specified classifier function
      * to generate keys from the encountered elements.
      */
     @Nonnull
