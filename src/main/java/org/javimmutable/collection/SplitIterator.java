@@ -50,8 +50,8 @@ import java.util.Objects;
 @Immutable
 public class SplitIterator<T>
 {
-    private SplitableIterator<T> left;
-    private SplitableIterator<T> right;
+    private final SplitableIterator<T> left;
+    private final SplitableIterator<T> right;
 
     public SplitIterator(@Nonnull SplitableIterator<T> left,
                          @Nonnull SplitableIterator<T> right)
