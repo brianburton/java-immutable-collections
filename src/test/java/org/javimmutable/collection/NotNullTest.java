@@ -44,14 +44,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertThrows;
 
-public class MaybeTest
+public class NotNullTest
     extends TestCase
 {
     public void testAbsent()
         throws IOException
     {
-        Maybe<String> e1 = Maybe.absent();
-        Maybe<String> e2 = Maybe.absent();
+        NotNull<String> e1 = NotNull.absent();
+        NotNull<String> e2 = NotNull.absent();
         assertSame(e1, e2);
         assertEquals(e1, e2);
         assertEquals(true, e1.isAbsent());
@@ -71,8 +71,8 @@ public class MaybeTest
         assertEquals(null, called.get());
         e1.applyThrows(x -> called.set(x));
         assertEquals(null, called.get());
-        assertEquals(Maybe.absent(), e1.map(String::hashCode));
-        assertEquals(Maybe.absent(), e1.mapThrows(this::hashCodeThrows));
+        assertEquals(NotNull.absent(), e1.map(String::hashCode));
+        assertEquals(NotNull.absent(), e1.mapThrows(this::hashCodeThrows));
         assertEquals("ZZZ", e1.get("ZZZ"));
         assertEquals("ZZZ", e1.getOr(() -> "ZZZ"));
         try {
@@ -86,23 +86,23 @@ public class MaybeTest
     public void testPresent()
         throws IOException
     {
-        Maybe<String> empty1 = Maybe.absent();
-        Maybe<String> empty2 = Maybe.present(null);
-        Maybe<String> filled1 = Maybe.present("ABC");
-        Maybe<String> filled2 = Maybe.present("BC");
-        Maybe<String> filled3 = Maybe.present("ABC");
-        assertEquals(false, empty1.equals(empty2));
-        assertEquals(false, empty2.equals(empty1));
+        NotNull<String> empty1 = NotNull.absent();
+        NotNull<String> empty2 = NotNull.present(null);
+        NotNull<String> filled1 = NotNull.present("ABC");
+        NotNull<String> filled2 = NotNull.present("BC");
+        NotNull<String> filled3 = NotNull.present("ABC");
+        assertEquals(true, empty1.equals(empty2));
+        assertEquals(true, empty2.equals(empty1));
 
-        assertEquals(false, empty2.isAbsent());
-        assertEquals(true, empty2.isPresent());
+        assertEquals(true, empty2.isAbsent());
+        assertEquals(false, empty2.isPresent());
         assertFalse(empty2.equals(filled1));
         assertFalse(empty2.equals(filled2));
         assertFalse(empty2.equals(filled3));
-        assertThrows(NoSuchElementException.class, empty1::unsafeGet);
-        assertEquals(null, empty1.getOrNull());
-        assertEquals("ZZZ", empty1.get("ZZZ"));
-        assertEquals(0, empty2.hashCode());
+        assertThrows(NoSuchElementException.class, empty2::unsafeGet);
+        assertEquals(null, empty2.getOrNull());
+        assertEquals("ZZZ", empty2.get("ZZZ"));
+        assertEquals(-1, empty2.hashCode());
 
         assertEquals(false, filled1.isAbsent());
         assertEquals(true, filled1.isPresent());
@@ -141,8 +141,8 @@ public class MaybeTest
         assertNull(called.get());
         filled3.applyThrows(x -> called.set(x));
         assertEquals("ABC", called.get());
-        assertEquals(Maybe.present("ABC".hashCode()), filled3.map(String::hashCode));
-        assertEquals(Maybe.present("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
+        assertEquals(NotNull.present("ABC".hashCode()), filled3.map(String::hashCode));
+        assertEquals(NotNull.present("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
         assertEquals("ABC", filled3.get("ZZZ"));
         assertEquals("ABC", filled3.getOr(() -> "ZZZ"));
         assertEquals("ABC", filled3.unsafeGet(() -> new RuntimeException("threw")));
@@ -151,15 +151,15 @@ public class MaybeTest
     public void testSerialization()
         throws Exception
     {
-        Maybe<String> maybe = Maybe.absent();
+        NotNull<String> maybe = NotNull.absent();
         StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uWpVBQDCJ5peUgAAAA==");
-        maybe = Maybe.present(null);
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM88sv8SvNyQkoyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAPDIaYNUAAAA");
+        maybe = NotNull.present(null);
         StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3QQUAjVxwxFMAAAA=");
-        maybe = Maybe.present("hello");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM88sv8SvNyQkoyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAPDIaYNUAAAA");
+        maybe = NotNull.present("hello");
         StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3CQNrRmpOTn4FAENwjkZaAAAA");
+                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM88sv8SvNyQkoyq+o/A8Cf05d5mFgqCgoZ2NgYH65e3cJA2tGak5OfgUA4iLtllwAAAA=");
     }
 
     private Integer hashCodeThrows(String value)

@@ -172,7 +172,7 @@ public class OrderedMap<K, V>
     public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
         final Node<K, V> current = values.get(key);
-        return current != null ? Maybe.notNull(IMapEntry.of(key, current.value)) : Maybe.absent();
+        return current != null ? Maybe.present(IMapEntry.of(key, current.value)) : Maybe.absent();
     }
 
     @Nonnull

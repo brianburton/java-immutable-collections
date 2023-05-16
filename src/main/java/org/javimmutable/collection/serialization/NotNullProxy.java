@@ -35,29 +35,29 @@
 
 package org.javimmutable.collection.serialization;
 
-import org.javimmutable.collection.Maybe;
+import org.javimmutable.collection.NotNull;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-public class MaybeProxy
+public class NotNullProxy
     implements Externalizable
 {
     private static final long serialVersionUID = -210221;
-    private static final int MAYBE_VERSION = 1001;
+    private static final int NOT_NULL_VERSION = 1001;
     private static final short NONE_CODE = (short)0xaaaa;
     private static final short SOME_CODE = (short)0xbbbb;
 
-    private Maybe value;
+    private NotNull value;
 
-    public MaybeProxy()
+    public NotNullProxy()
     {
-        this(Maybe.absent());
+        this(NotNull.absent());
     }
 
-    public MaybeProxy(Maybe value)
+    public NotNullProxy(NotNull value)
     {
         this.value = value;
     }
@@ -66,7 +66,7 @@ public class MaybeProxy
     public void writeExternal(ObjectOutput out)
         throws IOException
     {
-        out.writeInt(MAYBE_VERSION);
+        out.writeInt(NOT_NULL_VERSION);
         if (value.isAbsent()) {
             out.writeShort(NONE_CODE);
         } else {
@@ -80,19 +80,19 @@ public class MaybeProxy
         throws IOException, ClassNotFoundException
     {
         final int version = in.readInt();
-        if (version != MAYBE_VERSION) {
-            throw new IOException("unexpected version number: expected " + MAYBE_VERSION + " found " + version);
+        if (version != NOT_NULL_VERSION) {
+            throw new IOException("unexpected version number: expected " + NOT_NULL_VERSION + " found " + version);
         }
         final short valueCode = in.readShort();
         switch (valueCode) {
             case NONE_CODE:
-                value = Maybe.absent();
+                value = NotNull.absent();
                 break;
             case SOME_CODE:
-                value = Maybe.present(in.readObject());
+                value = NotNull.present(in.readObject());
                 break;
             default:
-                throw new IOException("unexpected Maybe type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
+                throw new IOException("unexpected NotNull type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
         }
     }
 

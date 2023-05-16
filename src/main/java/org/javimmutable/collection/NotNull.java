@@ -38,7 +38,7 @@ package org.javimmutable.collection;
 import org.javimmutable.collection.common.StreamConstants;
 import org.javimmutable.collection.iterators.EmptyIterator;
 import org.javimmutable.collection.iterators.SingleValueIterator;
-import org.javimmutable.collection.serialization.MaybeProxy;
+import org.javimmutable.collection.serialization.NotNullProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,67 +49,64 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Used to handle cases when a value may or may not be present and, when needed, to eliminate the use of
- * null values.  The value of a {@link Maybe} can be null but the {@link Maybe#notNull} method can be used to
- * change a null value into an absent value when desired.
+ * Used to handle cases when a value may or may not be present and to eliminate the use of
+ * null values.  The value of a {@link NotNull} cannot be null.
  * Provides a variety of utility methods to allow call chaining.
  */
-public abstract class Maybe<T>
+public abstract class NotNull<T>
     implements IStreamable<T>,
                Serializable
 {
-    private Maybe()
+    private NotNull()
     {
     }
 
     /**
-     * Returns a {@link Maybe} with no value. All absent {@link Maybe}s share a common instance.
+     * Returns a {@link NotNull} with no value. All absent {@link NotNull}s share a common instance.
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> Maybe<T> absent()
+    public static <T> NotNull<T> absent()
     {
         return Absent.ABSENT;
     }
 
     /**
-     * Returns a {@link Maybe} containing the value.  Null is a valid value.
+     * Returns a {@link NotNull} containing the value.  Null is treated as absent.
      */
     @Nonnull
-    public static <T> Maybe<T> present(T value)
+    public static <T> NotNull<T> present(T value)
     {
-        return new Present<>(value);
+        return (value == null) ? absent() : new Present<>(value);
     }
 
     /**
      * Determine if the object is an instance of the specified Class or a subclass.
-     * If the object is null, returns a {@link Maybe} containing null.
+     * If the object is null, returns a {@link NotNull} containing null.
      * If the object is not null but not of the correct class, returns an empty Holder.
      * Otherwise returns a Holder containing the value cast to the target type.
      *
-     * @param klass       class to cast the object to
-     * @param valueOrNull object to be case
-     * @param <T>         type of the class
-     * @return a {@link Maybe}
+     * @param klass class to cast the object to
+     * @param value object to be case
+     * @param <T>   type of the class
+     * @return a {@link NotNull}
      */
-    public static <T> Maybe<T> cast(@Nonnull Class<T> klass,
-                                    @Nullable Object valueOrNull)
+    public static <T> NotNull<T> cast(@Nonnull Class<T> klass,
+                                      @Nullable Object value)
     {
-        if (valueOrNull == null) {
-            return present(null);
-        } else if (klass.isInstance(valueOrNull)) {
-            return present(klass.cast(valueOrNull));
+        if (klass.isInstance(value)) {
+            return present(klass.cast(value));
         } else {
             return absent();
         }
     }
 
     /**
-     * Returns a {@link Maybe} containing the first value of the collection.  If the collection
-     * is empty an absent {@link Maybe} is returned.
+     * Returns a {@link NotNull} containing the first value of the collection.  If the collection
+     * is empty an absent {@link NotNull} is returned.
      */
     @Nonnull
-    public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection)
+    public static <T> NotNull<T> first(@Nonnull Iterable<? extends T> collection)
     {
         final Iterator<? extends T> i = collection.iterator();
         if (i.hasNext()) {
@@ -121,13 +118,13 @@ public abstract class Maybe<T>
     }
 
     /**
-     * Returns a {@link Maybe} containing the first value of the collection
+     * Returns a {@link NotNull} containing the first value of the collection
      * for which the predicate returns true.  If the collection
-     * is empty or predicate always returns false an absent {@link Maybe} is returned.
+     * is empty or predicate always returns false an absent {@link NotNull} is returned.
      */
     @Nonnull
-    public static <T> Maybe<T> first(@Nonnull Iterable<? extends T> collection,
-                                     @Nonnull Func1<? super T, Boolean> predicate)
+    public static <T> NotNull<T> first(@Nonnull Iterable<? extends T> collection,
+                                       @Nonnull Func1<? super T, Boolean> predicate)
     {
         for (T value : collection) {
             if (predicate.apply(value)) {
@@ -138,180 +135,180 @@ public abstract class Maybe<T>
     }
 
     /**
-     * If this absent or has a null value returns absent, otherwise returns this.
+     * If this absent  returns {@link Maybe#absent}, otherwise returns {@link Maybe#present}.
      */
     @Nonnull
-    public abstract NotNull<T> notNull();
+    public abstract Maybe<T> maybe();
 
     /**
-     * Produce a present {@link Maybe}.  If this {@link Maybe} is present it is returned.
+     * Produce a present {@link NotNull}.  If this {@link NotNull} is present it is returned.
      * Otherwise the absentMapping function is called to provide a value
-     * for the result {@link Maybe}.
+     * for the result {@link NotNull}.
      *
      * @param absentMapping produces value if this is absent
-     * @return a present {@link Maybe}
+     * @return a present {@link NotNull}
      */
     @Nonnull
-    public abstract Maybe<T> map(@Nonnull Func0<? extends T> absentMapping);
+    public abstract NotNull<T> map(@Nonnull Func0<? extends T> absentMapping);
 
     /**
-     * Produce a {@link Maybe} that is absent if this is absent or else contains the result
+     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
      * of passing this value to the given mapping function.
      *
      * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link Maybe}
+     * @return a possibly absent {@link NotNull}
      */
     @Nonnull
-    public abstract <U> Maybe<U> map(@Nonnull Function<? super T, ? extends U> presentMapping);
+    public abstract <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping);
 
     /**
-     * Produce a {@link Maybe} that is absent if this is absent or else contains the result
+     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
      * of passing this value to the given mapping function.
      *
      * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link Maybe}
+     * @return a possibly absent {@link NotNull}
      */
     @Nonnull
-    public abstract <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping);
+    public abstract <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping);
 
     /**
-     * Produce a present {@link Maybe}.  If this is absent the absentMapping function is called
+     * Produce a present {@link NotNull}.  If this is absent the absentMapping function is called
      * to provide a value.  Otherwise the presentMapping function is called to produce a
      * new value based on this value.
      *
      * @param absentMapping  produces value when this is absent
      * @param presentMapping maps this value to new value
-     * @return a present {@link Maybe}
+     * @return a present {@link NotNull}
      */
     @Nonnull
-    public abstract <U> Maybe<U> map(@Nonnull Func0<? extends U> absentMapping,
-                                     @Nonnull Func1<? super T, ? extends U> presentMapping);
+    public abstract <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
+                                       @Nonnull Func1<? super T, ? extends U> presentMapping);
 
     /**
-     * Produce a present {@link Maybe}.  If this {@link Maybe} is present it is returned.
+     * Produce a present {@link NotNull}.  If this {@link NotNull} is present it is returned.
      * Otherwise the absentMapping function is called to provide a value
-     * for the result {@link Maybe}.
+     * for the result {@link NotNull}.
      *
      * @param absentMapping produces value if this is absent
-     * @return a present {@link Maybe}
+     * @return a present {@link NotNull}
      */
     @Nonnull
-    public abstract <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
+    public abstract <E extends Exception> NotNull<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
         throws E;
 
     /**
-     * Produce a {@link Maybe} that is absent if this is absent or else contains the result
+     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
      * of passing this value to the given mapping function.
      *
      * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link Maybe}
+     * @return a possibly absent {@link NotNull}
      */
     @Nonnull
-    public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
+    public abstract <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
         throws E;
 
     /**
-     * Produce a present {@link Maybe}.  If this is absent the absentMapping function is called
+     * Produce a present {@link NotNull}.  If this is absent the absentMapping function is called
      * to provide a value.  Otherwise the presentMapping function is called to produce a
      * new value based on this value.
      *
      * @param absentMapping  produces value when this is absent
      * @param presentMapping maps this value to new value
-     * @return a present {@link Maybe}
+     * @return a present {@link NotNull}
      */
     @Nonnull
-    public abstract <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
-                                                                @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
+    public abstract <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
+                                                                  @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
         throws E;
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is absent absentMapping is called
-     * to produce a new {@link Maybe}. Otherwise this is returned.
+     * Produce a {@link NotNull} based on this one.  If this is absent absentMapping is called
+     * to produce a new {@link NotNull}. Otherwise this is returned.
      *
-     * @param absentMapping produce new {@link Maybe} if this is absent
-     * @return a {@link Maybe}
+     * @param absentMapping produce new {@link NotNull} if this is absent
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> absentMapping);
+    public abstract NotNull<T> flatMap(@Nonnull Func0<NotNull<T>> absentMapping);
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is present its value is
-     * passed to presentMapping to produce a new {@link Maybe}.  Otherwise this is returned.
+     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * passed to presentMapping to produce a new {@link NotNull}.  Otherwise this is returned.
      *
-     * @param presentMapping produce a new {@link Maybe} from this value
-     * @return a {@link Maybe}
+     * @param presentMapping produce a new {@link NotNull} from this value
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> presentMapping);
+    public abstract <A> NotNull<A> flatMap(@Nonnull Func1<? super T, NotNull<A>> presentMapping);
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is present its value is
-     * passed to presentMapping to produce a new {@link Maybe}.  Otherwise absentMapping is
-     * called to produce a new {@link Maybe}..
+     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * passed to presentMapping to produce a new {@link NotNull}.  Otherwise absentMapping is
+     * called to produce a new {@link NotNull}..
      *
-     * @param absentMapping  produce a new {@link Maybe} when this is absent
-     * @param presentMapping produce a new {@link Maybe} from this value
-     * @return a {@link Maybe}
+     * @param absentMapping  produce a new {@link NotNull} when this is absent
+     * @param presentMapping produce a new {@link NotNull} from this value
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> absentMapping,
-                                         @Nonnull Func1<? super T, Maybe<A>> presentMapping);
+    public abstract <A> NotNull<A> flatMap(@Nonnull Func0<NotNull<A>> absentMapping,
+                                           @Nonnull Func1<? super T, NotNull<A>> presentMapping);
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is absent absentMapping is called
-     * to produce a new {@link Maybe}. Otherwise this is returned.
+     * Produce a {@link NotNull} based on this one.  If this is absent absentMapping is called
+     * to produce a new {@link NotNull}. Otherwise this is returned.
      *
-     * @param absentMapping produce new {@link Maybe} if this is absent
-     * @return a {@link Maybe}
+     * @param absentMapping produce new {@link NotNull} if this is absent
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> absentMapping)
+    public abstract <E extends Exception> NotNull<T> flatMapThrows(@Nonnull Func0Throws<NotNull<T>, E> absentMapping)
         throws E;
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is present its value is
-     * passed to presentMapping to produce a new {@link Maybe}.  Otherwise this is returned.
+     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * passed to presentMapping to produce a new {@link NotNull}.  Otherwise this is returned.
      *
-     * @param presentMapping produce a new {@link Maybe} from this value
-     * @return a {@link Maybe}
+     * @param presentMapping produce a new {@link NotNull} from this value
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
+    public abstract <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
         throws E;
 
     /**
-     * Produce a {@link Maybe} based on this one.  If this is present its value is
-     * passed to presentMapping to produce a new {@link Maybe}.  Otherwise absentMapping is
-     * called to produce a new {@link Maybe}..
+     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * passed to presentMapping to produce a new {@link NotNull}.  Otherwise absentMapping is
+     * called to produce a new {@link NotNull}..
      *
-     * @param absentMapping  produce a new {@link Maybe} when this is absent
-     * @param presentMapping produce a new {@link Maybe} from this value
-     * @return a {@link Maybe}
+     * @param absentMapping  produce a new {@link NotNull} when this is absent
+     * @param presentMapping produce a new {@link NotNull} from this value
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> absentMapping,
-                                                                    @Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
+    public abstract <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func0Throws<NotNull<A>, E> absentMapping,
+                                                                      @Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
         throws E;
 
     /**
      * Returns this if this is present and predicate returns true.
-     * Otherwise an absent {@link Maybe} is returned.
+     * Otherwise an absent {@link NotNull} is returned.
      *
      * @param predicate determines whether to accept this value
-     * @return a {@link Maybe}
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract Maybe<T> select(@Nonnull Predicate<? super T> predicate);
+    public abstract NotNull<T> select(@Nonnull Predicate<? super T> predicate);
 
     /**
      * Returns this if this is present and predicate returns false.
-     * Otherwise an absent {@link Maybe} is returned.
+     * Otherwise an absent {@link NotNull} is returned.
      *
      * @param predicate determines whether to reject this value
-     * @return a {@link Maybe}
+     * @return a {@link NotNull}
      */
     @Nonnull
-    public abstract Maybe<T> reject(@Nonnull Predicate<? super T> predicate);
+    public abstract NotNull<T> reject(@Nonnull Predicate<? super T> predicate);
 
     /**
      * Invokes absentAction if this is absent.
@@ -320,7 +317,7 @@ public abstract class Maybe<T>
      * @return this
      */
     @Nonnull
-    public abstract Maybe<T> apply(@Nonnull Proc0 absentAction);
+    public abstract NotNull<T> apply(@Nonnull Proc0 absentAction);
 
     /**
      * Invokes presentAction with this value if this is present.
@@ -329,7 +326,7 @@ public abstract class Maybe<T>
      * @return this
      */
     @Nonnull
-    public abstract Maybe<T> apply(@Nonnull Proc1<? super T> presentAction);
+    public abstract NotNull<T> apply(@Nonnull Proc1<? super T> presentAction);
 
     /**
      * Invokes absentAction if this is absent.
@@ -338,7 +335,7 @@ public abstract class Maybe<T>
      * @return this
      */
     @Nonnull
-    public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
+    public abstract <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
         throws E;
 
     /**
@@ -348,7 +345,7 @@ public abstract class Maybe<T>
      * @return this
      */
     @Nonnull
-    public abstract <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
+    public abstract <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
         throws E;
 
     /**
@@ -447,7 +444,7 @@ public abstract class Maybe<T>
     public abstract boolean isPresent();
 
     private static class Absent<T>
-        extends Maybe<T>
+        extends NotNull<T>
     {
         @SuppressWarnings("rawtypes")
         private static final Absent ABSENT = new Absent();
@@ -458,60 +455,43 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public NotNull<T> notNull()
+        public Maybe<T> maybe()
         {
-            return NotNull.absent();
+            return Maybe.absent();
         }
 
         @Nonnull
         @Override
-        public Maybe<T> map(@Nonnull Func0<? extends T> absentMapping)
-        {
-            return present(absentMapping.apply());
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
-        {
-            return absent();
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
-        {
-            return absent();
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Func0<? extends U> absentMapping,
-                                @Nonnull Func1<? super T, ? extends U> presentMapping)
+        public NotNull<T> map(@Nonnull Func0<? extends T> absentMapping)
         {
             return present(absentMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
-            throws E
-        {
-            return present(absentMapping.apply());
-        }
-
-        @Nonnull
-        @Override
-        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
-            throws E
+        public <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
         {
             return absent();
         }
 
         @Nonnull
         @Override
-        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
-                                                           @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
+        public <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
+        {
+            return absent();
+        }
+
+        @Nonnull
+        @Override
+        public <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
+                                  @Nonnull Func1<? super T, ? extends U> presentMapping)
+        {
+            return present(absentMapping.apply());
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> NotNull<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
             throws E
         {
             return present(absentMapping.apply());
@@ -519,21 +499,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> absentMapping)
-        {
-            return absentMapping.apply();
-        }
-
-        @Nonnull
-        @Override
-        public <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> presentMapping)
-        {
-            return absent();
-        }
-
-        @Nonnull
-        @Override
-        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
+        public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
             return absent();
@@ -541,39 +507,70 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> absentMapping,
-                                    @Nonnull Func1<? super T, Maybe<A>> presentMapping)
-        {
-            return absentMapping.apply();
-        }
-
-        @Nonnull
-        @Override
-        public <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> absentMapping)
+        public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
+                                                             @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
-            return absentMapping.apply();
+            return present(absentMapping.apply());
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> absentMapping,
-                                                               @Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
-            throws E
+        public NotNull<T> flatMap(@Nonnull Func0<NotNull<T>> absentMapping)
         {
             return absentMapping.apply();
         }
 
         @Nonnull
         @Override
-        public Maybe<T> select(@Nonnull Predicate<? super T> predicate)
+        public <A> NotNull<A> flatMap(@Nonnull Func1<? super T, NotNull<A>> presentMapping)
         {
             return absent();
         }
 
         @Nonnull
         @Override
-        public Maybe<T> reject(@Nonnull Predicate<? super T> predicate)
+        public <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
+            throws E
+        {
+            return absent();
+        }
+
+        @Nonnull
+        @Override
+        public <A> NotNull<A> flatMap(@Nonnull Func0<NotNull<A>> absentMapping,
+                                      @Nonnull Func1<? super T, NotNull<A>> presentMapping)
+        {
+            return absentMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> NotNull<T> flatMapThrows(@Nonnull Func0Throws<NotNull<T>, E> absentMapping)
+            throws E
+        {
+            return absentMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func0Throws<NotNull<A>, E> absentMapping,
+                                                                 @Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
+            throws E
+        {
+            return absentMapping.apply();
+        }
+
+        @Nonnull
+        @Override
+        public NotNull<T> select(@Nonnull Predicate<? super T> predicate)
+        {
+            return absent();
+        }
+
+        @Nonnull
+        @Override
+        public NotNull<T> reject(@Nonnull Predicate<? super T> predicate)
         {
             return absent();
         }
@@ -593,7 +590,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public Maybe<T> apply(@Nonnull Proc0 absentAction)
+        public NotNull<T> apply(@Nonnull Proc0 absentAction)
         {
             absentAction.apply();
             return this;
@@ -601,14 +598,14 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public Maybe<T> apply(@Nonnull Proc1<? super T> presentAction)
+        public NotNull<T> apply(@Nonnull Proc1<? super T> presentAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
+        public <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
             throws E
         {
             absentAction.apply();
@@ -617,7 +614,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
+        public <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
             throws E
         {
             return this;
@@ -705,7 +702,7 @@ public abstract class Maybe<T>
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof Maybe.Absent;
+            return obj instanceof NotNull.Absent;
         }
 
         @Override
@@ -716,12 +713,12 @@ public abstract class Maybe<T>
 
         private Object writeReplace()
         {
-            return new MaybeProxy(this);
+            return new NotNullProxy(this);
         }
     }
 
     private static class Present<T>
-        extends Maybe<T>
+        extends NotNull<T>
     {
         private final T value;
 
@@ -732,82 +729,43 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public NotNull<T> notNull()
+        public Maybe<T> maybe()
         {
-            return NotNull.present(value);
+            return Maybe.present(value);
         }
 
         @Nonnull
         @Override
-        public Maybe<T> map(@Nonnull Func0<? extends T> absentMapping)
-        {
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
-        {
-            return present(presentMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
-        {
-            return present(presentMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
-        public <U> Maybe<U> map(@Nonnull Func0<? extends U> absentMapping,
-                                @Nonnull Func1<? super T, ? extends U> presentMapping)
-        {
-            return present(presentMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
-        public <E extends Exception> Maybe<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
-            throws E
+        public NotNull<T> map(@Nonnull Func0<? extends T> absentMapping)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
-            throws E
+        public <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
         {
             return present(presentMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <U, E extends Exception> Maybe<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
-                                                           @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
-            throws E
+        public <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
         {
             return present(presentMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public Maybe<T> flatMap(@Nonnull Func0<Maybe<T>> absentMapping)
+        public <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
+                                  @Nonnull Func1<? super T, ? extends U> presentMapping)
         {
-            return this;
+            return present(presentMapping.apply(value));
         }
 
         @Nonnull
         @Override
-        public <A> Maybe<A> flatMap(@Nonnull Func1<? super T, Maybe<A>> presentMapping)
-        {
-            return presentMapping.apply(value);
-        }
-
-        @Nonnull
-        @Override
-        public <E extends Exception> Maybe<T> flatMapThrows(@Nonnull Func0Throws<Maybe<T>, E> absentMapping)
+        public <E extends Exception> NotNull<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
             throws E
         {
             return this;
@@ -815,7 +773,46 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
+        public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
+            throws E
+        {
+            return present(presentMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
+                                                             @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
+            throws E
+        {
+            return present(presentMapping.apply(value));
+        }
+
+        @Nonnull
+        @Override
+        public NotNull<T> flatMap(@Nonnull Func0<NotNull<T>> absentMapping)
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A> NotNull<A> flatMap(@Nonnull Func1<? super T, NotNull<A>> presentMapping)
+        {
+            return presentMapping.apply(value);
+        }
+
+        @Nonnull
+        @Override
+        public <E extends Exception> NotNull<T> flatMapThrows(@Nonnull Func0Throws<NotNull<T>, E> absentMapping)
+            throws E
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
             throws E
         {
             return presentMapping.apply(value);
@@ -823,16 +820,16 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <A> Maybe<A> flatMap(@Nonnull Func0<Maybe<A>> absentMapping,
-                                    @Nonnull Func1<? super T, Maybe<A>> presentMapping)
+        public <A> NotNull<A> flatMap(@Nonnull Func0<NotNull<A>> absentMapping,
+                                      @Nonnull Func1<? super T, NotNull<A>> presentMapping)
         {
             return presentMapping.apply(value);
         }
 
         @Nonnull
         @Override
-        public <A, E extends Exception> Maybe<A> flatMapThrows(@Nonnull Func0Throws<Maybe<A>, E> absentMapping,
-                                                               @Nonnull Func1Throws<? super T, Maybe<A>, E> presentMapping)
+        public <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func0Throws<NotNull<A>, E> absentMapping,
+                                                                 @Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
             throws E
         {
             return presentMapping.apply(value);
@@ -840,14 +837,14 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public Maybe<T> select(@Nonnull Predicate<? super T> predicate)
+        public NotNull<T> select(@Nonnull Predicate<? super T> predicate)
         {
             return predicate.test(value) ? this : absent();
         }
 
         @Nonnull
         @Override
-        public Maybe<T> reject(@Nonnull Predicate<? super T> predicate)
+        public NotNull<T> reject(@Nonnull Predicate<? super T> predicate)
         {
             return predicate.test(value) ? absent() : this;
         }
@@ -867,14 +864,14 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public Maybe<T> apply(@Nonnull Proc0 absentAction)
+        public NotNull<T> apply(@Nonnull Proc0 absentAction)
         {
             return this;
         }
 
         @Nonnull
         @Override
-        public Maybe<T> apply(@Nonnull Proc1<? super T> presentAction)
+        public NotNull<T> apply(@Nonnull Proc1<? super T> presentAction)
         {
             presentAction.apply(value);
             return this;
@@ -882,7 +879,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
+        public <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc0Throws<E> absentAction)
             throws E
         {
             return this;
@@ -890,7 +887,7 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
-        public <E extends Exception> Maybe<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
+        public <E extends Exception> NotNull<T> applyThrows(@Nonnull Proc1Throws<? super T, E> presentAction)
             throws E
         {
             presentAction.apply(value);
@@ -973,7 +970,7 @@ public abstract class Maybe<T>
         @Override
         public int hashCode()
         {
-            return value == null ? 0 : value.hashCode();
+            return value.hashCode();
         }
 
         @SuppressWarnings("rawtypes")
@@ -983,7 +980,7 @@ public abstract class Maybe<T>
             if (obj == this) {
                 return true;
             }
-            if (!(obj instanceof Maybe.Present)) {
+            if (!(obj instanceof NotNull.Present)) {
                 return false;
             }
             Object otherValue = ((Present)obj).value;
@@ -1004,7 +1001,7 @@ public abstract class Maybe<T>
 
         private Object writeReplace()
         {
-            return new MaybeProxy(this);
+            return new NotNullProxy(this);
         }
     }
 }
