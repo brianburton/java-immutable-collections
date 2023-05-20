@@ -48,7 +48,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 /**
- * Used to handle cases when a value may or may not be full and to eliminate the use of
+ * Used to handle cases when a value may or may not exist and to eliminate the use of
  * null values.  The value of a {@link NotNull} cannot be null.
  * Provides a variety of utility methods to allow call chaining.
  */

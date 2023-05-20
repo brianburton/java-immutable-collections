@@ -48,9 +48,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 /**
- * Used to handle cases when a value may or may not be full and, when needed, to eliminate the use of
- * null values.  The value of a {@link Maybe} can be null but the {@link Maybe#notNull} method can be used to
- * change a null value into an empty value when desired.
+ * Used to handle cases when a value may or may not exist.  The value of a {@link Maybe} can
+ * be null but the {@link Maybe#notNull} method can be used to
+ * change a null value into an empty {@link NotNull} when desired.
+ * Alternatively, {@link Maybe#nullToEmpty} can be used to convert a null
+ * value into an empty {@link Maybe}.
  * Provides a variety of utility methods to allow call chaining.
  */
 public abstract class Maybe<T>
@@ -137,10 +139,17 @@ public abstract class Maybe<T>
     }
 
     /**
-     * If this empty or has a null value returns empty, otherwise returns this.
+     * If this empty or has a null value returns {@link NotNull#empty}, otherwise returns
+     * a {@link NotNull} containing the same value as this.
      */
     @Nonnull
     public abstract NotNull<T> notNull();
+
+    /**
+     * If this empty or has a null value returns {@link #empty}, otherwise returns this.
+     */
+    @Nonnull
+    public abstract Maybe<T> nullToEmpty();
 
     /**
      * Produce a full {@link Maybe}.  If this {@link Maybe} is full it is returned.
@@ -454,6 +463,13 @@ public abstract class Maybe<T>
 
         @Nonnull
         @Override
+        public Maybe<T> nullToEmpty()
+        {
+            return this;
+        }
+
+        @Nonnull
+        @Override
         public Maybe<T> map(@Nonnull Func0<? extends T> absentMapping)
         {
             return of(absentMapping.apply());
@@ -717,6 +733,13 @@ public abstract class Maybe<T>
         public NotNull<T> notNull()
         {
             return NotNull.of(value);
+        }
+
+        @Nonnull
+        @Override
+        public Maybe<T> nullToEmpty()
+        {
+            return value == null ? empty() : this;
         }
 
         @Nonnull

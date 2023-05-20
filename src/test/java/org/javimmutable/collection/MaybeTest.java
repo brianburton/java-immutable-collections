@@ -59,6 +59,7 @@ public class MaybeTest
         assertSame(Maybe.empty(), Maybe.first(Collections.<Integer>emptySet(), x -> x == 3));
         assertSame(Maybe.empty(), Maybe.first(Arrays.asList(1, 2), x -> x == 3));
         assertSame(NotNull.empty(), Maybe.empty().notNull());
+        assertSame(Maybe.empty(), Maybe.empty().nullToEmpty());
 
         // test map
         final Maybe<String> empty = Maybe.empty();
@@ -138,6 +139,7 @@ public class MaybeTest
     public void testFull()
         throws Exception
     {
+        final Maybe<String> full = Maybe.of("8");
         assertEquals(Maybe.of(1), Maybe.of(3 - 2));
         assertEquals(Maybe.of(null), Maybe.cast(Integer.class, null));
         assertEquals(Maybe.of(10), Maybe.cast(Integer.class, 10));
@@ -146,9 +148,10 @@ public class MaybeTest
         assertEquals(Maybe.of(2), Maybe.first(Arrays.asList(1, 2, 3), x -> x > 1));
         assertEquals(NotNull.empty(), Maybe.of(null).notNull());
         assertEquals(NotNull.of(3), Maybe.of(3).notNull());
+        assertSame(Maybe.empty(), Maybe.of(null).nullToEmpty());
+        assertSame(full, full.nullToEmpty());
 
         // test map
-        final Maybe<String> full = Maybe.of("8");
         assertEquals(Maybe.of("8"), full.map(() -> "1"));
         assertEquals(Maybe.of(8), full.map(Integer::parseInt));
         assertEquals(Maybe.of(8), full.map(() -> 1, Integer::parseInt));
