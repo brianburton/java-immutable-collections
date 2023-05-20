@@ -49,9 +49,9 @@ public class OneValueNodeTest
         final AbstractNode<Integer> node = new OneValueNode<>(100);
         assertThat(node.get(0)).isEqualTo(100);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Maybe.absent(), node.seekImpl(-1, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
-        assertEquals(Maybe.present(100), node.seekImpl(0, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
-        assertEquals(Maybe.absent(), node.seekImpl(1, () -> Maybe.absent(), value -> Maybe.present(value)));
+        assertEquals(Maybe.empty(), node.seekImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(100), node.seekImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), node.seekImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testVarious()

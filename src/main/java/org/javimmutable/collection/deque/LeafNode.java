@@ -178,7 +178,7 @@ class LeafNode<T>
     @Override
     public Maybe<T> find(int index)
     {
-        return Maybe.present(values[index]);
+        return Maybe.of(values[index]);
     }
 
     @Override

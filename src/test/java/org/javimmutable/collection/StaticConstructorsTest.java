@@ -483,12 +483,12 @@ public class StaticConstructorsTest
         hmap2 = hmap2.assign(80, null);
         assertEquals(null, hmap2.get(20));
         Maybe<Integer> integers1 = hmap2.find(20);
-        assertEquals(true, integers1.isAbsent());
+        assertEquals(true, integers1.isEmpty());
         // hmap2.find(20).getValue() would throw since the Holder is empty
 
         assertEquals(null, hmap2.get(80));
         Maybe<Integer> integers = hmap2.find(80);
-        assertEquals(false, integers.isAbsent());
+        assertEquals(false, integers.isEmpty());
         Maybe<Integer> integers2 = hmap2.find(80);
         assertEquals(null, integers2.unsafeGet());
 

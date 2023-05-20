@@ -85,9 +85,9 @@ public class LeafNode<K, V>
                   @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Maybe.present(value);
+            return Maybe.of(value);
         } else {
-            return Maybe.absent();
+            return Maybe.empty();
         }
     }
 
@@ -97,9 +97,9 @@ public class LeafNode<K, V>
                                      @Nonnull K key)
     {
         if (isMatch(comp, key)) {
-            return Maybe.present(asEntry());
+            return Maybe.of(asEntry());
         } else {
-            return Maybe.absent();
+            return Maybe.empty();
         }
     }
 
@@ -151,14 +151,14 @@ public class LeafNode<K, V>
                               @Nonnull Func1<Maybe<V>, V> generator)
     {
         if (isMatch(comp, key)) {
-            final V value = generator.apply(Maybe.present(this.value));
+            final V value = generator.apply(Maybe.of(this.value));
             if (this.value == value) {
                 return this;
             } else {
                 return new LeafNode<>(key, value);
             }
         } else {
-            final V value = generator.apply(Maybe.absent());
+            final V value = generator.apply(Maybe.empty());
             return ValueNode.instance(comp, this.key, this.value, key, value);
         }
     }

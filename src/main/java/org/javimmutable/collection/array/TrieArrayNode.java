@@ -157,7 +157,7 @@ public class TrieArrayNode<T>
     {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
-        return findImpl(shiftCountForValue, index, () -> Maybe.absent(), value -> Maybe.present(value));
+        return findImpl(shiftCountForValue, index, () -> Maybe.empty(), value -> Maybe.of(value));
     }
 
     @Nonnull
@@ -197,7 +197,7 @@ public class TrieArrayNode<T>
                                       @Nonnull K key)
     {
         final T node = getNodeFofHashKey(key);
-        return node != null ? mapper.mappedFind(node, key) : Maybe.absent();
+        return node != null ? mapper.mappedFind(node, key) : Maybe.empty();
     }
 
     @Nonnull
@@ -205,7 +205,7 @@ public class TrieArrayNode<T>
                                                          @Nonnull K key)
     {
         final T node = getNodeFofHashKey(key);
-        return node != null ? mapper.mappedFindEntry(node, key) : Maybe.absent();
+        return node != null ? mapper.mappedFindEntry(node, key) : Maybe.empty();
     }
 
     @Nonnull
@@ -576,7 +576,7 @@ public class TrieArrayNode<T>
                     return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
                 }
             } else {
-                final T newValue = mapper.mappedAssign(key, generator.apply(Maybe.absent()));
+                final T newValue = mapper.mappedAssign(key, generator.apply(Maybe.empty()));
                 assert mapper.mappedSize(newValue) == 1;
                 final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, newValue);
                 assert (size + 1) == computeSize(mapper, nodes, newValues);
@@ -598,7 +598,7 @@ public class TrieArrayNode<T>
                 }
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
-                final V value = generator.apply(Maybe.absent());
+                final V value = generator.apply(Maybe.empty());
                 final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, mapper.mappedAssign(key, value));
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;

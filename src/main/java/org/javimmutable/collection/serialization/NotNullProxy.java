@@ -54,7 +54,7 @@ public class NotNullProxy
 
     public NotNullProxy()
     {
-        this(NotNull.absent());
+        this(NotNull.empty());
     }
 
     public NotNullProxy(NotNull value)
@@ -67,7 +67,7 @@ public class NotNullProxy
         throws IOException
     {
         out.writeInt(NOT_NULL_VERSION);
-        if (value.isAbsent()) {
+        if (value.isEmpty()) {
             out.writeShort(NONE_CODE);
         } else {
             out.writeShort(SOME_CODE);
@@ -86,10 +86,10 @@ public class NotNullProxy
         final short valueCode = in.readShort();
         switch (valueCode) {
             case NONE_CODE:
-                value = NotNull.absent();
+                value = NotNull.empty();
                 break;
             case SOME_CODE:
-                value = NotNull.present(in.readObject());
+                value = NotNull.of(in.readObject());
                 break;
             default:
                 throw new IOException("unexpected NotNull type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);

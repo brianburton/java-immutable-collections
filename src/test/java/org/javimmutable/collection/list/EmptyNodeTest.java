@@ -77,8 +77,8 @@ public class EmptyNodeTest
 
     public void testSeek()
     {
-        assertEquals(Maybe.absent(), node.seekImpl(-1, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
-        assertEquals(Maybe.absent(), node.seekImpl(0, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
-        assertEquals(Maybe.absent(), node.seekImpl(node.size(), () -> Maybe.absent(), value -> Maybe.present(value)));
+        assertEquals(Maybe.empty(), node.seekImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.empty(), node.seekImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), node.seekImpl(node.size(), () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 }

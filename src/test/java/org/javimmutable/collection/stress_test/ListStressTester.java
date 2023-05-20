@@ -269,7 +269,7 @@ public class ListStressTester
             }
             verifyContents(list, expected);
             verifyContents(list.stream().parallel().collect(collector), expected);
-            verifyContents(list.transformSome(s -> s.length() % 2 == 0 ? Maybe.present(s + "x") : Maybe.absent()),
+            verifyContents(list.transformSome(s -> s.length() % 2 == 0 ? Maybe.of(s + "x") : Maybe.empty()),
                            expected.stream().filter(s -> s.length() % 2 == 0).map(s -> s + "x").collect(Collectors.toList()));
             verifyContents(list.transform(s -> s + "x"), expected.stream().map(s -> s + "x").collect(Collectors.toList()));
 

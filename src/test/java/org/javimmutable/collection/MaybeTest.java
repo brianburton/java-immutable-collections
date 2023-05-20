@@ -35,139 +35,250 @@
 
 package org.javimmutable.collection;
 
-import junit.framework.TestCase;
 import org.javimmutable.collection.common.StandardSerializableTests;
+import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertThrows;
+import static org.javimmutable.collection.common.TestUtil.makeList;
+import static org.junit.Assert.*;
 
 public class MaybeTest
-    extends TestCase
 {
-    public void testAbsent()
-        throws IOException
+    @Test
+    public void testEmpty()
+        throws Exception
     {
-        Maybe<String> e1 = Maybe.absent();
-        Maybe<String> e2 = Maybe.absent();
-        assertSame(e1, e2);
-        assertEquals(e1, e2);
-        assertEquals(true, e1.isAbsent());
-        assertEquals(false, e1.isPresent());
-        try {
-            e1.unsafeGet();
-            fail();
-        } catch (NoSuchElementException ex) {
-            // expected
-        }
-        assertEquals(null, e1.getOrNull());
-        assertEquals("default", e1.get("default"));
-        assertEquals(-1, e1.hashCode());
+        assertSame(Maybe.empty(), Maybe.empty());
+        assertSame(Maybe.empty(), Maybe.cast(Float.class, 10));
+        assertSame(Maybe.<Integer>empty(), Maybe.first(Collections.<Integer>emptySet()));
+        assertSame(Maybe.empty(), Maybe.first(Collections.<Integer>emptySet(), x -> x == 3));
+        assertSame(Maybe.empty(), Maybe.first(Arrays.asList(1, 2), x -> x == 3));
+        assertSame(NotNull.empty(), Maybe.empty().notNull());
 
-        final AtomicReference<String> called = new AtomicReference<>();
-        e1.apply(x -> called.set(x));
-        assertEquals(null, called.get());
-        e1.applyThrows(x -> called.set(x));
-        assertEquals(null, called.get());
-        assertEquals(Maybe.absent(), e1.map(String::hashCode));
-        assertEquals(Maybe.absent(), e1.mapThrows(this::hashCodeThrows));
-        assertEquals("ZZZ", e1.get("ZZZ"));
-        assertEquals("ZZZ", e1.getOr(() -> "ZZZ"));
-        try {
-            e1.unsafeGet(() -> new RuntimeException("threw"));
-            fail();
-        } catch (RuntimeException ex) {
-            assertEquals("threw", ex.getMessage());
-        }
+        // test map
+        final Maybe<String> empty = Maybe.empty();
+        assertEquals(Maybe.of("1"), empty.map(() -> "1"));
+        assertSame(Maybe.empty(), empty.map(Integer::parseInt));
+        assertEquals(Maybe.of(1), empty.map(() -> 1, Integer::parseInt));
+
+        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
+            throw new IOException();
+        }));
+        assertEquals(Maybe.empty(), empty.mapThrows(MaybeTest::toIntThrows));
+        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
+                                                                  throw new IOException();
+                                                              },
+                                                              MaybeTest::toIntThrows));
+
+        // test flatMap
+        assertEquals(Maybe.of("a"), empty.flatMap(() -> Maybe.of("a")));
+        assertEquals(Maybe.empty(), empty.flatMap(MaybeTest::toIntMaybe));
+        assertEquals(Maybe.of(1), empty.flatMap(() -> Maybe.of(1), MaybeTest::toIntMaybe));
+        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
+            throw new IOException();
+        }));
+        assertEquals(Maybe.empty(), empty.flatMapThrows(MaybeTest::toIntMaybeThrows));
+        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
+                                                                      throw new IOException();
+                                                                  },
+                                                                  MaybeTest::toIntMaybeThrows));
+
+        // test selection
+        assertSame(empty, empty.select(x -> true));
+        assertSame(empty, empty.select(x -> false));
+        assertSame(empty, empty.reject(x -> true));
+        assertSame(empty, empty.reject(x -> false));
+
+        // test application
+        Temp.Var1<String> change = Temp.var("");
+        assertSame(empty, empty.apply(() -> change.x = "1"));
+        assertEquals("1", change.x);
+        assertSame(empty, empty.apply(x -> change.x = x));
+        assertEquals("1", change.x);
+        assertSame(empty, empty.applyThrows(() -> change.x = "2"));
+        assertEquals("2", change.x);
+        assertThrows(IOException.class, () -> empty.applyThrows(() -> {
+            throw new IOException();
+        }));
+        assertSame(empty, empty.applyThrows(x -> change.x = x));
+        assertEquals("2", change.x);
+        assertSame(empty, empty.applyThrows(x -> {
+            throw new IOException();
+        }));
+
+        // test get
+        assertThrows(NoSuchElementException.class, () -> empty.unsafeGet());
+        assertThrows(IOException.class, () -> empty.unsafeGet(IOException::new));
+        assertEquals("1", empty.get("1"));
+        assertEquals(null, empty.getOrNull());
+        assertEquals("2", empty.getOr(() -> "2"));
+
+        // test match
+        assertEquals(Integer.valueOf(-1), empty.match(-1, Integer::parseInt));
+        assertEquals(Integer.valueOf(-1), empty.matchOr(() -> -1, Integer::parseInt));
+        assertEquals(Integer.valueOf(-1), empty.matchThrows(-1, MaybeTest::toIntThrows));
+        assertEquals(Integer.valueOf(-1), empty.matchOrThrows(() -> -1, MaybeTest::toIntThrows));
+
+        // miscellaneous
+        assertEquals(true, empty.isEmpty());
+        assertEquals(false, empty.isFull());
+        assertEquals(-1, empty.hashCode());
+        assertEquals("()", empty.toString());
+        assertEquals(Collections.emptyList(), makeList(empty));
+        assertEquals(Collections.emptyList(), empty.stream().collect(Collectors.toList()));
+        assertEquals(false, empty.iterator().hasNext());
     }
 
-    public void testPresent()
-        throws IOException
+    @Test
+    public void testFull()
+        throws Exception
     {
-        Maybe<String> empty1 = Maybe.absent();
-        Maybe<String> empty2 = Maybe.present(null);
-        Maybe<String> filled1 = Maybe.present("ABC");
-        Maybe<String> filled2 = Maybe.present("BC");
-        Maybe<String> filled3 = Maybe.present("ABC");
-        assertEquals(false, empty1.equals(empty2));
-        assertEquals(false, empty2.equals(empty1));
+        assertEquals(Maybe.of(1), Maybe.of(3 - 2));
+        assertEquals(Maybe.of(null), Maybe.cast(Integer.class, null));
+        assertEquals(Maybe.of(10), Maybe.cast(Integer.class, 10));
+        assertEquals(Maybe.of(1), Maybe.first(Arrays.asList(1, 2, 3)));
+        assertEquals(Maybe.of(3), Maybe.first(Arrays.asList(1, 2, 3), x -> x == 3));
+        assertEquals(Maybe.of(2), Maybe.first(Arrays.asList(1, 2, 3), x -> x > 1));
+        assertEquals(NotNull.empty(), Maybe.of(null).notNull());
+        assertEquals(NotNull.of(3), Maybe.of(3).notNull());
 
-        assertEquals(false, empty2.isAbsent());
-        assertEquals(true, empty2.isPresent());
-        assertFalse(empty2.equals(filled1));
-        assertFalse(empty2.equals(filled2));
-        assertFalse(empty2.equals(filled3));
-        assertThrows(NoSuchElementException.class, empty1::unsafeGet);
-        assertEquals(null, empty1.getOrNull());
-        assertEquals("ZZZ", empty1.get("ZZZ"));
-        assertEquals(0, empty2.hashCode());
+        // test map
+        final Maybe<String> full = Maybe.of("8");
+        assertEquals(Maybe.of("8"), full.map(() -> "1"));
+        assertEquals(Maybe.of(8), full.map(Integer::parseInt));
+        assertEquals(Maybe.of(8), full.map(() -> 1, Integer::parseInt));
 
-        assertEquals(false, filled1.isAbsent());
-        assertEquals(true, filled1.isPresent());
-        assertFalse(filled1.equals(empty2));
-        assertFalse(filled1.equals(filled2));
-        assertTrue(filled1.equals(filled3));
-        assertEquals("ABC", filled1.unsafeGet());
-        assertEquals("ABC", filled1.getOrNull());
-        assertEquals("ABC", filled1.get("ZZZ"));
-        assertEquals(64578, filled1.hashCode());
+        assertSame(full, full.mapThrows(() -> {
+            throw new IOException();
+        }));
+        assertEquals(Maybe.of(8), full.mapThrows(MaybeTest::toIntThrows));
+        assertEquals(Maybe.of(8), full.mapThrows(() -> {
+                                                     throw new IOException();
+                                                 },
+                                                 MaybeTest::toIntThrows));
 
-        assertEquals(false, filled2.isAbsent());
-        assertEquals(true, filled2.isPresent());
-        assertFalse(filled2.equals(empty2));
-        assertFalse(filled2.equals(filled1));
-        assertFalse(filled2.equals(filled3));
-        assertEquals("BC", filled2.unsafeGet());
-        assertEquals("BC", filled2.getOrNull());
-        assertEquals("BC", filled2.get("ZZZ"));
-        assertEquals(2113, filled2.hashCode());
+        // test flatMap
+        assertSame(full, full.flatMap(() -> Maybe.of("a")));
+        assertEquals(Maybe.of(8), full.flatMap(MaybeTest::toIntMaybe));
+        assertEquals(Maybe.of(8), full.flatMap(() -> Maybe.of(1), MaybeTest::toIntMaybe));
+        assertSame(full, full.flatMapThrows(() -> {
+            throw new IOException();
+        }));
+        assertEquals(Maybe.of(8), full.flatMapThrows(MaybeTest::toIntMaybeThrows));
+        assertEquals(Maybe.of(8), full.flatMapThrows(() -> {
+                                                         throw new IOException();
+                                                     },
+                                                     MaybeTest::toIntMaybeThrows));
 
-        assertEquals(false, filled3.isAbsent());
-        assertEquals(true, filled3.isPresent());
-        assertFalse(filled3.equals(empty2));
-        assertTrue(filled3.equals(filled1));
-        assertFalse(filled3.equals(filled2));
-        assertEquals("ABC", filled3.unsafeGet());
-        assertEquals("ABC", filled3.getOrNull());
-        assertEquals("ABC", filled3.get("ZZZ"));
-        assertEquals(64578, filled3.hashCode());
+        // test selection
+        assertEquals(Maybe.empty(), full.select(x -> false));
+        assertSame(full, full.select(x -> true));
+        assertSame(full, full.reject(x -> false));
+        assertEquals(Maybe.empty(), full.reject(x -> true));
 
-        final AtomicReference<String> called = new AtomicReference<>();
-        filled3.apply(x -> called.set(x));
-        assertEquals("ABC", called.get());
-        called.set(null);
-        assertNull(called.get());
-        filled3.applyThrows(x -> called.set(x));
-        assertEquals("ABC", called.get());
-        assertEquals(Maybe.present("ABC".hashCode()), filled3.map(String::hashCode));
-        assertEquals(Maybe.present("ABC".hashCode()), filled3.mapThrows(this::hashCodeThrows));
-        assertEquals("ABC", filled3.get("ZZZ"));
-        assertEquals("ABC", filled3.getOr(() -> "ZZZ"));
-        assertEquals("ABC", filled3.unsafeGet(() -> new RuntimeException("threw")));
+        // test application
+        Temp.Var1<String> change = Temp.var("");
+        assertSame(full, full.apply(() -> change.x = "1"));
+        assertEquals("", change.x);
+        assertSame(full, full.apply(x -> change.x = x));
+        assertEquals("8", change.x);
+        assertSame(full, full.applyThrows(() -> change.x = "2"));
+        assertEquals("8", change.x);
+        assertSame(full, full.applyThrows(() -> {
+            throw new IOException();
+        }));
+        change.x = "";
+        assertSame(full, full.applyThrows(x -> change.x = x));
+        assertEquals("8", change.x);
+        assertThrows(IOException.class, () -> full.applyThrows(x -> {
+            throw new IOException();
+        }));
+
+        // test get
+        assertEquals("8", full.unsafeGet());
+        assertEquals("8", full.unsafeGet(IOException::new));
+        assertEquals("8", full.get("1"));
+        assertEquals("8", full.getOrNull());
+        assertEquals("8", full.getOr(() -> "2"));
+
+        // test match
+        assertEquals(Integer.valueOf(8), full.match(-1, Integer::parseInt));
+        assertEquals(Integer.valueOf(8), full.matchOr(() -> -1, Integer::parseInt));
+        assertEquals(Integer.valueOf(8), full.matchThrows(-1, MaybeTest::toIntThrows));
+        assertEquals(Integer.valueOf(8), full.matchOrThrows(() -> -1, MaybeTest::toIntThrows));
+
+        // miscellaneous
+        assertEquals(false, full.isEmpty());
+        assertEquals(true, full.isFull());
+        assertEquals("8".hashCode(), full.hashCode());
+        assertEquals("(8)", full.toString());
+        assertEquals(Collections.singletonList("8"), makeList(full));
+        assertEquals(Collections.singletonList("8"), full.stream().collect(Collectors.toList()));
+
+        // equals
+        assertEquals(true, full.equals(full));
+        assertEquals(false, full.equals("8"));
+        assertEquals(false, full.equals(null));
+        assertEquals(false, Maybe.of(null).equals(full));
+        assertEquals(false, full.equals(Maybe.of(null)));
+        assertEquals(false, Maybe.of("x").equals(Maybe.of("y")));
+        assertEquals(true, Maybe.of("x").equals(Maybe.of("x")));
+        assertEquals(false, full.equals(Maybe.empty()));
+        assertEquals(false, Maybe.empty().equals(full));
     }
 
+    @Test
     public void testSerialization()
         throws Exception
     {
-        Maybe<String> maybe = Maybe.absent();
+        Maybe<String> maybe = Maybe.empty();
         StandardSerializableTests.verifySerializable(maybe,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uWpVBQDCJ5peUgAAAA==");
-        maybe = Maybe.present(null);
+        maybe = Maybe.of(null);
         StandardSerializableTests.verifySerializable(maybe,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3QQUAjVxwxFMAAAA=");
-        maybe = Maybe.present("hello");
+        maybe = Maybe.of("hello");
         StandardSerializableTests.verifySerializable(maybe,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM802sTEoNKMqvqPwPAn9OXeZhYKgoKGdjYGB+uXt3CQNrRmpOTn4FAENwjkZaAAAA");
     }
 
-    private Integer hashCodeThrows(String value)
+    private static int toIntThrows(String s)
         throws IOException
     {
-        if (value == null) {
-            throw new IOException();
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException ex) {
+            throw new IOException(ex.getMessage());
         }
-        return value.hashCode();
+    }
+
+    private static Maybe<Integer> toIntMaybeThrows(String s)
+        throws IOException
+    {
+        if (s.isEmpty()) {
+            return Maybe.empty();
+        }
+        try {
+            return Maybe.of(Integer.parseInt(s));
+        } catch (NumberFormatException ex) {
+            throw new IOException(ex.getMessage());
+        }
+    }
+
+    private static Maybe<Integer> toIntMaybe(String s)
+    {
+        if (s.isEmpty()) {
+            return Maybe.empty();
+        }
+        try {
+            return Maybe.of(Integer.parseInt(s));
+        } catch (NumberFormatException ex) {
+            return Maybe.empty();
+        }
     }
 }

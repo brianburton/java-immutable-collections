@@ -125,7 +125,7 @@ public abstract class AbstractListMapTestCase
 
         final IList<Integer> defaultValue = TreeList.<Integer>of().insert(17);
         Maybe<IList<Integer>> iLists = map.find(8);
-        assertTrue(iLists.isAbsent());
+        assertTrue(iLists.isEmpty());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));

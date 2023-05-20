@@ -105,10 +105,10 @@ public final class Functions
         while (iterator.hasNext()) {
             final T value = iterator.next();
             if (func.apply(value)) {
-                return Maybe.present(value);
+                return Maybe.of(value);
             }
         }
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,

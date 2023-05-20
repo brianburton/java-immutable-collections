@@ -41,7 +41,7 @@ import org.javimmutable.collection.Maybe;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static org.javimmutable.collection.Maybe.absent;
+import static org.javimmutable.collection.Maybe.empty;
 
 /**
  * Wrapper for an Indexed that only provides access to a portion of the full Indexed's values.
@@ -93,10 +93,10 @@ public class Subindexed<T>
     public Maybe<T> find(int index)
     {
         if ((index < 0) || (index >= size)) {
-            return absent();
+            return empty();
         }
         T value = source.get(offset + index);
-        return Maybe.present(value);
+        return Maybe.of(value);
     }
 
     @Override

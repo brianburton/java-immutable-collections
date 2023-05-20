@@ -245,9 +245,9 @@ public interface IDeque<T>
     {
         if (size() == 1) {
             T value = get(0);
-            return Maybe.present(value);
+            return Maybe.of(value);
         } else {
-            return Maybe.absent();
+            return Maybe.empty();
         }
     }
 }

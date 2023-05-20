@@ -218,7 +218,7 @@ public class StandardMapTests
 
     private static Func1<Maybe<Integer>, Integer> generator(int newValue)
     {
-        return h -> h.isAbsent() ? newValue : h.unsafeGet() * 10 + 1;
+        return h -> h.isEmpty() ? newValue : h.unsafeGet() * 10 + 1;
     }
 
     private static <K, V> void testCollector(IMap<K, V> values,

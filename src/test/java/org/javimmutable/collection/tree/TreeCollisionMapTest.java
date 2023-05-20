@@ -108,17 +108,17 @@ public class TreeCollisionMapTest
         node = transforms.update(node, 12, 90);
         assertEquals(4, transforms.size(node));
 
-        assertEquals(Maybe.present(100), transforms.findValue(node, 10));
-        assertEquals(Maybe.present(90), transforms.findValue(node, 12));
-        assertEquals(Maybe.present(180), transforms.findValue(node, 18));
-        assertEquals(Maybe.present(-60), transforms.findValue(node, -6));
-        assertEquals(Maybe.<Integer>absent(), transforms.findValue(node, 11));
+        assertEquals(Maybe.of(100), transforms.findValue(node, 10));
+        assertEquals(Maybe.of(90), transforms.findValue(node, 12));
+        assertEquals(Maybe.of(180), transforms.findValue(node, 18));
+        assertEquals(Maybe.of(-60), transforms.findValue(node, -6));
+        assertEquals(Maybe.<Integer>empty(), transforms.findValue(node, 11));
 
-        assertEquals(Maybe.present(IMapEntry.of(10, 100)), transforms.findEntry(node, 10));
-        assertEquals(Maybe.present(IMapEntry.of(12, 90)), transforms.findEntry(node, 12));
-        assertEquals(Maybe.present(IMapEntry.of(18, 180)), transforms.findEntry(node, 18));
-        assertEquals(Maybe.present(IMapEntry.of(-6, -60)), transforms.findEntry(node, -6));
-        assertEquals(Maybe.<IMapEntry<Integer, Integer>>absent(), transforms.findEntry(node, 11));
+        assertEquals(Maybe.of(IMapEntry.of(10, 100)), transforms.findEntry(node, 10));
+        assertEquals(Maybe.of(IMapEntry.of(12, 90)), transforms.findEntry(node, 12));
+        assertEquals(Maybe.of(IMapEntry.of(18, 180)), transforms.findEntry(node, 18));
+        assertEquals(Maybe.of(IMapEntry.of(-6, -60)), transforms.findEntry(node, -6));
+        assertEquals(Maybe.<IMapEntry<Integer, Integer>>empty(), transforms.findEntry(node, 11));
 
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         expected.add(IMapEntry.of(-6, -60));

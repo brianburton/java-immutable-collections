@@ -85,7 +85,7 @@ public class ArrayToMapAdaptor<T>
     @Override
     public boolean containsKey(Object o)
     {
-        return map.find((Integer)o).isPresent();
+        return map.find((Integer)o).isFull();
     }
 
     /**
@@ -154,7 +154,7 @@ public class ArrayToMapAdaptor<T>
             @Override
             public boolean contains(Object o)
             {
-                return map.find((Integer)o).isPresent();
+                return map.find((Integer)o).isFull();
             }
 
             @Override
@@ -221,7 +221,7 @@ public class ArrayToMapAdaptor<T>
                 }
                 Entry<Integer, T> oEntry = (Entry<Integer, T>)o;
                 Maybe<IMapEntry<Integer, T>> eMaybe = map.findEntry(oEntry.getKey());
-                return eMaybe.isPresent() && new MapEntry(eMaybe.unsafeGet()).equals(oEntry);
+                return eMaybe.isFull() && new MapEntry(eMaybe.unsafeGet()).equals(oEntry);
             }
 
             @Override

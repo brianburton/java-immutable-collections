@@ -175,7 +175,7 @@ public class DequeStressTester
             }
             verifyContents(deque, expected);
             verifyContents(deque.stream().parallel().collect(collector), expected);
-            verifyContents(deque.transformSome(s -> s.length() % 2 == 0 ? Maybe.present(s + "x") : Maybe.absent()),
+            verifyContents(deque.transformSome(s -> s.length() % 2 == 0 ? Maybe.of(s + "x") : Maybe.empty()),
                            expected.stream().filter(s -> s.length() % 2 == 0).map(s -> s + "x").collect(Collectors.toList()));
             verifyContents(deque.transform(s -> s + "x"), expected.stream().map(s -> s + "x").collect(Collectors.toList()));
 

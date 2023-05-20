@@ -73,10 +73,10 @@ public class FunctionsTest
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
         IList<Integer> list = ILists.of(1, 2, 3, 4);
-        assertEquals(Maybe.present(2), Functions.find(list.iterator(), func));
+        assertEquals(Maybe.of(2), Functions.find(list.iterator(), func));
 
         list = ILists.of(1, 5, 7);
-        assertEquals(Maybe.<Integer>absent(), Functions.find(list.iterator(), func));
+        assertEquals(Maybe.<Integer>empty(), Functions.find(list.iterator(), func));
     }
 
     public void testAssignAll()

@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 
-import static org.javimmutable.collection.Maybe.absent;
+import static org.javimmutable.collection.Maybe.empty;
 
 /**
  * Helper class with static methods to manipulate long bitmasks.
@@ -176,9 +176,9 @@ public final class BitmaskMath
         {
             long bit = findBit(index);
             if (bit == 0) {
-                return absent();
+                return empty();
             } else {
-                return Maybe.present(indexForBit(bit));
+                return Maybe.of(indexForBit(bit));
             }
         }
 

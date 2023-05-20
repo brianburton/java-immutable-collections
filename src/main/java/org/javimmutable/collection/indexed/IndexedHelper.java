@@ -35,15 +35,13 @@
 
 package org.javimmutable.collection.indexed;
 
+import org.javimmutable.collection.Func1;
 import org.javimmutable.collection.Indexed;
 import org.javimmutable.collection.Maybe;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-
-import static org.javimmutable.collection.Maybe.absent;
 
 /**
  * Provides a number of static utility methods for producing Indexed objects
@@ -71,7 +69,7 @@ public class IndexedHelper
             @Override
             public Maybe<T> find(int index)
             {
-                return absent();
+                return Maybe.empty();
             }
 
             @Override
@@ -105,9 +103,9 @@ public class IndexedHelper
             public Maybe<T> find(int index)
             {
                 if (index == 0) {
-                    return Maybe.present(a);
+                    return Maybe.of(a);
                 }
-                return absent();
+                return Maybe.empty();
             }
 
             @Override
@@ -147,11 +145,11 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return Maybe.present(a);
+                        return Maybe.of(a);
                     case 1:
-                        return Maybe.present(b);
+                        return Maybe.of(b);
                     default:
-                        return absent();
+                        return Maybe.empty();
                 }
             }
 
@@ -195,13 +193,13 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return Maybe.present(a);
+                        return Maybe.of(a);
                     case 1:
-                        return Maybe.present(b);
+                        return Maybe.of(b);
                     case 2:
-                        return Maybe.present(c);
+                        return Maybe.of(c);
                     default:
-                        return absent();
+                        return Maybe.empty();
                 }
             }
 
@@ -247,17 +245,17 @@ public class IndexedHelper
             {
                 switch (index) {
                     case 0:
-                        return Maybe.present(a);
+                        return Maybe.of(a);
                     case 1:
-                        return Maybe.present(b);
+                        return Maybe.of(b);
                     case 2:
-                        return Maybe.present(c);
+                        return Maybe.of(c);
                     default:
                         index -= 3;
                         if (index >= 0 && index < others.length) {
-                            return Maybe.present(others[index]);
+                            return Maybe.of(others[index]);
                         }
-                        return absent();
+                        return Maybe.empty();
                 }
             }
 
@@ -290,9 +288,9 @@ public class IndexedHelper
             public Maybe<T> find(int index)
             {
                 if (index < 0 || index >= count) {
-                    return absent();
+                    return Maybe.empty();
                 } else {
-                    return Maybe.present(value);
+                    return Maybe.of(value);
                 }
             }
 
@@ -325,9 +323,9 @@ public class IndexedHelper
             public Maybe<Integer> find(int index)
             {
                 if (index < 0 || index >= size) {
-                    return absent();
+                    return Maybe.empty();
                 }
-                return Maybe.present(low + index);
+                return Maybe.of(low + index);
             }
 
             @Override
@@ -353,7 +351,7 @@ public class IndexedHelper
 
     @Nonnull
     public static <O, T> Indexed<T> transformed(@Nonnull Indexed<O> indexed,
-                                                @Nonnull Function<O, T> transforminator)
+                                                @Nonnull Func1<O, T> transforminator)
     {
         return new Indexed<T>()
         {

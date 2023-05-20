@@ -1306,19 +1306,19 @@ public class TreeListTest
     public void testSeek()
     {
         IList<Integer> list = TreeList.of();
-        assertEquals(Maybe.absent(), list.find(0));
+        assertEquals(Maybe.empty(), list.find(0));
 
         list = rangeList(0, 0);
-        assertEquals(Maybe.absent(), list.find(-1));
-        assertEquals(Maybe.present(0), list.find(0));
-        assertEquals(Maybe.absent(), list.find(1));
+        assertEquals(Maybe.empty(), list.find(-1));
+        assertEquals(Maybe.of(0), list.find(0));
+        assertEquals(Maybe.empty(), list.find(1));
 
         list = rangeList(0, 24999);
-        assertEquals(Maybe.absent(), list.find(-1));
-        assertEquals(Maybe.present(0), list.find(0));
-        assertEquals(Maybe.present(12500), list.find(12500));
-        assertEquals(Maybe.present(24999), list.find(24999));
-        assertEquals(Maybe.absent(), list.find(25000));
+        assertEquals(Maybe.empty(), list.find(-1));
+        assertEquals(Maybe.of(0), list.find(0));
+        assertEquals(Maybe.of(12500), list.find(12500));
+        assertEquals(Maybe.of(24999), list.find(24999));
+        assertEquals(Maybe.empty(), list.find(25000));
     }
 
     private IList<Integer> list(Integer... values)

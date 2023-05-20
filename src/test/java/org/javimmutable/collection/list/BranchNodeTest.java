@@ -57,11 +57,11 @@ public class BranchNodeTest
         assertThat(root.get(0)).isEqualTo(0);
         assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
         assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
-        assertEquals(Maybe.absent(), root.seekImpl(-1, () -> Maybe.absent(), value4 -> Maybe.present(value4)));
-        assertEquals(Maybe.present(0), root.seekImpl(0, () -> Maybe.absent(), value3 -> Maybe.present(value3)));
-        assertEquals(Maybe.present(MAX_SIZE), root.seekImpl(MAX_SIZE, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
-        assertEquals(Maybe.present(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
-        assertEquals(Maybe.absent(), root.seekImpl(root.size(), () -> Maybe.absent(), value -> Maybe.present(value)));
+        assertEquals(Maybe.empty(), root.seekImpl(-1, () -> Maybe.empty(), value4 -> Maybe.of(value4)));
+        assertEquals(Maybe.of(0), root.seekImpl(0, () -> Maybe.empty(), value3 -> Maybe.of(value3)));
+        assertEquals(Maybe.of(MAX_SIZE), root.seekImpl(MAX_SIZE, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), root.seekImpl(root.size(), () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testRotateLeft()

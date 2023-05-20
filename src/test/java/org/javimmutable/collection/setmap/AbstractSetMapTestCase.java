@@ -128,7 +128,7 @@ public abstract class AbstractSetMapTestCase
 
         final ISet<Integer> defaultValue = HashSet.<Integer>of().insert(17);
         Maybe<ISet<Integer>> iSets = map.find(8);
-        assertTrue(iSets.isAbsent());
+        assertTrue(iSets.isEmpty());
         assertNull(map.get(8));
         assertNull(map.getValueOr(8, null));
         assertSame(defaultValue, map.getValueOr(8, defaultValue));

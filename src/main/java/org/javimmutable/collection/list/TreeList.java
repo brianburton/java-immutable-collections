@@ -318,7 +318,7 @@ public class TreeList<T>
     @Override
     public Maybe<T> find(int index)
     {
-        return root.seekImpl(index, () -> Maybe.absent(), value -> Maybe.present(value));
+        return root.seekImpl(index, () -> Maybe.empty(), value -> Maybe.of(value));
     }
 
     @Override

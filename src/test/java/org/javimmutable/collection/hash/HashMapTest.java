@@ -73,21 +73,21 @@ public class HashMapTest
     {
         IMap<Integer, Integer> map = HashMap.usingList();
         Maybe<Integer> integers2 = map.find(10);
-        assertEquals(true, integers2.isAbsent());
+        assertEquals(true, integers2.isEmpty());
         assertEquals(0, map.size());
         assertEquals(true, map.isEmpty());
         map = map.assign(10, 20);
         assertEquals(1, map.size());
         assertEquals(false, map.isEmpty());
         Maybe<Integer> integers1 = map.find(10);
-        assertEquals(false, integers1.isAbsent());
+        assertEquals(false, integers1.isEmpty());
         Maybe<Integer> integers3 = map.find(10);
         assertEquals(20, (int)integers3.unsafeGet());
         assertEquals(20, (int)map.getValueOr(10, -99));
         assertEquals(-99, (int)map.getValueOr(72, -99));
         map = map.delete(10);
         Maybe<Integer> integers = map.find(10);
-        assertEquals(true, integers.isAbsent());
+        assertEquals(true, integers.isEmpty());
         assertEquals(0, map.size());
 
         StandardMapTests.verifyMiscellaneous(HashMap.usingList());
@@ -134,7 +134,7 @@ public class HashMapTest
                             ManualHashKey key = createManualHashKey(maxKey, random);
                             Integer value = random.nextInt(1000000);
                             int merged = value;
-                            map = map.update(key, h -> h.isAbsent() ? value : Integer.valueOf(h.unsafeGet() ^ value));
+                            map = map.update(key, h -> h.isEmpty() ? value : Integer.valueOf(h.unsafeGet() ^ value));
                             if (expected.get(key) != null) {
                                 merged = expected.get(key) ^ value;
                             }
@@ -183,9 +183,9 @@ public class HashMapTest
                             Integer value = random.nextInt(1000000);
                             Integer currentValue = map.get(key);
                             if (currentValue == null) {
-                                map = map.update(key, h -> h.isAbsent() ? value : Integer.valueOf(-h.unsafeGet()));
+                                map = map.update(key, h -> h.isEmpty() ? value : Integer.valueOf(-h.unsafeGet()));
                             } else {
-                                map = map.update(key, h -> h.isAbsent() ? -value : value);
+                                map = map.update(key, h -> h.isEmpty() ? -value : value);
                             }
                             expected.put(key, value);
                             assertEquals(expected.size(), map.size());
@@ -199,7 +199,7 @@ public class HashMapTest
 
                 for (Map.Entry<ManualHashKey, Integer> entry : expected.entrySet()) {
                     Maybe<Integer> mapValue = map.find(entry.getKey());
-                    assertEquals(true, mapValue.isPresent());
+                    assertEquals(true, mapValue.isFull());
                     assertEquals(entry.getValue(), mapValue.unsafeGet());
                 }
 
@@ -230,10 +230,10 @@ public class HashMapTest
                 Collections.shuffle(keys, random);
                 for (ManualHashKey key : keys) {
                     Maybe<Integer> integers1 = map.find(key);
-                    assertEquals(false, integers1.isAbsent());
+                    assertEquals(false, integers1.isEmpty());
                     map = map.delete(key);
                     Maybe<Integer> integers = map.find(key);
-                    assertEquals(true, integers.isAbsent());
+                    assertEquals(true, integers.isEmpty());
                 }
                 assertEquals(0, map.size());
             }

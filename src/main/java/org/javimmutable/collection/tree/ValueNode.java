@@ -226,7 +226,7 @@ class ValueNode<K, V>
         final AbstractNode<K, V> right = this.right;
         final int diff = comp.compare(key, thisKey);
         if (diff == 0) {
-            final V newValue = generator.apply(Maybe.present(thisValue));
+            final V newValue = generator.apply(Maybe.of(thisValue));
             if (newValue != thisValue) {
                 return new ValueNode<>(key, newValue, left, right);
             }
@@ -341,7 +341,7 @@ class ValueNode<K, V>
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Maybe.present(value);
+            return Maybe.of(value);
         } else if (diff < 0) {
             return left.find(comp, key);
         } else {
@@ -356,7 +356,7 @@ class ValueNode<K, V>
     {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
-            return Maybe.present(entry());
+            return Maybe.of(entry());
         } else if (diff < 0) {
             return left.findEntry(comp, key);
         } else {

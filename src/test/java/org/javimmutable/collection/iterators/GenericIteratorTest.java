@@ -299,7 +299,7 @@ public class GenericIteratorTest
                                                                       int offset,
                                                                       int limit)
         {
-            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Maybe.present(i));
+            return GenericIterator.transformState(parent, node.iterateOverRange(null, offset, limit), i -> Maybe.of(i));
         }
 
         @Override

@@ -302,7 +302,7 @@ class BranchNode<T>
     public Maybe<T> find(int index)
     {
         T value = get(index);
-        return Maybe.present(value);
+        return Maybe.of(value);
     }
 
     @Override
@@ -418,7 +418,7 @@ class BranchNode<T>
             @Override
             public Maybe<Node<T>> find(int index)
             {
-                return Maybe.present(get(index));
+                return Maybe.of(get(index));
             }
 
             @Override

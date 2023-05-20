@@ -183,9 +183,9 @@ public class ArrayStressTester
                         Maybe<String> expectedMaybe;
                         if (expected.containsKey(index)) {
                             String value = expected.get(index);
-                            expectedMaybe = Maybe.present(value);
+                            expectedMaybe = Maybe.of(value);
                         } else {
-                            expectedMaybe = Maybe.absent();
+                            expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
                             throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));
@@ -197,9 +197,9 @@ public class ArrayStressTester
                         Maybe<IMapEntry<Integer, String>> expectedMaybe;
                         if (expected.containsKey(index)) {
                             IMapEntry<Integer, String> value = new MapEntry<>(index, expected.get(index));
-                            expectedMaybe = Maybe.present(value);
+                            expectedMaybe = Maybe.of(value);
                         } else {
-                            expectedMaybe = Maybe.absent();
+                            expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
                             throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));

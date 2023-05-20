@@ -134,7 +134,7 @@ public class ListCollisionMap<K, V>
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 V value1 = e.getValue();
-                V value = generator.apply(Maybe.present(value1));
+                V value = generator.apply(Maybe.of(value1));
                 if (e.getValue() == value) {
                     return root;
                 } else {
@@ -143,7 +143,7 @@ public class ListCollisionMap<K, V>
             }
             i += 1;
         }
-        V value = generator.apply(Maybe.absent());
+        V value = generator.apply(Maybe.empty());
         return root.append(IMapEntry.of(key, value));
     }
 
@@ -186,10 +186,10 @@ public class ListCollisionMap<K, V>
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
                 V value = e.getValue();
-                return Maybe.present(value);
+                return Maybe.of(value);
             }
         }
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Nonnull
@@ -200,10 +200,10 @@ public class ListCollisionMap<K, V>
         final AbstractNode<IMapEntry<K, V>> root = root(node);
         for (IMapEntry<K, V> e : root) {
             if (e.getKey().equals(key)) {
-                return Maybe.present(e);
+                return Maybe.of(e);
             }
         }
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Nonnull

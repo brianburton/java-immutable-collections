@@ -149,7 +149,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
-                        map = map.update(key, h -> h.isAbsent() ? key.getValue() : h.unsafeGet() + "," + key.getValue());
+                        map = map.update(key, h -> h.isEmpty() ? key.getValue() : h.unsafeGet() + "," + key.getValue());
                         expected.put(key, key.getValue());
                         break;
                     }
@@ -195,7 +195,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
                     case 1: { //update(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        map = map.update(key, h -> h.isAbsent() ? value : h.unsafeGet() + "," + value);
+                        map = map.update(key, h -> h.isEmpty() ? value : h.unsafeGet() + "," + value);
                         expected.put(key, expected.get(key) + "," + value);
                         break;
                     }
@@ -261,9 +261,9 @@ public class MapStressTester<K extends KeyWrapper<String>>
                         Maybe<String> expectedMaybe;
                         if (expected.containsKey(key)) {
                             String value = expected.get(key);
-                            expectedMaybe = Maybe.present(value);
+                            expectedMaybe = Maybe.of(value);
                         } else {
-                            expectedMaybe = Maybe.absent();
+                            expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
                             throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedMaybe, maybe));
@@ -275,9 +275,9 @@ public class MapStressTester<K extends KeyWrapper<String>>
                         Maybe<IMapEntry<K, String>> expectedMaybe;
                         if (expected.containsKey(key)) {
                             IMapEntry<K, String> value = new MapEntry<>(key, expected.get(key));
-                            expectedMaybe = Maybe.present(value);
+                            expectedMaybe = Maybe.of(value);
                         } else {
-                            expectedMaybe = Maybe.absent();
+                            expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentEntryHolder(maybe, expectedMaybe)) {
                             throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, maybe, maybe));
@@ -327,7 +327,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
             K key = entry.getKey();
             String expectedValue = entry.getValue();
             Maybe<String> maybe = map.find(key);
-            if (maybe.isAbsent()) {
+            if (maybe.isEmpty()) {
                 throw new RuntimeException(String.format("key mismatch - %s expected but not found%n", key));
             }
             String mapValue = maybe.unsafeGet();

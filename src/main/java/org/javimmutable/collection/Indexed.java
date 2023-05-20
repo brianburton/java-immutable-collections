@@ -36,7 +36,6 @@
 package org.javimmutable.collection;
 
 import javax.annotation.Nonnull;
-import java.util.function.Function;
 
 /**
  * Interface for containers that allow access to values by an integer index.
@@ -74,7 +73,7 @@ public interface Indexed<T>
     }
 
     static <S, T> Indexed<T> transformed(Indexed<S> source,
-                                         Function<S, T> transforminator)
+                                         Func1<S, T> transforminator)
     {
         return new Indexed<T>()
         {

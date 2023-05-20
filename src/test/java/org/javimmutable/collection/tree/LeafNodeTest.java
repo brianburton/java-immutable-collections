@@ -57,10 +57,10 @@ public class LeafNodeTest
         assertEquals((Integer)5, node.value());
         assertEquals((Integer)5, node.get(comparator, 1, 20));
         assertEquals((Integer)20, node.get(comparator, 3, 20));
-        assertEquals(Maybe.present(5), node.find(comparator, 1));
-        assertEquals(Maybe.absent(), node.find(comparator, 3));
-        assertEquals(Maybe.present(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
-        assertEquals(Maybe.absent(), node.findEntry(comparator, 3));
+        assertEquals(Maybe.of(5), node.find(comparator, 1));
+        assertEquals(Maybe.empty(), node.find(comparator, 3));
+        assertEquals(Maybe.of(MapEntry.entry(1, 5)), node.findEntry(comparator, 1));
+        assertEquals(Maybe.empty(), node.findEntry(comparator, 3));
     }
 
     public void testDelete()
@@ -93,7 +93,7 @@ public class LeafNodeTest
 
     public void testUpdate()
     {
-        final Func1<Maybe<Integer>, Integer> generator = h -> h.isPresent() ? h.unsafeGet() + 1 : 1;
+        final Func1<Maybe<Integer>, Integer> generator = h -> h.isFull() ? h.unsafeGet() + 1 : 1;
 
         AbstractNode<Integer, Integer> node = empty.update(comparator, 1, generator);
         assertTrue(node instanceof LeafNode);

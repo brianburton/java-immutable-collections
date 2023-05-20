@@ -79,14 +79,14 @@ public class EmptyHashMap<K, V>
     @Override
     public Maybe<V> find(@Nonnull K key)
     {
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Nonnull
     @Override
     public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
     {
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Nonnull

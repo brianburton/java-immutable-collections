@@ -86,7 +86,7 @@ class FringeNode<K, V>
                                      @Nonnull K key,
                                      @Nonnull Func1<Maybe<V>, V> generator)
     {
-        return ValueNode.instance(key, generator.apply(Maybe.absent()));
+        return ValueNode.instance(key, generator.apply(Maybe.empty()));
     }
 
     @Nonnull
@@ -132,7 +132,7 @@ class FringeNode<K, V>
     public Maybe<V> find(@Nonnull Comparator<K> comp,
                          @Nonnull K key)
     {
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Nonnull
@@ -140,7 +140,7 @@ class FringeNode<K, V>
     public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
                                             @Nonnull K key)
     {
-        return Maybe.absent();
+        return Maybe.empty();
     }
 
     @Override

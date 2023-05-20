@@ -45,11 +45,10 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Used to handle cases when a value may or may not be present and to eliminate the use of
+ * Used to handle cases when a value may or may not be full and to eliminate the use of
  * null values.  The value of a {@link NotNull} cannot be null.
  * Provides a variety of utility methods to allow call chaining.
  */
@@ -62,22 +61,22 @@ public abstract class NotNull<T>
     }
 
     /**
-     * Returns a {@link NotNull} with no value. All absent {@link NotNull}s share a common instance.
+     * Returns a {@link NotNull} with no value. All empty {@link NotNull}s share a common instance.
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> NotNull<T> absent()
+    public static <T> NotNull<T> empty()
     {
-        return Absent.ABSENT;
+        return Empty.EMPTY;
     }
 
     /**
-     * Returns a {@link NotNull} containing the value.  Null is treated as absent.
+     * Returns a {@link NotNull} containing the value.  Null is treated as empty.
      */
     @Nonnull
-    public static <T> NotNull<T> present(T value)
+    public static <T> NotNull<T> of(T value)
     {
-        return (value == null) ? absent() : new Present<>(value);
+        return (value == null) ? empty() : new Full<>(value);
     }
 
     /**
@@ -95,15 +94,15 @@ public abstract class NotNull<T>
                                       @Nullable Object value)
     {
         if (klass.isInstance(value)) {
-            return present(klass.cast(value));
+            return of(klass.cast(value));
         } else {
-            return absent();
+            return empty();
         }
     }
 
     /**
      * Returns a {@link NotNull} containing the first value of the collection.  If the collection
-     * is empty an absent {@link NotNull} is returned.
+     * is empty an empty {@link NotNull} is returned.
      */
     @Nonnull
     public static <T> NotNull<T> first(@Nonnull Iterable<? extends T> collection)
@@ -111,16 +110,16 @@ public abstract class NotNull<T>
         final Iterator<? extends T> i = collection.iterator();
         if (i.hasNext()) {
             T value = i.next();
-            return present(value);
+            return of(value);
         } else {
-            return absent();
+            return empty();
         }
     }
 
     /**
      * Returns a {@link NotNull} containing the first value of the collection
      * for which the predicate returns true.  If the collection
-     * is empty or predicate always returns false an absent {@link NotNull} is returned.
+     * is empty or predicate always returns false an empty {@link NotNull} is returned.
      */
     @Nonnull
     public static <T> NotNull<T> first(@Nonnull Iterable<? extends T> collection,
@@ -128,93 +127,83 @@ public abstract class NotNull<T>
     {
         for (T value : collection) {
             if (predicate.apply(value)) {
-                return present(value);
+                return of(value);
             }
         }
-        return absent();
+        return empty();
     }
 
     /**
-     * If this absent  returns {@link Maybe#absent}, otherwise returns {@link Maybe#present}.
+     * If this empty  returns {@link Maybe#empty}, otherwise returns {@link Maybe#of}.
      */
     @Nonnull
     public abstract Maybe<T> maybe();
 
     /**
-     * Produce a present {@link NotNull}.  If this {@link NotNull} is present it is returned.
+     * Produce a full {@link NotNull}.  If this {@link NotNull} is full it is returned.
      * Otherwise the absentMapping function is called to provide a value
      * for the result {@link NotNull}.
      *
-     * @param absentMapping produces value if this is absent
-     * @return a present {@link NotNull}
+     * @param absentMapping produces value if this is empty
+     * @return a full {@link NotNull}
      */
     @Nonnull
     public abstract NotNull<T> map(@Nonnull Func0<? extends T> absentMapping);
 
     /**
-     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
+     * Produce a {@link NotNull} that is empty if this is empty or else contains the result
      * of passing this value to the given mapping function.
      *
      * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link NotNull}
-     */
-    @Nonnull
-    public abstract <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping);
-
-    /**
-     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
-     * of passing this value to the given mapping function.
-     *
-     * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link NotNull}
+     * @return a possibly empty {@link NotNull}
      */
     @Nonnull
     public abstract <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping);
 
     /**
-     * Produce a present {@link NotNull}.  If this is absent the absentMapping function is called
+     * Produce a full {@link NotNull}.  If this is empty the absentMapping function is called
      * to provide a value.  Otherwise the presentMapping function is called to produce a
      * new value based on this value.
      *
-     * @param absentMapping  produces value when this is absent
+     * @param absentMapping  produces value when this is empty
      * @param presentMapping maps this value to new value
-     * @return a present {@link NotNull}
+     * @return a full {@link NotNull}
      */
     @Nonnull
     public abstract <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
                                        @Nonnull Func1<? super T, ? extends U> presentMapping);
 
     /**
-     * Produce a present {@link NotNull}.  If this {@link NotNull} is present it is returned.
+     * Produce a full {@link NotNull}.  If this {@link NotNull} is full it is returned.
      * Otherwise the absentMapping function is called to provide a value
      * for the result {@link NotNull}.
      *
-     * @param absentMapping produces value if this is absent
-     * @return a present {@link NotNull}
+     * @param absentMapping produces value if this is empty
+     * @return a full {@link NotNull}
      */
     @Nonnull
     public abstract <E extends Exception> NotNull<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
         throws E;
 
     /**
-     * Produce a {@link NotNull} that is absent if this is absent or else contains the result
+     * Produce a {@link NotNull} that is empty if this is empty or else contains the result
      * of passing this value to the given mapping function.
      *
      * @param presentMapping maps this value to new value
-     * @return a possibly absent {@link NotNull}
+     * @return a possibly empty {@link NotNull}
      */
     @Nonnull
     public abstract <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
         throws E;
 
     /**
-     * Produce a present {@link NotNull}.  If this is absent the absentMapping function is called
+     * Produce a full {@link NotNull}.  If this is empty the absentMapping function is called
      * to provide a value.  Otherwise the presentMapping function is called to produce a
      * new value based on this value.
      *
-     * @param absentMapping  produces value when this is absent
+     * @param absentMapping  produces value when this is empty
      * @param presentMapping maps this value to new value
-     * @return a present {@link NotNull}
+     * @return a full {@link NotNull}
      */
     @Nonnull
     public abstract <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func0Throws<? extends U, E> absentMapping,
@@ -222,17 +211,17 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is absent absentMapping is called
+     * Produce a {@link NotNull} based on this one.  If this is empty absentMapping is called
      * to produce a new {@link NotNull}. Otherwise this is returned.
      *
-     * @param absentMapping produce new {@link NotNull} if this is absent
+     * @param absentMapping produce new {@link NotNull} if this is empty
      * @return a {@link NotNull}
      */
     @Nonnull
     public abstract NotNull<T> flatMap(@Nonnull Func0<NotNull<T>> absentMapping);
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * Produce a {@link NotNull} based on this one.  If this is full its value is
      * passed to presentMapping to produce a new {@link NotNull}.  Otherwise this is returned.
      *
      * @param presentMapping produce a new {@link NotNull} from this value
@@ -242,11 +231,11 @@ public abstract class NotNull<T>
     public abstract <A> NotNull<A> flatMap(@Nonnull Func1<? super T, NotNull<A>> presentMapping);
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * Produce a {@link NotNull} based on this one.  If this is full its value is
      * passed to presentMapping to produce a new {@link NotNull}.  Otherwise absentMapping is
      * called to produce a new {@link NotNull}..
      *
-     * @param absentMapping  produce a new {@link NotNull} when this is absent
+     * @param absentMapping  produce a new {@link NotNull} when this is empty
      * @param presentMapping produce a new {@link NotNull} from this value
      * @return a {@link NotNull}
      */
@@ -255,10 +244,10 @@ public abstract class NotNull<T>
                                            @Nonnull Func1<? super T, NotNull<A>> presentMapping);
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is absent absentMapping is called
+     * Produce a {@link NotNull} based on this one.  If this is empty absentMapping is called
      * to produce a new {@link NotNull}. Otherwise this is returned.
      *
-     * @param absentMapping produce new {@link NotNull} if this is absent
+     * @param absentMapping produce new {@link NotNull} if this is empty
      * @return a {@link NotNull}
      */
     @Nonnull
@@ -266,7 +255,7 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * Produce a {@link NotNull} based on this one.  If this is full its value is
      * passed to presentMapping to produce a new {@link NotNull}.  Otherwise this is returned.
      *
      * @param presentMapping produce a new {@link NotNull} from this value
@@ -277,11 +266,11 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Produce a {@link NotNull} based on this one.  If this is present its value is
+     * Produce a {@link NotNull} based on this one.  If this is full its value is
      * passed to presentMapping to produce a new {@link NotNull}.  Otherwise absentMapping is
      * called to produce a new {@link NotNull}..
      *
-     * @param absentMapping  produce a new {@link NotNull} when this is absent
+     * @param absentMapping  produce a new {@link NotNull} when this is empty
      * @param presentMapping produce a new {@link NotNull} from this value
      * @return a {@link NotNull}
      */
@@ -291,8 +280,8 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Returns this if this is present and predicate returns true.
-     * Otherwise an absent {@link NotNull} is returned.
+     * Returns this if this is full and predicate returns true.
+     * Otherwise an empty {@link NotNull} is returned.
      *
      * @param predicate determines whether to accept this value
      * @return a {@link NotNull}
@@ -301,8 +290,8 @@ public abstract class NotNull<T>
     public abstract NotNull<T> select(@Nonnull Predicate<? super T> predicate);
 
     /**
-     * Returns this if this is present and predicate returns false.
-     * Otherwise an absent {@link NotNull} is returned.
+     * Returns this if this is full and predicate returns false.
+     * Otherwise an empty {@link NotNull} is returned.
      *
      * @param predicate determines whether to reject this value
      * @return a {@link NotNull}
@@ -311,27 +300,27 @@ public abstract class NotNull<T>
     public abstract NotNull<T> reject(@Nonnull Predicate<? super T> predicate);
 
     /**
-     * Invokes absentAction if this is absent.
+     * Invokes absentAction if this is empty.
      *
-     * @param absentAction action to call if this is absent
+     * @param absentAction action to call if this is empty
      * @return this
      */
     @Nonnull
     public abstract NotNull<T> apply(@Nonnull Proc0 absentAction);
 
     /**
-     * Invokes presentAction with this value if this is present.
+     * Invokes presentAction with this value if this is full.
      *
-     * @param presentAction action to call if this is present
+     * @param presentAction action to call if this is full
      * @return this
      */
     @Nonnull
     public abstract NotNull<T> apply(@Nonnull Proc1<? super T> presentAction);
 
     /**
-     * Invokes absentAction if this is absent.
+     * Invokes absentAction if this is empty.
      *
-     * @param absentAction action to call if this is absent
+     * @param absentAction action to call if this is empty
      * @return this
      */
     @Nonnull
@@ -339,9 +328,9 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Invokes presentAction with this value if this is present.
+     * Invokes presentAction with this value if this is full.
      *
-     * @param presentAction action to call if this is present
+     * @param presentAction action to call if this is full
      * @return this
      */
     @Nonnull
@@ -349,47 +338,47 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Gets this value.  Throws NoSuchElementException if this is absent.
+     * Gets this value.  Throws NoSuchElementException if this is empty.
      *
      * @return this value
-     * @throws NoSuchElementException if this is absent
+     * @throws NoSuchElementException if this is empty
      */
     public abstract T unsafeGet();
 
     /**
      * Gets this value.  Calls absentExceptionMapping to get an exception
-     * to throw if this is absent.
+     * to throw if this is empty.
      *
      * @return this value
-     * @throws E an exception produced by mapping if this is absent
+     * @throws E an exception produced by mapping if this is empty
      */
     public abstract <E extends Exception> T unsafeGet(@Nonnull Func0<E> absentExceptionMapping)
         throws E;
 
     /**
-     * Gets this value.  If this is absent returns absentValue instead.
+     * Gets this value.  If this is empty returns absentValue instead.
      *
-     * @param absentValue value to return if this is absent
+     * @param absentValue value to return if this is empty
      */
     public abstract T get(T absentValue);
 
     /**
-     * Gets this value.  If this is absent returns null.
+     * Gets this value.  If this is empty returns null.
      */
     public abstract T getOrNull();
 
     /**
-     * Gets this value.  If this is absent returns result of calling absentMapping instead.
+     * Gets this value.  If this is empty returns result of calling absentMapping instead.
      *
-     * @param absentMapping function to generate value to return if this is absent
+     * @param absentMapping function to generate value to return if this is empty
      */
     public abstract T getOr(@Nonnull Func0<? extends T> absentMapping);
 
     /**
-     * Gets a value based on this value.  If this is absent absentValue is returned.
+     * Gets a value based on this value.  If this is empty absentValue is returned.
      * Otherwise this value is passed to presentMapping to obtain a return value.
      *
-     * @param absentValue    value to return if this is absent
+     * @param absentValue    value to return if this is empty
      * @param presentMapping function to map this value into return value
      * @return a value
      */
@@ -397,11 +386,11 @@ public abstract class NotNull<T>
                                 @Nonnull Func1<? super T, U> presentMapping);
 
     /**
-     * Gets a value based on this value.  If this is absent absentMapping is called
+     * Gets a value based on this value.  If this is empty absentMapping is called
      * to obtain a return value.  Otherwise this value is passed to presentMapping to
      * obtain a return value.
      *
-     * @param absentMapping  function to produce a value to return if this is absent
+     * @param absentMapping  function to produce a value to return if this is empty
      * @param presentMapping function to map this value into return value
      * @return a value
      */
@@ -409,10 +398,10 @@ public abstract class NotNull<T>
                                   @Nonnull Func1<? super T, U> presentMapping);
 
     /**
-     * Gets a value based on this value.  If this is absent absentValue is returned.
+     * Gets a value based on this value.  If this is empty absentValue is returned.
      * Otherwise this value is passed to presentMapping to obtain a return value.
      *
-     * @param absentValue    value to return if this is absent
+     * @param absentValue    value to return if this is empty
      * @param presentMapping function to map this value into return value
      * @return a value
      */
@@ -421,11 +410,11 @@ public abstract class NotNull<T>
         throws E;
 
     /**
-     * Gets a value based on this value.  If this is absent absentMapping is called
+     * Gets a value based on this value.  If this is empty absentMapping is called
      * to obtain a return value.  Otherwise this value is passed to presentMapping to
      * obtain a return value.
      *
-     * @param absentMapping  function to produce a value to return if this is absent
+     * @param absentMapping  function to produce a value to return if this is empty
      * @param presentMapping function to map this value into return value
      * @return a value
      */
@@ -436,20 +425,20 @@ public abstract class NotNull<T>
     /**
      * Returns true if this has no value
      */
-    public abstract boolean isAbsent();
+    public abstract boolean isEmpty();
 
     /**
      * Returns true if this has a value
      */
-    public abstract boolean isPresent();
+    public abstract boolean isFull();
 
-    private static class Absent<T>
+    private static class Empty<T>
         extends NotNull<T>
     {
         @SuppressWarnings("rawtypes")
-        private static final Absent ABSENT = new Absent();
+        private static final Empty EMPTY = new Empty();
 
-        private Absent()
+        private Empty()
         {
         }
 
@@ -457,28 +446,21 @@ public abstract class NotNull<T>
         @Override
         public Maybe<T> maybe()
         {
-            return Maybe.absent();
+            return Maybe.empty();
         }
 
         @Nonnull
         @Override
         public NotNull<T> map(@Nonnull Func0<? extends T> absentMapping)
         {
-            return present(absentMapping.apply());
-        }
-
-        @Nonnull
-        @Override
-        public <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
-        {
-            return absent();
+            return of(absentMapping.apply());
         }
 
         @Nonnull
         @Override
         public <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
@@ -486,7 +468,7 @@ public abstract class NotNull<T>
         public <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
                                   @Nonnull Func1<? super T, ? extends U> presentMapping)
         {
-            return present(absentMapping.apply());
+            return of(absentMapping.apply());
         }
 
         @Nonnull
@@ -494,7 +476,7 @@ public abstract class NotNull<T>
         public <E extends Exception> NotNull<T> mapThrows(@Nonnull Func0Throws<? extends T, E> absentMapping)
             throws E
         {
-            return present(absentMapping.apply());
+            return of(absentMapping.apply());
         }
 
         @Nonnull
@@ -502,7 +484,7 @@ public abstract class NotNull<T>
         public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
@@ -511,7 +493,7 @@ public abstract class NotNull<T>
                                                              @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
-            return present(absentMapping.apply());
+            return of(absentMapping.apply());
         }
 
         @Nonnull
@@ -525,7 +507,7 @@ public abstract class NotNull<T>
         @Override
         public <A> NotNull<A> flatMap(@Nonnull Func1<? super T, NotNull<A>> presentMapping)
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
@@ -533,7 +515,7 @@ public abstract class NotNull<T>
         public <A, E extends Exception> NotNull<A> flatMapThrows(@Nonnull Func1Throws<? super T, NotNull<A>, E> presentMapping)
             throws E
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
@@ -565,14 +547,14 @@ public abstract class NotNull<T>
         @Override
         public NotNull<T> select(@Nonnull Predicate<? super T> predicate)
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
         @Override
         public NotNull<T> reject(@Nonnull Predicate<? super T> predicate)
         {
-            return absent();
+            return empty();
         }
 
         @Nonnull
@@ -682,13 +664,13 @@ public abstract class NotNull<T>
         }
 
         @Override
-        public boolean isAbsent()
+        public boolean isEmpty()
         {
             return true;
         }
 
         @Override
-        public boolean isPresent()
+        public boolean isFull()
         {
             return false;
         }
@@ -702,13 +684,13 @@ public abstract class NotNull<T>
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof NotNull.Absent;
+            return obj instanceof NotNull.Empty;
         }
 
         @Override
         public String toString()
         {
-            return "Absent";
+            return "()";
         }
 
         private Object writeReplace()
@@ -717,13 +699,14 @@ public abstract class NotNull<T>
         }
     }
 
-    private static class Present<T>
+    private static class Full<T>
         extends NotNull<T>
     {
         private final T value;
 
-        private Present(T value)
+        private Full(T value)
         {
+            assert value != null;
             this.value = value;
         }
 
@@ -731,7 +714,7 @@ public abstract class NotNull<T>
         @Override
         public Maybe<T> maybe()
         {
-            return Maybe.present(value);
+            return Maybe.of(value);
         }
 
         @Nonnull
@@ -743,16 +726,9 @@ public abstract class NotNull<T>
 
         @Nonnull
         @Override
-        public <U> NotNull<U> map(@Nonnull Function<? super T, ? extends U> presentMapping)
-        {
-            return present(presentMapping.apply(value));
-        }
-
-        @Nonnull
-        @Override
         public <U> NotNull<U> map(@Nonnull Func1<? super T, ? extends U> presentMapping)
         {
-            return present(presentMapping.apply(value));
+            return of(presentMapping.apply(value));
         }
 
         @Nonnull
@@ -760,7 +736,7 @@ public abstract class NotNull<T>
         public <U> NotNull<U> map(@Nonnull Func0<? extends U> absentMapping,
                                   @Nonnull Func1<? super T, ? extends U> presentMapping)
         {
-            return present(presentMapping.apply(value));
+            return of(presentMapping.apply(value));
         }
 
         @Nonnull
@@ -776,7 +752,7 @@ public abstract class NotNull<T>
         public <U, E extends Exception> NotNull<U> mapThrows(@Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
-            return present(presentMapping.apply(value));
+            return of(presentMapping.apply(value));
         }
 
         @Nonnull
@@ -785,7 +761,7 @@ public abstract class NotNull<T>
                                                              @Nonnull Func1Throws<? super T, ? extends U, E> presentMapping)
             throws E
         {
-            return present(presentMapping.apply(value));
+            return of(presentMapping.apply(value));
         }
 
         @Nonnull
@@ -839,14 +815,14 @@ public abstract class NotNull<T>
         @Override
         public NotNull<T> select(@Nonnull Predicate<? super T> predicate)
         {
-            return predicate.test(value) ? this : absent();
+            return predicate.test(value) ? this : empty();
         }
 
         @Nonnull
         @Override
         public NotNull<T> reject(@Nonnull Predicate<? super T> predicate)
         {
-            return predicate.test(value) ? absent() : this;
+            return predicate.test(value) ? empty() : this;
         }
 
         @Nonnull
@@ -956,13 +932,13 @@ public abstract class NotNull<T>
         }
 
         @Override
-        public boolean isAbsent()
+        public boolean isEmpty()
         {
             return false;
         }
 
         @Override
-        public boolean isPresent()
+        public boolean isFull()
         {
             return true;
         }
@@ -980,23 +956,17 @@ public abstract class NotNull<T>
             if (obj == this) {
                 return true;
             }
-            if (!(obj instanceof NotNull.Present)) {
+            if (!(obj instanceof NotNull.Full)) {
                 return false;
             }
-            Object otherValue = ((Present)obj).value;
-            if (value == null) {
-                return otherValue == null;
-            }
-            if (otherValue == null) {
-                return false;
-            }
+            Object otherValue = ((Full)obj).value;
             return value.equals(otherValue);
         }
 
         @Override
         public String toString()
         {
-            return "Present(" + value + ")";
+            return "(" + value + ")";
         }
 
         private Object writeReplace()

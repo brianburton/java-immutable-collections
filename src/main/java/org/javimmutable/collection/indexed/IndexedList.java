@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.javimmutable.collection.Maybe.absent;
+import static org.javimmutable.collection.Maybe.empty;
 
 @Immutable
 public class IndexedList<T>
@@ -89,7 +89,7 @@ public class IndexedList<T>
     @Override
     public Maybe<T> find(int index)
     {
-        return index >= 0 && index < values.size() ? Maybe.present(values.get(index)) : absent();
+        return index >= 0 && index < values.size() ? Maybe.of(values.get(index)) : empty();
     }
 
     @Override

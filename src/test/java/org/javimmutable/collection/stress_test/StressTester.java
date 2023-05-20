@@ -127,19 +127,19 @@ abstract class StressTester
     protected <T> boolean equivalentHolder(Maybe<T> maybe,
                                            Maybe<T> expectedMaybe)
     {
-        if ((maybe.isPresent() != expectedMaybe.isPresent())) {
+        if ((maybe.isFull() != expectedMaybe.isFull())) {
             return false;
         }
-        return !maybe.isPresent() || maybe.unsafeGet().equals(expectedMaybe.unsafeGet());
+        return !maybe.isFull() || maybe.unsafeGet().equals(expectedMaybe.unsafeGet());
     }
 
     protected <K, V> boolean equivalentEntryHolder(Maybe<IMapEntry<K, V>> maybe,
                                                    Maybe<IMapEntry<K, V>> expectedMaybe)
     {
-        if (maybe.isPresent() != expectedMaybe.isPresent()) {
+        if (maybe.isFull() != expectedMaybe.isFull()) {
             return false;
         }
-        if (maybe.isAbsent()) {
+        if (maybe.isEmpty()) {
             return true;
         }
         IMapEntry<K, V> entry = maybe.unsafeGet();

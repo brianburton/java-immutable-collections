@@ -118,7 +118,7 @@ abstract class AbstractSetMap<K, V>
     @Override
     public boolean contains(@Nonnull K key)
     {
-        return contents.find(key).isPresent();
+        return contents.find(key).isFull();
     }
 
     @Override

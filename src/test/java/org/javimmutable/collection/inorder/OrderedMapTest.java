@@ -147,7 +147,7 @@ public class OrderedMapTest
                         int key = r.nextInt(500);
                         int value = r.nextInt(500);
                         int merged = value;
-                        map = map.update(key, h -> h.isAbsent() ? value : h.unsafeGet() ^ value);
+                        map = map.update(key, h -> h.isEmpty() ? value : h.unsafeGet() ^ value);
                         if (expected.get(key) != null) {
                             merged = expected.get(key) ^ value;
                         }
@@ -157,7 +157,7 @@ public class OrderedMapTest
                         assertEquals(merged, (int)map.getValueOr(key, value - 1000));
                         Maybe<Integer> integers = map.find(key);
                         assertEquals(merged, (int)integers.getOrNull());
-                        assertEquals(Maybe.present(merged), map.find(key));
+                        assertEquals(Maybe.of(merged), map.find(key));
                         Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, merged), iMapEntries.unsafeGet());
                         break;
@@ -172,7 +172,7 @@ public class OrderedMapTest
                         assertEquals(value, (int)map.getValueOr(key, value - 1000));
                         Maybe<Integer> integers = map.find(key);
                         assertEquals(value, (int)integers.getOrNull());
-                        assertEquals(Maybe.present(value), map.find(key));
+                        assertEquals(Maybe.of(value), map.find(key));
                         Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, value), iMapEntries.unsafeGet());
                         break;
@@ -378,7 +378,7 @@ public class OrderedMapTest
             Maybe<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
             Integer value = entry.getValue();
-            assertEquals(Maybe.present(value), map.find(entry.getKey()));
+            assertEquals(Maybe.of(value), map.find(entry.getKey()));
             Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }
@@ -394,7 +394,7 @@ public class OrderedMapTest
             assertEquals(entry.getValue(), map.getValueOr(entry.getKey(), entry.getValue() - 1000));
             Maybe<Integer> integers = map.find(entry.getKey());
             assertEquals(entry.getValue(), integers.getOrNull());
-            assertEquals(Maybe.present(entry.getValue()), map.find(entry.getKey()));
+            assertEquals(Maybe.of(entry.getValue()), map.find(entry.getKey()));
             Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(entry.getKey());
             assertEquals(IMapEntry.of(entry.getKey(), entry.getValue()), iMapEntries.unsafeGet());
         }

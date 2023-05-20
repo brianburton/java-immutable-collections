@@ -87,7 +87,7 @@ public class ArraySingleValueMapNode<K, V>
     public Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
                          @Nonnull K key)
     {
-        return key.equals(this.key) ? Maybe.present(value) : Maybe.absent();
+        return key.equals(this.key) ? Maybe.of(value) : Maybe.empty();
     }
 
     @Nonnull
@@ -95,7 +95,7 @@ public class ArraySingleValueMapNode<K, V>
     public Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
                                             @Nonnull K key)
     {
-        return key.equals(this.key) ? Maybe.present(this) : Maybe.absent();
+        return key.equals(this.key) ? Maybe.of(this) : Maybe.empty();
     }
 
     @Nonnull
@@ -124,10 +124,10 @@ public class ArraySingleValueMapNode<K, V>
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
-            final V value = generator.apply(Maybe.absent());
+            final V value = generator.apply(Maybe.empty());
             return new ArrayMultiValueMapNode<>(collisionMap.dual(thisKey, thisValue, key, value));
         } else {
-            final V value = generator.apply(Maybe.present(thisValue));
+            final V value = generator.apply(Maybe.of(thisValue));
             if (value == thisValue) {
                 return this;
             } else {

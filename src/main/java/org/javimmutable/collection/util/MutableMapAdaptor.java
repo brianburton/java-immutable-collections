@@ -123,7 +123,7 @@ public abstract class MutableMapAdaptor<K, V>
         {
             final Map.Entry<K, V> entry = (Entry<K, V>)o;
             final K key = entry.getKey();
-            if (accessMap().findEntry(key).isPresent()) {
+            if (accessMap().findEntry(key).isFull()) {
                 replaceMap(accessMap().delete(key));
                 return true;
             } else {
@@ -137,7 +137,7 @@ public abstract class MutableMapAdaptor<K, V>
         {
             final Map.Entry<K, V> entry = (Entry<K, V>)o;
             final K key = entry.getKey();
-            return (accessMap().find(key).isPresent());
+            return (accessMap().find(key).isFull());
         }
 
         @Override

@@ -363,9 +363,9 @@ public class SetMapStressTester
                         Maybe<ISet<String>> expectedMaybe;
                         if (expected.containsKey(key)) {
                             ISet<String> value = expected.get(key);
-                            expectedMaybe = Maybe.present(value);
+                            expectedMaybe = Maybe.of(value);
                         } else {
-                            expectedMaybe = Maybe.absent();
+                            expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
                             throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedMaybe, maybe));

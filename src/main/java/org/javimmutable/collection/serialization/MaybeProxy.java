@@ -54,7 +54,7 @@ public class MaybeProxy
 
     public MaybeProxy()
     {
-        this(Maybe.absent());
+        this(Maybe.empty());
     }
 
     public MaybeProxy(Maybe value)
@@ -67,7 +67,7 @@ public class MaybeProxy
         throws IOException
     {
         out.writeInt(MAYBE_VERSION);
-        if (value.isAbsent()) {
+        if (value.isEmpty()) {
             out.writeShort(NONE_CODE);
         } else {
             out.writeShort(SOME_CODE);
@@ -86,10 +86,10 @@ public class MaybeProxy
         final short valueCode = in.readShort();
         switch (valueCode) {
             case NONE_CODE:
-                value = Maybe.absent();
+                value = Maybe.empty();
                 break;
             case SOME_CODE:
-                value = Maybe.present(in.readObject());
+                value = Maybe.of(in.readObject());
                 break;
             default:
                 throw new IOException("unexpected Maybe type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);

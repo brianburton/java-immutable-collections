@@ -50,9 +50,9 @@ public class MultiValueNodeTest
         final AbstractNode<Integer> node = leaf(0, 1);
         assertThat(node.get(0)).isEqualTo(0);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Maybe.absent(), node.seekImpl(-1, () -> Maybe.absent(), value2 -> Maybe.present(value2)));
-        assertEquals(Maybe.present(0), node.seekImpl(0, () -> Maybe.absent(), value1 -> Maybe.present(value1)));
-        assertEquals(Maybe.absent(), node.seekImpl(1, () -> Maybe.absent(), value -> Maybe.present(value)));
+        assertEquals(Maybe.empty(), node.seekImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(0), node.seekImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), node.seekImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testVarious()

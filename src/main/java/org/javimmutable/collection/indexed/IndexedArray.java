@@ -41,7 +41,7 @@ import org.javimmutable.collection.Maybe;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static org.javimmutable.collection.Maybe.absent;
+import static org.javimmutable.collection.Maybe.empty;
 
 /**
  * Indexed implementation backed by a java array.
@@ -88,7 +88,7 @@ public class IndexedArray<T>
     @Override
     public Maybe<T> find(int index)
     {
-        return index >= 0 && index < values.length ? Maybe.present(values[index]) : absent();
+        return index >= 0 && index < values.length ? Maybe.of(values[index]) : empty();
     }
 
     @Override

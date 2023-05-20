@@ -95,9 +95,9 @@ public class TreeMapTest
         assertEquals(Arrays.asList(3, 5, 7), map.getKeysList());
 
         map = TreeMap.of();
-        assertSame(Maybe.absent(), map.find(10));
+        assertSame(Maybe.empty(), map.find(10));
         map = map.assign(30, 18).assign(10, 11).assign(20, 19);
-        assertEquals(Maybe.present(11), map.find(10));
+        assertEquals(Maybe.of(11), map.find(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
         final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(IMapEntry.of(10, 11), IMapEntry.of(20, 19), IMapEntry.of(30, 18));
@@ -207,7 +207,7 @@ public class TreeMapTest
                         assertEquals(null, map.get(key));
                         assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                         Maybe<Integer> integers = map.find(key);
-                        assertEquals(true, integers.isAbsent());
+                        assertEquals(true, integers.isEmpty());
                         break;
                     }
                     case 4: {
@@ -223,9 +223,9 @@ public class TreeMapTest
                             assertEquals(null, map.get(key));
                             assertEquals(Integer.valueOf(-99), map.getValueOr(key, -99));
                             Maybe<Integer> integers = map.find(key);
-                            assertEquals(true, integers.isAbsent());
+                            assertEquals(true, integers.isEmpty());
                             Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
-                            assertEquals(true, iMapEntries.isAbsent());
+                            assertEquals(true, iMapEntries.isEmpty());
                         }
                     }
                 }
@@ -478,10 +478,10 @@ public class TreeMapTest
                                              Integer merged)
     {
         TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
-        treeMap = treeMap.update(key, h -> h.isAbsent() ? value : Integer.valueOf(h.unsafeGet() ^ value));
+        treeMap = treeMap.update(key, h -> h.isEmpty() ? value : Integer.valueOf(h.unsafeGet() ^ value));
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(key);
-        assertEquals(true, integers.isPresent());
+        assertEquals(true, integers.isFull());
         Maybe<Integer> integers1 = treeMap.find(key);
         assertEquals(merged, integers1.unsafeGet());
         return treeMap;
@@ -495,7 +495,7 @@ public class TreeMapTest
         treeMap = treeMap.assign(key, value);
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(key);
-        assertEquals(true, integers.isPresent());
+        assertEquals(true, integers.isFull());
         Maybe<Integer> integers1 = treeMap.find(key);
         assertEquals(value, integers1.unsafeGet());
         return treeMap;
@@ -509,7 +509,7 @@ public class TreeMapTest
         treeMap.checkInvariants();
         for (IMapEntry<Integer, Integer> entry : extra) {
             Maybe<Integer> integers = treeMap.find(entry.getKey());
-            assertEquals(true, integers.isPresent());
+            assertEquals(true, integers.isFull());
             Maybe<Integer> integers1 = treeMap.find(entry.getKey());
             assertEquals(entry.getValue(), integers1.unsafeGet());
         }
@@ -524,7 +524,7 @@ public class TreeMapTest
         treeMap.checkInvariants();
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
             Maybe<Integer> integers = treeMap.find(entry.getKey());
-            assertEquals(true, integers.isPresent());
+            assertEquals(true, integers.isFull());
             Maybe<Integer> integers1 = treeMap.find(entry.getKey());
             assertEquals(entry.getValue(), integers1.unsafeGet());
         }
@@ -538,7 +538,7 @@ public class TreeMapTest
         treeMap = treeMap.delete(value);
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(value);
-        assertEquals(true, integers.isAbsent());
+        assertEquals(true, integers.isEmpty());
         return treeMap;
     }
 }

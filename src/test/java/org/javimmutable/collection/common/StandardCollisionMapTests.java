@@ -107,10 +107,10 @@ public class StandardCollisionMapTests
                     Integer ev = expected.get(k);
                     Maybe<Integer> ah = map.findValue(node, k);
                     if (ev == null) {
-                        if (ah.isPresent()) {
+                        if (ah.isFull()) {
                             fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isAbsent()) {
+                    } else if (ah.isEmpty()) {
                         fail(String.format("findValue fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
@@ -120,10 +120,10 @@ public class StandardCollisionMapTests
                     Integer ev = expected.get(k);
                     Maybe<IMapEntry<Integer, Integer>> ah = map.findEntry(node, k);
                     if (ev == null) {
-                        if (ah.isPresent()) {
+                        if (ah.isFull()) {
                             fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.unsafeGet()));
                         }
-                    } else if (ah.isAbsent()) {
+                    } else if (ah.isEmpty()) {
                         fail(String.format("findEntry fail: k=%d ev=%s av=%s", k, ev, ah.getOrNull()));
                     }
                     break;
@@ -160,13 +160,13 @@ public class StandardCollisionMapTests
                 sb.append(String.format("mismatch: k=%d ev=%s av=%s\n", k, ev, av));
             }
             Maybe<Integer> hv = map.findValue(node, k);
-            if (hv.isAbsent()) {
+            if (hv.isEmpty()) {
                 sb.append(String.format("missing value for key: k=%d ev=%s\n", k, ev));
             } else if (!ev.equals(hv.unsafeGet())) {
                 sb.append(String.format("mismatch: k=%d ev=%s hv=%s\n", k, ev, hv.unsafeGet()));
             }
             Maybe<IMapEntry<Integer, Integer>> he = map.findEntry(node, k);
-            if (hv.isAbsent()) {
+            if (hv.isEmpty()) {
                 sb.append(String.format("missing entry for key: k=%d ev=%s\n", k, ev));
             } else {
                 if (!k.equals(he.unsafeGet().getKey())) {

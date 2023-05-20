@@ -239,7 +239,7 @@ public interface ISet<T>
     @Override
     default Maybe<T> find(T key)
     {
-        return contains(key) ? Maybe.present(key) : Maybe.absent();
+        return contains(key) ? Maybe.of(key) : Maybe.empty();
     }
 
     /**
