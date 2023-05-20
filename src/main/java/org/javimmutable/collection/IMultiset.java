@@ -386,15 +386,15 @@ public interface IMultiset<T>
     /**
      * Stream iterates through each Entry, that contains a unique value and the count of occurrences.
      *
-     * @return Streamable of {@link IMap}.Entries
+     * @return IStreamable of {@link IMap}.Entries
      */
     @Nonnull
     IStreamable<IMapEntry<T, Integer>> entries();
 
     /**
-     * Streamable that iterates through each occurrence in the multiset the correct number of times.
+     * IStreamable that iterates through each occurrence in the multiset the correct number of times.
      *
-     * @return Streamable that behaves as if multiset was a list
+     * @return IStreamable that behaves as if multiset was a list
      */
     @Nonnull
     IStreamable<T> occurrences();

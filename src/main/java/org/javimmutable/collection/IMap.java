@@ -173,13 +173,13 @@ public interface IMap<K, V>
     Map<K, V> getMap();
 
     /**
-     * Creates a Streamable to access all of the Map's keys.
+     * Creates an IStreamable to access all of the Map's keys.
      */
     @Nonnull
     IStreamable<K> keys();
 
     /**
-     * Creates a Streamable to access all of the Map's values.
+     * Creates an IStreamable to access all of the Map's values.
      */
     @Nonnull
     IStreamable<V> values();

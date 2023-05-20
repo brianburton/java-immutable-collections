@@ -45,8 +45,7 @@ import java.util.stream.StreamSupport;
  * creation implementations use spliterator().
  */
 public interface IStreamable<T>
-    extends SplitableIterable<T>,
-            Streamable<T>
+    extends SplitableIterable<T>
 {
     /**
      * Overridden here to require implementations to return a SplitableIterator rather than

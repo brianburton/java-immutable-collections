@@ -291,22 +291,22 @@ public interface ISetMap<K, V>
     ISetMap<K, V> deleteAll();
 
     /**
-     * Creates a Streamable to access all of the Map's keys.
+     * Creates an IStreamable to access all of the Map's keys.
      */
     @Nonnull
     IStreamable<K> keys();
 
     /**
-     * Creates a Streamable to access all of the specified key's set.
-     * If no set exists for key an empty Streamable is returned.
+     * Creates an IStreamable to access all of the specified key's set.
+     * If no set exists for key an empty IStreamable is returned.
      *
-     * @return a (possibly empty) Streamable for traversing the values associated with key
+     * @return a (possibly empty) IStreamable for traversing the values associated with key
      */
     @Nonnull
     IStreamable<V> values(@Nonnull K key);
 
     /**
-     * Creates a Streamable to access all of the Map's entries.
+     * Creates an IStreamable to access all of the Map's entries.
      */
     @Nonnull
     IStreamable<IMapEntry<K, V>> entries();

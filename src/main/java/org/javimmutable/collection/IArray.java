@@ -160,13 +160,13 @@ public interface IArray<T>
     Map<Integer, T> getMap();
 
     /**
-     * Creates a Streamable to access all of the array's keys.
+     * Creates an IStreamable to access all of the array's keys.
      */
     @Nonnull
     IStreamable<Integer> keys();
 
     /**
-     * Creates a Streamable to access all of the array's values.
+     * Creates an IStreamable to access all of the array's values.
      */
     @Nonnull
     IStreamable<T> values();
