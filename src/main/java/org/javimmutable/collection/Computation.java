@@ -36,13 +36,15 @@
 package org.javimmutable.collection;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.Callable;
 
 /**
  * A deferred computation.  Allows multiple processing steps to be queued into an immutable
- * object for later evaluation.  Nothing is done until the {@link #evaluate} method is called.
+ * object for later evaluation.  Nothing is done until the {@link #compute} method is called.
  * An exception at any step stops the computation at that point.
  */
+@Immutable
 public abstract class Computation<T>
     implements Callable<T>
 {
@@ -83,7 +85,7 @@ public abstract class Computation<T>
      * @return the outcome as a {@link Result}
      */
     @Nonnull
-    public Result<T> evaluate()
+    public Result<T> compute()
     {
         return Result.attempt(this);
     }

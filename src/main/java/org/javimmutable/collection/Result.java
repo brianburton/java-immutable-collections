@@ -36,57 +36,53 @@
 package org.javimmutable.collection;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
+/**
+ * Container for the result of some computation.  Contains either the computed value or
+ * some exception that was thrown when attempting to compute the value.  Allows success
+ * or failure to be treated.
+ *
+ * @param <T> type of value being computed
+ */
+@Immutable
 public abstract class Result<T>
 {
     private Result()
     {
     }
 
-    public abstract T get()
-        throws Exception;
-
-    public abstract T orElse(T defaultValue);
-
-    public abstract T orElseGet(Supplier<T> defaultValue);
-
-    @Nonnull
-    public abstract <U> Result<U> map(Func1Throws<T, U, Exception> func);
-
-    @Nonnull
-    public abstract <U> Result<U> flatMap(Func1<T, Result<U>> func);
-
-    @Nonnull
-    public abstract Result<T> mapFailure(Func1Throws<Exception, T, Exception> func);
-
-    @Nonnull
-    public abstract Result<T> flatMapFailure(Func1<Exception, Result<T>> func);
-
     /**
-     * Add a step to the computation that executes the procedure on the current value without changing that value.
-     * If the procedure throws it will terminate the computation at that point.
-     *
-     * @param proc the procedure to apply
-     * @return the new computation
+     * Creates a successful {@link Result} containing the given value.
      */
-    @Nonnull
-    public abstract Result<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
-
     @Nonnull
     public static <T> Result<T> success(T value)
     {
         return new Success<>(value);
     }
 
+    /**
+     * Creates a failure {@link Result} containing the exception that was thrown.
+     */
     @Nonnull
-    public static <T> Result<T> failure(Exception value)
+    public static <T> Result<T> failure(@Nonnull Exception value)
     {
+        if (value == null) {
+            throw new IllegalArgumentException("Exception cannot be null");
+        }
         return new Failure<>(value);
     }
 
+    /**
+     * Attempts to compute a value and returns an appropriate {@link Result}.
+     * Captures an {@link Exception} thrown and returns a {@link Result#failure} or,
+     * if no exception was thrown, returns a {@link Result#success} containing the value.
+     *
+     * @param func the computation that should produce a result
+     * @return the success or failure result
+     */
     @Nonnull
     public static <T> Result<T> attempt(Callable<T> func)
     {
@@ -96,6 +92,67 @@ public abstract class Result<T>
             return failure(error);
         }
     }
+
+    /**
+     * Gets the value or throws the exception.  Used to unwrap the result so it can
+     * be handled using try/catch.
+     *
+     * @return the value if we are a successful result
+     * @throws Exception if we are a failure result
+     */
+    public abstract T get()
+        throws Exception;
+
+    /**
+     * Converts a failure result into a success result with a specified value.
+     * If we are a failure result return a success result containing the specified value.
+     * Otherwise return this.
+     */
+    public abstract T orElse(T defaultValue);
+
+    /**
+     * Converts a failure result into a success result with the value returned by a {@link Supplier}.
+     * If we are a failure result return a success result containing the value returned by the {@link Supplier}.
+     * Otherwise return this.  Does not capture any runtime exception thrown by the supplier.
+     */
+    public abstract T orElseGet(Supplier<T> defaultValue);
+
+    /**
+     * Replaces our successful result with a new value computed using the provided function.
+     * Simply returns this if we are a failure result.
+     */
+    @Nonnull
+    public abstract <U> Result<U> map(Func1Throws<T, U, Exception> func);
+
+    /**
+     * Replaces our successful result with a new value computed using the provided function.
+     * Simply returns this if we are a failure result.
+     */
+    @Nonnull
+    public abstract <U> Result<U> flatMap(Func1<T, Result<U>> func);
+
+    /**
+     * Replaces our failure result with a new value computed using the provided function.
+     * Simply returns this if we are a success result.
+     */
+    @Nonnull
+    public abstract Result<T> mapFailure(Func1Throws<Exception, T, Exception> func);
+
+    /**
+     * Replaces our failure result with a new value computed using the provided function.
+     * Simply returns this if we are a success result.
+     */
+    @Nonnull
+    public abstract Result<T> flatMapFailure(Func1Throws<Exception, Result<T>, Exception> func);
+
+    /**
+     * Does nothing if we are a failure result.
+     * Calls a function with our value if we are a success result.
+     * If the function throws an exception returns a new failure result containing that exception.
+     * Otherwise returns this.
+     */
+    @Nonnull
+    public abstract Result<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
 
     public static class Success<T>
         extends Result<T>
@@ -157,7 +214,7 @@ public abstract class Result<T>
 
         @Nonnull
         @Override
-        public Result<T> flatMapFailure(Func1<Exception, Result<T>> func)
+        public Result<T> flatMapFailure(Func1Throws<Exception, Result<T>, Exception> func)
         {
             return this;
         }
@@ -175,22 +232,28 @@ public abstract class Result<T>
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(Object obj)
         {
-            if (this == o) {
+            if (obj == this) {
                 return true;
             }
-            if (!(o instanceof Success)) {
+            if (!(obj instanceof Success)) {
                 return false;
             }
-            Success<?> success = (Success<?>)o;
-            return Objects.equals(value, success.value);
+            Object otherValue = ((Success)obj).value;
+            if (value == null) {
+                return otherValue == null;
+            }
+            if (otherValue == null) {
+                return false;
+            }
+            return value.equals(otherValue);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(value);
+            return value == null ? 0 : value.hashCode();
         }
     }
 
@@ -201,6 +264,7 @@ public abstract class Result<T>
 
         private Failure(Exception exception)
         {
+            assert exception != null;
             this.exception = exception;
         }
 
@@ -250,7 +314,7 @@ public abstract class Result<T>
 
         @Nonnull
         @Override
-        public Result<T> flatMapFailure(Func1<Exception, Result<T>> func)
+        public Result<T> flatMapFailure(Func1Throws<Exception, Result<T>, Exception> func)
         {
             try {
                 return func.apply(exception);
@@ -276,13 +340,13 @@ public abstract class Result<T>
                 return false;
             }
             Failure<?> failure = (Failure<?>)o;
-            return Objects.equals(exception, failure.exception);
+            return exception.equals(failure.exception);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(exception);
+            return exception.hashCode();
         }
     }
 }

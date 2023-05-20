@@ -56,16 +56,16 @@ public class ComputationTest
             .apply(values::add)
             .map(x -> (double)(x + 1))
             .apply(values::add);
-        assertEquals(Result.success(11.0), cb0.evaluate());
+        assertEquals(Result.success(11.0), cb0.compute());
         assertEquals(Arrays.asList(10, 11.0), values);
-        assertEquals(Result.success(11.0), cb0.evaluate());
+        assertEquals(Result.success(11.0), cb0.compute());
         assertEquals(Arrays.asList(10, 11.0, 10, 11.0), values);
 
         values.clear();
         Computation<Boolean> cb1 = cb0.map(x -> x > 10);
-        assertEquals(Result.success(Boolean.TRUE), cb1.evaluate());
+        assertEquals(Result.success(Boolean.TRUE), cb1.compute());
         assertEquals(Arrays.asList(10, 11.0), values);
-        assertEquals(Result.success(Boolean.TRUE), cb1.evaluate());
+        assertEquals(Result.success(Boolean.TRUE), cb1.compute());
         assertEquals(Arrays.asList(10, 11.0, 10, 11.0), values);
 
         values.clear();
@@ -77,7 +77,7 @@ public class ComputationTest
             .map(x -> (double)(x + 1))
             .apply(values::add)
             .map(x -> x > 10);
-        assertEquals(Result.failure(error), cb2.evaluate());
+        assertEquals(Result.failure(error), cb2.compute());
         assertEquals(Collections.emptyList(), values);
 
         values.clear();
@@ -88,7 +88,7 @@ public class ComputationTest
                 throw error;
             })
             .map(x -> x > 10);
-        assertEquals(Result.failure(error), cb3.evaluate());
+        assertEquals(Result.failure(error), cb3.compute());
         assertEquals(Collections.singletonList(10), values);
 
         values.clear();
@@ -96,7 +96,7 @@ public class ComputationTest
             .flatMap(x -> Computation.of(() -> x + 4))
             .apply(values::add)
             .flatMap(x -> Computation.of(() -> String.valueOf(x)));
-        assertEquals(Result.success("22"), cb4.evaluate());
+        assertEquals(Result.success("22"), cb4.compute());
         assertEquals(Collections.singletonList(22), values);
 
         values.clear();

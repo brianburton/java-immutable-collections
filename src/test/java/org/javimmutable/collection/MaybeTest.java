@@ -219,6 +219,7 @@ public class MaybeTest
         assertEquals(false, full.isEmpty());
         assertEquals(true, full.isFull());
         assertEquals("8".hashCode(), full.hashCode());
+        assertEquals(0, Maybe.of(null).hashCode());
         assertEquals("(8)", full.toString());
         assertEquals(Collections.singletonList("8"), makeList(full));
         assertEquals(Collections.singletonList("8"), full.stream().collect(Collectors.toList()));
