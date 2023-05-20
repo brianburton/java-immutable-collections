@@ -65,7 +65,7 @@ public class ICollectorsTest
     private IListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,
                                                                 Func1<Integer, Integer> keyTransform)
     {
-        IListMap<Integer, Integer> expected = IListMap.listMap();
+        IListMap<Integer, Integer> expected = IListMaps.listMap();
         for (Integer value : source) {
             final Integer key = keyTransform.apply(value);
             expected = expected.insert(key, value);

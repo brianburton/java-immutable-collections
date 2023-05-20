@@ -43,8 +43,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Immutable implementation of both Map.Entry and {@link IMap}.Entry that uses the same equals() and hashCode() implementations as
- * documented in javadoc for Map.Entry.
+ * Immutable implementation of both {@link Map.Entry} and {@link IMapEntry} that uses the same equals() and hashCode() implementations as
+ * documented in javadoc for {@link Map.Entry}.
  */
 @Immutable
 public class MapEntry<K, V>
@@ -111,12 +111,12 @@ public class MapEntry<K, V>
         throw new UnsupportedOperationException();
     }
 
-    public IMapEntry<K, V> asEntry()
+    public IMapEntry<K, V> asIMapEntry()
     {
         return this;
     }
 
-    public Map.Entry<K, V> asJavaEntry()
+    public Map.Entry<K, V> asMapEntry()
     {
         return this;
     }
@@ -185,12 +185,12 @@ public class MapEntry<K, V>
         addToString(sb, value);
     }
 
-    public static <K, V> List<Map.Entry<K, V>> toMutableEntries(@Nonnull Collection<IMapEntry<K, V>> source)
+    public static <K, V> List<Map.Entry<K, V>> toMapEntries(@Nonnull Collection<IMapEntry<K, V>> source)
     {
         return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }
 
-    public static <K, V> List<IMapEntry<K, V>> toImmutableEntries(@Nonnull Collection<Map.Entry<K, V>> source)
+    public static <K, V> List<IMapEntry<K, V>> toIMapEntries(@Nonnull Collection<Map.Entry<K, V>> source)
     {
         return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }

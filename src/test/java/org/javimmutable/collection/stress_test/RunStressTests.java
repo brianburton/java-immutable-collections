@@ -43,7 +43,7 @@ import org.javimmutable.collection.IArrays;
 import org.javimmutable.collection.ICollectors;
 import org.javimmutable.collection.IDeques;
 import org.javimmutable.collection.IList;
-import org.javimmutable.collection.IListMap;
+import org.javimmutable.collection.IListMaps;
 import org.javimmutable.collection.ILists;
 import org.javimmutable.collection.IMapEntry;
 import org.javimmutable.collection.IMaps;
@@ -102,9 +102,9 @@ public class RunStressTests
         .insert(new SetMapStressTester(ISetMaps.sorted(), TreeMap.class))
         .insert(new SetMapStressTester(ISetMaps.factory(String.class, String.class).withMap(IMaps.sorted()).withSet(ISets.hashed()).create(), TreeMap.class))
 
-        .insert(new ListMapStressTester(IListMap.listMap(), java.util.HashMap.class))
-        .insert(new ListMapStressTester(IListMap.insertOrderListMap(), LinkedHashMap.class))
-        .insert(new ListMapStressTester(IListMap.sortedListMap(), TreeMap.class))
+        .insert(new ListMapStressTester(IListMaps.listMap(), java.util.HashMap.class))
+        .insert(new ListMapStressTester(IListMaps.insertOrderListMap(), LinkedHashMap.class))
+        .insert(new ListMapStressTester(IListMaps.sortedListMap(), TreeMap.class))
 
         .insert(new ArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
 

@@ -349,19 +349,19 @@ public class StaticConstructorsTest
 
     public void testListMap()
     {
-        verifyUnordered(isListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMap.<String, Integer>listMap().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyUnordered(isListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>listMap().insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testSortedListMap()
     {
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
-        verifyOrdered(isSortedListMap, entryList(entry("x", ILists.of(3)), entry("y", ILists.of(1)), entry("z", ILists.of(2))), () -> IListMap.<String, Integer>sortedListMap().insert("y", 1).insert("z", 2).insert("x", 3));
-        verifyOrdered(isSortedListMap, entryList(entry("z", ILists.of(2)), entry("y", ILists.of(1)), entry("x", ILists.of(3))), () -> IListMap.<String, Integer>sortedListMap(reverse).insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isSortedListMap, entryList(entry("x", ILists.of(3)), entry("y", ILists.of(1)), entry("z", ILists.of(2))), () -> IListMaps.<String, Integer>sortedListMap().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isSortedListMap, entryList(entry("z", ILists.of(2)), entry("y", ILists.of(1)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>sortedListMap(reverse).insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testInsertOrderListMap()
     {
-        verifyOrdered(isInsertOrderListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMap.<String, Integer>insertOrderListMap().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isInsertOrderListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>insertOrderListMap().insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testSetMap()

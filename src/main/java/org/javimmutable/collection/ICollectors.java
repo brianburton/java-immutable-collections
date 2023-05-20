@@ -83,25 +83,25 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toListMap()
     {
-        return IListMap.<K, V>listMap().toCollector();
+        return IListMaps.<K, V>listMap().toCollector();
     }
 
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toOrderedListMap()
     {
-        return IListMap.<K, V>insertOrderListMap().toCollector();
+        return IListMaps.<K, V>insertOrderListMap().toCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap()
     {
-        return IListMap.<K, V>sortedListMap().toCollector();
+        return IListMaps.<K, V>sortedListMap().toCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap(@Nonnull Comparator<K> comparator)
     {
-        return IListMap.<K, V>sortedListMap(comparator).toCollector();
+        return IListMaps.<K, V>sortedListMap(comparator).toCollector();
     }
 
     /**
@@ -249,8 +249,8 @@ public final class ICollectors
     @Nonnull
     public static <T, K> Collector<T, ?, IListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {
-        return GenericCollector.ordered(IListMap.listMap(),
-                                        IListMap.listMap(),
+        return GenericCollector.ordered(IListMaps.listMap(),
+                                        IListMaps.listMap(),
                                         IListMap::isEmpty,
                                         (a, v) -> a.insert(classifier.apply(v), v),
                                         (a, b) -> a.insertAll(b.entries()));

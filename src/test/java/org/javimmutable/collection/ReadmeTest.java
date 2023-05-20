@@ -151,7 +151,7 @@ public class ReadmeTest
     @Test
     public void listMaps()
     {
-        IListMap<String, Integer> index = IListMap.<String, Integer>sortedListMap()
+        IListMap<String, Integer> index = IListMaps.<String, Integer>sortedListMap()
             .insert("c", 2)
             .insert("a", 1)
             .insert("d", 640)

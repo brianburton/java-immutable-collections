@@ -35,14 +35,9 @@
 
 package org.javimmutable.collection;
 
-import org.javimmutable.collection.listmap.HashListMap;
-import org.javimmutable.collection.listmap.OrderedListMap;
-import org.javimmutable.collection.listmap.TreeListMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Collector;
 
@@ -64,42 +59,6 @@ public interface IListMap<K, V>
     default IListMap<K, V> insertAll(@Nonnull Iterable<? extends IMapEntry<K, IList<V>>> iterable)
     {
         return insertAll(iterable.iterator());
-    }
-
-    /**
-     * Creates a list map with higher performance but no specific ordering of keys.
-     */
-    @Nonnull
-    static <K, V> IListMap<K, V> listMap()
-    {
-        return HashListMap.of();
-    }
-
-    /**
-     * Creates a list map with keys sorted by order they are inserted.
-     */
-    @Nonnull
-    static <K, V> IListMap<K, V> insertOrderListMap()
-    {
-        return OrderedListMap.of();
-    }
-
-    /**
-     * Creates a list map with keys sorted by their natural ordering.
-     */
-    @Nonnull
-    static <K extends Comparable<K>, V> IListMap<K, V> sortedListMap()
-    {
-        return TreeListMap.of();
-    }
-
-    /**
-     * Creates a list map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
-     */
-    @Nonnull
-    static <K, V> IListMap<K, V> sortedListMap(@Nonnull Comparator<K> comparator)
-    {
-        return TreeListMap.of(comparator);
     }
 
     /**

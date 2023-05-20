@@ -221,18 +221,16 @@
                         <classpath/>
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collection.stress_test.RunStressTests</argument>
-                        <argument>--test</argument>
-                        <argument>deque</argument>
-                        <argument>--test</argument>
-                        <argument>orderedmap</argument>
-                        <argument>--test</argument>
-                        <argument>orderedset</argument>
-                        <argument>--test</argument>
-                        <argument>orderedsetmap</argument>
-                        <!--
-                                                <argument>&#45;&#45;test</argument>
-                                                <argument>hashset</argument>
-                        -->
+<!--                        <argument>&#45;&#45;test</argument>-->
+<!--                        <argument>deque</argument>-->
+<!--                        <argument>&#45;&#45;test</argument>-->
+<!--                        <argument>orderedmap</argument>-->
+<!--                        <argument>&#45;&#45;test</argument>-->
+<!--                        <argument>orderedset</argument>-->
+<!--                        <argument>&#45;&#45;test</argument>-->
+<!--                        <argument>orderedsetmap</argument>-->
+<!--                        <argument>&#45;&#45;test</argument>-->
+<!--                        <argument>hashset</argument>-->
                     </arguments>
                 </configuration>
             </plugin>
@@ -247,7 +245,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-            <!-- change bcel library used during site generation to solve ClassFormatException --> 
+            <!-- change bcel library used during site generation to solve ClassFormatException -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
