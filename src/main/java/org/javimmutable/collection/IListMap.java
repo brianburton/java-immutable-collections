@@ -248,7 +248,7 @@ public interface IListMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toCollector()
+    default Collector<IMapEntry<K, V>, ?, IListMap<K, V>> listMapCollector()
     {
         return GenericCollector.ordered(this,
                                         deleteAll(),

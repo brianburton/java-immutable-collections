@@ -200,7 +200,7 @@ public abstract class AbstractListMapTestCase
         }
 
         IListMap<Integer, Integer> expected = template.insertAll(values);
-        IListMap<Integer, Integer> actual = values1.parallelStream().collect(template.toCollector());
+        IListMap<Integer, Integer> actual = values1.parallelStream().collect(template.listMapCollector());
         assertEquals(expected, actual);
 
         verifyForEach(actual);

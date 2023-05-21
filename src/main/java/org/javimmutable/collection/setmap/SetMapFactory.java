@@ -57,7 +57,7 @@ public class SetMapFactory<K, V>
 
     public Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> collector()
     {
-        return create().toCollector();
+        return create().setMapCollector();
     }
 
     public SetMapFactory<K, V> withMap(@Nonnull IMap<K, ISet<V>> map)

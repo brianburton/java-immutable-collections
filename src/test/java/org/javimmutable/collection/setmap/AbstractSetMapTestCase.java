@@ -534,7 +534,7 @@ public abstract class AbstractSetMapTestCase
             }
         }
 
-        ISetMap<Integer, Integer> actual = values.parallelStream().collect(template.toCollector());
+        ISetMap<Integer, Integer> actual = values.parallelStream().collect(template.setMapCollector());
         assertEquals(expected, actual);
     }
 }

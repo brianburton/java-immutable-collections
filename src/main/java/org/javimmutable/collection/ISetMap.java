@@ -341,7 +341,7 @@ public interface ISetMap<K, V>
      * of the collected values inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toCollector()
+    default Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> setMapCollector()
     {
         return GenericCollector.unordered(this,
                                           deleteAll(),

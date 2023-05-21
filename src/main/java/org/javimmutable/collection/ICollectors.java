@@ -83,25 +83,25 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toListMap()
     {
-        return IListMaps.<K, V>listMap().toCollector();
+        return IListMaps.<K, V>listMap().listMapCollector();
     }
 
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toOrderedListMap()
     {
-        return IListMaps.<K, V>insertOrderListMap().toCollector();
+        return IListMaps.<K, V>insertOrderListMap().listMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap()
     {
-        return IListMaps.<K, V>sortedListMap().toCollector();
+        return IListMaps.<K, V>sortedListMap().listMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap(@Nonnull Comparator<K> comparator)
     {
-        return IListMaps.<K, V>sortedListMap(comparator).toCollector();
+        return IListMaps.<K, V>sortedListMap(comparator).listMapCollector();
     }
 
     /**
@@ -221,25 +221,25 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toSetMap()
     {
-        return ISetMaps.<K, V>hashed().toCollector();
+        return ISetMaps.<K, V>hashed().setMapCollector();
     }
 
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toOrderedSetMap()
     {
-        return ISetMaps.<K, V>ordered().toCollector();
+        return ISetMaps.<K, V>ordered().setMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toSortedSetMap()
     {
-        return ISetMaps.<K, V>sorted().toCollector();
+        return ISetMaps.<K, V>sorted().setMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toSortedSetMap(@Nonnull Comparator<K> comparator)
     {
-        return ISetMaps.<K, V>sorted(comparator).toCollector();
+        return ISetMaps.<K, V>sorted(comparator).setMapCollector();
     }
 
     /**

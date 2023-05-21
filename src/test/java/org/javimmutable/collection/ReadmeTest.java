@@ -37,6 +37,7 @@ package org.javimmutable.collection;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -45,10 +46,135 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.*;
 
 public class ReadmeTest
 {
+    @Test
+    public void streams() {
+        IList<String> source = ILists.of("axle", "wheel", "apple", "wall");
+        ISet<String> copied = source.stream().collect(ICollectors.toSet());
+        assertEquals(ISets.hashed("axle", "wheel", "apple", "wall"), copied);
+    }
+
+    @Test
+    public void reduce() {
+        IList<Integer> values = ILists.of(1, 2, 3, 4, 5, 6, 7, 8);
+        assertEquals(36, (int)values.reduce(0, (s,x) -> s + x));        // 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8
+        assertEquals(-18, (int)values.reduce(18, (s,x) -> s - x));      // 18 - 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
+        assertEquals(16, (int)values.reduce(0, (s,x) -> s + (x / 2)));  // 0 + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4
+    }
+
+    @Test
+    public void listTutorial() {
+        {
+            IList<Integer> list = ILists.of();
+            list = list.insert(10).insert(20).insert(30);
+            assertEquals(Integer.valueOf(10), list.get(0));
+            assertEquals(Integer.valueOf(20), list.get(1));
+            assertEquals(Integer.valueOf(30), list.get(2));
+
+            IList<Integer> changed = list.deleteLast().insert(45);
+            assertEquals(Integer.valueOf(10), list.get(0));
+            assertEquals(Integer.valueOf(20), list.get(1));
+            assertEquals(Integer.valueOf(30), list.get(2));
+            assertEquals(Integer.valueOf(10), changed.get(0));
+            assertEquals(Integer.valueOf(20), changed.get(1));
+            assertEquals(Integer.valueOf(45), changed.get(2));
+
+            assertEquals(Arrays.asList(10, 20, 30), list.getList());
+            assertEquals(Arrays.asList(10, 20, 45), changed.getList());
+        }
+        {
+            IList<Integer> list = ILists.of();
+            list = list.insert(30).insert(0, 20).insert(0, 10);
+            assertEquals(Arrays.asList(10, 20, 30), list.getList());
+
+            IList<Integer> list2 = list.delete(1).insert(1, 87);
+            assertEquals(Arrays.asList(10, 20, 30), list.getList());
+            assertEquals(Arrays.asList(10, 87, 30), list2.getList());
+        }
+        {
+            IList<String> source = ILists.of("able", "baker", "charlie", "delta", "echo");
+            assertEquals(ILists.of("baker", "charlie"), source.select(str -> str.contains("r")));
+            assertEquals(ILists.of("able", "baker", "delta"), source.reject(str -> str.contains("h")));
+            assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
+            assertEquals(ILists.of("baker", "charlie"),
+                          source.stream()
+                              .filter(str -> str.contains("r"))
+                              .collect(ICollectors.toList()));
+        }
+    }
+
+    @Test
+    public void mapTutorial() {
+        {
+            IMap<Integer, Integer> hmap = IMaps.hashed();
+            hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
+
+            IMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18, 19);
+
+            assertEquals(Integer.valueOf(11), hmap.get(10));
+            assertEquals(Integer.valueOf(19), hmap.get(20));
+            assertEquals(Integer.valueOf(31), hmap.get(30));
+
+            assertEquals(Integer.valueOf(11), hmap2.get(10));
+            assertEquals(Integer.valueOf(19), hmap2.get(18));
+            assertEquals(null, hmap2.get(20));
+            assertEquals(Integer.valueOf(31), hmap2.get(30));
+
+            // find
+
+            hmap2 = hmap2.assign(80, null);
+            assertEquals(null, hmap2.get(20));
+            assertEquals(true, hmap2.find(20).isEmpty());
+            // since the Maybe is empty we get the default value
+            assertEquals(Integer.valueOf(-1), hmap2.find(20).get(-1));
+
+            assertEquals(null, hmap2.get(80));
+            assertEquals(false, hmap2.find(80).isEmpty());
+            // the Maybe is full and value is null
+            assertEquals(null, hmap2.find(80).get(-1));
+        }
+
+        // sorted
+        {
+            IMap<Integer, Integer> smap = IMaps.sorted();
+            smap = smap.assign(30, 31).assign(20, 21).assign(20, 19).assign(10, 80);
+            assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(smap.getMap().keySet()));
+            assertEquals(Arrays.asList(80, 19, 31), new ArrayList<>(smap.getMap().values()));
+        }
+
+        // ordered
+        {
+            IMap<Integer, Integer> omap = IMaps.ordered();
+            omap = omap.assign(30, 31).assign(20, 21).assign(10, 80).assign(20, 19);
+            assertEquals(Arrays.asList(30, 20, 10), new ArrayList<>(omap.getMap().keySet()));
+            assertEquals(Arrays.asList(31, 19, 80), new ArrayList<>(omap.getMap().values()));
+        }
+    }
+
+    @Test
+    public void arrayTutorial()
+    {
+        {
+            IArray<String> array = IArrays.of();
+            array = array.assign(25000, "charlie");
+            array = array.assign(0, "baker");
+            array = array.assign(-50000, "able");
+            assertEquals("baker", array.get(0));
+        }
+        {
+            IArray<String> array = IArrays.<String>of()
+                .assign(25000, "charlie")
+                .assign(-50000, "able")
+                .assign(0, "baker");
+            assertEquals(-25000, array.keys().stream().mapToInt(i -> i).sum());
+            assertEquals("ab,ba,ch", array.values().stream().map(x -> x.substring(0, 2)).collect(Collectors.joining(",")));
+        }
+    }
+
     @Test
     public void creation()
     {
