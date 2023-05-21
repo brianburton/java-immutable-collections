@@ -37,6 +37,7 @@ package org.javimmutable.collection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -51,7 +52,8 @@ import java.util.stream.Collector;
 public interface IMap<K, V>
     extends ICollection<IMapEntry<K, V>>,
             Mapped<K, V>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Add key/value entry to the map, replacing any existing entry with same key.

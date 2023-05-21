@@ -38,6 +38,7 @@ package org.javimmutable.collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -51,7 +52,8 @@ import java.util.stream.Collector;
 public interface ISet<T>
     extends ICollection<T>,
             Mapped<T, T>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Adds the single value to the Set.

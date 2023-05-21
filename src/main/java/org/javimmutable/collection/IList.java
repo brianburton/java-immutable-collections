@@ -38,6 +38,7 @@ package org.javimmutable.collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -50,7 +51,8 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface IList<T>
-    extends IDeque<T>
+    extends IDeque<T>,
+            Serializable
 {
     /**
      * Replaces the value at the specified index (which must be within current

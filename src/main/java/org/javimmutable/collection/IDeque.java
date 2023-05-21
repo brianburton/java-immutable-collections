@@ -38,6 +38,7 @@ package org.javimmutable.collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -53,7 +54,8 @@ import java.util.stream.Collector;
 public interface IDeque<T>
     extends ICollection<T>,
             Indexed<T>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     /**
      * Retrieves the value at the specified index (which must be within the bounds

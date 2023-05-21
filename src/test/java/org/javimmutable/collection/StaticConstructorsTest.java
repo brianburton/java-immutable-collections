@@ -597,7 +597,7 @@ public class StaticConstructorsTest
 
     private <T> Iterable<T> iterable(T... values)
     {
-        return () -> IndexedIterator.iterator(indexed(values));
+        return IndexedIterator.fwd(indexed(values));
     }
 
     private <T> Iterator<T> iterator(T... values)

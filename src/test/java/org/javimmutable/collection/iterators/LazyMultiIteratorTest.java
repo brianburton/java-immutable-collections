@@ -114,6 +114,6 @@ public class LazyMultiIteratorTest
 
     private SplitableIterable<Integer> values(Integer... array)
     {
-        return () -> IndexedIterator.iterator(IndexedArray.retained(array));
+        return IndexedIterator.fwd(IndexedArray.retained(array));
     }
 }

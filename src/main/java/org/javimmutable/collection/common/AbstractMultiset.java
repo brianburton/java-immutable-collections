@@ -455,7 +455,7 @@ public abstract class AbstractMultiset<T>
             @Override
             public SplitableIterator<T> iterator()
             {
-                return LazyMultiIterator.transformed(map.iterator(), e -> () -> IndexedIterator.iterator(IndexedHelper.repeating(e.getKey(), e.getValue())));
+                return LazyMultiIterator.transformed(map.iterator(), e -> IndexedIterator.fwd(IndexedHelper.repeating(e.getKey(), e.getValue())));
             }
 
             @Override
