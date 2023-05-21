@@ -35,6 +35,10 @@
 
 package org.javimmutable.collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
+
 /**
  * Collection of useful temporary object classes.  These can be useful as simple temporary arguments
  * to lambda expressions like reduce().  These classes have public fields and are not intended to
@@ -45,17 +49,20 @@ package org.javimmutable.collection;
  */
 public class Temp
 {
+    @Nonnull
     public static <A> Val1<A> val(A a)
     {
         return new Val1<>(a);
     }
 
+    @Nonnull
     public static <A, B> Val2<A, B> val(A a,
                                         B b)
     {
         return new Val2<>(a, b);
     }
 
+    @Nonnull
     public static <A, B, C> Val3<A, B, C> val(A a,
                                               B b,
                                               C c)
@@ -63,6 +70,7 @@ public class Temp
         return new Val3<>(a, b, c);
     }
 
+    @Nonnull
     public static <A, B, C, D> Val4<A, B, C, D> val(A a,
                                                     B b,
                                                     C c,
@@ -71,6 +79,7 @@ public class Temp
         return new Val4<>(a, b, c, d);
     }
 
+    @Immutable
     public static class Val1<A>
     {
         public final A a;
@@ -81,6 +90,7 @@ public class Temp
         }
     }
 
+    @Immutable
     public static class Val2<A, B>
     {
         public final A a;
@@ -94,6 +104,7 @@ public class Temp
         }
     }
 
+    @Immutable
     public static class Val3<A, B, C>
     {
         public final A a;
@@ -110,6 +121,7 @@ public class Temp
         }
     }
 
+    @Immutable
     public static class Val4<A, B, C, D>
     {
         public final A a;
@@ -129,17 +141,20 @@ public class Temp
         }
     }
 
+    @Nonnull
     public static <X> Var1<X> var(X x)
     {
         return new Var1<>(x);
     }
 
+    @Nonnull
     public static <X, Y> Var2<X, Y> var(X x,
                                         Y y)
     {
         return new Var2<>(x, y);
     }
 
+    @Nonnull
     public static <X, Y, Z> Var3<X, Y, Z> var(X x,
                                               Y y,
                                               Z z)
@@ -147,6 +162,7 @@ public class Temp
         return new Var3<>(x, y, z);
     }
 
+    @Nonnull
     public static <W, X, Y, Z> Var4<W, X, Y, Z> var(W w,
                                                     X x,
                                                     Y y,
@@ -155,6 +171,7 @@ public class Temp
         return new Var4<>(w, x, y, z);
     }
 
+    @NotThreadSafe
     public static class Var1<X>
     {
         public X x;
@@ -165,6 +182,7 @@ public class Temp
         }
     }
 
+    @NotThreadSafe
     public static class Var2<X, Y>
     {
         public X x;
@@ -178,6 +196,7 @@ public class Temp
         }
     }
 
+    @NotThreadSafe
     public static class Var3<X, Y, Z>
     {
         public X x;
@@ -194,6 +213,7 @@ public class Temp
         }
     }
 
+    @NotThreadSafe
     public static class Var4<W, X, Y, Z>
     {
         public W w;
@@ -213,6 +233,7 @@ public class Temp
         }
     }
 
+    @NotThreadSafe
     public static class Int1
     {
         public int a;
@@ -223,6 +244,7 @@ public class Temp
         }
     }
 
+    @Nonnull
     public static Int1 intVar(int a)
     {
         return new Int1(a);
