@@ -44,6 +44,7 @@ import org.javimmutable.collection.Maybe;
 import org.javimmutable.collection.SplitableIterator;
 import org.javimmutable.collection.common.Conditions;
 import org.javimmutable.collection.common.StreamConstants;
+import org.javimmutable.collection.util.Functions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -141,12 +142,9 @@ abstract class AbstractListMap<K, V>
     @Override
     public IListMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, IList<V>>> iterator)
     {
-        IListMap<K, V> map = this;
-        while (iterator.hasNext()) {
-            IMapEntry<K, IList<V>> entry = iterator.next();
-            map = map.insertAll(entry.getKey(), entry.getValue());
-        }
-        return map;
+        return Functions.foldLeft((IListMap<K, V>)this,
+                                  iterator,
+                                  (s, e) -> s.insertAll(e.getKey(), e.getValue()));
     }
 
     @Override

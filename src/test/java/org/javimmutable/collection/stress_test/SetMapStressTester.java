@@ -95,6 +95,7 @@ public class SetMapStressTester
         throws IllegalAccessException, InstantiationException
     {
         @SuppressWarnings("unchecked") Map<String, ISet<String>> expected = expectedClass.newInstance();
+        final ISet<String> emptySet = setmap.getSet("").deleteAll();
         final RandomKeyManager keys = new RandomKeyManager(random, tokens);
         ISetMap<String, String> setmap = this.setmap;
         final int size = 1 + random.nextInt(100000);
@@ -120,7 +121,7 @@ public class SetMapStressTester
                     }
                     case 2: { //insert(Entry<K, V>)
                         String value = RandomKeyManager.makeValue(tokens, random);
-                        MapEntry<String, String> entry = new MapEntry<>(key, value);
+                        MapEntry<String, ISet<String>> entry = new MapEntry<>(key, emptySet.insert(value));
                         setmap = setmap.insert(entry);
                         addAt(expected, key, value);
                         break;
@@ -198,7 +199,7 @@ public class SetMapStressTester
                     }
                     case 2: { //insert(Entry<K, V>)
                         String value = makeUpdateValue(tokens, random, key, expected);
-                        MapEntry<String, String> entry = new MapEntry<>(key, value);
+                        MapEntry<String, ISet<String>> entry = new MapEntry<>(key, emptySet.insert(value));
                         setmap = setmap.insert(entry);
                         addAt(expected, key, value);
                         break;

@@ -45,7 +45,7 @@ import org.javimmutable.collection.Maybe;
 import org.javimmutable.collection.SplitableIterator;
 import org.javimmutable.collection.common.Conditions;
 import org.javimmutable.collection.common.StreamConstants;
-import org.javimmutable.collection.iterators.EntryStreamable;
+import org.javimmutable.collection.util.Functions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,9 +110,17 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public ISetMap<K, V> getInsertableSelf()
+    public ISetMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, ISet<V>>> iterator)
     {
-        return this;
+        return Functions.foldLeft((ISetMap<K, V>)this,
+                                  iterator,
+                                  (s, e) -> s.insertAll(e.getKey(), e.getValue()));
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+
     }
 
     @Override
@@ -253,9 +261,9 @@ abstract class AbstractSetMap<K, V>
 
     @Override
     @Nonnull
-    public ISetMap<K, V> insert(@Nonnull IMapEntry<K, V> e)
+    public ISetMap<K, V> insert(@Nonnull IMapEntry<K, ISet<V>> e)
     {
-        return insert(e.getKey(), e.getValue());
+        return assign(e.getKey(), e.getValue());
     }
 
     @Nonnull
@@ -315,9 +323,9 @@ abstract class AbstractSetMap<K, V>
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<K, V>> entries()
+    public IStreamable<IMapEntry<K, ISet<V>>> entries()
     {
-        return new EntryStreamable<>(this);
+        return contents;
     }
 
     @Override

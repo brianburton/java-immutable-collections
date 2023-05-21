@@ -99,10 +99,10 @@ public abstract class AbstractSetMapTestCase
         assertSame(map.getSet(1), map.get(1));
         assertEquals(2, map.getSet(1).size());
 
-        map = map.insert(IMapEntry.of(3, 87));
-        map = map.insert(IMapEntry.of(2, 87));
-        map = map.insert(IMapEntry.of(1, 87));
-        map = map.insert(IMapEntry.of(1, 87));
+        map = map.insert(3, 87);
+        map = map.insert(2, 87);
+        map = map.insert(1, 87);
+        map = map.insert(1, 87);
         assertFalse(map.isEmpty());
         assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
@@ -523,15 +523,17 @@ public abstract class AbstractSetMapTestCase
 
     private static void verifyCollector(ISetMap<Integer, Integer> template)
     {
+        ISetMap<Integer, Integer> expected = template;
         Collection<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 500; ++i) {
             values.add(IMapEntry.of(i, i));
+            expected = expected.insert(i, i);
             if (i % 2 == 0) {
                 values.add(IMapEntry.of(i, -i));
+                expected = expected.insert(i, -i);
             }
         }
 
-        ISetMap<Integer, Integer> expected = template.insertAll(values);
         ISetMap<Integer, Integer> actual = values.parallelStream().collect(template.toCollector());
         assertEquals(expected, actual);
     }

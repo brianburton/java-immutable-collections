@@ -48,9 +48,8 @@ import java.util.stream.Collector;
  */
 @Immutable
 public interface ISetMap<K, V>
-    extends Insertable<IMapEntry<K, V>, ISetMap<K, V>>,
+    extends ICollection<IMapEntry<K, ISet<V>>>,
             Mapped<K, ISet<V>>,
-            IStreamable<IMapEntry<K, ISet<V>>>,
             InvariantCheckable,
             Serializable
 {
@@ -76,7 +75,7 @@ public interface ISetMap<K, V>
      */
     @Nonnull
     @Override
-    ISetMap<K, V> insert(@Nonnull IMapEntry<K, V> value);
+    ISetMap<K, V> insert(@Nonnull IMapEntry<K, ISet<V>> value);
 
     /**
      * Add value to the Set for the specified key. Note that if the value has already been
@@ -90,15 +89,32 @@ public interface ISetMap<K, V>
      * Adds all of the elements of the specified Iterable to the Set for the specified key.
      */
     @Nonnull
-    ISetMap<K, V> insertAll(@Nonnull K key,
-                            @Nonnull Iterable<? extends V> values);
+    default ISetMap<K, V> insertAll(@Nonnull K key,
+                                    @Nonnull Iterable<? extends V> values)
+    {
+        return assign(key, getSet(key).insertAll(values));
+    }
 
     /**
      * Adds all of the elements of the specified collection to the Set for the specified key.
      */
     @Nonnull
-    ISetMap<K, V> insertAll(@Nonnull K key,
-                            @Nonnull Iterator<? extends V> values);
+    default ISetMap<K, V> insertAll(@Nonnull K key,
+                                    @Nonnull Iterator<? extends V> values)
+    {
+        return assign(key, getSet(key).insertAll(values));
+    }
+
+    @Nonnull
+    @Override
+    ISetMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, ISet<V>>> iterator);
+
+    @Nonnull
+    @Override
+    default ISetMap<K, V> insertAll(@Nonnull Iterable<? extends IMapEntry<K, ISet<V>>> iterable)
+    {
+        return insertAll(iterable.iterator());
+    }
 
     /**
      * Determines if the setmap contains the specified key.
@@ -285,7 +301,7 @@ public interface ISetMap<K, V>
     }
 
     /**
-     * @return an equivalent collectin with no values
+     * @return an equivalent collection with no values
      */
     @Nonnull
     ISetMap<K, V> deleteAll();
@@ -309,7 +325,7 @@ public interface ISetMap<K, V>
      * Creates an IStreamable to access all of the Map's entries.
      */
     @Nonnull
-    IStreamable<IMapEntry<K, V>> entries();
+    IStreamable<IMapEntry<K, ISet<V>>> entries();
 
     /**
      * Processes every key/set pair in this map using the provided function.
@@ -339,6 +355,10 @@ public interface ISetMap<K, V>
     @Nonnull
     default Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> toCollector()
     {
-        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b.entries()));
+        return GenericCollector.unordered(this,
+                                          deleteAll(),
+                                          a -> a.isEmpty(),
+                                          (a, e) -> a.insert(e.getKey(), e.getValue()),
+                                          (a, b) -> a.insertAll(b.entries()));
     }
 }

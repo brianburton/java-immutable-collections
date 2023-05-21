@@ -38,6 +38,7 @@ package org.javimmutable.collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.stream.Collector;
 
@@ -48,7 +49,8 @@ import java.util.stream.Collector;
 public interface IListMap<K, V>
     extends ICollection<IMapEntry<K, IList<V>>>,
             Mapped<K, IList<V>>,
-            InvariantCheckable
+            InvariantCheckable,
+            Serializable
 {
     @Nonnull
     @Override

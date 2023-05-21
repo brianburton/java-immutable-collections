@@ -45,8 +45,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import static java.util.Arrays.asList;
-
 public class OrderedSetMapTest
     extends AbstractSetMapTestCase
 {
@@ -88,9 +86,9 @@ public class OrderedSetMapTest
         ISetMap<String, String> empty = OrderedSetMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM8y9KSS1KTQlOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3yjGpuKQoMbkEh1kF5RwMDMwvGYCgAgCckAYPqAAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM8y9KSS1KTQlOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3yjGpuKQoMbkEh1kF5RwMDMwvGRgYGEsYGB3LWaCsxAoAn0js0bYAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM8y9KSS1KTQlOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3yjGpuKQoMbkEh1kF5RwMDMwvGYBECQOjYzkLkMUIZCUWMtQxsMC5SUAcBeclVwAAIZMm6NMAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM8y9KSS1KTQlOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3yjGpuKQoMbkEh1kF5RwMDMwvGRgYmEoYGB3LWYAsBiArCcxiBLKcKgDj80SEwAAAAA==");

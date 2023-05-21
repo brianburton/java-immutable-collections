@@ -46,8 +46,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import static java.util.Arrays.asList;
-
 public class HashSetMapTest
     extends AbstractSetMapTestCase
 {
@@ -89,9 +87,9 @@ public class HashSetMapTest
         ISetMap<String, String> empty = HashSetMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM80gszghOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5RwMDMwvGYCgAgBoXpNBpQAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM80gszghOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5RwMDMwvGRgYGEsYGB3LWaCsxAoAyuQfNrMAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM80gszghOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5RwMDMwvGYBECQOjYzkLkMUIZCUCcRScl1zIUMfAAucmVQAAAJi7zdAAAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHM80gszghOLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5RwMDMwvGRgYmEoYGB3LWYAsBiArCcxiBLKcKgAnRApuvQAAAA==");

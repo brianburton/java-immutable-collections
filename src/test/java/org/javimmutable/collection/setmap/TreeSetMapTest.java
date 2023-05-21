@@ -47,8 +47,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import static java.util.Arrays.asList;
-
 public class TreeSetMapTest
     extends AbstractSetMapTestCase
 {
@@ -99,9 +97,9 @@ public class TreeSetMapTest
         ISetMap<String, String> empty = TreeSetMap.of();
         StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW4zxWdmCdA1es75uQWJRSApKKskvwhmFhPMLCANAJtapsrtAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW4zxWdmCdA1es75uQWJRSApKKskvwhmFhPMLAbGEgZGRzgrsQIA7wSRO/sAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW4zxWdmCdA1es75uQWJRSApKKskvwhmFhPMLAbmEgZGRzCLEchKBOIoOC+5kKGOgQ3OTaoAAJINejoYAQAA");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW4zxWdmCdA1es75uQWJRSApKKskvwhmFhPMLAamEgZGRzCLAchKArMYgSynCgBw+y7aBQEAAA==");
@@ -109,9 +107,9 @@ public class TreeSetMapTest
         empty = TreeSetMap.of(String.CASE_INSENSITIVE_ORDER);
         StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty,
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW7TApqXqJeTmJeuF1xSlJmXruKcWJzqmVecmlecWZJZluqcn1uQWJRYkl9UzhxTGxPw9BwTzAAgDQBS8Hn+4gAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert("A", "a"),
                                                      "H4sIAAAAAAAA/1vzloG1uIjBMr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/T684tSgzMSezKhHMCylKTQ1OLfFNLAgoyq+o/A8C/1SMeRgYKooYbIk3xzGpuKQoMbkEh1kF5SwMDMwvgW7TApqXqJeTmJeuF1xSlJmXruKcWJzqmVecmlecWZJZluqcn1uQWJRYkl9UzhxTGxPw9BwTzAAGxhIGRkc4K7ECAHt53cjwAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("a", "b"), IMapEntry.of("Z", "c"))),
+        StandardSerializableTests.verifySerializable(iteratorFactory, TreeSetMapTest::extraSerializationChecks, empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
                                                      "H4sIAAAAAAAA/42OMQrCQBREv0Y7j5HKYhsrCwuxshACsRKbn/AJK5vd+Pcbo6An8izewsLCK6irYik4MDAzxWNON+h6hqHjQq2w1mW5EcwMqdwZQ7loZ5Un1mj0Ht9tzkQpyQyrhF2ze7x0jwc9gIZh9D9nnHlhzOUHq9p2AKJr+NYPPFQGbaFSYW2LeIKeptaT9Vp0TRNXVsgojrfR8rBMLuf2FwBtgRZ+0hqO0A01C168p1ZIefMEP5eJHgMBAAA=");
         StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
                                                      "H4sIAAAAAAAA/43OMQrCQBCF4YnRzmOkstjGysJCU1kIAS3TTMIQVja7YXaMUfBGnsVbWFh4BXUNWApO9U/z8S4PGHmGmeNK7bDVdb0XLAyp0hlDpWhnlSfWaPQJ+2/LRBuSNTYZu+74+twzmY4BOob5/86i8MJYyg+rOQwB4nvYNgkeKoO2UhthbaskRU8r68l6Lbql1NUNMorjQ5yf8+x2HXwBGAhEi74gVNFXFGrZvQGHACY4+gAAAA==");
