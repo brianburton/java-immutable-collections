@@ -59,7 +59,7 @@ public interface ICollection<T>
      * Add all values to the container in some manner appropriate to the implementation.
      */
     @Nonnull
-     ICollection<T> insertAll(@Nonnull Iterable<? extends T> iterable);
+    ICollection<T> insertAll(@Nonnull Iterable<? extends T> iterable);
 
     /**
      * @return number of values in the collection

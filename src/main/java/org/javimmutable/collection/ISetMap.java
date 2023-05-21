@@ -285,20 +285,8 @@ public interface ISetMap<K, V>
     /**
      * Return the number of keys in the map.
      */
+    @Override
     int size();
-
-    /**
-     * @return true only if the set contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return true only if set contains values
-     */
-    default boolean isNonEmpty()
-    {
-        return !isEmpty();
-    }
 
     /**
      * @return an equivalent collection with no values
