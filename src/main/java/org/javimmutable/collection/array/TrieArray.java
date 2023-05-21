@@ -49,6 +49,7 @@ import org.javimmutable.collection.common.StreamConstants;
 import org.javimmutable.collection.iterators.IteratorHelper;
 import org.javimmutable.collection.iterators.TransformIterator;
 import org.javimmutable.collection.serialization.ArrayProxy;
+import org.javimmutable.collection.util.Functions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -156,18 +157,6 @@ public class TrieArray<T>
         return size;
     }
 
-    @Override
-    public boolean isEmpty()
-    {
-        return size == 0;
-    }
-
-    @Override
-    public boolean isNonEmpty()
-    {
-        return size != 0;
-    }
-
     @Nonnull
     @Override
     public IArray<T> deleteAll()
@@ -191,9 +180,16 @@ public class TrieArray<T>
 
     @Nonnull
     @Override
-    public IArray<T> getInsertableSelf()
+    public IArray<T> insertAll(@Nonnull Iterator<? extends IMapEntry<Integer, T>> iterator)
     {
-        return this;
+        return Functions.foldLeft((IArray<T>)this, iterator, IArray::insert);
+    }
+
+    @Nonnull
+    @Override
+    public IArray<T> insertAll(@Nonnull Iterable<? extends IMapEntry<Integer, T>> iterable)
+    {
+        return insertAll(iterable.iterator());
     }
 
     @Override

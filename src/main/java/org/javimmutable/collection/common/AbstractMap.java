@@ -87,18 +87,6 @@ public abstract class AbstractMap<K, V>
         return answer;
     }
 
-    @Override
-    public boolean isEmpty()
-    {
-        return size() == 0;
-    }
-
-    @Override
-    public boolean isNonEmpty()
-    {
-        return size() != 0;
-    }
-
     @Nonnull
     @Override
     public Map<K, V> getMap()

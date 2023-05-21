@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -54,8 +55,7 @@ import java.util.Map;
 @Immutable
 public interface IArray<T>
     extends Indexed<T>,
-            Insertable<IMapEntry<Integer, T>, IArray<T>>,
-            IStreamable<IMapEntry<Integer, T>>,
+            ICollection<IMapEntry<Integer, T>>,
             InvariantCheckable,
             Serializable
 {
@@ -105,6 +105,18 @@ public interface IArray<T>
     @Nonnull
     Maybe<IMapEntry<Integer, T>> findEntry(int index);
 
+    @Nonnull
+    @Override
+    IArray<T> insert(IMapEntry<Integer, T> value);
+
+    @Nonnull
+    @Override
+    IArray<T> insertAll(@Nonnull Iterator<? extends IMapEntry<Integer, T>> iterator);
+
+    @Nonnull
+    @Override
+    IArray<T> insertAll(@Nonnull Iterable<? extends IMapEntry<Integer, T>> iterable);
+
     /**
      * Sets the value associated with a specific index.  Index must be non-null but value
      * can be null.  If the index already has a value in the map the old value is discarded
@@ -130,25 +142,10 @@ public interface IArray<T>
     IArray<T> delete(int index);
 
     /**
-     * Return the number of entries in the map.
-     */
-    @Override
-    int size();
-
-    /**
-     * @return true only if list contains no values
-     */
-    boolean isEmpty();
-
-    /**
-     * @return false only if list contains no values
-     */
-    boolean isNonEmpty();
-
-    /**
      * @return an equivalent collection with no values
      */
     @Nonnull
+    @Override
     IArray<T> deleteAll();
 
     /**

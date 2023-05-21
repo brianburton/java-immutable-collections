@@ -53,23 +53,13 @@ public interface ICollection<T>
      * Add all values to the container in some manner appropriate to the implementation.
      */
     @Nonnull
-    default ICollection<T> insertAll(@Nonnull Iterator<? extends T> iterator)
-    {
-        ICollection<T> container = this;
-        while (iterator.hasNext()) {
-            container = container.insert(iterator.next());
-        }
-        return container;
-    }
+    ICollection<T> insertAll(@Nonnull Iterator<? extends T> iterator);
 
     /**
      * Add all values to the container in some manner appropriate to the implementation.
      */
     @Nonnull
-    default ICollection<T> insertAll(@Nonnull Iterable<? extends T> iterable)
-    {
-        return insertAll(iterable.iterator());
-    }
+     ICollection<T> insertAll(@Nonnull Iterable<? extends T> iterable);
 
     /**
      * @return number of values in the collection
