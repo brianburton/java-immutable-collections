@@ -51,7 +51,7 @@ public class ResultTest
         assertEquals(Result.failure(error), Result.attempt(() -> {
             throw error;
         }));
-        assertThrows(IllegalArgumentException.class, () -> Result.failure(null));
+        assertThrows(IllegalArgumentException.class, () -> Result.failure(null).get());
     }
 
     @Test

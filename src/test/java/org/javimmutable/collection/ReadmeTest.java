@@ -37,6 +37,9 @@ package org.javimmutable.collection;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -52,22 +55,25 @@ import static org.assertj.core.api.Assertions.*;
 public class ReadmeTest
 {
     @Test
-    public void streams() {
+    public void streams()
+    {
         IList<String> source = ILists.of("axle", "wheel", "apple", "wall");
         ISet<String> copied = source.stream().collect(ICollectors.toSet());
         assertEquals(ISets.hashed("axle", "wheel", "apple", "wall"), copied);
     }
 
     @Test
-    public void reduce() {
+    public void reduce()
+    {
         IList<Integer> values = ILists.of(1, 2, 3, 4, 5, 6, 7, 8);
-        assertEquals(36, (int)values.reduce(0, (s,x) -> s + x));        // 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8
-        assertEquals(-18, (int)values.reduce(18, (s,x) -> s - x));      // 18 - 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
-        assertEquals(16, (int)values.reduce(0, (s,x) -> s + (x / 2)));  // 0 + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4
+        assertEquals(36, (int)values.reduce(0, (s, x) -> s + x));        // 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8
+        assertEquals(-18, (int)values.reduce(18, (s, x) -> s - x));      // 18 - 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
+        assertEquals(16, (int)values.reduce(0, (s, x) -> s + (x / 2)));  // 0 + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4
     }
 
     @Test
-    public void listTutorial() {
+    public void listTutorial()
+    {
         {
             IList<Integer> list = ILists.of();
             list = list.insert(10).insert(20).insert(30);
@@ -101,14 +107,15 @@ public class ReadmeTest
             assertEquals(ILists.of("able", "baker", "delta"), source.reject(str -> str.contains("h")));
             assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
             assertEquals(ILists.of("baker", "charlie"),
-                          source.stream()
-                              .filter(str -> str.contains("r"))
-                              .collect(ICollectors.toList()));
+                         source.stream()
+                             .filter(str -> str.contains("r"))
+                             .collect(ICollectors.toList()));
         }
     }
 
     @Test
-    public void mapTutorial() {
+    public void mapTutorial()
+    {
         {
             IMap<Integer, Integer> hmap = IMaps.hashed();
             hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
@@ -173,6 +180,38 @@ public class ReadmeTest
             assertEquals(-25000, array.keys().stream().mapToInt(i -> i).sum());
             assertEquals("ab,ba,ch", array.values().stream().map(x -> x.substring(0, 2)).collect(Collectors.joining(",")));
         }
+    }
+
+    public String callWebService(String host,
+                                 int port)
+        throws IOException
+    {
+        return "";
+    }
+
+    public IList<String> extractHouseAddresses(String webServiceResult)
+        throws ParseException
+    {
+        return ILists.of();
+    }
+
+    public IList<BigDecimal> lookupHouseValues(IList<String> houseAddresses)
+        throws IOException
+    {
+        return ILists.of();
+    }
+
+    @Test
+    public void tropes()
+    {
+        IMap<String, String> envVars = IMaps.hashed(System.getenv());
+        int port = envVars.find("PORT").map(Integer::parseInt).get(80);
+
+        Result<BigDecimal> totalValue =
+            Result.attempt(() -> callWebService("some-host", 443))
+                .map(resultJson -> extractHouseAddresses(resultJson))
+                .map(addresses -> lookupHouseValues(addresses))
+                .map(values -> values.reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
     @Test

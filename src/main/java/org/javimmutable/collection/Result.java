@@ -70,7 +70,7 @@ public abstract class Result<T>
     public static <T> Result<T> failure(@Nonnull Exception value)
     {
         if (value == null) {
-            throw new IllegalArgumentException("Exception cannot be null");
+            value = new IllegalArgumentException("null exception passed to failure()");
         }
         return new Failure<>(value);
     }
