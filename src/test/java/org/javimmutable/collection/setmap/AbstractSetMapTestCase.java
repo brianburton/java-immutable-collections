@@ -239,7 +239,8 @@ public abstract class AbstractSetMapTestCase
 
     private void verifySetOperations(ISetMap<Integer, Integer> emptyMap)
     {
-        ISet<Integer> emptyJet = HashSet.of();
+        ISet<Integer> emptyJet = emptyMap.getSet(1);
+        assert emptyJet.isEmpty();
         final Set<Integer> emptySet = Collections.emptySet();
 
         assertEquals(0, emptyMap.size());
@@ -341,6 +342,20 @@ public abstract class AbstractSetMapTestCase
         verifyExpected(expected, 1, makeSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
+
+        //ICollection.insert to empty set
+        ISet<Integer> valuesSet = emptyJet.insertAll(values);
+        jetMap = emptyMap;
+        expected.put(1, values);
+        verifyExpected(expected, 1, values);
+        verifyContents(jetMap.insert(IMapEntry.of(1, valuesSet)), expected);
+
+        //ICollection.insert to non-empty set
+        valuesSet = emptyJet.insertAll(Arrays.asList(0, 5));
+        jetMap = emptyMap.union(1, values);
+        expected.put(1, withExtra);
+        verifyExpected(expected, 1, withExtra);
+        verifyContents(jetMap.insert(IMapEntry.of(1, valuesSet)), expected);
     }
 
     public void verifyContents(ISetMap<Integer, Integer> jetMap,
@@ -351,6 +366,7 @@ public abstract class AbstractSetMapTestCase
         for (Map.Entry<Integer, Set<Integer>> expectedEntry : expected.entrySet()) {
             Integer key = expectedEntry.getKey();
             Set<Integer> values = expectedEntry.getValue();
+            assertEquals(jetMap.getSet(key).getSet(), values);
             for (Integer v : values) {
                 assertEquals(true, jetMap.contains(key, v));
             }

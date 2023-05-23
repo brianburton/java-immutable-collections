@@ -263,7 +263,7 @@ abstract class AbstractSetMap<K, V>
     @Nonnull
     public ISetMap<K, V> insert(@Nonnull IMapEntry<K, ISet<V>> e)
     {
-        return assign(e.getKey(), e.getValue());
+        return insertAll(e.getKey(), e.getValue());
     }
 
     @Nonnull
