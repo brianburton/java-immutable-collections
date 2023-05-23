@@ -38,11 +38,13 @@ package org.javimmutable.collection.util;
 import org.javimmutable.collection.IArray;
 import org.javimmutable.collection.IMap;
 import org.javimmutable.collection.array.TrieArray;
-import org.javimmutable.collection.common.MutableDelta;
 import org.javimmutable.collection.hash.HashMap;
 import org.javimmutable.collection.inorder.OrderedMap;
 import org.javimmutable.collection.tree.TreeMap;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -63,29 +65,42 @@ public final class MapTimingComparison
         final int seed = Integer.parseInt(argv[0]);
         final int loops = Integer.parseInt(argv[1]);
 
-        MutableDelta javaHashElapsed = new MutableDelta();
-        MutableDelta javaTreeElapsed = new MutableDelta();
-        MutableDelta hashElapsed = new MutableDelta();
-        MutableDelta treeElapsed = new MutableDelta();
-        MutableDelta arrayElapsed = new MutableDelta();
-        MutableDelta inOrderElapsed = new MutableDelta();
+        List<Integer> javaHashTimes = new ArrayList<>();
+        List<Integer> javaTreeTimes = new ArrayList<>();
+        List<Integer> hashTimes = new ArrayList<>();
+        List<Integer> treeTimes = new ArrayList<>();
+        List<Integer> arrayTimes = new ArrayList<>();
+        List<Integer> inOrderTimes = new ArrayList<>();
         System.out.println("warm up runs");
 
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;
         final int maxCommand = 10;
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta(), new MutableDelta());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         System.out.println();
 
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaHashElapsed, javaTreeElapsed, hashElapsed, treeElapsed, arrayElapsed, inOrderElapsed);
+            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaHashTimes, javaTreeTimes, hashTimes, treeTimes, arrayTimes, inOrderTimes);
             System.out.println();
         }
-        System.out.printf("jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n", javaHashElapsed.getValue() / 25.0, javaTreeElapsed.getValue() / 25.0, treeElapsed.getValue() / 25.0, hashElapsed.getValue() / 25.0, arrayElapsed.getValue() / 25.0, inOrderElapsed.getValue() / 25.0);
+        System.out.printf("jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n",
+                          avg(javaHashTimes), avg(javaTreeTimes), avg(treeTimes), avg(hashTimes), avg(arrayTimes), avg(inOrderTimes));
+    }
+
+    private static double avg(List<Integer> times)
+    {
+        times.sort(Comparator.naturalOrder());
+        int tenPercent = (times.size() + 9) / 10;
+        int limit = times.size() - tenPercent;
+        double total = 0.0;
+        for (int i = 0; i < limit; ++i) {
+            total += times.get(i);
+        }
+        return total / (double)limit;
     }
 
     @SuppressWarnings("UnusedAssignment")
@@ -94,12 +109,12 @@ public final class MapTimingComparison
                                 int maxValue,
                                 int maxKey,
                                 int maxCommand,
-                                MutableDelta javaHashElapsed,
-                                MutableDelta javaTreeElapsed,
-                                MutableDelta hashElapsed,
-                                MutableDelta treeElapsed,
-                                MutableDelta arrayElapsed,
-                                MutableDelta inOrderElapsed)
+                                List<Integer> javaHashElapsed,
+                                List<Integer> javaTreeElapsed,
+                                List<Integer> hashElapsed,
+                                List<Integer> treeElapsed,
+                                List<Integer> arrayElapsed,
+                                List<Integer> inOrderElapsed)
         throws Exception
     {
         Random random = new Random(seed);
