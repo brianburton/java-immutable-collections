@@ -77,9 +77,9 @@ public abstract class Maybe<T>
      * Returns a {@link Maybe} containing the value.  Null is a valid value.
      */
     @Nonnull
-    public static <T> Maybe<T> of(T value)
+    public static <T> Maybe<T> of(@Nullable T valueOrNull)
     {
-        return new Full<>(value);
+        return new Full<>(valueOrNull);
     }
 
     /**

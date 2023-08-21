@@ -74,9 +74,9 @@ public abstract class NotNull<T>
      * Returns a {@link NotNull} containing the value.  Null is treated as empty.
      */
     @Nonnull
-    public static <T> NotNull<T> of(T value)
+    public static <T> NotNull<T> of(@Nullable T valueOrNull)
     {
-        return (value == null) ? empty() : new Full<>(value);
+        return (valueOrNull == null) ? empty() : new Full<>(valueOrNull);
     }
 
     /**
@@ -86,15 +86,15 @@ public abstract class NotNull<T>
      * Otherwise returns a Holder containing the value cast to the target type.
      *
      * @param klass class to cast the object to
-     * @param value object to be case
+     * @param valueOrNull object to be case
      * @param <T>   type of the class
      * @return a {@link NotNull}
      */
     public static <T> NotNull<T> cast(@Nonnull Class<T> klass,
-                                      @Nullable Object value)
+                                      @Nullable Object valueOrNull)
     {
-        if (klass.isInstance(value)) {
-            return of(klass.cast(value));
+        if (klass.isInstance(valueOrNull)) {
+            return of(klass.cast(valueOrNull));
         } else {
             return empty();
         }
