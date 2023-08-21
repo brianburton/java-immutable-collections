@@ -69,7 +69,7 @@ import java.util.TreeSet;
 
 /**
  * Test program to run an infinite loop feeding data to every implementation of every
- * JImmutable collection type, querying the data, and deleting the data to verify
+ * collection type, querying the data, and deleting the data to verify
  * the collection always contains what it should.
  */
 public class RunStressTests

@@ -51,8 +51,8 @@ import java.util.stream.Collectors;
 
 /**
  * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
- * Each version of the method will first generate a goal size. Then it will grow the JImmutable by a third of
- * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the JImmutable is the
+ * Each version of the method will first generate a goal size. Then it will grow the collection by a third of
+ * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the collection is the
  * generated size. All the values are then deleted.
  */
 abstract class StressTester
@@ -77,7 +77,7 @@ abstract class StressTester
 
     protected String getNameOption(Object obj)
     {
-        return obj.getClass().getSimpleName().replaceFirst("JImmutable", "").replace("Empty", "").toLowerCase();
+        return obj.getClass().getSimpleName().replaceFirst("I", "").replace("Empty", "").toLowerCase();
     }
 
     protected static String getName(Object obj)

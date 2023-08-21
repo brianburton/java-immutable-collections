@@ -113,14 +113,14 @@ public class MapStressTester<K extends KeyWrapper<String>>
                            KeyFactory factory)
     {
         if (map instanceof HashMap) {
-            String name = map.getClass().getSimpleName().replace("Empty", "").replaceFirst("JImmutable", "");
+            String name = map.getClass().getSimpleName().replace("Empty", "").replaceFirst("I", "");
             if (factory instanceof BadHashKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
                 name = "Bad" + name;
             }
             if (factory instanceof ComparableRegularKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
                 name = "Comparable" + name;
             }
-            return "JImmutable" + name;
+            return "I" + name;
         } else {
             return getName(map);
         }
