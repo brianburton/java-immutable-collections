@@ -42,10 +42,10 @@ import java.util.Objects;
 /**
  * Container object holding two SplitableIterators.  The two Iterators visit different
  * elements from the same original Iterator.  The left Iterator always visits elements
- * that would that come before the elements visited by the right Iterator in the
- * original Iterator.  Visiting all elements in the left Iterator and then visiting
- * all elements in the right Iterator yields exactly the same elements as visiting
- * all elements from the original Iterator.
+ * that come before the elements visited by the right Iterator in the original Iterator.
+ * Visiting all elements in the left Iterator and then visiting all elements in the right
+ * Iterator yields exactly the same elements as visiting all elements from the original
+ * Iterator.
  */
 @Immutable
 public class SplitIterator<T>

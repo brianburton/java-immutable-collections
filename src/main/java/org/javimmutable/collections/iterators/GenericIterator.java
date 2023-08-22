@@ -154,20 +154,21 @@ public class GenericIterator<T>
          * or null (if there is no next position).  The returned State might be this State object or a new
          * State, or null.  The returned State might have a value or it might be empty.
          */
+        @Nullable
         State<T> advance();
     }
 
     @Override
     public synchronized boolean hasNext()
     {
-        advanceStateToStartingPositionIfNecessary();
+        advanceStateToNextPositionIfNecessary();
         return stateHasValue();
     }
 
     @Override
     public synchronized T next()
     {
-        advanceStateToStartingPositionIfNecessary();
+        advanceStateToNextPositionIfNecessary();
         if (!stateHasValue()) {
             throw new NoSuchElementException();
         }
@@ -202,12 +203,15 @@ public class GenericIterator<T>
      * starting a new iteration otherwise it calls advance if necessary to move to the first
      * available position.
      */
-    private void advanceStateToStartingPositionIfNecessary()
+    private void advanceStateToNextPositionIfNecessary()
     {
         if (uninitialized) {
+            // create a starting state on first pass
             state = root.iterateOverRange(null, offset, limit);
             uninitialized = false;
         }
+        // Advance until we reach a state with a value or run out of states to try.
+        // We need the loop because it's possible for a state to be empty but be followed by a non-empty one.
         while (state != null && !state.hasValue()) {
             state = state.advance();
         }
@@ -411,9 +415,9 @@ public class GenericIterator<T>
     {
         private final State<T> parent;
         private final Indexed<? extends Iterable<T>> collections;
-        private int offset;
-        private int limit;
-        private int index;
+        private int offset;  // offset relative to remaining Iterables
+        private int limit;   // limit relative to remaining Iterables
+        private int index;   // index of next Iterable to iterator over
 
         private MultiIterableState(@Nullable State<T> parent,
                                    @Nonnull Indexed<? extends Iterable<T>> collections,
@@ -431,16 +435,16 @@ public class GenericIterator<T>
         public State<T> advance()
         {
             final Iterable<T> collection = collections.get(index);
-            final int size = collection.iterableSize();
-            if (offset >= size) {
+            final int collectionSize = collection.iterableSize();
+            if (offset >= collectionSize) {
                 // Starting point for iteration is somewhere beyond this collection.
                 // Advance to the next collection to try again.  Offset and limit have
                 // to be adjusted accordingly for the next collection.
                 index += 1;
-                offset -= size;
-                limit -= size;
+                offset -= collectionSize;
+                limit -= collectionSize;
                 return this;
-            } else if (limit <= size) {
+            } else if (limit <= collectionSize) {
                 // this collection contains all remaining values so pass control to it forever
                 return collection.iterateOverRange(parent, offset, limit);
             } else {
@@ -448,10 +452,10 @@ public class GenericIterator<T>
                 // passing us as parent so we can resume control once it's exhausted.
                 // Offset and limit have to be adjusted to resume at the next collection
                 // when we get control again.
-                final State<T> answer = collection.iterateOverRange(this, offset, size);
+                final State<T> answer = collection.iterateOverRange(this, offset, collectionSize);
                 index += 1;
                 offset = 0;
-                limit -= size;
+                limit -= collectionSize;
                 return answer;
             }
         }
