@@ -93,11 +93,11 @@
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.0-jre</version>
-            <scope>test</scope>
+            <version>32.1.2-jre</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
