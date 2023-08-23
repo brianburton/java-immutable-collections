@@ -253,4 +253,47 @@ public final class IMaps
             return Functions.assignAll(OrderedMap.of(), source);
         }
     }
+
+    /**
+     * Constructs a Builder to produce unsorted maps.
+     * <p>
+     * Implementation note: The map will adopt a hash code collision strategy based on
+     * the first key added.  All keys in the map must either implement Comparable (and
+     * be comparable to all other keys in the map) or not implement Comparable.  Attempting to use keys
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous keys in any map.
+     */
+    @Nonnull
+    public static <K, V> IMapBuilder<K, V> hashedBuilder()
+    {
+        return HashMap.builder();
+    }
+
+    /**
+     * Create a Builder to construct sorted maps using the natural order of the keys.
+     */
+    @Nonnull
+    public static <K extends Comparable<K>, V> IMapBuilder<K, V> sortedBuilder()
+    {
+        return TreeMap.builder();
+    }
+
+    /**
+     * Create a Builder to construct sorted maps using the specified Comparator for keys.
+     */
+    @Nonnull
+    public static <K, V> IMapBuilder<K, V> sortedBuilder(@Nonnull Comparator<K> comparator)
+    {
+        return TreeMap.builder(comparator);
+    }
+
+    /**
+     * Create a Builder to construct maps whose iterators visit entries in the same order they were
+     * added to the map.
+     */
+    @Nonnull
+    public static <K, V> IMapBuilder<K, V> orderedBuilder()
+    {
+        return OrderedMap.builder();
+    }
 }

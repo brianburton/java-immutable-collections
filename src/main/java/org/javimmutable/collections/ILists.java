@@ -83,4 +83,13 @@ public final class ILists
     {
         return TreeList.of(source.iterator());
     }
+
+    /**
+     * Produces a Builder for efficiently constructing a IList built atop a balanced binary tree.
+     */
+    @Nonnull
+    public static <T> IListBuilder<T> builder()
+    {
+        return TreeList.listBuilder();
+    }
 }

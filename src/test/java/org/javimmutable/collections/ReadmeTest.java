@@ -35,6 +35,9 @@
 
 package org.javimmutable.collections;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -48,9 +51,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static junit.framework.TestCase.assertEquals;
-import static org.assertj.core.api.Assertions.*;
 
 public class ReadmeTest
 {
@@ -226,7 +226,7 @@ public class ReadmeTest
             .insert("strings");
         IList<String> literal = ILists.of("these", "are", "some", "strings");
         IList<String> fromJavaList = ILists.allOf(sourceList);
-        IList<String> fromBuilder = IBuilders.<String>list()
+        IList<String> fromBuilder = ILists.<String>builder()
             .add("these")
             .add("are")
             .addAll("some", "strings")
@@ -255,7 +255,8 @@ public class ReadmeTest
             .map(e -> e.getKey())
             .collect(ICollectors.toList());
         assertThat(primes)
-            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
+            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+                                 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 
         // you can easily grab sub-lists from a list
         assertThat(primes.prefix(7)).isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17));
@@ -278,8 +279,12 @@ public class ReadmeTest
         ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
         ISet<Integer> changed = numbers.reject(i -> i % 3 != 2);
         assertThat(changed).isEqualTo(ISets.hashed(2, 5, 8, 11, 14, 17));
+
         changed = numbers.select(i -> i % 3 == 1);
         assertThat(changed).isEqualTo(ISets.hashed(1, 4, 7, 10, 13, 16, 19));
+
+        IDeque<Integer> transformed = changed.stream().collect(ICollectors.toDeque());
+        assertThat(transformed).isEqualTo(IDeques.of(1, 4, 7, 10, 13, 16, 19));
     }
 
     @Test
@@ -288,8 +293,10 @@ public class ReadmeTest
         IList<Integer> numbers = IntStream.range(1, 21).boxed().collect(ICollectors.toList());
         IList<Integer> changed = numbers.prefix(6);
         assertThat(changed).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6));
+
         changed = numbers.suffix(16);
         assertThat(changed).isEqualTo(ILists.of(17, 18, 19, 20));
+
         changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9, 12)));
         assertThat(changed).isEqualTo(ILists.of(17, 18, 1, 2, 3, 10, 11, 12, 19, 20));
     }
@@ -316,7 +323,7 @@ public class ReadmeTest
     @Test
     public void listMaps()
     {
-        IListMap<String, Integer> index = IListMaps.<String, Integer>sortedListMap()
+        IListMap<String, Integer> index = IListMaps.<String, Integer>sorted()
             .insert("c", 2)
             .insert("a", 1)
             .insert("d", 640)

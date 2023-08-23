@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections;
 
+import static java.util.Arrays.asList;
 import junit.framework.TestCase;
 import org.javimmutable.collections.array.TrieArray;
 import org.javimmutable.collections.hash.EmptyHashMap;
@@ -75,8 +76,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static java.util.Arrays.asList;
 
 @SuppressWarnings("unchecked")
 public class StaticConstructorsTest
@@ -125,7 +124,7 @@ public class StaticConstructorsTest
                       () -> IArrays.allOf(asList("c", "a", "d", "a")));
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
-                      () -> IBuilders.array().add(asList("c", "a", "d", "a")).build());
+                      () -> IArrays.builder().add(asList("c", "a", "d", "a")).build());
         verifyOrdered(isArray,
                       asList(entry(0, "c"), entry(1, "a"), entry(2, "d"), entry(3, "a")),
                       () -> Stream.of("c", "a", "d", "a").collect(ICollectors.toArray()));
@@ -140,7 +139,7 @@ public class StaticConstructorsTest
         assertEquals(list, ILists.allOf(input.iterator()));
         assertEquals(list, ILists.allOf(list));
         assertEquals(list, ILists.of(1, 2, 3));
-        assertEquals(list, IBuilders.<Integer>list().addAll(input).build());
+        assertEquals(list, ILists.<Integer>builder().addAll(input).build());
         assertEquals(list, ILists.allOf(IteratorHelper.plainIterable(asList(1, 2, 3))));
 
         verifyOrdered(isList, asList(), () -> ILists.of());
@@ -149,7 +148,7 @@ public class StaticConstructorsTest
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(ISets.ordered("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(iterator("a", "b", "c")));
         verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.allOf(asList("a", "b", "c")));
-        verifyOrdered(isList, asList("a", "b", "c"), () -> IBuilders.list().addAll("a", "b", "c").build());
+        verifyOrdered(isList, asList("a", "b", "c"), () -> ILists.builder().addAll("a", "b", "c").build());
         verifyOrdered(isList, asList("a", "b", "c"), () -> Stream.of("a", "b", "c").collect(ICollectors.toList()));
     }
 
@@ -180,7 +179,7 @@ public class StaticConstructorsTest
         verifyUnordered(isEmptyMap, asList(), () -> IMaps.hashed());
         final List<IMapEntry<String, String>> entries = asList(entry("z", "1"), entry("x", "2"), entry("w", "3"), entry("y", "4"));
         verifyUnordered(isMap, entries, () -> IMaps.hashed(map(entries)));
-        verifyUnordered(isMap, entries, () -> IBuilders.<String, String>map().add(entries).build());
+        verifyUnordered(isMap, entries, () -> IMaps.<String, String>hashedBuilder().add(entries).build());
     }
 
     public void testSortedMap()
@@ -211,12 +210,12 @@ public class StaticConstructorsTest
 
         verifyOrdered(isSortedMap, asList(), () -> IMaps.sorted());
         verifyOrdered(isSortedMap, sorted, () -> IMaps.sorted(map(entries)));
-        verifyOrdered(isSortedMap, sorted, () -> IBuilders.<String, String>sortedMap().add(entries).build());
+        verifyOrdered(isSortedMap, sorted, () -> IMaps.<String, String>sortedBuilder().add(entries).build());
         verifyOrdered(isSortedMap, sorted, () -> entries.stream().collect(ICollectors.toSortedMap()));
 
         verifyOrdered(isSortedMap, asList(), () -> IMaps.sorted());
         verifyOrdered(isSortedMap, reversed, () -> IMaps.sorted(reverse, map(entries)));
-        verifyOrdered(isSortedMap, reversed, () -> IBuilders.<String, String>sortedMap(reverse).add(entries).build());
+        verifyOrdered(isSortedMap, reversed, () -> IMaps.<String, String>sortedBuilder(reverse).add(entries).build());
         verifyOrdered(isSortedMap, reversed, () -> entries.stream().collect(ICollectors.toSortedMap(reverse)));
     }
 
@@ -233,7 +232,7 @@ public class StaticConstructorsTest
         IMap<String, String> iomap = IMaps.ordered(map(entries));
         assertSame(iomap, IMaps.ordered(iomap));
 
-        assertEquals(IMaps.<String, String>ordered().insertAll(entries), IBuilders.orderedMap().add(entries).build());
+        assertEquals(IMaps.<String, String>ordered().insertAll(entries), IMaps.orderedBuilder().add(entries).build());
     }
 
     public void testSet()
@@ -245,7 +244,7 @@ public class StaticConstructorsTest
         assertEquals(set, ISets.hashed(input.iterator()));
         assertEquals(set, ISets.hashed(set));
         assertEquals(set, ISets.hashed(1, 100, 45, 87, 1));
-        assertEquals(set, IBuilders.set().add(1, 100, 45, 87, 1).build());
+        assertEquals(set, ISets.hashedBuilder().add(1, 100, 45, 87, 1).build());
 
         verifyUnordered(isEmptySet, asList(), () -> ISets.hashed());
         verifyUnordered(isSet, asList("a", "b", "c"), () -> ISets.hashed("a", "b", "c"));
@@ -263,8 +262,8 @@ public class StaticConstructorsTest
         assertEquals(set, ISets.sorted(input.iterator()));
         assertEquals(set, ISets.sorted(set));
         assertEquals(set, ISets.sorted(1, 100, 45, 87, 1));
-        assertEquals(set, IBuilders.<Integer>sortedSet().add(1, 100, 45, 87, 1).build());
-        assertEquals(set, IBuilders.sortedSet(ComparableComparator.<Integer>of()).add(1, 100, 45, 87, 1).build());
+        assertEquals(set, ISets.<Integer>sortedBuilder().add(1, 100, 45, 87, 1).build());
+        assertEquals(set, ISets.sortedBuilder(ComparableComparator.<Integer>of()).add(1, 100, 45, 87, 1).build());
         IteratorHelper.iteratorEquals(set.iterator(), asList(1, 45, 87, 100).iterator());
 
         Comparator<Integer> reverser = (a, b) -> -a.compareTo(b);
@@ -273,7 +272,7 @@ public class StaticConstructorsTest
         assertEquals(set, ISets.sorted(reverser, input.iterator()));
         assertEquals(set, ISets.sorted(reverser, set));
         assertEquals(set, ISets.sorted(reverser, 1, 100, 45, 87, 1));
-        assertEquals(set, IBuilders.sortedSet(reverser).add(1, 100, 45, 87, 1).build());
+        assertEquals(set, ISets.sortedBuilder(reverser).add(1, 100, 45, 87, 1).build());
         IteratorHelper.iteratorEquals(set.iterator(), asList(100, 87, 45, 1).iterator());
 
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
@@ -301,7 +300,7 @@ public class StaticConstructorsTest
         verifyOrdered(isInsertOrderSet, entries, () -> ISets.ordered("x", "w", "z", "y"));
         verifyOrdered(isInsertOrderSet, entries, () -> ISets.ordered(iterable("x", "w", "z", "y")));
         verifyOrdered(isInsertOrderSet, entries, () -> ISets.ordered(iterator("x", "w", "z", "y")));
-        verifyOrdered(isInsertOrderSet, entries, () -> IBuilders.<String>orderedSet().add("x", "w", "z", "y").build());
+        verifyOrdered(isInsertOrderSet, entries, () -> ISets.<String>orderedBuilder().add("x", "w", "z", "y").build());
         verifyOrdered(isInsertOrderSet, entries, () -> Stream.of("x", "w", "z", "y").collect(ICollectors.toOrderedSet()));
     }
 
@@ -349,19 +348,19 @@ public class StaticConstructorsTest
 
     public void testListMap()
     {
-        verifyUnordered(isListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>listMap().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyUnordered(isListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>hashed().insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testSortedListMap()
     {
         final Comparator<String> reverse = ComparableComparator.<String>of().reversed();
-        verifyOrdered(isSortedListMap, entryList(entry("x", ILists.of(3)), entry("y", ILists.of(1)), entry("z", ILists.of(2))), () -> IListMaps.<String, Integer>sortedListMap().insert("y", 1).insert("z", 2).insert("x", 3));
-        verifyOrdered(isSortedListMap, entryList(entry("z", ILists.of(2)), entry("y", ILists.of(1)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>sortedListMap(reverse).insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isSortedListMap, entryList(entry("x", ILists.of(3)), entry("y", ILists.of(1)), entry("z", ILists.of(2))), () -> IListMaps.<String, Integer>sorted().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isSortedListMap, entryList(entry("z", ILists.of(2)), entry("y", ILists.of(1)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>sorted(reverse).insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testInsertOrderListMap()
     {
-        verifyOrdered(isInsertOrderListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>insertOrderListMap().insert("y", 1).insert("z", 2).insert("x", 3));
+        verifyOrdered(isInsertOrderListMap, entryList(entry("y", ILists.of(1)), entry("z", ILists.of(2)), entry("x", ILists.of(3))), () -> IListMaps.<String, Integer>ordered().insert("y", 1).insert("z", 2).insert("x", 3));
     }
 
     public void testSetMap()

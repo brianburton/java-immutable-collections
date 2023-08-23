@@ -83,25 +83,25 @@ public final class ICollectors
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toListMap()
     {
-        return IListMaps.<K, V>listMap().listMapCollector();
+        return IListMaps.<K, V>hashed().listMapCollector();
     }
 
     @Nonnull
     public static <K, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toOrderedListMap()
     {
-        return IListMaps.<K, V>insertOrderListMap().listMapCollector();
+        return IListMaps.<K, V>ordered().listMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap()
     {
-        return IListMaps.<K, V>sortedListMap().listMapCollector();
+        return IListMaps.<K, V>sorted().listMapCollector();
     }
 
     @Nonnull
     public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IListMap<K, V>> toSortedListMap(@Nonnull Comparator<K> comparator)
     {
-        return IListMaps.<K, V>sortedListMap(comparator).listMapCollector();
+        return IListMaps.<K, V>sorted(comparator).listMapCollector();
     }
 
     /**
@@ -249,8 +249,8 @@ public final class ICollectors
     @Nonnull
     public static <T, K> Collector<T, ?, IListMap<K, T>> groupingBy(@Nonnull Function<? super T, ? extends K> classifier)
     {
-        return GenericCollector.ordered(IListMaps.listMap(),
-                                        IListMaps.listMap(),
+        return GenericCollector.ordered(IListMaps.hashed(),
+                                        IListMaps.hashed(),
                                         IListMap::isEmpty,
                                         (a, v) -> a.insert(classifier.apply(v), v),
                                         (a, b) -> a.insertAll(b.entries()));

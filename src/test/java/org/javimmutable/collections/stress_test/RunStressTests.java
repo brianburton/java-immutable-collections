@@ -102,9 +102,9 @@ public class RunStressTests
         .insert(new SetMapStressTester(ISetMaps.sorted(), TreeMap.class))
         .insert(new SetMapStressTester(ISetMaps.factory(String.class, String.class).withMap(IMaps.sorted()).withSet(ISets.hashed()).create(), TreeMap.class))
 
-        .insert(new ListMapStressTester(IListMaps.listMap(), java.util.HashMap.class))
-        .insert(new ListMapStressTester(IListMaps.insertOrderListMap(), LinkedHashMap.class))
-        .insert(new ListMapStressTester(IListMaps.sortedListMap(), TreeMap.class))
+        .insert(new ListMapStressTester(IListMaps.hashed(), java.util.HashMap.class))
+        .insert(new ListMapStressTester(IListMaps.ordered(), LinkedHashMap.class))
+        .insert(new ListMapStressTester(IListMaps.sorted(), TreeMap.class))
 
         .insert(new ArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
 

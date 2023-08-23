@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
+import org.javimmutable.collections.IMaps;
 import org.javimmutable.collections.Temp;
 
 import java.util.ArrayList;
@@ -122,9 +122,9 @@ public class MapAccessTimingComparison
     {
         javaMapLoop(seed, loops, maxValue, maxKey, "jhash", javaHashElapsed, java.util.HashMap::new);
         javaMapLoop(seed, loops, maxValue, maxKey, "jtree", javaTreeElapsed, java.util.TreeMap::new);
-        iMapLoop(seed, loops, maxValue, maxKey, "hash", hashElapsed, IBuilders::map);
-        iMapLoop(seed, loops, maxValue, maxKey, "tree", treeElapsed, IBuilders::sortedMap);
-        iMapLoop(seed, loops, maxValue, maxKey, "order", inOrderElapsed, IBuilders::orderedMap);
+        iMapLoop(seed, loops, maxValue, maxKey, "hash", hashElapsed, IMaps::hashedBuilder);
+        iMapLoop(seed, loops, maxValue, maxKey, "tree", treeElapsed, IMaps::sortedBuilder);
+        iMapLoop(seed, loops, maxValue, maxKey, "order", inOrderElapsed, IMaps::orderedBuilder);
     }
 
     private static void javaMapLoop(int seed,

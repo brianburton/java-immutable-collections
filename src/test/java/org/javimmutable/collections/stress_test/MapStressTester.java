@@ -35,9 +35,9 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IBuilders;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListBuilder;
+import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMaps;
@@ -45,8 +45,12 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardMapTests;
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.tree.TreeMapTest;
 
@@ -54,9 +58,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-import static org.javimmutable.collections.stress_test.KeyFactory.*;
 
 /**
  * Test program for all implementations of JImmutableMap. Divided into five sections:
@@ -93,7 +94,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
     public IList<String> getOptions()
     {
         final String option = getNameOption(map);
-        final IListBuilder<String> options = IBuilders.list();
+        final IListBuilder<String> options = ILists.builder();
         options.add("map");
         options.add(option);
         if (map instanceof HashMap) {

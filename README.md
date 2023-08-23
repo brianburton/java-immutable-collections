@@ -7,26 +7,26 @@ The immutable collections for Java library (JImmutable Collections) is a bundle 
 collections intended to replace or supplement the standard `java.util` collections. Functional replacements are provided
 for each of the most commonly used collections:
 
-Java Class | JImmutable Interface | Factory Method
---- | --- | ---
-ArrayList | JImmutableList | `JImmutables.list()`
-LinkedList | JImmutableList | `JImmutables.list()`
-HashMap | JImmutableMap | `JImmutables.map()`
-TreeMap | JImmutableMap | `JImmutables.sortedMap()` `JImmutables.sortedMap(Comparator)`
-LinkedHashMap | JImmutableMap | `JImmutables.insertOrderMap()`
-HashSet | JImmutableSet | `JImmutables.set()`
-TreeSet | JImmutableSet | `JImmutables.sortedSet()` `JImmutables.sortedSet(Comparator)`
-LinkedHashSet | JImmutableSet | `JImmutables.insertOrderSet()`
+| Java Class    | JImmutable Interface | Factory Methods                             |
+|---------------|----------------------|---------------------------------------------|
+| ArrayList     | IList                | `ILists.of()`, `ILists.allOf()`             |
+| LinkedList    | IList                | `ILists.of()`, `ILists.allOf()`             |
+| HashMap       | IMap                 | `IMaps.hashed()`                            |
+| TreeMap       | IMap                 | `IMaps.sorted()` `IMaps.sorted(Comparator)` |
+| LinkedHashMap | IMap                 | `IMaps.ordered()`                           |
+| HashSet       | ISet                 | `ISets.hashed()`                            |
+| TreeSet       | ISet                 | `ISets.sorted()` `ISets.sorted(Comparator)` |
+| LinkedHashSet | ISet                 | `ISets.ordered()`                           |
 
 There are also a number of highly useful collections with no equivalent in the standard Java library.
 
-Description | JImmutable Interface | Factory Method
---- | --- | ---
-Map of lists of items related by a key. | JImmutableListMap | `JImmutables.listMap()` `JImmutables.sortedListMap()`  `JImmutables.sortedListMap(Comparator)`  `JImmutables.insertOrderListMap()`
-Map of sets of items related by a key. | JImmutableSetMap | `JImmutables.setMap()` `JImmutables.sortedSetMap()`  `JImmutables.sortedSetMap(Comparator)`  `JImmutables.insertOrderSetMap()`
-Set that tracks number of times any given element was added. | JImmutableMultiset | `JImmutables.multiset()`  `JImmutables.sortedMultiset()` `JImmutables.sortedMultiset(Comparator)` `JImmutables.insertOrderMultiset()`
-Sparse array of elements indexed by an Integer. | JImmutableArray | `JImmutables.array()`
-Stack implemented using a Lisp style head/tail list. | JImmutableStack | `JImmutables.stack()`
+| Description                                                  | JImmutable Interface | Factory Method                                                                                      |
+|--------------------------------------------------------------|----------------------|-----------------------------------------------------------------------------------------------------|
+| Similar to a list but only add and delete at front or back.  | IDeque               | `IDeques.of()` `IDeques.allOf()`                                                                    |
+| Map of lists of items related by a key.                      | IListMap             | `IListMaps.hashed()` `IListMaps.sorted()`  `IListMaps.sorted(Comparator)`  `IListMaps.ordered()`    |
+| Map of sets of items related by a key.                       | ISetMap              | `ISetMaps.hashed()` `ISetMaps.sorted()`  `ISetMaps.sorted(Comparator)`  `ISetMaps.ordered()`        |
+| Set that tracks number of times any given element was added. | IMultiset            | `IMultisets.hashed()`  `IMultisets.sorted()` `IMultisets.sorted(Comparator)` `IMultisets.ordered()` |
+| Sparse array of elements indexed by an Integer.              | IArray               | `IArrays.of()` `IArrays.allOf()`                                                                    |
 
 The collections support these standard Java features:
 
@@ -36,8 +36,8 @@ The collections support these standard Java features:
   values separately or both at the same time.
 - All are `Iterable`. Maps support iterators over their keys and values separately or both at the same time.
 - Where appropriate they provide views that can be passed to code that requires a standard collection interface.  (
-  e.g. `JImmutableMap` has a `getMap()` method to create a view that mplements `Map`)
-- Most provide collectors for use with Streams to create new collections in `collect()` method call.
+  e.g. `IMap` has a `getMap()` method to create a view that implements `Map`)
+- Most provide collectors for use with Streams to create new collections in `collect()` method call. (see `ICollectors`)
 - Most provide efficient builder classes for constructing new collections in imperative fashion.
 
 Immutability/Persistence
@@ -51,24 +51,23 @@ new collection from an old one is extremely fast.
 
 Since the collections are immutable they can be safely shared throughout a program without the need for synchronization
 or defensive copying. In fact structure sharing is a theme throughout the library. For example, you never actually
-create an empty JImmutableList instance. The `JImmutables.list()` factory method always returns a single, shared, empty
+create an empty IList instance. The `ILists.of()` factory method always returns a single, shared, empty
 list instance. The other factory methods work the same way.
 
 The collections are still highly dynamic and fully support addition, deletion, and replacement of elements via efficient
 creation of modified versions of themselves. This sets them apart from the static immutable collections in
 the [Guava](https://github.com/google/guava) collections library.
 
-**Note:** Keep in mind that while the JImmutables themselves are immutable the values you choose to store in them might
+**Note:** Keep in mind that while the collections themselves are immutable the values you choose to store in them might
 not be. Always [use immutable objects as keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys)
 and if you use mutable objects as values be aware that your code could mutate them between when you add them to a
-JImmutable and when you retrieve them later.
+collection and when you retrieve them later.
 
 Dependencies
 ---
 
 The library is designed to have no dependencies on other libraries, but it should interact well with others. Standard
-java interfaces are used where appropriate. Class names were chosen so as not to conflict with Guava's immutable
-container class names or Hibernate's persistent container class names.
+java interfaces are used where appropriate.
 
 # Examples
 
@@ -82,23 +81,23 @@ import static org.javimmutable.collections.util.JImmutables.*;
 Factory Methods
 ---
 
-The `JImmutables` class has static factory methods to make it easy to create new instances. Here are various ways to
+Static factory methods make it easy to create new collections. Here are various ways to
 create the same basic list. Similar factory methods exist for the other collections.
 
 ````
         List<String> sourceList = Arrays.asList("these", "are", "some", "strings");
-        JImmutableList<String> empty = list();
-        JImmutableList<String> aList = empty
+        IList<String> empty = ILists.of();
+        IList<String> aList = empty
             .insert("these")
             .insert("are")
             .insert("some")
             .insert("strings");
-        JImmutableList<String> literal = list("these", "are", "some", "strings");
-        JImmutableList<String> fromJavaList = list(sourceList);
-        JImmutableList<String> fromBuilder = JImmutables.<String>listBuilder()
+        IList<String> literal = ILists.of("these", "are", "some", "strings");
+        IList<String> fromJavaList = ILists.allOf(sourceList);
+        IList<String> fromBuilder = ILists.<String>builder()
             .add("these")
             .add("are")
-            .add("some", "strings")
+            .addAll("some", "strings")
             .build();
         assertThat(aList).isEqualTo(literal);
         assertThat(fromJavaList).isEqualTo(literal);
@@ -127,42 +126,45 @@ Streams can be used along with the provided collector methods to easily create n
 function creates a list of the integer factors (other than 1) of an integer.
 
 ````
-    private JImmutableList<Integer> factorsOf(int number)
+    private IList<Integer> factorsOf(int number)
     {
         final int maxPossibleFactor = (int)Math.sqrt(number);
         return IntStream.range(2, maxPossibleFactor + 1).boxed()
             .filter(candidate -> number % candidate == 0)
-            .collect(listCollector());
+            .collect(ICollectors.toList());
     }
 ````
 
-This code creates a lookup table of all the factors of the first 1000 integers into a `JImmutableMap`.
+This code creates a lookup table of all the factors of the first 1000 integers into an `IMap`.
 
 ````
-    JImmutableMap<Integer, JImmutableList<Integer>> factorMap =
-        IntStream.range(2, 1000).boxed()
-            .map(i -> MapEntry.of(i, factorsOf(i)))
-            .collect(mapCollector());
+        IMap<Integer, IList<Integer>> factorMap =
+            IntStream.range(2, 100).boxed()
+                .map(i -> IMapEntry.of(i, factorsOf(i)))
+                .collect(ICollectors.toMap());
 ````
 
 This code shows how the lookup table could be used to get a list of the prime numbers in the map:
 
 ````
-        JImmutableList<Integer> primes = factorMap.stream()
+        IList<Integer> primes = factorMap.stream()
             .filter(e -> e.getValue().isEmpty())
             .map(e -> e.getKey())
-            .collect(listCollector());
+            .collect(ICollectors.toList());
+        assertThat(primes)
+            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 
+                                 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
 ````
 
 Iteration
 ----
 
 In addition to fully supporting Streams and Iterators the collections also provide their own iteration methods that
-operate in a more functional style. For example the `forEach()` method takes a lamba and invokes it for each element of
+operate in a more functional style. For example the `forEach()` method takes a lambda and invokes it for each element of
 the collection:
 
 ````
-        JImmutableSet<Integer> numbers = IntStream.range(1,20).boxed().collect(setCollector());
+        ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
         numbers.forEach(i -> System.out.println(i));
 ````
 
@@ -171,15 +173,15 @@ transformation. All of these operations can be done with Stream/map/filter/colle
 light-weight versions are faster when a single thread is sufficient for the job.
 
 ````
-        JImmutableSet<Integer> numbers = IntStream.range(1, 20).boxed().collect(setCollector());
-        JImmutableSet<Integer> changed = numbers.reject(i -> i % 3 != 2);
-        assertThat(changed).isEqualTo(set(2, 5, 8, 11, 14, 17));
+        ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
+        ISet<Integer> changed = numbers.reject(i -> i % 3 != 2);
+        assertThat(changed).isEqualTo(ISets.hashed(2, 5, 8, 11, 14, 17));
         
         changed = numbers.select(i -> i % 3 == 1);
-        assertThat(changed).isEqualTo(set(1, 4, 7, 10, 13, 16, 19));
-        
-        JImmutableList<Integer> transformed = changed.collect(list());
-        assertThat(transformed).isEqualTo(list(1, 4, 7, 10, 13, 16, 19));
+        assertThat(changed).isEqualTo(ISets.hashed(1, 4, 7, 10, 13, 16, 19));
+
+        IDeque<Integer> transformed = changed.stream().collect(ICollectors.toDeque());
+        assertThat(transformed).isEqualTo(IDeques.of(1, 4, 7, 10, 13, 16, 19));
 ````
 
 Slicing and Dicing Lists
@@ -190,15 +192,15 @@ from anywhere within themselves. This example shows how various sub-lists can be
 into the middle of another.
 
 ````
-        JImmutableList<Integer> numbers = IntStream.range(1, 21).boxed().collect(listCollector());
-        JImmutableList<Integer> changed = numbers.prefix(6);
-        assertThat(changed).isEqualTo(list(1, 2, 3, 4, 5, 6));
+        IList<Integer> numbers = IntStream.range(1, 21).boxed().collect(ICollectors.toList());
+        IList<Integer> changed = numbers.prefix(6);
+        assertThat(changed).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6));
         
         changed = numbers.suffix(16);
-        assertThat(changed).isEqualTo(list(17, 18, 19, 20));
+        assertThat(changed).isEqualTo(ILists.of(17, 18, 19, 20));
         
-        changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9,12)));
-        assertThat(changed).isEqualTo(list(17,18,1,2,3,10,11,12,19,20));
+        changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9, 12)));
+        assertThat(changed).isEqualTo(ILists.of(17, 18, 1, 2, 3, 10, 11, 12, 19, 20));
 ````
 
 Inserting entire lists will always reuse structure from both lists as much as possible. Likewise, removing sub-lists
@@ -209,18 +211,18 @@ into a builder.
 Maps of Sets and Lists
 ---
 
-The `JImmutableSetMap` makes it easy to index values or accumulate values related to a key. The `JImmutableListMap`
+The `ISetMap` makes it easy to index values or accumulate values related to a key. The `IListMap`
 works similarly but accumulates lists of values by key so it can preserve the order in which they are added and track
 duplicates.
 
 The example below shows a trivial example of indexing a sequence of sentences by the words they contain.
 
 ````
-        JImmutableList<String> source = list("Now is our time.",
-                                             "Our moment has arrived.",
-                                             "Shall we embrace immutable collections?",
-                                             "Or tread in dangerous synchronized bogs forever?");
-        JImmutableSetMap<String, String> index = source
+        IList<String> source = ILists.of("Now is our time.",
+                                         "Our moment has arrived.",
+                                         "Shall we embrace immutable collections?",
+                                         "Or tread in dangerous synchronized waters forever?");
+        ISetMap<String, String> index = source
             .stream()
             .flatMap(line -> Stream.of(line
                                            .toLowerCase()
@@ -228,27 +230,27 @@ The example below shows a trivial example of indexing a sequence of sentences by
                                            .replace("?", "")
                                            .split(" "))
                 .map(word -> MapEntry.entry(word, line)))
-            .collect(setMapCollector());
-        assertThat(index.get("our")).isEqualTo(set("Now is our time.", "Our moment has arrived."));
+            .collect(ICollectors.toSetMap());
+        assertThat(index.get("our")).isEqualTo(ISets.hashed("Now is our time.", "Our moment has arrived."));
 ````
 
 These classes offer a variety of methods for adding elements individually or in groups as well as iterating over all the
 values for a given key as well as over the entire collection.
 
 ````
-        JImmutableListMap<String, Integer> index = JImmutables.<String, Integer>sortedListMap()
+        IListMap<String, Integer> index = IListMaps.<String, Integer>sorted()
             .insert("c", 2)
             .insert("a", 1)
             .insert("d", 640)
             .insert("b", 3)
             .insert("d", 512)
-            .insertAll("a", list(-4, 40, 18)); // could be any Iterable not just list
+            .insertAll("a", ILists.of(-4, 40, 18)); // could be any Iterable not just list
         // keys are sorted in the map
-        assertThat(list(index.keys())).isEqualTo(list("a", "b", "c", "d"));
+        assertThat(ILists.allOf(index.keys())).isEqualTo(ILists.of("a", "b", "c", "d"));
         // values appear in the list in order they are added
-        assertThat(index.getList("a")).isEqualTo(list(1, -4, 40, 18));
-        assertThat(index.getList("d")).isEqualTo(list(640, 512));
-        assertThat(index.getList("x")).isEqualTo(list());
+        assertThat(index.getList("a")).isEqualTo(ILists.of(1, -4, 40, 18));
+        assertThat(index.getList("d")).isEqualTo(ILists.of(640, 512));
+        assertThat(index.getList("x")).isEqualTo(ILists.of());
 ````
 
 ConcurrentModificationException
@@ -266,11 +268,12 @@ modifying a different version of the collection, and the iterator doesn't become
             }
         }).isInstanceOf(ConcurrentModificationException.class);
 
-        JImmutableMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());
-        for (JImmutableMap.Entry<Integer, Integer> entry : myMap) {
+        IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
+        for (IMapEntry<Integer, Integer> entry : myMap) {
             myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
         }
-        assertThat(list(myMap.values())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+        assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+        assertThat(ILists.allOf(myMap.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
 ````
 
 The static collector factory methods create collectors that add elements from the stream to an empty collection.
@@ -279,15 +282,15 @@ than an empty instance). This can be used with a Stream to add entries to the co
 to the map. Some keys update existing entries while others are new keys to be added to the collection.
 
 ````
-        myMap = IntStream.range(1, 11).boxed().map(i -> MapEntry.of(i, i)).collect(mapCollector());  // uses empty map collector
-        JImmutableMap<Integer, Integer> changed = myMap.stream()
-            .map(entry -> MapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
-            .collect(myMap.mapCollector());   // uses an instance based collector
+        myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
+        IMap<Integer, Integer> changed = myMap.stream()
+            .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+            .collect(myMap.mapCollector());
         // 6-10 were updated, 11-15 were added
-        assertThat(list(changed.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-        assertThat(list(changed.values())).isEqualTo(list(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        assertThat(ILists.allOf(changed.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
         // original map is unchanged 
-        assertThat(list(myMap.keys())).isEqualTo(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 ````
 
 Maybe - Avoiding null
@@ -312,7 +315,7 @@ Once you have a Maybe value you can call the `map` method with a lambda that tra
 transformed value can be of the same or another type. If your lambda returns another Maybe you should use the
 `flatMap` method to "unwrap" the resulting value.
 
-````java
+````
 // simplified class for illustration - normally you'd use getters
 class Person
 {
@@ -320,16 +323,18 @@ class Person
   final Maybe<PhoneNumber> homePhone;
   final Maybe<PhoneNumber> mobilePhone;
 }
-  
-  Maybe<Person> customer = customers.lookupCustomerByName("Jones", "Patrick");
-  Maybe<String> email = customer.map(c -> c.emailAddress);
-  // get the area code from the home phone number if we have one, "" otherwise
-  String areaCode = customer.flatMap(c -> c.homePhone)
+
+Maybe<Person> customer = customers.lookupCustomerByName("Jones", "Patrick");
+Maybe<String> email = customer.map(c -> c.emailAddress);
+
+// get the area code from the home phone number if we have one, "" otherwise
+String areaCode = customer.flatMap(c -> c.homePhone)
           .map(phone -> phone.getAreaCode())
           .get("");
+
 // another way to do the same - using match
-areaCode=customer.flatMap(c->c.homePhone)
-        .match("",phone->phone.getAreaCode());
+areaCode = customer.flatMap(c -> c.homePhone)
+                   .match("", phone -> phone.getAreaCode());
 ````
 
 # Resources

@@ -52,7 +52,7 @@ public final class IListMaps
      * Creates a list map with higher performance but no specific ordering of keys.
      */
     @Nonnull
-    public static <K, V> IListMap<K, V> listMap()
+    public static <K, V> IListMap<K, V> hashed()
     {
         return HashListMap.of();
     }
@@ -61,7 +61,7 @@ public final class IListMaps
      * Creates a list map with keys sorted by order they are inserted.
      */
     @Nonnull
-    public static <K, V> IListMap<K, V> insertOrderListMap()
+    public static <K, V> IListMap<K, V> ordered()
     {
         return OrderedListMap.of();
     }
@@ -70,7 +70,7 @@ public final class IListMaps
      * Creates a list map with keys sorted by their natural ordering.
      */
     @Nonnull
-    public static <K extends Comparable<K>, V> IListMap<K, V> sortedListMap()
+    public static <K extends Comparable<K>, V> IListMap<K, V> sorted()
     {
         return TreeListMap.of();
     }
@@ -79,7 +79,7 @@ public final class IListMaps
      * Creates a list map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
      */
     @Nonnull
-    public static <K, V> IListMap<K, V> sortedListMap(@Nonnull Comparator<K> comparator)
+    public static <K, V> IListMap<K, V> sorted(@Nonnull Comparator<K> comparator)
     {
         return TreeListMap.of(comparator);
     }

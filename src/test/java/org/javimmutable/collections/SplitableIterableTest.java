@@ -44,14 +44,14 @@ public class SplitableIterableTest
 {
     public void testIndexedForEach()
     {
-        IListBuilder<Integer> collected = IBuilders.list();
+        IListBuilder<Integer> collected = ILists.builder();
         ILists.of(1, 2, 3).indexedForEach((i, v) -> collected.add(i).add(v));
         assertEquals(ILists.of(0, 1, 1, 2, 2, 3), collected.build());
     }
 
     public void testIndexedForEachThrows()
     {
-        IListBuilder<Integer> collected = IBuilders.list();
+        IListBuilder<Integer> collected = ILists.builder();
         try {
             ILists.of(1, 2, 3).indexedForEachThrows((i, v) -> {
                 if (i == 2) {

@@ -118,4 +118,15 @@ public final class IArrays
     {
         return TrieArray.<T>builder().add(source).build();
     }
+
+    /**
+     * Produces a Builder for efficiently constructing a IArray
+     * built atop a 32-way integer trie.  All values added by the builder are
+     * assigned consecutive indices starting with zero.
+     */
+    @Nonnull
+    public static <T> IArrayBuilder<T> builder()
+    {
+        return TrieArray.builder();
+    }
 }

@@ -269,4 +269,54 @@ public final class ISets
     {
         return OrderedSet.<T>builder().add(source).build();
     }
+
+    /**
+     * Constructs Builder object to produce unsorted sets.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     */
+    @Nonnull
+    public static <T> ISetBuilder<T> hashedBuilder()
+    {
+        return HashSet.builder();
+    }
+
+    /**
+     * Constructs a Builder object to produce sets that sort values in their natural
+     * sort order (using ComparableComparator).
+     */
+    @Nonnull
+    public static <T extends Comparable<T>> ISetBuilder<T> sortedBuilder()
+    {
+        return TreeSet.builder();
+    }
+
+    /**
+     * Constructs a Builder object to produce sets that sort values using specified Comparator.
+     */
+    @Nonnull
+    public static <T> ISetBuilder<T> sortedBuilder(@Nonnull Comparator<T> comparator)
+    {
+        return TreeSet.builder(comparator);
+    }
+
+    /**
+     * Constructs Builder object to produce sets that sort values based on
+     * the order they were originally added to the set.
+     * <p>
+     * Implementation note: The set will adopt a hash code collision strategy based on
+     * the first value assigned to the set.  All values in the map must either implement Comparable (and
+     * be comparable to all other values in the set) or not implement Comparable.  Attempting to use values
+     * some of which implement Comparable and some of which do not will lead to runtime errors.  It is
+     * always safest to use homogeneous values in any set.
+     */
+    @Nonnull
+    public static <T> ISetBuilder<T> orderedBuilder()
+    {
+        return OrderedSet.builder();
+    }
 }

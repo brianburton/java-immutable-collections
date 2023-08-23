@@ -63,7 +63,7 @@ public final class IDeques
     @SafeVarargs
     public static <T> IDeque<T> of(T... values)
     {
-        return IBuilders.<T>deque().addAll(IndexedArray.retained(values)).build();
+        return IDeques.<T>builder().addAll(IndexedArray.retained(values)).build();
     }
 
     /**
@@ -72,7 +72,7 @@ public final class IDeques
     @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source)
     {
-        return IBuilders.<T>deque().addAll(source).build();
+        return IDeques.<T>builder().addAll(source).build();
     }
 
     /**
@@ -81,6 +81,14 @@ public final class IDeques
     @Nonnull
     public static <T> IDeque<T> allOf(@Nonnull Iterable<? extends T> source)
     {
-        return IBuilders.<T>deque().addAll(source).build();
+        return IDeques.<T>builder().addAll(source).build();
+    }
+
+    /**
+     * Produces a Builder for efficiently constructing an IDeque.
+     */
+    public static <T> IDequeBuilder<T> builder()
+    {
+        return ArrayDeque.builder();
     }
 }
