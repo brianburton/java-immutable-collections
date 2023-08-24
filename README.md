@@ -9,6 +9,7 @@ for each of the most commonly used collections:
 
 | Java Class    | JImmutable Interface | Factory Methods                             |
 |---------------|----------------------|---------------------------------------------|
+| ArrayDeque    | IDeque               | `IDeque.of()`, `IDeque.allOf()`             |
 | ArrayList     | IList                | `ILists.of()`, `ILists.allOf()`             |
 | LinkedList    | IList                | `ILists.of()`, `ILists.allOf()`             |
 | HashMap       | IMap                 | `IMaps.hashed()`                            |
