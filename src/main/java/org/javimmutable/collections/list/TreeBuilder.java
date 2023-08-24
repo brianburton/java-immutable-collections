@@ -39,10 +39,8 @@ import org.javimmutable.collections.Indexed;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 @NotThreadSafe
 class TreeBuilder<T>
@@ -164,62 +162,14 @@ class TreeBuilder<T>
         }
     }
 
-    void add(@Nonnull Indexed<? extends T> source)
-    {
-        add(source, 0, source.size());
-    }
-
-    @Nonnull
-    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source)
-    {
-        return nodeFromIndexed(source, 0, source.size());
-    }
-
     @Nonnull
     static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source,
                                                int offset,
                                                int limit)
     {
-        final int sourceSize = limit - offset;
-        if (sourceSize == 0) {
-            return EmptyNode.instance();
-        } else if (sourceSize == 1) {
-            return new OneValueNode<>(source.get(offset));
-        } else if (sourceSize <= MultiValueNode.MAX_SIZE) {
-            return new MultiValueNode<>(source.subArray(offset, limit), sourceSize);
-        }
-
-        final List<AbstractNode<T>> nodes = new ArrayList<>(1 + sourceSize / MultiValueNode.MAX_SIZE);
-        int o = offset;
-        while (o < limit) {
-            final int nodeSize = Math.min(MultiValueNode.MAX_SIZE, limit - o);
-            if (nodeSize == 1) {
-                nodes.add(new OneValueNode<>(source.get(o)));
-            } else {
-                nodes.add(new MultiValueNode<>(source.subArray(o, o + nodeSize), nodeSize));
-            }
-            o += nodeSize;
-        }
-        int nodeCount = nodes.size();
-        while (nodeCount > 1) {
-            int writeIndex = 0;
-            int readIndex = 0;
-            int remaining = nodeCount;
-            while (remaining > 0) {
-                if (remaining > 1) {
-                    nodes.set(writeIndex, BranchNode.balance(nodes.get(readIndex), nodes.get(readIndex + 1)));
-                    readIndex += 2;
-                    writeIndex += 1;
-                    remaining -= 2;
-                } else {
-                    nodes.set(writeIndex - 1, nodes.get(writeIndex - 1).append(nodes.get(readIndex)));
-                    readIndex += 1;
-                    remaining -= 1;
-                }
-            }
-            nodeCount = writeIndex;
-        }
-        return nodes.get(0);
+        TreeBuilder<T> builder = new TreeBuilder<>();
+        builder.add(source, offset, limit);
+        return builder.build();
     }
 
     @Nonnull

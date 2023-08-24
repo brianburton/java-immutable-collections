@@ -47,8 +47,9 @@ import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ListAdaptor;
 import org.javimmutable.collections.common.MutableDelta;
 import org.javimmutable.collections.common.StreamConstants;
-import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
 import org.javimmutable.collections.serialization.TreeListProxy;
 
 import javax.annotation.Nonnull;
@@ -61,8 +62,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
-
-import static org.javimmutable.collections.list.TreeBuilder.*;
 
 @Immutable
 public class TreeList<T>
@@ -472,8 +471,6 @@ public class TreeList<T>
         AbstractNode<T> otherRoot;
         if (values instanceof TreeList) {
             otherRoot = ((TreeList<T>)values).root;
-        } else if (values instanceof List) {
-            otherRoot = TreeBuilder.nodeFromIndexed(IndexedList.retained((List)values));
         } else {
             otherRoot = nodeFromIterator(values.iterator());
         }
@@ -580,7 +577,7 @@ public class TreeList<T>
         @Override
         public synchronized ListBuilder<T> addAll(Indexed<? extends T> source)
         {
-            builder.add(source);
+            builder.add(source, 0, source.size());
             return this;
         }
 
