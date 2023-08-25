@@ -35,7 +35,9 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.Maybe;
 import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
@@ -46,6 +48,7 @@ import org.javimmutable.collections.iterators.StandardIteratorTests;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collector;
@@ -91,6 +94,24 @@ public class ListStressTester
         int size = 1 + random.nextInt(100000);
         System.out.printf("ListStressTest on %s of size %d%n", getName(list), size);
 
+        // Verify that builder and collector work correctly.
+        System.out.println("Filling a builder.");
+        IListBuilder<String> builder = ILists.builder();
+        for (int i = 0; i < size; ++i) {
+            String value = RandomKeyManager.makeValue(tokens, random);
+            expected.add(value);
+            builder.add(value);
+        }
+        System.out.println("Verifying list from builder.");
+        verifyContents(builder.build(), expected);
+        System.out.println("Verifying list from parallel collector.");
+        verifyContents(expected.parallelStream().collect(ICollectors.toList()), expected);
+        System.out.println("Verifying list from reverse method.");
+        Collections.reverse(expected);
+        verifyContents(builder.build().reverse(), expected);
+        expected.clear();
+
+        System.out.println("Starting step tests.");
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             assert expected.size() == list.size();
             System.out.printf("growing %d%n", list.size());

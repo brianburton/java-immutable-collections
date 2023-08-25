@@ -35,7 +35,10 @@
 
 package org.javimmutable.collections.stress_test;
 
+import org.javimmutable.collections.ICollectors;
 import org.javimmutable.collections.IDeque;
+import org.javimmutable.collections.IDequeBuilder;
+import org.javimmutable.collections.IDeques;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 import org.javimmutable.collections.Maybe;
@@ -47,6 +50,7 @@ import org.javimmutable.collections.iterators.StandardIteratorTests;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collector;
@@ -91,6 +95,24 @@ public class DequeStressTester
         int size = 1 + random.nextInt(100000);
         System.out.printf("DequeStressTest on %s of size %d%n", getName(deque), size);
 
+        // Verify that builder and collector work correctly.
+        System.out.println("Filling a builder.");
+        IDequeBuilder<String> builder = IDeques.builder();
+        for (int i = 0; i < size; ++i) {
+            String value = RandomKeyManager.makeValue(tokens, random);
+            expected.add(value);
+            builder.add(value);
+        }
+        System.out.println("Verifying deque from builder.");
+        verifyContents(builder.build(), expected);
+        System.out.println("Verifying deque from parallel collector.");
+        verifyContents(expected.parallelStream().collect(ICollectors.toDeque()), expected);
+        System.out.println("Verifying deque from reverse method.");
+        Collections.reverse(expected);
+        verifyContents(builder.build().reverse(), expected);
+        expected.clear();
+
+        System.out.println("Starting step tests.");
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(6, size, random)) {
             assert expected.size() == deque.size();
             System.out.printf("growing %d%n", deque.size());
