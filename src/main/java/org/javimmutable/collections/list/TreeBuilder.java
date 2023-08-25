@@ -56,7 +56,7 @@ class TreeBuilder<T>
         buffer = (T[])new Object[MultiValueNode.MAX_SIZE];
     }
 
-    void clear()
+    synchronized void clear()
     {
         Arrays.fill(buffer, null);
         count = 0;
@@ -65,7 +65,7 @@ class TreeBuilder<T>
     }
 
     @Nonnull
-    AbstractNode<T> build()
+    synchronized AbstractNode<T> build()
     {
         AbstractNode<T> answer;
         switch (count) {
@@ -85,7 +85,7 @@ class TreeBuilder<T>
         return answer;
     }
 
-    int size()
+    synchronized int size()
     {
         return size;
     }
@@ -96,7 +96,7 @@ class TreeBuilder<T>
      * branch using the left node and proceeds further using the right node.
      * At the leaf all values are copied into the buffer.
      */
-    void rebuild(@Nonnull AbstractNode<T> node)
+    synchronized void rebuild(@Nonnull AbstractNode<T> node)
     {
         count = 0;
         size = node.size();
@@ -110,7 +110,7 @@ class TreeBuilder<T>
         }
     }
 
-    void add(T value)
+    synchronized void add(T value)
     {
         buffer[count++] = value;
         if (count == MultiValueNode.MAX_SIZE) {
@@ -125,27 +125,27 @@ class TreeBuilder<T>
         size += 1;
     }
 
-    void add(@Nonnull Iterator<? extends T> source)
+    synchronized void add(@Nonnull Iterator<? extends T> source)
     {
         while (source.hasNext()) {
             add(source.next());
         }
     }
 
-    void add(@Nonnull Iterable<? extends T> source)
+    synchronized void add(@Nonnull Iterable<? extends T> source)
     {
         add(source.iterator());
     }
 
     @SafeVarargs
-    final <K extends T> void add(K... source)
+    synchronized final <K extends T> void add(K... source)
     {
         for (K k : source) {
             add(k);
         }
     }
 
-    void add(@Nonnull Indexed<? extends T> source,
+    synchronized void add(@Nonnull Indexed<? extends T> source,
              int offset,
              int limit)
     {
@@ -172,7 +172,7 @@ class TreeBuilder<T>
         return builder.build();
     }
 
-    void checkInvariants()
+    synchronized void checkInvariants()
     {
         if (size != computeSize()) {
             throw new IllegalStateException("size mismatch");

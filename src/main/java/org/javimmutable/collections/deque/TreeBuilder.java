@@ -156,7 +156,7 @@ class TreeBuilder<T>
             }
         }
 
-        void clear()
+        private void clear()
         {
             Arrays.fill(values, null);
             next = null;

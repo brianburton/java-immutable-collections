@@ -515,37 +515,27 @@ public class TreeList<T>
         @Override
         public TreeList<T> build()
         {
-            return create(buildImpl());
+            return create(builder.build());
         }
 
         @Nonnull
         public ListBuilder<T> combineWith(@Nonnull ListBuilder<T> other)
         {
-            AbstractNode<T> myRoot = buildImpl();
-            AbstractNode<T> theirRoot = other.buildImpl();
-            rebuildImpl(myRoot.append(theirRoot));
+            AbstractNode<T> myRoot = builder.build();
+            AbstractNode<T> theirRoot = other.builder.build();
+            builder.rebuild(myRoot.append(theirRoot));
             return this;
         }
 
-        private synchronized AbstractNode<T> buildImpl()
-        {
-            return builder.build();
-        }
-
-        private synchronized void rebuildImpl(AbstractNode<T> newTree)
-        {
-            builder.rebuild(newTree);
-        }
-
         @Override
-        public synchronized int size()
+        public int size()
         {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> add(T value)
+        public ListBuilder<T> add(T value)
         {
             builder.add(value);
             return this;
@@ -553,7 +543,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> addAll(Iterator<? extends T> source)
+        public ListBuilder<T> addAll(Iterator<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -561,7 +551,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> addAll(Iterable<? extends T> source)
+        public ListBuilder<T> addAll(Iterable<? extends T> source)
         {
             builder.add(source);
             return this;
@@ -569,7 +559,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized <K extends T> ListBuilder<T> addAll(K... source)
+        public <K extends T> ListBuilder<T> addAll(K... source)
         {
             builder.add(source);
             return this;
@@ -577,9 +567,9 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> addAll(Indexed<? extends T> source,
-                                                  int offset,
-                                                  int limit)
+        public ListBuilder<T> addAll(Indexed<? extends T> source,
+                                     int offset,
+                                     int limit)
         {
             builder.add(source, offset, limit);
             return this;
@@ -587,7 +577,7 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> addAll(Indexed<? extends T> source)
+        public ListBuilder<T> addAll(Indexed<? extends T> source)
         {
             builder.add(source, 0, source.size());
             return this;
@@ -595,13 +585,13 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized ListBuilder<T> clear()
+        public ListBuilder<T> clear()
         {
             builder.clear();
             return this;
         }
 
-        public synchronized void checkInvariants()
+        public void checkInvariants()
         {
             builder.checkInvariants();
         }
