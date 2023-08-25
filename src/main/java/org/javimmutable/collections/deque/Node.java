@@ -77,6 +77,9 @@ interface Node<T>
                       boolean forwardOrder,
                       @Nonnull Iterator<? extends T> values);
 
+    @Nonnull
+    Node<T> reverse();
+
     int computedSize();
 
     @Nonnull

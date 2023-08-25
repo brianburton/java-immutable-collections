@@ -49,7 +49,7 @@ public class LeafNodeTest
     {
         Random r = new Random(10L);
         for (int loop = 1; loop <= 1000; ++loop) {
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             Node<Integer> node = EmptyNode.of();
             for (int i = 1; i <= 32; ++i) {
                 if (r.nextBoolean()) {
@@ -70,7 +70,7 @@ public class LeafNodeTest
     {
         Random r = new Random(10L);
         for (int loop = 1; loop <= 1000; ++loop) {
-            List<Integer> expected = new ArrayList<Integer>();
+            List<Integer> expected = new ArrayList<>();
             Node<Integer> node = EmptyNode.of();
             for (int i = 1; i <= 32; ++i) {
                 expected.add(i);
@@ -100,7 +100,7 @@ public class LeafNodeTest
 
     public void testInsertFirstBranchCreation()
     {
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {
             expected.add(0, i);
@@ -118,7 +118,7 @@ public class LeafNodeTest
 
     public void testInsertLastBranchCreation()
     {
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {
             expected.add(i);
@@ -136,7 +136,7 @@ public class LeafNodeTest
 
     public void testAssign()
     {
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {
             expected.add(i);
@@ -151,6 +151,16 @@ public class LeafNodeTest
             assertTrue(node instanceof LeafNode);
             node.checkInvariants();
             StandardIteratorTests.listIteratorTest(expected, node.iterator());
+        }
+    }
+
+    public void testReverse() {
+        Node<Integer> node = EmptyNode.of();
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 0; i <= 32; ++i) {
+            StandardIteratorTests.listIteratorTest(expected, node.reverse().iterator());
+            node = node.insertLast(i);
+            expected.add(0, i);
         }
     }
 }

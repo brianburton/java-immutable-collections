@@ -471,6 +471,18 @@ class BranchNode<T>
         suffix.checkInvariants();
     }
 
+    @Nonnull
+    @Override
+    public Node<T> reverse()
+    {
+        Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length);
+        int to = newNodes.length;
+        for (Node<T> node : nodes) {
+            newNodes[--to] = node.reverse();
+        }
+        return new BranchNode<>(depth, size, suffix.reverse(), newNodes, prefix.reverse());
+    }
+
     Node<T> prefix()
     {
         return prefix;

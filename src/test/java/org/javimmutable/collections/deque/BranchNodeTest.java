@@ -36,6 +36,8 @@
 package org.javimmutable.collections.deque;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
 import java.util.ArrayList;
@@ -126,6 +128,25 @@ public class BranchNodeTest
         } catch (IllegalStateException ignored) {
             // expected
         }
+    }
+
+    public void testReverse() {
+        Node<Integer> prefix = LeafNode.fromList(IndexedHelper.range(-3,0), 0, 4);
+        Node<Integer> filled1 = LeafNode.fromList(IndexedHelper.range(1,32), 0, 32);
+        Node<Integer> filled2 = LeafNode.fromList(IndexedHelper.range(33,64), 0, 32);
+        Node<Integer> suffix = LeafNode.fromList(IndexedHelper.range(65,68), 0, 4);
+        Node<Integer>[] nodes = DequeHelper.allocateNodes(2);
+        nodes[0] = filled1;
+        nodes[1] = filled2;
+        assertEquals(true, filled1.isFull());
+        assertEquals(true, filled2.isFull());
+        Node<Integer> node = BranchNode.forTesting(prefix, nodes, suffix);
+        Indexed<Integer> expected = IndexedHelper.range(-3,68);
+        assertEquals(IndexedHelper.asList(expected), IndexedHelper.asList(node));
+
+        expected = expected.reversed();
+        node = node.reverse();
+        assertEquals(IndexedHelper.asList(expected), IndexedHelper.asList(node));
     }
 
     public void testInsertFirst()

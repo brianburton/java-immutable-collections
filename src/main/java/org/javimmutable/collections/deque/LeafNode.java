@@ -221,6 +221,18 @@ class LeafNode<T>
         }
     }
 
+    @Nonnull
+    @Override
+    public Node<T> reverse()
+    {
+        T[] newValues = DequeHelper.allocateValues(values.length);
+        int to = newValues.length;
+        for (T value : values) {
+            newValues[--to] = value;
+        }
+        return new LeafNode<>(newValues);
+    }
+
     Indexed<T> values()
     {
         return IndexedArray.retained(values);

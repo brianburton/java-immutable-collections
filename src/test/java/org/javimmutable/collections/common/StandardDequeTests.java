@@ -48,6 +48,7 @@ public class StandardDequeTests
         verifyInsertAllLast(empty);
         verifyTransform(empty);
         verifyAssign(empty);
+        verifyReverse(empty);
         verifySingle(empty);
     }
 
@@ -88,6 +89,18 @@ public class StandardDequeTests
                 actual = actual.assign(i, 1 + i);
             }
             assertEquals(expected, actual);
+        }
+    }
+
+    public static void verifyReverse(IDeque<Integer> empty)
+    {
+        IDeque<Integer> expected = empty;
+        IDeque<Integer> actual = empty;
+        for (int size = 0; size < 512; ++size) {
+            expected = expected.insertFirst(size);
+            actual = actual.insertLast(size);
+            assertEquals(expected, actual.reverse());
+            assertEquals(expected.reverse(), actual);
         }
     }
 

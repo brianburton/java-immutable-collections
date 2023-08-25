@@ -288,11 +288,7 @@ public class ArrayDeque<T>
     @Override
     public IDeque<T> reverse()
     {
-        TreeBuilder<T> builder = new TreeBuilder<>(false);
-        for (T value : this) {
-            builder.add(value);
-        }
-        return new ArrayDeque<>(builder.build());
+        return new ArrayDeque<>(root.reverse());
     }
 
     @Override

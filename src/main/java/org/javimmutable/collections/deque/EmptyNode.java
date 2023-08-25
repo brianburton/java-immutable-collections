@@ -161,13 +161,20 @@ final class EmptyNode<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
-
-    @Override
     public int computedSize()
     {
         return 0;
+    }
+
+    @Nonnull
+    @Override
+    public Node<T> reverse()
+    {
+        return this;
+    }
+
+    @Override
+    public void checkInvariants()
+    {
     }
 }
