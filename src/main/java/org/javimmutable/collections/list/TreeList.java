@@ -513,16 +513,28 @@ public class TreeList<T>
 
         @Nonnull
         @Override
-        public synchronized TreeList<T> build()
+        public TreeList<T> build()
         {
-            return create(builder.build());
+            return create(buildImpl());
         }
 
         @Nonnull
-        public synchronized ListBuilder<T> combineWith(@Nonnull ListBuilder<T> other)
+        public ListBuilder<T> combineWith(@Nonnull ListBuilder<T> other)
         {
-            builder.combineWith(other.builder);
+            AbstractNode<T> myRoot = buildImpl();
+            AbstractNode<T> theirRoot = other.buildImpl();
+            rebuildImpl(myRoot.append(theirRoot));
             return this;
+        }
+
+        private synchronized AbstractNode<T> buildImpl()
+        {
+            return builder.build();
+        }
+
+        private synchronized void rebuildImpl(AbstractNode<T> newTree)
+        {
+            builder.rebuild(newTree);
         }
 
         @Override

@@ -90,14 +90,6 @@ class TreeBuilder<T>
         return size;
     }
 
-    void combineWith(@Nonnull TreeBuilder<T> other)
-    {
-        final AbstractNode<T> a = build();
-        final AbstractNode<T> b = other.build();
-        final AbstractNode<T> ab = a.append(b);
-        rebuild(ab);
-    }
-
     /**
      * Clears any existing data in this builder and then populates the builder with
      * nodes from the provided tree.  At each level of the tree it creates a parent
