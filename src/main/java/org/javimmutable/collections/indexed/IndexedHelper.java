@@ -35,7 +35,6 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Maybe;
 
@@ -62,7 +61,7 @@ public class IndexedHelper
             @Override
             public T get(int index)
             {
-                throw new ArrayIndexOutOfBoundsException();
+                throw new ArrayIndexOutOfBoundsException(index);
             }
 
             @Nonnull
@@ -95,7 +94,7 @@ public class IndexedHelper
                 if (index == 0) {
                     return a;
                 }
-                throw new ArrayIndexOutOfBoundsException();
+                throw new ArrayIndexOutOfBoundsException(index);
             }
 
             @Nonnull
@@ -135,7 +134,7 @@ public class IndexedHelper
                     case 1:
                         return b;
                     default:
-                        throw new ArrayIndexOutOfBoundsException();
+                        throw new ArrayIndexOutOfBoundsException(index);
                 }
             }
 
@@ -183,7 +182,7 @@ public class IndexedHelper
                     case 2:
                         return c;
                     default:
-                        throw new ArrayIndexOutOfBoundsException();
+                        throw new ArrayIndexOutOfBoundsException(index);
                 }
             }
 
@@ -271,13 +270,16 @@ public class IndexedHelper
     public static <T> Indexed<T> repeating(T value,
                                            int count)
     {
-        return new Indexed<T>()
+        if (count < 0) {
+            throw new ArrayIndexOutOfBoundsException(count);
+        }
+        return new Indexed<>()
         {
             @Override
             public T get(int index)
             {
                 if (index < 0 || index >= count) {
-                    throw new ArrayIndexOutOfBoundsException();
+                    throw new ArrayIndexOutOfBoundsException(index);
                 } else {
                     return value;
                 }
@@ -307,13 +309,16 @@ public class IndexedHelper
                                          int high)
     {
         final int size = high - low + 1;
-        return new Indexed<Integer>()
+        if (size < 0) {
+            throw new ArrayIndexOutOfBoundsException(size);
+        }
+        return new Indexed<>()
         {
             @Override
             public Integer get(int index)
             {
                 if (index < 0 || index >= size) {
-                    throw new ArrayIndexOutOfBoundsException();
+                    throw new ArrayIndexOutOfBoundsException(index);
                 }
                 return low + index;
             }
@@ -347,32 +352,5 @@ public class IndexedHelper
             answer.add(indexed.get(i));
         }
         return answer;
-    }
-
-    @Nonnull
-    public static <O, T> Indexed<T> transformed(@Nonnull Indexed<O> indexed,
-                                                @Nonnull Func1<O, T> transforminator)
-    {
-        return new Indexed<T>()
-        {
-            @Override
-            public T get(int index)
-            {
-                return transforminator.apply(indexed.get(index));
-            }
-
-            @Nonnull
-            @Override
-            public Maybe<T> find(int index)
-            {
-                return indexed.find(index).map(transforminator);
-            }
-
-            @Override
-            public int size()
-            {
-                return indexed.size();
-            }
-        };
     }
 }

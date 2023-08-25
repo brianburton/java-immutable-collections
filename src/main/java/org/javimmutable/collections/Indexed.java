@@ -61,39 +61,98 @@ public interface Indexed<T>
     @Nonnull
     Maybe<T> find(int index);
 
-    @SuppressWarnings("unchecked")
-    default T[] subArray(int offset,
-                         int limit)
+    default <U> Indexed<U> transformed(Func1<T, U> transforminator)
     {
-        final Object[] answer = new Object[limit - offset];
-        for (int i = offset; i < limit; ++i) {
-            answer[i - offset] = get(i);
-        }
-        return (T[])answer;
+        return new Indexed<>()
+        {
+            @Override
+            public U get(int index)
+            {
+                return transforminator.apply(Indexed.this.get(index));
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<U> find(int index)
+            {
+                return Indexed.this.find(index).map(transforminator);
+            }
+
+            @Override
+            public int size()
+            {
+                return Indexed.this.size();
+            }
+        };
     }
 
-    static <S, T> Indexed<T> transformed(Indexed<S> source,
-                                         Func1<S, T> transforminator)
+    @Nonnull
+    default Indexed<T> reversed()
     {
-        return new Indexed<T>()
+        final int size = size();
+        final int last = size - 1;
+        if (size == 0) {
+            return this;
+        }
+        return new Indexed<>()
         {
             @Override
             public T get(int index)
             {
-                return transforminator.apply(source.get(index));
+                return Indexed.this.get(last - index);
+            }
+
+            @Override
+            public int size()
+            {
+                return size;
             }
 
             @Nonnull
             @Override
             public Maybe<T> find(int index)
             {
-                return source.find(index).map(transforminator);
+                return Indexed.this.find(last - index);
+            }
+        };
+    }
+
+    @Nonnull
+    default Indexed<T> prefix(int size)
+    {
+        if (size == size()) {
+            return this;
+        }
+        if (size < 0 || size > size()) {
+            throw new ArrayIndexOutOfBoundsException(size);
+        }
+        final int last = size - 1;
+        return new Indexed<>()
+        {
+            @Override
+            public T get(int index)
+            {
+                if (index < 0 || index > last) {
+                    throw new ArrayIndexOutOfBoundsException(index);
+                }
+                return Indexed.this.get(index);
             }
 
             @Override
             public int size()
             {
-                return source.size();
+                return size;
+            }
+
+            @Nonnull
+            @Override
+            public Maybe<T> find(int index)
+            {
+                if (index < 0 || index > last) {
+                    return Maybe.empty();
+                } else {
+                    return Indexed.this.find(index);
+                }
             }
         };
     }
