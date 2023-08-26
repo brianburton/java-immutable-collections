@@ -220,13 +220,13 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-        if (values instanceof ArrayDeque) {
-            final Node<T> other = ((ArrayDeque<T>)values).root;
-            if (other.size() > root.size()) {
-                final Node<T> newRoot = other.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(root));
-                return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
-            }
-        }
+//        if (values instanceof ArrayDeque) {
+//            final Node<T> other = ((ArrayDeque<T>)values).root;
+//            if (other.size() > root.size()) {
+//                final Node<T> newRoot = other.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(root));
+//                return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+//            }
+//        }
         return insertAllLast(values.iterator());
     }
 
@@ -234,7 +234,11 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
-        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, true, values);
+        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
+        while (values.hasNext()) {
+            builder.add(values.next());
+        }
+        final Node<T> newRoot = builder.build();
         return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
     }
 
@@ -356,43 +360,43 @@ public class ArrayDeque<T>
     public static class Builder<T>
         implements IDequeBuilder<T>
     {
-        private final TreeBuilder<T> builder;
+        private final ForwardBuilder<T> builder;
 
         private Builder()
         {
-            builder = new TreeBuilder<>(true);
+            builder = ForwardBuilder.appendToExistingNode(EmptyNode.of());
         }
 
         @Nonnull
         @Override
-        public ArrayDeque<T> build()
+        public synchronized ArrayDeque<T> build()
         {
             return builder.size() == 0 ? of() : new ArrayDeque<>(builder.build());
         }
 
         @Override
-        public int size()
+        public synchronized int size()
         {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public Builder<T> add(T value)
+        public synchronized Builder<T> add(T value)
         {
             builder.add(value);
             return this;
         }
 
         @Nonnull
-        private Iterator<T> iterator()
+        private synchronized Iterator<T> iterator()
         {
             return builder.build().iterator();
         }
 
         @Nonnull
         @Override
-        public IDequeBuilder<T> clear()
+        public synchronized IDequeBuilder<T> clear()
         {
             builder.clear();
             return this;

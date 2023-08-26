@@ -42,6 +42,7 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Iterator;
 
 /**
@@ -87,5 +88,23 @@ interface Node<T>
     default SplitableIterator<T> iterator()
     {
         return new GenericIterator<>(this, 0, size());
+    }
+
+    @Nullable
+    default LeafNode<T> castAsLeaf()
+    {
+        return null;
+    }
+
+    @Nullable
+    default BranchNode<T> castAsBranch()
+    {
+        return null;
+    }
+
+    @Nonnull
+    default Node<T> prune()
+    {
+        return this;
     }
 }

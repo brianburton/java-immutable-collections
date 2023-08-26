@@ -200,6 +200,13 @@ class LeafNode<T>
 
     @Nullable
     @Override
+    public LeafNode<T> castAsLeaf()
+    {
+        return this;
+    }
+
+    @Nullable
+    @Override
     public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
                                                      int offset,
                                                      int limit)

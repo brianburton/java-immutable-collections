@@ -119,7 +119,7 @@ class BranchNode<T>
                                       int limit,
                                       Node<T> suffix)
     {
-        assert limit > offset;
+        assert limit >= offset;
         assert DequeHelper.allNodesFull(depth, sourceNodes, offset, limit);
         final Node<T>[] nodes = DequeHelper.allocateNodes(sourceNodes, offset, limit);
         return new BranchNode<>(depth, size, prefix, nodes, suffix);
@@ -384,6 +384,28 @@ class BranchNode<T>
         }
         assert newNode.size() == maxSize || !values.hasNext();
         return newNode;
+    }
+
+    @Nullable
+    @Override
+    public BranchNode<T> castAsBranch()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public Node<T> prune()
+    {
+        if (suffix.isEmpty() && nodes.length == 0) {
+            return prefix.prune();
+        }
+        if (prefix.isEmpty() && nodes.length == 0) {
+            return suffix.prune();
+        }
+        return prefix.isEmpty() && suffix().isEmpty() && nodes.length == 1
+               ? nodes[0].prune()
+               : this;
     }
 
     @Nullable
