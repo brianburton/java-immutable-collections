@@ -43,7 +43,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
@@ -325,65 +324,6 @@ class BranchNode<T>
             return new BranchNode<>(depth, size, prefix, nodes, suffix.assign(index, value));
         }
         throw new IndexOutOfBoundsException();
-    }
-
-    /**
-     * Efficiently add values from an Iterator to those contained in this BranchNode
-     * to create a new BranchNode of a given maximum size.  This is done in two stages.
-     * First the appropriate (based on insertion order) prefix/suffix is expanded until
-     * it is full.  Then a builder is created from the full nodes of this branch and any
-     * remaining values from the iterator are added to the builder.  Finally the original
-     * prefix/suffix from the unexpanded side is added to the final result.
-     */
-    @Override
-    public Node<T> insertAll(int maxSize,
-                             boolean forwardOrder,
-                             @Nonnull Iterator<? extends T> values)
-    {
-        assert maxSize >= size;
-        assert DequeHelper.sizeForDepth(depth) >= size;
-        if (size >= maxSize || !values.hasNext()) {
-            return this;
-        }
-        final int fullSize = Math.min(DequeHelper.sizeForDepth(depth), maxSize);
-        final int growthAllowed = fullSize - size;
-        BranchNode<T> newNode;
-        if (isFull()) {
-            newNode = this;
-        } else if (forwardOrder) {
-            if (suffix.isEmpty()) {
-                newNode = this;
-            } else {
-                final int maxSuffixSize = Math.min(DequeHelper.sizeForDepth(depth - 1), suffix.size() + growthAllowed);
-                final Node<T> newSuffix = suffix.insertAll(maxSuffixSize, true, values);
-                newNode = withSuffix(newSuffix);
-            }
-            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
-                assert newNode.suffix.isEmpty();
-                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
-                newNode = TreeBuilder.expandBranchNode(fullSize - prefix.size(), true, newNode, values).withPrefix(prefix);
-            }
-        } else {
-            if (prefix.isEmpty()) {
-                newNode = this;
-            } else {
-                final int maxPrefixSize = Math.min(DequeHelper.sizeForDepth(depth - 1), prefix.size() + growthAllowed);
-                final Node<T> newPrefix = prefix.insertAll(maxPrefixSize, false, values);
-                newNode = withPrefix(newPrefix);
-            }
-            if (values.hasNext() && newNode.size() < maxSize && !newNode.isFull()) {
-                assert newNode.prefix.isEmpty();
-                // expand on the filled nodes and then add our unused opposite prefix/suffix to the result
-                newNode = TreeBuilder.expandBranchNode(fullSize - suffix.size(), false, newNode, values).withSuffix(suffix);
-            }
-        }
-        assert newNode.isFull() || newNode.size == maxSize || !values.hasNext();
-        if (newNode.size() < maxSize && values.hasNext()) {
-            // since we are already full we need to create a parent and expand that
-            newNode = TreeBuilder.expandBranchNode(maxSize, forwardOrder, new BranchNode<>(newNode), values);
-        }
-        assert newNode.size() == maxSize || !values.hasNext();
-        return newNode;
     }
 
     @Nullable

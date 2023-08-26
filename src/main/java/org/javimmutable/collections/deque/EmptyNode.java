@@ -41,7 +41,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * Node implementation containing no values.  Implemented as a singleton.
@@ -140,14 +139,6 @@ final class EmptyNode<T>
                           T value)
     {
         throw new IndexOutOfBoundsException();
-    }
-
-    @Override
-    public Node<T> insertAll(int maxSize,
-                             boolean forwardOrder,
-                             @Nonnull Iterator<? extends T> values)
-    {
-        return TreeBuilder.createFromIterator(maxSize, forwardOrder, values);
     }
 
     @Nullable

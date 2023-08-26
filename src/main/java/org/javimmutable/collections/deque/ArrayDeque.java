@@ -44,7 +44,6 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.ArrayDequeProxy;
 
@@ -182,6 +181,38 @@ public class ArrayDeque<T>
         return insertAllLast(values);
     }
 
+    private static <T> Node<T> insertAllFirstImpl(Node<T> root,
+                                                  Indexed<? extends T> values)
+    {
+        ReverseBuilder<T> builder = ReverseBuilder.prependToExistingNode(root);
+        builder.addAll(values.reversed());
+        return builder.build();
+    }
+
+    private static <T> Node<T> insertAllFirstImpl(Node<T> root,
+                                                  Iterator<? extends T> values)
+    {
+        ReverseBuilder<T> builder = ReverseBuilder.prependToExistingNode(root);
+        builder.addAll(IteratorHelper.<T>reverse(values));
+        return builder.build();
+    }
+
+    private static <T> Node<T> insertAllLastImpl(Node<T> root,
+                                                 Indexed<? extends T> values)
+    {
+        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
+        builder.addAll(values);
+        return builder.build();
+    }
+
+    private static <T> Node<T> insertAllLastImpl(Node<T> root,
+                                                 Iterator<? extends T> values)
+    {
+        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
+        builder.addAll(values);
+        return builder.build();
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
@@ -191,18 +222,18 @@ public class ArrayDeque<T>
         if (values instanceof ArrayDeque) {
             final Node<T> other = ((ArrayDeque<T>)values).root;
             if (other.size() > root.size()) {
-                newRoot = other.insertAll(Integer.MAX_VALUE, true, root.iterator());
+                newRoot = insertAllLastImpl(other, root);
             } else {
-                newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(other));
+                newRoot = insertAllFirstImpl(root, other);
             }
         } else if (values instanceof Indexed) {
             final Indexed<T> indexed = (Indexed<T>)values;
-            newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(indexed));
+            newRoot = insertAllFirstImpl(root, indexed);
         } else if (values instanceof List) {
             final Indexed<T> indexed = IndexedList.retained((List<T>)values);
-            newRoot = root.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(indexed));
+            newRoot = insertAllFirstImpl(root, indexed);
         } else {
-            newRoot = root.insertAll(Integer.MAX_VALUE, false, IteratorHelper.<T>reverse(values.iterator()));
+            newRoot = insertAllFirstImpl(root, values.iterator());
         }
         return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
     }
@@ -211,7 +242,7 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
-        final Node<T> newRoot = root.insertAll(Integer.MAX_VALUE, false, IteratorHelper.<T>reverse(values));
+        final Node<T> newRoot = insertAllFirstImpl(root, values);
         return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
     }
 
@@ -220,13 +251,13 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertAllLast(@Nonnull Iterable<? extends T> values)
     {
-//        if (values instanceof ArrayDeque) {
-//            final Node<T> other = ((ArrayDeque<T>)values).root;
-//            if (other.size() > root.size()) {
-//                final Node<T> newRoot = other.insertAll(Integer.MAX_VALUE, false, IndexedIterator.reverse(root));
-//                return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
-//            }
-//        }
+        if (values instanceof ArrayDeque) {
+            final Node<T> other = ((ArrayDeque<T>)values).root;
+            if (other.size() > root.size()) {
+                final Node<T> newRoot = insertAllFirstImpl(other, root);
+                return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+            }
+        }
         return insertAllLast(values.iterator());
     }
 
@@ -234,11 +265,7 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
-        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
-        while (values.hasNext()) {
-            builder.add(values.next());
-        }
-        final Node<T> newRoot = builder.build();
+        final Node<T> newRoot = insertAllLastImpl(root, values);
         return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
     }
 

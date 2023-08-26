@@ -43,7 +43,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
 
 /**
  * Node that forms the bottom of the 32-way tree and contains up to 32 values.
@@ -188,14 +187,6 @@ class LeafNode<T>
         T[] newValues = values.clone();
         newValues[index] = value;
         return new LeafNode<T>(newValues);
-    }
-
-    @Override
-    public Node<T> insertAll(int maxSize,
-                             boolean forwardOrder,
-                             @Nonnull Iterator<? extends T> values)
-    {
-        return TreeBuilder.expandLeafNode(maxSize, forwardOrder, this, values);
     }
 
     @Nullable

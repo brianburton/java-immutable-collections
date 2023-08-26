@@ -43,7 +43,6 @@ import org.javimmutable.collections.iterators.GenericIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Iterator;
 
 /**
  * Interface for classes used to implement 32-way trees that restrict inserts and deletions
@@ -73,10 +72,6 @@ interface Node<T>
 
     Node<T> assign(int index,
                    T value);
-
-    Node<T> insertAll(int maxSize,
-                      boolean forwardOrder,
-                      @Nonnull Iterator<? extends T> values);
 
     @Nonnull
     Node<T> reverse();

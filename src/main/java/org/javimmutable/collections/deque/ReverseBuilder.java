@@ -9,18 +9,18 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 
-class ForwardBuilder<T>
+class ReverseBuilder<T>
 {
     private final Leaf<T> leaf;
 
-    private ForwardBuilder(Leaf<T> leaf)
+    private ReverseBuilder(Leaf<T> leaf)
     {
         this.leaf = leaf;
     }
 
     void add(T value)
     {
-        leaf.append(value);
+        leaf.prepend(value);
     }
 
     void addAll(Indexed<? extends T> values)
@@ -52,21 +52,21 @@ class ForwardBuilder<T>
         leaf.clear();
     }
 
-    static <T> ForwardBuilder<T> appendToExistingNode(Node<T> baseNode)
+    static <T> ReverseBuilder<T> prependToExistingNode(Node<T> baseNode)
     {
         LeafNode<T> leafNode = baseNode.castAsLeaf();
         if (leafNode != null) {
-            return new ForwardBuilder<>(new Leaf<>(leafNode.values(), null));
+            return new ReverseBuilder<>(new Leaf<>(leafNode.values(), null));
         }
 
         BranchNode<T> branchNode = baseNode.castAsBranch();
         if (branchNode == null) {
             assert baseNode.isEmpty();
-            return new ForwardBuilder<>(new Leaf<>(IndexedHelper.empty(), null));
+            return new ReverseBuilder<>(new Leaf<>(IndexedHelper.empty(), null));
         }
 
-        Branch<T> branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.prefix(), null);
-        baseNode = branchNode.suffix();
+        Branch<T> branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), null);
+        baseNode = branchNode.prefix();
         while (true) {
             while (branch.depth > baseNode.getDepth() + 1) {
                 branch = new Branch<>(branch.depth - 1, branch);
@@ -74,16 +74,16 @@ class ForwardBuilder<T>
             leafNode = baseNode.castAsLeaf();
             if (leafNode != null) {
                 assert branch.depth == 2;
-                return new ForwardBuilder<>(new Leaf<>(leafNode.values(), branch));
+                return new ReverseBuilder<>(new Leaf<>(leafNode.values(), branch));
             }
             branchNode = baseNode.castAsBranch();
             if (branchNode == null) {
                 assert baseNode.isEmpty();
                 assert branch.depth == 2;
-                return new ForwardBuilder<>(new Leaf<>(IndexedHelper.empty(), branch));
+                return new ReverseBuilder<>(new Leaf<>(IndexedHelper.empty(), branch));
             }
-            branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.prefix(), branch);
-            baseNode = branchNode.suffix();
+            branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), branch);
+            baseNode = branchNode.prefix();
         }
     }
 
@@ -92,6 +92,7 @@ class ForwardBuilder<T>
         private final T[] values;
         private Branch<T> next;
         private int length;
+        private int index;
         private int capacity;
 
         private Leaf(Indexed<T> values,
@@ -101,24 +102,27 @@ class ForwardBuilder<T>
 
             this.values = DequeHelper.allocateValues(32);
             length = values.size();
+            index = 32 - length;
             capacity = (next != null)
                        ? Math.min(32, next.capacity) - length
                        : 32 - length;
             for (int i = 0; i < length; ++i) {
-                this.values[i] = values.get(i);
+                this.values[index + i] = values.get(i);
             }
             this.next = next;
             pushIfFull();
             assert capacity > 0;
         }
 
-        private void append(T value)
+        private void prepend(T value)
         {
             assert capacity > 0;
-            values[length++] = value;
+            length += 1;
+            index -= 1;
+            values[index] = value;
             capacity -= 1;
             if (capacity == 0) {
-                push();
+                pushPrepend();
             }
             assert capacity > 0;
         }
@@ -137,6 +141,7 @@ class ForwardBuilder<T>
             Arrays.fill(values, null);
             next = null;
             length = 0;
+            index = 32;
             capacity = 32;
         }
 
@@ -152,26 +157,41 @@ class ForwardBuilder<T>
                 assert capacity >= 0;
             }
             if (capacity == 0) {
-                push();
+                pushAppend();
             }
         }
 
-        private void push()
+        private void pushAppend()
         {
-            Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), 0, length);
+            Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), index, 32);
             if (next == null) {
                 next = new Branch<>(2, null);
             }
             next.append(newNode);
 
             length = 0;
+            index = 32;
+            capacity = Math.min(next.capacity, 32);
+            Arrays.fill(values, null);
+        }
+
+        private void pushPrepend()
+        {
+            Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), index, 32);
+            if (next == null) {
+                next = new Branch<>(2, null);
+            }
+            next.prepend(newNode);
+
+            length = 0;
+            index = 32;
             capacity = Math.min(next.capacity, 32);
             Arrays.fill(values, null);
         }
 
         private Node<T> toNode()
         {
-            Node<T> leafNode = length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), 0, length);
+            Node<T> leafNode = length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), index, 32);
             return next == null ? leafNode : next.toNode(leafNode);
         }
     }
@@ -181,8 +201,9 @@ class ForwardBuilder<T>
         private final Node<T>[] nodes;
         private final int depth;
         private Branch<T> next;
-        private Node<T> prefix;
+        private Node<T> suffix;
         private int length;
+        private int index;
         private int capacity;
         private int size;
 
@@ -194,16 +215,17 @@ class ForwardBuilder<T>
             this.nodes = DequeHelper.allocateNodes(32);
             this.depth = depth;
             this.next = next;
-            prefix = EmptyNode.of();
+            suffix = EmptyNode.of();
             capacity = (next != null)
                        ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
                        : DequeHelper.sizeForDepth(depth);
+            index = 32;
             assert capacity >= 0;
         }
 
         private Branch(int depth,
                        @Nonnull Indexed<Node<T>> startNodes,
-                       @Nonnull Node<T> prefix,
+                       @Nonnull Node<T> suffix,
                        @Nullable Branch<T> next)
         {
             assert startNodes.size() == 0 || startNodes.get(0).getDepth() < depth;
@@ -212,16 +234,17 @@ class ForwardBuilder<T>
             this.nodes = DequeHelper.allocateNodes(32);
             this.depth = depth;
             this.next = next;
-            this.prefix = prefix;
+            this.suffix = suffix;
             capacity = (next != null)
                        ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
                        : DequeHelper.sizeForDepth(depth);
 
             length = startNodes.size();
-            size = prefix.size();
+            index = 32 - length;
+            size = suffix.size();
             for (int i = 0; i < length; ++i) {
                 Node<T> node = startNodes.get(i);
-                nodes[i] = node;
+                nodes[index + i] = node;
                 size += node.size();
             }
             capacity -= size;
@@ -236,15 +259,20 @@ class ForwardBuilder<T>
             assert node.size() <= capacity;
             assert node.isFull() || node.size() == capacity;
 
-            Node<T> suffix = EmptyNode.of();
+            Node<T> prefix = EmptyNode.of();
             if (node.isFull()) {
-                nodes[length++] = node;
+                for (int i = 0; i < length; ++i) {
+                    nodes[index + i - 1] = nodes[index + i];
+                }
+                length += 1;
+                index -= 1;
+                nodes[31] = node;
                 capacity -= node.size();
                 size += node.size();
             } else if (node.size() == capacity) {
                 capacity -= node.size();
                 size += node.size();
-                suffix = node;
+                prefix = node;
             } else {
                 throw new AssertionError("node.isFull() || node.size() == capacity");
             }
@@ -254,13 +282,56 @@ class ForwardBuilder<T>
                     ? node
                     : BranchNode.forNodeBuilder(depth, size, prefix,
                                                 IndexedArray.retained(nodes),
-                                                0, length, suffix);
+                                                index, 32, suffix);
                 if (next == null) {
                     next = new Branch<>(depth + 1, null);
                 }
                 next.append(newNode);
-                prefix = EmptyNode.of();
                 length = 0;
+                index = 32;
+                size = 0;
+                capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
+                Arrays.fill(nodes, null);
+            }
+            assert capacity > 0;
+        }
+
+        private void prepend(Node<T> node)
+        {
+            assert capacity > 0;
+            assert length < nodes.length;
+            assert node.getDepth() < depth;
+            assert node.size() <= capacity;
+            assert node.isFull() || node.size() == capacity;
+
+            Node<T> prefix = EmptyNode.of();
+            if (node.isFull()) {
+                length += 1;
+                index -= 1;
+                nodes[index] = node;
+                capacity -= node.size();
+                size += node.size();
+            } else if (node.size() == capacity) {
+                capacity -= node.size();
+                size += node.size();
+                prefix = node;
+            } else {
+                throw new AssertionError("node.isFull() || node.size() == capacity");
+            }
+            if (capacity == 0) {
+                Node<T> newNode =
+                    size == node.size()
+                    ? node
+                    : BranchNode.forNodeBuilder(depth, size, prefix,
+                                                IndexedArray.retained(nodes),
+                                                index, 32, suffix);
+                if (next == null) {
+                    next = new ReverseBuilder.Branch<>(depth + 1, null);
+                }
+                next.prepend(newNode);
+                suffix = EmptyNode.of();
+                length = 0;
+                index = 32;
                 size = 0;
                 capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
                 Arrays.fill(nodes, null);
@@ -285,36 +356,37 @@ class ForwardBuilder<T>
                 assert capacity >= 0;
             }
             if (capacity == 0) {
-                Node<T> newNode = BranchNode.forNodeBuilder(depth, size, prefix,
+                Node<T> newNode = BranchNode.forNodeBuilder(depth, size, EmptyNode.of(),
                                                             IndexedArray.retained(nodes),
-                                                            0, length, EmptyNode.of());
+                                                            index, 32, suffix);
                 if (next == null) {
                     next = new Branch<>(depth + 1, null);
                 }
                 next.append(newNode);
-                prefix = EmptyNode.of();
+                suffix = EmptyNode.of();
                 length = 0;
+                index = 32;
                 size = 0;
                 capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
                 Arrays.fill(nodes, null);
             }
         }
 
-        private Node<T> toNode(Node<T> suffix)
+        private Node<T> toNode(Node<T> prefix)
         {
-            assert suffix.size() < capacity;
+            assert prefix.size() < capacity;
 
             if (size > 0) {
-                suffix = BranchNode.forNodeBuilder(depth,
-                                                   size + suffix.size(),
+                prefix = BranchNode.forNodeBuilder(depth,
+                                                   size + prefix.size(),
                                                    prefix,
-                                                   IndexedArray.retained(nodes), 0, length,
+                                                   IndexedArray.retained(nodes), index, 32,
                                                    suffix);
             }
             if (next == null) {
-                return suffix;
+                return prefix;
             } else {
-                return next.toNode(suffix);
+                return next.toNode(prefix);
             }
         }
     }
