@@ -35,6 +35,8 @@
 
 package org.javimmutable.collections.deque;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IDeque;
@@ -52,9 +54,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("deprecation")
 public class ArrayDequeTest
@@ -395,32 +394,76 @@ public class ArrayDequeTest
             ArrayDeque<Integer> list = ArrayDeque.of();
 
             for (int loops = 0; loops < (4 * size); ++loops) {
-                switch (random.nextInt(7)) {
-                    case 0: { //insertAllFirst(Iterable), insertAllFirst(Iterator)
+                switch (random.nextInt(14)) {
+                    case 0: { // insert
+                        final int value = random.nextInt(size);
+                        list = list.insert(value);
+                        expected.add(value);
+                    }
+                    break;
+                    case 1: { // insertLast
+                        final int value = random.nextInt(size);
+                        list = list.insertLast(value);
+                        expected.add(value);
+                    }
+                    break;
+                    case 2: { // insertFirst
+                        final int value = random.nextInt(size);
+                        list = list.insertFirst(value);
+                        expected.add(0, value);
+                    }
+                    break;
+                    case 3: { //insertAllFirst(Iterable:IDeque)
+                        IDeque<Integer> values = makeDeque(random, size);
+                        ;
+                        list = list.insertAllFirst(values);
+                        expected.addAll(0, values.getList());
+                        break;
+                    }
+                    case 4: { //insertAllFirst(Iterable:Indexed)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllFirst(plainIterable(values)) : list.insertAllFirst(values.iterator());
+                        list = list.insertAllFirst(IndexedList.retained(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 1: { //insertAllFirst(Collection)
+                    case 5: { //insertAllFirst(Iterable:List)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                        list = list.insertAllFirst(values);
                         expected.addAll(0, values);
                         break;
                     }
-                    case 2: { //insertAllLast(Iterable)
+                    case 6: { //insertAllFirst(Iterable:plain)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllLast(plainIterable(values)) : list.insertAllLast(values.iterator());
+                        list = list.insertAllFirst(plainIterable(values));
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 7: {//insertAllFirst(Iterator)
+                        List<Integer> values = makeValues(random, size);
+                        list = list.insertAllFirst(values.iterator());
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 8: { //insertAllLast(Iterable:IDeque)
+                        IDeque<Integer> values = makeDeque(random, size);
+                        ;
+                        list = list.insertAllLast(values);
+                        expected.addAll(values.getList());
+                        break;
+                    }
+                    case 9: { //insertAllLast(Iterable:List)
+                        List<Integer> values = makeValues(random, size);
+                        list = list.insertAllLast(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 3: {//insertAllLast(Collection)
+                    case 10: { //insertAllLast(Iterator)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                        list = list.insertAllLast(values.iterator());
                         expected.addAll(values);
                         break;
                     }
-                    case 4: { //deleteFirst
+                    case 11: { //deleteFirst
                         if (list.size() > 0) {
                             list = list.deleteFirst();
                             expected.remove(0);
@@ -434,7 +477,7 @@ public class ArrayDequeTest
                         }
                         break;
                     }
-                    case 5: { //deleteLast
+                    case 12: { //deleteLast
                         if (list.size() > 0) {
                             list = list.deleteLast();
                             expected.remove(expected.size() - 1);
@@ -448,7 +491,7 @@ public class ArrayDequeTest
                         }
                         break;
                     }
-                    case 6: { // assign
+                    case 13: { // assign
                         if (list.size() > 1) {
                             final int index = random.nextInt(list.size() - 1);
                             final int value = random.nextInt(size);
@@ -616,6 +659,16 @@ public class ArrayDequeTest
     private IDeque<Integer> mkDeque(Integer... values)
     {
         return ArrayDeque.of(IndexedArray.retained(values));
+    }
+
+    private IDeque<Integer> makeDeque(Random random,
+                                      int size)
+    {
+        IDeque<Integer> list = ArrayDeque.of();
+        for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
+            list = list.insertLast(random.nextInt(size));
+        }
+        return list;
     }
 
     private List<Integer> makeValues(Random random,
