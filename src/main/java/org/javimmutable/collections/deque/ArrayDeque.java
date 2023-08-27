@@ -99,6 +99,16 @@ public class ArrayDeque<T>
                                                       b -> b.build());
     }
 
+    @Nonnull
+    static <T> ArrayDeque<T> create(@Nonnull Node<T> root)
+    {
+        if (root.isEmpty()) {
+            return of();
+        } else {
+            return new ArrayDeque<>(root);
+        }
+    }
+
     @Override
     public int size()
     {
@@ -123,14 +133,14 @@ public class ArrayDeque<T>
     public ArrayDeque<T> assign(int index,
                                 @Nullable T value)
     {
-        return new ArrayDeque<>(root.assign(index, value));
+        return create(root.assign(index, value));
     }
 
     @Nonnull
     @Override
     public ArrayDeque<T> insert(@Nullable T value)
     {
-        return new ArrayDeque<>(root.insertLast(value));
+        return create(root.insertLast(value));
     }
 
     @Nonnull
@@ -157,14 +167,14 @@ public class ArrayDeque<T>
     @Override
     public ArrayDeque<T> insertFirst(@Nullable T value)
     {
-        return new ArrayDeque<>(root.insertFirst(value));
+        return create(root.insertFirst(value));
     }
 
     @Nonnull
     @Override
     public ArrayDeque<T> insertLast(@Nullable T value)
     {
-        return new ArrayDeque<>(root.insertLast(value));
+        return create(root.insertLast(value));
     }
 
     @Nonnull
@@ -235,7 +245,7 @@ public class ArrayDeque<T>
         } else {
             newRoot = insertAllFirstImpl(root, values.iterator());
         }
-        return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+        return (newRoot != root) ? create(newRoot) : this;
     }
 
     @Nonnull
@@ -243,7 +253,7 @@ public class ArrayDeque<T>
     public ArrayDeque<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
     {
         final Node<T> newRoot = insertAllFirstImpl(root, values);
-        return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+        return (newRoot != root) ? create(newRoot) : this;
     }
 
     @SuppressWarnings("unchecked")
@@ -255,7 +265,7 @@ public class ArrayDeque<T>
             final Node<T> other = ((ArrayDeque<T>)values).root;
             if (other.size() > root.size()) {
                 final Node<T> newRoot = insertAllFirstImpl(other, root);
-                return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+                return (newRoot != root) ? create(newRoot) : this;
             }
         }
         return insertAllLast(values.iterator());
@@ -266,7 +276,7 @@ public class ArrayDeque<T>
     public ArrayDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values)
     {
         final Node<T> newRoot = insertAllLastImpl(root, values);
-        return (newRoot != root) ? new ArrayDeque<>(newRoot) : this;
+        return (newRoot != root) ? create(newRoot) : this;
     }
 
     @Nonnull
@@ -276,7 +286,7 @@ public class ArrayDeque<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new ArrayDeque<>(root.deleteFirst());
+        return create(root.deleteFirst());
     }
 
     @Nonnull
@@ -286,7 +296,7 @@ public class ArrayDeque<T>
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return new ArrayDeque<>(root.deleteLast());
+        return create(root.deleteLast());
     }
 
     @Override
@@ -319,7 +329,7 @@ public class ArrayDeque<T>
     @Override
     public IDeque<T> reverse()
     {
-        return new ArrayDeque<>(root.reverse());
+        return create(root.reverse());
     }
 
     @Override
@@ -398,7 +408,7 @@ public class ArrayDeque<T>
         @Override
         public synchronized ArrayDeque<T> build()
         {
-            return builder.size() == 0 ? of() : new ArrayDeque<>(builder.build());
+            return create(builder.build());
         }
 
         @Override
