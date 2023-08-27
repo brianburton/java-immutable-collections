@@ -35,15 +35,24 @@
 
 package org.javimmutable.collections.deque;
 
+import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * A builder for efficiently building {@link IDeque}s.  Also supports efficiently
+ * appending values to an existing {@link IDeque}.  When constructed with an existing
+ * deque it retains nearly all of its structure and just constructs new nodes needed
+ * to add new values to the end of the deque.
+ */
+@NotThreadSafe
 class ForwardBuilder<T>
 {
     private final Leaf<T> leaf;
@@ -87,6 +96,13 @@ class ForwardBuilder<T>
         leaf.clear();
     }
 
+    /**
+     * Deconstructs the base node to construct a list of builders that add new elements
+     * to the end of the list.
+     *
+     * @param baseNode the node the builder will prepend data to
+     * @return the builder
+     */
     static <T> ForwardBuilder<T> appendToExistingNode(Node<T> baseNode)
     {
         LeafNode<T> leafNode = baseNode.castAsLeaf();
@@ -96,27 +112,37 @@ class ForwardBuilder<T>
 
         BranchNode<T> branchNode = baseNode.castAsBranch();
         if (branchNode == null) {
+            // if it's not a leaf and not a branch it must be empty
             assert baseNode.isEmpty();
             return new ForwardBuilder<>(new Leaf<>(IndexedHelper.empty(), null));
         }
 
+        // Now start at the root branch and work our way down the tree following the
+        // suffixes to the last prefix node.
         Branch<T> branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.prefix(), null);
         baseNode = branchNode.suffix();
         while (true) {
+            // suffixes can jump multiple levels so fill any gaps with empty branch nodes
             while (branch.depth > baseNode.getDepth() + 1) {
                 branch = new Branch<>(branch.depth - 1, branch);
             }
+
+            // we stop if we hit a leaf node
             leafNode = baseNode.castAsLeaf();
             if (leafNode != null) {
                 assert branch.depth == 2;
                 return new ForwardBuilder<>(new Leaf<>(leafNode.values(), branch));
             }
+
+            // we also stop if we hit an empty suffix
             branchNode = baseNode.castAsBranch();
             if (branchNode == null) {
                 assert baseNode.isEmpty();
                 assert branch.depth == 2;
                 return new ForwardBuilder<>(new Leaf<>(IndexedHelper.empty(), branch));
             }
+
+            // add a node for the branch and follow its suffix in the next loop iteration
             branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.prefix(), branch);
             baseNode = branchNode.suffix();
         }
@@ -143,7 +169,12 @@ class ForwardBuilder<T>
                 this.values[i] = values.get(i);
             }
             this.next = next;
+
+            // We don't let nodes stay completely full but a newly constructed one might be.
+            // So we need go through the list and push the values for amy full branch or leaf
+            // on it its parent.
             pushIfFull();
+
             assert capacity > 0;
         }
 
