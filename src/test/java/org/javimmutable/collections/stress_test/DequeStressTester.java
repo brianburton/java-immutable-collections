@@ -45,6 +45,7 @@ import org.javimmutable.collections.Maybe;
 import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.indexed.IndexedList;
 import static org.javimmutable.collections.iterators.IteratorHelper.plainIterable;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import static org.junit.Assert.assertEquals;
@@ -118,7 +119,7 @@ public class DequeStressTester
             System.out.printf("growing %d%n", deque.size());
             while (expected.size() < step.growthSize()) {
                 final int maxToAdd = Math.min(1000, step.growthSize() - expected.size());
-                switch (random.nextInt(12)) {
+                switch (random.nextInt(16)) {
                     case 0: { //insert(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         deque = deque.insert(value);
@@ -149,45 +150,69 @@ public class DequeStressTester
                         expected.addAll(values);
                         break;
                     }
-                    case 5: { //insertAllFirst(Iterable)
+                    case 5: { //insertAllFirst(Iterable:IDeque)
+                        IDeque<String> values = makeInsertDeque(tokens, random, maxToAdd);
+                        deque = deque.insertAllFirst(values);
+                        expected.addAll(0, values.getList());
+                        break;
+                    }
+                    case 6: { //insertAllFirst(Iterable:Indexed)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
+                        deque = deque.insertAllFirst(IndexedList.retained(values));
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 7: { //insertAllFirst(Iterable:List)
+                        List<String> values = makeInsertList(tokens, random, maxToAdd);
+                        deque = deque.insertAllFirst(values);
+                        expected.addAll(0, values);
+                        break;
+                    }
+                    case 8: { //insertAllFirst(Iterable:Plain)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(plainIterable(values));
                         expected.addAll(0, values);
                         break;
                     }
-                    case 6: { //insertAllFirst(Iterator)
+                    case 9: { //insertAllFirst(Iterator)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(values.iterator());
                         expected.addAll(0, values);
                         break;
                     }
-                    case 7: { //insertAllLast(Iterable)
+                    case 10: { //insertAllLast(Iterable::IDeque)
+                        IDeque<String> values = makeInsertDeque(tokens, random, maxToAdd);
+                        deque = deque.insertAllLast(values);
+                        expected.addAll(values.getList());
+                        break;
+                    }
+                    case 11: { //insertAllLast(Iterable:List)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
-                        deque = deque.insertAllLast(plainIterable(values));
+                        deque = deque.insertAllLast(values);
                         expected.addAll(values);
                         break;
                     }
-                    case 8: { //insertAllLast(iterator)
+                    case 12: { //insertAllLast(iterator)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllLast(values.iterator());
                         expected.addAll(values);
                         break;
                     }
-                    case 9: { //deleteFirst()
+                    case 13: { //deleteFirst()
                         if (expected.size() > 0) {
                             deque = deque.deleteFirst();
                             expected.remove(0);
                         }
                         break;
                     }
-                    case 10: { //deleteLast()
+                    case 14: { //deleteLast()
                         if (expected.size() > 0) {
                             deque = deque.deleteLast();
                             expected.remove(expected.size() - 1);
                         }
                         break;
                     }
-                    case 11: { //reverse()
+                    case 15: { //reverse()
                         expected = TestUtil.reversedList(expected);
                         deque = deque.reverse();
                         break;
@@ -340,5 +365,16 @@ public class DequeStressTester
         System.out.printf("checking cursor with size %d%n", deque.size());
         StandardIteratorTests.listIteratorTest(expected, deque.iterator());
         StandardStreamableTests.verifyOrderedUsingCollection(expected, deque);
+    }
+
+    private IDeque<String> makeInsertDeque(IList<String> tokens,
+                                           Random random,
+                                           int maxToAdd)
+    {
+        IDeque<String> list = IDeques.of();
+        for (int i = 0, limit = random.nextInt(maxToAdd); i < limit; ++i) {
+            list = list.insertLast(RandomKeyManager.makeValue(tokens, random));
+        }
+        return list;
     }
 }
