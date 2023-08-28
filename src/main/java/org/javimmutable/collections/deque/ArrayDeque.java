@@ -39,6 +39,7 @@ import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IDequeBuilder;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.DequeListAdaptor;
@@ -395,7 +396,8 @@ public class ArrayDeque<T>
     }
 
     public static class Builder<T>
-        implements IDequeBuilder<T>
+        implements IDequeBuilder<T>,
+                   InvariantCheckable
     {
         private final ForwardBuilder<T> builder;
 
@@ -437,6 +439,12 @@ public class ArrayDeque<T>
         {
             builder.clear();
             return this;
+        }
+
+        @Override
+        public void checkInvariants()
+        {
+            builder.checkInvariants();
         }
     }
 }

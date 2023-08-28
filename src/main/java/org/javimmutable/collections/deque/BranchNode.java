@@ -89,16 +89,6 @@ class BranchNode<T>
         assert node.isFull();
     }
 
-    BranchNode(Node<T> node)
-    {
-        this(node.getDepth() + 1,
-             node.size(),
-             EmptyNode.of(),
-             DequeHelper.allocateSingleNode(node),
-             EmptyNode.of());
-        assert node.isFull();
-    }
-
     BranchNode(Node<T> node,
                T suffixValue)
     {
@@ -458,33 +448,5 @@ class BranchNode<T>
     Node<T> suffix()
     {
         return suffix;
-    }
-
-    private BranchNode<T> withPrefix(@Nonnull Node<T> newPrefix)
-    {
-        assert newPrefix.getDepth() < depth;
-        final int baseSize = size - prefix.size();
-        if (newPrefix.size() == DequeHelper.sizeForDepth(depth - 1)) {
-            final Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
-            newNodes[0] = newPrefix;
-            return new BranchNode<T>(depth, baseSize + newPrefix.size(), EmptyNode.of(), newNodes, suffix);
-        } else {
-            return new BranchNode<T>(depth, baseSize + newPrefix.size(), newPrefix, nodes, suffix);
-        }
-    }
-
-    private BranchNode<T> withSuffix(@Nonnull Node<T> newSuffix)
-    {
-        assert newSuffix.getDepth() < depth;
-        final int baseSize = size - suffix.size();
-        if (newSuffix.size() == DequeHelper.sizeForDepth(depth - 1)) {
-            final Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
-            newNodes[nodes.length] = newSuffix;
-            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, newNodes, EmptyNode.of());
-        } else {
-            return new BranchNode<T>(depth, baseSize + newSuffix.size(), prefix, nodes, newSuffix);
-        }
     }
 }

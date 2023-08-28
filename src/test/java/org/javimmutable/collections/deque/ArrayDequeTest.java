@@ -606,10 +606,12 @@ public class ArrayDequeTest
             builder.add(size);
             manual = manual.insertLast(size);
             assertEquals(size, builder.size());
+            builder.checkInvariants();
             ArrayDeque<Integer> list = builder.build();
             assertEquals(expected, list.getList());
             list.checkInvariants();
         }
+        builder.checkInvariants();
         assertEquals(manual, builder.build());
 
         StandardBuilderTests.verifyBuilder(expected, this::builder, (l, j) -> l.equals(j.getList()), new Integer[0]);

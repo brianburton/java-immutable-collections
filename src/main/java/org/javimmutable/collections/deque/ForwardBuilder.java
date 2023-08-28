@@ -37,6 +37,7 @@ package org.javimmutable.collections.deque;
 
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 
@@ -54,10 +55,11 @@ import java.util.Iterator;
  */
 @NotThreadSafe
 class ForwardBuilder<T>
+    implements InvariantCheckable
 {
-    private final Leaf<T> leaf;
+    private final Leaf<T> leaf;  // first node (depth 1 leaf) in the chain
 
-    private ForwardBuilder(Leaf<T> leaf)
+    private ForwardBuilder(@Nonnull Leaf<T> leaf)
     {
         this.leaf = leaf;
     }
@@ -88,12 +90,24 @@ class ForwardBuilder<T>
 
     int size()
     {
-        return leaf.totalSize();
+        int computedSize = leaf.length;
+        Branch<T> branch = leaf.next;
+        while (branch != null) {
+            computedSize += branch.size;
+            branch = branch.next;
+        }
+        return computedSize;
     }
 
     void clear()
     {
         leaf.clear();
+    }
+
+    @Override
+    public void checkInvariants()
+    {
+        leaf.checkInvariants();
     }
 
     /**
@@ -189,15 +203,6 @@ class ForwardBuilder<T>
             assert capacity > 0;
         }
 
-        private int totalSize()
-        {
-            int answer = length;
-            if (next != null) {
-                answer += next.totalSize();
-            }
-            return answer;
-        }
-
         private void clear()
         {
             Arrays.fill(values, null);
@@ -239,6 +244,22 @@ class ForwardBuilder<T>
         {
             Node<T> leafNode = length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), 0, length);
             return next == null ? leafNode : next.toNode(leafNode);
+        }
+
+        private void checkInvariants()
+        {
+            if (next != null) {
+                next.checkInvariants();
+                if (next.depth != 2) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            for (int i = length; i < values.length; ++i) {
+                if (values[i] != null) {
+                    throw new IllegalStateException();
+                }
+            }
         }
     }
 
@@ -305,15 +326,13 @@ class ForwardBuilder<T>
             Node<T> suffix = EmptyNode.of();
             if (node.isFull()) {
                 nodes[length++] = node;
-                capacity -= node.size();
-                size += node.size();
             } else if (node.size() == capacity) {
-                capacity -= node.size();
-                size += node.size();
                 suffix = node;
             } else {
                 throw new AssertionError("node.isFull() || node.size() == capacity");
             }
+            capacity -= node.size();
+            size += node.size();
             if (capacity == 0) {
                 Node<T> newNode =
                     size == node.size()
@@ -332,15 +351,6 @@ class ForwardBuilder<T>
                 Arrays.fill(nodes, null);
             }
             assert capacity > 0;
-        }
-
-        private int totalSize()
-        {
-            int answer = size;
-            if (next != null) {
-                answer += next.totalSize();
-            }
-            return answer;
         }
 
         private void pushIfFull()
@@ -381,6 +391,53 @@ class ForwardBuilder<T>
                 return suffix;
             } else {
                 return next.toNode(suffix);
+            }
+        }
+
+        private void checkInvariants()
+        {
+            if (next != null) {
+                next.checkInvariants();
+                if (next.depth != depth + 1) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            if (capacity <= 0) {
+                throw new IllegalStateException();
+            }
+
+            if (prefix == null) {
+                throw new IllegalStateException();
+            }
+
+            // we should always maintain a proper size and length
+            int computedSize = prefix.size();
+            for (int i = 0; i < length; ++i) {
+                Node<T> node = nodes[i];
+                node.checkInvariants();
+
+                if (node.getDepth() != depth - 1) {
+                    throw new IllegalStateException();
+                }
+                computedSize += node.size();
+            }
+            if (computedSize != size) {
+                throw new IllegalStateException();
+            }
+
+            for (int i = length; i < nodes.length; ++i) {
+                if (nodes[i] != null) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            int computedCapacity = DequeHelper.sizeForDepth(depth) - computedSize;
+            if (next != null) {
+                computedCapacity = Math.min(computedCapacity, next.capacity);
+            }
+            if (computedCapacity != capacity) {
+                throw new IllegalStateException();
             }
         }
     }

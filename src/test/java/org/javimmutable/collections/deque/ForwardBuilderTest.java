@@ -96,6 +96,7 @@ public class ForwardBuilderTest
     public void testEmpty()
     {
         ForwardBuilder<Integer> builder = appendToExistingNode(EmptyNode.of());
+        builder.checkInvariants();
         verifyEquals(Collections.emptyList(), builder.build());
     }
 
@@ -110,6 +111,7 @@ public class ForwardBuilderTest
             built.checkInvariants();
             verifyEquals(expected, built);
         }
+        builder.checkInvariants();
     }
 
     public void testScenarios()
@@ -130,6 +132,7 @@ public class ForwardBuilderTest
     {
         ForwardBuilder<Integer> builder = appendToExistingNode(EmptyNode.of());
         builder.addAll(scenario.middle);
+        builder.checkInvariants();
         Node<Integer> starter = builder.build();
         starter.checkInvariants();
 
@@ -144,7 +147,9 @@ public class ForwardBuilderTest
         starter.checkInvariants();
 
         builder = appendToExistingNode(starter);
+        builder.checkInvariants();
         builder.addAll(scenario.adds);
+        builder.checkInvariants();
         Node<Integer> built = builder.build();
         built.checkInvariants();
 
