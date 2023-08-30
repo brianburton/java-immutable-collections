@@ -360,6 +360,29 @@ public class ArrayDeque<T>
         return builder.build();
     }
 
+    @Nonnull
+    @Override
+    public IDeque<T> prefix(int limit)
+    {
+        final Node<T> newRoot = root.prefix(limit);
+        return (newRoot == root) ? this : create(newRoot);
+    }
+
+    @Nonnull
+    @Override
+    public IDeque<T> suffix(int offset)
+    {
+        final Node<T> newRoot = root.suffix(offset);
+        return (newRoot == root) ? this : create(newRoot);
+    }
+
+    @Nonnull
+    public IDeque<T> middle(int offset,
+                            int limit)
+    {
+        return prefix(limit).suffix(offset);
+    }
+
     @Override
     public int getSpliteratorCharacteristics()
     {

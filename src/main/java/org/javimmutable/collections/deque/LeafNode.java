@@ -231,6 +231,36 @@ class LeafNode<T>
         return new LeafNode<>(newValues);
     }
 
+    @Nonnull
+    @Override
+    public Node<T> prefix(int limit)
+    {
+        if (limit < 0 || limit > values.length) {
+            throw new IndexOutOfBoundsException();
+        } else if (limit == 0) {
+            return EmptyNode.of();
+        } else if (limit == values.length) {
+            return this;
+        } else {
+            return fromList(IndexedArray.retained(values), 0, limit);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Node<T> suffix(int offset)
+    {
+        if (offset < 0 || offset > values.length) {
+            throw new IndexOutOfBoundsException();
+        } else if (offset == values.length) {
+            return EmptyNode.of();
+        } else if (offset == 0) {
+            return this;
+        } else {
+            return fromList(IndexedArray.retained(values), offset, values.length);
+        }
+    }
+
     Indexed<T> values()
     {
         return IndexedArray.retained(values);

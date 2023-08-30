@@ -36,6 +36,7 @@
 package org.javimmutable.collections.deque;
 
 import junit.framework.TestCase;
+import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
@@ -130,18 +131,19 @@ public class BranchNodeTest
         }
     }
 
-    public void testReverse() {
-        Node<Integer> prefix = LeafNode.fromList(IndexedHelper.range(-3,0), 0, 4);
-        Node<Integer> filled1 = LeafNode.fromList(IndexedHelper.range(1,32), 0, 32);
-        Node<Integer> filled2 = LeafNode.fromList(IndexedHelper.range(33,64), 0, 32);
-        Node<Integer> suffix = LeafNode.fromList(IndexedHelper.range(65,68), 0, 4);
+    public void testReverse()
+    {
+        Node<Integer> prefix = LeafNode.fromList(IndexedHelper.range(-3, 0), 0, 4);
+        Node<Integer> filled1 = LeafNode.fromList(IndexedHelper.range(1, 32), 0, 32);
+        Node<Integer> filled2 = LeafNode.fromList(IndexedHelper.range(33, 64), 0, 32);
+        Node<Integer> suffix = LeafNode.fromList(IndexedHelper.range(65, 68), 0, 4);
         Node<Integer>[] nodes = DequeHelper.allocateNodes(2);
         nodes[0] = filled1;
         nodes[1] = filled2;
         assertEquals(true, filled1.isFull());
         assertEquals(true, filled2.isFull());
         Node<Integer> node = BranchNode.forTesting(prefix, nodes, suffix);
-        Indexed<Integer> expected = IndexedHelper.range(-3,68);
+        Indexed<Integer> expected = IndexedHelper.range(-3, 68);
         assertEquals(IndexedHelper.asList(expected), IndexedHelper.asList(node));
 
         expected = expected.reversed();
@@ -443,6 +445,34 @@ public class BranchNodeTest
         assertEquals(0, node.size());
     }
 
+    public void testSubsequences()
+    {
+        // a list from 0 to 6141 with nearly full prefix and suffix and 4 filled nodes in the middle
+        IDeque<Integer> deque = ArrayDeque.<Integer>builder().addAll(IndexedHelper.range(1023, 5118)).build();
+        assert deque.size() % 1024 == 0;
+        for (int i = 1022; i >= 0; --i) {
+            deque = deque.insertFirst(i);
+        }
+        for (int i = 5119; i <= 6141; ++i) {
+            deque = deque.insertLast(i);
+        }
+
+        // test sliding windows of increasing size (fibonacci numbers)
+        int prev = 0;
+        int windowSize = 1;
+        while (windowSize <= deque.size()) {
+            for (int offset = 0; offset < deque.size() - windowSize; ++offset) {
+                int limit = Math.min(deque.size(), offset + windowSize);
+                List<Integer> expected = sequence(offset, limit);
+                List<Integer> actual = deque.middle(offset, limit).getList();
+                assertEquals(expected, actual);
+            }
+            int next = prev + windowSize;
+            prev = windowSize;
+            windowSize = next;
+        }
+    }
+
     static Node<Integer>[] nodesArray(int length,
                                       int value)
     {
@@ -478,6 +508,17 @@ public class BranchNodeTest
             for (int i = first; i <= last; ++i) {
                 answer.add(i);
             }
+        }
+        return answer;
+    }
+
+    static List<Integer> sequence(int offset,
+                                  int limit)
+    {
+        List<Integer> answer = new ArrayList<>();
+        while (limit > offset) {
+            answer.add(offset);
+            offset += 1;
         }
         return answer;
     }

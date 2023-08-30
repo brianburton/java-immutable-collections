@@ -449,4 +449,70 @@ class BranchNode<T>
     {
         return suffix;
     }
+
+    @Nonnull
+    @Override
+    public Node<T> prefix(int limit)
+    {
+        if (limit < 0 || limit > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (limit < prefix.size()) {
+            return prefix.prefix(limit);
+        }
+
+        final int newSize = limit;
+        limit -= prefix.size();
+        final int fullNodeSize = DequeHelper.sizeForDepth(depth - 1);
+        final int arrayIndex = limit / fullNodeSize;
+        if (arrayIndex < nodes.length) {
+            limit -= arrayIndex * fullNodeSize;
+            Node<T>[] newNodes = DequeHelper.allocateNodes(IndexedArray.retained(nodes), 0, arrayIndex);
+            Node<T> newSuffix = nodes[arrayIndex].prefix(limit);
+            return new BranchNode<>(depth, newSize, prefix, newNodes, newSuffix).prune();
+        }
+
+        limit -= nodes.length * fullNodeSize;
+        if (suffix.containsIndex(limit)) {
+            return new BranchNode<>(depth, newSize, prefix, nodes, suffix.prefix(limit));
+        }
+
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Nonnull
+    @Override
+    public Node<T> suffix(int offset)
+    {
+        if (offset < 0 || offset > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (offset == 0) {
+            return this;
+        }
+
+        if (offset == size) {
+            return EmptyNode.of();
+        }
+
+        final int newSize = size - offset;
+        if (offset <= prefix.size()) {
+            return new BranchNode<>(depth, newSize, prefix.suffix(offset), nodes, suffix);
+        }
+
+        offset -= prefix.size();
+        final int fullNodeSize = DequeHelper.sizeForDepth(depth - 1);
+        final int arrayIndex = offset / fullNodeSize;
+        if (arrayIndex < nodes.length) {
+            offset -= arrayIndex * fullNodeSize;
+            Node<T>[] newNodes = DequeHelper.allocateNodes(IndexedArray.retained(nodes), arrayIndex + 1, nodes.length);
+            Node<T> newPrefix = nodes[arrayIndex].suffix(offset);
+            return new BranchNode<>(depth, newSize, newPrefix, newNodes, suffix).prune();
+        }
+
+        offset -= nodes.length * fullNodeSize;
+        return suffix.suffix(offset);
+    }
 }

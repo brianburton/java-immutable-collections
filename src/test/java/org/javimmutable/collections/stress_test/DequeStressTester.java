@@ -233,6 +233,29 @@ public class DequeStressTester
             assertEquals(Stream.of("1", "2").collect(deque.dequeCollector()),
                          deque.insertAllLast(List.of("1", "2")));
 
+            if (deque.size() > 0) {
+                assertEquals(expected.size(), deque.size());
+                int offset = random.nextInt(deque.size());
+                int limit = offset + random.nextInt(deque.size() - offset);
+                switch (random.nextInt(3)) {
+                    case 0: {
+                        IDeque<String> a = deque.prefix(offset);
+                        assertEquals(a.getList(), expected.subList(0, offset));
+                        break;
+                    }
+                    case 1: {
+                        IDeque<String> b = deque.middle(offset, limit);
+                        assertEquals(b.getList(), expected.subList(offset, limit));
+                        break;
+                    }
+                    case 2: {
+                        IDeque<String> c = deque.suffix(limit);
+                        assertEquals(c.getList(), expected.subList(limit, expected.size()));
+                        break;
+                    }
+                }
+            }
+
             System.out.printf("updating %d%n", deque.size());
             for (int i = 0; i < deque.size() / 6; ++i) {
                 switch (random.nextInt(2)) {

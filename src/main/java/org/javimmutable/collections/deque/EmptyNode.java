@@ -168,4 +168,26 @@ final class EmptyNode<T>
     public void checkInvariants()
     {
     }
+
+    @Nonnull
+    @Override
+    public Node<T> prefix(int limit)
+    {
+        if (limit == 0) {
+            return this;
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Node<T> suffix(int offset)
+    {
+        if (offset == 0) {
+            return this;
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
 }

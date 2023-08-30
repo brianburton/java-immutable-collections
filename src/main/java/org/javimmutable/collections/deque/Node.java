@@ -102,4 +102,23 @@ interface Node<T>
     {
         return this;
     }
+
+    /**
+     * Return the (possibly empty) list containing the first limit values.
+     *
+     * @param limit last index (exclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    Node<T> prefix(int limit);
+
+    /**
+     * Return the (possibly empty) list containing the values starting at offset (inclusive)
+     * and including all remaining items.
+     *
+     * @param offset first index (inclusive) of values to include
+     * @return a possibly empty list containing the values
+     */
+    @Nonnull
+    Node<T> suffix(int offset);
 }

@@ -506,6 +506,30 @@ public class ArrayDequeTest
             StandardIteratorTests.listIteratorTest(expected, list.iterator());
             StandardStreamableTests.verifyOrderedUsingCollection(expected, list);
             assertEquals(expected, list.getList());
+
+            if (list.size() > 0) {
+                assertEquals(expected.size(), list.size());
+                int offset = random.nextInt(list.size());
+                int limit = offset + random.nextInt(list.size() - offset);
+                switch (random.nextInt(3)) {
+                    case 0: {
+                        IDeque<Integer> a = list.prefix(offset);
+                        assertEquals(a.getList(), expected.subList(0, offset));
+                        break;
+                    }
+                    case 1: {
+                        IDeque<Integer> b = list.middle(offset, limit);
+                        assertEquals(b.getList(), expected.subList(offset, limit));
+                        break;
+                    }
+                    case 2: {
+                        IDeque<Integer> c = list.suffix(limit);
+                        assertEquals(c.getList(), expected.subList(limit, expected.size()));
+                        break;
+                    }
+                }
+            }
+
             list = list.deleteAll();
             assertEquals(0, list.size());
             assertEquals(true, list.isEmpty());
