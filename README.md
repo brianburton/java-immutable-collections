@@ -9,7 +9,7 @@ for each of the most commonly used collections:
 
 | Java Class    | JImmutable Interface | Factory Methods                             |
 |---------------|----------------------|---------------------------------------------|
-| ArrayDeque    | IDeque               | `IDeque.of()`, `IDeque.allOf()`             |
+| ArrayDeque    | IDeque               | `IDeques.of()`, `IDeques.allOf()`           |
 | ArrayList     | IList                | `ILists.of()`, `ILists.allOf()`             |
 | LinkedList    | IList                | `ILists.of()`, `ILists.allOf()`             |
 | HashMap       | IMap                 | `IMaps.hashed()`                            |
@@ -23,7 +23,6 @@ There are also a number of highly useful collections with no equivalent in the s
 
 | Description                                                  | JImmutable Interface | Factory Method                                                                                      |
 |--------------------------------------------------------------|----------------------|-----------------------------------------------------------------------------------------------------|
-| Similar to a list but only add and delete at front or back.  | IDeque               | `IDeques.of()` `IDeques.allOf()`                                                                    |
 | Map of lists of items related by a key.                      | IListMap             | `IListMaps.hashed()` `IListMaps.sorted()`  `IListMaps.sorted(Comparator)`  `IListMaps.ordered()`    |
 | Map of sets of items related by a key.                       | ISetMap              | `ISetMaps.hashed()` `ISetMaps.sorted()`  `ISetMaps.sorted(Comparator)`  `ISetMaps.ordered()`        |
 | Set that tracks number of times any given element was added. | IMultiset            | `IMultisets.hashed()`  `IMultisets.sorted()` `IMultisets.sorted(Comparator)` `IMultisets.ordered()` |
@@ -71,13 +70,6 @@ The library is designed to have no dependencies on other libraries, but it shoul
 java interfaces are used where appropriate.
 
 # Examples
-
-The examples in this section highlight some features of the library. All of them use a static import of the factory
-methods in the `JImmutables` utility class:
-
-````
-import static org.javimmutable.collections.util.JImmutables.*;
-````
 
 Factory Methods
 ---
@@ -369,7 +361,7 @@ releases include source jars for easy reference in your IDE.
 ````
     <dependency>
         <groupId>org.javimmutable</groupId>
-        <artifactId>javimmutable-collections</artifactId>
+        <artifactId>collections</artifactId>
         <version>insert-desired-version</version>
     </dependency>
 ````
