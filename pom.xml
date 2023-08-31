@@ -3,7 +3,7 @@
 
     <groupId>org.javimmutable</groupId>
     <artifactId>collections</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0a</version>
     <packaging>jar</packaging>
 
     <name>JImmutable Collections</name>
@@ -72,7 +72,7 @@
     <scm>
         <connection>scm:git:git://github.com/brianburton/java-immutable-collections.git</connection>
         <developerConnection>scm:git:git@github.com:brianburton/java-immutable-collections.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v4.0.0a</tag>
         <url>https://github.com/brianburton/java-immutable-collections</url>
     </scm>
 
@@ -220,7 +220,7 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath/>
+                        <classpath />
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
 <!--                        <argument>&#45;&#45;test</argument>-->
