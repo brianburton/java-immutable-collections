@@ -257,7 +257,7 @@ public class LeafNode<K, V>
                                                                    int offset,
                                                                    int limit)
     {
-        return GenericIterator.singleValueState(parent, asEntry());
+        return GenericIterator.singleValueState(parent, asEntry(), offset, limit);
     }
 
     @Override

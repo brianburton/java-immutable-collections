@@ -35,6 +35,7 @@
 
 package org.javimmutable.collections.iterators;
 
+import static java.util.Arrays.asList;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.Indexed;
@@ -43,16 +44,16 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
+import org.javimmutable.collections.indexed.IndexedList;
+import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedSplit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.GenericIterator.MIN_SIZE_FOR_SPLIT;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
 
 public class GenericIteratorTest
     extends TestCase
@@ -92,6 +93,56 @@ public class GenericIteratorTest
         eq(lr(1, len), deep);
         verifyOrderedIterable(lr(1, len), deep);
         verifyOrderedSplit(true, lr(1, len / 2), lr(len / 2 + 1, len), deep.iterator());
+    }
+
+    public void testSingleValueState()
+    {
+        verifyStateOperations(GenericIterator.singleValueState(null, 1, 0, 1), List.of(1));
+        verifyStateOperations(GenericIterator.singleValueState(null, 1, 1, 1), List.of());
+    }
+
+    public void testMultiValueState()
+    {
+        verifyStateOperations(GenericIterator.multiValueState(null, IndexedHelper.indexed(1, 2, 3), 0, 3), List.of(1, 2, 3));
+        verifyStateOperations(GenericIterator.multiValueState(null, IndexedHelper.indexed(1, 2, 3), 1, 3), List.of(2, 3));
+        verifyStateOperations(GenericIterator.multiValueState(null, IndexedHelper.indexed(1, 2, 3), 2, 3), List.of(3));
+        verifyStateOperations(GenericIterator.multiValueState(null, IndexedHelper.indexed(1, 2, 3), 3, 3), List.of());
+    }
+
+    public void testMultiIterableState()
+    {
+        for (int numLists = 1; numLists <= 3; ++numLists) {
+            List<List<List<Integer>>> combos = ListCombinations.combosOfListsOfLength(numLists, 0, 3);
+            ListCombinations.renumberCombos(combos);
+            for (List<List<Integer>> combo : combos) {
+                List<SimpleIterable<Integer>> iterables = new ArrayList<>();
+                for (List<Integer> integers : combo) {
+                    iterables.add(new SimpleIterable<>(IndexedList.retained(integers)));
+                }
+                List<Integer> expected = ListCombinations.valuesFrom(combo);
+                Indexed<GenericIterator.Iterable<Integer>> values = IndexedList.retained(iterables);
+                GenericIterator.State<Integer> state = GenericIterator.multiIterableState(null, values, 0, expected.size());
+                verifyStateOperations(state, expected);
+            }
+        }
+    }
+
+    private void verifyStateOperations(GenericIterator.State<Integer> state,
+                                       List<Integer> expected)
+    {
+        state = GenericIterator.State.advanceUntilHasValue(state);
+        if (expected.isEmpty()) {
+            assertNull(state);
+        } else {
+            for (Integer x : expected) {
+                assertNotNull(state);
+                assertEquals(true, state.hasValue());
+                assertEquals(x, state.value());
+                assertEquals(x, state.value());
+                state = GenericIterator.State.advanceToNextValue(state);
+            }
+        }
+        assertEquals(null, state);
     }
 
     private int limit(int multiple)
@@ -165,6 +216,32 @@ public class GenericIteratorTest
         return list;
     }
 
+    private static class SimpleIterable<T>
+        implements GenericIterator.Iterable<T>
+    {
+        private final Indexed<T> values;
+
+        private SimpleIterable(Indexed<T> values)
+        {
+            this.values = values;
+        }
+
+        @Nullable
+        @Override
+        public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
+                                                         int offset,
+                                                         int limit)
+        {
+            return GenericIterator.multiValueState(parent, values, offset, limit);
+        }
+
+        @Override
+        public int iterableSize()
+        {
+            return values.size();
+        }
+    }
+
     private static abstract class Node
         implements GenericIterator.Iterable<Integer>,
                    IStreamable<Integer>
@@ -206,7 +283,7 @@ public class GenericIteratorTest
                                                                int offset,
                                                                int limit)
         {
-            return GenericIterator.singleValueState(parent, value);
+            return GenericIterator.singleValueState(parent, value, offset, limit);
         }
     }
 

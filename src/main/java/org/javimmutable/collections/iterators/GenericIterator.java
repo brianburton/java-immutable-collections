@@ -152,30 +152,56 @@ public class GenericIterator<T>
         /**
          * Try to move forward to the next position.  Returns either a valid state (if next position exists)
          * or null (if there is no next position).  The returned State might be this State object or a new
-         * State, or null.  The returned State might have a value or it might be empty.
+         * State, or null.  The returned State might have a value or it might be empty and in need of another
+         * call to {@link #advance()} to reach a value.
          */
         @Nullable
         State<T> advance();
+
+        /**
+         * Chains calls to {@link #advance()} until wither a value is reached or null is returned.
+         * If already at a value just returns the state.
+         */
+        static <T> State<T> advanceUntilHasValue(State<T> state)
+        {
+            while (state != null && !state.hasValue()) {
+                state = state.advance();
+            }
+            return state;
+        }
+
+        /**
+         * Advances past current value (if any) and then chains calls to {@link #advance()} until wither a value
+         * is reached or null is returned.
+         */
+        static <T> State<T> advanceToNextValue(State<T> state)
+        {
+            if (state != null) {
+                return advanceUntilHasValue(state.advance());
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
     public synchronized boolean hasNext()
     {
-        advanceStateToNextPositionIfNecessary();
+        initializeStateIfNecessary();
         return stateHasValue();
     }
 
     @Override
     public synchronized T next()
     {
-        advanceStateToNextPositionIfNecessary();
+        initializeStateIfNecessary();
         if (!stateHasValue()) {
             throw new NoSuchElementException();
         }
         final T answer = state.value();
         offset += 1;
         if (offset < limit) {
-            state = state.advance();
+            state = State.advanceToNextValue(state);
         } else {
             state = null;
         }
@@ -199,21 +225,17 @@ public class GenericIterator<T>
     }
 
     /**
-     * Ensures that state is on a valid position if possible.  Gets a starting state if we are
-     * starting a new iteration otherwise it calls advance if necessary to move to the first
-     * available position.
+     * Gets an initial state if we are starting a new iteration and advances it to the first
+     * value if possible.  Does nothing if we are already initialized.
      */
-    private void advanceStateToNextPositionIfNecessary()
+    private void initializeStateIfNecessary()
     {
         if (uninitialized) {
             // create a starting state on first pass
+            assert state == null;
             state = root.iterateOverRange(null, offset, limit);
+            state = State.advanceUntilHasValue(state);
             uninitialized = false;
-        }
-        // Advance until we reach a state with a value or run out of states to try.
-        // We need the loop because it's possible for a state to be empty but be followed by a non-empty one.
-        while (state != null && !state.hasValue()) {
-            state = state.advance();
         }
     }
 
@@ -226,9 +248,16 @@ public class GenericIterator<T>
      * Returns a State for iterating a single value.
      */
     public static <T> State<T> singleValueState(State<T> parent,
-                                                T value)
+                                                T value,
+                                                int offset,
+                                                int limit)
     {
-        return new SingleValueState<>(parent, value);
+        assert offset >= 0 && offset <= limit && limit <= 1;
+        if (offset == limit) {
+            return parent;
+        } else {
+            return new SingleValueState<>(parent, value);
+        }
     }
 
     /**
@@ -243,12 +272,7 @@ public class GenericIterator<T>
                                              int offset,
                                              int limit)
             {
-                assert offset >= 0 && offset <= limit && limit <= 1;
-                if (offset == limit) {
-                    return parent;
-                } else {
-                    return new SingleValueState<>(parent, value);
-                }
+                return singleValueState(parent, value, offset, limit);
             }
 
             @Override
@@ -268,7 +292,11 @@ public class GenericIterator<T>
                                                int limit)
     {
         assert offset >= 0 && offset <= limit && limit <= values.size();
-        return new MultiValueState<>(parent, values, offset, limit);
+        if (offset == limit) {
+            return parent;
+        } else {
+            return new MultiValueState<>(parent, values, offset, limit);
+        }
     }
 
     /**
@@ -334,34 +362,29 @@ public class GenericIterator<T>
     {
         private final State<T> parent;
         private final T value;
-        private boolean available;
 
         private SingleValueState(@Nullable State<T> parent,
                                  T value)
         {
             this.parent = parent;
             this.value = value;
-            available = true;
         }
 
         @Override
         public boolean hasValue()
         {
-            return available;
+            return true;
         }
 
         @Override
         public T value()
         {
-            assert available;
-            available = false;
             return value;
         }
 
         @Override
         public State<T> advance()
         {
-            assert !available;
             return parent;
         }
     }
@@ -379,6 +402,7 @@ public class GenericIterator<T>
                                 int offset,
                                 int limit)
         {
+            assert offset >= 0 && offset < limit;
             this.parent = parent;
             this.values = values;
             this.offset = offset;
@@ -424,6 +448,7 @@ public class GenericIterator<T>
                                    int offset,
                                    int limit)
         {
+            assert offset >= 0 && offset < limit;
             this.parent = parent;
             this.collections = collections;
             this.limit = limit;
