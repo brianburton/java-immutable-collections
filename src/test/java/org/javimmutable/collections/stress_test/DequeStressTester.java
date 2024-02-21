@@ -124,84 +124,98 @@ public class DequeStressTester
                         String value = RandomKeyManager.makeValue(tokens, random);
                         deque = deque.insert(value);
                         expected.add(value);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 1: { //insertFirst(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         deque = deque.insertFirst(value);
                         expected.add(0, value);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 2: { //insertLast(T)
                         String value = RandomKeyManager.makeValue(tokens, random);
                         deque = deque.insertLast(value);
                         expected.add(value);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 3: { //insertAll(Iterable)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAll(plainIterable(values));
                         expected.addAll(values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 4: { //insertAll(Iterator)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAll(values.iterator());
                         expected.addAll(values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 5: { //insertAllFirst(Iterable:IDeque)
                         IDeque<String> values = makeInsertDeque(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(values);
                         expected.addAll(0, values.getList());
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 6: { //insertAllFirst(Iterable:Indexed)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(IndexedList.retained(values));
                         expected.addAll(0, values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 7: { //insertAllFirst(Iterable:List)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(values);
                         expected.addAll(0, values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 8: { //insertAllFirst(Iterable:Plain)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(plainIterable(values));
                         expected.addAll(0, values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 9: { //insertAllFirst(Iterator)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllFirst(values.iterator());
                         expected.addAll(0, values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 10: { //insertAllLast(Iterable::IDeque)
                         IDeque<String> values = makeInsertDeque(tokens, random, maxToAdd);
                         deque = deque.insertAllLast(values);
                         expected.addAll(values.getList());
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 11: { //insertAllLast(Iterable:List)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllLast(values);
                         expected.addAll(values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 12: { //insertAllLast(iterator)
                         List<String> values = makeInsertList(tokens, random, maxToAdd);
                         deque = deque.insertAllLast(values.iterator());
                         expected.addAll(values);
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     case 13: { //deleteFirst()
                         if (expected.size() > 0) {
                             deque = deque.deleteFirst();
                             expected.remove(0);
+                            assertEquals(expected.size(), deque.size());
                         }
                         break;
                     }
@@ -209,12 +223,14 @@ public class DequeStressTester
                         if (expected.size() > 0) {
                             deque = deque.deleteLast();
                             expected.remove(expected.size() - 1);
+                            assertEquals(expected.size(), deque.size());
                         }
                         break;
                     }
                     case 15: { //reverse()
                         expected = TestUtil.reversedList(expected);
                         deque = deque.reverse();
+                        assertEquals(expected.size(), deque.size());
                         break;
                     }
                     default:

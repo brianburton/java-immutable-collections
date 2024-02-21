@@ -38,8 +38,8 @@ package org.javimmutable.collections.deque;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
-import static org.javimmutable.collections.deque.ForwardBuilder.appendToExistingNode;
-import static org.javimmutable.collections.deque.ReverseBuilder.prependToExistingNode;
+import static org.javimmutable.collections.deque.ForwardBuilder.insertAtEnd;
+import static org.javimmutable.collections.deque.ReverseBuilder.insertAtBeginning;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import static org.javimmutable.collections.indexed.IndexedHelper.range;
 import org.javimmutable.collections.iterators.IndexedIterator;
@@ -97,17 +97,19 @@ public class ReverseBuilderTest
 
     public void testEmpty()
     {
-        ReverseBuilder<Integer> builder = prependToExistingNode(EmptyNode.of());
+        ReverseBuilder<Integer> builder = insertAtBeginning(EmptyNode.of());
+        builder.checkInvariants();
         verifyEquals(Collections.emptyList(), builder.build());
     }
 
     public void testAddToEmpty()
     {
-        ReverseBuilder<Integer> builder = prependToExistingNode(EmptyNode.of());
+        ReverseBuilder<Integer> builder = insertAtBeginning(EmptyNode.of());
         List<Integer> expected = new ArrayList<>();
         for (int i = 2500; i > 0; --i) {
             expected.add(0, i);
             builder.add(i);
+            builder.checkInvariants();
             Node<Integer> built = builder.build();
             built.checkInvariants();
             verifyEquals(expected, built);
@@ -130,7 +132,7 @@ public class ReverseBuilderTest
 
     private void runScenario(Scenario scenario)
     {
-        ForwardBuilder<Integer> startBuilder = appendToExistingNode(EmptyNode.of());
+        ForwardBuilder<Integer> startBuilder = insertAtEnd(EmptyNode.of());
         startBuilder.addAll(scenario.middle);
         Node<Integer> starter = startBuilder.build();
         starter.checkInvariants();
@@ -145,8 +147,9 @@ public class ReverseBuilderTest
         }
         starter.checkInvariants();
 
-        ReverseBuilder<Integer> builder = prependToExistingNode(starter);
+        ReverseBuilder<Integer> builder = insertAtBeginning(starter);
         builder.addAll(scenario.adds.reversed());
+        builder.checkInvariants();
         Node<Integer> built = builder.build();
         built.checkInvariants();
 

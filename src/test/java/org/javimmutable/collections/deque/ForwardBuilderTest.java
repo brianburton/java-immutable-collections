@@ -38,7 +38,7 @@ package org.javimmutable.collections.deque;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
-import static org.javimmutable.collections.deque.ForwardBuilder.appendToExistingNode;
+import static org.javimmutable.collections.deque.ForwardBuilder.insertAtEnd;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import static org.javimmutable.collections.indexed.IndexedHelper.range;
 
@@ -95,14 +95,14 @@ public class ForwardBuilderTest
 
     public void testEmpty()
     {
-        ForwardBuilder<Integer> builder = appendToExistingNode(EmptyNode.of());
+        ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         builder.checkInvariants();
         verifyEquals(Collections.emptyList(), builder.build());
     }
 
     public void testAddToEmpty()
     {
-        ForwardBuilder<Integer> builder = appendToExistingNode(EmptyNode.of());
+        ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         List<Integer> expected = new ArrayList<>();
         for (int i = 1; i < 2500; ++i) {
             expected.add(i);
@@ -130,7 +130,7 @@ public class ForwardBuilderTest
 
     private void runScenario(Scenario scenario)
     {
-        ForwardBuilder<Integer> builder = appendToExistingNode(EmptyNode.of());
+        ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         builder.addAll(scenario.middle);
         builder.checkInvariants();
         Node<Integer> starter = builder.build();
@@ -146,7 +146,7 @@ public class ForwardBuilderTest
         }
         starter.checkInvariants();
 
-        builder = appendToExistingNode(starter);
+        builder = insertAtEnd(starter);
         builder.checkInvariants();
         builder.addAll(scenario.adds);
         builder.checkInvariants();

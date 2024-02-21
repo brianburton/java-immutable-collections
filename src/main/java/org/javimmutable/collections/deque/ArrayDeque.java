@@ -195,7 +195,7 @@ public class ArrayDeque<T>
     private static <T> Node<T> insertAllFirstImpl(Node<T> root,
                                                   Indexed<? extends T> values)
     {
-        ReverseBuilder<T> builder = ReverseBuilder.prependToExistingNode(root);
+        ReverseBuilder<T> builder = ReverseBuilder.insertAtBeginning(root);
         builder.addAll(values.reversed());
         return builder.build();
     }
@@ -203,7 +203,7 @@ public class ArrayDeque<T>
     private static <T> Node<T> insertAllFirstImpl(Node<T> root,
                                                   Iterator<? extends T> values)
     {
-        ReverseBuilder<T> builder = ReverseBuilder.prependToExistingNode(root);
+        ReverseBuilder<T> builder = ReverseBuilder.insertAtBeginning(root);
         builder.addAll(IteratorHelper.<T>reverse(values));
         return builder.build();
     }
@@ -211,7 +211,7 @@ public class ArrayDeque<T>
     private static <T> Node<T> insertAllLastImpl(Node<T> root,
                                                  Indexed<? extends T> values)
     {
-        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
+        ForwardBuilder<T> builder = ForwardBuilder.insertAtEnd(root);
         builder.addAll(values);
         return builder.build();
     }
@@ -219,7 +219,7 @@ public class ArrayDeque<T>
     private static <T> Node<T> insertAllLastImpl(Node<T> root,
                                                  Iterator<? extends T> values)
     {
-        ForwardBuilder<T> builder = ForwardBuilder.appendToExistingNode(root);
+        ForwardBuilder<T> builder = ForwardBuilder.insertAtEnd(root);
         builder.addAll(values);
         return builder.build();
     }
@@ -426,7 +426,7 @@ public class ArrayDeque<T>
 
         private Builder()
         {
-            builder = ForwardBuilder.appendToExistingNode(EmptyNode.of());
+            builder = ForwardBuilder.insertAtEnd(EmptyNode.of());
         }
 
         @Nonnull

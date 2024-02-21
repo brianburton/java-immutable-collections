@@ -37,6 +37,7 @@ package org.javimmutable.collections.deque;
 
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 
@@ -54,6 +55,7 @@ import java.util.Iterator;
  */
 @NotThreadSafe
 class ReverseBuilder<T>
+    implements InvariantCheckable
 {
     private final Leaf<T> leaf;
 
@@ -64,7 +66,7 @@ class ReverseBuilder<T>
 
     void add(T value)
     {
-        leaf.prepend(value);
+        leaf.add(value);
     }
 
     void addAll(Indexed<? extends T> values)
@@ -86,56 +88,77 @@ class ReverseBuilder<T>
         return leaf.toNode().prune();
     }
 
+    @Override
+    public void checkInvariants()
+    {
+        leaf.checkInvariants();
+    }
+
     /**
      * Deconstructs the base node to construct a list of builders that add new elements
      * to the front of the list.
      *
-     * @param baseNode the node the builder will prepend data to
+     * @param root the node the builder will prepend data to
      * @return the builder
      */
-    static <T> ReverseBuilder<T> prependToExistingNode(Node<T> baseNode)
+    static <T> ReverseBuilder<T> insertAtBeginning(Node<T> root)
     {
-        LeafNode<T> leafNode = baseNode.castAsLeaf();
-        if (leafNode != null) {
-            return new ReverseBuilder<>(new Leaf<>(leafNode.values(), null));
+        if (root.getDepth() == 1) {
+            if (root.isFull()) {
+                Branch<T> branch = new Branch<>(2, IndexedHelper.indexed(root), EmptyNode.of(), null);
+                Leaf<T> leaf = new Leaf<>(IndexedHelper.empty(), branch);
+                return new ReverseBuilder<>(leaf);
+            } else {
+                LeafNode<T> leafNode = root.castAsLeaf();
+                Indexed<T> values = leafNode != null ? leafNode.values() : IndexedHelper.empty();
+                Leaf<T> leaf = new Leaf<>(values, null);
+                return new ReverseBuilder<>(leaf);
+            }
         }
 
-        BranchNode<T> branchNode = baseNode.castAsBranch();
-        if (branchNode == null) {
-            // if it's not a leaf and not a branch it must be empty
-            assert baseNode.isEmpty();
-            return new ReverseBuilder<>(new Leaf<>(IndexedHelper.empty(), null));
+        BranchNode<T> branchNode = root.castAsBranch();
+        assert branchNode != null;
+        if (branchNode.isFull()) {
+            Branch<T> branch = new Branch<>(branchNode.getDepth() + 1, IndexedHelper.indexed(branchNode), EmptyNode.of(), null);
+            Leaf<T> leaf = new Leaf<>(IndexedHelper.empty(), addMissingBranches(1, branch));
+            return new ReverseBuilder<>(leaf);
         }
 
-        // Now start at the root branch and work our way down the tree following the
-        // prefixes to the last prefix node.
-        Branch<T> branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), null);
-        baseNode = branchNode.prefix();
-        while (true) {
-            // prefixes can jump multiple levels so fill any gaps with empty branch nodes
-            while (branch.depth > baseNode.getDepth() + 1) {
-                branch = new Branch<>(branch.depth - 1, branch);
+        Branch<T> next = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), null);
+        Node<T> prefix = branchNode.prefix();
+        while (prefix.getDepth() > 1) {
+            next = addMissingBranches(prefix.getDepth(), next);
+            branchNode = prefix.castAsBranch();
+            assert branchNode != null;
+            if (prefix.isFull()) {
+                next.add(prefix);
+            } else {
+                next = new Branch<>(branchNode.getDepth(),
+                                    branchNode.filledNodes(),
+                                    branchNode.suffix(),
+                                    next);
             }
-
-            // we stop if we hit a leaf node
-            leafNode = baseNode.castAsLeaf();
-            if (leafNode != null) {
-                assert branch.depth == 2;
-                return new ReverseBuilder<>(new Leaf<>(leafNode.values(), branch));
-            }
-
-            // we also stop if we hit an empty prefix
-            branchNode = baseNode.castAsBranch();
-            if (branchNode == null) {
-                assert baseNode.isEmpty();
-                assert branch.depth == 2;
-                return new ReverseBuilder<>(new Leaf<>(IndexedHelper.empty(), branch));
-            }
-
-            // add a node for the branch and follow its prefix in the next loop iteration
-            branch = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), branch);
-            baseNode = branchNode.prefix();
+            prefix = branchNode.prefix();
         }
+
+        next = addMissingBranches(1, next);
+        if (prefix.isFull()) {
+            next.add(prefix);
+            prefix = EmptyNode.of();
+        }
+        LeafNode<T> leafNode = prefix.castAsLeaf();
+        Indexed<T> values = leafNode != null ? leafNode.values() : IndexedHelper.empty();
+        return new ReverseBuilder<>(new Leaf<>(values, next));
+    }
+
+    private static <T> Branch<T> addMissingBranches(int nodeDepth,
+                                                    Branch<T> next)
+    {
+        final int requiredDepth = nodeDepth + 1;
+        while (next.depth > requiredDepth) {
+            next = new Branch<>(next.depth - 1, next);
+        }
+        return next;
     }
 
     private static class Leaf<T>
@@ -162,15 +185,10 @@ class ReverseBuilder<T>
             }
             this.next = next;
 
-            // We don't let nodes stay completely full but a newly constructed one might be.
-            // So we need go through the list and push the values for amy full branch or leaf
-            // on it its parent.
-            pushIfFull();
-
             assert capacity > 0;
         }
 
-        private void prepend(T value)
+        private void add(T value)
         {
             assert capacity > 0;
             length += 1;
@@ -178,7 +196,7 @@ class ReverseBuilder<T>
             values[index] = value;
             capacity -= 1;
             if (capacity == 0) {
-                pushPrepend();
+                push();
             }
             assert capacity > 0;
         }
@@ -192,52 +210,13 @@ class ReverseBuilder<T>
             return answer;
         }
 
-        private void clear()
-        {
-            Arrays.fill(values, null);
-            next = null;
-            length = 0;
-            index = 32;
-            capacity = 32;
-        }
-
-        /**
-         * Called after initialization to push all full nodes to their next builder so that we
-         * always maintain capacity in every node of the builder.
-         */
-        private void pushIfFull()
-        {
-            if (next != null) {
-                next.pushIfFull();
-                capacity = Math.min(next.capacity, 32) - length;
-                assert capacity >= 0;
-            }
-            if (capacity == 0) {
-                pushAppend();
-            }
-        }
-
-        private void pushAppend()
+        private void push()
         {
             Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), index, 32);
             if (next == null) {
                 next = new Branch<>(2, null);
             }
-            next.append(newNode);
-
-            length = 0;
-            index = 32;
-            capacity = Math.min(next.capacity, 32);
-            Arrays.fill(values, null);
-        }
-
-        private void pushPrepend()
-        {
-            Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), index, 32);
-            if (next == null) {
-                next = new Branch<>(2, null);
-            }
-            next.prepend(newNode);
+            next.add(newNode);
 
             length = 0;
             index = 32;
@@ -249,6 +228,26 @@ class ReverseBuilder<T>
         {
             Node<T> leafNode = length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), index, 32);
             return next == null ? leafNode : next.toNode(leafNode);
+        }
+
+        private void checkInvariants()
+        {
+            if (next != null) {
+                next.checkInvariants();
+                if (next.depth != 2) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            if (index + length != 32) {
+                throw new IllegalStateException();
+            }
+
+            for (int i = 0; i < index; ++i) {
+                if (values[i] != null) {
+                    throw new IllegalStateException();
+                }
+            }
         }
     }
 
@@ -307,52 +306,7 @@ class ReverseBuilder<T>
             assert capacity >= 0;
         }
 
-        private void append(Node<T> node)
-        {
-            assert capacity > 0;
-            assert length < nodes.length;
-            assert node.getDepth() < depth;
-            assert node.size() <= capacity;
-            assert node.isFull() || node.size() == capacity;
-
-            Node<T> prefix = EmptyNode.of();
-            if (node.isFull()) {
-                for (int i = 0; i < length; ++i) {
-                    nodes[index + i - 1] = nodes[index + i];
-                }
-                length += 1;
-                index -= 1;
-                nodes[31] = node;
-                capacity -= node.size();
-                size += node.size();
-            } else if (node.size() == capacity) {
-                capacity -= node.size();
-                size += node.size();
-                prefix = node;
-            } else {
-                throw new AssertionError("node.isFull() || node.size() == capacity");
-            }
-            if (capacity == 0) {
-                Node<T> newNode =
-                    size == node.size()
-                    ? node
-                    : BranchNode.forNodeBuilder(depth, size, prefix,
-                                                IndexedArray.retained(nodes),
-                                                index, 32, suffix);
-                if (next == null) {
-                    next = new Branch<>(depth + 1, null);
-                }
-                next.append(newNode);
-                length = 0;
-                index = 32;
-                size = 0;
-                capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
-                Arrays.fill(nodes, null);
-            }
-            assert capacity > 0;
-        }
-
-        private void prepend(Node<T> node)
+        private void add(Node<T> node)
         {
             assert capacity > 0;
             assert length < nodes.length;
@@ -365,34 +319,38 @@ class ReverseBuilder<T>
                 length += 1;
                 index -= 1;
                 nodes[index] = node;
-                capacity -= node.size();
-                size += node.size();
             } else if (node.size() == capacity) {
-                capacity -= node.size();
-                size += node.size();
                 prefix = node;
             } else {
                 throw new AssertionError("node.isFull() || node.size() == capacity");
             }
+            capacity -= node.size();
+            size += node.size();
             if (capacity == 0) {
-                Node<T> newNode =
-                    size == node.size()
-                    ? node
-                    : BranchNode.forNodeBuilder(depth, size, prefix,
-                                                IndexedArray.retained(nodes),
-                                                index, 32, suffix);
-                if (next == null) {
-                    next = new ReverseBuilder.Branch<>(depth + 1, null);
-                }
-                next.prepend(newNode);
-                suffix = EmptyNode.of();
-                length = 0;
-                index = 32;
-                size = 0;
-                capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
-                Arrays.fill(nodes, null);
+                push(node, prefix);
             }
             assert capacity > 0;
+        }
+
+        private void push(Node<T> node,
+                          Node<T> prefix)
+        {
+            Node<T> newNode =
+                size == node.size()
+                ? node
+                : BranchNode.forNodeBuilder(depth, size, prefix,
+                                            IndexedArray.retained(nodes),
+                                            index, 32, suffix);
+            if (next == null) {
+                next = new Branch<>(depth + 1, null);
+            }
+            next.add(newNode);
+            suffix = EmptyNode.of();
+            length = 0;
+            index = 32;
+            size = 0;
+            capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
+            Arrays.fill(nodes, null);
         }
 
         private int totalSize()
@@ -402,30 +360,6 @@ class ReverseBuilder<T>
                 answer += next.totalSize();
             }
             return answer;
-        }
-
-        private void pushIfFull()
-        {
-            if (next != null) {
-                next.pushIfFull();
-                capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth)) - size;
-                assert capacity >= 0;
-            }
-            if (capacity == 0) {
-                Node<T> newNode = BranchNode.forNodeBuilder(depth, size, EmptyNode.of(),
-                                                            IndexedArray.retained(nodes),
-                                                            index, 32, suffix);
-                if (next == null) {
-                    next = new Branch<>(depth + 1, null);
-                }
-                next.append(newNode);
-                suffix = EmptyNode.of();
-                length = 0;
-                index = 32;
-                size = 0;
-                capacity = Math.min(next.capacity, DequeHelper.sizeForDepth(depth));
-                Arrays.fill(nodes, null);
-            }
         }
 
         private Node<T> toNode(Node<T> prefix)
@@ -443,6 +377,58 @@ class ReverseBuilder<T>
                 return prefix;
             } else {
                 return next.toNode(prefix);
+            }
+        }
+
+
+        private void checkInvariants()
+        {
+            if (next != null) {
+                next.checkInvariants();
+                if (next.depth != depth + 1) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            if (capacity <= 0) {
+                throw new IllegalStateException();
+            }
+
+            if (suffix == null) {
+                throw new IllegalStateException();
+            }
+
+            if (index + length != 32) {
+                throw new IllegalStateException();
+            }
+
+            // we should always maintain a proper size and length
+            int computedSize = suffix.size();
+            for (int i = 0; i < length; ++i) {
+                Node<T> node = nodes[index + i];
+                node.checkInvariants();
+
+                if (node.getDepth() != depth - 1) {
+                    throw new IllegalStateException();
+                }
+                computedSize += node.size();
+            }
+            if (computedSize != size) {
+                throw new IllegalStateException();
+            }
+
+            for (int i = 0; i < index; ++i) {
+                if (nodes[i] != null) {
+                    throw new IllegalStateException();
+                }
+            }
+
+            int computedCapacity = DequeHelper.sizeForDepth(depth) - computedSize;
+            if (next != null) {
+                computedCapacity = Math.min(computedCapacity, next.capacity);
+            }
+            if (computedCapacity != capacity) {
+                throw new IllegalStateException();
             }
         }
     }
