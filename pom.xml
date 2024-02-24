@@ -164,6 +164,33 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>readme</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/doc</directory>
+                                            <includes>
+                                                <include>README.md</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <encoding>UTF-8</encoding>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -199,6 +226,8 @@
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <preparationGoals>resources:copy-resources@readme scm:add -Dincludes=README.md</preparationGoals>
+                    <completionGoals>resources:copy-resources@readme scm:add -Dincludes=README.md</completionGoals>
                 </configuration>
             </plugin>
             <plugin>
@@ -220,19 +249,19 @@
                     <classpathScope>test</classpathScope>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>-ea</argument>
                         <argument>org.javimmutable.collections.stress_test.RunStressTests</argument>
-<!--                        <argument>&#45;&#45;test</argument>-->
-<!--                        <argument>deque</argument>-->
-<!--                        <argument>&#45;&#45;test</argument>-->
-<!--                        <argument>orderedmap</argument>-->
-<!--                        <argument>&#45;&#45;test</argument>-->
-<!--                        <argument>orderedset</argument>-->
-<!--                        <argument>&#45;&#45;test</argument>-->
-<!--                        <argument>orderedsetmap</argument>-->
-<!--                        <argument>&#45;&#45;test</argument>-->
-<!--                        <argument>hashset</argument>-->
+                        <!--                        <argument>&#45;&#45;test</argument>-->
+                        <!--                        <argument>deque</argument>-->
+                        <!--                        <argument>&#45;&#45;test</argument>-->
+                        <!--                        <argument>orderedmap</argument>-->
+                        <!--                        <argument>&#45;&#45;test</argument>-->
+                        <!--                        <argument>orderedset</argument>-->
+                        <!--                        <argument>&#45;&#45;test</argument>-->
+                        <!--                        <argument>orderedsetmap</argument>-->
+                        <!--                        <argument>&#45;&#45;test</argument>-->
+                        <!--                        <argument>hashset</argument>-->
                     </arguments>
                 </configuration>
             </plugin>

@@ -363,7 +363,7 @@ releases include source jars for easy reference in your IDE.
     <dependency>
         <groupId>org.javimmutable</groupId>
         <artifactId>collections</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>${project.version}</version>
     </dependency>
 ````
 
