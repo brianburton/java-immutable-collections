@@ -286,6 +286,23 @@ to the map. Some keys update existing entries while others are new keys to be ad
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 ````
 
+Maybe - Handling Optional Values
+---
+
+The `Maybe` class, returned by `find()` methods in all collections, is similar to `Optional` but has several
+advantages:
+
+- `Maybe` is serializable so you can use it as a field in `Serializable` objects if desired.
+- `Maybe` offers more utility methods than `Optional`.
+- `Maybe` supports null values (sometimes you just want null...)
+
+`Maybe` and `NotNull` can interoperate with one another. Calling `notNull()` on a `Maybe` returns a `NotNull` reflecting
+the presence and nullity of a value in the `Maybe`. Similarly, calling `maybe()` on a `NotNull` returns a `Maybe`
+reflecting the
+presence of a value in the `Result`. Note that this is not aalways a round trip.  
+If `m` is a `Maybe` containing a null value calling `m.notNull().maybe()` will return an empty `Maybe`.
+
+
 NotNull - Avoiding null
 ---
 
@@ -300,14 +317,13 @@ does not allow nulls and provides more monadic functionality. It is meant to be 
 There are two possible states for a `NotNull` object:
 
 - `Empty` indicates no value is stored within the `NotNull`. The `unsafeGet` methods cannot be called on these objects
-  but
-  all others can be called safely.
+  but all others can be called safely.
 - `Full` indicates a non-null value is stored within the `NotNull`. All methods can be called on these objects.
 
-NotNull should be used when a value might not exist. For example as the result of a database query for a single object.
-Once you have a NotNull value you can call the `map` method with a lambda that transforms the value (if one exists). The
-transformed value can be of the same or another type. If your lambda returns another NotNull you should use the
-`flatMap` method to "unwrap" the resulting value.
+NotNull should be used when a value might not exist or might be null. For example as the result of a database query for
+a single object. Once you have a NotNull value you can call the `map` method with a lambda that transforms the value
+(if one exists). The transformed value can be of the same or another type. If your lambda returns another NotNull you
+should use the `flatMap` method to "unwrap" the resulting value.
 
 ````
 // simplified class for illustration - normally you'd use getters
