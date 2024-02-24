@@ -88,6 +88,7 @@ class BranchNode<T>
     private static <T> AbstractNode<T> join(@Nonnull AbstractNode<T> left,
                                             @Nonnull AbstractNode<T> right)
     {
+        assert Math.abs(left.depth() - right.depth()) <= 1;
         final int size = left.size() + right.size();
         if (size <= MultiValueNode.MAX_SIZE) {
             return new MultiValueNode<>(left, right, size);
