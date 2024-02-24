@@ -116,6 +116,7 @@ public class RunStressTests
         final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file").withOptionalArg().ofType(String.class).defaultsTo("src/site/markdown/index.md");
         final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies random number seed").withOptionalArg().ofType(Long.class).defaultsTo(System.currentTimeMillis());
         final OptionSpec<String> testSpec = parser.accepts("test", "specifies tests to run").withRequiredArg().ofType(String.class);
+        final OptionSpec<Integer> loopsSpec = parser.accepts("loops", "specifies max number of loops to run").withOptionalArg().ofType(Integer.class).defaultsTo(-1);
         final OptionSet options;
         try {
             options = parser.parse(argv);
@@ -137,18 +138,19 @@ public class RunStressTests
 
         long seed = options.valueOf(seedSpec);
         final Random random = new Random(seed);
+        final int maxLoops = options.valueOf(loopsSpec);
+        int loopNumber = 1;
 
         System.out.printf("%nRunning %d testers: %s%n", selectedTests.size(), valuesString(selectedTests.transform(StressTester::getTestName)));
-        //noinspection InfiniteLoopStatement
-        while (true) {
+        while (maxLoops < 0 || loopNumber <= maxLoops) {
             for (StressTester tester : selectedTests) {
-                System.out.printf("%nStarting %s with seed %d%n", tester.getTestName(), seed);
+                System.out.printf("%nLoop %d Starting %s with seed %d%n", loopNumber, tester.getTestName(), seed);
                 tester.execute(random, tokens);
                 seed = System.currentTimeMillis();
                 random.setSeed(seed);
                 System.out.println("sleeping before next test");
-                //noinspection BusyWait
-                Thread.sleep(5000);
+                Thread.sleep(2000);
+                loopNumber += 1;
             }
         }
     }

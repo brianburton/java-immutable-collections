@@ -370,11 +370,15 @@ class ForwardBuilder<T>
             assert suffix.size() < capacity;
 
             if (size > 0) {
-                suffix = BranchNode.forNodeBuilder(depth,
-                                                   size + suffix.size(),
-                                                   prefix,
-                                                   IndexedArray.retained(nodes), 0, length,
-                                                   suffix);
+                if (prefix.isEmpty() && suffix.isEmpty() && length == 1) {
+                    suffix = nodes[0];
+                } else {
+                    suffix = BranchNode.forNodeBuilder(depth,
+                                                       size + suffix.size(),
+                                                       prefix,
+                                                       IndexedArray.retained(nodes), 0, length,
+                                                       suffix);
+                }
             }
             if (next == null) {
                 return suffix;

@@ -367,11 +367,15 @@ class ReverseBuilder<T>
             assert prefix.size() < capacity;
 
             if (size > 0) {
-                prefix = BranchNode.forNodeBuilder(depth,
-                                                   size + prefix.size(),
-                                                   prefix,
-                                                   IndexedArray.retained(nodes), index, 32,
-                                                   suffix);
+                if (prefix.isEmpty() && suffix.isEmpty() && length == 1) {
+                    prefix = nodes[index];
+                } else {
+                    prefix = BranchNode.forNodeBuilder(depth,
+                                                       size + prefix.size(),
+                                                       prefix,
+                                                       IndexedArray.retained(nodes), index, 32,
+                                                       suffix);
+                }
             }
             if (next == null) {
                 return prefix;
