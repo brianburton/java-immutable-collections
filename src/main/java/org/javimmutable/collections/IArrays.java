@@ -39,6 +39,7 @@ import org.javimmutable.collections.array.TrieArray;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
+import java.util.stream.Collector;
 
 public final class IArrays
 {
@@ -128,5 +129,14 @@ public final class IArrays
     public static <T> IArrayBuilder<T> builder()
     {
         return TrieArray.builder();
+    }
+
+    /**
+     * Collects values into a {@link IArray}.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, IArray<T>> collector()
+    {
+        return TrieArray.collector();
     }
 }

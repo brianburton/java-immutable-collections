@@ -40,6 +40,7 @@ import org.javimmutable.collections.list.TreeList;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
+import java.util.stream.Collector;
 
 public final class ILists
 {
@@ -91,5 +92,14 @@ public final class ILists
     public static <T> IListBuilder<T> builder()
     {
         return TreeList.listBuilder();
+    }
+
+    /**
+     * Efficiently collects values into a {@link IList} built atop a balanced binary tree.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, IList<T>> collector()
+    {
+        return TreeList.createListCollector();
     }
 }

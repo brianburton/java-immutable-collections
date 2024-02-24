@@ -40,6 +40,7 @@ import org.javimmutable.collections.indexed.IndexedArray;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
+import java.util.stream.Collector;
 
 public final class IDeques
 {
@@ -90,5 +91,14 @@ public final class IDeques
     public static <T> IDequeBuilder<T> builder()
     {
         return ArrayDeque.builder();
+    }
+
+    /**
+     * Collects values into a IDeque.
+     */
+    @Nonnull
+    public static <T> Collector<T, ?, IDeque<T>> collector()
+    {
+        return ArrayDeque.collector();
     }
 }
