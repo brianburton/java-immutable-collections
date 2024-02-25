@@ -185,8 +185,7 @@ class BranchNode<T>
         }
         if (nodes.length > 0) {
             Node<T> newPrefix = nodes[0];
-            Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length - 1);
-            System.arraycopy(nodes, 1, newNodes, 0, newNodes.length);
+            Node<T>[] newNodes = DequeHelper.deleteFirst(nodes);
             return forDelete(size - 1, newPrefix.deleteFirst(), newNodes, suffix);
         }
         if (!suffix.isEmpty()) {
@@ -203,8 +202,7 @@ class BranchNode<T>
         }
         if (nodes.length > 0) {
             Node<T> newSuffix = nodes[nodes.length - 1];
-            Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length - 1);
-            System.arraycopy(nodes, 0, newNodes, 0, newNodes.length);
+            Node<T>[] newNodes = DequeHelper.deleteLast(nodes);
             return forDelete(size - 1, prefix, newNodes, newSuffix.deleteLast());
         }
         if (!prefix.isEmpty()) {
@@ -219,17 +217,11 @@ class BranchNode<T>
         if (isFull()) {
             return new BranchNode<>(value, this);
         }
-        if (prefix.getDepth() < (depth - 1)) {
-            return new BranchNode<>(depth, size + 1, prefix.insertFirst(value), nodes, suffix);
-        }
-        assert prefix.getDepth() == (depth - 1);
-        assert !prefix.isFull();
+
         Node<T>[] newNodes;
         Node<T> newPrefix = prefix.insertFirst(value);
-        if (newPrefix.isFull()) {
-            newNodes = DequeHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
-            newNodes[0] = newPrefix;
+        if (newPrefix.getDepth() == (depth - 1) && newPrefix.isFull()) {
+            newNodes = DequeHelper.insertFirst(nodes, newPrefix);
             newPrefix = EmptyNode.of();
         } else {
             newNodes = nodes;
@@ -243,17 +235,11 @@ class BranchNode<T>
         if (isFull()) {
             return new BranchNode<>(this, value);
         }
-        if (suffix.getDepth() < (depth - 1)) {
-            return new BranchNode<>(depth, size + 1, prefix, nodes, suffix.insertLast(value));
-        }
-        assert suffix.getDepth() == (depth - 1);
-        assert !suffix.isFull();
+
         Node<T>[] newNodes;
         Node<T> newSuffix = suffix.insertLast(value);
-        if (newSuffix.isFull()) {
-            newNodes = DequeHelper.allocateNodes(nodes.length + 1);
-            System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
-            newNodes[nodes.length] = newSuffix;
+        if (newSuffix.getDepth() == (depth - 1) && newSuffix.isFull()) {
+            newNodes = DequeHelper.insertLast(nodes, newSuffix);
             newSuffix = EmptyNode.of();
         } else {
             newNodes = nodes;
@@ -305,8 +291,9 @@ class BranchNode<T>
         final int fullNodeSize = DequeHelper.sizeForDepth(depth - 1);
         int arrayIndex = index / fullNodeSize;
         if (arrayIndex < nodes.length) {
-            Node<T>[] newNodes = nodes.clone();
-            newNodes[arrayIndex] = nodes[arrayIndex].assign(index - (arrayIndex * fullNodeSize), value);
+            int nodeIndexStart = arrayIndex * fullNodeSize;
+            Node<T> newNode = nodes[arrayIndex].assign(index - nodeIndexStart, value);
+            Node<T>[] newNodes = DequeHelper.assign(nodes, arrayIndex, newNode);
             return new BranchNode<>(depth, size, prefix, newNodes, suffix);
         }
         index -= nodes.length * fullNodeSize;

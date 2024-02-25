@@ -77,6 +77,47 @@ final class DequeHelper
         return answer;
     }
 
+    static <T> Node<T>[] assign(Node<T>[] nodes,
+                                int index,
+                                Node<T> node)
+    {
+        Node<T>[] newNodes = nodes.clone();
+        newNodes[index] = node;
+        return newNodes;
+    }
+
+    static <T> Node<T>[] insertFirst(Node<T>[] nodes,
+                                     Node<T> node)
+    {
+        Node<T>[] newNodes = allocateNodes(nodes.length + 1);
+        System.arraycopy(nodes, 0, newNodes, 1, nodes.length);
+        newNodes[0] = node;
+        return newNodes;
+    }
+
+    static <T> Node<T>[] insertLast(Node<T>[] nodes,
+                                    Node<T> node)
+    {
+        Node<T>[] newNodes = allocateNodes(nodes.length + 1);
+        System.arraycopy(nodes, 0, newNodes, 0, nodes.length);
+        newNodes[nodes.length] = node;
+        return newNodes;
+    }
+
+    static <T> Node<T>[] deleteFirst(Node<T>[] nodes)
+    {
+        Node<T>[] newNodes = allocateNodes(nodes.length - 1);
+        System.arraycopy(nodes, 1, newNodes, 0, newNodes.length);
+        return newNodes;
+    }
+
+    static <T> Node<T>[] deleteLast(Node<T>[] nodes)
+    {
+        Node<T>[] newNodes = allocateNodes(nodes.length - 1);
+        System.arraycopy(nodes, 0, newNodes, 0, newNodes.length);
+        return newNodes;
+    }
+
     static int sizeForDepth(int depth)
     {
         return 1 << (5 * depth);
