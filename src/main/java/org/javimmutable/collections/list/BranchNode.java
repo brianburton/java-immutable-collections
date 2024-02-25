@@ -145,15 +145,15 @@ class BranchNode<T>
     }
 
     @Override
-    <C> C seekImpl(int index,
+    <C> C findImpl(int index,
                    Func0<C> defaultMapping,
                    Func1<T, C> valueMapping)
     {
         final int leftSize = left.size();
         if (index < leftSize) {
-            return left.seekImpl(index, defaultMapping, valueMapping);
+            return left.findImpl(index, defaultMapping, valueMapping);
         } else {
-            return right.seekImpl(index - leftSize, defaultMapping, valueMapping);
+            return right.findImpl(index - leftSize, defaultMapping, valueMapping);
         }
     }
 

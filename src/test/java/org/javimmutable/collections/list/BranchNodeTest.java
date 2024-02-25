@@ -36,14 +36,15 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.javimmutable.collections.Maybe;
+import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
+import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
+import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
+import static org.javimmutable.collections.list.MultiValueNodeTest.leaf;
+import static org.javimmutable.collections.list.MultiValueNodeTest.reversed;
 
 import javax.annotation.Nonnull;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.common.TestUtil.verifyOutOfBounds;
-import static org.javimmutable.collections.list.MultiValueNode.*;
-import static org.javimmutable.collections.list.MultiValueNodeTest.*;
 
 public class BranchNodeTest
     extends TestCase
@@ -57,11 +58,11 @@ public class BranchNodeTest
         assertThat(root.get(0)).isEqualTo(0);
         assertThat(root.get(MAX_SIZE)).isEqualTo(MAX_SIZE);
         assertThat(root.get(2 * MAX_SIZE)).isEqualTo(2 * MAX_SIZE);
-        assertEquals(Maybe.empty(), root.seekImpl(-1, () -> Maybe.empty(), value4 -> Maybe.of(value4)));
-        assertEquals(Maybe.of(0), root.seekImpl(0, () -> Maybe.empty(), value3 -> Maybe.of(value3)));
-        assertEquals(Maybe.of(MAX_SIZE), root.seekImpl(MAX_SIZE, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
-        assertEquals(Maybe.of(2 * MAX_SIZE + 1), root.seekImpl(2 * MAX_SIZE + 1, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
-        assertEquals(Maybe.empty(), root.seekImpl(root.size(), () -> Maybe.empty(), value -> Maybe.of(value)));
+        assertEquals(Maybe.empty(), root.findImpl(-1, () -> Maybe.empty(), value4 -> Maybe.of(value4)));
+        assertEquals(Maybe.of(0), root.findImpl(0, () -> Maybe.empty(), value3 -> Maybe.of(value3)));
+        assertEquals(Maybe.of(MAX_SIZE), root.findImpl(MAX_SIZE, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(2 * MAX_SIZE + 1), root.findImpl(2 * MAX_SIZE + 1, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), root.findImpl(root.size(), () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testRotateLeft()

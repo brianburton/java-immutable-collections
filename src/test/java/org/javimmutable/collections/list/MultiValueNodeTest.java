@@ -36,11 +36,12 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.javimmutable.collections.list.MultiValueNode.*;
+import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
+import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
 
 public class MultiValueNodeTest
     extends TestCase
@@ -50,9 +51,9 @@ public class MultiValueNodeTest
         final AbstractNode<Integer> node = leaf(0, 1);
         assertThat(node.get(0)).isEqualTo(0);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Maybe.empty(), node.seekImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
-        assertEquals(Maybe.of(0), node.seekImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
-        assertEquals(Maybe.empty(), node.seekImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
+        assertEquals(Maybe.empty(), node.findImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(0), node.findImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), node.findImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testVarious()

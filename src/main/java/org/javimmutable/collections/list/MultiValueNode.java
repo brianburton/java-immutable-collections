@@ -136,7 +136,7 @@ class MultiValueNode<T>
     }
 
     @Override
-    <C> C seekImpl(int index,
+    <C> C findImpl(int index,
                    Func0<C> defaultMapping,
                    Func1<T, C> valueMapping)
     {

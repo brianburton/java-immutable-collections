@@ -36,9 +36,9 @@
 package org.javimmutable.collections.list;
 
 import junit.framework.TestCase;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.javimmutable.collections.Maybe;
-
-import static org.assertj.core.api.Assertions.*;
 import static org.javimmutable.collections.common.TestUtil.verifyContents;
 
 public class OneValueNodeTest
@@ -49,9 +49,9 @@ public class OneValueNodeTest
         final AbstractNode<Integer> node = new OneValueNode<>(100);
         assertThat(node.get(0)).isEqualTo(100);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertEquals(Maybe.empty(), node.seekImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
-        assertEquals(Maybe.of(100), node.seekImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
-        assertEquals(Maybe.empty(), node.seekImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
+        assertEquals(Maybe.empty(), node.findImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
+        assertEquals(Maybe.of(100), node.findImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
+        assertEquals(Maybe.empty(), node.findImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
     public void testVarious()
