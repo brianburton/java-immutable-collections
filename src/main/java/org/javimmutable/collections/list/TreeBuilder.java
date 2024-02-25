@@ -38,11 +38,12 @@ package org.javimmutable.collections.list;
 import org.javimmutable.collections.Indexed;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Arrays;
 import java.util.Iterator;
 
-@NotThreadSafe
+@ThreadSafe
 class TreeBuilder<T>
 {
     private final T[] buffer;
@@ -138,7 +139,7 @@ class TreeBuilder<T>
     }
 
     @SafeVarargs
-    synchronized final <K extends T> void add(K... source)
+    final synchronized <K extends T> void add(K... source)
     {
         for (K k : source) {
             add(k);
@@ -146,8 +147,8 @@ class TreeBuilder<T>
     }
 
     synchronized void add(@Nonnull Indexed<? extends T> source,
-             int offset,
-             int limit)
+                          int offset,
+                          int limit)
     {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
@@ -196,7 +197,7 @@ class TreeBuilder<T>
         private BranchBuilder<T> parent;
         private AbstractNode<T> buffer;
 
-        private BranchBuilder(@Nonnull BranchBuilder<T> parent,
+        private BranchBuilder(@Nullable BranchBuilder<T> parent,
                               @Nonnull AbstractNode<T> node)
         {
             this.parent = parent;
