@@ -1,0 +1,15 @@
+org.javimmutable.collections
+org.javimmutable.collections.array
+org.javimmutable.collections.common
+org.javimmutable.collections.deque
+org.javimmutable.collections.hash
+org.javimmutable.collections.indexed
+org.javimmutable.collections.inorder
+org.javimmutable.collections.iterators
+org.javimmutable.collections.list
+org.javimmutable.collections.listmap
+org.javimmutable.collections.serialization
+org.javimmutable.collections.setmap
+org.javimmutable.collections.stress_test
+org.javimmutable.collections.tree
+org.javimmutable.collections.util
