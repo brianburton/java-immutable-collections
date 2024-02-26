@@ -91,8 +91,7 @@ class MultiValueNode<T>
     {
         assert count > 1;
         assert count <= MAX_SIZE;
-        this.values = allocate(count);
-        System.arraycopy(values, 0, this.values, 0, count);
+        this.values = ArrayHelper.prefix(this, values, count);
     }
 
     /**

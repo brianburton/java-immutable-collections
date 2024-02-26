@@ -271,7 +271,7 @@ public final class ArrayHelper
     }
 
     /**
-     * Returns a copy of orig containing of length limit containing all values from [0,limit).
+     * Returns a copy of orig of length limit containing all values from [0,limit).
      */
     @Nonnull
     public static <T> T[] prefix(@Nonnull Allocator<T> allocator,
