@@ -298,8 +298,7 @@ advantages:
 
 `Maybe` and `NotNull` can interoperate with one another. Calling `notNull()` on a `Maybe` returns a `NotNull` reflecting
 the presence and nullity of a value in the `Maybe`. Similarly, calling `maybe()` on a `NotNull` returns a `Maybe`
-reflecting the
-presence of a value in the `Result`. Note that this is not aalways a round trip.  
+reflecting the presence of a value in the `NotNull`. Note that this is not always a round trip.  
 If `m` is a `Maybe` containing a null value calling `m.notNull().maybe()` will return an empty `Maybe`.
 
 
