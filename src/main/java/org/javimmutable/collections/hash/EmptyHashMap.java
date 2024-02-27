@@ -51,7 +51,7 @@ import java.io.Serializable;
 
 /**
  * Singleton implementation of {@link IMap} that contains no elements.
- * When a value is assigned to the map a {@link IHashMap} is created that
+ * When a value is assigned to the map a {@link IMap} is created that
  * manages hash collisions using a tree if key is Comparable or a list otherwise.
  */
 @Immutable

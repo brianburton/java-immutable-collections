@@ -1,321 +1,389 @@
+# Immutable Collections For Java
+
 Overview
 ---
 
-The JImmutable Collections library provides a powerful set of immutable/persistent collection classes designed with performance and ease of integration in mind. These collections are intended to replace the java.util collection classes when you require the thread safety and other benefits that immutability provides.
+The immutable collections for Java library (JImmutable Collections) is a bundle of high performance immutable
+collections intended to replace or supplement the standard `java.util` collections. Functional replacements are provided
+for each of the most commonly used collections:
 
-Immutability and persistence are terms which people tend to interpret in different ways. The JImmutable collection classes are immutable in the sense that once a given collection has been created it cannot be modified. This means that it can be safely shared throughout a program without the need for synchronization or defensive copying.
+| Java Class    | JImmutable Interface | Factory Methods                             |
+|---------------|----------------------|---------------------------------------------|
+| ArrayDeque    | IDeque               | `IDeques.of()`, `IDeques.allOf()`           |
+| ArrayList     | IList                | `ILists.of()`, `ILists.allOf()`             |
+| LinkedList    | IList                | `ILists.of()`, `ILists.allOf()`             |
+| HashMap       | IMap                 | `IMaps.hashed()`                            |
+| TreeMap       | IMap                 | `IMaps.sorted()` `IMaps.sorted(Comparator)` |
+| LinkedHashMap | IMap                 | `IMaps.ordered()`                           |
+| HashSet       | ISet                 | `ISets.hashed()`                            |
+| TreeSet       | ISet                 | `ISets.sorted()` `ISets.sorted(Comparator)` |
+| LinkedHashSet | ISet                 | `ISets.ordered()`                           |
 
-However the collections are designed to allow themselves to be easily modified as well. Each collection provides methods for adding and removing elements. Each of these methods creates a new collection of the same type while leaving the original collection intact (i.e. the original persists). The data structures used to implement the collections (linked lists, b-trees, and array mapped tries) allow for almost all of the structure of the original collection to be shared by the new collection. Since all objects within each collection are immutable this sharing is completely safe. The collections are persistent in the functional programming sense. The collections are not persistent in the database sense. All contents are stored in memory at all times.
+There are also a number of highly useful collections with no equivalent in the standard Java library.
 
-Each collection class provides adapter methods to create java.util style unmodifiable collections backed by the immutable collection. Unlike the Guava immutable collection classes these adapters do not create defensive copies of all elements from the original collections. They simply access elements within the original collection. If you have code that needs a java.util.Map to do its work you can still use a PersisentHashMap and simply call it's asMap() method when you need to pass a java.util.Map to your older code.
+| Description                                                  | JImmutable Interface | Factory Method                                                                                      |
+|--------------------------------------------------------------|----------------------|-----------------------------------------------------------------------------------------------------|
+| Map of lists of items related by a key.                      | IListMap             | `IListMaps.hashed()` `IListMaps.sorted()`  `IListMaps.sorted(Comparator)`  `IListMaps.ordered()`    |
+| Map of sets of items related by a key.                       | ISetMap              | `ISetMaps.hashed()` `ISetMaps.sorted()`  `ISetMaps.sorted(Comparator)`  `ISetMaps.ordered()`        |
+| Set that tracks number of times any given element was added. | IMultiset            | `IMultisets.hashed()`  `IMultisets.sorted()` `IMultisets.sorted(Comparator)` `IMultisets.ordered()` |
+| Sparse array of elements indexed by an Integer.              | IArray               | `IArrays.of()` `IArrays.allOf()`                                                                    |
 
-The collections provide methods to create efficient Iterators and Streams.  In addition the library contains a Cursor class that is similar to Iterator but is immutable and allows for lazy evaluation. All collections implement the Iterable interface so you can use them in foreach loops.
+The collections support these standard Java features:
 
-The library is designed to have no dependencies on other libraries but it should interact well with others. Standard java interfaces are used where appropriate. Class names were chosen so as not to conflict with Guava's immutable container class names.
+- All are fully `Serializable` to facilitate storing to disk or sending over a network (i.e. in an Apache Spark
+  application)
+- All allow creation of Streams (parallel or sequential) over their contents. Maps support streams over their keys and
+  values separately or both at the same time.
+- All are `Iterable`. Maps support iterators over their keys and values separately or both at the same time.
+- Where appropriate they provide views that can be passed to code that requires a standard collection interface.  (
+  e.g. `IMap` has a `getMap()` method to create a view that implements `Map`)
+- Most provide collectors for use with Streams to create new collections in `collect()` method call. (see `ICollectors`)
+- Most provide efficient builder classes for constructing new collections in imperative fashion.
 
-Resources
+Immutability/Persistence
 ---
 
-- [Project Wiki](https://github.com/brianburton/java-immutable-collections/wiki)
-- [Project Website](https://github.com/brianburton/java-immutable-collections)
-- [Javadocs](./apidocs/index.html)
-- [Releases](https://github.com/brianburton/java-immutable-collections/releases)
-- [search.maven.org](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22)
+The collections are all [immutable](https://en.wikipedia.org/wiki/Immutable_object)
+and [persistent](https://en.wikipedia.org/wiki/Persistent_data_structure). Any method that adds or removes an item in a
+collection actually creates a new collection. The old and new collections share almost all of their structure in common
+with only the minimum number of new objects needed to implement the change in the new version. The process of creating a
+new collection from an old one is extremely fast.
 
-Tutorials
+Since the collections are immutable they can be safely shared throughout a program without the need for synchronization
+or defensive copying. In fact structure sharing is a theme throughout the library. For example, you never actually
+create an empty IList instance. The `ILists.of()` factory method always returns a single, shared, empty
+list instance. The other factory methods work the same way.
+
+The collections are still highly dynamic and fully support addition, deletion, and replacement of elements via efficient
+creation of modified versions of themselves. This sets them apart from the static immutable collections in
+the [Guava](https://github.com/google/guava) collections library.
+
+**Note:** Keep in mind that while the collections themselves are immutable the values you choose to store in them might
+not be. Always [use immutable objects as keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys)
+and if you use mutable objects as values be aware that your code could mutate them between when you add them to a
+collection and when you retrieve them later.
+
+Dependencies
 ---
 
-**Downloading**
+The library is designed to have no dependencies on other libraries, but it should interact well with others. Standard
+java interfaces are used where appropriate.
 
-If your application is built using a tool that understands maven coordinates the easiest way to add the library to your project is to simply add it as a dependency in your pom or build file.  The maven coordinates to use are documented on the web site's [Dependency Information](http://brianburton.github.io/java-immutable-collections/dependency-info.html) page.  You can browse all available artifacts on the [search.maven.org](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22) page.
-
-The library itself is distributed as a single jar so adding the jar itself to small projects is also an option.  The [Releases](https://github.com/brianburton/java-immutable-collections/releases) page on [github.com](https://github.com/brianburton/java-immutable-collections/) contains links to zip files containing the jar for each release.
-
-**List Tutorial**
-
-JImmutable Collections provides two interfaces with signatures similar to java.util.List.  Both of these interfaces provide access to elements in the list using an integer index.  As with List valid indexes are always in the range zero through `size() - 1`.  JImmutable Collections uses assign() instead of set(), insert() instead of add(), and delete() instead of remove() so that when converting code from java.util.List to JImmutableList the compiler will find all of the places that you need to replace a simple method call with an assignment.
-
-The simpler interface, JImmutableList, provides indexed access to elements within the list but restricts addition and removal of values to the end of the list.  Values added to the list are always stored in  order based on how they were added.  Cursors also traverse the values in the same order.  The current implementation uses a 32-way tree which provides O(log32(n)) performance for all operations. (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))
-
-As with all of the immutable collection classes any method that modifies the list actually creates a new list instance and returns it as the method's result.  This result can be assigned to the original list variable or to a new variable as needed.  The original, unmodified, version of the list remains in memory until garbage collected.  The lists reuse as much structure as possible so adding and removing elements requires very little copying and only a small amount of additional memory.
-
-In the example below notice that changed's third value is now 45 and list's third value is still 30.  The two lists internally contain shared copies of the common values to minimize memory consumption and improve performance but as a user of the list you don't need to worry about that.
-
-````
-    JImmutableList<Integer> list = JImmutables.list();
-    list = list.insert(10).insert(20).insert(30);
-    assertEquals(10, list.get(0));
-    assertEquals(20, list.get(1));
-    assertEquals(30, list.get(2));
-
-    JImmutableList<Integer> changed = list.deleteLast().insert(45);
-    assertEquals(10, list.get(0));
-    assertEquals(20, list.get(1));
-    assertEquals(30, list.get(2));
-    assertEquals(10, changed.get(0));
-    assertEquals(20, changed.get(1));
-    assertEquals(45, changed.get(2));
-````
-
-The JImmutableList interfaces provide a getList() method that returns an object implementing java.util.List that uses the original list as its data source.  The actual data is not copied so this method has very low overhead.  You can use this any time you need to pass a JImmutableList to code that needs a java.util.List. The resulting List is unmodifiable so set, remove, etc methods all throw UnsupportedOperationExceptions.
-
-````
-    assertEquals(Arrays.asList(10, 20, 30), list.getList());
-    assertEquals(Arrays.asList(10, 20, 45), changed.getList());
-````
-
-The JImmutableRandomAccessList interface provides all of the same methods as JImmutableList but also allows insertion and removal of values from anywhere in the list.  The current implementation uses a b-tree which provides O(log(n)) performance for all operations.
-
-The JImmutables.ralist() factory method can be used to create new JImmutableRandomAccessList.  In the example below a new JImmutableRandomAccessList is created and values are inserted to place its elements in the same order as list from the first example.
-
-````
-    JImmutableRandomAccessList<Integer> ralist = JImmutables.ralist();
-    ralist = ralist.insert(30).insert(0, 20).insert(0, 10);
-    assertEquals(10, ralist.get(0));
-    assertEquals(20, ralist.get(1));
-    assertEquals(30, ralist.get(2));
-    
-    JImmutableRandomAccessList<Integer> ralist2 = ralist;
-    ralist2 = ralist2.delete(1).insert(1, 87);
-    assertEquals(10, ralist.get(0));
-    assertEquals(20, ralist.get(1));
-    assertEquals(30, ralist.get(2));
-    assertEquals(10, ralist2.get(0));
-    assertEquals(87, ralist2.get(1));
-    assertEquals(30, ralist2.get(2));
-    assertEquals(Arrays.asList(10, 20, 30), ralist.getList());
-    assertEquals(Arrays.asList(10, 87, 30), ralist2.getList());
-````
-
-**Map Tutorial**
-
-The JImmutable library provides a JImmutableMap interface that is very similar to java.util.Map.  Like other immutable interfaces all of the methods that modify the map return a new map as their result.  The old and new maps share almost all of their structure in common to minimize memory and CPU overhead.  Two implementations are provided.  Nulls are not permitted as keys but can be used as values.  JImmutable Collections uses assign() instead of put() and delete() instead of remove() so that when converting code from java.util.Map to JImmutableMap the compiler will find all of the places that you need to replace a simple method call with an assignment.
-
-JImmutables.map() uses a hash mapped integer trie to store its values.  This provides O(log32(n)) performance for all operations.  (see [Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance))  Values within the map are stored in an ordering based on the hash codes of the keys so no guarantee is made about what order an Iterator, Stream, or Cursor will visit entries. (see [Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys) for advice on selecting keys for maps)
-
-JImmutables.sortedMap() uses a b-tree with a Comparator object to store its values.  This provides O(log2(n)) performance for all operations.  Values within the map are stored in sorted order based on the Comparator used by the tree.  Usually you will use objects which implement the Comparable interface as keys and when you do so the keys will be stored in their natural ordering.  When you need to use keys that do not implement Comparable or if you need to use a different ordering you can create the tree with your own Comparator class.  Care must be taken to write robust and correct implementations of Comparable/Comparator to ensure the tree operates as expected.
-
-````
-    JImmutableMap<Integer, Integer> hmap = JImmutables.map();
-    hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
-
-    JImmutableMap<Integer, Integer> hmap2 = hmap.delete(20).assign(18,19);
-
-    assertEquals(11, hmap.get(10));
-    assertEquals(19, hmap.get(20));
-    assertEquals(31, hmap.get(30));
-
-    assertEquals(11, hmap2.get(10));
-    assertEquals(19, hmap2.get(18));
-    assertEquals(null, hmap2.get(20));
-    assertEquals(31, hmap2.get(30));
-````
-
-The get() method operates in the same manner as java.util.Map.get().  If the map does not contain a value for the specified key null is returned.  Since JImmutableMaps allow nulls as values the get() method's result can be ambiguous.  JImmutableMap provides a find() method which is similar to get() but always returns a non-null Holder object that can be used to determine unambiguously whether or not a value was found matching the key.
-
-````
-    hmap2 = hmap2.assign(80, null);
-    assertEquals(null, hmap2.get(20));
-    assertEquals(true, hmap2.find(20).isEmpty());
-    // hmap2.find(20).getValue() would throw since the Holder is empty
-
-    assertEquals(null, hmap2.get(80));
-    assertEquals(false, hmap2.find(80).isEmpty());
-    assertEquals(null, hmap2.find(80).getValue());
-````
-
-JImmutableMap includes a getMap() method that returns an object implementing java.util.Map.  The returned Map is immutable (set, remove, etc throw UnsupportedOperationException) and uses the original JImmutableMap to access values.  getMap() has very low overhead since the contents of the JImmutableMap are not copied when creating the Map.  Use this method when you want to share the JImmutableMap's contents with code that only understands java.util.Map.
-
-Sorted maps work exactly the same way as hash maps but their cursors provide access to entries in sorted order based on their keys.  In the example below the keySet() and values() methods provide their contents sorted based on the order of the corresponding keys in the map.
-
-````
-    JImmutableMap<Integer, Integer> smap = JImmutables.sortedMap();
-    smap = smap.assign(10, 80).assign(20, 21).assign(30, 31).assign(20, 19);
-    assertEquals(Arrays.asList(10, 20, 30), new ArrayList<Integer>(smap.getMap().keySet()));
-    assertEquals(Arrays.asList(80, 19, 31), new ArrayList<Integer>(smap.getMap().values()));
-````
-
-**Array Tutorial**
-
-JImmutable Collections provides a sparse array implementation.  A sparse array is an immutable collection similar to a map except that:
-
-- it implements JImmutableArray instead of JImmutableMap
-- its keys are ints (not Integers) so no boxing/unboxing is needed for them
-- its iterators, streams, and cursors iterate in sorted order by key using natural integer ordering (negative indexes then positive indexes)
-
-Any valid 32-bit integer can be used as an index to a sparse array.  Like a map the array efficiently manages memory so an array with widely dispersed keys will use approximately the same amount of memory as one with contiguous keys.
-
-Like all of the other jimmutable containers you should create sparse array instances using the static factory methods in the util.JImmutables class.  Using these methods instead of instantiating objects directly is preferred since it isolates the client from future changes in the underlying implementation.
-
-JImmutableArrays are immutable.  The assign() and delete() methods leave the original array intact and return a new modified array containing the requested change.  The old and new arrays share almost all of their structure in common so very little copying is performed.
-
-````
-    JImmutableArray<Integer> array = JImmutables.array();
-    array = array.assign(-50000, "able");
-    array = array.assign(25000, "charlie");
-    array = array.assign(0, "baker");
-    assertEquals("baker", array.get(0));
-````
-
-The example creates an empty array and then assigns three values.  Notice that the indexes are not contiguous and that negative indexes are perfectly acceptable.  Arrays iterate over their values in order of their keys so for the sample array valuesCursor() would return the values in the order "able" then "baker" then "charlie".  The keysCursor() would return -50000 then 0 then 25000.  Cursors skip "missing" indexes.  The standard cursor() method returns JImmutableMap.Entry objects that contain both the index and the value for each entry in the array.
-
-Since arrays are not contiguous there is no concept of "insertion", only assignment.  If you need a collection that manages indexes for you use a JImmutableList.  However if your algorithm provides a natural way to manage its own indexes a JImmutableArray might be a better option.
+# Examples
 
 Factory Methods
 ---
 
-Internally JImmutable Collections uses integer tries, B-Trees, and 32-way trees for the collection implementations but it strives to hide that fact from its users. There is no reason to directly create objects of the implementation classes. Your code will be cleaner and more future proof if you always create new collections using the factory methods in the JImmutables class.
-
-Static methods in JImmutables can be used to create new instances of each collection interface. For example:
+Static factory methods make it easy to create new collections. Here are various ways to
+create the same basic list. Similar factory methods exist for the other collections.
 
 ````
-	import org.javimmutable.collections.util.JImmutables;
-
-	...
-
-	// create a new empty list
-	JImmutableList<String> es = JImmutables.list();
-
-	// create a new list containing all the same values as a java List
-	JImmutableList<String> copied = JImmutables.list(Arrays.asList("a", "b", "c"));
+        List<String> sourceList = Arrays.asList("these", "are", "some", "strings");
+        IList<String> empty = ILists.of();
+        IList<String> aList = empty
+            .insert("these")
+            .insert("are")
+            .insert("some")
+            .insert("strings");
+        IList<String> literal = ILists.of("these", "are", "some", "strings");
+        IList<String> fromJavaList = ILists.allOf(sourceList);
+        IList<String> fromBuilder = ILists.<String>builder()
+            .add("these")
+            .add("are")
+            .addAll("some", "strings")
+            .build();
+        assertThat(aList).isEqualTo(literal);
+        assertThat(fromJavaList).isEqualTo(literal);
+        assertThat(fromBuilder).isEqualTo(literal);
 ````
 
-The second example shows how to create a new list with starting values copied from another source. Variations of the list() method are defined to copy values from a Java array, a Cursor, a Cursorable (any JImmutable collection), a Java Iterator, or a Java Collection. When copying values from another source the list() method preserves their original order.
-
-Equivalent constructor methods exist for creating JImmutableStacks (stack()), JImmutableRandomAccessLists (ralist()), unsorted JImmutableMaps (map()), and sorted JImmutableMaps (sortedMap()). (see [Collections Overview])
-
-Important note about stack() - when copying from another source the objects in the source will be added to the stack in the same order they appear in the source. Because of the nature of stacks that means that when you remove values from the stack or iterate over them you will encounter them in the opposite order.
-
-The versions of map() and sortedMap() methods that accept a JImmutableMap to copy from will detect when you are copying from a compatible map and in that case will just return the source map itself. This might happen when you want to produce a sorted map from a map passed to you and don't know the type of the map you are copying.
-
-The sortedMap() method can create maps that sort keys based on their natural order (for keys that implement Comparable) but it can also create maps that sort keys based on a Comparator provided by the caller. When providing your own Comparator class be extremely careful to ensure that your Comparator is immutable and repeatable. The map will share your Comparator across all child instances of the map. If your Comparator is mutable and is somehow modified that could easily break the map and cause undefined behavior. Similarly if your Comparator can be affected by any outside entity that would change its comparisons of keys over time that also could break any maps that use it. If you haven't already done so be sure to read the section on Comparator in the JDK's javadoc and also the advice on how to write a well behaved Comparator in Effective Java.
-
-Comparative Performance
+Iterators
 ---
 
-Let's start off by stating the obvious.  Mutable collections are faster than immutable ones.  That's a basic fact of life.  Consider a hash table for example.  A mutable hash map can simply replace a value in an internal array in response to a put() call while an immutable one has to create a number of new objects to build a new version of the map reflecting the change.  So, yes, mutable collections are faster.
-
-The real questions are: how much faster are mutable collections and will you really notice the difference.  Based on benchmark runs a JImmutableHashMap is about 2-3 times slower than a HashMap but is about 1.5x faster than a TreeMap.  Unless your application spends most of its time CPU bound updating collections you probably won't notice much of a difference using an immutable collection.
-
-Here is a sample run using the org.javimmutable.collections.util.MapTimingComparison benchmark program that comes with JImmutable Collections.  The program uses a random number generator to create sequences of puts, gets, and deletes.  The program can be tweaked in a variety of ways but the primary setting is the number of loops (operations) to perform.  The program repeats the same series of random operations on a TreeMap<Inetger, Integer>, a JImmutables.map(), and a JImmutables.array().  These test runs were performed on a MacBook Pro with heap settings -Xms384m -Xmx512m.
+The collections are all `Iterable` so they can be used in standard `for` loops.
 
 ````
-    // subset of results for 250k ops run using TreeMap averages include many other runs
-    java map adds 74847 removes 24925 gets 150228 size 74814 elapsed 80
-    jimm map adds 74847 removes 24925 gets 150228 size 74814 elapsed 57
-    jimm ary adds 74847 removes 24925 gets 150228 size 74814 elapsed 50
-
-    java map adds 75044 removes 24846 gets 150110 size 75013 elapsed 80
-    jimm map adds 75044 removes 24846 gets 150110 size 75013 elapsed 55
-    jimm ary adds 75044 removes 24846 gets 150110 size 75013 elapsed 50
-
-    java map adds 75093 removes 24995 gets 149912 size 75050 elapsed 81
-    jimm map adds 75093 removes 24995 gets 149912 size 75050 elapsed 55
-    jimm ary adds 75093 removes 24995 gets 149912 size 75050 elapsed 51
-
-    java avg: 79.6  hash avg: 55.6  array avg: 50.0
+        int eWordCount = 0;
+        for (String word : fromBuilder) {
+            if (word.contains("e")) {
+                eWordCount += 1;
+            }
+        }
+        assertThat(eWordCount).isEqualTo(3);
 ````
 
-As you can see the TreeMap completed 250,000 operations in about 80 milliseconds on average winding up with a map containing 75k elements.  JImmutables.map() completed the same operations in 55 ms and JImmutables.array() in 50 ms.  Using the same program a HashMap averages around 21 ms.
-
-Increasing the number of operations to 500k (double) the average times are 52 ms for HashMap, 200 ms for TreeMap, 128 ms for JImmutables.map() and 118 ms for JImmutables.array().  The resulting collections contain approximately 150k elements.  For the same run JImmutables.sortedMap() takes approximately 375 ms.
-
-Cranking the number of operations up some more (1.5 million) we get these times: HashMap 262 ms, JImmutables.map() 530 ms, JImmutables.array() 476 ms.  The final collection contained 448k elements.  For these I used heap settings -Xms384m -Xmx768m.
-
-````
-    // subset of results for 1.5 million ops run using HashMap averages include many other runs
-    java map adds 449849 removes 149741 gets 900410 size 448534 elapsed 269
-    jimm map adds 449849 removes 149741 gets 900410 size 448534 elapsed 521
-    jimm ary adds 449849 removes 149741 gets 900410 size 448534 elapsed 466
-
-    java map adds 449889 removes 149428 gets 900683 size 448581 elapsed 267
-    jimm map adds 449889 removes 149428 gets 900683 size 448581 elapsed 517
-    jimm ary adds 449889 removes 149428 gets 900683 size 448581 elapsed 465
-
-    java map adds 450106 removes 149794 gets 900100 size 448768 elapsed 265
-    jimm map adds 450106 removes 149794 gets 900100 size 448768 elapsed 522
-    jimm ary adds 450106 removes 149794 gets 900100 size 448768 elapsed 462
-
-    java avg: 260.0  hash avg: 505.9  array avg: 456.2
-````
-
-From these test runs with maps it's clear that java.util.HashMap is wicked fast as would be expected but the fully immutable alternatives are still within a factor of 2-3 of it even for collections as large as 448k elements.  Saying something is 2-3 times slower than something else sounds bad but keep in mind that this test performed one and a half million operations, wound up with a collection of 448k elements, and the difference in execution time between the best mutable and immutable versions was only about 245 milliseconds!  In exchange for that quarter second your program would have all the benefits of immutability including:
-
-- elimination of the need for locking or any potential for lock contention impacting performance
-- elimination of the need for defensive copying or any potential for different parts of the program using the same map changing the data unexpectedly and breaking other parts of the program
-- improvements in maintainability from ability to reason about how and when collections might change
-
-
-If your program is CPU bound and works with enormous data structures it might require the use of mutable data structures.  However for most programs switching to fully immutable data structures would have no noticeable effect on performance but would provide major benefits in the design and maintainability of the system.
-
-Collections
+Streams and Collectors
 ---
 
-JImmutable Collections contains a variety of fully immutable collections designed to suit different needs in an application. This page describes the various collections (as of version 2.2) and their general performance characteristics. For each collection the summary lists the JImmutables factory method used to create an instance, the general algorithmic complexity of the collection, and a description of the collection's uses and characteristics.
+Streams can be used along with the provided collector methods to easily create new collections. For example this
+function creates a list of the integer factors (other than 1) of an integer.
 
-The complexity is expressed in big-oh notation which means "on the order of" or "within some constant multiple of" the value in parentheses. logX(n) means log to the base X of the number of elements in the collection. To give an idea of scale log32(100000) is 3.3 while log2(100000) is 16.6. "Within some constant factor" means that there will be fixed costs associated with the implementation so one algorithm with a given big-oh complexity might be 2-3 times faster than another with the same complexity.
+````
+    private IList<Integer> factorsOf(int number)
+    {
+        final int maxPossibleFactor = (int)Math.sqrt(number);
+        return IntStream.range(2, maxPossibleFactor + 1).boxed()
+            .filter(candidate -> number % candidate == 0)
+            .collect(ICollectors.toList());
+    }
+````
 
-Generally speaking ArrayList will be much faster than JImmutableList since it simply updates an array but for most algorithms the difference will not be significant to overall run time. JImmutableMaps are generally comparable in performance (i.e. within acceptable limits for most algorithms) to java.util.Maps. See the [Comparative Performance] page for an idea of how the immutable maps and arrays compare to java.util.Maps.
+This code creates a lookup table of all the factors of the first 1000 integers into an `IMap`.
 
-Factory|Complexity|Description
----|---|---
-JImmutables.array()|O(log32(n))|A sparse array allowing any integer (positive or negative) as index. Indexes do not need to be consecutive and the array allocates memory only for indexes actually inserted into the array. Implemented internally as an integer trie with 32-way branching. Cursors visit elements in order by index with negative indexes visited before positive indexes. No direct java.util analog but similar to a TreeMap but with better performance.
-JImmutables.map()|O(log32(n))|A hash map using hashCode() and equals() methods of keys. Keys and values are stored in hash mapped array tries using linked lists or b-trees for collision handling (two keys having same hash code). Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Intended as a replacement for java.util.HashMap. Cursors visit elements in an unspecified order.
-JImmutables.sortedMap()|O(log2(n))|A tree map using a Comparator object to sort and compare keys. Keys and values are stored in B-trees. Intended as a replacement for java.util.TreeMap. Iterators, Streams, and Cursors visit elements in sort order of keys as specified by the Comparator.
-JImmutables.insertOrderMap()|O(2 * log32(n))|A hash map using hashCode() and equals() methods of keys. Keys and values are stored in hash mapped array tries using linked lists or b-trees for collision handling (two keys having same hash code). A second integer trie is also used to govern cursor order. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a map() since it maintains two data structures internally. Intended as a replacement for java.util.LinkedHashMap. Iterators, Streams, and Cursors visit elements in the order they were originally inserted into the map.
-JImmutables.stack()|O(1) inserts/deletes at head, O(n) searches|A singly linked linear list of elements maintained in reverse insertion order. Extremely fast inserts and deletes from the head but searches require looping through all elements to find a match. Does not support insertion or deletion inside the list. Useful as a stack or a fast temporary list of items where LIFO order is acceptable. Cursors visit elements in LIFO (last in first out) order.
-JImmutables.list()|O(log32(n))|A "list" implemented internally as a 32-way tree. Allows elements to be inserted or removed only at either end of the list. Allows elements to be replaced anywhere within the list. Intended as a replacement for java.util.List. Cursors visit elements in order by index.
-JImmutables.ralist()|O(log2(n))|A "list" implemented internally as a B-tree. Allows elements to be inserted, removed, and updated anywhere within the list. Intended as a replacement for java.util.List in algorithms that require insertion or removal from the middle of the list. Otherwise use list(). Cursors visit elements in order by index.
-JImmutables.set()|O(log32(n))|A set implemented internally using a hash map. Keys are stored in hash mapped array tries using hashCode() and equals() methods to compare keys. Intended as a replacement for HashSet. Cursors visit elements in an unspecified order.
-JImmutables.sortedSet()|O(log2(n))|A set implemented internally using a B-tree. Keys are compared using a Comparator. Intended as a replacement for TreeSet. Cursors visit elements in sort order of keys as specified by the Comparator.
-JImmutables.insertOrderSet()|O(2 * log32(n))|A set implemented internally using an integer trie for sort order and a hash mapped trie for searching. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a set() since it maintains two data structures internally. Intended as a replacement for java.util.LinkedHashSet. Cursors visit elements in the order they were originally inserted into the map.
-JImmutables.listMap()|O(log32(n))|A hash map mapping keys to JImmutableLists. Performance similar to JImmutables.map(). Cursors visit elements in an unspecified order.
-JImmutables.sortedListMap()|O(log2(n))|A sorted map mapping keys to JImmutableLists. Performance similar to JImmutables.sortedMap(). Cursors visit elements in sort order of keys as specified by the Comparator.
-JImmutables.insertOrderListMap()|O(2 * log32(n))|A sorted map mapping keys to JImmutableLists. Performance similar to JImmutables.insertOrderMap(). Cursors visit elements in the order they were originally inserted into the map.
-JImmutables.setMap()|O(log32(n))|A hash map mapping keys to JImmutableSets. Performance similar to JImmutables.map(). Cursors visit elements in an unspecified order.  Sets are all equivalent to one created by JImmutables.set().
-JImmutables.sortedSetMap()|O(log2(n))|A sorted map mapping keys to JImmutableSets. Performance similar to JImmutables.sortedMap(). Cursors visit elements in sort order of keys as specified by the Comparator.  Sets are all equivalent to one created by JImmutables.set().
-JImmutables.insertOrderSetMap()|O(2 * log32(n))|A sorted map mapping keys to JImmutableSets. Performance similar to JImmutables.insertOrderMap(). Cursors visit elements in the order they were originally inserted into the map.  Sets are all equivalent to one created by JImmutables.set().
-JImmutables.multiset()|O(log32(n))|A multiset implemented internally using a hash map. Keys are stored in hash mapped array tries using hashCode() and equals() methods to compare keys. Cursors visit elements in an unspecified order.
-JImmutables.sortedMultiset()|O(log2(n))|A multiset implemented internally using a B-tree. Keys are compared using a Comparator. Cursors visit elements in sort order of keys as specified by the Comparator.
-JImmutables.insertOrderMultiset()|O(2 * log32(n))|A multiset implemented internally using an integer trie for sort order and a hash mapped trie for searching. Performance scales roughly linearly with size of the collection since depth of the trie never exceeds 7 levels. Perhaps as much as twice the overhead of a multiset() since it maintains two data structures internally. Cursors visit elements in the order they were originally inserted into the map.
+````
+        IMap<Integer, IList<Integer>> factorMap =
+            IntStream.range(2, 100).boxed()
+                .map(i -> IMapEntry.of(i, factorsOf(i)))
+                .collect(ICollectors.toMap());
+````
 
+This code shows how the lookup table could be used to get a list of the prime numbers in the map:
 
-Hash Keys
+````
+        IList<Integer> primes = factorMap.stream()
+            .filter(e -> e.getValue().isEmpty())
+            .map(e -> e.getKey())
+            .collect(ICollectors.toList());
+        assertThat(primes)
+            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 
+                                 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
+````
+
+Iteration
+----
+
+In addition to fully supporting Streams and Iterators the collections also provide their own iteration methods that
+operate in a more functional style. For example the `forEach()` method takes a lambda and invokes it for each element of
+the collection:
+
+````
+        ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
+        numbers.forEach(i -> System.out.println(i));
+````
+
+Methods are also provided to iterate over an entire collection to produce a new one by applying a predicate or
+transformation. All of these operations can be done with Stream/map/filter/collect as well of course, but these
+light-weight versions are faster when a single thread is sufficient for the job.
+
+````
+        ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
+        ISet<Integer> changed = numbers.reject(i -> i % 3 != 2);
+        assertThat(changed).isEqualTo(ISets.hashed(2, 5, 8, 11, 14, 17));
+        
+        changed = numbers.select(i -> i % 3 == 1);
+        assertThat(changed).isEqualTo(ISets.hashed(1, 4, 7, 10, 13, 16, 19));
+
+        IDeque<Integer> transformed = changed.stream().collect(ICollectors.toDeque());
+        assertThat(transformed).isEqualTo(IDeques.of(1, 4, 7, 10, 13, 16, 19));
+````
+
+Slicing and Dicing Lists
+----
+
+Lists allow elements (and even whole lists) to be added or deleted at any index. They also support grabbing sub-lists
+from anywhere within themselves. This example shows how various sub-lists can be extracted from a list and then inserted
+into the middle of another.
+
+````
+        IList<Integer> numbers = IntStream.range(1, 21).boxed().collect(ICollectors.toList());
+        IList<Integer> changed = numbers.prefix(6);
+        assertThat(changed).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6));
+        
+        changed = numbers.suffix(16);
+        assertThat(changed).isEqualTo(ILists.of(17, 18, 19, 20));
+        
+        changed = changed.insertAll(2, numbers.prefix(3).insertAllLast(numbers.middle(9, 12)));
+        assertThat(changed).isEqualTo(ILists.of(17, 18, 1, 2, 3, 10, 11, 12, 19, 20));
+````
+
+Inserting entire lists will always reuse structure from both lists as much as possible. Likewise, removing sub-lists
+from within a large list will produce a new list that shares most of its structure with the original list. This means
+building a large list by successively appending other lists to it can be faster than inserting the individual values
+into a builder.
+
+Maps of Sets and Lists
 ---
 
-JImmutable Collections includes two basic types of maps ([Map Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/Map-Tutorial)): sorted and unsorted.  A third type, insert order maps, use an unsorted map for their implementation internally so they won't be addressed here.  Sorted maps are implemented using balanced b-trees.  Unsorted maps are implemented using hash array mapped tries (HAMT).
+The `ISetMap` makes it easy to index values or accumulate values related to a key. The `IListMap`
+works similarly but accumulates lists of values by key so it can preserve the order in which they are added and track
+duplicates.
 
-Most hash map implementations use an array sufficiently large to hold all of the elements in the map plus some extra capacity to allow for growth and minimize hash collisions.  These implementations compute an integer hash code for each key (in Java the hashCode() method is used for this purpose) and then take the modulus of this code and the size of the array to produce an index into the array.  Since hash codes are 32-bit integers the arrays themselves are tiny in comparison to the 4 billion potential hash codes.  When two different hash codes map to the same array index this is called a "hash collision".  Allowing extra space in the array and using a prime number for its size can help to reduce the number of collisions.
+The example below shows a trivial example of indexing a sequence of sentences by the words they contain.
 
-In contrast a HAMT is a shallow tree-like structure which maps every possible hash code to a unique location in the trie.  The trie's potential capacity is exactly equal to the number of possible hash codes so two hash codes can never "collide" due to limited capacity of the structure.  In that sense a HAMT is an ideal structure for hashing so it would seem that hash collisions would be impossible.
+````
+        IList<String> source = ILists.of("Now is our time.",
+                                         "Our moment has arrived.",
+                                         "Shall we embrace immutable collections?",
+                                         "Or tread in dangerous synchronized waters forever?");
+        ISetMap<String, String> index = source
+            .stream()
+            .flatMap(line -> Stream.of(line
+                                           .toLowerCase()
+                                           .replace(".", "")
+                                           .replace("?", "")
+                                           .split(" "))
+                .map(word -> MapEntry.entry(word, line)))
+            .collect(ICollectors.toSetMap());
+        assertThat(index.get("our")).isEqualTo(ISets.hashed("Now is our time.", "Our moment has arrived."));
+````
 
-However there is another potential source of hash collisions.  Specifically a poorly implemented hash function can generate the same hash code for many keys.  An obvious example would be one that hashes strings by simply adding the UTF-32 integer values of each character.  This would obviously produce exactly the same hash code for the strings "ABCD", "DCBA", and "ADBC".
+These classes offer a variety of methods for adding elements individually or in groups as well as iterating over all the
+values for a given key as well as over the entire collection.
 
-Since hash collisions are always possible hash map implementations have to adopt strategies for dealing with collisions.
+````
+        IListMap<String, Integer> index = IListMaps.<String, Integer>sorted()
+            .insert("c", 2)
+            .insert("a", 1)
+            .insert("d", 640)
+            .insert("b", 3)
+            .insert("d", 512)
+            .insertAll("a", ILists.of(-4, 40, 18)); // could be any Iterable not just list
+        // keys are sorted in the map
+        assertThat(ILists.allOf(index.keys())).isEqualTo(ILists.of("a", "b", "c", "d"));
+        // values appear in the list in order they are added
+        assertThat(index.getList("a")).isEqualTo(ILists.of(1, -4, 40, 18));
+        assertThat(index.getList("d")).isEqualTo(ILists.of(640, 512));
+        assertThat(index.getList("x")).isEqualTo(ILists.of());
+````
 
-**Collision Handling Strategies**
+ConcurrentModificationException
+---
 
-Versions of JImmutable Collections prior to 1.6 relied on the hash functions producing very few collisions.  Based on that simplifying assumption they adopted the simple strategy of using linked lists of key/value pairs to resolve collisions at any given location in the HAMT.  For example if 9 different keys stored in the hash map have exactly the same hash code the map would store all nine elements in a linked list at the HAMT node corresponding to that hash code.  Whenever the `get()` method is called for one of those keys the map would find the node with the appropriate hash code in the HAMT and then walk the linked list looking for a matching key.  Obviously this implementations performance would degrade in the presence of poor `hashCode()` methods that generate frequent collisions.
+Immutable collections never throw these. The example below is contrived, but it illustrates the problem of updating a
+mutable collection while iterating over its contents. Since immutable collections are persistent you are always
+modifying a different version of the collection, and the iterator doesn't become confused.
 
-A second hash collision strategy has been available beginning with version 1.6.  This second strategy uses balanced B-trees instead of linked lists at each node.  In the example above with 9 keys in the same HAMT node a linked list could require up to 9 list nodes to be visited searching for a key but with a B-tree at most 2 tree nodes would have to be visited.  With 128 collisions in a single node the list would require visiting up to 128 list nodes but the B-tree would require at most 7 tree nodes.
+````
+        assertThatThrownBy(() -> {
+            Map<Integer, Integer> ints = IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
+            for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
+                ints.put(2 * entry.getKey(), 2 * entry.getValue());
+            }
+        }).isInstanceOf(ConcurrentModificationException.class);
 
-Obviously the b-tree strategy offers superior performance.  However since it relies on the ability to keep keys sorted in the tree it can only be used for certain types of keys.  Specifically keys must implement the Comparable interface.  Since the various factory methods, JImmutables.map(), do not require that keys implement Comparable each map waits to decide which strategy to use until the first key is added to the map.  On the first call to insert() the map determines if the key is Comparable.  If it is the map uses the B-tree strategy.  Otherwise it falls back on the linked list strategy.
+        IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
+        for (IMapEntry<Integer, Integer> entry : myMap) {
+            myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
+        }
+        assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+        assertThat(ILists.allOf(myMap.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+````
 
-**Best Practices for Unsorted Map Keys**
+The static collector factory methods create collectors that add elements from the stream to an empty collection.
+Instances of the collection classes also provide an instance method to create a collector based on that instance (rather
+than an empty instance). This can be used with a Stream to add entries to the collection. The example below adds entries
+to the map. Some keys update existing entries while others are new keys to be added to the collection.
 
-All of this background boils down to a few simple best practices to follow when deciding which objects to use as keys in your unsorted maps.
+````
+        myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
+        IMap<Integer, Integer> changed = myMap.stream()
+            .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+            .collect(myMap.mapCollector());
+        // 6-10 were updated, 11-15 were added
+        assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        assertThat(ILists.allOf(changed.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        // original map is unchanged 
+        assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+````
 
-1. Ensure that all keys in the map are implementations of a single class.
-2. Ensure the key class is immutable.
-3. Ensure the key class has an excellent `hashCode()` method.
-4. Ensure the key class `K` implements `Comparable<K>`.
+Maybe - Handling Optional Values
+---
 
-Restricting your keys to a single class ensures that all of the keys will always be comparable to one another.  It also ensures that all keys either implement Comparable or do not.  For example if you have a class A which is not Comparable and a subclass B of A which is Comparable then an unsorted map will encounter exceptions if the first key inserted is of class B but a later key is of class A.  In that case the map will choose to use the B-strategy when the B key is inserted but when the map tries to cast the A key to Comparable an exception will be thrown.  All keys in a given map **must** either implement Comparable or not implement Comparable.  You cannot have a mix of the two in a single map.  The easiest way to prevent this problem from happening is to use homogeneous hash keys.
+The `Maybe` class, returned by `find()` methods in all collections, is similar to `Optional` but has several
+advantages:
 
-Restricting your keys to be immutable is required not just in the JImmutable maps but also in the java.util maps.  If a key is mutable it would be possible for its `hashCode()` to change after the key has already been added to the map.  If that were to happen later attempts to delete or move the key could corrupt the map.
+- `Maybe` is serializable so you can use it as a field in `Serializable` objects if desired.
+- `Maybe` offers more utility methods than `Optional`.
+- `Maybe` supports null values (sometimes you just want null...)
 
-Having an excellent `hashCode()` will make it highly unlikely that any collisions will happen in a HAMT.  Integer is an obvious example of a class whose hash codes never collide.  (note: if your keys are Integers though you could use a JImmutableArray for better efficiency)  There is always a trade off of performance vs collision avoidance.  For example computing an MD5 digest and using the first 32 bits would probably yield a fantastic hash code but would be extremely slow.  Do some reading on how to implement efficient `hashCode()` methods.  The time expended will pay off in better performance for your program.
+`Maybe` and `NotNull` can interoperate with one another. Calling `notNull()` on a `Maybe` returns a `NotNull` reflecting
+the presence and nullity of a value in the `Maybe`. Similarly, calling `maybe()` on a `NotNull` returns a `Maybe`
+reflecting the presence of a value in the `NotNull`. Note that this is not always a round trip.  
+If `m` is a `Maybe` containing a null value calling `m.notNull().maybe()` will return an empty `Maybe`.
 
-Restricting your keys to those classes which implement Comparable will allow the map to use a B-tree for maximum performance if collisions do happen.  Imagine the worst case scenario of a `hashCode()` that always generates the same number.  In that case a map using the B-tree strategy will have O(log(N)) performance while a map using linked list strategy will have O(N) performance.  So the small amount of time needed to add a well written `compareTo()` method can pay off in better performance if your `hashCode()` method proves to be less than stellar.
 
-Of course the easiest strategy is to simply use one of Java's built in value types as keys.  String, Integer, Double, etc all implement Comparable and have good `hashCode()` implementations.
+NotNull - Avoiding null
+---
+
+The use of null has been controversial. The JImmutable collections are mostly indifferent to null. Nulls are not
+permitted as keys to maps or values in sets. However, they can be stored as values in lists and maps. Maybes returned
+by the `find()` method permit nulls as well.
+
+There are many disadvantages to nulls though. In particular, they cannot be used in call chains. The `NotNull` class
+provides an alternative to null that can be easily chained in a functional style.  `NotNull` is similar to `Maybe` but
+does not allow nulls and provides more monadic functionality. It is meant to be used in sequences of method calls.
+
+There are two possible states for a `NotNull` object:
+
+- `Empty` indicates no value is stored within the `NotNull`. The `unsafeGet` methods cannot be called on these objects
+  but all others can be called safely.
+- `Full` indicates a non-null value is stored within the `NotNull`. All methods can be called on these objects.
+
+NotNull should be used when a value might not exist or might be null. For example as the result of a database query for
+a single object. Once you have a NotNull value you can call the `map` method with a lambda that transforms the value
+(if one exists). The transformed value can be of the same or another type. If your lambda returns another NotNull you
+should use the `flatMap` method to "unwrap" the resulting value.
+
+````
+// simplified class for illustration - normally you'd use getters
+class Person
+{
+  final String emailAddress;
+  final NotNull<PhoneNumber> homePhone;
+  final NotNull<PhoneNumber> mobilePhone;
+}
+
+NotNull<Person> customer = customers.lookupCustomerByName("Jones", "Patrick");
+NotNull<String> email = customer.map(c -> c.emailAddress);
+
+// get the area code from the home phone number if we have one, "" otherwise
+String areaCode = customer.flatMap(c -> c.homePhone)
+          .map(phone -> phone.getAreaCode())
+          .get("");
+
+// another way to do the same - using match
+areaCode = customer.flatMap(c -> c.homePhone)
+                   .match("", phone -> phone.getAreaCode());
+````
+
+# Resources
+
+Wiki Pages
+---
+
+[JImmutables Factory Methods](https://github.com/brianburton/java-immutable-collections/wiki/JImmutables-Factory-Methods)  
+[Collections Overview](https://github.com/brianburton/java-immutable-collections/wiki/Collections-Overview)  
+[List Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/List-Tutorial)  
+[Map Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/Map-Tutorial)  
+[Array Tutorial](https://github.com/brianburton/java-immutable-collections/wiki/Array-Tutorial)  
+[Streams and Lambdas](https://github.com/brianburton/java-immutable-collections/wiki/Streams-and-Lambdas)  
+[Comparative Performance](https://github.com/brianburton/java-immutable-collections/wiki/Comparative-Performance)  
+[Hash Keys](https://github.com/brianburton/java-immutable-collections/wiki/Hash-Keys)  
+[Project Javadoc](http://brianburton.github.io/java-immutable-collections/apidocs/index.html)  
+[Jackson Module for JSON Support](https://github.com/brianburton/javimmutable-jackson)
+
+
+Project Status
+---
+All production releases undergo stress testing and pass all junit tests. Of course, you should evaluate the collections
+for yourself and perform your own tests before deploying the collections to production systems.
+
+All releases are uploaded to the [releases section](https://github.com/brianburton/java-immutable-collections/releases)
+on GitHub and are also available via Maven
+in [Maven Central](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.javimmutable%22%20AND%20a%3A%22javimmutable-collections%22)
+. You can add JImmutable Collections to your Maven project by adding a dependency like this to your pom.xml. The maven
+releases include source jars for easy reference in your IDE.
+
+````
+    <dependency>
+        <groupId>org.javimmutable</groupId>
+        <artifactId>collections</artifactId>
+        <version>4.0.1</version>
+    </dependency>
+````
+
+Project Members:
+---
+
+- [Brian Burton](https://github.com/brianburton) (admin)
+- [Angela Burton](https://github.com/anjbur)
