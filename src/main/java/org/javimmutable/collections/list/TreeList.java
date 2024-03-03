@@ -151,7 +151,15 @@ public class TreeList<T>
     public TreeList<T> insert(int index,
                               @Nullable T value)
     {
-        return new TreeList<>(root.insert(index, value));
+        AbstractNode<T> newRoot;
+        if (index == 0) {
+            newRoot = root.prepend(value);
+        } else if (index == root.size()) {
+            newRoot = root.append(value);
+        } else {
+            newRoot = root.insert(index, value);
+        }
+        return new TreeList<>(newRoot);
     }
 
     @Nonnull

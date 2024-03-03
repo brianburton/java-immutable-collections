@@ -35,12 +35,28 @@
 
 package org.javimmutable.collections.common;
 
+import static java.util.Arrays.asList;
 import junit.framework.TestCase;
+import static org.javimmutable.collections.common.ArrayHelper.Allocator;
+import static org.javimmutable.collections.common.ArrayHelper.allocator;
+import static org.javimmutable.collections.common.ArrayHelper.append;
+import static org.javimmutable.collections.common.ArrayHelper.assign;
+import static org.javimmutable.collections.common.ArrayHelper.assignAppend;
+import static org.javimmutable.collections.common.ArrayHelper.assignDelete;
+import static org.javimmutable.collections.common.ArrayHelper.assignInsert;
+import static org.javimmutable.collections.common.ArrayHelper.assignTwo;
+import static org.javimmutable.collections.common.ArrayHelper.concat;
+import static org.javimmutable.collections.common.ArrayHelper.delete;
+import static org.javimmutable.collections.common.ArrayHelper.insert;
+import static org.javimmutable.collections.common.ArrayHelper.prefix;
+import static org.javimmutable.collections.common.ArrayHelper.prefixInsert;
+import static org.javimmutable.collections.common.ArrayHelper.prepend;
+import static org.javimmutable.collections.common.ArrayHelper.reverse;
+import static org.javimmutable.collections.common.ArrayHelper.subArray;
+import static org.javimmutable.collections.common.ArrayHelper.suffix;
+import static org.javimmutable.collections.common.ArrayHelper.suffixInsert;
 
 import java.util.concurrent.Callable;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.ArrayHelper.*;
 
 public class ArrayHelperTest
     extends TestCase
@@ -120,6 +136,14 @@ public class ArrayHelperTest
     {
         verifyValues(append(alloc, new Integer[0], 9), 9);
         verifyValues(append(alloc, new Integer[]{1}, 9), 1, 9);
+        verifyValues(append(alloc, new Integer[]{1, 2}, 9), 1, 2, 9);
+    }
+
+    public void testPrepend()
+    {
+        verifyValues(prepend(alloc, new Integer[0], 9), 9);
+        verifyValues(prepend(alloc, new Integer[]{1}, 9), 9, 1);
+        verifyValues(prepend(alloc, new Integer[]{1, 2}, 9), 9, 1, 2);
     }
 
     public void testInsert()

@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 class EmptyNode<T>
     extends AbstractNode<T>
 {
-    private static EmptyNode INSTANCE = new EmptyNode();
+    private static final EmptyNode INSTANCE = new EmptyNode();
 
     private EmptyNode()
     {

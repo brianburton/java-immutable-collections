@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
 import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
-import static org.javimmutable.collections.list.MultiValueNode.SPLIT_SIZE;
 
 public class MultiValueNodeTest
     extends TestCase
@@ -71,13 +70,13 @@ public class MultiValueNodeTest
         assertThat(leaf(0, 5).append(leaf(5, 10))).isEqualTo(leaf(0, 10));
         assertThat(leaf(0, MAX_SIZE - 3).append(leaf(MAX_SIZE - 3, MAX_SIZE))).isEqualTo(leaf(0, MAX_SIZE));
         assertThat(leaf(0, MAX_SIZE - 3).append(leaf(MAX_SIZE - 3, MAX_SIZE + 1))).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
-        assertThat(leaf(0, MAX_SIZE).append(MAX_SIZE)).isEqualTo(new BranchNode<>(leaf(0, SPLIT_SIZE), leaf(SPLIT_SIZE, MAX_SIZE + 1)));
+        assertThat(leaf(0, MAX_SIZE).append(MAX_SIZE)).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE), leaf(MAX_SIZE, MAX_SIZE + 1)));
 
         assertThat(leaf(1, 5).prepend(0)).isEqualTo(leaf(0, 5));
         assertThat(leaf(5, 10).prepend(leaf(0, 5))).isEqualTo(leaf(0, 10));
         assertThat(leaf(MAX_SIZE - 3, MAX_SIZE).prepend(leaf(0, MAX_SIZE - 3))).isEqualTo(leaf(0, MAX_SIZE));
         assertThat(leaf(MAX_SIZE - 3, MAX_SIZE + 1).prepend(leaf(0, MAX_SIZE - 3))).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
-        assertThat(leaf(1, MAX_SIZE + 1).prepend(0)).isEqualTo(new BranchNode<>(leaf(0, SPLIT_SIZE + 1), leaf(SPLIT_SIZE + 1, MAX_SIZE + 1)));
+        assertThat(leaf(1, MAX_SIZE + 1).prepend(0)).isEqualTo(new BranchNode<>(leaf(0, 1), leaf(1, MAX_SIZE + 1)));
 
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(-1, 9));
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));

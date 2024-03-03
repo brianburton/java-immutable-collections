@@ -150,7 +150,12 @@ class MultiValueNode<T>
     @Override
     AbstractNode<T> append(T value)
     {
-        return insert(values.length, value);
+        if (values.length < MAX_SIZE) {
+            T[] newValues = ArrayHelper.append(this, values, value);
+            return new MultiValueNode<>(newValues);
+        } else {
+            return new BranchNode<>(this, new OneValueNode<>(value));
+        }
     }
 
     @Nonnull
@@ -175,7 +180,12 @@ class MultiValueNode<T>
     @Override
     AbstractNode<T> prepend(T value)
     {
-        return insert(0, value);
+        if (values.length < MAX_SIZE) {
+            T[] newValues = ArrayHelper.prepend(this, values, value);
+            return new MultiValueNode<>(newValues);
+        } else {
+            return new BranchNode<>(new OneValueNode<>(value), this);
+        }
     }
 
     @Nonnull

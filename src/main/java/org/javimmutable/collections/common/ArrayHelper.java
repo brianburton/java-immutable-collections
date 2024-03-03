@@ -135,6 +135,25 @@ public final class ArrayHelper
     }
 
     /**
+     * Creates a copy of orig with one extra value added at the beginning.
+     * Length of result is orig.length + 1.
+     *
+     * @param allocator used to allocate the resulting array
+     * @param orig      array to copy
+     * @param value     value to assign at beginning of new array
+     */
+    @Nonnull
+    public static <T> T[] prepend(@Nonnull Allocator<T> allocator,
+                                  @Nonnull T[] orig,
+                                  T value)
+    {
+        final T[] answer = allocator.allocate(orig.length + 1);
+        System.arraycopy(orig, 0, answer, 1, orig.length);
+        answer[0] = value;
+        return answer;
+    }
+
+    /**
      * Creates a copy of orig with one extra value inserted at index.
      * All values from index->length are shifted to the right by 1.
      *

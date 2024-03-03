@@ -67,28 +67,44 @@ public class BranchNodeTest
 
     public void testRotateLeft()
     {
-        AbstractNode<Integer> expected = branch(branch(leaf(0, MAX_SIZE),
-                                                       leaf(MAX_SIZE, 2 * MAX_SIZE)),
-                                                branch(leaf(2 * MAX_SIZE, 2 * MAX_SIZE + SPLIT_SIZE),
-                                                       leaf(2 * MAX_SIZE + SPLIT_SIZE, 3 * MAX_SIZE + 1)));
-        AbstractNode<Integer> actual = branch(leaf(0, MAX_SIZE),
-                                              branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
-                                                     leaf(2 * MAX_SIZE, 3 * MAX_SIZE)));
-        assertThat(actual.append(3 * MAX_SIZE)).isEqualTo(expected);
-        assertThat(actual.insert(3 * MAX_SIZE, 3 * MAX_SIZE)).isEqualTo(expected);
+        AbstractNode<Integer> start = branch(leaf(0, MAX_SIZE),
+                                             branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
+                                                    leaf(2 * MAX_SIZE, 3 * MAX_SIZE)));
+
+        // append keeps the array full as it adds a value to the end
+        assertThat(start.append(3 * MAX_SIZE))
+            .isEqualTo(branch(branch(leaf(0, MAX_SIZE),
+                                     leaf(MAX_SIZE, 2 * MAX_SIZE)),
+                              branch(leaf(2 * MAX_SIZE, 3 * MAX_SIZE),
+                                     leaf(3 * MAX_SIZE, 3 * MAX_SIZE + 1))));
+
+        // insert splits the array as it adds a value to the end
+        assertThat(start.insert(3 * MAX_SIZE, 3 * MAX_SIZE))
+            .isEqualTo(branch(branch(leaf(0, MAX_SIZE),
+                                     leaf(MAX_SIZE, 2 * MAX_SIZE)),
+                              branch(leaf(2 * MAX_SIZE, 2 * MAX_SIZE + SPLIT_SIZE),
+                                     leaf(2 * MAX_SIZE + SPLIT_SIZE, 3 * MAX_SIZE + 1))));
     }
 
     public void testRotateRight()
     {
-        AbstractNode<Integer> expected = branch(branch(leaf(-1, SPLIT_SIZE),
-                                                       leaf(SPLIT_SIZE, MAX_SIZE)),
-                                                branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
-                                                       leaf(2 * MAX_SIZE, 3 * MAX_SIZE)));
-        AbstractNode<Integer> actual = branch(branch(leaf(0, MAX_SIZE),
-                                                     leaf(MAX_SIZE, 2 * MAX_SIZE)),
-                                              leaf(2 * MAX_SIZE, 3 * MAX_SIZE));
-        assertThat(actual.prepend(-1)).isEqualTo(expected);
-        assertThat(actual.insert(0, -1)).isEqualTo(expected);
+        AbstractNode<Integer> start = branch(branch(leaf(0, MAX_SIZE),
+                                                    leaf(MAX_SIZE, 2 * MAX_SIZE)),
+                                             leaf(2 * MAX_SIZE, 3 * MAX_SIZE));
+
+        // prepend keeps the array full as it adds a value to the beginning
+        assertThat(start.prepend(-1))
+            .isEqualTo(branch(branch(leaf(-1, 0),
+                                     leaf(0, MAX_SIZE)),
+                              branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
+                                     leaf(2 * MAX_SIZE, 3 * MAX_SIZE))));
+
+        // insert splits the array as it adds a value to the beginning
+        assertThat(start.insert(0, -1))
+            .isEqualTo(branch(branch(leaf(-1, SPLIT_SIZE),
+                                     leaf(SPLIT_SIZE, MAX_SIZE)),
+                              branch(leaf(MAX_SIZE, 2 * MAX_SIZE),
+                                     leaf(2 * MAX_SIZE, 3 * MAX_SIZE))));
     }
 
     public void testDelete()
