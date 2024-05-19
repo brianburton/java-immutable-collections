@@ -45,9 +45,8 @@ import java.util.stream.Collector;
 
 /**
  * Interface for containers that store items in list form with individual items available
- * for get() and assign() using their indexes.  Items inserted into the list are always
- * added at either the front or the end of the list and indexes of items are always in
- * the range 0 through size() - 1.
+ * for get() and assign() using their indexes.  Items can be inserted into the list at
+ * any index.  Indexes of items are always in the range 0 through size() - 1.
  */
 @Immutable
 public interface IList<T>

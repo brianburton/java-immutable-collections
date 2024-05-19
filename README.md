@@ -69,8 +69,6 @@ Dependencies
 The library is designed to have no dependencies on other libraries, but it should interact well with others. Standard
 java interfaces are used where appropriate.
 
-# Examples
-
 Factory Methods
 ---
 
@@ -132,7 +130,7 @@ This code creates a lookup table of all the factors of the first 1000 integers i
 
 ````
         IMap<Integer, IList<Integer>> factorMap =
-            IntStream.range(2, 100).boxed()
+            IntStream.range(2, 1000).boxed()
                 .map(i -> IMapEntry.of(i, factorsOf(i)))
                 .collect(ICollectors.toMap());
 ````
@@ -238,15 +236,17 @@ values for a given key as well as over the entire collection.
             .insert("b", 3)
             .insert("d", 512)
             .insertAll("a", ILists.of(-4, 40, 18)); // could be any Iterable not just list
+
         // keys are sorted in the map
         assertThat(ILists.allOf(index.keys())).isEqualTo(ILists.of("a", "b", "c", "d"));
+
         // values appear in the list in order they are added
         assertThat(index.getList("a")).isEqualTo(ILists.of(1, -4, 40, 18));
         assertThat(index.getList("d")).isEqualTo(ILists.of(640, 512));
         assertThat(index.getList("x")).isEqualTo(ILists.of());
 ````
 
-ConcurrentModificationException
+Bye Bye ConcurrentModificationException
 ---
 
 Immutable collections never throw these. The example below is contrived, but it illustrates the problem of updating a
@@ -257,12 +257,14 @@ modifying a different version of the collection, and the iterator doesn't become
         assertThatThrownBy(() -> {
             Map<Integer, Integer> ints = IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
             for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
+                // changing the map while we iterate throws an exception
                 ints.put(2 * entry.getKey(), 2 * entry.getValue());
             }
         }).isInstanceOf(ConcurrentModificationException.class);
 
         IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
         for (IMapEntry<Integer, Integer> entry : myMap) {
+            // we aren't changing the map, we're making a new one so its fine
             myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
         }
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
@@ -279,9 +281,11 @@ to the map. Some keys update existing entries while others are new keys to be ad
         IMap<Integer, Integer> changed = myMap.stream()
             .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
             .collect(myMap.mapCollector());
+
         // 6-10 were updated, 11-15 were added
         assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
         assertThat(ILists.allOf(changed.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+
         // original map is unchanged 
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 ````
@@ -312,6 +316,7 @@ by the `find()` method permit nulls as well.
 There are many disadvantages to nulls though. In particular, they cannot be used in call chains. The `NotNull` class
 provides an alternative to null that can be easily chained in a functional style.  `NotNull` is similar to `Maybe` but
 does not allow nulls and provides more monadic functionality. It is meant to be used in sequences of method calls.
+Its also `Servializable` so you can use it in a field in `Serializable` objects if desired.
 
 There are two possible states for a `NotNull` object:
 
@@ -345,8 +350,6 @@ String areaCode = customer.flatMap(c -> c.homePhone)
 areaCode = customer.flatMap(c -> c.homePhone)
                    .match("", phone -> phone.getAreaCode());
 ````
-
-# Resources
 
 Wiki Pages
 ---
